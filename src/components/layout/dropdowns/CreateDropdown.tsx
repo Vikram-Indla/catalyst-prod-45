@@ -58,7 +58,7 @@ export function CreateDropdown({ onClose, onCreateEpic, onCreateIncident }: Crea
       'Epics': '/items/epics?create=true',
       'Features': '/features?create=true',
       'Stories': '/items/stories',
-      'Defects': '/items/defects',
+      'Defects': '/releases/defects?create=true',
       'Tasks': '/items/tasks',
       'Objectives': '/items/objectives',
       'Dependencies': '/items/dependencies',

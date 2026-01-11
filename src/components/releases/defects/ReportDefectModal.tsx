@@ -1,13 +1,12 @@
 /**
- * Enterprise-Grade Defect Report Modal
- * Based on industry standards from Jira, TestRail, and QA best practices
+ * Streamlined Defect Report Modal
+ * Simplified form with only essential required fields
  * 
- * Required fields:
- * - Title, Severity, Priority, Defect Type, Module
- * - Steps to Reproduce, Expected Result, Actual Result
- * - Environment, Release/Version
+ * Required fields (6): Title, Severity, Steps, Expected, Actual, Release
+ * Optional fields in collapsible "Additional Details" section
  */
 
+import { useState } from "react";
 import { 
   Bug, 
   Upload, 
@@ -15,7 +14,8 @@ import {
   AlertTriangle, 
   AlertCircle, 
   Info, 
-  Minus 
+  Minus,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { releaseOptions, testCaseOptions, assigneeOptions } from "@/data/defectsData";
+import { cn } from "@/lib/utils";
 
 export interface DefectFormData {
   title: string;
@@ -73,45 +79,45 @@ export function ReportDefectModal({
   setFormData, 
   onSubmit 
 }: ReportDefectModalProps) {
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  
   const updateField = (field: keyof DefectFormData, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Bug className="w-5 h-5 text-red-600" />
-            Report Defect
-          </DialogTitle>
-          <DialogDescription>
-            Log a bug or issue discovered during testing. Fields marked <span className="text-red-500">*</span> are required.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-xl max-h-[85vh] flex flex-col p-0 gap-0 bg-white">
         
-        <div className="space-y-6">
+        {/* STICKY HEADER */}
+        <div className="sticky top-0 bg-white z-10 px-6 pt-6 pb-4 border-b">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Bug className="w-5 h-5 text-red-600" />
+              Report Defect
+            </DialogTitle>
+            <DialogDescription>
+              Log a bug found during testing. Fields marked <span className="text-red-500">*</span> are required.
+            </DialogDescription>
+          </DialogHeader>
           
-          {/* SECTION 1: Basic Information */}
+          {/* Title field in sticky area - always visible */}
+          <div className="mt-4">
+            <label className="text-sm font-medium">
+              Title <span className="text-red-500">*</span>
+            </label>
+            <Input 
+              placeholder="Brief description of the issue..."
+              className="mt-1"
+              value={formData.title}
+              onChange={(e) => updateField('title', e.target.value)}
+            />
+          </div>
+        </div>
+        
+        {/* SCROLLABLE CONTENT */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide border-b pb-2">
-              Basic Information
-            </h3>
-            
-            {/* Title */}
-            <div>
-              <label className="text-sm font-medium">
-                Title <span className="text-red-500">*</span>
-              </label>
-              <Input 
-                placeholder="Brief, descriptive summary of the issue..."
-                value={formData.title}
-                onChange={(e) => updateField('title', e.target.value)}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Example: "Login button unresponsive on Safari iOS 17"
-              </p>
-            </div>
             
             {/* Severity & Priority Row */}
             <div className="grid grid-cols-2 gap-4">
@@ -120,38 +126,38 @@ export function ReportDefectModal({
                   Severity <span className="text-red-500">*</span>
                 </label>
                 <Select value={formData.severity} onValueChange={(v) => updateField('severity', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="How serious is it?" />
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="How serious?" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="blocker">
                       <div className="flex items-center gap-2">
                         <Ban className="w-4 h-4 text-purple-600" />
-                        <span>Blocker — System unusable</span>
+                        <span>Blocker</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="critical">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-red-600" />
-                        <span>Critical — Major function broken</span>
+                        <span>Critical</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="major">
                       <div className="flex items-center gap-2">
                         <AlertCircle className="w-4 h-4 text-orange-600" />
-                        <span>Major — Function impaired</span>
+                        <span>Major</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="minor">
                       <div className="flex items-center gap-2">
                         <Info className="w-4 h-4 text-yellow-600" />
-                        <span>Minor — Cosmetic issue</span>
+                        <span>Minor</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="trivial">
                       <div className="flex items-center gap-2">
                         <Minus className="w-4 h-4 text-gray-500" />
-                        <span>Trivial — Enhancement</span>
+                        <span>Trivial</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -159,75 +165,20 @@ export function ReportDefectModal({
               </div>
               
               <div>
-                <label className="text-sm font-medium">
-                  Priority <span className="text-red-500">*</span>
-                </label>
+                <label className="text-sm font-medium">Priority</label>
                 <Select value={formData.priority} onValueChange={(v) => updateField('priority', v)}>
-                  <SelectTrigger>
+                  <SelectTrigger className="mt-1">
                     <SelectValue placeholder="How urgent?" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="P1">P1 — Urgent (Fix immediately)</SelectItem>
-                    <SelectItem value="P2">P2 — High (Fix this sprint)</SelectItem>
-                    <SelectItem value="P3">P3 — Medium (Fix soon)</SelectItem>
-                    <SelectItem value="P4">P4 — Low (Fix when possible)</SelectItem>
+                    <SelectItem value="P1">P1 - Urgent</SelectItem>
+                    <SelectItem value="P2">P2 - High</SelectItem>
+                    <SelectItem value="P3">P3 - Medium</SelectItem>
+                    <SelectItem value="P4">P4 - Low</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            
-            {/* Defect Type & Module Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">
-                  Defect Type <span className="text-red-500">*</span>
-                </label>
-                <Select value={formData.defectType} onValueChange={(v) => updateField('defectType', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="What kind of bug?" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="functional">Functional — Feature not working</SelectItem>
-                    <SelectItem value="ui">UI/Visual — Display issue</SelectItem>
-                    <SelectItem value="performance">Performance — Slow/timeout</SelectItem>
-                    <SelectItem value="security">Security — Vulnerability</SelectItem>
-                    <SelectItem value="data">Data — Incorrect/missing data</SelectItem>
-                    <SelectItem value="integration">Integration — API/system issue</SelectItem>
-                    <SelectItem value="usability">Usability — Hard to use</SelectItem>
-                    <SelectItem value="crash">Crash — Application crash</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium">
-                  Module/Component <span className="text-red-500">*</span>
-                </label>
-                <Select value={formData.module} onValueChange={(v) => updateField('module', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Which module?" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="authentication">Authentication</SelectItem>
-                    <SelectItem value="dashboard">Dashboard</SelectItem>
-                    <SelectItem value="reports">Reports</SelectItem>
-                    <SelectItem value="user-management">User Management</SelectItem>
-                    <SelectItem value="payments">Payments</SelectItem>
-                    <SelectItem value="notifications">Notifications</SelectItem>
-                    <SelectItem value="api">API</SelectItem>
-                    <SelectItem value="mobile">Mobile App</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          
-          {/* SECTION 2: Reproduction Details */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide border-b pb-2">
-              Reproduction Details
-            </h3>
             
             {/* Steps to Reproduce */}
             <div>
@@ -235,172 +186,63 @@ export function ReportDefectModal({
                 Steps to Reproduce <span className="text-red-500">*</span>
               </label>
               <Textarea 
-                placeholder={"1. Navigate to login page\n2. Enter valid credentials\n3. Click 'Sign In' button\n4. Observe the error..."}
+                placeholder={"1. Navigate to...\n2. Click on...\n3. Observe..."}
                 value={formData.stepsToReproduce}
                 onChange={(e) => updateField('stepsToReproduce', e.target.value)}
-                className="min-h-[100px] font-mono text-sm"
+                className="mt-1 min-h-[80px] font-mono text-sm"
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Number each step. Be specific about what you clicked/entered.
-              </p>
             </div>
             
-            {/* Expected vs Actual Row */}
+            {/* Expected vs Actual - Side by Side */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">
-                  Expected Result <span className="text-red-500">*</span>
+                  Expected <span className="text-red-500">*</span>
                 </label>
                 <Textarea 
-                  placeholder="What should have happened..."
+                  placeholder="What should happen..."
                   value={formData.expectedResult}
                   onChange={(e) => updateField('expectedResult', e.target.value)}
-                  className="min-h-[80px]"
+                  className="mt-1 min-h-[60px]"
                 />
               </div>
-              
               <div>
                 <label className="text-sm font-medium">
-                  Actual Result <span className="text-red-500">*</span>
+                  Actual <span className="text-red-500">*</span>
                 </label>
                 <Textarea 
-                  placeholder="What actually happened..."
+                  placeholder="What happened..."
                   value={formData.actualResult}
                   onChange={(e) => updateField('actualResult', e.target.value)}
-                  className="min-h-[80px]"
+                  className="mt-1 min-h-[60px]"
                 />
               </div>
             </div>
             
-            {/* URL */}
-            <div>
-              <label className="text-sm font-medium">URL (if applicable)</label>
-              <Input 
-                placeholder="https://app.catalyst.gov.sa/..."
-                value={formData.url}
-                onChange={(e) => updateField('url', e.target.value)}
-              />
-            </div>
-          </div>
-          
-          {/* SECTION 3: Environment */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide border-b pb-2">
-              Environment
-            </h3>
-            
+            {/* Release & Assignee */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">
-                  Environment <span className="text-red-500">*</span>
-                </label>
-                <Select value={formData.environment} onValueChange={(v) => updateField('environment', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Where found?" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="dev">Development</SelectItem>
-                    <SelectItem value="qa">QA</SelectItem>
-                    <SelectItem value="staging">Staging</SelectItem>
-                    <SelectItem value="uat">UAT</SelectItem>
-                    <SelectItem value="production">Production</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium">
-                  Release/Version <span className="text-red-500">*</span>
+                  Release <span className="text-red-500">*</span>
                 </label>
                 <Select value={formData.releaseId} onValueChange={(v) => updateField('releaseId', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Which release?" />
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select release" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     {releaseOptions.filter(r => r.value !== 'all').map(release => (
                       <SelectItem key={release.value} value={release.value}>
-                        {release.label}
+                        {release.value}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="text-sm font-medium">Browser</label>
-                <Select value={formData.browser} onValueChange={(v) => updateField('browser', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="chrome">Chrome</SelectItem>
-                    <SelectItem value="firefox">Firefox</SelectItem>
-                    <SelectItem value="safari">Safari</SelectItem>
-                    <SelectItem value="edge">Edge</SelectItem>
-                    <SelectItem value="mobile-safari">Safari (iOS)</SelectItem>
-                    <SelectItem value="mobile-chrome">Chrome (Android)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium">OS</label>
-                <Select value={formData.os} onValueChange={(v) => updateField('os', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="windows-11">Windows 11</SelectItem>
-                    <SelectItem value="windows-10">Windows 10</SelectItem>
-                    <SelectItem value="macos">macOS</SelectItem>
-                    <SelectItem value="ios">iOS</SelectItem>
-                    <SelectItem value="android">Android</SelectItem>
-                    <SelectItem value="linux">Linux</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium">Device</label>
-                <Input 
-                  placeholder="e.g., iPhone 15 Pro"
-                  value={formData.device}
-                  onChange={(e) => updateField('device', e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-          
-          {/* SECTION 4: Traceability & Assignment */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide border-b pb-2">
-              Traceability & Assignment
-            </h3>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Linked Test Case</label>
-                <Select value={formData.linkedTestId} onValueChange={(v) => updateField('linkedTestId', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Link to test case..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    {testCaseOptions.map(tc => (
-                      <SelectItem key={tc.value || 'none'} value={tc.value || 'none'}>
-                        {tc.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
               <div>
                 <label className="text-sm font-medium">Assign To</label>
                 <Select value={formData.assigneeId} onValueChange={(v) => updateField('assigneeId', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select assignee..." />
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     {assigneeOptions.filter(a => a.value !== 'all').map(assignee => (
@@ -413,49 +255,137 @@ export function ReportDefectModal({
               </div>
             </div>
             
-            {/* How Detected */}
+            {/* Attachments */}
             <div>
-              <label className="text-sm font-medium">How Detected</label>
-              <Select value={formData.howDetected} onValueChange={(v) => updateField('howDetected', v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="How was this found?" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="manual-test">Manual Testing</SelectItem>
-                  <SelectItem value="automated-test">Automated Testing</SelectItem>
-                  <SelectItem value="regression">Regression Testing</SelectItem>
-                  <SelectItem value="uat">UAT</SelectItem>
-                  <SelectItem value="production">Production Monitoring</SelectItem>
-                  <SelectItem value="customer">Customer Reported</SelectItem>
-                  <SelectItem value="code-review">Code Review</SelectItem>
-                </SelectContent>
-              </Select>
+              <label className="text-sm font-medium">Attachments</label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center mt-1 hover:border-gray-400 transition-colors cursor-pointer">
+                <Upload className="w-5 h-5 mx-auto text-gray-400" />
+                <p className="text-sm text-gray-500 mt-1">
+                  Drop files or <span className="text-primary">browse</span>
+                </p>
+              </div>
             </div>
-          </div>
-          
-          {/* SECTION 5: Attachments */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide border-b pb-2">
-              Attachments
-            </h3>
             
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
-              <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-              <p className="text-sm text-gray-600">
-                Drag & drop screenshots, videos, or logs
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                or <span className="text-primary">browse files</span>
-              </p>
-            </div>
-            <p className="text-xs text-gray-500">
-              💡 Tip: Screenshots with annotations help developers understand the issue faster
-            </p>
+            {/* COLLAPSIBLE: Additional Details */}
+            <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
+              <CollapsibleTrigger className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 py-2">
+                <ChevronRight className={cn(
+                  "w-4 h-4 transition-transform",
+                  isAdvancedOpen && "rotate-90"
+                )} />
+                Additional Details (optional)
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-2 space-y-4">
+                
+                {/* Environment & Module */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Environment</label>
+                    <Select value={formData.environment} onValueChange={(v) => updateField('environment', v)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Where found?" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="dev">Development</SelectItem>
+                        <SelectItem value="qa">QA</SelectItem>
+                        <SelectItem value="staging">Staging</SelectItem>
+                        <SelectItem value="uat">UAT</SelectItem>
+                        <SelectItem value="production">Production</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Module</label>
+                    <Select value={formData.module} onValueChange={(v) => updateField('module', v)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Which module?" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="authentication">Authentication</SelectItem>
+                        <SelectItem value="dashboard">Dashboard</SelectItem>
+                        <SelectItem value="reports">Reports</SelectItem>
+                        <SelectItem value="user-management">User Management</SelectItem>
+                        <SelectItem value="payments">Payments</SelectItem>
+                        <SelectItem value="api">API</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* Defect Type & How Detected */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Defect Type</label>
+                    <Select value={formData.defectType} onValueChange={(v) => updateField('defectType', v)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="What kind?" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="functional">Functional</SelectItem>
+                        <SelectItem value="ui">UI/Visual</SelectItem>
+                        <SelectItem value="performance">Performance</SelectItem>
+                        <SelectItem value="security">Security</SelectItem>
+                        <SelectItem value="data">Data</SelectItem>
+                        <SelectItem value="integration">Integration</SelectItem>
+                        <SelectItem value="crash">Crash</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">How Detected</label>
+                    <Select value={formData.howDetected} onValueChange={(v) => updateField('howDetected', v)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="How found?" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="manual-test">Manual Testing</SelectItem>
+                        <SelectItem value="automated-test">Automated Test</SelectItem>
+                        <SelectItem value="regression">Regression</SelectItem>
+                        <SelectItem value="uat">UAT</SelectItem>
+                        <SelectItem value="production">Production</SelectItem>
+                        <SelectItem value="customer">Customer Report</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* Linked Test Case */}
+                <div>
+                  <label className="text-sm font-medium">Linked Test Case</label>
+                  <Select value={formData.linkedTestId} onValueChange={(v) => updateField('linkedTestId', v)}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Link to test..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {testCaseOptions.map(tc => (
+                        <SelectItem key={tc.value || 'none'} value={tc.value || 'none'}>
+                          {tc.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* URL */}
+                <div>
+                  <label className="text-sm font-medium">URL</label>
+                  <Input 
+                    placeholder="https://..."
+                    value={formData.url}
+                    onChange={(e) => updateField('url', e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                
+              </CollapsibleContent>
+            </Collapsible>
+            
           </div>
-          
         </div>
         
-        <DialogFooter className="mt-6 pt-4 border-t">
+        {/* STICKY FOOTER */}
+        <DialogFooter className="sticky bottom-0 bg-white border-t px-6 py-4">
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
@@ -467,6 +397,7 @@ export function ReportDefectModal({
             Report Defect
           </Button>
         </DialogFooter>
+        
       </DialogContent>
     </Dialog>
   );
