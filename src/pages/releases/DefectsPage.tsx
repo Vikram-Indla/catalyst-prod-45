@@ -29,6 +29,8 @@ import { toast } from "sonner";
 import { DefectTableView } from "@/components/releases/defects/DefectTableView";
 import { DefectKanbanView } from "@/components/releases/defects/DefectKanbanView";
 import { ReportDefectModal, DefectFormData } from "@/components/releases/defects/ReportDefectModal";
+import { EditDefectModal } from "@/components/releases/defects/EditDefectModal";
+import { ReassignModal } from "@/components/releases/defects/ReassignModal";
 import { 
   defectsData, 
   Defect, 
@@ -107,6 +109,11 @@ export default function ReleasesDefectsPage() {
   // Modal
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [formData, setFormData] = useState<DefectFormData>(initialFormState);
+  
+  // Edit and Reassign modals
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
+  const [selectedDefect, setSelectedDefect] = useState<Defect | null>(null);
   
   // Auto-open modal when ?create=true is in URL
   useEffect(() => {
@@ -250,6 +257,34 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
   const handleDelete = (defectId: string) => {
     setDefects(defects.filter(d => d.id !== defectId));
     toast.success('Defect deleted');
+  };
+
+  // Handle Edit
+  const handleEdit = (defect: Defect) => {
+    setSelectedDefect(defect);
+    setIsEditModalOpen(true);
+  };
+
+  // Handle Reassign
+  const handleReassign = (defect: Defect) => {
+    setSelectedDefect(defect);
+    setIsReassignModalOpen(true);
+  };
+
+  // Save edited defect
+  const handleSaveEdit = (updatedDefect: Defect) => {
+    setDefects(defects.map(d => d.id === updatedDefect.id ? updatedDefect : d));
+  };
+
+  // Save reassignment
+  const handleSaveReassign = (assigneeId: string) => {
+    if (selectedDefect) {
+      const newAssignee = getAssigneeById(assigneeId);
+      setDefects(defects.map(d => 
+        d.id === selectedDefect.id ? { ...d, assignee: newAssignee, updatedAt: 'Just now' } : d
+      ));
+      toast.success(`Reassigned to ${newAssignee.name}`);
+    }
   };
 
   return (
@@ -447,6 +482,8 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
             defects={filteredDefects} 
             onUpdateStatus={updateStatus}
             onDelete={handleDelete}
+            onEdit={handleEdit}
+            onReassign={handleReassign}
           />
         ) : (
           <DefectKanbanView 
@@ -464,6 +501,26 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
         setFormData={setFormData}
         onSubmit={handleReportDefect}
       />
+
+      {/* Edit Defect Modal */}
+      {selectedDefect && (
+        <EditDefectModal
+          open={isEditModalOpen}
+          onOpenChange={setIsEditModalOpen}
+          defect={selectedDefect}
+          onSave={handleSaveEdit}
+        />
+      )}
+
+      {/* Reassign Modal */}
+      {selectedDefect && (
+        <ReassignModal
+          open={isReassignModalOpen}
+          onOpenChange={setIsReassignModalOpen}
+          currentAssignee={selectedDefect.assignee}
+          onReassign={handleSaveReassign}
+        />
+      )}
     </div>
   );
 }

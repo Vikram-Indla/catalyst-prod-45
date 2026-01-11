@@ -94,6 +94,7 @@ import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
 import ReleasesDefectsPage from "./pages/releases/DefectsPage";
+const ReleasesDefectDetailPage = lazy(() => import("./pages/releases/DefectDetailPage"));
 import OrgSetup from "./pages/admin/OrgSetup";
 import HierarchyConfig from "./pages/admin/HierarchyConfig";
 import CustomFields from "./pages/admin/CustomFields";
@@ -730,6 +731,7 @@ const App = () => (
               <Route path="/releases/quality-gates" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/rtm" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/defects" element={<ReleasesDefectsPage />} />
+              <Route path="/releases/defects/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesDefectDetailPage /></Suspense>} />
               
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
