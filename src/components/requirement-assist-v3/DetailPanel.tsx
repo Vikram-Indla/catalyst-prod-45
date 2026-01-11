@@ -1,27 +1,45 @@
 // ============================================================
 // DETAIL PANEL COMPONENT - ENHANCED
-// Gradient badges, sections with icons, enhanced styling
+// Fixed: confidence %, correct level, publish button, inline editing
 // ============================================================
 
 import React, { useState } from 'react';
 import { useStore, selectSelectedItem } from '@/stores/requirementAssistStore';
 import { 
   X, 
-  Edit2, 
-  RefreshCw, 
+  Pencil, 
   Check,
   FileText,
   ListChecks,
   BarChart3,
   Info,
+  Upload,
+  Trash2,
+  Plus,
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { 
+  formatConfidencePercent, 
+  getConfidenceColor 
+} from '@/utils/requirementAssistDisplayId';
 
 export function DetailPanel() {
-  const { isDetailOpen, closeDetail } = useStore();
+  const { isDetailOpen, closeDetail, updateWorkItem, programs, projects, programId, projectId } = useStore();
   const item = useStore(selectSelectedItem);
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Edit state
+  const [editedTitle, setEditedTitle] = useState('');
+  const [editedDescription, setEditedDescription] = useState('');
+  const [editedCriteria, setEditedCriteria] = useState<string[]>([]);
 
   if (!item) return null;
+
+  // Get codes for display
+  const program = programs.find(p => p.id === programId);
+  const project = projects.find(p => p.id === projectId);
+  const programCode = program?.code || 'PRG';
+  const projectCode = project?.code || 'PRJ';
 
   // Badge configuration with gradients
   const badgeConfig: Record<string, { bg: string; text: string }> = {
@@ -33,8 +51,8 @@ export function DetailPanel() {
 
   const badge = badgeConfig[item.itemType] || { bg: 'bg-slate-500', text: 'text-white' };
 
-  // Confidence color and label
-  const confidencePercent = Math.round(item.confidenceScore * 100);
+  // FIXED: Use utility function for confidence percentage
+  const confidencePercent = formatConfidencePercent(item.confidenceScore);
   const confidenceColor = 
     confidencePercent >= 90 ? 'bg-emerald-500' :
     confidencePercent >= 80 ? 'bg-amber-500' :
@@ -43,6 +61,64 @@ export function DetailPanel() {
     confidencePercent >= 90 ? 'High Confidence' :
     confidencePercent >= 80 ? 'Medium Confidence' :
     'Low Confidence';
+
+  // FIXED: Correct level based on item type
+  const levelMap: Record<string, number> = { prd: -1, epic: 0, feature: 1, story: 2, task: 3, test_case: 3 };
+  const correctLevel = levelMap[item.itemType] ?? 0;
+
+  // Start editing
+  const handleStartEdit = () => {
+    setEditedTitle(item.title);
+    setEditedDescription(item.description || '');
+    setEditedCriteria(item.acceptanceCriteria || []);
+    setIsEditing(true);
+  };
+
+  // Save edits
+  const handleSaveEdit = () => {
+    updateWorkItem(item.id, {
+      title: editedTitle,
+      description: editedDescription,
+      acceptanceCriteria: editedCriteria,
+      isEdited: true,
+    });
+    setIsEditing(false);
+    toast.success('Changes saved');
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  // Criteria management
+  const updateCriterion = (index: number, value: string) => {
+    const newCriteria = [...editedCriteria];
+    newCriteria[index] = value;
+    setEditedCriteria(newCriteria);
+  };
+
+  const removeCriterion = (index: number) => {
+    setEditedCriteria(editedCriteria.filter((_, i) => i !== index));
+  };
+
+  const addCriterion = () => {
+    setEditedCriteria([...editedCriteria, '']);
+  };
+
+  // FIXED: Publish single item
+  const handlePublishSingle = async () => {
+    try {
+      // Mark as published in store
+      updateWorkItem(item.id, {
+        isPublished: true,
+      });
+      
+      toast.success(`Published ${item.displayId} to backlog`);
+    } catch (error) {
+      toast.error('Failed to publish item');
+    }
+  };
 
   return (
     <>
@@ -66,7 +142,9 @@ export function DetailPanel() {
         {/* Header */}
         <div className="px-5 py-4 border-b border-slate-100 flex-shrink-0 bg-gradient-to-r from-slate-50 to-white">
           <div className="flex items-start justify-between mb-3">
-            <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-bold ${badge.bg} ${badge.text} shadow-lg`}>
+            <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-bold ${
+              item.isPublished ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : badge.bg
+            } ${badge.text} shadow-lg`}>
               {item.displayId}
             </span>
             <button 
@@ -81,102 +159,209 @@ export function DetailPanel() {
             {item.title}
           </h2>
           
-          {item.isEdited && (
-            <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-xs font-medium">
-              <Edit2 className="w-3 h-3" />
-              Edited
-            </span>
-          )}
+          <div className="flex items-center gap-2 mt-2">
+            {item.isPublished && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs font-medium">
+                <Check className="w-3 h-3" />
+                Published
+              </span>
+            )}
+            {item.isEdited && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-xs font-medium">
+                <Pencil className="w-3 h-3" />
+                Edited
+              </span>
+            )}
+          </div>
         </div>
         
         {/* Body */}
         <div className="flex-1 overflow-y-auto">
-          {/* Description */}
-          {item.description && (
-            <Section icon={FileText} title="Description">
-              <p className="text-sm text-slate-600 leading-relaxed">
-                {item.description}
-              </p>
-            </Section>
-          )}
-          
-          {/* Acceptance Criteria */}
-          {item.acceptanceCriteria && item.acceptanceCriteria.length > 0 && (
-            <Section icon={ListChecks} title="Acceptance Criteria">
-              <ul className="space-y-0">
-                {item.acceptanceCriteria.map((criterion: string, index: number) => (
-                  <li 
-                    key={index}
-                    className="flex items-start gap-3 py-3 border-b border-slate-50 last:border-0"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
-                      <Check className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <span className="text-sm text-slate-600 leading-relaxed">
-                      {criterion}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Section>
-          )}
-          
-          {/* AI Confidence */}
-          <Section icon={BarChart3} title="AI Confidence">
-            <div className="p-4 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-100">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-slate-600">{confidenceLabel}</span>
-                <span className={`
-                  text-2xl font-bold
-                  ${confidencePercent >= 90 ? 'text-emerald-600' :
-                    confidencePercent >= 80 ? 'text-amber-600' :
-                    'text-red-600'}
-                `}>
-                  {confidencePercent}%
-                </span>
-              </div>
-              <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full rounded-full transition-all duration-500 ${confidenceColor}`}
-                  style={{ width: `${confidencePercent}%` }}
+          {isEditing ? (
+            /* ============ EDIT MODE ============ */
+            <div className="p-5 space-y-5">
+              {/* Title */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Title
+                </label>
+                <input
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  className="w-full mt-2 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
                 />
               </div>
-              <p className="mt-3 text-xs text-slate-500">
-                {confidencePercent >= 90 
-                  ? 'Explicitly stated in requirements with clear acceptance criteria.'
-                  : confidencePercent >= 80
-                  ? 'Strongly implied by context and related requirements.'
-                  : 'Inferred from domain patterns. Manual review recommended.'
-                }
-              </p>
+              
+              {/* Description */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Description
+                </label>
+                <textarea
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  rows={4}
+                  className="w-full mt-2 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none resize-none"
+                />
+              </div>
+              
+              {/* Acceptance Criteria */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Acceptance Criteria
+                </label>
+                <div className="space-y-2 mt-2">
+                  {editedCriteria.map((criterion, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <input
+                        value={criterion}
+                        onChange={(e) => updateCriterion(index, e.target.value)}
+                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
+                        placeholder={`Criterion ${index + 1}`}
+                      />
+                      <button 
+                        onClick={() => removeCriterion(index)} 
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button 
+                  onClick={addCriterion} 
+                  className="mt-3 flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add criterion
+                </button>
+              </div>
+              
+              {/* Save/Cancel buttons */}
+              <div className="flex gap-3 pt-4 border-t border-slate-100">
+                <button 
+                  onClick={handleCancelEdit} 
+                  className="flex-1 py-2.5 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm font-medium text-slate-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleSaveEdit} 
+                  className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors"
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
-          </Section>
-          
-          {/* Metadata */}
-          <Section icon={Info} title="Metadata">
-            <div className="grid grid-cols-2 gap-3">
-              <MetadataCard label="Type" value={item.itemType} />
-              <MetadataCard label="Level" value={`Level ${item.level}`} />
-              <MetadataCard label="Selected" value={item.isSelected ? 'Yes' : 'No'} />
-              <MetadataCard label="Published" value={item.isPublished ? 'Yes' : 'No'} />
-            </div>
-          </Section>
+          ) : (
+            /* ============ VIEW MODE ============ */
+            <>
+              {/* Description */}
+              {item.description && (
+                <Section icon={FileText} title="Description">
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {item.description}
+                  </p>
+                </Section>
+              )}
+              
+              {/* Acceptance Criteria */}
+              {item.acceptanceCriteria && item.acceptanceCriteria.length > 0 && (
+                <Section icon={ListChecks} title="Acceptance Criteria">
+                  <ul className="space-y-0">
+                    {item.acceptanceCriteria.map((criterion: string, index: number) => (
+                      <li 
+                        key={index}
+                        className="flex items-start gap-3 py-3 border-b border-slate-50 last:border-0"
+                      >
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                          <Check className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <span className="text-sm text-slate-600 leading-relaxed">
+                          {criterion}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </Section>
+              )}
+              
+              {/* AI Confidence - FIXED */}
+              <Section icon={BarChart3} title="AI Confidence">
+                <div className="p-4 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-100">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm text-slate-600">{confidenceLabel}</span>
+                    <span className={`
+                      text-2xl font-bold
+                      ${confidencePercent >= 90 ? 'text-emerald-600' :
+                        confidencePercent >= 80 ? 'text-amber-600' :
+                        'text-red-600'}
+                    `}>
+                      {confidencePercent}%
+                    </span>
+                  </div>
+                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-500 ${confidenceColor}`}
+                      style={{ width: `${Math.min(confidencePercent, 100)}%` }}
+                    />
+                  </div>
+                  <p className="mt-3 text-xs text-slate-500">
+                    {confidencePercent >= 90 
+                      ? 'Explicitly stated in requirements with clear acceptance criteria.'
+                      : confidencePercent >= 80
+                      ? 'Strongly implied by context and related requirements.'
+                      : 'Inferred from domain patterns. Manual review recommended.'
+                    }
+                  </p>
+                </div>
+              </Section>
+              
+              {/* Metadata - FIXED LEVEL */}
+              <Section icon={Info} title="Metadata">
+                <div className="grid grid-cols-2 gap-3">
+                  <MetadataCard label="Type" value={item.itemType} />
+                  <MetadataCard label="Level" value={`Level ${correctLevel}`} />
+                  <MetadataCard label="Selected" value={item.isSelected ? 'Yes' : 'No'} />
+                  <MetadataCard label="Published" value={item.isPublished ? 'Yes' : 'No'} />
+                </div>
+              </Section>
+            </>
+          )}
         </div>
         
-        {/* Footer */}
-        <div className="px-5 py-4 border-t border-slate-100 flex gap-3 flex-shrink-0 bg-gradient-to-r from-slate-50 to-white">
-          <button 
-            onClick={() => setIsEditing(true)}
-            className="flex-1 h-10 flex items-center justify-center gap-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all"
-          >
-            <Edit2 className="w-4 h-4" />
-            Edit
-          </button>
-          <button className="flex-1 h-10 flex items-center justify-center gap-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all">
-            <RefreshCw className="w-4 h-4" />
-            Regenerate
-          </button>
-        </div>
+        {/* Footer - FIXED BUTTONS */}
+        {!isEditing && (
+          <div className="px-5 py-4 border-t border-slate-100 flex gap-3 flex-shrink-0 bg-gradient-to-r from-slate-50 to-white">
+            <button 
+              onClick={handleStartEdit}
+              disabled={item.isPublished}
+              className={`flex-1 h-10 flex items-center justify-center gap-2 bg-white border rounded-xl text-sm font-medium transition-all ${
+                item.isPublished 
+                  ? 'border-slate-200 text-slate-400 cursor-not-allowed' 
+                  : 'border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+              }`}
+            >
+              <Pencil className="w-4 h-4" />
+              Edit
+            </button>
+            
+            {item.isPublished ? (
+              <div className="flex-1 h-10 flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200 text-sm font-medium">
+                <Check className="w-4 h-4" />
+                Published
+              </div>
+            ) : (
+              <button 
+                onClick={handlePublishSingle}
+                className="flex-1 h-10 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-md hover:shadow-lg text-sm font-medium transition-all"
+              >
+                <Upload className="w-4 h-4" />
+                Publish
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
