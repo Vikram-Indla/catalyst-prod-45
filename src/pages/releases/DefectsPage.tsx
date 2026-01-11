@@ -278,13 +278,21 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
 
   // Save reassignment
   const handleSaveReassign = (assigneeId: string) => {
-    if (selectedDefect) {
-      const newAssignee = getAssigneeFromId(assigneeId);
-      setDefects(defects.map(d => 
+    if (!selectedDefect) return;
+
+    const newAssignee = getAssigneeFromId(assigneeId);
+
+    setDefects(prev =>
+      prev.map(d =>
         d.id === selectedDefect.id ? { ...d, assignee: newAssignee, updatedAt: 'Just now' } : d
-      ));
-      toast.success(`Reassigned to ${newAssignee.name}`);
-    }
+      )
+    );
+
+    setSelectedDefect(prev =>
+      prev ? { ...prev, assignee: newAssignee, updatedAt: 'Just now' } : prev
+    );
+
+    toast.success(`Reassigned to ${newAssignee.name}`);
   };
 
   return (
