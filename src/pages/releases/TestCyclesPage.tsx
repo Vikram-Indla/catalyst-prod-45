@@ -135,9 +135,14 @@ export default function TestCyclesPage() {
   };
   
   const handleDuplicateCycle = (cycle: TestCycle) => {
+    // Count existing cycles for this release to generate proper ID
+    const releaseCycles = cycles.filter(c => c.releaseId === cycle.releaseId);
+    const nextNumber = releaseCycles.length + 1;
+    const releaseSuffix = cycle.releaseId.replace('REL-', '');
+    
     const newCycle: TestCycle = {
       ...cycle,
-      id: `CY-${Date.now().toString().slice(-8)}`,
+      id: `CY-${releaseSuffix}-${String(nextNumber).padStart(2, '0')}`,
       name: `${cycle.name} (Copy)`,
       status: 'planned',
       progress: 0,
@@ -147,7 +152,7 @@ export default function TestCyclesPage() {
       updatedAt: 'Just now'
     };
     setCycles([newCycle, ...cycles]);
-    toast.success('Test cycle duplicated');
+    toast.success(`Cycle ${newCycle.id} created`);
   };
 
   const handleCycleClick = (cycle: TestCycle) => {
