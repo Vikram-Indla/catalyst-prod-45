@@ -1,4 +1,4 @@
-import { Lock, ChevronDown, ChevronLeft, ChevronRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3 } from 'lucide-react';
+import { Lock, ChevronDown, ChevronLeft, ChevronRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -48,6 +48,7 @@ const productSidebarConfig: SidebarConfig = {
     { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
     // Ideas items removed - now rendered as collapsible group
     { id: 'Requirement Assist', title: 'Requirement Assist™', path: '/product/requirement-assist', exact: true },
+    { id: 'Generation History', title: 'Generation History', path: '/generation-history', exact: true, icon: History },
   ],
 };
 
