@@ -4,6 +4,7 @@
 // ============================================================
 
 import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useStore, selectFilteredWorkItems } from '@/stores/requirementAssistStore';
 import { TreeItem } from './TreeItem';
 
@@ -17,7 +18,7 @@ export function WorkItemTree() {
     toggleExpanded,
   } = useStore();
   
-  const filteredItems = useStore(selectFilteredWorkItems);
+  const filteredItems = useStore(useShallow(selectFilteredWorkItems));
 
   // If filtering, show flat list; otherwise show tree
   const displayItems = filterType === 'all' ? workItemsTree : filteredItems;

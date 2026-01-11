@@ -4,6 +4,7 @@
 // ============================================================
 
 import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useStore, selectItemCounts } from '@/stores/requirementAssistStore';
 import { 
   Download, 
@@ -15,7 +16,7 @@ import toast from 'react-hot-toast';
 
 export function Footer() {
   const { workItems, generation } = useStore();
-  const counts = useStore(selectItemCounts);
+  const counts = useStore(useShallow(selectItemCounts));
   
   const hasItems = workItems.length > 0;
 
