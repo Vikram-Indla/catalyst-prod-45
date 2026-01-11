@@ -29,7 +29,7 @@ interface CreateCycleModalProps {
 export interface CreateCycleData {
   name: string;
   releaseId: string;
-  environment: 'dev' | 'beta' | 'staging' | 'uat' | 'production';
+  environment: 'dev' | 'qa' | 'beta' | 'staging' | 'uat' | 'production';
   assignee: {
     name: string;
     initials: string;
@@ -57,7 +57,7 @@ export function CreateCycleModal({ open, onOpenChange, onCreateCycle }: CreateCy
     onCreateCycle({
       name,
       releaseId,
-      environment: environment as 'dev' | 'beta' | 'staging' | 'uat' | 'production',
+      environment: environment as 'dev' | 'qa' | 'beta' | 'staging' | 'uat' | 'production',
       assignee: selectedAssignee ? {
         name: selectedAssignee.label,
         initials: selectedAssignee.initials,
@@ -131,6 +131,7 @@ export function CreateCycleModal({ open, onOpenChange, onCreateCycle }: CreateCy
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dev">Development</SelectItem>
+                <SelectItem value="qa">QA</SelectItem>
                 <SelectItem value="beta">Beta</SelectItem>
                 <SelectItem value="staging">Staging</SelectItem>
                 <SelectItem value="uat">UAT</SelectItem>

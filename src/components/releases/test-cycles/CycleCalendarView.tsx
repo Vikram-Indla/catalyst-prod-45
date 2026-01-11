@@ -33,9 +33,10 @@ const statusColors: Record<string, string> = {
 
 const envColors: Record<string, string> = {
   dev: 'text-purple-600',
-  beta: 'text-cyan-600',
+  qa: 'text-cyan-600',
+  beta: 'text-amber-600',
   staging: 'text-orange-600',
-  uat: 'text-yellow-600',
+  uat: 'text-indigo-600',
   production: 'text-red-600'
 };
 
