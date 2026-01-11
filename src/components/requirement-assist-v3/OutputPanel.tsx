@@ -4,6 +4,7 @@
 // ============================================================
 
 import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useStore, selectItemCounts } from '@/stores/requirementAssistStore';
 import { GeneratingOverlay } from './GeneratingOverlay';
 import { WorkItemTree } from './WorkItemTree';
@@ -23,7 +24,7 @@ export function OutputPanel() {
     collapseAll,
   } = useStore();
   
-  const counts = useStore(selectItemCounts);
+  const counts = useStore(useShallow(selectItemCounts));
   const hasItems = workItems.length > 0;
 
   return (
