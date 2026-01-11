@@ -6,7 +6,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useRequirementAssistStore, type Generation } from '@/stores/requirementAssistStore';
 import { supabase } from '@/integrations/supabase/client';
-import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 
 // Helper to transform DB row to store Generation
@@ -88,10 +87,6 @@ export function useGeneration() {
     setGenerationError(null);
     setWorkItems([]);
 
-    const generationId = uuidv4();
-    const programName = programs.find(p => p.id === programId)?.name;
-    const projectName = projects.find(p => p.id === projectId)?.name;
-
     try {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
@@ -130,14 +125,14 @@ export function useGeneration() {
 
       // 2. Subscribe to generation updates (realtime)
       const genChannel = supabase
-        .channel(`generation-${generationId}`)
+        .channel(`generation-${actualGenerationId}`)
         .on(
           'postgres_changes',
           {
             event: 'UPDATE',
             schema: 'public',
             table: 'ra_generations',
-            filter: `id=eq.${generationId}`,
+            filter: `id=eq.${actualGenerationId}`,
           },
           (payload) => {
             const updated = payload.new as any;
@@ -149,7 +144,7 @@ export function useGeneration() {
             });
 
             // Handle completion states
-            if (updated.status === 'published') {
+            if (updated.status === 'published' || updated.status === 'draft') {
               setGenerating(false);
               expandAll();
               toast.success('Generation completed!');
@@ -168,14 +163,14 @@ export function useGeneration() {
 
       // 3. Subscribe to work items (realtime streaming)
       const itemsChannel = supabase
-        .channel(`items-${generationId}`)
+        .channel(`items-${actualGenerationId}`)
         .on(
           'postgres_changes',
           {
             event: 'INSERT',
             schema: 'public',
             table: 'ra_generated_items',
-            filter: `generation_id=eq.${generationId}`,
+            filter: `generation_id=eq.${actualGenerationId}`,
           },
           (payload) => {
             const item = payload.new as any;
@@ -209,15 +204,25 @@ export function useGeneration() {
         'generate-requirements',
         {
           body: {
-            generationId,
+            generationId: actualGenerationId,
             inputText,
-            config: {
-              programId,
-              projectId,
-              programName,
-              projectName,
-              outputs: outputConfig,
-              compliance: ['dga', 'nca_ecc'],
+            outputTypes: {
+              prd: outputConfig.prd,
+              epics: outputConfig.epics,
+              features: outputConfig.features,
+              stories: outputConfig.stories,
+              testCases: outputConfig.testCases,
+              acceptanceCriteria: true,
+            },
+            compliance: {
+              dga: true,
+              nca: true,
+              babok: true,
+            },
+            settings: {
+              model: 'google/gemini-3-flash-preview',
+              temperature: 0.7,
+              maxTokens: 4000,
             },
           },
         }
