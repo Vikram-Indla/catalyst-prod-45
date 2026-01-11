@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, User, UserPlus, Clock, Briefcase, AlertCircle, CheckCircle, X, Lightbulb, Users } from 'lucide-react';
+import { Search, User, UserPlus, Clock, AlertCircle, CheckCircle, X, Lightbulb, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { useAllTeamMembers } from '@/hooks/useAllTeamMembers';
+import { useApprovedProfiles, type ApprovedProfile } from '@/hooks/useApprovedProfiles';
 import { useAuth } from '@/lib/auth';
 
 interface Assignee {
@@ -19,15 +19,7 @@ interface Assignee {
   color: string;
 }
 
-interface TeamMember {
-  id: string;
-  name: string;
-  initials: string;
-  email: string;
-  role: string;
-  teamId?: string;
-  teamName?: string;
-  avatarColor?: string;
+interface EnrichedProfile extends ApprovedProfile {
   activeDefects?: number;
   isCurrentUser?: boolean;
 }
@@ -64,12 +56,6 @@ const getWorkloadColor = (count: number) => {
   return 'text-red-600 bg-red-50';
 };
 
-const getWorkloadLabel = (count: number) => {
-  if (count <= 2) return 'Light';
-  if (count <= 5) return 'Moderate';
-  return 'Heavy';
-};
-
 export function ReassignModal({ 
   open, 
   onOpenChange, 
@@ -79,22 +65,22 @@ export function ReassignModal({
   defectTitle 
 }: ReassignModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [selectedMember, setSelectedMember] = useState<EnrichedProfile | null>(null);
   
   const { user } = useAuth();
-  const { data: teamMembers = [], isLoading } = useAllTeamMembers();
+  const { data: profiles = [], isLoading } = useApprovedProfiles();
 
-  // Enrich team members with simulated workload data and current user flag
-  const enrichedMembers = useMemo<TeamMember[]>(() => {
-    return teamMembers.map((member, index) => ({
-      ...member,
+  // Enrich profiles with simulated workload data and current user flag
+  const enrichedMembers = useMemo<EnrichedProfile[]>(() => {
+    return profiles.map((profile) => ({
+      ...profile,
       // Simulate active defects (in production, this would come from a query)
       activeDefects: Math.floor(Math.random() * 8) + 1,
-      isCurrentUser: member.id === user?.id,
+      isCurrentUser: profile.id === user?.id,
     }));
-  }, [teamMembers, user?.id]);
+  }, [profiles, user?.id]);
 
-  // Get current user from team members
+  // Get current user from profiles
   const currentUser = useMemo(() => {
     return enrichedMembers.find(m => m.isCurrentUser);
   }, [enrichedMembers]);
@@ -123,10 +109,10 @@ export function ReassignModal({
       .slice(0, 3);
   }, [enrichedMembers, currentlyAssigned]);
 
-  // Recently worked on similar issues (simulated - in production, query defects)
+  // Recently assigned (simulated - show random subset for demo)
   const recentlyAssigned = useMemo(() => {
+    // In production, this would query recent defect assignments
     return enrichedMembers
-      .filter(m => m.role.toLowerCase().includes('qa') || m.role.toLowerCase().includes('engineer'))
       .filter(m => m.id !== currentlyAssigned?.id)
       .slice(0, 2);
   }, [enrichedMembers, currentlyAssigned]);
@@ -138,9 +124,7 @@ export function ReassignModal({
     const query = searchQuery.toLowerCase();
     return enrichedMembers.filter(m => 
       m.name.toLowerCase().includes(query) ||
-      m.email.toLowerCase().includes(query) ||
-      m.role.toLowerCase().includes(query) ||
-      m.teamName.toLowerCase().includes(query)
+      m.email.toLowerCase().includes(query)
     );
   }, [searchQuery, enrichedMembers]);
 
@@ -152,7 +136,7 @@ export function ReassignModal({
   };
 
   // Member row component
-  const MemberRow = ({ member, showWorkload = true }: { member: TeamMember; showWorkload?: boolean }) => (
+  const MemberRow = ({ member, showWorkload = true }: { member: EnrichedProfile; showWorkload?: boolean }) => (
     <div
       className={cn(
         "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border",
@@ -178,16 +162,20 @@ export function ReassignModal({
             <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">You</span>
           )}
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground truncate">
-          <span>{member.role}</span>
-          {member.teamName && (
-            <>
-              <span>•</span>
-              <span>{member.teamName}</span>
-            </>
-          )}
+        <div className="text-xs text-muted-foreground truncate">
+          {member.email}
         </div>
       </div>
+      
+      {/* Workload */}
+      {showWorkload && member.activeDefects !== undefined && (
+        <div className={cn(
+          "text-xs px-2 py-1 rounded-full flex-shrink-0",
+          getWorkloadColor(member.activeDefects)
+        )}>
+          {member.activeDefects} active
+        </div>
+      )}
       
       {/* Workload */}
       {showWorkload && member.activeDefects !== undefined && (
