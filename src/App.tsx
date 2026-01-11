@@ -93,6 +93,7 @@ import ReleasesTestCasesPage from "./pages/releases/TestCasesPage";
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
+import ReleasesDefectsPage from "./pages/releases/DefectsPage";
 import OrgSetup from "./pages/admin/OrgSetup";
 import HierarchyConfig from "./pages/admin/HierarchyConfig";
 import CustomFields from "./pages/admin/CustomFields";
@@ -728,7 +729,7 @@ const App = () => (
               <Route path="/releases/coverage" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/quality-gates" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/rtm" element={<ReleasesPlaceholderPage />} />
-              <Route path="/releases/defects" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/defects" element={<ReleasesDefectsPage />} />
               
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
