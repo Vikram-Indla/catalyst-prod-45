@@ -6538,6 +6538,143 @@ export type Database = {
         }
         Relationships: []
       }
+      idea_attachments: {
+        Row: {
+          created_at: string | null
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          idea_id: string
+          storage_path: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          idea_id: string
+          storage_path: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          idea_id?: string
+          storage_path?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_attachments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          idea_id: string
+          is_internal: boolean | null
+          is_pinned: boolean | null
+          parent_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          is_internal?: boolean | null
+          is_pinned?: boolean | null
+          parent_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          is_internal?: boolean | null
+          is_pinned?: boolean | null
+          parent_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "idea_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_duplicates: {
+        Row: {
+          duplicate_idea_id: string | null
+          id: string
+          is_confirmed: boolean | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          similarity_score: number | null
+          source_idea_id: string | null
+        }
+        Insert: {
+          duplicate_idea_id?: string | null
+          id?: string
+          is_confirmed?: boolean | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          similarity_score?: number | null
+          source_idea_id?: string | null
+        }
+        Update: {
+          duplicate_idea_id?: string | null
+          id?: string
+          is_confirmed?: boolean | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          similarity_score?: number | null
+          source_idea_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_duplicates_duplicate_idea_id_fkey"
+            columns: ["duplicate_idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_duplicates_source_idea_id_fkey"
+            columns: ["source_idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       idea_group_members: {
         Row: {
           created_at: string | null
@@ -6640,6 +6777,98 @@ export type Database = {
             columns: ["form_id"]
             isOneToOne: false
             referencedRelation: "ideation_forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_tag_links: {
+        Row: {
+          idea_id: string
+          tag_id: string
+        }
+        Insert: {
+          idea_id: string
+          tag_id: string
+        }
+        Update: {
+          idea_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_tag_links_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_tag_links_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "idea_tags_master"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_tags_master: {
+        Row: {
+          color: string | null
+          id: string
+          name: string
+          name_ar: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          color?: string | null
+          id?: string
+          name: string
+          name_ar?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          color?: string | null
+          id?: string
+          name?: string
+          name_ar?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
+      idea_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          idea_id: string
+          importance_rating: number | null
+          updated_at: string | null
+          user_id: string
+          vote_type: Database["public"]["Enums"]["improvement_vote_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          importance_rating?: number | null
+          updated_at?: string | null
+          user_id: string
+          vote_type: Database["public"]["Enums"]["improvement_vote_type"]
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          importance_rating?: number | null
+          updated_at?: string | null
+          user_id?: string
+          vote_type?: Database["public"]["Enums"]["improvement_vote_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
             referencedColumns: ["id"]
           },
         ]
@@ -6992,6 +7221,68 @@ export type Database = {
           },
         ]
       }
+      impact_scores: {
+        Row: {
+          ai_assisted: boolean | null
+          alignment: number | null
+          calculated_score: number | null
+          complexity: number | null
+          created_at: string | null
+          id: string
+          idea_id: string
+          imperative: number | null
+          is_current: boolean | null
+          justification: string | null
+          ministry_efficiency: number | null
+          pain_severity: number | null
+          scored_by: string | null
+          timeframe: number | null
+          version: number | null
+        }
+        Insert: {
+          ai_assisted?: boolean | null
+          alignment?: number | null
+          calculated_score?: number | null
+          complexity?: number | null
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          imperative?: number | null
+          is_current?: boolean | null
+          justification?: string | null
+          ministry_efficiency?: number | null
+          pain_severity?: number | null
+          scored_by?: string | null
+          timeframe?: number | null
+          version?: number | null
+        }
+        Update: {
+          ai_assisted?: boolean | null
+          alignment?: number | null
+          calculated_score?: number | null
+          complexity?: number | null
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          imperative?: number | null
+          is_current?: boolean | null
+          justification?: string | null
+          ministry_efficiency?: number | null
+          pain_severity?: number | null
+          scored_by?: string | null
+          timeframe?: number | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impact_scores_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       import_history: {
         Row: {
           created_at: string | null
@@ -7024,6 +7315,211 @@ export type Database = {
           total_records?: number
         }
         Relationships: []
+      }
+      improvement_ideas: {
+        Row: {
+          against_votes: number | null
+          ai_category:
+            | Database["public"]["Enums"]["improvement_idea_category"]
+            | null
+          ai_compliance_tags: string[] | null
+          ai_duplicate_ids: string[] | null
+          ai_summary: string | null
+          ai_summary_ar: string | null
+          ai_v2030_mapping: string[] | null
+          category: Database["public"]["Enums"]["improvement_idea_category"]
+          code: string | null
+          converted_at: string | null
+          converted_by: string | null
+          converted_to_br_id: string | null
+          created_at: string | null
+          deleted_at: string | null
+          description: string
+          description_ar: string | null
+          for_votes: number | null
+          id: string
+          initiative_id: string | null
+          is_anonymous: boolean | null
+          status: Database["public"]["Enums"]["improvement_idea_status"] | null
+          submitted_at: string | null
+          submitter_email: string | null
+          submitter_id: string | null
+          submitter_name: string | null
+          submitter_type:
+            | Database["public"]["Enums"]["improvement_submitter_type"]
+            | null
+          title: string
+          title_ar: string | null
+          total_votes: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          against_votes?: number | null
+          ai_category?:
+            | Database["public"]["Enums"]["improvement_idea_category"]
+            | null
+          ai_compliance_tags?: string[] | null
+          ai_duplicate_ids?: string[] | null
+          ai_summary?: string | null
+          ai_summary_ar?: string | null
+          ai_v2030_mapping?: string[] | null
+          category?: Database["public"]["Enums"]["improvement_idea_category"]
+          code?: string | null
+          converted_at?: string | null
+          converted_by?: string | null
+          converted_to_br_id?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description: string
+          description_ar?: string | null
+          for_votes?: number | null
+          id?: string
+          initiative_id?: string | null
+          is_anonymous?: boolean | null
+          status?: Database["public"]["Enums"]["improvement_idea_status"] | null
+          submitted_at?: string | null
+          submitter_email?: string | null
+          submitter_id?: string | null
+          submitter_name?: string | null
+          submitter_type?:
+            | Database["public"]["Enums"]["improvement_submitter_type"]
+            | null
+          title: string
+          title_ar?: string | null
+          total_votes?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          against_votes?: number | null
+          ai_category?:
+            | Database["public"]["Enums"]["improvement_idea_category"]
+            | null
+          ai_compliance_tags?: string[] | null
+          ai_duplicate_ids?: string[] | null
+          ai_summary?: string | null
+          ai_summary_ar?: string | null
+          ai_v2030_mapping?: string[] | null
+          category?: Database["public"]["Enums"]["improvement_idea_category"]
+          code?: string | null
+          converted_at?: string | null
+          converted_by?: string | null
+          converted_to_br_id?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string
+          description_ar?: string | null
+          for_votes?: number | null
+          id?: string
+          initiative_id?: string | null
+          is_anonymous?: boolean | null
+          status?: Database["public"]["Enums"]["improvement_idea_status"] | null
+          submitted_at?: string | null
+          submitter_email?: string | null
+          submitter_id?: string | null
+          submitter_name?: string | null
+          submitter_type?:
+            | Database["public"]["Enums"]["improvement_submitter_type"]
+            | null
+          title?: string
+          title_ar?: string | null
+          total_votes?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "improvement_ideas_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_initiatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      improvement_initiatives: {
+        Row: {
+          code: string | null
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          description_ar: string | null
+          end_date: string | null
+          id: string
+          owner_id: string | null
+          product_id: string | null
+          settings: Json | null
+          start_date: string | null
+          status:
+            | Database["public"]["Enums"]["improvement_initiative_status"]
+            | null
+          title: string
+          title_ar: string | null
+          updated_at: string | null
+          visibility:
+            | Database["public"]["Enums"]["improvement_visibility"]
+            | null
+          voting_type:
+            | Database["public"]["Enums"]["improvement_voting_type"]
+            | null
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          description_ar?: string | null
+          end_date?: string | null
+          id?: string
+          owner_id?: string | null
+          product_id?: string | null
+          settings?: Json | null
+          start_date?: string | null
+          status?:
+            | Database["public"]["Enums"]["improvement_initiative_status"]
+            | null
+          title: string
+          title_ar?: string | null
+          updated_at?: string | null
+          visibility?:
+            | Database["public"]["Enums"]["improvement_visibility"]
+            | null
+          voting_type?:
+            | Database["public"]["Enums"]["improvement_voting_type"]
+            | null
+        }
+        Update: {
+          code?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          description_ar?: string | null
+          end_date?: string | null
+          id?: string
+          owner_id?: string | null
+          product_id?: string | null
+          settings?: Json | null
+          start_date?: string | null
+          status?:
+            | Database["public"]["Enums"]["improvement_initiative_status"]
+            | null
+          title?: string
+          title_ar?: string | null
+          updated_at?: string | null
+          visibility?:
+            | Database["public"]["Enums"]["improvement_visibility"]
+            | null
+          voting_type?:
+            | Database["public"]["Enums"]["improvement_voting_type"]
+            | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "improvement_initiatives_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       incident_attachments: {
         Row: {
@@ -7703,6 +8199,38 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "incident_teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      initiative_moderators: {
+        Row: {
+          created_at: string | null
+          id: string
+          initiative_id: string | null
+          role: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          initiative_id?: string | null
+          role?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          initiative_id?: string | null
+          role?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "initiative_moderators_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_initiatives"
             referencedColumns: ["id"]
           },
         ]
@@ -26660,6 +27188,40 @@ export type Database = {
         | "boolean"
       health_status: "green" | "yellow" | "red"
       impact_level: "high" | "medium" | "low"
+      improvement_idea_category:
+        | "licensing_improvement"
+        | "compliance_automation"
+        | "investor_experience"
+        | "process_optimization"
+        | "digital_service"
+        | "integration"
+        | "data_quality"
+        | "accessibility"
+        | "security_enhancement"
+        | "reporting_analytics"
+        | "mobile_capability"
+        | "other"
+      improvement_idea_status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "scoring"
+        | "approved"
+        | "rejected"
+        | "deferred"
+        | "converted"
+        | "archived"
+      improvement_initiative_status:
+        | "draft"
+        | "active"
+        | "collecting"
+        | "evaluating"
+        | "closed"
+        | "archived"
+      improvement_submitter_type: "employee" | "investor" | "partner" | "public"
+      improvement_visibility: "internal" | "external" | "both"
+      improvement_vote_type: "for" | "against"
+      improvement_voting_type: "simple" | "weighted" | "token"
       incident_status:
         | "open"
         | "triage"
@@ -27176,6 +27738,43 @@ export const Constants = {
       ],
       health_status: ["green", "yellow", "red"],
       impact_level: ["high", "medium", "low"],
+      improvement_idea_category: [
+        "licensing_improvement",
+        "compliance_automation",
+        "investor_experience",
+        "process_optimization",
+        "digital_service",
+        "integration",
+        "data_quality",
+        "accessibility",
+        "security_enhancement",
+        "reporting_analytics",
+        "mobile_capability",
+        "other",
+      ],
+      improvement_idea_status: [
+        "draft",
+        "submitted",
+        "under_review",
+        "scoring",
+        "approved",
+        "rejected",
+        "deferred",
+        "converted",
+        "archived",
+      ],
+      improvement_initiative_status: [
+        "draft",
+        "active",
+        "collecting",
+        "evaluating",
+        "closed",
+        "archived",
+      ],
+      improvement_submitter_type: ["employee", "investor", "partner", "public"],
+      improvement_visibility: ["internal", "external", "both"],
+      improvement_vote_type: ["for", "against"],
+      improvement_voting_type: ["simple", "weighted", "token"],
       incident_status: [
         "open",
         "triage",
