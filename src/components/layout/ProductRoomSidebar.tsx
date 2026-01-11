@@ -14,13 +14,13 @@ const productSidebarConfig: SidebarConfig = {
   badge: 'PR',
   label: 'Product',
   items: [
-    { id: 'Requirement Assist', title: 'Requirement Assist™', path: '/product/requirement-assist', exact: true },
     { id: 'Product Backlog', title: 'Product Backlog', path: '/industry/backlog', exact: false },
     { id: 'Product Kanban', title: 'Product Kanban', path: '/industry/kanban', exact: true },
     { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
     { id: 'Ideas Hub', title: 'Ideas Hub', path: '/industry/ideas/hub', exact: true },
     { id: 'All Ideas', title: 'All Ideas', path: '/industry/ideas/all', exact: false },
     { id: 'Initiatives', title: 'Initiatives', path: '/industry/ideas/initiatives', exact: false },
+    { id: 'Requirement Assist', title: 'Requirement Assist™', path: '/product/requirement-assist', exact: true },
   ],
 };
 
