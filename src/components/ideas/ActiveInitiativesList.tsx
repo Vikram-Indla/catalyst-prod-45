@@ -114,13 +114,13 @@ export function ActiveInitiativesList({ initiatives, loading = false, onInitiati
             </div>
 
             {/* Stats */}
-            {(initiative.idea_count !== undefined || initiative.vote_count !== undefined) && (
+            {(initiative.ideas_count !== undefined || initiative.total_votes !== undefined) && (
               <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                {initiative.idea_count !== undefined && (
-                  <span>{initiative.idea_count} ideas</span>
+                {initiative.ideas_count !== undefined && (
+                  <span>{initiative.ideas_count} ideas</span>
                 )}
-                {initiative.vote_count !== undefined && (
-                  <span>{initiative.vote_count} votes</span>
+                {initiative.total_votes !== undefined && (
+                  <span>{initiative.total_votes} votes</span>
                 )}
               </div>
             )}
