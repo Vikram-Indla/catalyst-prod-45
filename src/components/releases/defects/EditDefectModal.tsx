@@ -76,7 +76,7 @@ const statusOptions = [
 ];
 
 const assigneeOptions = [
-  { value: '', label: 'Unassigned' },
+  { value: 'unassigned', label: 'Unassigned' },
   { value: 'VS', label: 'Vikram S.' },
   { value: 'AA', label: 'Ahmed A.' },
   { value: 'SK', label: 'Sara K.' },
@@ -84,7 +84,7 @@ const assigneeOptions = [
 ];
 
 const environmentOptions = [
-  { value: '', label: 'Select environment' },
+  { value: 'none', label: 'Select environment' },
   { value: 'development', label: 'Development' },
   { value: 'staging', label: 'Staging' },
   { value: 'uat', label: 'UAT' },
@@ -126,10 +126,10 @@ export function EditDefectModal({ open, onOpenChange, defect, onSave }: EditDefe
         actualResult: defect.actualResult || '',
         releaseId: defect.releaseId || '',
         linkedTestId: defect.linkedTestId || '',
-        assigneeId: defect.assignee?.initials || '',
+        assigneeId: defect.assignee?.initials || 'unassigned',
         defectType: defect.defectType || '',
         module: defect.module || '',
-        environment: defect.environment || '',
+        environment: defect.environment || 'none',
         browser: defect.browser || '',
         os: defect.os || '',
         url: defect.url || '',
@@ -150,10 +150,10 @@ export function EditDefectModal({ open, onOpenChange, defect, onSave }: EditDefe
       actualResult: form.actualResult,
       releaseId: form.releaseId,
       linkedTestId: form.linkedTestId || null,
-      assignee: form.assigneeId ? getAssigneeById(form.assigneeId) : { name: 'Unassigned', initials: '?', color: 'gray' },
+      assignee: form.assigneeId && form.assigneeId !== 'unassigned' ? getAssigneeById(form.assigneeId) : { name: 'Unassigned', initials: '?', color: 'gray' },
       defectType: form.defectType,
       module: form.module,
-      environment: form.environment,
+      environment: form.environment === 'none' ? '' : form.environment,
       browser: form.browser,
       os: form.os,
       url: form.url,
