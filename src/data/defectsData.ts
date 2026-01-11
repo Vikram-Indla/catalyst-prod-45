@@ -25,6 +25,19 @@ export interface Defect {
   };
   createdAt: string;
   updatedAt: string;
+  // Extended fields for enterprise-grade defect tracking
+  priority?: string;
+  defectType?: string;
+  module?: string;
+  environment?: string;
+  browser?: string;
+  os?: string;
+  device?: string;
+  url?: string;
+  howDetected?: string;
+  stepsToReproduce?: string;
+  expectedResult?: string;
+  actualResult?: string;
 }
 
 export const defectsData: Defect[] = [

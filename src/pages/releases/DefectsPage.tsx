@@ -28,7 +28,7 @@ import { toast } from "sonner";
 
 import { DefectTableView } from "@/components/releases/defects/DefectTableView";
 import { DefectKanbanView } from "@/components/releases/defects/DefectKanbanView";
-import { ReportDefectModal } from "@/components/releases/defects/ReportDefectModal";
+import { ReportDefectModal, DefectFormData } from "@/components/releases/defects/ReportDefectModal";
 import { 
   defectsData, 
   Defect, 
@@ -39,6 +39,28 @@ import {
   getAssigneeById 
 } from "@/data/defectsData";
 import { cn } from "@/lib/utils";
+
+// Initial empty form state
+const initialFormState: DefectFormData = {
+  title: '',
+  severity: '',
+  priority: '',
+  defectType: '',
+  module: '',
+  stepsToReproduce: '',
+  expectedResult: '',
+  actualResult: '',
+  url: '',
+  environment: '',
+  releaseId: '',
+  browser: '',
+  os: '',
+  device: '',
+  linkedTestId: '',
+  assigneeId: '',
+  howDetected: '',
+  description: ''
+};
 
 export default function ReleasesDefectsPage() {
   const navigate = useNavigate();
@@ -58,14 +80,7 @@ export default function ReleasesDefectsPage() {
   
   // Modal
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [newDefect, setNewDefect] = useState({
-    title: '',
-    severity: '',
-    releaseId: '',
-    linkedTestId: '',
-    assigneeId: '',
-    description: ''
-  });
+  const [formData, setFormData] = useState<DefectFormData>(initialFormState);
   
   // Filtered defects
   const filteredDefects = useMemo(() => {
@@ -106,33 +121,88 @@ export default function ReleasesDefectsPage() {
     setAssigneeFilter('all');
   };
   
-  // Create defect
+  // Create defect with comprehensive validation
   const handleReportDefect = () => {
-    if (!newDefect.title || !newDefect.severity || !newDefect.releaseId || !newDefect.description) {
-      toast.error('Please fill in required fields');
+    // Validate required fields
+    const requiredFields: (keyof DefectFormData)[] = [
+      'title', 'severity', 'priority', 'defectType', 
+      'module', 'stepsToReproduce', 'expectedResult', 
+      'actualResult', 'environment', 'releaseId'
+    ];
+    
+    const fieldLabels: Record<string, string> = {
+      title: 'Title',
+      severity: 'Severity',
+      priority: 'Priority',
+      defectType: 'Defect Type',
+      module: 'Module/Component',
+      stepsToReproduce: 'Steps to Reproduce',
+      expectedResult: 'Expected Result',
+      actualResult: 'Actual Result',
+      environment: 'Environment',
+      releaseId: 'Release/Version'
+    };
+    
+    const missingFields = requiredFields.filter(f => !formData[f]);
+    
+    if (missingFields.length > 0) {
+      const missingLabels = missingFields.map(f => fieldLabels[f]).join(', ');
+      toast.error(`Please fill required fields: ${missingLabels}`);
       return;
     }
     
     const defectNumber = defects.length + 90;
+    
+    // Build comprehensive description from form data
+    const fullDescription = `
+**Steps to Reproduce:**
+${formData.stepsToReproduce}
+
+**Expected Result:**
+${formData.expectedResult}
+
+**Actual Result:**
+${formData.actualResult}
+
+**Environment:** ${formData.environment}
+**Browser:** ${formData.browser || 'Not specified'}
+**OS:** ${formData.os || 'Not specified'}
+**Device:** ${formData.device || 'Not specified'}
+${formData.url ? `**URL:** ${formData.url}` : ''}
+    `.trim();
+    
     const defect: Defect = {
       id: `DEF-${String(defectNumber).padStart(3, '0')}`,
-      title: newDefect.title,
-      description: newDefect.description,
-      severity: newDefect.severity as Defect['severity'],
+      title: formData.title,
+      description: fullDescription,
+      severity: formData.severity as Defect['severity'],
       status: 'open',
-      releaseId: newDefect.releaseId,
-      linkedTestId: newDefect.linkedTestId === 'none' ? null : newDefect.linkedTestId || null,
+      releaseId: formData.releaseId,
+      linkedTestId: formData.linkedTestId === 'none' ? null : formData.linkedTestId || null,
       linkedStepId: null,
-      assignee: getAssigneeById(newDefect.assigneeId),
+      assignee: getAssigneeById(formData.assigneeId),
       reporter: { name: 'Vikram S.', initials: 'VS', color: 'blue' },
       createdAt: 'Just now',
-      updatedAt: 'Just now'
+      updatedAt: 'Just now',
+      // Extended fields
+      priority: formData.priority,
+      defectType: formData.defectType,
+      module: formData.module,
+      environment: formData.environment,
+      browser: formData.browser,
+      os: formData.os,
+      device: formData.device,
+      url: formData.url,
+      howDetected: formData.howDetected,
+      stepsToReproduce: formData.stepsToReproduce,
+      expectedResult: formData.expectedResult,
+      actualResult: formData.actualResult
     };
     
     setDefects([defect, ...defects]);
     setIsReportModalOpen(false);
-    setNewDefect({ title: '', severity: '', releaseId: '', linkedTestId: '', assigneeId: '', description: '' });
-    toast.success(`${defect.id} reported`);
+    setFormData(initialFormState);
+    toast.success(`${defect.id} reported successfully`);
   };
   
   // Update status
@@ -365,8 +435,8 @@ export default function ReleasesDefectsPage() {
       <ReportDefectModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
-        newDefect={newDefect}
-        setNewDefect={setNewDefect}
+        formData={formData}
+        setFormData={setFormData}
         onSubmit={handleReportDefect}
       />
     </div>
