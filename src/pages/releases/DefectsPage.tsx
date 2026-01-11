@@ -279,7 +279,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
   // Save reassignment
   const handleSaveReassign = (assigneeId: string) => {
     if (selectedDefect) {
-      const newAssignee = getAssigneeById(assigneeId);
+      const newAssignee = getAssigneeFromId(assigneeId);
       setDefects(defects.map(d => 
         d.id === selectedDefect.id ? { ...d, assignee: newAssignee, updatedAt: 'Just now' } : d
       ));
