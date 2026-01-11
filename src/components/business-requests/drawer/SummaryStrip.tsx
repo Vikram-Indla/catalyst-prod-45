@@ -4,7 +4,22 @@
  */
 
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
+import { 
+  LucideIcon,
+  FileText,
+  Clock,
+  Calendar,
+  AlertTriangle,
+  AlertCircle,
+  Shield,
+  Flag,
+  CheckCircle,
+  Link,
+  Layers,
+  Wallet,
+  TrendingUp,
+  Users
+} from 'lucide-react';
 
 export interface SummaryMetric {
   icon: LucideIcon;
@@ -94,7 +109,7 @@ export function DemandSummaryStrip({
   daysOpen?: number;
   daysToTarget?: number | null;
 }) {
-  const { FileText, Clock, Calendar } = require('lucide-react');
+  // Icons imported from lucide-react at top
   
   const metrics: SummaryMetric[] = [
     {
@@ -130,7 +145,7 @@ export function RisksSummaryStrip({
   openRisks: number;
   criticalRisks: number;
 }) {
-  const { AlertTriangle, AlertCircle, Shield } = require('lucide-react');
+  // Icons imported from lucide-react at top
 
   const metrics: SummaryMetric[] = [
     {
@@ -164,7 +179,7 @@ export function MilestonesSummaryStrip({
   completed: number;
   atRisk: number;
 }) {
-  const { Flag, CheckCircle, AlertTriangle } = require('lucide-react');
+  // Icons imported from lucide-react at top
 
   const metrics: SummaryMetric[] = [
     {
@@ -197,7 +212,7 @@ export function LinksSummaryStrip({
   documents: number;
   implementations: number;
 }) {
-  const { Link, FileText, Layers } = require('lucide-react');
+  // Icons imported from lucide-react at top
 
   const metrics: SummaryMetric[] = [
     {
@@ -229,7 +244,7 @@ export function BudgetSummaryStrip({
   fundingStatus?: string | null;
   capacityStatus?: string | null;
 }) {
-  const { Wallet, TrendingUp, Users } = require('lucide-react');
+  // Icons imported from lucide-react at top
 
   const formatCurrency = (value: number) => {
     if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
