@@ -36,6 +36,7 @@ import { toast } from 'sonner';
 import { SeverityBadge } from '@/components/releases/defects/SeverityBadge';
 import { DefectStatusBadge } from '@/components/releases/defects/DefectStatusBadge';
 import { PriorityBadge } from '@/components/releases/defects/PriorityBadge';
+import { InlineTextEdit } from '@/components/releases/defects/InlineTextEdit';
 import { EditDefectModal } from '@/components/releases/defects/EditDefectModal';
 import { ReassignModal } from '@/components/releases/defects/ReassignModal';
 import { defectsData, Defect, getAssigneeById } from '@/data/defectsData';
@@ -355,6 +356,20 @@ export default function DefectDetailPage() {
     toast.success(`${updatedDefect.id} updated successfully`);
   }, []);
 
+  // Inline field update handlers with autosave
+  const handleFieldUpdate = useCallback(async (field: keyof Defect, value: string): Promise<void> => {
+    if (!defect) return;
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    setDefect(prev => prev ? { 
+      ...prev, 
+      [field]: value, 
+      updatedAt: 'Just now' 
+    } : null);
+  }, [defect]);
+
   const handleReassign = useCallback((assigneeId: string) => {
     if (defect) {
       const newAssignee = getAssigneeById(assigneeId);
@@ -509,9 +524,13 @@ export default function DefectDetailPage() {
           <div className="flex items-start justify-between gap-6 py-3">
             {/* Title with LEFT BORDER for severity */}
             <div className={cn("flex-1 pl-4 border-l-[3px]", getSeverityBorderColor(defect.severity))}>
-              <h1 className="text-lg font-semibold text-gray-900 leading-tight">
-                {defect.title}
-              </h1>
+              <InlineTextEdit
+                value={defect.title}
+                onSave={(value) => handleFieldUpdate('title', value)}
+                placeholder="Enter defect title..."
+                textClassName="text-lg font-semibold text-gray-900 leading-tight"
+                emptyMessage="Untitled"
+              />
               <p className="text-[13px] text-gray-500 mt-0.5 line-clamp-1">
                 {defect.description?.substring(0, 120)}...
               </p>
@@ -573,25 +592,30 @@ export default function DefectDetailPage() {
             {activeTab === 'details' && (
               <>
                 {/* Description */}
-                <ContentCard title="Description" action={<EditLink onClick={() => setIsEditModalOpen(true)} />}>
-                  {defect.description ? (
-                    <p className="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {defect.description}
-                    </p>
-                  ) : (
-                    <InlineEmpty message="No description" action="Add description" onAction={() => setIsEditModalOpen(true)} />
-                  )}
+                <ContentCard title="Description">
+                  <InlineTextEdit
+                    value={defect.description}
+                    onSave={(value) => handleFieldUpdate('description', value)}
+                    placeholder="Add a description..."
+                    multiline
+                    rows={4}
+                    emptyMessage="No description provided"
+                  />
                 </ContentCard>
                 
                 {/* Steps to Reproduce */}
-                <ContentCard title="Steps to Reproduce" action={<EditLink onClick={() => setIsEditModalOpen(true)} />}>
-                  {defect.stepsToReproduce ? (
-                    <div className="bg-gray-50 rounded p-4 font-mono text-[13px] text-gray-700 border-l-[3px] border-blue-500 whitespace-pre-wrap leading-relaxed">
-                      {defect.stepsToReproduce}
-                    </div>
-                  ) : (
-                    <InlineEmpty message="No steps provided" action="Add steps" onAction={() => setIsEditModalOpen(true)} />
-                  )}
+                <ContentCard title="Steps to Reproduce">
+                  <div className="bg-gray-50 rounded p-4 border-l-[3px] border-blue-500">
+                    <InlineTextEdit
+                      value={defect.stepsToReproduce}
+                      onSave={(value) => handleFieldUpdate('stepsToReproduce', value)}
+                      placeholder="Add steps to reproduce..."
+                      multiline
+                      rows={5}
+                      emptyMessage="No steps provided"
+                      textClassName="font-mono"
+                    />
+                  </div>
                 </ContentCard>
                 
                 {/* Expected vs Actual - Side by Side */}
@@ -601,13 +625,16 @@ export default function DefectDetailPage() {
                     titleIcon={<CheckCircle className="w-3.5 h-3.5 text-emerald-500" />}
                     titleClass="text-emerald-700"
                   >
-                    {defect.expectedResult ? (
-                      <div className="bg-emerald-50 rounded p-4 text-[13px] text-gray-700 border-l-[3px] border-emerald-500 leading-relaxed">
-                        {defect.expectedResult}
-                      </div>
-                    ) : (
-                      <InlineEmpty message="Not provided" />
-                    )}
+                    <div className="bg-emerald-50 rounded p-4 border-l-[3px] border-emerald-500">
+                      <InlineTextEdit
+                        value={defect.expectedResult}
+                        onSave={(value) => handleFieldUpdate('expectedResult', value)}
+                        placeholder="Add expected result..."
+                        multiline
+                        rows={3}
+                        emptyMessage="Not provided"
+                      />
+                    </div>
                   </ContentCard>
                   
                   <ContentCard 
@@ -615,13 +642,16 @@ export default function DefectDetailPage() {
                     titleIcon={<XCircle className="w-3.5 h-3.5 text-red-500" />}
                     titleClass="text-red-700"
                   >
-                    {defect.actualResult ? (
-                      <div className="bg-red-50 rounded p-4 text-[13px] text-gray-700 border-l-[3px] border-red-500 leading-relaxed">
-                        {defect.actualResult}
-                      </div>
-                    ) : (
-                      <InlineEmpty message="Not provided" />
-                    )}
+                    <div className="bg-red-50 rounded p-4 border-l-[3px] border-red-500">
+                      <InlineTextEdit
+                        value={defect.actualResult}
+                        onSave={(value) => handleFieldUpdate('actualResult', value)}
+                        placeholder="Add actual result..."
+                        multiline
+                        rows={3}
+                        emptyMessage="Not provided"
+                      />
+                    </div>
                   </ContentCard>
                 </div>
                 
@@ -705,14 +735,18 @@ export default function DefectDetailPage() {
             
             {activeTab === 'reproduction' && (
               <>
-                <ContentCard title="Steps to Reproduce" action={<EditLink onClick={() => setIsEditModalOpen(true)} />}>
-                  {defect.stepsToReproduce ? (
-                    <div className="bg-gray-50 rounded p-4 font-mono text-[13px] text-gray-700 border-l-[3px] border-blue-500 whitespace-pre-wrap leading-relaxed">
-                      {defect.stepsToReproduce}
-                    </div>
-                  ) : (
-                    <InlineEmpty message="No steps provided" action="Add steps" onAction={() => setIsEditModalOpen(true)} />
-                  )}
+                <ContentCard title="Steps to Reproduce">
+                  <div className="bg-gray-50 rounded p-4 border-l-[3px] border-blue-500">
+                    <InlineTextEdit
+                      value={defect.stepsToReproduce}
+                      onSave={(value) => handleFieldUpdate('stepsToReproduce', value)}
+                      placeholder="Add steps to reproduce..."
+                      multiline
+                      rows={6}
+                      emptyMessage="No steps provided"
+                      textClassName="font-mono"
+                    />
+                  </div>
                 </ContentCard>
                 
                 <div className="grid grid-cols-2 gap-4">
@@ -721,13 +755,16 @@ export default function DefectDetailPage() {
                     titleIcon={<CheckCircle className="w-3.5 h-3.5 text-emerald-500" />}
                     titleClass="text-emerald-700"
                   >
-                    {defect.expectedResult ? (
-                      <div className="bg-emerald-50 rounded p-4 text-[13px] text-gray-700 border-l-[3px] border-emerald-500 leading-relaxed">
-                        {defect.expectedResult}
-                      </div>
-                    ) : (
-                      <InlineEmpty message="Not provided" />
-                    )}
+                    <div className="bg-emerald-50 rounded p-4 border-l-[3px] border-emerald-500">
+                      <InlineTextEdit
+                        value={defect.expectedResult}
+                        onSave={(value) => handleFieldUpdate('expectedResult', value)}
+                        placeholder="Add expected result..."
+                        multiline
+                        rows={4}
+                        emptyMessage="Not provided"
+                      />
+                    </div>
                   </ContentCard>
                   
                   <ContentCard 
@@ -735,13 +772,16 @@ export default function DefectDetailPage() {
                     titleIcon={<XCircle className="w-3.5 h-3.5 text-red-500" />}
                     titleClass="text-red-700"
                   >
-                    {defect.actualResult ? (
-                      <div className="bg-red-50 rounded p-4 text-[13px] text-gray-700 border-l-[3px] border-red-500 leading-relaxed">
-                        {defect.actualResult}
-                      </div>
-                    ) : (
-                      <InlineEmpty message="Not provided" />
-                    )}
+                    <div className="bg-red-50 rounded p-4 border-l-[3px] border-red-500">
+                      <InlineTextEdit
+                        value={defect.actualResult}
+                        onSave={(value) => handleFieldUpdate('actualResult', value)}
+                        placeholder="Add actual result..."
+                        multiline
+                        rows={4}
+                        emptyMessage="Not provided"
+                      />
+                    </div>
                   </ContentCard>
                 </div>
                 
