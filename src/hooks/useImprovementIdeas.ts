@@ -299,9 +299,9 @@ export function useIdeasHubMetrics() {
   return useQuery({
     queryKey: ['ideas-hub-metrics'],
     queryFn: async () => {
-      // Get counts
+      // Get counts with idea_type
       const [ideasRes, initiativesRes, scoresRes] = await Promise.all([
-        supabase.from('improvement_ideas').select('id, status, converted_to_br_id', { count: 'exact' }).is('deleted_at', null),
+        supabase.from('improvement_ideas').select('id, status, idea_type, converted_to_br_id', { count: 'exact' }).is('deleted_at', null),
         supabase.from('improvement_initiatives').select('id', { count: 'exact' }).in('status', ['active', 'collecting', 'evaluating']),
         supabase.from('impact_scores').select('calculated_score').eq('is_current', true),
       ]);
@@ -309,6 +309,8 @@ export function useIdeasHubMetrics() {
       const ideas = ideasRes.data || [];
       const totalIdeas = ideas.length;
       const pendingReview = ideas.filter(i => ['submitted', 'under_review'].includes(i.status)).length;
+      const quickWinsPending = ideas.filter(i => i.idea_type === 'quick_win' && i.status === 'quick_win_approved').length;
+      const strategicIdeas = ideas.filter(i => i.idea_type === 'strategic').length;
       const converted = ideas.filter(i => i.converted_to_br_id).length;
       const conversionRate = totalIdeas > 0 ? (converted / totalIdeas) * 100 : 0;
       
@@ -318,6 +320,8 @@ export function useIdeasHubMetrics() {
       return {
         totalIdeas,
         pendingReview,
+        quickWinsPending,
+        strategicIdeas,
         avgImpactScore: Math.round(avgImpactScore * 100) / 100,
         conversionRate: Math.round(conversionRate),
         activeInitiatives: initiativesRes.count || 0,
