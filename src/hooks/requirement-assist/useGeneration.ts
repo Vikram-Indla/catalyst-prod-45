@@ -192,6 +192,7 @@ export function useGeneration() {
               isSelected: true,
               isEdited: false,
               isPublished: item.is_published || false,
+              publishedAt: item.published_at || null,
             });
           }
         )
@@ -312,10 +313,11 @@ export function useGeneration() {
           description: item.description,
           acceptanceCriteria: item.acceptance_criteria ? item.acceptance_criteria.split('\n').filter(Boolean) : [],
           confidenceScore: item.confidence_score || 0,
-          confidenceReason: null,
+          confidenceReason: item.confidence_reason || null,
           isSelected: true,
           isEdited: false,
           isPublished: item.is_published || false,
+          publishedAt: item.published_at || null,
         }))
       );
 

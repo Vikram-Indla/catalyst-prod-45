@@ -1,14 +1,17 @@
 // ============================================================
 // DETAIL PANEL COMPONENT - ENHANCED
 // Fixed: confidence %, correct level, publish button, inline editing
+// Added: Published context section
 // ============================================================
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStore, selectSelectedItem } from '@/stores/requirementAssistStore';
 import { 
   X, 
   Pencil, 
   Check,
+  CheckCircle,
   FileText,
   ListChecks,
   BarChart3,
@@ -16,16 +19,22 @@ import {
   Upload,
   Trash2,
   Plus,
+  ExternalLink,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 import { 
   formatConfidencePercent, 
   getConfidenceColor 
 } from '@/utils/requirementAssistDisplayId';
 
 export function DetailPanel() {
-  const { isDetailOpen, closeDetail, updateWorkItem, programs, projects, programId, projectId } = useStore();
+  const navigate = useNavigate();
+  const { isDetailOpen, closeDetail, updateWorkItem, programs, projects, programId, projectId, generation } = useStore();
   const item = useStore(selectSelectedItem);
+  
+  // Get generation display ID from store
+  const generationDisplayId = generation?.displayId || null;
   const [isEditing, setIsEditing] = useState(false);
   
   // Edit state
@@ -109,9 +118,10 @@ export function DetailPanel() {
   // FIXED: Publish single item
   const handlePublishSingle = async () => {
     try {
-      // Mark as published in store
+      // Mark as published in store with timestamp
       updateWorkItem(item.id, {
         isPublished: true,
+        publishedAt: new Date().toISOString(),
       });
       
       toast.success(`Published ${item.displayId} to backlog`);
@@ -177,6 +187,55 @@ export function DetailPanel() {
         
         {/* Body */}
         <div className="flex-1 overflow-y-auto">
+          {/* Published Context Section */}
+          {item.isPublished && (
+            <div className="mx-5 mt-5 mb-2 bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm font-semibold text-emerald-700">Published</span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-emerald-600 text-xs uppercase tracking-wide mb-1">Program</p>
+                  <p className="font-medium text-slate-900">{program?.name || 'N/A'} ({programCode})</p>
+                </div>
+                <div>
+                  <p className="text-emerald-600 text-xs uppercase tracking-wide mb-1">Project</p>
+                  <p className="font-medium text-slate-900">{project?.name || 'N/A'} ({projectCode})</p>
+                </div>
+                <div>
+                  <p className="text-emerald-600 text-xs uppercase tracking-wide mb-1">Published To</p>
+                  <p className="font-medium text-slate-900">
+                    {item.itemType === 'story' ? 'Project Backlog' : 'Program Backlog'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-emerald-600 text-xs uppercase tracking-wide mb-1">Published At</p>
+                  <p className="font-medium text-slate-900">
+                    {item.publishedAt 
+                      ? format(new Date(item.publishedAt), 'MMM d, yyyy • h:mm a')
+                      : format(new Date(), 'MMM d, yyyy • h:mm a')
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              {/* Source Generation */}
+              {generationDisplayId && (
+                <div className="mt-3 pt-3 border-t border-emerald-100">
+                  <p className="text-emerald-600 text-xs uppercase tracking-wide mb-1">Source Generation</p>
+                  <button 
+                    onClick={() => navigate(`/generation-history?id=${generationDisplayId}`)}
+                    className="inline-flex items-center gap-1 font-mono text-sm text-blue-600 hover:underline"
+                  >
+                    {generationDisplayId}
+                    <ExternalLink className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
           {isEditing ? (
             /* ============ EDIT MODE ============ */
             <div className="p-5 space-y-5">
