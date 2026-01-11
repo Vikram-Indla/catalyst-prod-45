@@ -6,11 +6,13 @@ interface SeverityBadgeProps {
 }
 
 export function SeverityBadge({ severity }: SeverityBadgeProps) {
+  // Catalyst V5 Design System compliant colors
+  // Blocker uses solid red for highest visual severity
   const styles: Record<string, string> = {
-    blocker: 'bg-purple-100 text-purple-800 border border-purple-300',
+    blocker: 'bg-red-600 text-white border border-red-700',
     critical: 'bg-red-100 text-red-800 border border-red-300',
     major: 'bg-orange-100 text-orange-800 border border-orange-300',
-    minor: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
+    minor: 'bg-amber-100 text-amber-800 border border-amber-300',
     trivial: 'bg-gray-100 text-gray-600 border border-gray-300'
   };
   
