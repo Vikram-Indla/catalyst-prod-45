@@ -18,9 +18,11 @@ interface DefectTableViewProps {
   defects: Defect[];
   onUpdateStatus: (defectId: string, status: string) => void;
   onDelete: (defectId: string) => void;
+  onEdit?: (defect: Defect) => void;
+  onReassign?: (defect: Defect) => void;
 }
 
-export function DefectTableView({ defects, onUpdateStatus, onDelete }: DefectTableViewProps) {
+export function DefectTableView({ defects, onUpdateStatus, onDelete, onEdit, onReassign }: DefectTableViewProps) {
   const navigate = useNavigate();
 
   const avatarColors: Record<string, string> = {
@@ -120,10 +122,10 @@ export function DefectTableView({ defects, onUpdateStatus, onDelete }: DefectTab
                       <DropdownMenuItem onClick={() => navigate(`/releases/defects/${defect.id}`)}>
                         <Eye className="w-4 h-4 mr-2" /> View
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onEdit?.(defect)}>
                         <Pencil className="w-4 h-4 mr-2" /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onReassign?.(defect)}>
                         <UserPlus className="w-4 h-4 mr-2" /> Reassign
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
