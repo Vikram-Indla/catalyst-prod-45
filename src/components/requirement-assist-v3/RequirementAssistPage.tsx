@@ -7,9 +7,12 @@ import React, { useState } from 'react';
 import { Header } from './Header';
 import { InputPanel } from './InputPanel';
 import { OutputPanel } from './OutputPanel';
+import { PublishConfirmModal } from './PublishConfirmModal';
+import { PublishSummaryModal } from './PublishSummaryModal';
 import { useKeyboardShortcuts, usePrograms } from '@/hooks/requirement-assist';
 import { useStore, selectItemCounts } from '@/stores/requirementAssistStore';
 import { useShallow } from 'zustand/react/shallow';
+import { generateDisplayId, isPublishable } from '@/utils/requirementAssistDisplayId';
 import { 
   Download, 
   Upload, 
@@ -22,21 +25,41 @@ import {
 import toast from 'react-hot-toast';
 import { exportToExcel, exportToCSV, exportToJSON } from '@/utils/requirementAssistExport';
 
+interface PublishedItem {
+  key: string;
+  type: string;
+  title: string;
+}
+
 export function RequirementAssistPage() {
   // Initialize hooks
   useKeyboardShortcuts();
   usePrograms();
 
-  const { workItems, generation } = useStore();
+  const { workItems, generation, programs, projects, programId, projectId, updateWorkItem } = useStore();
   const counts = useStore(useShallow(selectItemCounts));
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+  
+  // Publish modal states
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [publishedItems, setPublishedItems] = useState<PublishedItem[]>([]);
+  const [publishedAt, setPublishedAt] = useState('');
 
-  const selectedItems = workItems.filter(item => item.isSelected);
+  // FIX #3: Only include publishable items (no PRD, not already published)
+  const selectedItems = workItems.filter(item => item.isSelected && isPublishable(item));
   const hasItems = workItems.length > 0;
+  
+  // Get program and project names for modals
+  const selectedProgram = programs.find(p => p.id === programId);
+  const selectedProject = projects.find(p => p.id === projectId);
+  const programName = selectedProgram?.name || 'Not selected';
+  const projectName = selectedProject?.name || 'Not selected';
+  const projectCode = selectedProject?.code || 'PRJ';
 
   const handleExport = async (format: 'excel' | 'csv' | 'json') => {
-    const itemsToExport = selectedItems.length > 0 ? selectedItems : workItems;
+    const itemsToExport = selectedItems.length > 0 ? selectedItems : workItems.filter(i => isPublishable(i));
     const filename = `requirement-assist-${generation?.displayId || 'export'}`;
 
     try {
@@ -60,16 +83,55 @@ export function RequirementAssistPage() {
     setIsExportOpen(false);
   };
 
-  const handlePublish = async () => {
+  // FIX #5: Show confirmation modal before publish
+  const handlePublishClick = () => {
     if (selectedItems.length === 0) {
       toast.error('Select items to publish');
       return;
     }
+    setShowConfirmModal(true);
+  };
 
+  // FIX #4 & #6: Actual publish with state tracking and summary
+  const handleConfirmPublish = async () => {
     setIsPublishing(true);
+    
     try {
+      // Simulate publish API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success(`Published ${selectedItems.length} items to backlog`);
+      
+      // FIX #2: Generate proper display IDs with project code
+      const typeCounters = { epic: 0, feature: 0, story: 0 };
+      const published: PublishedItem[] = [];
+      
+      for (const item of selectedItems) {
+        const itemType = item.itemType as 'epic' | 'feature' | 'story';
+        typeCounters[itemType] = (typeCounters[itemType] || 0) + 1;
+        
+        const permanentId = generateDisplayId(projectCode, itemType, typeCounters[itemType]);
+        
+        // FIX #4: Mark item as published
+        updateWorkItem(item.id, {
+          isPublished: true,
+          displayId: permanentId,
+        });
+        
+        published.push({
+          key: permanentId,
+          type: itemType,
+          title: item.title,
+        });
+      }
+      
+      // Prepare summary modal data
+      setPublishedItems(published);
+      setPublishedAt(new Date().toLocaleString());
+      
+      // Close confirm modal, show summary modal
+      setShowConfirmModal(false);
+      setShowSummaryModal(true);
+      
+      toast.success(`Published ${published.length} items to backlog`);
     } catch (error) {
       toast.error('Publish failed. Please try again.');
     } finally {
@@ -177,7 +239,7 @@ export function RequirementAssistPage() {
 
           {/* Publish Button */}
           <button
-            onClick={handlePublish}
+            onClick={handlePublishClick}
             disabled={!hasItems || counts.selected === 0 || isPublishing}
             className={`
               h-9 px-5 flex items-center gap-2 text-sm font-semibold
@@ -202,6 +264,27 @@ export function RequirementAssistPage() {
           </button>
         </div>
       </footer>
+      
+      {/* FIX #5: Publish Confirmation Modal */}
+      <PublishConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmPublish}
+        selectedItems={selectedItems}
+        programName={programName}
+        projectName={projectName}
+        isPublishing={isPublishing}
+      />
+      
+      {/* FIX #6: Publish Summary Modal */}
+      <PublishSummaryModal
+        isOpen={showSummaryModal}
+        onClose={() => setShowSummaryModal(false)}
+        publishedItems={publishedItems}
+        programName={programName}
+        projectName={projectName}
+        publishedAt={publishedAt}
+      />
     </div>
   );
 }
