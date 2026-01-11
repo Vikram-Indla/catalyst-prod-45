@@ -247,6 +247,7 @@ import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPlanningPage from "./pages/CapacityPlanningPage";
 import { RequirementAssistPage } from "./components/requirement-assist-v3";
+const GenerationHistoryPage = lazy(() => import("./pages/product/GenerationHistoryPage"));
 import { RequirementAssistHistory } from "./pages/product/requirement-assist";
 import { RAAdminAIConfiguration, RAAdminTemplates, RAAdminCompliance, RAAdminTranslation, RAAdminAnalytics, RAAdminPermissions } from "./pages/admin/requirement-assist";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
@@ -461,6 +462,7 @@ const App = () => (
 {/* Requirement Assist Routes - under Product */}
 <Route path="/product/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistPage /></Suspense>} />
 <Route path="/product/requirement-assist/history" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistHistory /></Suspense>} />
+<Route path="/generation-history" element={<Suspense fallback={<div className="p-8">Loading...</div>}><GenerationHistoryPage /></Suspense>} />
 {/* Catch-all for unknown requirement-assist sub-routes */}
 <Route path="/product/requirement-assist/*" element={<Navigate to="/product/requirement-assist" replace />} />
 

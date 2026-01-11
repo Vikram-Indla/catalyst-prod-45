@@ -6340,6 +6340,87 @@ export type Database = {
           },
         ]
       }
+      generation_items: {
+        Row: {
+          acceptance_criteria: Json | null
+          confidence_reason: string | null
+          confidence_score: number | null
+          created_at: string | null
+          description: string | null
+          generation_id: string | null
+          id: string
+          is_edited: boolean | null
+          is_published: boolean | null
+          is_selected: boolean | null
+          item_type: string
+          level: number | null
+          parent_id: string | null
+          permanent_display_id: string | null
+          published_at: string | null
+          sort_order: number | null
+          temp_display_id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          acceptance_criteria?: Json | null
+          confidence_reason?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          description?: string | null
+          generation_id?: string | null
+          id?: string
+          is_edited?: boolean | null
+          is_published?: boolean | null
+          is_selected?: boolean | null
+          item_type: string
+          level?: number | null
+          parent_id?: string | null
+          permanent_display_id?: string | null
+          published_at?: string | null
+          sort_order?: number | null
+          temp_display_id: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          acceptance_criteria?: Json | null
+          confidence_reason?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          description?: string | null
+          generation_id?: string | null
+          id?: string
+          is_edited?: boolean | null
+          is_published?: boolean | null
+          is_selected?: boolean | null
+          item_type?: string
+          level?: number | null
+          parent_id?: string | null
+          permanent_display_id?: string | null
+          published_at?: string | null
+          sort_order?: number | null
+          temp_display_id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_items_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generation_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "generation_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       generations: {
         Row: {
           ai_model: string | null
@@ -16069,6 +16150,7 @@ export type Database = {
       }
       programs: {
         Row: {
+          code: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -16079,6 +16161,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          code?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -16089,6 +16172,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          code?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -16457,6 +16541,7 @@ export type Database = {
         Row: {
           archived_at: string | null
           archived_by: string | null
+          code: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -16473,6 +16558,7 @@ export type Database = {
         Insert: {
           archived_at?: string | null
           archived_by?: string | null
+          code?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -16489,6 +16575,7 @@ export type Database = {
         Update: {
           archived_at?: string | null
           archived_by?: string | null
+          code?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
