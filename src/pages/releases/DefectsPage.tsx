@@ -247,7 +247,6 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
             </Button>
             <Button 
               size="sm" 
-              className="bg-red-600 hover:bg-red-700 text-white"
               onClick={() => setIsReportModalOpen(true)}
             >
               <Plus className="w-4 h-4 mr-2" />
