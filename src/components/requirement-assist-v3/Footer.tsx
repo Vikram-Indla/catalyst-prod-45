@@ -80,35 +80,29 @@ export function Footer() {
 
   return (
     <footer className="h-14 bg-white border-t border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
-      {/* Left: Stats */}
+      {/* Left: Stats - Always show badges */}
       <div className="flex items-center gap-3">
-        {hasItems ? (
-          <>
-            <StatBadge 
-              count={counts.epics} 
-              label="Epics" 
-              className="bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-ra-badge-epic" 
-            />
-            <StatBadge 
-              count={counts.features} 
-              label="Features" 
-              className="bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-ra-badge-feature" 
-            />
-            <StatBadge 
-              count={counts.stories} 
-              label="Stories" 
-              className="bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-ra-badge-story" 
-            />
-            
-            <div className="w-px h-6 bg-slate-200 mx-2" />
-            
-            <span className="text-sm text-slate-600">
-              <strong className="font-semibold text-slate-900">{counts.selected}</strong> selected
-            </span>
-          </>
-        ) : (
-          <span className="text-sm text-slate-400">No items generated yet</span>
-        )}
+        <StatBadge 
+          count={counts.epics} 
+          label="Epics" 
+          className="bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-sm shadow-violet-500/30" 
+        />
+        <StatBadge 
+          count={counts.features} 
+          label="Features" 
+          className="bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-sm shadow-teal-500/30" 
+        />
+        <StatBadge 
+          count={counts.stories} 
+          label="Stories" 
+          className="bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-sm shadow-emerald-500/30" 
+        />
+        
+        <div className="w-px h-6 bg-slate-200 mx-2" />
+        
+        <span className="text-sm text-slate-600">
+          <strong className="font-semibold text-slate-900">{counts.selected}</strong> selected
+        </span>
       </div>
 
       {/* Right: Actions */}
