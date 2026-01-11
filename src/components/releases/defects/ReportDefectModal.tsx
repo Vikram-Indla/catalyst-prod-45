@@ -221,19 +221,22 @@ function generateSmartContent(title: string) {
     ? `Note the precondition: "${condition}"`
     : '';
   
+  // Clean the object name to avoid duplicates
+  const cleanObject = object.trim();
+  
   switch (issueType) {
     case 'cannot':
       steps = [
         `1. Log in to the system with appropriate permissions`,
         `2. ${locationStep}`,
-        `3. Attempt to ${action}`,
+        `3. Attempt to ${action} the ${cleanObject}`,
         conditionNote ? `4. ${conditionNote}` : null,
         `${conditionNote ? '5' : '4'}. Observe that the action cannot be completed`
       ].filter(Boolean).join('\n');
       
       expected = condition
-        ? `User should be able to ${action} the ${object}, or receive a clear message explaining why "${condition}" prevents this action.`
-        : `User should be able to ${action} the ${object} successfully.`;
+        ? `User should be able to ${action} the ${cleanObject}, or receive a clear message explaining why "${condition}" prevents this action.`
+        : `User should be able to ${action} the ${cleanObject} successfully.`;
       
       actual = `[Describe: Is there an error message? Is the button/option disabled? Does nothing happen when clicked? What exactly prevents the action?]`;
       severity = 'major';
@@ -276,12 +279,12 @@ function generateSmartContent(title: string) {
       steps = [
         `1. Log in to the system`,
         `2. ${locationStep}`,
-        `3. Observe the ${object} display/behavior`,
+        `3. Observe the ${cleanObject} display/behavior`,
         conditionNote ? `4. ${conditionNote}` : null,
         `${conditionNote ? '5' : '4'}. Compare with expected behavior`
       ].filter(Boolean).join('\n');
       
-      expected = `${object} should display/behave correctly as per specifications.`;
+      expected = `The ${cleanObject} should display/behave correctly as per specifications.`;
       actual = `[Describe: What is wrong? What should it show vs what it actually shows? Include screenshots if possible.]`;
       severity = 'major';
       priority = 'P3';
@@ -292,12 +295,12 @@ function generateSmartContent(title: string) {
       steps = [
         `1. Log in to the system`,
         `2. ${locationStep}`,
-        `3. Look for the expected element/data`,
+        `3. Look for the expected element/data in ${cleanObject}`,
         conditionNote ? `4. ${conditionNote}` : null,
         `${conditionNote ? '5' : '4'}. Confirm the element/data is not visible`
       ].filter(Boolean).join('\n');
       
-      expected = `${object} should be visible and display all relevant information.`;
+      expected = `The ${cleanObject} should be visible and display all relevant information.`;
       actual = `[Describe: What is missing? Was it visible before? Is the area completely blank or just specific data missing?]`;
       severity = 'minor';
       priority = 'P3';
@@ -330,7 +333,7 @@ function generateSmartContent(title: string) {
         `${conditionNote ? '5' : '4'}. Observe the result`
       ].filter(Boolean).join('\n');
       
-      expected = `The ${object} feature should work as designed without issues.`;
+      expected = `The ${cleanObject} feature should work as designed without issues.`;
       actual = `[Describe exactly what went wrong and how it differs from expected behavior]`;
       severity = 'major';
       priority = 'P3';

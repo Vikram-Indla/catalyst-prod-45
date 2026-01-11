@@ -136,63 +136,58 @@ export function ReassignModal({
   };
 
   // Member row component
-  const MemberRow = ({ member, showWorkload = true }: { member: EnrichedProfile; showWorkload?: boolean }) => (
-    <div
-      className={cn(
-        "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border",
-        selectedMember?.id === member.id 
-          ? "border-primary bg-primary/5" 
-          : "border-transparent hover:bg-muted/50"
-      )}
-      onClick={() => setSelectedMember(member)}
-    >
-      {/* Avatar */}
-      <div className={cn(
-        "w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0",
-        getAvatarColor(member.name)
-      )}>
-        {member.initials}
-      </div>
-      
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-foreground truncate">{member.name}</span>
-          {member.isCurrentUser && (
-            <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">You</span>
-          )}
-        </div>
-        <div className="text-xs text-muted-foreground truncate">
-          {member.email}
-        </div>
-      </div>
-      
-      {/* Workload */}
-      {showWorkload && member.activeDefects !== undefined && (
+  // Member row component with selection state
+  const MemberRow = ({ member, showWorkload = true }: { member: EnrichedProfile; showWorkload?: boolean }) => {
+    const isSelected = selectedMember?.id === member.id;
+    
+    return (
+      <div
+        className={cn(
+          "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+          isSelected 
+            ? "border-primary bg-primary/5 shadow-sm" 
+            : "border-transparent hover:border-primary/30 hover:bg-muted/50"
+        )}
+        onClick={() => setSelectedMember(member)}
+      >
+        {/* Avatar */}
         <div className={cn(
-          "text-xs px-2 py-1 rounded-full flex-shrink-0",
-          getWorkloadColor(member.activeDefects)
+          "w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0",
+          getAvatarColor(member.name)
         )}>
-          {member.activeDefects} active
+          {member.initials}
         </div>
-      )}
-      
-      {/* Workload */}
-      {showWorkload && member.activeDefects !== undefined && (
-        <div className={cn(
-          "text-xs px-2 py-1 rounded-full flex-shrink-0",
-          getWorkloadColor(member.activeDefects)
-        )}>
-          {member.activeDefects} active
+        
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-foreground truncate">{member.name}</span>
+            {member.isCurrentUser && (
+              <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">You</span>
+            )}
+          </div>
+          <div className="text-xs text-muted-foreground truncate">
+            {member.email}
+          </div>
         </div>
-      )}
-      
-      {/* Selected indicator */}
-      {selectedMember?.id === member.id && (
-        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-      )}
-    </div>
-  );
+        
+        {/* Workload badge - ONLY ONE */}
+        {showWorkload && member.activeDefects !== undefined && (
+          <div className={cn(
+            "text-xs px-2 py-1 rounded-full font-medium flex-shrink-0",
+            getWorkloadColor(member.activeDefects)
+          )}>
+            {member.activeDefects} active
+          </div>
+        )}
+        
+        {/* Selected indicator */}
+        {isSelected && (
+          <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+        )}
+      </div>
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
