@@ -230,13 +230,13 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Page Header */}
-      <div className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-4">
+      <div className="flex-shrink-0 border-b border-border bg-card px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-gray-500 uppercase tracking-wide">RELEASES</span>
-              <span className="text-gray-400">/</span>
-              <span className="font-semibold text-gray-900">Defects</span>
+              <span className="text-muted-foreground uppercase tracking-wide">RELEASES</span>
+              <span className="text-muted-foreground/50">/</span>
+              <span className="font-semibold text-foreground">Defects</span>
             </div>
           </div>
           
@@ -269,7 +269,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
             label="Open" 
             value={stats.open}
             icon={AlertCircle}
-            variant="danger"
+            variant="warning"
             trend="+3 this week"
           />
           <StatCard 
@@ -300,11 +300,11 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
         </div>
 
         {/* Filters Bar */}
-        <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg mb-4">
+        <div className="flex items-center justify-between p-4 bg-card border border-border rounded-lg mb-4">
           <div className="flex items-center gap-3 flex-wrap">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input 
                 placeholder="Search defects..." 
                 className="pl-10 w-64"
@@ -318,7 +318,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="All Releases" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-popover">
                 {releaseOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.value === 'all' ? option.label : option.value}
@@ -332,7 +332,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-popover">
                 {statusOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -346,7 +346,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="All Severity" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-popover">
                 {severityOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -360,7 +360,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="All Assignees" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-popover">
                 {assigneeOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -373,7 +373,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-gray-500"
+              className="text-muted-foreground"
               onClick={clearFilters}
               disabled={!hasActiveFilters}
             >
@@ -384,13 +384,13 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
           
           {/* View Toggle */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center bg-muted rounded-lg p-1">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 className={cn(
                   "px-3",
-                  viewMode === 'list' && "bg-white shadow-sm"
+                  viewMode === 'list' && "bg-card shadow-sm"
                 )}
                 onClick={() => setViewMode('list')}
               >
@@ -401,7 +401,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
                 size="sm"
                 className={cn(
                   "px-3",
-                  viewMode === 'kanban' && "bg-white shadow-sm"
+                  viewMode === 'kanban' && "bg-card shadow-sm"
                 )}
                 onClick={() => setViewMode('kanban')}
               >
@@ -412,7 +412,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
         </div>
 
         {/* Results Count */}
-        <div className="mb-4 text-sm text-gray-500">
+        <div className="mb-4 text-sm text-muted-foreground">
           Showing {filteredDefects.length} of {defects.length} defects
         </div>
 
@@ -448,30 +448,30 @@ interface StatCardProps {
   label: string;
   value: number | string;
   icon: React.ElementType;
-  variant: 'default' | 'danger' | 'primary' | 'success';
+  variant: 'default' | 'warning' | 'primary' | 'success';
   trend?: string;
 }
 
 function StatCard({ label, value, icon: Icon, variant, trend }: StatCardProps) {
   const variantStyles = {
-    default: 'bg-gray-50 border-gray-200',
-    danger: 'bg-red-50 border-red-200',
-    primary: 'bg-blue-50 border-blue-200',
-    success: 'bg-green-50 border-green-200',
+    default: 'bg-muted border-border',
+    warning: 'bg-amber-50 border-amber-200',
+    primary: 'bg-blue-50 border-primary/20',
+    success: 'bg-teal-50 border-teal-200',
   };
   
   const iconStyles = {
-    default: 'text-gray-600 bg-gray-100',
-    danger: 'text-red-600 bg-red-100',
-    primary: 'text-blue-600 bg-blue-100',
-    success: 'text-green-600 bg-green-100',
+    default: 'text-muted-foreground bg-muted',
+    warning: 'text-amber-600 bg-amber-100',
+    primary: 'text-primary bg-blue-100',
+    success: 'text-teal-600 bg-teal-100',
   };
   
   const valueStyles = {
-    default: 'text-gray-900',
-    danger: 'text-red-700',
-    primary: 'text-blue-700',
-    success: 'text-green-700',
+    default: 'text-foreground',
+    warning: 'text-amber-700',
+    primary: 'text-primary',
+    success: 'text-teal-700',
   };
   
   return (
@@ -481,10 +481,10 @@ function StatCard({ label, value, icon: Icon, variant, trend }: StatCardProps) {
     )}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{label}</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">{label}</p>
           <p className={cn("text-2xl font-bold", valueStyles[variant])}>{value}</p>
           {trend && (
-            <p className="text-xs text-gray-500 mt-1">{trend}</p>
+            <p className="text-xs text-muted-foreground mt-1">{trend}</p>
           )}
         </div>
         <div className={cn(
