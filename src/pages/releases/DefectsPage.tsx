@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Bug, 
@@ -38,6 +38,7 @@ import {
   assigneeOptions,
   getAssigneeById 
 } from "@/data/defectsData";
+import { useActiveUsers } from "@/hooks/useActiveUsers";
 import { cn } from "@/lib/utils";
 
 // Initial empty form state
@@ -66,8 +67,32 @@ export default function ReleasesDefectsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Fetch active users for assignee lookup
+  const { data: activeUsers = [] } = useActiveUsers();
+  
   // Data
   const [defects, setDefects] = useState<Defect[]>(defectsData);
+  
+  // Helper to get assignee from UUID or initials
+  const getAssigneeFromId = useCallback((assigneeId: string | undefined) => {
+    if (!assigneeId) {
+      return { name: 'Unassigned', initials: '?', color: 'gray' };
+    }
+    
+    // First try to find in active users (UUID lookup)
+    const user = activeUsers.find(u => u.id === assigneeId);
+    if (user) {
+      const name = user.full_name || user.email || 'Unknown';
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      // Generate a consistent color based on user id
+      const colors = ['blue', 'green', 'purple', 'orange', 'teal', 'pink'];
+      const colorIndex = assigneeId.charCodeAt(0) % colors.length;
+      return { name, initials, color: colors[colorIndex] };
+    }
+    
+    // Fallback to legacy getAssigneeById (initials-based)
+    return getAssigneeById(assigneeId);
+  }, [activeUsers]);
   
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -188,7 +213,7 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
       releaseId: formData.releaseId,
       linkedTestId: formData.linkedTestId === 'none' ? null : formData.linkedTestId || null,
       linkedStepId: null,
-      assignee: getAssigneeById(formData.assigneeId),
+      assignee: getAssigneeFromId(formData.assigneeId),
       reporter: { name: 'Vikram S.', initials: 'VS', color: 'blue' },
       createdAt: 'Just now',
       updatedAt: 'Just now',
