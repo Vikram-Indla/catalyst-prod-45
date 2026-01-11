@@ -4,15 +4,14 @@
  * Catalyst V5 Compliant Colors
  */
 
-// Catalyst V5 Compliant Colors
+// Catalyst V5 Compliant Colors - NO GREEN, use TEAL for success states
 export const WORKFLOW_COLORS = {
-  gray: { bg: 'bg-gray-100', text: 'text-gray-700', solid: 'bg-gray-500', border: 'border-gray-400' },
-  blue: { bg: 'bg-blue-100', text: 'text-blue-700', solid: 'bg-blue-600', border: 'border-blue-500' },
-  teal: { bg: 'bg-teal-100', text: 'text-teal-700', solid: 'bg-teal-600', border: 'border-teal-500' },
-  orange: { bg: 'bg-orange-100', text: 'text-orange-700', solid: 'bg-orange-500', border: 'border-orange-500' },
-  red: { bg: 'bg-red-100', text: 'text-red-700', solid: 'bg-red-600', border: 'border-red-500' },
-  green: { bg: 'bg-green-100', text: 'text-green-700', solid: 'bg-green-600', border: 'border-green-500' },
-  amber: { bg: 'bg-amber-100', text: 'text-amber-700', solid: 'bg-amber-500', border: 'border-amber-500' },
+  gray: { bg: 'bg-muted', text: 'text-muted-foreground', solid: 'bg-gray-500', border: 'border-border' },
+  blue: { bg: 'bg-blue-50', text: 'text-blue-700', solid: 'bg-primary', border: 'border-primary' },
+  teal: { bg: 'bg-teal-50', text: 'text-teal-700', solid: 'bg-teal-600', border: 'border-teal-500' },
+  orange: { bg: 'bg-amber-50', text: 'text-amber-700', solid: 'bg-amber-500', border: 'border-amber-500' },
+  red: { bg: 'bg-red-50', text: 'text-red-700', solid: 'bg-red-600', border: 'border-red-500' },
+  amber: { bg: 'bg-amber-50', text: 'text-amber-700', solid: 'bg-amber-500', border: 'border-amber-500' },
 } as const;
 
 export type WorkflowColor = keyof typeof WORKFLOW_COLORS;
@@ -174,7 +173,7 @@ export const DEFECT_STATUSES: DefectStatus[] = [
     name: 'READY FOR PROD',
     description: 'Approved for production deployment',
     category: 'release',
-    color: 'green',
+    color: 'teal',
     order: 13,
     isInitial: false,
     isFinal: false,
@@ -185,7 +184,7 @@ export const DEFECT_STATUSES: DefectStatus[] = [
     name: 'IN PRODUCTION',
     description: 'Deployed to production environment',
     category: 'release',
-    color: 'green',
+    color: 'teal',
     order: 14,
     isInitial: false,
     isFinal: false,
@@ -255,7 +254,7 @@ export const DEFAULT_KANBAN_COLUMNS: KanbanColumn[] = [
   {
     id: 'release',
     name: 'Release Pipeline',
-    color: 'green',
+    color: 'teal',
     statuses: ['uat_ready', 'in_beta', 'beta_ready', 'ready_for_production', 'in_production', 'monitor'],
     isVisible: true,
     order: 4
