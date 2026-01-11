@@ -6302,6 +6302,170 @@ export type Database = {
           },
         ]
       }
+      generation_events: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          duration_ms: number | null
+          event_data: Json | null
+          event_type: string
+          generation_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          duration_ms?: number | null
+          event_data?: Json | null
+          event_type: string
+          generation_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          duration_ms?: number | null
+          event_data?: Json | null
+          event_type?: string
+          generation_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_events_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generations: {
+        Row: {
+          ai_model: string | null
+          ai_tokens_input: number | null
+          ai_tokens_output: number | null
+          analysis: Json | null
+          completed_at: string | null
+          compliance_standards: string[] | null
+          created_at: string | null
+          created_by: string | null
+          current_step: string | null
+          deleted_at: string | null
+          display_id: string | null
+          epic_count: number | null
+          error_code: string | null
+          error_message: string | null
+          feature_count: number | null
+          generation_number: number
+          generation_time_ms: number | null
+          id: string
+          input_source: string | null
+          input_text: string
+          input_word_count: number | null
+          is_published: boolean | null
+          output_config: Json | null
+          program_id: string | null
+          progress: number | null
+          project_id: string | null
+          published_at: string | null
+          published_to: string | null
+          status: Database["public"]["Enums"]["generation_status"] | null
+          story_count: number | null
+          task_count: number | null
+          title: string | null
+          total_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_model?: string | null
+          ai_tokens_input?: number | null
+          ai_tokens_output?: number | null
+          analysis?: Json | null
+          completed_at?: string | null
+          compliance_standards?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          current_step?: string | null
+          deleted_at?: string | null
+          display_id?: string | null
+          epic_count?: number | null
+          error_code?: string | null
+          error_message?: string | null
+          feature_count?: number | null
+          generation_number?: number
+          generation_time_ms?: number | null
+          id?: string
+          input_source?: string | null
+          input_text: string
+          input_word_count?: number | null
+          is_published?: boolean | null
+          output_config?: Json | null
+          program_id?: string | null
+          progress?: number | null
+          project_id?: string | null
+          published_at?: string | null
+          published_to?: string | null
+          status?: Database["public"]["Enums"]["generation_status"] | null
+          story_count?: number | null
+          task_count?: number | null
+          title?: string | null
+          total_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_model?: string | null
+          ai_tokens_input?: number | null
+          ai_tokens_output?: number | null
+          analysis?: Json | null
+          completed_at?: string | null
+          compliance_standards?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          current_step?: string | null
+          deleted_at?: string | null
+          display_id?: string | null
+          epic_count?: number | null
+          error_code?: string | null
+          error_message?: string | null
+          feature_count?: number | null
+          generation_number?: number
+          generation_time_ms?: number | null
+          id?: string
+          input_source?: string | null
+          input_text?: string
+          input_word_count?: number | null
+          is_published?: boolean | null
+          output_config?: Json | null
+          program_id?: string | null
+          progress?: number | null
+          project_id?: string | null
+          published_at?: string | null
+          published_to?: string | null
+          status?: Database["public"]["Enums"]["generation_status"] | null
+          story_count?: number | null
+          task_count?: number | null
+          title?: string | null
+          total_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generations_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           created_at: string
@@ -15101,6 +15265,66 @@ export type Database = {
             columns: ["portfolio_id"]
             isOneToOne: true
             referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prd_documents: {
+        Row: {
+          content_html: string | null
+          content_markdown: string
+          created_at: string | null
+          generation_id: string
+          id: string
+          sections: Json | null
+          table_of_contents: Json | null
+          title: string
+          updated_at: string | null
+          version: number | null
+          word_count: number | null
+          work_item_id: string | null
+        }
+        Insert: {
+          content_html?: string | null
+          content_markdown: string
+          created_at?: string | null
+          generation_id: string
+          id?: string
+          sections?: Json | null
+          table_of_contents?: Json | null
+          title: string
+          updated_at?: string | null
+          version?: number | null
+          word_count?: number | null
+          work_item_id?: string | null
+        }
+        Update: {
+          content_html?: string | null
+          content_markdown?: string
+          created_at?: string | null
+          generation_id?: string
+          id?: string
+          sections?: Json | null
+          table_of_contents?: Json | null
+          title?: string
+          updated_at?: string | null
+          version?: number | null
+          word_count?: number | null
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prd_documents_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prd_documents_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
         ]
@@ -25953,158 +26177,106 @@ export type Database = {
       }
       work_items: {
         Row: {
-          acceptance_criteria: string | null
-          assignee_id: string | null
-          created_at: string
+          acceptance_criteria: Json | null
+          ai_reasoning: string | null
+          benefit_hypothesis: string | null
+          confidence_reason: string | null
+          confidence_score: number | null
+          created_at: string | null
           description: string | null
-          due_date: string | null
-          feature_id: string | null
-          fixed_version_id: string | null
+          display_id: string
+          external_id: string | null
+          external_sync_at: string | null
+          external_system: string | null
+          external_url: string | null
+          generation_id: string
           id: string
-          key: string
-          labels: string[] | null
-          parent_work_item_id: string | null
-          priority: Database["public"]["Enums"]["priority_level"]
-          project_id: string
-          reporter_id: string | null
-          sequence_number: number
-          severity: Database["public"]["Enums"]["severity_level"] | null
-          status: Database["public"]["Enums"]["work_item_status"]
-          story_points: number | null
-          summary: string
-          type: Database["public"]["Enums"]["work_item_type"]
-          updated_at: string
+          is_edited: boolean | null
+          is_locked: boolean | null
+          is_published: boolean | null
+          is_selected: boolean | null
+          item_type: Database["public"]["Enums"]["work_item_type"]
+          level: number | null
+          parent_id: string | null
+          sort_order: number | null
+          source_text: string | null
+          success_metrics: Json | null
+          technical_notes: string | null
+          title: string
+          updated_at: string | null
         }
         Insert: {
-          acceptance_criteria?: string | null
-          assignee_id?: string | null
-          created_at?: string
+          acceptance_criteria?: Json | null
+          ai_reasoning?: string | null
+          benefit_hypothesis?: string | null
+          confidence_reason?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
           description?: string | null
-          due_date?: string | null
-          feature_id?: string | null
-          fixed_version_id?: string | null
+          display_id: string
+          external_id?: string | null
+          external_sync_at?: string | null
+          external_system?: string | null
+          external_url?: string | null
+          generation_id: string
           id?: string
-          key: string
-          labels?: string[] | null
-          parent_work_item_id?: string | null
-          priority?: Database["public"]["Enums"]["priority_level"]
-          project_id: string
-          reporter_id?: string | null
-          sequence_number: number
-          severity?: Database["public"]["Enums"]["severity_level"] | null
-          status?: Database["public"]["Enums"]["work_item_status"]
-          story_points?: number | null
-          summary: string
-          type: Database["public"]["Enums"]["work_item_type"]
-          updated_at?: string
+          is_edited?: boolean | null
+          is_locked?: boolean | null
+          is_published?: boolean | null
+          is_selected?: boolean | null
+          item_type: Database["public"]["Enums"]["work_item_type"]
+          level?: number | null
+          parent_id?: string | null
+          sort_order?: number | null
+          source_text?: string | null
+          success_metrics?: Json | null
+          technical_notes?: string | null
+          title: string
+          updated_at?: string | null
         }
         Update: {
-          acceptance_criteria?: string | null
-          assignee_id?: string | null
-          created_at?: string
+          acceptance_criteria?: Json | null
+          ai_reasoning?: string | null
+          benefit_hypothesis?: string | null
+          confidence_reason?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
           description?: string | null
-          due_date?: string | null
-          feature_id?: string | null
-          fixed_version_id?: string | null
+          display_id?: string
+          external_id?: string | null
+          external_sync_at?: string | null
+          external_system?: string | null
+          external_url?: string | null
+          generation_id?: string
           id?: string
-          key?: string
-          labels?: string[] | null
-          parent_work_item_id?: string | null
-          priority?: Database["public"]["Enums"]["priority_level"]
-          project_id?: string
-          reporter_id?: string | null
-          sequence_number?: number
-          severity?: Database["public"]["Enums"]["severity_level"] | null
-          status?: Database["public"]["Enums"]["work_item_status"]
-          story_points?: number | null
-          summary?: string
-          type?: Database["public"]["Enums"]["work_item_type"]
-          updated_at?: string
+          is_edited?: boolean | null
+          is_locked?: boolean | null
+          is_published?: boolean | null
+          is_selected?: boolean | null
+          item_type?: Database["public"]["Enums"]["work_item_type"]
+          level?: number | null
+          parent_id?: string | null
+          sort_order?: number | null
+          source_text?: string | null
+          success_metrics?: Json | null
+          technical_notes?: string | null
+          title?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "work_items_assignee_id_fkey"
-            columns: ["assignee_id"]
+            foreignKeyName: "work_items_generation_id_fkey"
+            columns: ["generation_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "generations"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "work_items_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "work_items_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_items_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "v_resource_profile"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "work_items_feature_id_fkey"
-            columns: ["feature_id"]
-            isOneToOne: false
-            referencedRelation: "features"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_items_fixed_version_id_fkey"
-            columns: ["fixed_version_id"]
-            isOneToOne: false
-            referencedRelation: "releases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_items_parent_work_item_id_fkey"
-            columns: ["parent_work_item_id"]
+            foreignKeyName: "work_items_parent_id_fkey"
+            columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "work_items"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_items_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_items_reporter_id_fkey"
-            columns: ["reporter_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_items_reporter_id_fkey"
-            columns: ["reporter_id"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "work_items_reporter_id_fkey"
-            columns: ["reporter_id"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_items_reporter_id_fkey"
-            columns: ["reporter_id"]
-            isOneToOne: false
-            referencedRelation: "v_resource_profile"
-            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -27086,6 +27258,13 @@ export type Database = {
         Args: { p_program_id: string }
         Returns: string
       }
+      generate_work_item_display_id: {
+        Args: {
+          p_generation_id: string
+          p_item_type: Database["public"]["Enums"]["work_item_type"]
+        }
+        Returns: string
+      }
       generate_work_manager_task_key: {
         Args: { p_team_id: string }
         Returns: string
@@ -27365,6 +27544,14 @@ export type Database = {
         | "select"
         | "multi_select"
         | "boolean"
+      generation_status:
+        | "draft"
+        | "analyzing"
+        | "generating"
+        | "validating"
+        | "completed"
+        | "failed"
+        | "cancelled"
       health_status: "green" | "yellow" | "red"
       impact_level: "high" | "medium" | "low"
       improvement_idea_category:
@@ -27920,6 +28107,15 @@ export const Constants = {
         "select",
         "multi_select",
         "boolean",
+      ],
+      generation_status: [
+        "draft",
+        "analyzing",
+        "generating",
+        "validating",
+        "completed",
+        "failed",
+        "cancelled",
       ],
       health_status: ["green", "yellow", "red"],
       impact_level: ["high", "medium", "low"],
