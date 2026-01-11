@@ -1,58 +1,77 @@
 // ============================================================
-// HEADER COMPONENT
+// HEADER COMPONENT - PageChrome-style inline breadcrumb
+// Matches /industry/backlog header pattern
 // ============================================================
 
 import React from 'react';
 import { useStore } from '@/stores/requirementAssistStore';
-import { Sparkles, ChevronLeft, HelpCircle, Settings } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { HelpCircle, Settings } from 'lucide-react';
 
 export function Header() {
   const { generation } = useStore();
-  const navigate = useNavigate();
 
   return (
-    <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 flex-shrink-0">
-      {/* Left */}
-      <div className="flex items-center gap-3">
-        <button 
-          onClick={() => navigate(-1)}
-          className="p-2 rounded-md hover:bg-slate-100 text-slate-500"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        
+    <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
+      {/* Row 1: Breadcrumb + Title - PageChrome style (inline) */}
+      <div
+        className="flex items-center justify-between px-6"
+        style={{ 
+          height: '52px',
+          borderBottom: '1px solid var(--divider)',
+        }}
+      >
+        {/* Left: Breadcrumb + Title (NO ICONS) */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
+          <span
+            className="text-[11px] font-semibold uppercase tracking-wider"
+            style={{ color: 'var(--text-3)' }}
+          >
+            PRODUCT
+          </span>
+          <span 
+            className="text-[14px]" 
+            style={{ color: 'var(--text-4)' }}
+          >
+            /
+          </span>
+          <h1
+            className="text-[18px] font-semibold"
+            style={{ color: 'var(--text-1)' }}
+          >
+            Requirement Assist
+          </h1>
+        </div>
+
+        {/* Center - Generation ID */}
+        {generation && (
+          <div 
+            className="text-sm font-mono"
+            style={{ color: 'var(--text-3)' }}
+          >
+            {generation.displayId}
           </div>
-          <div>
-            <h1 className="text-base font-semibold text-slate-900">
-              Requirement Assist
-            </h1>
-            <p className="text-xs text-slate-500">
-              AI-Powered Requirements Generation
-            </p>
-          </div>
+        )}
+
+        {/* Right - Action Buttons */}
+        <div className="flex items-center gap-2">
+          <button 
+            className="p-2 rounded-md transition-colors"
+            style={{ color: 'var(--text-3)' }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
+          <button 
+            className="p-2 rounded-md transition-colors"
+            style={{ color: 'var(--text-3)' }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            <Settings className="w-5 h-5" />
+          </button>
         </div>
       </div>
-
-      {/* Center - Generation ID */}
-      {generation && (
-        <div className="text-sm text-slate-500">
-          <span className="font-mono">{generation.displayId}</span>
-        </div>
-      )}
-
-      {/* Right */}
-      <div className="flex items-center gap-2">
-        <button className="p-2 rounded-md hover:bg-slate-100 text-slate-500">
-          <HelpCircle className="w-5 h-5" />
-        </button>
-        <button className="p-2 rounded-md hover:bg-slate-100 text-slate-500">
-          <Settings className="w-5 h-5" />
-        </button>
-      </div>
-    </header>
+    </div>
   );
 }
