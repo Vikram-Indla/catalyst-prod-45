@@ -45,11 +45,11 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CheckCircle } from "lucide-react";
 import { releaseOptions, testCaseOptions, defectsData } from "@/data/defectsData";
 import { UserPicker } from "@/components/ui/user-picker";
 import { cn } from "@/lib/utils";
@@ -326,11 +326,27 @@ export function ReportDefectModal({
   // Quality improvement tips - dynamic based on missing fields
   const qualityTips = useMemo(() => {
     const tips: string[] = [];
-    if (formData.title.length < 20) tips.push('Add more detail to title (20+ chars)');
-    if (formData.stepsToReproduce.split('\n').filter(l => l.trim()).length < 3) tips.push('Add more reproduction steps (3+)');
-    if (formData.expectedResult.length < 20) tips.push('Describe expected behavior more clearly');
-    if (formData.actualResult.length < 20) tips.push('Describe actual behavior more clearly');
-    if (!formData.severity) tips.push('Select a severity level');
+    if (!formData.title || formData.title.length < 20) {
+      tips.push('Add more detail to the title (at least 20 characters)');
+    }
+    if (!formData.stepsToReproduce || formData.stepsToReproduce.split('\n').filter(l => l.trim()).length < 3) {
+      tips.push('Add at least 3 clear steps to reproduce');
+    }
+    if (!formData.expectedResult || formData.expectedResult.length < 20) {
+      tips.push('Describe the expected result in more detail');
+    }
+    if (!formData.actualResult || formData.actualResult.length < 20) {
+      tips.push('Describe the actual result in more detail');
+    }
+    if (!formData.severity) {
+      tips.push('Select a severity level');
+    }
+    if (!formData.releaseId) {
+      tips.push('Select the target release');
+    }
+    if (!formData.assigneeId) {
+      tips.push('Consider assigning to a team member');
+    }
     return tips;
   }, [formData]);
   
@@ -797,45 +813,56 @@ export function ReportDefectModal({
         {/* FIXED FOOTER with Quality Score - More spacious */}
         <div className="shrink-0 bg-muted border-t border-border px-6 py-4 flex items-center justify-between">
           {/* Quality Score */}
-          <TooltipProvider>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Quality:</span>
-                <div className="flex items-center gap-0.5">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <Star 
-                      key={star}
-                      className={cn(
-                        "w-5 h-5",
-                        star <= qualityScore 
-                          ? 'fill-amber-400 text-amber-400' 
-                          : 'text-muted-foreground/30'
-                      )}
-                    />
-                  ))}
-                </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Quality:</span>
+              <div className="flex items-center gap-0.5">
+                {[1, 2, 3, 4, 5].map(star => (
+                  <Star 
+                    key={star}
+                    className={cn(
+                      "w-5 h-5",
+                      star <= qualityScore 
+                        ? 'fill-amber-400 text-amber-400' 
+                        : 'text-muted-foreground/30'
+                    )}
+                  />
+                ))}
               </div>
-              
-              {qualityTips.length > 0 && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs text-primary px-2 gap-1">
-                      <Lightbulb className="w-3.5 h-3.5" />
-                      Improve
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs bg-popover">
-                    <p className="font-medium mb-1 text-sm">Tips to improve:</p>
-                    <ul className="text-xs space-y-1 text-muted-foreground">
+            </div>
+            
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 text-primary gap-1 hover:bg-primary/10">
+                  <Lightbulb className="w-4 h-4" />
+                  Improve
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-4" align="start">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Lightbulb className="w-4 h-4 text-amber-500" />
+                    Tips to improve your defect report
+                  </div>
+                  {qualityTips.length > 0 ? (
+                    <ul className="space-y-2">
                       {qualityTips.map((tip, i) => (
-                        <li key={i}>• {tip}</li>
+                        <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="text-amber-500 mt-0.5">•</span>
+                          {tip}
+                        </li>
                       ))}
                     </ul>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-          </TooltipProvider>
+                  ) : (
+                    <p className="text-sm text-green-600 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Great job! Your report is comprehensive.
+                    </p>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           
           {/* Actions */}
           <div className="flex items-center gap-3">
