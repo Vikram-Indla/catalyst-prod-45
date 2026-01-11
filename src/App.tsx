@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { Toaster as HotToaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
@@ -323,6 +324,32 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <Toaster />
+      <HotToaster 
+        position="bottom-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#1e293b',
+            color: '#f8fafc',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#f8fafc',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#f8fafc',
+            },
+          },
+        }}
+      />
       <AuthProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
