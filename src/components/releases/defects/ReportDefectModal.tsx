@@ -90,149 +90,285 @@ interface ReportDefectModalProps {
   onSubmit: () => void;
 }
 
-// Smart content generator based on title keywords - Intelligent AI-powered
-const generateSmartContent = (title: string) => {
+// ============================================================================
+// SEMANTIC AI TITLE PARSER - Intelligent content generation
+// ============================================================================
+
+interface ParsedTitle {
+  action: string;        // What user is trying to do
+  object: string;        // What feature/module
+  context: string;       // Where/when/how
+  condition: string;     // Special circumstances
+  issueType: 'cannot' | 'error' | 'slow' | 'wrong' | 'missing' | 'crash' | 'other';
+}
+
+/**
+ * Semantic title parser - extracts meaning from defect titles
+ * Handles patterns like:
+ * - "User cannot start Environmental Permit from RCJY without Site Allocation"
+ * - "Login page shows error after entering credentials"
+ * - "Dashboard loading slowly on mobile devices"
+ */
+function parseDefectTitle(title: string): ParsedTitle {
   const titleLower = title.toLowerCase();
   
-  // Extract key patterns from title
-  const extractedTerms = {
-    hasError: /error|fail|crash|exception|broken|not.?working/i.test(title),
-    hasLogin: /login|auth|sign.?in|password|session|credential|logout/i.test(title),
-    hasPayment: /payment|checkout|cart|order|transaction|billing|invoice/i.test(title),
-    hasButton: /button|click|tap|press|unresponsive/i.test(title),
-    hasDisplay: /display|show|render|visible|appear|layout|ui|css|style|hidden|missing/i.test(title),
-    hasData: /data|export|import|csv|report|missing|incorrect|wrong/i.test(title),
-    hasPerformance: /slow|timeout|loading|lag|freeze|performance|hang/i.test(title),
-    hasTab: /tab|panel|section|page|screen/i.test(title),
-    hasPermit: /permit|license|approval|certificate/i.test(title),
-    hasAPI: /api|endpoint|request|response|500|404|403|401/i.test(title),
-    hasForm: /form|input|field|submit|validation/i.test(title),
-    hasSearch: /search|filter|query|find/i.test(title),
-    hasUpload: /upload|file|attachment|document|image/i.test(title),
-    hasNotification: /notification|alert|email|message|sms/i.test(title),
-  };
+  // Detect issue type from keywords
+  let issueType: ParsedTitle['issueType'] = 'other';
+  if (/cannot|can't|unable|doesn't|does not|won't|will not|fails? to|not able/i.test(titleLower)) {
+    issueType = 'cannot';
+  } else if (/error|exception|fail|broke|broken|invalid/i.test(titleLower)) {
+    issueType = 'error';
+  } else if (/slow|timeout|delay|hang|freeze|loading|performance|lag/i.test(titleLower)) {
+    issueType = 'slow';
+  } else if (/wrong|incorrect|bad|unexpected|mismatch|not correct/i.test(titleLower)) {
+    issueType = 'wrong';
+  } else if (/missing|not showing|blank|empty|disappear|not visible|hidden/i.test(titleLower)) {
+    issueType = 'missing';
+  } else if (/crash|unresponsive|stopped|killed|terminated/i.test(titleLower)) {
+    issueType = 'crash';
+  }
   
-  // Extract specific terms from title for personalization
-  const words = title.split(/[\s\-]+/).filter(w => w.length > 3);
-  const specificArea = words.slice(0, 4).join(' ');
+  // Extract action (verb phrase after cannot/unable/fails to)
+  let action = 'perform the action';
+  const actionPatterns = [
+    /cannot\s+(\w+(?:\s+\w+)?)/i,
+    /can't\s+(\w+(?:\s+\w+)?)/i,
+    /unable\s+to\s+(\w+(?:\s+\w+)?)/i,
+    /fails?\s+to\s+(\w+(?:\s+\w+)?)/i,
+    /not\s+able\s+to\s+(\w+(?:\s+\w+)?)/i,
+    /won't\s+(\w+(?:\s+\w+)?)/i,
+    /doesn't\s+(\w+(?:\s+\w+)?)/i,
+  ];
+  
+  for (const pattern of actionPatterns) {
+    const match = title.match(pattern);
+    if (match && match[1]) {
+      action = match[1].trim();
+      break;
+    }
+  }
+  
+  // Extract object (the feature/module - usually capitalized words or after action verb)
+  let object = 'the affected feature';
+  
+  // Try to find object after action verbs
+  const objectPatterns = [
+    /(?:start|open|access|view|edit|create|submit|save|load|use|see|find|get|download|upload|export|import|login|sign|enter|click|select|navigate)\s+(?:the\s+)?(?:to\s+)?([A-Z][a-zA-Z\s]+?)(?:\s+from|\s+in|\s+on|\s+without|\s+with|\s+after|\s+before|$)/i,
+    /(?:the\s+)([A-Z][a-zA-Z\s]+?)(?:\s+(?:is|are|was|were|shows?|displays?|appears?|doesn't|does not|fails?))/i,
+  ];
+  
+  for (const pattern of objectPatterns) {
+    const match = title.match(pattern);
+    if (match && match[1] && match[1].length > 2) {
+      object = match[1].trim();
+      break;
+    }
+  }
+  
+  // Fallback: find capitalized multi-word phrases (likely feature names)
+  if (object === 'the affected feature') {
+    const capitalizedMatch = title.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/);
+    if (capitalizedMatch) {
+      object = capitalizedMatch[1];
+    } else {
+      // Try single capitalized word that's not at start
+      const words = title.split(/\s+/);
+      const capitalWord = words.slice(1).find(w => /^[A-Z][a-z]+$/.test(w) && w.length > 3);
+      if (capitalWord) {
+        object = capitalWord;
+      }
+    }
+  }
+  
+  // Extract context (from X, in Y, on Z, at W)
+  let context = '';
+  const contextMatch = title.match(/(?:from|in|on|at)\s+(?:the\s+)?([A-Z][A-Za-z0-9\s]+?)(?:\s+without|\s+with|\s+when|\s+after|\s+before|\s+if|$)/i);
+  if (contextMatch && contextMatch[1]) {
+    context = contextMatch[1].trim();
+  }
+  
+  // Extract condition (without X, when Y, if Z, after W)
+  let condition = '';
+  const conditionMatch = title.match(/(?:without|when|if|unless|before|after|during)\s+(.+?)$/i);
+  if (conditionMatch && conditionMatch[1]) {
+    condition = conditionMatch[1].trim();
+  }
+  
+  return { action, object, context, condition, issueType };
+}
+
+/**
+ * Generate smart content based on parsed title semantics
+ */
+function generateSmartContent(title: string) {
+  const parsed = parseDefectTitle(title);
+  const { action, object, context, condition, issueType } = parsed;
   
   let steps = '';
   let expected = '';
   let actual = '';
   let severity = 'major';
+  let priority = 'P2';
   let module = 'other';
   
-  // Generate based on detected patterns - ordered by priority
-  if (extractedTerms.hasLogin) {
-    steps = `1. Navigate to the login page\n2. Enter valid user credentials\n3. Click the Sign In button\n4. Observe the system response`;
-    expected = 'User should be authenticated successfully and redirected to the dashboard';
-    actual = 'Describe the error message or unexpected behavior observed';
-    severity = 'critical';
-    module = 'authentication';
-  } else if (extractedTerms.hasPayment) {
-    steps = `1. Add item(s) to cart\n2. Proceed to checkout\n3. Enter payment information\n4. Click Submit/Pay button\n5. Observe the transaction result`;
-    expected = 'Payment should be processed successfully with confirmation displayed';
-    actual = 'Describe the payment failure, error, or unexpected behavior';
-    severity = 'blocker';
-    module = 'payments';
-  } else if (extractedTerms.hasAPI) {
-    steps = `1. Navigate to ${specificArea || 'the feature'} that triggers the API call\n2. Perform the action that initiates the request\n3. Observe the network request/response\n4. Note any error codes or messages`;
-    expected = 'API should return expected data with 200 status code';
-    actual = 'Describe the API error - status code, error message, timeout, etc.';
-    severity = 'critical';
-    module = 'api';
-  } else if (extractedTerms.hasTab || extractedTerms.hasPermit) {
-    steps = `1. Navigate to ${specificArea || 'the affected module'}\n2. Click on the tab/section mentioned\n3. Wait for content to load\n4. Observe any error messages or unexpected behavior`;
-    expected = 'Tab should load successfully displaying the relevant content without errors';
-    actual = 'Describe the specific error message or unexpected behavior encountered';
-    severity = 'major';
-    module = 'dashboard';
-  } else if (extractedTerms.hasError) {
-    steps = `1. Navigate to ${specificArea || 'the affected area'}\n2. Perform the action that triggers the error\n3. Observe the error displayed`;
-    expected = 'The action should complete successfully without errors';
-    actual = 'Describe the exact error message and when it appears';
-    severity = 'major';
-    module = 'other';
-  } else if (extractedTerms.hasButton) {
-    steps = `1. Navigate to the page containing the button\n2. Locate the ${specificArea || 'affected'} button\n3. Click the button\n4. Observe the response`;
-    expected = 'Button should respond with visual feedback and trigger the expected action';
-    actual = 'Describe what happens (no response, wrong action, error, etc.)';
-    severity = 'major';
-    module = 'dashboard';
-  } else if (extractedTerms.hasDisplay) {
-    steps = `1. Navigate to ${specificArea || 'the affected page'}\n2. Locate the UI element mentioned\n3. Observe the display/rendering`;
-    expected = 'Content should display correctly with proper formatting and layout';
-    actual = 'Describe what is incorrectly displayed or missing';
-    severity = 'minor';
-    module = 'dashboard';
-  } else if (extractedTerms.hasData) {
-    steps = `1. Navigate to the data/report section\n2. Apply any relevant filters\n3. Trigger the export/view action\n4. Review the output`;
-    expected = 'Data should be complete and accurately formatted';
-    actual = 'Describe what data is missing, incorrect, or malformed';
-    severity = 'major';
-    module = 'reports';
-  } else if (extractedTerms.hasPerformance) {
-    steps = `1. Navigate to ${specificArea || 'the affected area'}\n2. Perform the action that causes slowness\n3. Measure or observe the response time`;
-    expected = 'Action should complete within acceptable time (< 3 seconds)';
-    actual = 'Describe the delay duration and any timeout errors';
-    severity = 'major';
-    module = 'performance';
-  } else if (extractedTerms.hasForm) {
-    steps = `1. Navigate to ${specificArea || 'the form'}\n2. Fill in the required fields\n3. Submit the form\n4. Observe the result`;
-    expected = 'Form should validate inputs and submit successfully';
-    actual = 'Describe the validation error or submission failure';
-    severity = 'major';
-    module = 'dashboard';
-  } else if (extractedTerms.hasSearch) {
-    steps = `1. Navigate to ${specificArea || 'the search feature'}\n2. Enter search criteria\n3. Execute the search\n4. Review the results`;
-    expected = 'Search should return relevant results matching the criteria';
-    actual = 'Describe what is wrong with the search results';
-    severity = 'major';
-    module = 'dashboard';
-  } else if (extractedTerms.hasUpload) {
-    steps = `1. Navigate to ${specificArea || 'the upload feature'}\n2. Select file(s) to upload\n3. Initiate the upload\n4. Observe the upload progress and result`;
-    expected = 'File should upload successfully with confirmation displayed';
-    actual = 'Describe the upload failure or error encountered';
-    severity = 'major';
-    module = 'other';
-  } else if (extractedTerms.hasNotification) {
-    steps = `1. Trigger the action that should send notification\n2. Wait for notification delivery\n3. Check the notification content/status`;
-    expected = 'Notification should be sent/displayed correctly with proper content';
-    actual = 'Describe what is wrong with the notification';
-    severity = 'major';
-    module = 'notifications';
-  } else {
-    // Default fallback - still use title context, NO placeholders
-    steps = `1. Navigate to ${specificArea || 'the affected area'}\n2. Perform the action related to: ${title}\n3. Observe the result`;
-    expected = 'The feature should work as designed without errors';
-    actual = 'Describe the specific issue encountered';
-    severity = 'major';
-    module = 'other';
+  // Build contextual location step
+  const locationStep = context 
+    ? `Navigate to ${object}${context ? ` (from/in ${context})` : ''}`
+    : `Navigate to the ${object} module/section`;
+  
+  // Build condition note if present
+  const conditionNote = condition
+    ? `Note the precondition: "${condition}"`
+    : '';
+  
+  switch (issueType) {
+    case 'cannot':
+      steps = [
+        `1. Log in to the system with appropriate permissions`,
+        `2. ${locationStep}`,
+        `3. Attempt to ${action}`,
+        conditionNote ? `4. ${conditionNote}` : null,
+        `${conditionNote ? '5' : '4'}. Observe that the action cannot be completed`
+      ].filter(Boolean).join('\n');
+      
+      expected = condition
+        ? `User should be able to ${action} the ${object}, or receive a clear message explaining why "${condition}" prevents this action.`
+        : `User should be able to ${action} the ${object} successfully.`;
+      
+      actual = `[Describe: Is there an error message? Is the button/option disabled? Does nothing happen when clicked? What exactly prevents the action?]`;
+      severity = 'major';
+      priority = 'P2';
+      module = 'dashboard';
+      break;
+      
+    case 'error':
+      steps = [
+        `1. Log in to the system`,
+        `2. ${locationStep}`,
+        `3. Perform the action that triggers the error`,
+        conditionNote ? `4. ${conditionNote}` : null,
+        `${conditionNote ? '5' : '4'}. Observe the error message/behavior`
+      ].filter(Boolean).join('\n');
+      
+      expected = `The action should complete successfully without errors.`;
+      actual = `[Copy the EXACT error message. Note when it appears and what happens after dismissing it.]`;
+      severity = 'critical';
+      priority = 'P1';
+      module = 'other';
+      break;
+      
+    case 'slow':
+      steps = [
+        `1. Log in to the system`,
+        `2. ${locationStep}`,
+        `3. Perform the action and start timing`,
+        `4. Note the response time or timeout behavior`
+      ].join('\n');
+      
+      expected = `Action should complete within 3 seconds under normal network conditions.`;
+      actual = `[State the actual time taken. Note if it times out, freezes, or shows loading indefinitely.]`;
+      severity = 'major';
+      priority = 'P2';
+      module = 'performance';
+      break;
+      
+    case 'wrong':
+      steps = [
+        `1. Log in to the system`,
+        `2. ${locationStep}`,
+        `3. Observe the ${object} display/behavior`,
+        conditionNote ? `4. ${conditionNote}` : null,
+        `${conditionNote ? '5' : '4'}. Compare with expected behavior`
+      ].filter(Boolean).join('\n');
+      
+      expected = `${object} should display/behave correctly as per specifications.`;
+      actual = `[Describe: What is wrong? What should it show vs what it actually shows? Include screenshots if possible.]`;
+      severity = 'major';
+      priority = 'P3';
+      module = 'dashboard';
+      break;
+      
+    case 'missing':
+      steps = [
+        `1. Log in to the system`,
+        `2. ${locationStep}`,
+        `3. Look for the expected element/data`,
+        conditionNote ? `4. ${conditionNote}` : null,
+        `${conditionNote ? '5' : '4'}. Confirm the element/data is not visible`
+      ].filter(Boolean).join('\n');
+      
+      expected = `${object} should be visible and display all relevant information.`;
+      actual = `[Describe: What is missing? Was it visible before? Is the area completely blank or just specific data missing?]`;
+      severity = 'minor';
+      priority = 'P3';
+      module = 'dashboard';
+      break;
+      
+    case 'crash':
+      steps = [
+        `1. Log in to the system`,
+        `2. ${locationStep}`,
+        `3. Perform the action that causes the crash`,
+        `4. Document any error messages before crash`,
+        `5. Note if the application recovers or requires restart`
+      ].join('\n');
+      
+      expected = `The application should handle the action gracefully without crashing.`;
+      actual = `[Describe: Does the app freeze, close, or show white screen? Any error before crash? Does it recover?]`;
+      severity = 'blocker';
+      priority = 'P1';
+      module = 'other';
+      break;
+      
+    default:
+      // Intelligent fallback - still uses parsed components
+      steps = [
+        `1. Log in to the system with appropriate credentials`,
+        `2. ${locationStep}`,
+        `3. Perform the action described: "${title.slice(0, 60)}${title.length > 60 ? '...' : ''}"`,
+        conditionNote ? `4. ${conditionNote}` : null,
+        `${conditionNote ? '5' : '4'}. Observe the result`
+      ].filter(Boolean).join('\n');
+      
+      expected = `The ${object} feature should work as designed without issues.`;
+      actual = `[Describe exactly what went wrong and how it differs from expected behavior]`;
+      severity = 'major';
+      priority = 'P3';
+      module = 'other';
   }
   
-  // Map severity to priority
-  const priorityMap: Record<string, string> = {
-    blocker: 'P1',
-    critical: 'P1',
-    major: 'P2',
-    minor: 'P3',
-    trivial: 'P4'
-  };
-
-  // Calculate confidence based on pattern matches
-  const matchCount = Object.values(extractedTerms).filter(Boolean).length;
-  const confidence = matchCount >= 2 ? 0.85 : matchCount === 1 ? 0.75 : 0.6;
+  // Detect module from object/context keywords
+  if (/login|auth|sign|password|session|credential/i.test(title)) {
+    module = 'authentication';
+  } else if (/payment|checkout|cart|order|transaction|billing/i.test(title)) {
+    module = 'payments';
+  } else if (/report|export|data|analytics/i.test(title)) {
+    module = 'reports';
+  } else if (/api|endpoint|request|response|500|404|403/i.test(title)) {
+    module = 'api';
+  } else if (/notification|alert|email|message/i.test(title)) {
+    module = 'notifications';
+  }
+  
+  // Calculate confidence based on how much we could parse
+  let confidence = 0.6;
+  if (action !== 'perform the action') confidence += 0.1;
+  if (object !== 'the affected feature') confidence += 0.1;
+  if (context) confidence += 0.1;
+  if (condition) confidence += 0.05;
+  if (issueType !== 'other') confidence += 0.05;
+  confidence = Math.min(confidence, 0.95);
 
   return {
     steps,
     expected,
     actual,
     suggestedSeverity: severity,
-    suggestedPriority: priorityMap[severity] || 'P3',
+    suggestedPriority: priority,
     suggestedModule: module,
     confidence
   };
-};
+}
 
 // Find potential duplicate defects
 const findDuplicates = (title: string) => {
