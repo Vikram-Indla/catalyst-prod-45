@@ -6,9 +6,8 @@
  * Information Architecture with Section Headers:
  * - DASHBOARDS: Command Center, Release Dashboard, My Test Scope
  * - RELEASES: All Releases, Calendar View, Release Compare
- * - TESTING: Test Cases, Test Cycles, Test Execution
+ * - TESTING: Test Cases, Test Cycles, Test Execution, Defects (defects belong here!)
  * - ANALYTICS & AI: Ask AI, Coverage Reports, Quality Gates, RTM
- * - Footer: Defects
  */
 
 import { 
@@ -35,7 +34,7 @@ interface ReleasesManagementSidebarProps {
   className?: string;
 }
 
-// FIX 3: Add sidebar section headers
+// Defects moved to TESTING section - they are discovered during testing
 const releasesManagementSections: SidebarSection[] = [
   {
     title: 'Dashboards',
@@ -59,6 +58,7 @@ const releasesManagementSections: SidebarSection[] = [
       { id: 'test-cases', title: 'Test Cases', path: '/releases/test-cases', icon: FileCheck, exact: false },
       { id: 'test-cycles', title: 'Test Cycles', path: '/releases/test-cycles', icon: Globe, exact: false },
       { id: 'test-execution', title: 'Test Execution', path: '/releases/execution', icon: Play, exact: false },
+      { id: 'defects', title: 'Defects', path: '/releases/defects', icon: Bug, exact: false, badge: 8, badgeVariant: 'danger' },
     ],
   },
   {
@@ -76,15 +76,7 @@ const releasesManagementSidebarConfig: SidebarConfig = {
   badge: 'RL',
   label: 'Releases',
   sections: releasesManagementSections,
-  footerItem: {
-    id: 'defects',
-    title: 'Defects',
-    path: '/releases/defects',
-    icon: Bug,
-    exact: false,
-    badge: 8,
-    badgeVariant: 'danger',
-  },
+  // No footer item - Defects is now in TESTING section where it belongs
 };
 
 export function ReleasesManagementSidebar({ expanded, onToggle, className }: ReleasesManagementSidebarProps) {
