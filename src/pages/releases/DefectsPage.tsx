@@ -214,18 +214,11 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
   };
   
   // Update status
-  const updateStatus = (defectId: string, newStatus: Defect['status']) => {
+  const updateStatus = (defectId: string, newStatus: string) => {
     setDefects(defects.map(d => 
       d.id === defectId ? { ...d, status: newStatus, updatedAt: 'Just now' } : d
     ));
-    const statusLabels: Record<string, string> = {
-      open: 'Open',
-      in_progress: 'In Progress',
-      resolved: 'Resolved',
-      closed: 'Closed',
-      reopened: 'Reopened'
-    };
-    toast.success(`Status updated to ${statusLabels[newStatus]}`);
+    toast.success(`Status updated to ${newStatus.replace(/_/g, ' ').toUpperCase()}`);
   };
   
   // Delete defect

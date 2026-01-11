@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 interface DefectTableViewProps {
   defects: Defect[];
-  onUpdateStatus: (defectId: string, status: Defect['status']) => void;
+  onUpdateStatus: (defectId: string, status: string) => void;
   onDelete: (defectId: string) => void;
 }
 
