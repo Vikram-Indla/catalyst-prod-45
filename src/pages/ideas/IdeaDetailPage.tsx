@@ -82,7 +82,7 @@ export default function IdeaDetailPage() {
             <p className="text-muted-foreground mb-4">
               The requested idea could not be loaded.
             </p>
-            <Button onClick={() => navigate('/ideas/all')}>
+            <Button onClick={() => navigate('/industry/ideas/all')}>
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Ideas
             </Button>
           </CardContent>

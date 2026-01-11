@@ -430,18 +430,17 @@ const App = () => (
 {/* Catch-all for unknown requirement-assist sub-routes */}
 <Route path="/product/requirement-assist/*" element={<Navigate to="/product/requirement-assist" replace />} />
 
-              {/* Ideas Hub Module */}
-              <Route path="/ideas" element={<Navigate to="/ideas/hub" replace />} />
-              <Route path="/ideas/hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasHubPage /></Suspense>} />
-              <Route path="/ideas/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/ideas/submit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/ideas/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativesPage /></Suspense>} />
-              <Route path="/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeaDetailPage /></Suspense>} />
+              {/* Ideas Hub Module - under Industry/Product */}
+              <Route path="/industry/ideas" element={<Navigate to="/industry/ideas/hub" replace />} />
+              <Route path="/industry/ideas/hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasHubPage /></Suspense>} />
+              <Route path="/industry/ideas/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
+              <Route path="/industry/ideas/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativesPage /></Suspense>} />
+              <Route path="/industry/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
+              <Route path="/industry/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
+              <Route path="/industry/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeaDetailPage /></Suspense>} />
 
               {/* Enterprise More Items */}
-              <Route path="/enterprise/ideation" element={<Navigate to="/ideas/hub" replace />} />
+              <Route path="/enterprise/ideation" element={<Navigate to="/industry/ideas/hub" replace />} />
               <Route path="/enterprise/risks" element={<EnterpriseRisks />} />
               <Route path="/enterprise/impediments" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/epics" element={<EnterpriseEpics />} />
