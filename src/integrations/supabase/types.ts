@@ -6781,6 +6781,89 @@ export type Database = {
           },
         ]
       }
+      idea_status_history: {
+        Row: {
+          change_reason: string | null
+          changed_by: string | null
+          created_at: string | null
+          from_status:
+            | Database["public"]["Enums"]["improvement_idea_status"]
+            | null
+          id: string
+          idea_id: string
+          metadata: Json | null
+          to_status: Database["public"]["Enums"]["improvement_idea_status"]
+        }
+        Insert: {
+          change_reason?: string | null
+          changed_by?: string | null
+          created_at?: string | null
+          from_status?:
+            | Database["public"]["Enums"]["improvement_idea_status"]
+            | null
+          id?: string
+          idea_id: string
+          metadata?: Json | null
+          to_status: Database["public"]["Enums"]["improvement_idea_status"]
+        }
+        Update: {
+          change_reason?: string | null
+          changed_by?: string | null
+          created_at?: string | null
+          from_status?:
+            | Database["public"]["Enums"]["improvement_idea_status"]
+            | null
+          id?: string
+          idea_id?: string
+          metadata?: Json | null
+          to_status?: Database["public"]["Enums"]["improvement_idea_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_status_history_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_tag_assignments: {
+        Row: {
+          created_at: string | null
+          id: string
+          idea_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_tag_assignments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "improvement_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_tag_assignments_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "idea_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       idea_tag_links: {
         Row: {
           idea_id: string
@@ -6810,6 +6893,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      idea_tags: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: string
+          name: string
+          name_ar: string | null
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          name_ar?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          name_ar?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
       }
       idea_tags_master: {
         Row: {
@@ -7324,9 +7437,13 @@ export type Database = {
             | null
           ai_compliance_tags: string[] | null
           ai_duplicate_ids: string[] | null
+          ai_suggested_type:
+            | Database["public"]["Enums"]["improvement_idea_type"]
+            | null
           ai_summary: string | null
           ai_summary_ar: string | null
           ai_v2030_mapping: string[] | null
+          business_request_id: string | null
           category: Database["public"]["Enums"]["improvement_idea_category"]
           code: string | null
           converted_at: string | null
@@ -7338,8 +7455,10 @@ export type Database = {
           description_ar: string | null
           for_votes: number | null
           id: string
+          idea_type: Database["public"]["Enums"]["improvement_idea_type"] | null
           initiative_id: string | null
           is_anonymous: boolean | null
+          source_type: string | null
           status: Database["public"]["Enums"]["improvement_idea_status"] | null
           submitted_at: string | null
           submitter_email: string | null
@@ -7351,6 +7470,9 @@ export type Database = {
           title: string
           title_ar: string | null
           total_votes: number | null
+          triage_notes: string | null
+          triaged_at: string | null
+          triaged_by: string | null
           updated_at: string | null
         }
         Insert: {
@@ -7360,9 +7482,13 @@ export type Database = {
             | null
           ai_compliance_tags?: string[] | null
           ai_duplicate_ids?: string[] | null
+          ai_suggested_type?:
+            | Database["public"]["Enums"]["improvement_idea_type"]
+            | null
           ai_summary?: string | null
           ai_summary_ar?: string | null
           ai_v2030_mapping?: string[] | null
+          business_request_id?: string | null
           category?: Database["public"]["Enums"]["improvement_idea_category"]
           code?: string | null
           converted_at?: string | null
@@ -7374,8 +7500,12 @@ export type Database = {
           description_ar?: string | null
           for_votes?: number | null
           id?: string
+          idea_type?:
+            | Database["public"]["Enums"]["improvement_idea_type"]
+            | null
           initiative_id?: string | null
           is_anonymous?: boolean | null
+          source_type?: string | null
           status?: Database["public"]["Enums"]["improvement_idea_status"] | null
           submitted_at?: string | null
           submitter_email?: string | null
@@ -7387,6 +7517,9 @@ export type Database = {
           title: string
           title_ar?: string | null
           total_votes?: number | null
+          triage_notes?: string | null
+          triaged_at?: string | null
+          triaged_by?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -7396,9 +7529,13 @@ export type Database = {
             | null
           ai_compliance_tags?: string[] | null
           ai_duplicate_ids?: string[] | null
+          ai_suggested_type?:
+            | Database["public"]["Enums"]["improvement_idea_type"]
+            | null
           ai_summary?: string | null
           ai_summary_ar?: string | null
           ai_v2030_mapping?: string[] | null
+          business_request_id?: string | null
           category?: Database["public"]["Enums"]["improvement_idea_category"]
           code?: string | null
           converted_at?: string | null
@@ -7410,8 +7547,12 @@ export type Database = {
           description_ar?: string | null
           for_votes?: number | null
           id?: string
+          idea_type?:
+            | Database["public"]["Enums"]["improvement_idea_type"]
+            | null
           initiative_id?: string | null
           is_anonymous?: boolean | null
+          source_type?: string | null
           status?: Database["public"]["Enums"]["improvement_idea_status"] | null
           submitted_at?: string | null
           submitter_email?: string | null
@@ -7423,9 +7564,19 @@ export type Database = {
           title?: string
           title_ar?: string | null
           total_votes?: number | null
+          triage_notes?: string | null
+          triaged_at?: string | null
+          triaged_by?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "improvement_ideas_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "improvement_ideas_initiative_id_fkey"
             columns: ["initiative_id"]
@@ -7437,13 +7588,19 @@ export type Database = {
       }
       improvement_initiatives: {
         Row: {
+          avg_impact_score: number | null
+          business_request_id: string | null
           code: string | null
+          conversion_notes: string | null
+          converted_at: string | null
+          converted_by: string | null
           created_at: string | null
           deleted_at: string | null
           description: string | null
           description_ar: string | null
           end_date: string | null
           id: string
+          ideas_count: number | null
           owner_id: string | null
           product_id: string | null
           settings: Json | null
@@ -7453,6 +7610,7 @@ export type Database = {
             | null
           title: string
           title_ar: string | null
+          total_votes: number | null
           updated_at: string | null
           visibility:
             | Database["public"]["Enums"]["improvement_visibility"]
@@ -7462,13 +7620,19 @@ export type Database = {
             | null
         }
         Insert: {
+          avg_impact_score?: number | null
+          business_request_id?: string | null
           code?: string | null
+          conversion_notes?: string | null
+          converted_at?: string | null
+          converted_by?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
           description_ar?: string | null
           end_date?: string | null
           id?: string
+          ideas_count?: number | null
           owner_id?: string | null
           product_id?: string | null
           settings?: Json | null
@@ -7478,6 +7642,7 @@ export type Database = {
             | null
           title: string
           title_ar?: string | null
+          total_votes?: number | null
           updated_at?: string | null
           visibility?:
             | Database["public"]["Enums"]["improvement_visibility"]
@@ -7487,13 +7652,19 @@ export type Database = {
             | null
         }
         Update: {
+          avg_impact_score?: number | null
+          business_request_id?: string | null
           code?: string | null
+          conversion_notes?: string | null
+          converted_at?: string | null
+          converted_by?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
           description_ar?: string | null
           end_date?: string | null
           id?: string
+          ideas_count?: number | null
           owner_id?: string | null
           product_id?: string | null
           settings?: Json | null
@@ -7503,6 +7674,7 @@ export type Database = {
             | null
           title?: string
           title_ar?: string | null
+          total_votes?: number | null
           updated_at?: string | null
           visibility?:
             | Database["public"]["Enums"]["improvement_visibility"]
@@ -7512,6 +7684,13 @@ export type Database = {
             | null
         }
         Relationships: [
+          {
+            foreignKeyName: "improvement_initiatives_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "improvement_initiatives_product_id_fkey"
             columns: ["product_id"]
@@ -27211,6 +27390,10 @@ export type Database = {
         | "deferred"
         | "converted"
         | "archived"
+        | "triaged"
+        | "quick_win_approved"
+        | "linked"
+      improvement_idea_type: "standard" | "quick_win" | "strategic"
       improvement_initiative_status:
         | "draft"
         | "active"
@@ -27218,6 +27401,8 @@ export type Database = {
         | "evaluating"
         | "closed"
         | "archived"
+        | "validated"
+        | "converted"
       improvement_submitter_type: "employee" | "investor" | "partner" | "public"
       improvement_visibility: "internal" | "external" | "both"
       improvement_vote_type: "for" | "against"
@@ -27762,7 +27947,11 @@ export const Constants = {
         "deferred",
         "converted",
         "archived",
+        "triaged",
+        "quick_win_approved",
+        "linked",
       ],
+      improvement_idea_type: ["standard", "quick_win", "strategic"],
       improvement_initiative_status: [
         "draft",
         "active",
@@ -27770,6 +27959,8 @@ export const Constants = {
         "evaluating",
         "closed",
         "archived",
+        "validated",
+        "converted",
       ],
       improvement_submitter_type: ["employee", "investor", "partner", "public"],
       improvement_visibility: ["internal", "external", "both"],
