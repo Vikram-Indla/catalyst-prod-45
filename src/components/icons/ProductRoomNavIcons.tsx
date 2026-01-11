@@ -1,4 +1,5 @@
 import React, { CSSProperties } from 'react';
+import { Lightbulb, List, Megaphone } from 'lucide-react';
 
 interface IconProps {
   className?: string;
@@ -77,4 +78,7 @@ export const PRODUCT_ROOM_NAV_ICONS: Record<string, React.FC<IconProps>> = {
   'Product Kanban': ProductKanbanIcon,
   'Product Roadmap': ProductRoadmapIcon,
   'Product Capacity': ProductCapacityIcon,
+  'Ideas Hub': Lightbulb,
+  'All Ideas': List,
+  'Initiatives': Megaphone,
 };

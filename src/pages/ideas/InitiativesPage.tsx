@@ -144,7 +144,7 @@ export default function InitiativesPage() {
                 <Card
                   key={initiative.id}
                   className="hover:shadow-md transition-shadow cursor-pointer group"
-                  onClick={() => navigate(`/ideas/initiatives/${initiative.id}`)}
+                  onClick={() => navigate(`/industry/ideas/initiatives/${initiative.id}`)}
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">

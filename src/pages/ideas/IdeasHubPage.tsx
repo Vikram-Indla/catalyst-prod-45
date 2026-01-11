@@ -53,12 +53,12 @@ export default function IdeasHubPage() {
         <div className="flex items-center gap-3">
           <Button 
             variant="outline" 
-            onClick={() => navigate('/ideas/all')}
+            onClick={() => navigate('/industry/ideas/all')}
           >
             View All Ideas
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-          <Button onClick={() => navigate('/ideas/submit')}>
+          <Button onClick={() => navigate('/industry/ideas/submit')}>
             <Plus className="mr-2 h-4 w-4" />
             Submit Idea
           </Button>
@@ -122,7 +122,7 @@ export default function IdeasHubPage() {
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate('/ideas/all?sort=votes')}
+              onClick={() => navigate('/industry/ideas/all?sort=votes')}
             >
               See all
               <ArrowRight className="ml-1 h-3 w-3" />
@@ -132,7 +132,7 @@ export default function IdeasHubPage() {
             <TopIdeasList 
               ideas={topIdeas || []} 
               loading={topIdeasLoading}
-              onIdeaClick={(id) => navigate(`/ideas/${id}`)}
+              onIdeaClick={(id) => navigate(`/industry/ideas/${id}`)}
             />
           </CardContent>
         </Card>
@@ -152,7 +152,7 @@ export default function IdeasHubPage() {
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate('/ideas/initiatives')}
+              onClick={() => navigate('/industry/ideas/initiatives')}
             >
               Manage
               <ArrowRight className="ml-1 h-3 w-3" />
@@ -162,7 +162,7 @@ export default function IdeasHubPage() {
             <ActiveInitiativesList 
               initiatives={activeInitiatives}
               loading={initiativesLoading}
-              onInitiativeClick={(id) => navigate(`/ideas/initiatives/${id}`)}
+              onInitiativeClick={(id) => navigate(`/industry/ideas/initiatives/${id}`)}
             />
           </CardContent>
         </Card>
@@ -171,7 +171,7 @@ export default function IdeasHubPage() {
       {/* Quick Actions / CTA Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => navigate('/ideas/submit')}
+          onClick={() => navigate('/industry/ideas/submit')}
         >
           <CardContent className="flex items-center gap-4 p-5">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -185,7 +185,7 @@ export default function IdeasHubPage() {
         </Card>
 
         <Card className="bg-gradient-to-br from-amber-500/5 to-amber-500/10 border-amber-500/20 hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => navigate('/ideas/scoring')}
+          onClick={() => navigate('/industry/ideas/scoring')}
         >
           <CardContent className="flex items-center gap-4 p-5">
             <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
@@ -199,7 +199,7 @@ export default function IdeasHubPage() {
         </Card>
 
         <Card className="bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 border-emerald-500/20 hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => navigate('/ideas/matrix')}
+          onClick={() => navigate('/industry/ideas/matrix')}
         >
           <CardContent className="flex items-center gap-4 p-5">
             <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
