@@ -66,6 +66,15 @@ function toInitiative(row: Record<string, unknown>): ImprovementInitiative {
     created_at: row.created_at as string,
     updated_at: row.updated_at as string,
     deleted_at: row.deleted_at as string | undefined,
+    // New aggregated stats fields
+    ideas_count: (row.ideas_count as number) ?? 0,
+    total_votes: (row.total_votes as number) ?? 0,
+    avg_impact_score: (row.avg_impact_score as number) ?? 0,
+    // BR conversion fields
+    business_request_id: row.business_request_id as string | undefined,
+    converted_at: row.converted_at as string | undefined,
+    converted_by: row.converted_by as string | undefined,
+    conversion_notes: row.conversion_notes as string | undefined,
   };
 }
 
@@ -118,6 +127,11 @@ function toIdea(row: Record<string, unknown>): ImprovementIdea {
     description_ar: row.description_ar as string | undefined,
     category: row.category as ImprovementIdeaCategory,
     status: row.status as ImprovementIdeaStatus,
+    // New triage fields
+    idea_type: (row.idea_type as ImprovementIdea['idea_type']) || 'standard',
+    triaged_at: row.triaged_at as string | undefined,
+    triaged_by: row.triaged_by as string | undefined,
+    triage_notes: row.triage_notes as string | undefined,
     submitter_id: row.submitter_id as string | undefined,
     submitter_type: row.submitter_type as ImprovementIdea['submitter_type'],
     submitter_name: row.submitter_name as string | undefined,
@@ -132,9 +146,14 @@ function toIdea(row: Record<string, unknown>): ImprovementIdea {
     ai_duplicate_ids: (row.ai_duplicate_ids as string[]) || [],
     ai_summary: row.ai_summary as string | undefined,
     ai_summary_ar: row.ai_summary_ar as string | undefined,
+    ai_suggested_type: row.ai_suggested_type as ImprovementIdea['idea_type'] | undefined,
+    // BR conversion fields
+    business_request_id: row.business_request_id as string | undefined,
     converted_to_br_id: row.converted_to_br_id as string | undefined,
     converted_at: row.converted_at as string | undefined,
     converted_by: row.converted_by as string | undefined,
+    conversion_notes: row.conversion_notes as string | undefined,
+    source_type: (row.source_type as 'direct' | 'initiative') || 'direct',
     submitted_at: row.submitted_at as string | undefined,
     created_at: row.created_at as string,
     updated_at: row.updated_at as string,
@@ -211,7 +230,8 @@ export function useImprovementIdeas(filters?: UseImprovementIdeasFilters) {
         query = query.eq('initiative_id', filters.initiativeId);
       }
       if (filters?.status?.length) {
-        query = query.in('status', filters.status);
+        // Use filter to avoid type mismatch with new status values
+        query = query.filter('status', 'in', `(${filters.status.join(',')})`);
       }
       if (filters?.category?.length) {
         query = query.in('category', filters.category);
@@ -454,12 +474,20 @@ export function useUpdateImprovementIdea() {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }: UpdateIdeaInput) => {
+      // Build update object with only defined values
+      const updateData: Record<string, unknown> = {
+        updated_at: new Date().toISOString(),
+      };
+      if (updates.title !== undefined) updateData.title = updates.title;
+      if (updates.title_ar !== undefined) updateData.title_ar = updates.title_ar;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.description_ar !== undefined) updateData.description_ar = updates.description_ar;
+      if (updates.category !== undefined) updateData.category = updates.category;
+      if (updates.status !== undefined) updateData.status = updates.status;
+
       const { data, error } = await supabase
         .from('improvement_ideas')
-        .update({ 
-          ...updates, 
-          updated_at: new Date().toISOString() 
-        })
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();

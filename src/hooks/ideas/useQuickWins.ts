@@ -83,11 +83,12 @@ export function useQuickWins() {
   return useQuery({
     queryKey: ['quick-wins'],
     queryFn: async () => {
+      // Use filter on column that may not be in generated types yet
       const { data, error } = await supabase
         .from('improvement_ideas')
         .select(`*, impact_score:impact_scores(*)`)
-        .eq('idea_type', 'quick_win')
-        .not('status', 'eq', 'converted')
+        .filter('idea_type', 'eq', 'quick_win')
+        .neq('status', 'converted')
         .is('deleted_at', null)
         .order('for_votes', { ascending: false });
       
@@ -104,7 +105,7 @@ export function useQuickWinsPending() {
       const { data, error } = await supabase
         .from('improvement_ideas')
         .select(`*, impact_score:impact_scores(*)`)
-        .eq('idea_type', 'quick_win')
+        .filter('idea_type', 'eq', 'quick_win')
         .in('status', ['under_review', 'scoring'])
         .is('deleted_at', null)
         .order('for_votes', { ascending: false });
@@ -122,7 +123,7 @@ export function useQuickWinsApproved() {
       const { data, error } = await supabase
         .from('improvement_ideas')
         .select(`*, impact_score:impact_scores(*)`)
-        .eq('idea_type', 'quick_win')
+        .filter('idea_type', 'eq', 'quick_win')
         .eq('status', 'approved')
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
@@ -140,7 +141,7 @@ export function useUnlinkedStrategicIdeas() {
       const { data, error } = await supabase
         .from('improvement_ideas')
         .select(`*, impact_score:impact_scores(*)`)
-        .eq('idea_type', 'strategic')
+        .filter('idea_type', 'eq', 'strategic')
         .is('initiative_id', null)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
@@ -159,7 +160,7 @@ export function useIdeasAwaitingTriage() {
         .from('improvement_ideas')
         .select(`*, impact_score:impact_scores(*)`)
         .in('status', ['submitted', 'under_review'])
-        .eq('idea_type', 'standard')
+        .filter('idea_type', 'eq', 'standard')
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
       

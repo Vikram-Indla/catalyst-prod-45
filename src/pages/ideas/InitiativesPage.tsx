@@ -33,6 +33,8 @@ const statusColors: Record<ImprovementInitiativeStatus, string> = {
   active: 'bg-green-500',
   collecting: 'bg-blue-500',
   evaluating: 'bg-purple-500',
+  validated: 'bg-teal-500',
+  converted: 'bg-emerald-600',
   closed: 'bg-gray-400',
   archived: 'bg-gray-300',
 };
@@ -169,11 +171,11 @@ export default function InitiativesPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex items-center gap-2 text-sm">
                         <Lightbulb className="h-4 w-4 text-yellow-500" />
-                        <span>{initiative.idea_count || 0} ideas</span>
+                        <span>{initiative.ideas_count || 0} ideas</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <Vote className="h-4 w-4 text-blue-500" />
-                        <span>{initiative.vote_count || 0} votes</span>
+                        <span>{initiative.total_votes || 0} votes</span>
                       </div>
                     </div>
 
