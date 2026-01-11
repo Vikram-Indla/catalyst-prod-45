@@ -29,6 +29,8 @@ interface PublishedItem {
   key: string;
   type: string;
   title: string;
+  programId?: string;
+  projectId?: string;
 }
 
 export function RequirementAssistPage() {
@@ -56,6 +58,7 @@ export function RequirementAssistPage() {
   const selectedProject = projects.find(p => p.id === projectId);
   const programName = selectedProgram?.name || 'Not selected';
   const projectName = selectedProject?.name || 'Not selected';
+  const programCode = selectedProgram?.code || 'PRG';
   const projectCode = selectedProject?.code || 'PRJ';
 
   const handleExport = async (format: 'excel' | 'csv' | 'json') => {
@@ -100,7 +103,8 @@ export function RequirementAssistPage() {
       // Simulate publish API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // FIX #2: Generate proper display IDs with project code
+      // FIX #2: Generate proper display IDs
+      // Epics/Features use programCode, Stories use projectCode
       const typeCounters = { epic: 0, feature: 0, story: 0 };
       const published: PublishedItem[] = [];
       
@@ -108,7 +112,8 @@ export function RequirementAssistPage() {
         const itemType = item.itemType as 'epic' | 'feature' | 'story';
         typeCounters[itemType] = (typeCounters[itemType] || 0) + 1;
         
-        const permanentId = generateDisplayId(projectCode, itemType, typeCounters[itemType]);
+        // Pass itemType first, then programCode, projectCode, sequence
+        const permanentId = generateDisplayId(itemType, programCode, projectCode, typeCounters[itemType]);
         
         // FIX #4: Mark item as published
         updateWorkItem(item.id, {
@@ -120,6 +125,8 @@ export function RequirementAssistPage() {
           key: permanentId,
           type: itemType,
           title: item.title,
+          programId: programId || '',
+          projectId: projectId || '',
         });
       }
       
@@ -283,6 +290,8 @@ export function RequirementAssistPage() {
         publishedItems={publishedItems}
         programName={programName}
         projectName={projectName}
+        programId={programId || ''}
+        projectId={projectId || ''}
         publishedAt={publishedAt}
       />
     </div>
