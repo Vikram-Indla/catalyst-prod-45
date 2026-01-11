@@ -8,18 +8,17 @@ import { useRequirementAssistStore } from '@/stores/requirementAssistStore';
 import { useGeneration } from './useGeneration';
 
 export function useKeyboardShortcuts() {
-  const { 
-    isGenerating, 
-    isDetailOpen, 
-    selectedItemId,
-    workItems,
-    closeDetail, 
-    selectItem,
-    toggleExpanded,
-    expandAll,
-    collapseAll,
-    openDetail,
-  } = useRequirementAssistStore();
+  // Use individual selectors to prevent unnecessary re-renders
+  const isGenerating = useRequirementAssistStore((state) => state.isGenerating);
+  const isDetailOpen = useRequirementAssistStore((state) => state.isDetailOpen);
+  const selectedItemId = useRequirementAssistStore((state) => state.selectedItemId);
+  const workItems = useRequirementAssistStore((state) => state.workItems);
+  const closeDetail = useRequirementAssistStore((state) => state.closeDetail);
+  const selectItem = useRequirementAssistStore((state) => state.selectItem);
+  const toggleExpanded = useRequirementAssistStore((state) => state.toggleExpanded);
+  const expandAll = useRequirementAssistStore((state) => state.expandAll);
+  const collapseAll = useRequirementAssistStore((state) => state.collapseAll);
+  const openDetail = useRequirementAssistStore((state) => state.openDetail);
   
   const { startGeneration } = useGeneration();
 

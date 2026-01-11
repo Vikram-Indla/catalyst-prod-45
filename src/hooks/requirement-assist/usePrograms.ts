@@ -3,15 +3,23 @@
 // Load programs and projects from database
 // ============================================================
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRequirementAssistStore } from '@/stores/requirementAssistStore';
 import { supabase } from '@/integrations/supabase/client';
 
 export function usePrograms() {
-  const { setPrograms, setProjects, programId } = useRequirementAssistStore();
+  const programId = useRequirementAssistStore((state) => state.programId);
+  const setPrograms = useRequirementAssistStore((state) => state.setPrograms);
+  const setProjects = useRequirementAssistStore((state) => state.setProjects);
+  
+  // Use ref to track if we've loaded programs
+  const programsLoadedRef = useRef(false);
 
-  // Load programs on mount
+  // Load programs on mount (only once)
   useEffect(() => {
+    if (programsLoadedRef.current) return;
+    programsLoadedRef.current = true;
+
     async function loadPrograms() {
       const { data, error } = await supabase
         .from('programs')
