@@ -291,8 +291,8 @@ export function ReportDefectModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-xl max-h-[85vh] flex flex-col p-0 gap-0 bg-white">
         
-        {/* STICKY HEADER */}
-        <div className="sticky top-0 bg-white z-10 px-6 pt-6 pb-4 border-b">
+        {/* FIXED HEADER */}
+        <div className="shrink-0 bg-white px-6 pt-6 pb-4 border-b">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Bug className="w-5 h-5 text-red-600" />
@@ -686,8 +686,8 @@ export function ReportDefectModal({
           </div>
         </div>
         
-        {/* STICKY FOOTER with Quality Score */}
-        <DialogFooter className="sticky bottom-0 bg-white border-t px-6 py-4 flex-row items-center justify-between">
+        {/* FIXED FOOTER with Quality Score */}
+        <div className="shrink-0 bg-gray-50 border-t px-6 py-4 flex items-center justify-between">
           {/* Quality Score */}
           <TooltipProvider>
             <div className="flex items-center gap-3">
@@ -743,7 +743,7 @@ export function ReportDefectModal({
               Report Defect
             </Button>
           </div>
-        </DialogFooter>
+        </div>
         
       </DialogContent>
     </Dialog>
