@@ -501,3 +501,64 @@ export function useUpdateImprovementIdea() {
     },
   });
 }
+
+// ============================================================
+// INITIATIVE MUTATIONS
+// ============================================================
+
+interface CreateInitiativeInput {
+  title: string;
+  title_ar?: string;
+  description?: string;
+  description_ar?: string;
+  visibility?: 'internal' | 'external' | 'both';
+  voting_type?: 'simple' | 'weighted' | 'token';
+  start_date?: string;
+  end_date?: string;
+  product_id?: string;
+  settings?: Partial<ImprovementInitiativeSettings>;
+}
+
+export function useCreateImprovementInitiative() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (initiative: CreateInitiativeInput) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { data, error } = await supabase
+        .from('improvement_initiatives')
+        .insert({
+          title: initiative.title,
+          title_ar: initiative.title_ar,
+          description: initiative.description,
+          description_ar: initiative.description_ar,
+          visibility: initiative.visibility || 'internal',
+          voting_type: initiative.voting_type || 'simple',
+          start_date: initiative.start_date,
+          end_date: initiative.end_date,
+          owner_id: user?.id,
+          product_id: initiative.product_id,
+          status: 'draft',
+          settings: {
+            require_arabic: false,
+            allow_anonymous: false,
+            moderation_required: true,
+            max_ideas_per_user: 10,
+            voting_enabled: true,
+            comments_enabled: true,
+            ...initiative.settings,
+          },
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return toInitiative(data as unknown as Record<string, unknown>);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['improvement-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['ideas-hub-metrics'] });
+    },
+  });
+}
