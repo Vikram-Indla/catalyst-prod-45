@@ -9,7 +9,7 @@ import { useGeneration } from '@/hooks/requirement-assist';
 import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
 
 export function GenerateButton() {
-  const { isGenerating, inputText } = useStore();
+  const { isGenerating } = useStore();
   const canGenerate = useStore(selectCanGenerate);
   const wordCount = useStore(selectWordCount);
   const { startGeneration } = useGeneration();
@@ -17,7 +17,7 @@ export function GenerateButton() {
   const needsMoreWords = wordCount > 0 && wordCount < 10;
 
   return (
-    <div className="p-4 border-t border-slate-100 flex-shrink-0 bg-gradient-to-r from-slate-50 to-white">
+    <div className="p-4 border-t border-slate-100 flex-shrink-0 bg-gradient-to-r from-slate-50/50 to-white">
       <button
         onClick={startGeneration}
         disabled={!canGenerate}
@@ -28,8 +28,9 @@ export function GenerateButton() {
           overflow-hidden
           ${canGenerate 
             ? `
-              bg-gradient-to-r from-blue-600 to-blue-700 text-white
-              hover:from-blue-500 hover:to-blue-600
+              bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 text-white
+              hover:from-blue-500 hover:via-blue-500 hover:to-indigo-500
+              shadow-lg shadow-blue-500/25
               hover:shadow-xl hover:shadow-blue-500/30
               hover:-translate-y-0.5
               active:translate-y-0 active:shadow-lg
@@ -38,36 +39,38 @@ export function GenerateButton() {
           }
         `}
       >
-        {/* Shimmer effect on hover */}
+        {/* Animated shimmer on hover */}
         {canGenerate && (
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
         )}
 
-        {isGenerating ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span>Generating...</span>
-          </>
-        ) : canGenerate ? (
-          <>
-            <Sparkles className="w-5 h-5" />
-            <span>Generate with CATY</span>
-            <kbd className="ml-2 px-2 py-0.5 bg-white/20 rounded-md text-xs font-mono">
-              ⌘G
-            </kbd>
-          </>
-        ) : needsMoreWords ? (
-          <>
-            <AlertCircle className="w-4 h-4" />
-            <span>Enter at least 10 words</span>
-            <span className="ml-2 text-xs opacity-75">({wordCount}/10)</span>
-          </>
-        ) : (
-          <>
-            <Sparkles className="w-5 h-5 opacity-50" />
-            <span>Enter requirements to generate</span>
-          </>
-        )}
+        {/* Button content */}
+        <span className="relative flex items-center gap-2.5">
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Generating...</span>
+            </>
+          ) : canGenerate ? (
+            <>
+              <Sparkles className="w-5 h-5" />
+              <span>Generate with CATY</span>
+              <kbd className="ml-1 px-2 py-0.5 bg-white/20 rounded-md text-xs font-mono backdrop-blur-sm">
+                ⌘G
+              </kbd>
+            </>
+          ) : needsMoreWords ? (
+            <>
+              <AlertCircle className="w-4 h-4" />
+              <span>Need {10 - wordCount} more words</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-5 h-5 opacity-50" />
+              <span>Enter requirements to generate</span>
+            </>
+          )}
+        </span>
       </button>
       
       {/* Keyboard hint */}

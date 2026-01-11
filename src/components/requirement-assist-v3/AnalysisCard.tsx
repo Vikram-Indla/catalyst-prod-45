@@ -1,6 +1,6 @@
 // ============================================================
 // ANALYSIS CARD COMPONENT - ENHANCED
-// Shows live AI analysis with colored stat boxes
+// Shows live AI analysis with colored stat boxes & pulse effects
 // ============================================================
 
 import React from 'react';
@@ -18,35 +18,39 @@ export function AnalysisCard() {
   const estimatedFeatures = Math.max(1, Math.ceil(analysis.functions.length / 2));
   const estimatedStories = analysis.functions.length + analysis.nfrs.length || 1;
 
-  // Stats configuration with icons
+  // Stats configuration with icons and gradients
   const stats = [
     { 
       value: analysis.actors.length, 
       label: 'Actors', 
       icon: Users,
       color: 'text-violet-600',
-      bgColor: 'bg-violet-50',
+      bgGradient: 'from-violet-50 to-violet-100/50',
+      borderColor: 'border-violet-100/50',
     },
     { 
       value: analysis.functions.length, 
       label: 'Functions', 
       icon: Zap,
       color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      bgGradient: 'from-blue-50 to-blue-100/50',
+      borderColor: 'border-blue-100/50',
     },
     { 
       value: analysis.nfrs.length, 
       label: 'NFRs', 
       icon: Shield,
       color: 'text-teal-600',
-      bgColor: 'bg-teal-50',
+      bgGradient: 'from-teal-50 to-teal-100/50',
+      borderColor: 'border-teal-100/50',
     },
     { 
       value: analysis.integrations.length, 
       label: 'Integrations', 
       icon: Link,
       color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
+      bgGradient: 'from-orange-50 to-orange-100/50',
+      borderColor: 'border-orange-100/50',
     },
   ];
 
@@ -63,34 +67,49 @@ export function AnalysisCard() {
 
   return (
     <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl shadow-ra-card overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+      {/* Enhanced Header with Glowing Icon */}
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
+        <div className="relative">
+          {/* Glowing icon container */}
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
+          {/* Subtle pulse ring */}
+          {isAnalyzing && (
+            <div 
+              className="absolute -inset-1 rounded-xl bg-blue-500/20 animate-ping opacity-75" 
+              style={{ animationDuration: '3s' }} 
+            />
+          )}
+        </div>
+        <div className="flex items-center gap-2">
           <span className="font-semibold text-slate-900">CATY Analysis</span>
+          <span className="text-xs text-slate-400">Real-time</span>
         </div>
         {isAnalyzing && (
-          <div className="flex items-center gap-2 text-xs text-blue-600">
+          <div className="ml-auto flex items-center gap-2 text-xs text-blue-600">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
             Analyzing...
           </div>
         )}
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid with Hover Effects */}
       <div className="grid grid-cols-4 gap-3 p-4">
         {stats.map((stat) => (
           <div 
             key={stat.label}
-            className={`text-center py-3 px-2 rounded-xl ${stat.bgColor} border border-slate-100 transition-transform hover:scale-105`}
+            className={`
+              group relative text-center py-3 px-2 rounded-xl 
+              bg-gradient-to-br ${stat.bgGradient} border ${stat.borderColor}
+              transition-all duration-200 hover:shadow-md hover:scale-[1.02] cursor-default
+            `}
           >
-            <stat.icon className={`w-4 h-4 mx-auto mb-1.5 ${stat.color} opacity-60`} />
+            <stat.icon className={`w-4 h-4 mx-auto mb-1.5 ${stat.color} opacity-60 group-hover:scale-110 transition-transform`} />
             <div className={`text-2xl font-bold ${hasContent && stat.value > 0 ? stat.color : 'text-slate-300'}`}>
               {stat.value}
             </div>
-            <div className="text-[10px] uppercase tracking-wide text-slate-500 font-medium">
+            <div className="text-[10px] uppercase tracking-wide text-slate-500/70 font-semibold">
               {stat.label}
             </div>
           </div>
