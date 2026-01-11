@@ -144,14 +144,17 @@ export default function SubmitIdeaPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Link to Initiative (Optional)</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select 
+                      onValueChange={(val) => field.onChange(val === '__none__' ? undefined : val)} 
+                      value={field.value || '__none__'}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select an initiative or leave empty" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">No specific initiative</SelectItem>
+                        <SelectItem value="__none__">No specific initiative</SelectItem>
                         {initiatives.map((init) => (
                           <SelectItem key={init.id} value={init.id}>
                             {init.code} - {init.title}
