@@ -234,15 +234,26 @@ export function ReportDefectModal({
     return () => clearTimeout(timer);
   }, [formData.title]);
   
-  // Quality score calculation
+  // Quality score calculation - dynamic based on form completeness
   const qualityScore = useMemo(() => {
     let score = 0;
     if (formData.title?.length >= 20) score += 1;
-    if (formData.stepsToReproduce?.split('\n').length >= 3) score += 1;
-    if (formData.expectedResult?.length >= 15) score += 1;
-    if (formData.actualResult?.length >= 15) score += 1;
+    if (formData.stepsToReproduce?.split('\n').filter(l => l.trim()).length >= 3) score += 1;
+    if (formData.expectedResult?.length >= 20) score += 1;
+    if (formData.actualResult?.length >= 20) score += 1;
     if (formData.severity) score += 1;
     return score;
+  }, [formData]);
+
+  // Quality improvement tips - dynamic based on missing fields
+  const qualityTips = useMemo(() => {
+    const tips: string[] = [];
+    if (formData.title.length < 20) tips.push('Add more detail to title (20+ chars)');
+    if (formData.stepsToReproduce.split('\n').filter(l => l.trim()).length < 3) tips.push('Add more reproduction steps (3+)');
+    if (formData.expectedResult.length < 20) tips.push('Describe expected behavior more clearly');
+    if (formData.actualResult.length < 20) tips.push('Describe actual behavior more clearly');
+    if (!formData.severity) tips.push('Select a severity level');
+    return tips;
   }, [formData]);
   
   // AI description generation
@@ -697,23 +708,20 @@ export function ReportDefectModal({
                 </div>
               </div>
               
-              {qualityScore < 4 && (
+              {qualityTips.length > 0 && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 text-xs text-primary p-1">
-                      <Lightbulb className="w-3 h-3 mr-1" />
+                    <Button variant="ghost" size="sm" className="h-6 text-xs text-primary p-1 gap-1">
+                      <Lightbulb className="w-3 h-3" />
                       Improve
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs bg-white">
                     <p className="font-medium mb-1 text-sm">Tips to improve:</p>
                     <ul className="text-xs space-y-1 text-muted-foreground">
-                      {formData.title.length < 20 && <li>• Add more detail to the title</li>}
-                      {!formData.stepsToReproduce && <li>• Add steps to reproduce</li>}
-                      {formData.stepsToReproduce && formData.stepsToReproduce.split('\n').length < 3 && <li>• Add more steps (3+)</li>}
-                      {!formData.expectedResult && <li>• Specify expected result</li>}
-                      {!formData.actualResult && <li>• Describe actual result</li>}
-                      {!formData.severity && <li>• Select a severity level</li>}
+                      {qualityTips.map((tip, i) => (
+                        <li key={i}>• {tip}</li>
+                      ))}
                     </ul>
                   </TooltipContent>
                 </Tooltip>
