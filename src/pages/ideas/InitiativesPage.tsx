@@ -26,7 +26,6 @@ import { useImprovementInitiatives } from '@/hooks/useImprovementIdeas';
 import { INITIATIVE_STATUS_LABELS, ImprovementInitiativeStatus } from '@/types/improvement-ideas';
 import { format, differenceInDays, isPast } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import { IdeasRoomSidebar } from '@/components/layout/IdeasRoomSidebar';
 
 const statusColors: Record<ImprovementInitiativeStatus, string> = {
   draft: 'bg-gray-500',
@@ -43,7 +42,6 @@ export default function InitiativesPage() {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
   const { data: initiatives = [], isLoading } = useImprovementInitiatives();
 
@@ -63,9 +61,7 @@ export default function InitiativesPage() {
   };
 
   return (
-    <div className="flex h-full">
-      <IdeasRoomSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
-      <div className="flex-1 p-6 space-y-6 overflow-auto">
+    <div className="flex flex-col gap-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -230,6 +226,5 @@ export default function InitiativesPage() {
           </div>
         )}
       </div>
-    </div>
   );
 }
