@@ -414,7 +414,7 @@ export default function DefectDetailPage() {
   const assigneeColor = avatarColors[defect.assignee?.color || 'gray'] || avatarColors.gray;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-full w-full bg-gray-50 overflow-auto">
       
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* HEADER - Full Width, Dense                                          */}
