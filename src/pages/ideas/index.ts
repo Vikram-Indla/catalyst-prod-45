@@ -4,6 +4,7 @@ export { default as IdeasHubPageElevated } from './IdeasHubPageElevated';
 export { default as IdeasHubPageRebuilt } from './IdeasHubPageRebuilt';
 export { default as AllIdeasPage } from './AllIdeasPage';
 export { default as AllIdeasPageElevated } from './AllIdeasPageElevated';
+export { default as AllIdeasPageRebuilt } from './AllIdeasPageRebuilt';
 export { default as IdeaDetailPage } from './IdeaDetailPage';
 export { default as IdeaDetailPageElevated } from './IdeaDetailPageElevated';
 export { default as SubmitIdeaPage } from './SubmitIdeaPage';
