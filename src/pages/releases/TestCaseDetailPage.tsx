@@ -2,11 +2,11 @@
  * Test Case Detail Page — Catalyst Release & Test Management Module
  * Route: /releases/test-cases/:id
  * Quality Target: 9.5/10 (GOD-TIER)
- * Features: Keyboard navigation, tab persistence, enhanced animations
+ * Features: Keyboard navigation, tab persistence, enhanced animations, quick actions
  */
 
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import {
@@ -21,6 +21,8 @@ import {
   Link2,
   MessageSquare,
   Keyboard,
+  FileText,
+  GitCommit,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -35,13 +37,22 @@ import { TestCaseExecutionHistory } from '@/components/releases/test-case-detail
 import { TestCaseLinksAttachments } from '@/components/releases/test-case-detail/TestCaseLinksAttachments';
 import { TestCaseComments } from '@/components/releases/test-case-detail/TestCaseComments';
 import { TestCasePropertiesPanel } from '@/components/releases/test-case-detail/TestCasePropertiesPanel';
+import { RequirementsCoverage } from '@/components/releases/test-case-detail/RequirementsCoverage';
+import { TestCaseVersionHistory } from '@/components/releases/test-case-detail/TestCaseVersionHistory';
+import { QuickActionsBar } from '@/components/releases/test-case-detail/QuickActionsBar';
 import { testCaseDetailData, testCaseSteps, executionHistory } from '@/data/testCaseDetailData';
 import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
 import { cn } from '@/lib/utils';
 
 export default function TestCaseDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState('steps');
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Persist active tab in URL
+  const activeTab = searchParams.get('tab') || 'steps';
+  const setActiveTab = (tab: string) => {
+    setSearchParams({ tab }, { replace: true });
+  };
   
   const testCase = testCaseDetailData;
   
@@ -54,6 +65,15 @@ export default function TestCaseDetailPage() {
     goToPrev, 
     goToNext 
   } = useTestCaseNavigation({ currentId: id || '' });
+
+  // Quick action handlers
+  const handleExecute = () => {
+    toast.success('Starting test execution...');
+  };
+
+  const handleDuplicate = () => {
+    toast.success(`Test case duplicated as ${id}-copy`);
+  };
 
   return (
     <motion.div 
@@ -188,7 +208,7 @@ export default function TestCaseDetailPage() {
               transition={{ delay: 0.2 }}
             >
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-0">
+                <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-0 flex-wrap">
                   <TabsTrigger 
                     value="steps" 
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
@@ -204,26 +224,43 @@ export default function TestCaseDetailPage() {
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
                   >
                     <Clock className="w-4 h-4 mr-2" />
-                    Execution History
+                    History
                     <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
                       {executionHistory.length}
                     </span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="requirements" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Requirements
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">4</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="links" 
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
                   >
                     <Link2 className="w-4 h-4 mr-2" />
-                    Links & Attachments
+                    Links
                     <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">3</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="comments" 
+                    data-tab="comments"
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Comments
                     <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">5</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="versions" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
+                  >
+                    <GitCommit className="w-4 h-4 mr-2" />
+                    Versions
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">3</span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -235,12 +272,20 @@ export default function TestCaseDetailPage() {
                   <TestCaseExecutionHistory history={executionHistory} />
                 </TabsContent>
 
+                <TabsContent value="requirements" className="mt-6">
+                  <RequirementsCoverage />
+                </TabsContent>
+
                 <TabsContent value="links" className="mt-6">
                   <TestCaseLinksAttachments />
                 </TabsContent>
 
                 <TabsContent value="comments" className="mt-6">
                   <TestCaseComments />
+                </TabsContent>
+
+                <TabsContent value="versions" className="mt-6">
+                  <TestCaseVersionHistory />
                 </TabsContent>
               </Tabs>
             </motion.div>
@@ -257,6 +302,13 @@ export default function TestCaseDetailPage() {
           </motion.div>
         </div>
       </div>
+
+      {/* Quick Actions Bar */}
+      <QuickActionsBar 
+        testCaseId={id || 'TC-001'} 
+        onExecute={handleExecute}
+        onDuplicate={handleDuplicate}
+      />
     </motion.div>
   );
 }
