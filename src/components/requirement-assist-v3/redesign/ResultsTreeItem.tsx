@@ -14,6 +14,8 @@ interface ResultsTreeItemProps {
   programCode: string;
   projectCode: string;
   level?: number;
+  onItemClick?: (item: WorkItem) => void;
+  style?: React.CSSProperties;
 }
 
 const BADGE_COLORS: Record<string, string> = {
@@ -27,7 +29,9 @@ export function ResultsTreeItem({
   allItems, 
   programCode, 
   projectCode, 
-  level = 0 
+  level = 0,
+  onItemClick,
+  style
 }: ResultsTreeItemProps) {
   const [expanded, setExpanded] = useState(level === 0);
   const { toggleItemSelection } = useStore();
@@ -52,14 +56,17 @@ export function ResultsTreeItem({
   };
 
   return (
-    <div>
+    <div style={style}>
       <div
         className={cn(
           "flex items-center gap-2 py-2 px-3 rounded-lg cursor-pointer transition-colors group",
           item.isSelected ? "bg-blue-50" : "hover:bg-slate-50",
           level > 0 && "ml-6"
         )}
-        onClick={handleSelect}
+        onClick={(e) => {
+          handleSelect(e);
+          onItemClick?.(item);
+        }}
       >
         {/* Expand/Collapse */}
         {children.length > 0 ? (
@@ -125,7 +132,6 @@ export function ResultsTreeItem({
         )}
       </div>
 
-      {/* Children */}
       {expanded && children.length > 0 && (
         <div className="border-l border-slate-200 ml-5">
           {children.map(child => (
@@ -136,6 +142,7 @@ export function ResultsTreeItem({
               programCode={programCode}
               projectCode={projectCode}
               level={level + 1}
+              onItemClick={onItemClick}
             />
           ))}
         </div>

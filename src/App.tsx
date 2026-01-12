@@ -102,6 +102,7 @@ import Releases from "./pages/Releases";
 import ReleasesCommandCenter from "./pages/releases/CommandCenter";
 import ReleasesPlaceholderPage from "./pages/releases/PlaceholderPage";
 import ReleasesTestCasesPage from "./pages/releases/TestCasesPage";
+import ReleasesTestCasesLibraryPage from "./pages/releases/TestCasesLibraryPage";
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
@@ -776,6 +777,8 @@ const App = () => (
               <Route path="/releases/compare" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/test-cases" element={<ReleasesTestCasesPage />} />
               <Route path="/releases/test-cases/:id" element={<ReleasesTestCaseDetailPage />} />
+              <Route path="/releases/tests" element={<ReleasesTestCasesLibraryPage />} />
+              <Route path="/releases/tests/:id" element={<ReleasesTestCaseDetailPage />} />
               <Route path="/releases/test-cycles" element={<ReleasesTestCyclesPage />} />
               <Route path="/releases/execution" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/execution/:cycleId/:testCaseId" element={<ReleasesTestExecutionPage />} />
