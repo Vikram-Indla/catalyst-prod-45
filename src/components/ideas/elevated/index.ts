@@ -34,3 +34,6 @@ export * from './BulkActionsBar';
 export * from './IdeaCardRebuilt';
 export * from './IdeasTableRebuilt';
 export * from './IdeasPagination';
+
+// Submit Idea Modal - World Class Rebuild
+export * from './SubmitIdeaModalRebuilt';
