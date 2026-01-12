@@ -1,18 +1,20 @@
 /**
  * Test Cases Page — Catalyst Release & Test Management Module
  * Route: /releases/test-cases
- * Quality Target: 9.5/10 (GOD-TIER)
+ * Quality Target: 9.8/10 (GOD-TIER)
  * 
  * Features:
  * - List View (default) with sortable data table
  * - Grid View with responsive card layout
- * - Filters bar with search and dropdowns
+ * - URL-synced filters for shareable views
  * - Bulk actions bar
  * - Pagination
  * - Row actions menu
+ * - Keyboard shortcuts (⌘K search, ⌘N create, Esc clear)
+ * - Create Test Case dialog with validation
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -33,6 +35,8 @@ import {
   UserPlus,
   Tags,
   Trash2,
+  Command,
+  Keyboard,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,47 +48,90 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { TestCasesTable } from '@/components/releases/test-cases/TestCasesTable';
 import { TestCasesGrid } from '@/components/releases/test-cases/TestCasesGrid';
 import { TestCaseEmptyState } from '@/components/releases/test-cases/TestCaseEmptyState';
+import { CreateTestCaseDialog } from '@/components/releases/test-cases/CreateTestCaseDialog';
 import { testCasesData } from '@/data/testCasesData';
+import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
+import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 type ViewMode = 'list' | 'grid' | 'kanban';
 
 export default function TestCasesPage() {
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [releaseFilter, setReleaseFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [priorityFilter, setPriorityFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('catalyst-test-cases-view') as ViewMode) || 'list';
+    }
+    return 'list';
+  });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // URL-synced filters
+  const { 
+    filters, 
+    setFilter, 
+    clearFilters, 
+    hasActiveFilters, 
+    activeFilterCount 
+  } = useTestCaseFilters();
+
+  // Keyboard shortcuts
+  useTestCaseKeyboardShortcuts({
+    onSearch: () => searchInputRef.current?.focus(),
+    onCreate: () => setIsCreateOpen(true),
+    onEscape: () => {
+      if (selectedIds.size > 0) {
+        setSelectedIds(new Set());
+      }
+    },
+    onDelete: () => {
+      if (selectedIds.size > 0) {
+        toast.error(`${selectedIds.size} test case(s) deleted`);
+        setSelectedIds(new Set());
+      }
+    },
+  });
+
+  // Persist view mode
+  useEffect(() => {
+    localStorage.setItem('catalyst-test-cases-view', viewMode);
+  }, [viewMode]);
 
   // Apply filters
   const filteredTestCases = useMemo(() => {
     return testCasesData.filter(tc => {
       // Search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
+      if (filters.search) {
+        const query = filters.search.toLowerCase();
         if (!tc.id.toLowerCase().includes(query) && !tc.title.toLowerCase().includes(query)) {
           return false;
         }
       }
       // Release filter
-      if (releaseFilter !== 'all' && tc.release !== releaseFilter) return false;
+      if (filters.releases?.length && !filters.releases.includes(tc.release)) return false;
       // Status filter
-      if (statusFilter !== 'all' && tc.status !== statusFilter) return false;
+      if (filters.statuses?.length && !filters.statuses.includes(tc.status)) return false;
       // Priority filter
-      if (priorityFilter !== 'all' && tc.priority !== priorityFilter) return false;
+      if (filters.priorities?.length && !filters.priorities.includes(tc.priority)) return false;
       // Type filter
-      if (typeFilter !== 'all' && tc.type !== typeFilter) return false;
+      if (filters.types?.length && !filters.types.includes(tc.type)) return false;
       
       return true;
     });
-  }, [searchQuery, releaseFilter, statusFilter, priorityFilter, typeFilter]);
+  }, [filters]);
 
   // Pagination
   const totalPages = Math.ceil(filteredTestCases.length / itemsPerPage);
@@ -93,16 +140,13 @@ export default function TestCasesPage() {
     return filteredTestCases.slice(start, start + itemsPerPage);
   }, [filteredTestCases, currentPage, itemsPerPage]);
 
-  // Count active filters
-  const activeFilterCount = [releaseFilter, statusFilter, priorityFilter, typeFilter]
-    .filter(f => f !== 'all').length;
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
-  const clearAllFilters = () => {
-    setSearchQuery('');
-    setReleaseFilter('all');
-    setStatusFilter('all');
-    setPriorityFilter('all');
-    setTypeFilter('all');
+  const handleClearAllFilters = () => {
+    clearFilters();
     setCurrentPage(1);
   };
 
@@ -126,6 +170,17 @@ export default function TestCasesPage() {
 
   const clearSelection = () => setSelectedIds(new Set());
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    setIsRefreshing(false);
+    toast.success('Test cases refreshed');
+  };
+
+  const handleCreateSuccess = useCallback(() => {
+    // Could trigger a refetch here in a real app
+  }, []);
+
   return (
     <div className="flex flex-col h-full">
       {/* Context Bar / Breadcrumb */}
@@ -134,14 +189,21 @@ export default function TestCasesPage() {
           <span className="text-muted-foreground uppercase tracking-wide text-xs font-medium">RELEASES</span>
           <span className="text-muted-foreground">/</span>
           <span className="font-semibold text-foreground">Test Cases</span>
+          <Badge variant="secondary" className="ml-2 text-xs">
+            {filteredTestCases.length} total
+          </Badge>
         </div>
         
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">Last updated: 2 min ago</span>
-          <Button variant="outline" size="sm" className="h-8">
-            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
-            Refresh
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8" onClick={handleRefresh} disabled={isRefreshing}>
+                <RefreshCw className={cn("w-3.5 h-3.5 mr-1.5", isRefreshing && "animate-spin")} />
+                Refresh
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Refresh test cases</TooltipContent>
+          </Tooltip>
           <Button variant="outline" size="sm" className="h-8">
             <Upload className="w-3.5 h-3.5 mr-1.5" />
             Import
@@ -150,10 +212,16 @@ export default function TestCasesPage() {
             <Download className="w-3.5 h-3.5 mr-1.5" />
             Export
           </Button>
-          <Button size="sm" className="h-8">
-            <Plus className="w-3.5 h-3.5 mr-1.5" />
-            New Test Case
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="sm" className="h-8" onClick={() => setIsCreateOpen(true)}>
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                New Test Case
+                <kbd className="ml-2 text-[10px] bg-primary-foreground/20 px-1 py-0.5 rounded">⌘N</kbd>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Create new test case (⌘N)</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -164,18 +232,23 @@ export default function TestCasesPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
+              ref={searchInputRef}
+              id="test-case-search"
               placeholder="Search test cases..." 
-              className="pl-10 w-64 h-9"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
+              className="pl-10 pr-16 w-72 h-9"
+              value={filters.search || ''}
+              onChange={(e) => setFilter('search', e.target.value || undefined)}
             />
+            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded border">
+              ⌘K
+            </kbd>
           </div>
           
           {/* Release Filter */}
-          <Select value={releaseFilter} onValueChange={(v) => { setReleaseFilter(v); setCurrentPage(1); }}>
+          <Select 
+            value={filters.releases?.[0] || 'all'} 
+            onValueChange={(v) => setFilter('releases', v === 'all' ? undefined : [v])}
+          >
             <SelectTrigger className="w-[180px] h-9">
               <SelectValue placeholder="Release" />
             </SelectTrigger>
@@ -188,7 +261,10 @@ export default function TestCasesPage() {
           </Select>
           
           {/* Status Filter */}
-          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}>
+          <Select 
+            value={filters.statuses?.[0] || 'all'} 
+            onValueChange={(v) => setFilter('statuses', v === 'all' ? undefined : [v])}
+          >
             <SelectTrigger className="w-[130px] h-9">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -202,7 +278,10 @@ export default function TestCasesPage() {
           </Select>
           
           {/* Priority Filter */}
-          <Select value={priorityFilter} onValueChange={(v) => { setPriorityFilter(v); setCurrentPage(1); }}>
+          <Select 
+            value={filters.priorities?.[0] || 'all'} 
+            onValueChange={(v) => setFilter('priorities', v === 'all' ? undefined : [v])}
+          >
             <SelectTrigger className="w-[130px] h-9">
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
@@ -216,7 +295,10 @@ export default function TestCasesPage() {
           </Select>
           
           {/* Type Filter */}
-          <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setCurrentPage(1); }}>
+          <Select 
+            value={filters.types?.[0] || 'all'} 
+            onValueChange={(v) => setFilter('types', v === 'all' ? undefined : [v])}
+          >
             <SelectTrigger className="w-[140px] h-9">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
@@ -244,7 +326,7 @@ export default function TestCasesPage() {
                 variant="ghost" 
                 size="sm" 
                 className="h-9 text-muted-foreground hover:text-foreground"
-                onClick={clearAllFilters}
+                onClick={handleClearAllFilters}
               >
                 Clear all
               </Button>
@@ -252,8 +334,24 @@ export default function TestCasesPage() {
           )}
         </div>
         
-        {/* View Toggle */}
-        <div className="flex items-center gap-2">
+        {/* View Toggle & Keyboard Hint */}
+        <div className="flex items-center gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 text-muted-foreground">
+                <Keyboard className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="space-y-1">
+              <p className="font-medium text-xs">Keyboard Shortcuts</p>
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <p><kbd className="bg-muted px-1 rounded">⌘K</kbd> Focus search</p>
+                <p><kbd className="bg-muted px-1 rounded">⌘N</kbd> Create test case</p>
+                <p><kbd className="bg-muted px-1 rounded">Esc</kbd> Clear selection</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+          
           <div className="flex items-center bg-muted rounded-lg p-1">
             <Button 
               variant="ghost" 
@@ -302,7 +400,7 @@ export default function TestCasesPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <TestCaseEmptyState onClearFilters={clearAllFilters} />
+              <TestCaseEmptyState onClearFilters={handleClearAllFilters} />
             </motion.div>
           ) : viewMode === 'list' ? (
             <motion.div
@@ -450,6 +548,14 @@ export default function TestCasesPage() {
             className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-foreground text-background px-6 py-3 rounded-full shadow-xl flex items-center gap-4 z-50"
           >
             <span className="text-sm font-medium">{selectedIds.size} selected</span>
+            {selectedIds.size < filteredTestCases.length && (
+              <button
+                className="text-xs text-primary-foreground/70 hover:text-primary-foreground underline"
+                onClick={() => setSelectedIds(new Set(filteredTestCases.map(tc => tc.id)))}
+              >
+                Select all {filteredTestCases.length}
+              </button>
+            )}
             <div className="w-px h-5 bg-muted-foreground/30" />
             <Button variant="ghost" size="sm" className="text-background hover:bg-muted-foreground/20">
               <FolderInput className="w-4 h-4 mr-2" />
@@ -463,7 +569,15 @@ export default function TestCasesPage() {
               <Tags className="w-4 h-4 mr-2" />
               Add Tags
             </Button>
-            <Button variant="ghost" size="sm" className="text-destructive hover:bg-muted-foreground/20">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-destructive hover:bg-muted-foreground/20"
+              onClick={() => {
+                toast.error(`${selectedIds.size} test case(s) deleted`);
+                setSelectedIds(new Set());
+              }}
+            >
               <Trash2 className="w-4 h-4 mr-2" />
               Delete
             </Button>
@@ -476,6 +590,13 @@ export default function TestCasesPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Create Test Case Dialog */}
+      <CreateTestCaseDialog
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onSuccess={handleCreateSuccess}
+      />
     </div>
   );
 }
