@@ -49,7 +49,7 @@ function AnimatedNumber({
 
   return (
     <p className={cn(
-      "text-3xl font-bold transition-all duration-300",
+      "text-2xl font-bold transition-all duration-300",
       isActive ? "text-white" : "text-slate-300",
       animate && "scale-110"
     )}>
@@ -70,9 +70,9 @@ function EstimateCard({
 }) {
   return (
     <div className={cn(
-      "rounded-2xl p-5 transition-all duration-500",
+      "rounded-xl p-4 transition-all duration-500",
       isActive 
-        ? "bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg"
+        ? "bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-500/20"
         : "bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200"
     )}>
       <p className={cn(
@@ -82,7 +82,7 @@ function EstimateCard({
         Estimated Output
       </p>
       
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-4">
         <div className="text-center">
           <AnimatedNumber value={estimates.epics} isActive={isActive} />
           <p className={cn(
@@ -186,7 +186,7 @@ function QualityCard({
       </div>
       
       {/* Progress Bar */}
-      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+      <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
         <div 
           className="h-full rounded-full transition-all duration-500"
           style={{ 
@@ -437,14 +437,14 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
           {/* ID Preview Badges */}
           {programId && projectId && (
             <div className="flex items-center gap-2 ml-4">
-              <span className="px-2 py-1 bg-violet-50 border border-violet-200 text-violet-700 text-xs font-mono font-semibold rounded-lg">
-                <Layers className="w-3 h-3 inline mr-1" />
-                {selectedProgram?.code || 'PRG'}-XXX
-              </span>
-              <span className="px-2 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono font-semibold rounded-lg">
-                <FileText className="w-3 h-3 inline mr-1" />
-                {selectedProject?.code || 'PRJ'}-XXX
-              </span>
+              <div className="px-3 py-1.5 bg-violet-100 border border-violet-200 rounded-lg flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-violet-500 rounded-full" />
+                <span className="text-xs font-bold text-violet-700 font-mono">{selectedProgram?.code || 'PRG'}-XXX</span>
+              </div>
+              <div className="px-3 py-1.5 bg-emerald-100 border border-emerald-200 rounded-lg flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+                <span className="text-xs font-bold text-emerald-700 font-mono">{selectedProject?.code || 'PRJ'}-XXX</span>
+              </div>
             </div>
           )}
         </div>
@@ -476,14 +476,12 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
           </div>
 
           {/* Empty State */}
-          <div className="flex-1 flex items-center justify-center p-6">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
-                <Clock className="w-6 h-6 text-slate-400" />
-              </div>
-              <p className="text-sm font-medium text-slate-600 mb-1">No history yet</p>
-              <p className="text-xs text-slate-400">Your generations will appear here</p>
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
+              <Clock className="w-6 h-6 text-slate-400" />
             </div>
+            <p className="text-sm font-medium text-slate-600 mb-1">No history yet</p>
+            <p className="text-xs text-slate-400">Your generations will appear here</p>
           </div>
 
           {/* Footer */}
@@ -501,10 +499,10 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
         <div className="flex-1 flex flex-col min-w-0 p-6">
           <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col overflow-hidden">
             {/* Editor Header */}
-            <div className="px-5 py-3 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
-              <div className="flex items-center gap-2">
+            <div className="h-12 px-5 flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex-shrink-0">
+              <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-slate-700">Requirements Input</span>
-                <span className="px-2 py-0.5 bg-slate-200/70 rounded text-xs font-medium text-slate-500">
+                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
                   Draft
                 </span>
               </div>
@@ -526,7 +524,7 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Describe your system requirements in detail. Include actors, functionalities, integrations, and non-functional requirements..."
               maxLength={3000}
-              className="flex-1 p-6 text-base text-slate-900 placeholder:text-slate-400 resize-none focus:outline-none leading-relaxed"
+              className="flex-1 p-6 text-base text-slate-900 placeholder:text-slate-400 resize-none focus:outline-none leading-relaxed min-h-[300px]"
             />
 
             {/* Footer */}
