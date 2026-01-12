@@ -3,6 +3,7 @@
  */
 
 export { MyWorkDashboard } from './MyWorkDashboard';
+export { TMOverviewDashboard } from './TMOverviewDashboard';
 export * from './my-work';
 export * from './execution';
 export * from './templates';
