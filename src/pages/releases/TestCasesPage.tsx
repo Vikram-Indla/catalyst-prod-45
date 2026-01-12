@@ -70,11 +70,13 @@ import { AdvancedFiltersDialog } from '@/components/releases/test-cases/Advanced
 import { TestCaseDetailDrawer } from '@/components/releases/test-cases/TestCaseDetailDrawer';
 import { testCasesData, TestCase } from '@/data/testCasesData';
 import { useTestCasesApi, useDeleteTestCasesApi, useDuplicateTestCaseApi } from '@/hooks/use-test-cases-api';
+import { useBulkCreateTestCasesApi } from '@/hooks/use-create-test-case-api';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
 import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import type { GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
 
 type ViewMode = 'list' | 'grid' | 'kanban';
 
@@ -133,6 +135,36 @@ export default function TestCasesPage() {
 
   const deleteTestCases = useDeleteTestCasesApi();
   const duplicateTestCase = useDuplicateTestCaseApi();
+  const bulkCreateTestCases = useBulkCreateTestCasesApi({
+    projectId,
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  // Handler for AI-generated test cases
+  const handleAIGeneratedTestCases = useCallback((generatedTestCases: GeneratedTestCase[]) => {
+    const inputs = generatedTestCases.map(tc => ({
+      project_id: projectId,
+      title: tc.title,
+      description: tc.summary,
+      preconditions: tc.preconditions?.join('\n'),
+      status: 'draft' as const,
+      tags: tc.tags,
+      steps: tc.steps.map((step, idx) => ({
+        step_number: idx + 1,
+        action: step.action,
+        expected_result: step.expectedResult,
+        test_data: step.testData,
+      })),
+    }));
+
+    bulkCreateTestCases.mutate(inputs, {
+      onSuccess: (results) => {
+        toast.success(`Successfully created ${results.length} AI-generated test cases`);
+      },
+    });
+  }, [projectId, bulkCreateTestCases]);
 
   // Keyboard shortcuts
   useTestCaseKeyboardShortcuts({
@@ -669,13 +701,18 @@ export default function TestCasesPage() {
         onOpenChange={setIsExportOpen}
         selectedCount={selectedIds.size}
         totalCount={totalCount}
+        testCases={filteredTestCases}
+        selectedIds={selectedIds}
       />
 
       {/* Import Test Cases Dialog */}
       <ImportTestCasesDialog
         open={isImportOpen}
         onOpenChange={setIsImportOpen}
-        onImport={(count) => toast.success(`Imported ${count} test cases`)}
+        onImport={(count) => {
+          toast.success(`Imported ${count} test cases`);
+          refetch(); // Refresh the list after import
+        }}
       />
 
       {/* Templates Dialog */}
@@ -693,9 +730,7 @@ export default function TestCasesPage() {
       <AIGenerateTestCasesDialog
         open={isAIGenerateOpen}
         onOpenChange={setIsAIGenerateOpen}
-        onTestCasesGenerated={(testCases) => {
-          toast.success(`Added ${testCases.length} AI-generated test cases`);
-        }}
+        onTestCasesGenerated={handleAIGeneratedTestCases}
       />
 
       {/* Keyboard Shortcuts Dialog */}

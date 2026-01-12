@@ -30,15 +30,18 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { TestCase } from '@/data/testCasesData';
+import { exportTestCases, type ExportFormat } from './utils/exportTestCases';
 
 interface ExportTestCasesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedCount?: number;
   totalCount?: number;
+  testCases?: TestCase[];
+  selectedIds?: Set<string>;
 }
 
-type ExportFormat = 'xlsx' | 'csv' | 'json' | 'pdf';
 type ExportScope = 'selected' | 'filtered' | 'all';
 
 interface FormatOption {
@@ -46,13 +49,13 @@ interface FormatOption {
   label: string;
   icon: React.ElementType;
   description: string;
+  disabled?: boolean;
 }
 
 const formatOptions: FormatOption[] = [
   { value: 'xlsx', label: 'Excel (.xlsx)', icon: FileSpreadsheet, description: 'Best for data analysis and editing' },
   { value: 'csv', label: 'CSV (.csv)', icon: FileText, description: 'Universal format, compatible with most tools' },
   { value: 'json', label: 'JSON (.json)', icon: FileJson, description: 'For import into other systems' },
-  { value: 'pdf', label: 'PDF Report (.pdf)', icon: File, description: 'Formatted report for sharing' },
 ];
 
 const fieldOptions = [
@@ -77,6 +80,8 @@ export function ExportTestCasesDialog({
   onOpenChange, 
   selectedCount = 0,
   totalCount = 0,
+  testCases = [],
+  selectedIds = new Set(),
 }: ExportTestCasesDialogProps) {
   const [format, setFormat] = useState<ExportFormat>('xlsx');
   const [scope, setScope] = useState<ExportScope>(selectedCount > 0 ? 'selected' : 'all');
@@ -100,22 +105,53 @@ export function ExportTestCasesDialog({
     setSelectedFields(newFields);
   };
 
+  const getTestCasesToExport = () => {
+    switch (scope) {
+      case 'selected':
+        return testCases.filter(tc => selectedIds.has(tc.id));
+      case 'filtered':
+      case 'all':
+        return testCases;
+      default:
+        return [];
+    }
+  };
+
   const handleExport = async () => {
     setIsExporting(true);
     setExportProgress(0);
 
-    // Simulate export progress
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise(resolve => setTimeout(resolve, 150));
-      setExportProgress(i);
-    }
+    try {
+      // Show progress
+      for (let i = 0; i <= 50; i += 10) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+        setExportProgress(i);
+      }
 
-    setIsExporting(false);
-    setExportProgress(0);
-    onOpenChange(false);
-    
-    const count = scope === 'selected' ? selectedCount : scope === 'filtered' ? totalCount : totalCount;
-    toast.success(`Exported ${count} test cases as ${format.toUpperCase()}`);
+      const casesToExport = getTestCasesToExport();
+      const fields = Array.from(selectedFields);
+
+      // Perform export
+      exportTestCases(casesToExport, {
+        format,
+        selectedFields: fields,
+      });
+
+      for (let i = 50; i <= 100; i += 10) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+        setExportProgress(i);
+      }
+
+      const count = casesToExport.length;
+      toast.success(`Exported ${count} test cases as ${format.toUpperCase()}`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Export failed. Please try again.');
+    } finally {
+      setIsExporting(false);
+      setExportProgress(0);
+      onOpenChange(false);
+    }
   };
 
   const getExportCount = () => {
