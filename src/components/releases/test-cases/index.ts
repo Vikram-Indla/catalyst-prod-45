@@ -28,5 +28,10 @@ export { BulkAssignDialog } from './BulkAssignDialog';
 export { BulkMoveDialog } from './BulkMoveDialog';
 export { BulkTagsDialog } from './BulkTagsDialog';
 
+// Phase 10: Test Execution
+export { ExecuteTestCaseDialog } from './ExecuteTestCaseDialog';
+export { TestRunSummaryCard } from './TestRunSummaryCard';
+export { QuickExecuteButton } from './QuickExecuteButton';
+
 // Badges
 export * from './badges';

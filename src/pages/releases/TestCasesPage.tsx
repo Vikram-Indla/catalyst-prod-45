@@ -72,6 +72,7 @@ import { TestCaseDetailDrawer } from '@/components/releases/test-cases/TestCaseD
 import { BulkAssignDialog } from '@/components/releases/test-cases/BulkAssignDialog';
 import { BulkMoveDialog } from '@/components/releases/test-cases/BulkMoveDialog';
 import { BulkTagsDialog } from '@/components/releases/test-cases/BulkTagsDialog';
+import { ExecuteTestCaseDialog } from '@/components/releases/test-cases/ExecuteTestCaseDialog';
 import { testCasesData, TestCase } from '@/data/testCasesData';
 import { useTestCasesApi, useDeleteTestCasesApi, useDuplicateTestCaseApi } from '@/hooks/use-test-cases-api';
 import { useBulkCreateTestCasesApi } from '@/hooks/use-create-test-case-api';
@@ -117,6 +118,9 @@ export default function TestCasesPage() {
   const [isBulkAssignOpen, setIsBulkAssignOpen] = useState(false);
   const [isBulkMoveOpen, setIsBulkMoveOpen] = useState(false);
   const [isBulkTagsOpen, setIsBulkTagsOpen] = useState(false);
+  
+  // Test execution
+  const [isExecuteOpen, setIsExecuteOpen] = useState(false);
   
   // Focused item index for keyboard navigation
   const [focusedIndex, setFocusedIndex] = useState(-1);
@@ -857,7 +861,30 @@ export default function TestCasesPage() {
           setIsEditOpen(true);
         }}
         onExecute={() => {
-          toast.success(`Starting execution for ${selectedTestCase?.id}...`);
+          setIsDetailDrawerOpen(false);
+          setIsExecuteOpen(true);
+        }}
+      />
+
+      {/* Execute Test Case Dialog */}
+      <ExecuteTestCaseDialog
+        testCase={selectedTestCase ? {
+          id: selectedTestCase.id,
+          title: selectedTestCase.title,
+          description: selectedTestCase.description,
+          status: selectedTestCase.status,
+          priority: selectedTestCase.priority,
+          type: selectedTestCase.type,
+          preconditions: selectedTestCase.preconditions,
+          steps: selectedTestCase.testSteps,
+        } : null}
+        open={isExecuteOpen}
+        onOpenChange={setIsExecuteOpen}
+        onComplete={(execution) => {
+          toast.success(`Execution completed: ${execution.overallResult.toUpperCase()}`, {
+            description: `Duration: ${Math.floor(execution.duration / 60)}m ${execution.duration % 60}s`,
+          });
+          refetch();
         }}
       />
 
