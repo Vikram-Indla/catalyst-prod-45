@@ -346,13 +346,12 @@ export default function AllIdeasPageRebuilt() {
           />
         )}
       </div>
-    </div>
     
-    {/* Submit Idea Modal */}
-    <SubmitIdeaModalRebuilt 
-      open={showSubmitModal} 
-      onOpenChange={setShowSubmitModal} 
-    />
+      {/* Submit Idea Modal */}
+      <SubmitIdeaModalRebuilt 
+        open={showSubmitModal} 
+        onOpenChange={setShowSubmitModal} 
+      />
     </>
   );
 }
