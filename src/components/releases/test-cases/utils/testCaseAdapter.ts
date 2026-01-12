@@ -123,6 +123,20 @@ export function apiToUITestCase(apiCase: ApiTestCase): UITestCase {
       color: getAvatarColor(apiCase.owner_id),
     },
     updated: formatRelativeTime(apiCase.updated_at),
+    // Extended fields
+    description: apiCase.description,
+    preconditions: apiCase.preconditions,
+    tags: apiCase.tags,
+    createdBy: apiCase.created_by_profile?.full_name,
+    createdAt: apiCase.created_at,
+    updatedAt: apiCase.updated_at,
+    testSteps: apiCase.steps?.map(step => ({
+      id: step.id,
+      step: step.step_number,
+      action: step.action,
+      expectedResult: step.expected_result,
+      testData: step.test_data,
+    })),
   };
 }
 

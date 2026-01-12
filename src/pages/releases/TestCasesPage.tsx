@@ -60,6 +60,7 @@ import { TestCasesGrid } from '@/components/releases/test-cases/TestCasesGrid';
 import { TestCasesKanban } from '@/components/releases/test-cases/TestCasesKanban';
 import { TestCaseEmptyState } from '@/components/releases/test-cases/TestCaseEmptyState';
 import { CreateTestCaseDialog } from '@/components/releases/test-cases/CreateTestCaseDialog';
+import { EditTestCaseDialog } from '@/components/releases/test-cases/EditTestCaseDialog';
 import { BulkActionsBar } from '@/components/releases/test-cases/BulkActionsBar';
 import { ExportTestCasesDialog } from '@/components/releases/test-cases/ExportTestCasesDialog';
 import { ImportTestCasesDialog } from '@/components/releases/test-cases/ImportTestCasesDialog';
@@ -106,6 +107,7 @@ export default function TestCasesPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase | null>(null);
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [templatePrefillData, setTemplatePrefillData] = useState<PrefilledTestCase | null>(null);
 
   // URL-synced filters
@@ -787,20 +789,38 @@ export default function TestCasesPage() {
         testCase={selectedTestCase ? {
           id: selectedTestCase.id,
           title: selectedTestCase.title,
+          description: selectedTestCase.description,
+          preconditions: selectedTestCase.preconditions,
           status: selectedTestCase.status,
           priority: selectedTestCase.priority,
           type: selectedTestCase.type,
+          tags: selectedTestCase.tags,
           lastRunStatus: selectedTestCase.lastRun as any,
-          automationStatus: 'manual',
+          automationStatus: selectedTestCase.automationStatus || 'manual',
+          createdBy: selectedTestCase.createdBy || selectedTestCase.assignee.name,
+          createdAt: selectedTestCase.createdAt,
+          updatedAt: selectedTestCase.updatedAt,
+          steps: selectedTestCase.testSteps,
         } : null}
         open={isDetailDrawerOpen}
         onOpenChange={setIsDetailDrawerOpen}
         onEdit={() => {
           setIsDetailDrawerOpen(false);
-          toast.info('Edit mode coming soon');
+          setIsEditOpen(true);
         }}
         onExecute={() => {
           toast.success(`Starting execution for ${selectedTestCase?.id}...`);
+        }}
+      />
+
+      {/* Edit Test Case Dialog */}
+      <EditTestCaseDialog
+        testCase={selectedTestCase}
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        onSuccess={() => {
+          refetch();
+          setSelectedTestCase(null);
         }}
       />
     </div>
