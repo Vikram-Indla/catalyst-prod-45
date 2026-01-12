@@ -13,3 +13,11 @@ export type { TestCaseStatus } from './StatusBadge';
 
 export { LastRunBadge } from './LastRunBadge';
 export type { LastRunStatus } from './LastRunBadge';
+
+export { ExecutionStatusBadge } from './ExecutionStatusBadge';
+export type { ExecutionStatus } from './ExecutionStatusBadge';
+
+export { AutomationBadge } from './AutomationBadge';
+export type { AutomationStatus } from './AutomationBadge';
+
+export { CoverageBadge } from './CoverageBadge';

@@ -19,5 +19,8 @@ export { TestCaseComparisonDialog } from './TestCaseComparisonDialog';
 export { DraggableStepsList } from './DraggableStepsList';
 export { CollaborationIndicator, CollaboratorCursor } from './CollaborationIndicator';
 
+// Phase 8: Detail Drawer
+export { TestCaseDetailDrawer } from './TestCaseDetailDrawer';
+
 // Badges
 export * from './badges';
