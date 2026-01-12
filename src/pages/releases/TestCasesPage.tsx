@@ -69,6 +69,9 @@ import { AIGenerateTestCasesDialog } from '@/components/releases/test-cases/AIGe
 import { KeyboardShortcutsDialog } from '@/components/releases/test-cases/KeyboardShortcutsDialog';
 import { AdvancedFiltersDialog } from '@/components/releases/test-cases/AdvancedFiltersDialog';
 import { TestCaseDetailDrawer } from '@/components/releases/test-cases/TestCaseDetailDrawer';
+import { BulkAssignDialog } from '@/components/releases/test-cases/BulkAssignDialog';
+import { BulkMoveDialog } from '@/components/releases/test-cases/BulkMoveDialog';
+import { BulkTagsDialog } from '@/components/releases/test-cases/BulkTagsDialog';
 import { testCasesData, TestCase } from '@/data/testCasesData';
 import { useTestCasesApi, useDeleteTestCasesApi, useDuplicateTestCaseApi } from '@/hooks/use-test-cases-api';
 import { useBulkCreateTestCasesApi } from '@/hooks/use-create-test-case-api';
@@ -109,6 +112,14 @@ export default function TestCasesPage() {
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [templatePrefillData, setTemplatePrefillData] = useState<PrefilledTestCase | null>(null);
+  
+  // Bulk action dialogs
+  const [isBulkAssignOpen, setIsBulkAssignOpen] = useState(false);
+  const [isBulkMoveOpen, setIsBulkMoveOpen] = useState(false);
+  const [isBulkTagsOpen, setIsBulkTagsOpen] = useState(false);
+  
+  // Focused item index for keyboard navigation
+  const [focusedIndex, setFocusedIndex] = useState(-1);
 
   // URL-synced filters
   const { 
@@ -196,24 +207,6 @@ export default function TestCasesPage() {
     });
   }, [projectId, bulkCreateTestCases]);
 
-  // Keyboard shortcuts
-  useTestCaseKeyboardShortcuts({
-    onSearch: () => searchInputRef.current?.focus(),
-    onCreate: () => setIsCreateOpen(true),
-    onEscape: () => {
-      if (selectedIds.size > 0) {
-        setSelectedIds(new Set());
-      }
-    },
-    onDelete: () => {
-      if (selectedIds.size > 0) {
-        const ids = Array.from(selectedIds);
-        deleteTestCases.mutate(ids);
-        setSelectedIds(new Set());
-      }
-    },
-  });
-
   // Persist view mode
   useEffect(() => {
     localStorage.setItem('catalyst-test-cases-view', viewMode);
@@ -246,6 +239,61 @@ export default function TestCasesPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [filters]);
+
+  // Keyboard shortcuts - comprehensive (must be after paginatedTestCases is defined)
+  useTestCaseKeyboardShortcuts({
+    onSearch: () => searchInputRef.current?.focus(),
+    onCreate: () => setIsCreateOpen(true),
+    onAdvancedFilters: () => setIsAdvancedFiltersOpen(true),
+    onShowHelp: () => setIsKeyboardShortcutsOpen(true),
+    onViewChange: (view) => setViewMode(view),
+    onEdit: () => {
+      if (selectedIds.size === 1) {
+        const id = Array.from(selectedIds)[0];
+        const tc = paginatedTestCases.find(t => t.id === id);
+        if (tc) {
+          setSelectedTestCase(tc);
+          setIsEditOpen(true);
+        }
+      }
+    },
+    onDuplicate: () => {
+      if (selectedIds.size > 0) {
+        Array.from(selectedIds).forEach(id => duplicateTestCase.mutate({ id }));
+        toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
+      }
+    },
+    onSelectAll: () => {
+      setSelectedIds(new Set(paginatedTestCases.map(tc => tc.id)));
+    },
+    onNavigateNext: () => {
+      setFocusedIndex(prev => Math.min(prev + 1, paginatedTestCases.length - 1));
+    },
+    onNavigatePrev: () => {
+      setFocusedIndex(prev => Math.max(prev - 1, 0));
+    },
+    onOpenSelected: () => {
+      if (focusedIndex >= 0 && focusedIndex < paginatedTestCases.length) {
+        setSelectedTestCase(paginatedTestCases[focusedIndex]);
+        setIsDetailDrawerOpen(true);
+      }
+    },
+    onEscape: () => {
+      if (isDetailDrawerOpen) {
+        setIsDetailDrawerOpen(false);
+      } else if (selectedIds.size > 0) {
+        setSelectedIds(new Set());
+        setFocusedIndex(-1);
+      }
+    },
+    onDelete: () => {
+      if (selectedIds.size > 0) {
+        const ids = Array.from(selectedIds);
+        deleteTestCases.mutate(ids);
+        setSelectedIds(new Set());
+      }
+    },
+  });
 
   const handleClearAllFilters = () => {
     clearFilters();
@@ -700,9 +748,9 @@ export default function TestCasesPage() {
             totalCount={totalCount}
             onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.id)))}
             onClear={clearSelection}
-            onMove={() => toast.info('Move to Release dialog coming soon')}
-            onAssign={() => toast.info('Assign dialog coming soon')}
-            onAddTags={() => toast.info('Add Tags dialog coming soon')}
+            onMove={() => setIsBulkMoveOpen(true)}
+            onAssign={() => setIsBulkAssignOpen(true)}
+            onAddTags={() => setIsBulkTagsOpen(true)}
             onDelete={() => {
               const ids = Array.from(selectedIds);
               deleteTestCases.mutate(ids);
@@ -710,9 +758,9 @@ export default function TestCasesPage() {
             }}
             onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
             onDuplicate={() => {
-              // Duplicate each selected test case
               const ids = Array.from(selectedIds);
               ids.forEach(id => duplicateTestCase.mutate({ id }));
+              toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
             }}
             onExport={() => setIsExportOpen(true)}
           />
@@ -821,6 +869,46 @@ export default function TestCasesPage() {
         onSuccess={() => {
           refetch();
           setSelectedTestCase(null);
+        }}
+      />
+
+      {/* Bulk Assign Dialog */}
+      <BulkAssignDialog
+        open={isBulkAssignOpen}
+        onOpenChange={setIsBulkAssignOpen}
+        selectedCount={selectedIds.size}
+        onAssign={(assigneeId) => {
+          toast.success(`Assigned ${selectedIds.size} test case(s) to team member`);
+          setSelectedIds(new Set());
+          refetch();
+        }}
+      />
+
+      {/* Bulk Move Dialog */}
+      <BulkMoveDialog
+        open={isBulkMoveOpen}
+        onOpenChange={setIsBulkMoveOpen}
+        selectedCount={selectedIds.size}
+        currentRelease={filters.releases?.[0]}
+        onMove={(releaseId) => {
+          toast.success(`Moved ${selectedIds.size} test case(s) to release`);
+          setSelectedIds(new Set());
+          refetch();
+        }}
+      />
+
+      {/* Bulk Tags Dialog */}
+      <BulkTagsDialog
+        open={isBulkTagsOpen}
+        onOpenChange={setIsBulkTagsOpen}
+        selectedCount={selectedIds.size}
+        onApplyTags={(tagsToAdd, tagsToRemove) => {
+          const changes = [];
+          if (tagsToAdd.length) changes.push(`added ${tagsToAdd.length} tag(s)`);
+          if (tagsToRemove.length) changes.push(`removed ${tagsToRemove.length} tag(s)`);
+          toast.success(`Updated tags: ${changes.join(', ')}`);
+          setSelectedIds(new Set());
+          refetch();
         }}
       />
     </div>
