@@ -29,7 +29,8 @@ const defaultFactors: ImpactFactor[] = [
 ];
 
 export function ImpactScoreCard({ score, factors, className }: ImpactScoreCardProps) {
-  const displayFactors = factors || defaultFactors.map(f => ({ ...f, value: score }));
+  // Use provided factors or defaults with 0 values (NOT the score!)
+  const displayFactors = factors || defaultFactors;
   // Normalize score to /5 if it's /100
   const normalizedScore = score > 5 ? score / 20 : score;
 

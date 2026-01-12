@@ -252,8 +252,9 @@ export default function IdeaDetailPageRebuilt() {
   }
 
   const ideaType = idea.idea_type || 'standard';
-  const showTriagePanel = ['submitted', 'under_review'].includes(idea.status) && ideaType === 'standard';
-  const showQuickWinActions = ideaType === 'quick_win' && ['triaged', 'quick_win_approved', 'approved'].includes(idea.status);
+  // Show triage panel for ideas in scoring/submitted/under_review status that haven't been typed yet
+  const showTriagePanel = ['submitted', 'under_review', 'scoring'].includes(idea.status) && ideaType === 'standard';
+  const showQuickWinActions = ideaType === 'quick_win' && ['triaged', 'quick_win_approved', 'approved', 'scoring'].includes(idea.status);
   const showConvertedBanner = idea.status === 'converted' && idea.business_request;
   
   // Normalize score to /5
@@ -284,8 +285,8 @@ export default function IdeaDetailPageRebuilt() {
   };
 
   const typeConfig = {
-    quick_win: { icon: Zap, label: 'Quick Win', colors: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-    strategic: { icon: Box, label: 'Strategic', colors: 'bg-blue-100 text-blue-600 border-blue-200' },
+    quick_win: { icon: Zap, label: 'Quick Win', colors: 'bg-emerald-500 text-white border-emerald-600 shadow-lg shadow-emerald-500/25' },
+    strategic: { icon: Box, label: 'Strategic', colors: 'bg-blue-500 text-white border-blue-600 shadow-lg shadow-blue-500/25' },
     standard: { icon: null, label: 'Standard', colors: 'bg-slate-100 text-slate-600 border-slate-200' },
   };
   const TypeIcon = typeConfig[ideaType as keyof typeof typeConfig]?.icon;
@@ -327,75 +328,77 @@ export default function IdeaDetailPageRebuilt() {
             )}
 
             {/* Header Card */}
-            <Card className={`overflow-hidden border ${headerBg}`}>
-              <CardContent className="p-6">
+            <Card className={`overflow-hidden border-0 shadow-lg ${headerBg}`}>
+              {/* Colored Header Section */}
+              <div className={`p-6 ${ideaType === 'quick_win' ? 'bg-gradient-to-r from-emerald-500 to-green-500' : ideaType === 'strategic' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : 'bg-gradient-to-r from-slate-600 to-slate-700'}`}>
                 {/* Top Row - Badges */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2.5 py-1 bg-white/80 backdrop-blur border border-slate-200 rounded-md text-xs font-mono font-semibold text-slate-700">
-                      {idea.code}
-                    </span>
-                    <Badge className={statusColors[idea.status] || statusColors.submitted}>
-                      {IDEA_STATUS_LABELS[idea.status] || idea.status.replace('_', ' ')}
+                <div className="flex items-center gap-2 flex-wrap mb-4">
+                  <span className="px-3 py-1.5 bg-white/20 backdrop-blur border border-white/30 rounded-lg text-xs font-mono font-bold text-white">
+                    {idea.code}
+                  </span>
+                  <Badge className={`px-3 py-1 text-xs font-semibold uppercase tracking-wide ${statusColors[idea.status] || statusColors.submitted}`}>
+                    {IDEA_STATUS_LABELS[idea.status] || idea.status.replace('_', ' ')}
+                  </Badge>
+                  {ideaType !== 'standard' && (
+                    <Badge className={`px-3 py-1.5 text-sm font-bold ${typeConfig[ideaType as keyof typeof typeConfig]?.colors}`}>
+                      {TypeIcon && <TypeIcon className="w-4 h-4 mr-1.5" />}
+                      {typeConfig[ideaType as keyof typeof typeConfig]?.label}
                     </Badge>
-                    {ideaType !== 'standard' && (
-                      <Badge variant="outline" className={typeConfig[ideaType as keyof typeof typeConfig]?.colors}>
-                        {TypeIcon && <TypeIcon className="w-3.5 h-3.5 mr-1" />}
-                        {typeConfig[ideaType as keyof typeof typeConfig]?.label}
-                      </Badge>
-                    )}
-                  </div>
-                  <Button variant="ghost" size="sm" className="gap-1.5 text-slate-600 hover:text-slate-900">
-                    <Edit className="w-3.5 h-3.5" />
-                    Edit
-                  </Button>
+                  )}
                 </div>
 
                 {/* Title */}
-                <h1 className="text-2xl font-bold text-slate-900 mb-4 leading-tight">
+                <h1 className="text-2xl font-bold text-white mb-4 leading-tight">
                   {idea.title}
                 </h1>
 
                 {/* Meta Row */}
-                <div className="flex items-center gap-6 text-sm text-slate-600 mb-6 flex-wrap">
+                <div className="flex items-center gap-6 text-sm text-white/90 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white text-xs font-semibold">
+                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white text-sm font-semibold border border-white/30">
                       {submitterInitials}
                     </div>
-                    <span>{submitterName}</span>
+                    <span className="font-medium">{submitterName}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-slate-400" />
+                    <Clock className="w-4 h-4 text-white/70" />
                     {format(new Date(idea.submitted_at || idea.created_at), 'MMM d, yyyy')}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <MessageSquare className="w-4 h-4 text-slate-400" />
+                    <MessageSquare className="w-4 h-4 text-white/70" />
                     {commentsCount} comments
                   </div>
                 </div>
+              </div>
 
-                {/* Separator */}
-                <div className="border-t border-slate-200/60 my-4" />
-
-                {/* Vote Widget & Actions */}
+              {/* Bottom Section - Votes & Actions */}
+              <CardContent className="p-6 bg-white">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <VoteWidget
                     forVotes={idea.for_votes || 0}
                     againstVotes={idea.against_votes || 0}
                     onVote={handleVote}
                     disabled={voteIdea.isPending}
+                    size="lg"
                   />
 
-                  {showQuickWinActions && (
-                    <Button
-                      onClick={handleApproveAndConvert}
-                      disabled={convertToBR.isPending}
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/25"
-                    >
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      {convertToBR.isPending ? 'Converting...' : 'Approve & Create BR'}
+                  <div className="flex items-center gap-3">
+                    <Button variant="ghost" size="sm" className="gap-1.5 text-slate-600 hover:text-slate-900">
+                      <Edit className="w-4 h-4" />
+                      Edit
                     </Button>
-                  )}
+                    
+                    {showQuickWinActions && (
+                      <Button
+                        onClick={handleApproveAndConvert}
+                        disabled={convertToBR.isPending}
+                        className="h-11 px-5 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white shadow-lg shadow-emerald-500/30 font-semibold"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        {convertToBR.isPending ? 'Converting...' : 'Approve & Create BR'}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
