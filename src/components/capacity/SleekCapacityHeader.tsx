@@ -205,7 +205,7 @@ export function SleekCapacityHeader({
           <Button
             onClick={onAddResource}
             size="sm"
-            className="h-8 px-4 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+            className="h-8 px-4 text-xs bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
           >
             <Plus className="h-3.5 w-3.5 mr-1.5" />
             Book Resource
