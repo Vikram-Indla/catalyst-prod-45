@@ -19,5 +19,7 @@ export { MoreFiltersPanel, type MoreFiltersState } from './MoreFiltersPanel';
 export { BulkActionsBar } from './BulkActionsBar';
 export { ActiveFilterPills } from './ActiveFilterPills';
 export { SortDropdown } from './SortDropdown';
+export { TestCaseHistoryPanel } from './TestCaseHistoryPanel';
+export { VersionComparisonView } from './VersionComparisonView';
 // Only export main editor components, not individual tabs to avoid conflicts with reports module
 export { EditorHeader, EditorToolbar, ContextPanel } from './editor';
