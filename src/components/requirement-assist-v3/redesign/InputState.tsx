@@ -73,8 +73,8 @@ function EstimateCard({
     <div className={cn(
       "rounded-xl p-4 transition-all duration-500",
       isActive 
-        ? "bg-gradient-to-br from-blue-600 to-indigo-700 shadow-md"
-        : "bg-slate-100"
+        ? "bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg"
+        : "bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200"
     )}>
       <p className={cn(
         "text-[10px] font-semibold uppercase tracking-wider mb-3",
@@ -421,12 +421,15 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               <span className="text-xs font-semibold text-slate-700">History</span>
               <span className="text-[10px] text-slate-400">0</span>
             </div>
-            <button 
-              onClick={onShowHistory}
-              className="text-[10px] font-medium text-blue-600 hover:text-blue-700 hover:underline"
-            >
-              View All →
-            </button>
+            {/* Only show when count > 0 */}
+            {false && (
+              <button 
+                onClick={onShowHistory}
+                className="text-[10px] font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              >
+                View All →
+              </button>
+            )}
           </div>
 
           {/* Search */}
@@ -440,16 +443,19 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
             </div>
           </div>
 
-          {/* Empty State */}
-          <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
-            <Clock className="w-8 h-8 text-slate-200 mb-2" />
-            <p className="text-xs text-slate-400">No history yet</p>
+          {/* Empty State - Polished */}
+          <div className="flex-1 flex flex-col items-center justify-center p-4">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center mb-2">
+              <Clock className="w-5 h-5 text-slate-400" />
+            </div>
+            <p className="text-xs font-medium text-slate-500">No history yet</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">Generations appear here</p>
           </div>
         </div>
 
-        {/* Center: Editor */}
-        <div className="flex-1 p-5 bg-slate-50">
-          <div className="h-full flex flex-col bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden">
+        {/* Center: Main Editor */}
+        <div className="flex-1 p-5 bg-slate-50 overflow-hidden">
+          <div className="h-full bg-white rounded-xl border border-slate-200 shadow-lg shadow-slate-200/50 flex flex-col overflow-hidden">
             {/* Card Header - Minimal */}
             <div className="h-11 px-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50 flex-shrink-0">
               <div className="flex items-center gap-3">
@@ -467,11 +473,19 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               placeholder="Describe your system requirements in detail. You can paste images directly..."
             />
 
-            {/* Generate Footer */}
-            <div className="h-14 px-4 flex items-center justify-end border-t border-slate-100 bg-gradient-to-r from-slate-50 to-white flex-shrink-0">
-              <Button
-                onClick={handleGenerate}
+            {/* Editor Footer with Word Count + Generate Button */}
+            <div className="h-14 px-4 flex items-center justify-between border-t border-slate-100 bg-gradient-to-r from-slate-50 to-white flex-shrink-0">
+              {/* Left: Word count */}
+              <div className="flex items-center gap-3 text-sm text-slate-500">
+                <span><strong className="text-slate-700">{wordCount}</strong> words</span>
+                <span className="text-slate-300">|</span>
+                <span>{inputText.length} / 3,000</span>
+              </div>
+
+              {/* Right: Generate Button */}
+              <button
                 disabled={!canGenerate}
+                onClick={handleGenerate}
                 className={cn(
                   "h-10 px-5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all",
                   canGenerate
@@ -481,8 +495,8 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               >
                 <Sparkles className="w-4 h-4" />
                 {canGenerate ? 'Generate' : `${10 - wordCount} more words`}
-                {canGenerate && <kbd className="ml-1 text-[10px] opacity-60 bg-white/20 px-1 rounded">⌘G</kbd>}
-              </Button>
+                {canGenerate && <kbd className="ml-1 text-[10px] opacity-60">⌘G</kbd>}
+              </button>
             </div>
           </div>
         </div>
@@ -525,11 +539,17 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
             )}
           </div>
 
-          {/* Keyboard Shortcuts */}
-          <div className="p-3 border-t border-slate-100 bg-slate-50">
+          {/* Keyboard Shortcuts Footer */}
+          <div className="p-3 border-t border-slate-100 bg-slate-50/50 flex-shrink-0">
             <div className="flex items-center justify-center gap-4 text-[10px] text-slate-400">
-              <span><kbd className="px-1 py-0.5 bg-white rounded border text-[9px]">⌘G</kbd> Generate</span>
-              <span><kbd className="px-1 py-0.5 bg-white rounded border text-[9px]">⌘V</kbd> Paste image</span>
+              <span>
+                <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-mono">⌘G</kbd>
+                <span className="ml-1">Generate</span>
+              </span>
+              <span>
+                <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-mono">⌘V</kbd>
+                <span className="ml-1">Paste image</span>
+              </span>
             </div>
           </div>
         </div>
