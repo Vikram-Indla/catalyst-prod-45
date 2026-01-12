@@ -53,7 +53,7 @@ import { EpicBalancingPage } from "./modules/epic-balancing";
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
 import Ideation from "./pages/Ideation";
-const IdeasHubPage = lazy(() => import("./pages/ideas/IdeasHubPageElevated"));
+const IdeasHubPage = lazy(() => import("./pages/ideas/IdeasHubPageRebuilt"));
 const AllIdeasPage = lazy(() => import("./pages/ideas/AllIdeasPageElevated"));
 const IdeaDetailPage = lazy(() => import("./pages/ideas/IdeaDetailPageElevated"));
 const InitiativesPage = lazy(() => import("./pages/ideas/InitiativesPage"));
