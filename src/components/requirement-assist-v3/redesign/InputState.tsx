@@ -396,13 +396,14 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
           </div>
         </div>
         
-        {/* Destination Selectors */}
+        {/* Program/Project Selectors + ID Badges */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
+          {/* Selectors Container */}
+          <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-xl border border-slate-200">
             <div className="flex items-center gap-2">
               <span className="text-xs text-slate-500">Program:</span>
               <Select value={programId || ''} onValueChange={(v) => setProgramId(v || null)}>
-                <SelectTrigger className="w-40 h-9">
+                <SelectTrigger className="border-0 bg-transparent font-semibold h-auto p-0 w-auto min-w-[120px]">
                   <SelectValue placeholder="Select program" />
                 </SelectTrigger>
                 <SelectContent>
@@ -422,7 +423,7 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
                 onValueChange={(v) => setProjectId(v || null)}
                 disabled={!programId}
               >
-                <SelectTrigger className="w-40 h-9">
+                <SelectTrigger className="border-0 bg-transparent font-semibold h-auto p-0 w-auto min-w-[140px]">
                   <SelectValue placeholder="Select project" />
                 </SelectTrigger>
                 <SelectContent>
@@ -434,19 +435,21 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
             </div>
           </div>
 
-          {/* ID Preview Badges */}
-          {programId && projectId && (
-            <div className="flex items-center gap-2 ml-4">
-              <div className="px-3 py-1.5 bg-violet-100 border border-violet-200 rounded-lg flex items-center gap-1.5">
-                <span className="w-2 h-2 bg-violet-500 rounded-full" />
-                <span className="text-xs font-bold text-violet-700 font-mono">{selectedProgram?.code || 'PRG'}-XXX</span>
-              </div>
-              <div className="px-3 py-1.5 bg-emerald-100 border border-emerald-200 rounded-lg flex items-center gap-1.5">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full" />
-                <span className="text-xs font-bold text-emerald-700 font-mono">{selectedProject?.code || 'PRJ'}-XXX</span>
-              </div>
+          {/* ID Preview Badges - Always visible with fallback defaults */}
+          <div className="flex items-center gap-2">
+            <div className="px-3 py-1.5 bg-violet-100 border border-violet-200 rounded-lg flex items-center gap-1.5">
+              <span className="w-2 h-2 bg-violet-500 rounded-full" />
+              <span className="text-xs font-bold text-violet-700 font-mono">
+                {selectedProgram?.code || 'CAT'}-XXX
+              </span>
             </div>
-          )}
+            <div className="px-3 py-1.5 bg-emerald-100 border border-emerald-200 rounded-lg flex items-center gap-1.5">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+              <span className="text-xs font-bold text-emerald-700 font-mono">
+                {selectedProject?.code || 'DIP'}-XXX
+              </span>
+            </div>
+          </div>
         </div>
       </header>
 
