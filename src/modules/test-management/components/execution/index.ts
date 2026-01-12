@@ -9,6 +9,7 @@ export { ExecutionShortcutHints } from './ExecutionShortcutHints';
 export { ExecutionScreenshots } from './ExecutionScreenshots';
 export { QuickDefectDialog } from './QuickDefectDialog';
 export { AttachmentDropzone } from './AttachmentDropzone';
+export { EnvironmentSelector, type Environment as ExecutionEnvironment } from './EnvironmentSelector';
 
 // Full-page runner
 export * from './runner';
