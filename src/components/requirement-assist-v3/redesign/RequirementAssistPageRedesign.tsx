@@ -1,6 +1,7 @@
 // ============================================================
-// REQUIREMENT ASSIST PAGE (REDESIGN)
+// REQUIREMENT ASSIST PAGE (COMPLETE REDESIGN)
 // 3-State Flow: INPUT → GENERATING → RESULTS
+// Enterprise-grade UI with full interactivity
 // ============================================================
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -11,6 +12,7 @@ import { HistorySlideOver } from './HistorySlideOver';
 import { useStore, type Generation } from '@/stores/requirementAssistStore';
 import { useKeyboardShortcuts, usePrograms } from '@/hooks/requirement-assist';
 import { v4 as uuidv4 } from 'uuid';
+import { useToast } from '@/hooks/use-toast';
 
 type PageState = 'input' | 'generating' | 'results';
 
@@ -18,13 +20,23 @@ type PageState = 'input' | 'generating' | 'results';
 async function mockGenerateRequirements(
   requirements: string,
   programId: string,
-  projectId: string
+  projectId: string,
+  onProgress?: (progress: number, step: number) => void
 ): Promise<Generation> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 3000));
-  
   const id = uuidv4();
   const wordCount = requirements.trim().split(/\s+/).filter(Boolean).length;
+  
+  // Simulate progress updates
+  for (let i = 0; i <= 100; i += 5) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const step = i < 25 ? 1 : i < 50 ? 2 : i < 75 ? 3 : 4;
+    onProgress?.(i, step);
+  }
+  
+  const complexity = wordCount / 30;
+  const epicCount = Math.max(1, Math.floor(complexity)) + 1;
+  const featureCount = Math.max(2, Math.floor(complexity * 2)) + 2;
+  const storyCount = Math.max(4, Math.floor(complexity * 4)) + 4;
   
   return {
     id,
@@ -47,10 +59,10 @@ async function mockGenerateRequirements(
     progress: 100,
     currentStep: null,
     errorMessage: null,
-    epicCount: Math.max(1, Math.floor(wordCount / 100)),
-    featureCount: Math.max(1, Math.floor(wordCount / 40)),
-    storyCount: Math.max(1, Math.floor(wordCount / 15)),
-    totalCount: 0,
+    epicCount,
+    featureCount,
+    storyCount,
+    totalCount: epicCount + featureCount + storyCount,
     createdAt: new Date().toISOString(),
     completedAt: new Date().toISOString(),
   };
@@ -72,10 +84,10 @@ function generateMockWorkItems(generation: Generation) {
       level: 0,
       sortOrder: e,
       displayId: `EPIC-${e + 1}`,
-      title: `Epic ${e + 1}: Generated from requirements`,
-      description: 'Auto-generated epic based on input requirements',
+      title: `Epic ${e + 1}: System capability from requirements`,
+      description: 'Auto-generated epic based on input requirements. This epic encompasses the core functionality described in the input.',
       acceptanceCriteria: [],
-      confidenceScore: 0.85,
+      confidenceScore: 0.85 + Math.random() * 0.1,
       confidenceReason: null,
       isSelected: true,
       isEdited: false,
@@ -96,9 +108,9 @@ function generateMockWorkItems(generation: Generation) {
         sortOrder: f,
         displayId: `FEAT-${e * featuresPerEpic + f + 1}`,
         title: `Feature ${f + 1}: Supporting capability`,
-        description: 'Auto-generated feature',
+        description: 'Auto-generated feature that supports the parent epic functionality.',
         acceptanceCriteria: [],
-        confidenceScore: 0.8,
+        confidenceScore: 0.80 + Math.random() * 0.1,
         confidenceReason: null,
         isSelected: true,
         isEdited: false,
@@ -108,7 +120,7 @@ function generateMockWorkItems(generation: Generation) {
       
       // Generate stories for each feature
       const storiesPerFeature = Math.ceil(storyCount / featureCount);
-      for (let s = 0; s < storiesPerFeature; s++) {
+      for (let s = 0; s < storiesPerFeature && s < 3; s++) {
         items.push({
           id: uuidv4(),
           generationId: generation.id,
@@ -117,10 +129,14 @@ function generateMockWorkItems(generation: Generation) {
           level: 2,
           sortOrder: s,
           displayId: `STORY-${(e * featuresPerEpic + f) * storiesPerFeature + s + 1}`,
-          title: `User Story ${s + 1}: As a user, I want...`,
-          description: 'Auto-generated user story',
-          acceptanceCriteria: ['Given...', 'When...', 'Then...'],
-          confidenceScore: 0.75,
+          title: `User Story ${s + 1}: As a user, I want to perform an action`,
+          description: 'Auto-generated user story with clear acceptance criteria.',
+          acceptanceCriteria: [
+            'Given a precondition is met',
+            'When the user performs an action',
+            'Then the expected outcome occurs'
+          ],
+          confidenceScore: 0.75 + Math.random() * 0.15,
           confidenceReason: null,
           isSelected: true,
           isEdited: false,
@@ -138,6 +154,8 @@ export function RequirementAssistPageRedesign() {
   // Initialize hooks
   useKeyboardShortcuts();
   usePrograms();
+  
+  const { toast } = useToast();
 
   const [state, setState] = useState<PageState>('input');
   const [showHistory, setShowHistory] = useState(false);
@@ -152,6 +170,7 @@ export function RequirementAssistPageRedesign() {
     inputText,
     programId,
     projectId,
+    expandAll,
   } = useStore();
 
   // Check if we have a previous generation to restore
@@ -177,14 +196,27 @@ export function RequirementAssistPageRedesign() {
       result.totalCount = workItems.length;
       setGeneration(result);
       
+      // Expand all items by default
+      expandAll();
+      
       setState('results');
+      
+      toast({
+        title: "Generation Complete!",
+        description: `Created ${result.epicCount} epics, ${result.featureCount} features, and ${result.storyCount} stories.`,
+      });
     } catch (error) {
       console.error('Generation failed:', error);
+      toast({
+        title: "Generation Failed",
+        description: "An error occurred during generation. Please try again.",
+        variant: "destructive"
+      });
       setState('input');
     } finally {
       setGenerating(false);
     }
-  }, [setGeneration, setWorkItems, setGenerating]);
+  }, [setGeneration, setWorkItems, setGenerating, expandAll, toast]);
 
   const handleCancel = useCallback(() => {
     setGenerating(false);
@@ -214,7 +246,7 @@ export function RequirementAssistPageRedesign() {
   }, [setGeneration]);
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden bg-slate-50">
       {state === 'input' && (
         <InputState 
           onStart={startGeneration} 
@@ -246,3 +278,5 @@ export function RequirementAssistPageRedesign() {
     </div>
   );
 }
+
+export default RequirementAssistPageRedesign;
