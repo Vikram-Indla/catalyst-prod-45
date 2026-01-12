@@ -19,7 +19,8 @@ import {
   BulkActionsBar,
   IdeaCardRebuilt,
   IdeasTableRebuilt,
-  IdeasPagination
+  IdeasPagination,
+  SubmitIdeaModalRebuilt
 } from '@/components/ideas/elevated';
 import type { ImprovementIdea } from '@/types/improvement-ideas';
 
@@ -34,6 +35,7 @@ export default function AllIdeasPageRebuilt() {
   
   // State
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [initiativeFilter, setInitiativeFilter] = useState(searchParams.get('initiative') || 'all');
   const [typeFilter, setTypeFilter] = useState(searchParams.get('type') || 'all');
@@ -58,13 +60,13 @@ export default function AllIdeasPageRebuilt() {
         const isInput = ['INPUT', 'TEXTAREA'].includes((e.target as Element)?.tagName);
         if (!isInput) {
           e.preventDefault();
-          navigate('/industry/ideas/submit');
+          setShowSubmitModal(true);
         }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigate]);
+  }, []);
 
   // Tab counts
   const tabCounts = useMemo(() => ({
@@ -217,11 +219,11 @@ export default function AllIdeasPageRebuilt() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+    <>
       <div className="p-6 lg:p-10 max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <IdeasListHeader
-          onSubmitClick={() => navigate('/industry/ideas/submit')}
+          onSubmitClick={() => setShowSubmitModal(true)}
           onExport={() => toast({ title: "Export", description: "Export started..." })}
         />
 
@@ -345,5 +347,12 @@ export default function AllIdeasPageRebuilt() {
         )}
       </div>
     </div>
+    
+    {/* Submit Idea Modal */}
+    <SubmitIdeaModalRebuilt 
+      open={showSubmitModal} 
+      onOpenChange={setShowSubmitModal} 
+    />
+    </>
   );
 }

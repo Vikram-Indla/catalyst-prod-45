@@ -7,6 +7,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lightbulb, Plus, List } from 'lucide-react';
+import { SubmitIdeaModalRebuilt } from '@/components/ideas/elevated';
 import { Button } from '@/components/ui/button';
 import { 
   useIdeasHubMetrics, 
@@ -33,6 +34,9 @@ export default function IdeasHubPageRebuilt() {
   const navigate = useNavigate();
   const { toast } = useToast();
   
+  // State
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
+  
   const { data: metrics, isLoading: metricsLoading } = useIdeasHubMetrics();
   const { data: topIdeas, isLoading: topIdeasLoading } = useTopImprovementIdeas(5);
   const { data: initiatives, isLoading: initiativesLoading } = useImprovementInitiatives();
@@ -47,7 +51,7 @@ export default function IdeasHubPageRebuilt() {
 
       if (e.key.toLowerCase() === 'n' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
-        navigate('/industry/ideas/submit');
+        setShowSubmitModal(true);
       }
       if (e.key.toLowerCase() === 'g' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
@@ -210,7 +214,7 @@ export default function IdeasHubPageRebuilt() {
                 <Kbd>G</Kbd>
               </Button>
               <Button 
-                onClick={() => navigate('/industry/ideas/submit')}
+                onClick={() => setShowSubmitModal(true)}
                 className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-600/25 group"
               >
                 <Plus className="w-4 h-4" />
@@ -255,7 +259,7 @@ export default function IdeasHubPageRebuilt() {
 
             {/* Quick Actions Grid */}
             <QuickActionsGrid
-              onSubmitClick={() => navigate('/industry/ideas/submit')}
+              onSubmitClick={() => setShowSubmitModal(true)}
               onScoreClick={() => navigate('/industry/ideas/all?status=submitted')}
               onMatrixClick={() => navigate('/industry/ideas/matrix')}
               pendingScoring={pendingScoring}
@@ -318,6 +322,12 @@ export default function IdeasHubPageRebuilt() {
           </div>
         </div>
       </div>
+      
+      {/* Submit Idea Modal */}
+      <SubmitIdeaModalRebuilt 
+        open={showSubmitModal} 
+        onOpenChange={setShowSubmitModal} 
+      />
     </div>
   );
 }
