@@ -57,6 +57,7 @@ import {
 } from '@/components/ui/tooltip';
 import { TestCasesTable } from '@/components/releases/test-cases/TestCasesTable';
 import { TestCasesGrid } from '@/components/releases/test-cases/TestCasesGrid';
+import { TestCasesKanban } from '@/components/releases/test-cases/TestCasesKanban';
 import { TestCaseEmptyState } from '@/components/releases/test-cases/TestCaseEmptyState';
 import { CreateTestCaseDialog } from '@/components/releases/test-cases/CreateTestCaseDialog';
 import { BulkActionsBar } from '@/components/releases/test-cases/BulkActionsBar';
@@ -454,7 +455,7 @@ export default function TestCasesPage() {
                 }}
               />
             </motion.div>
-          ) : (
+          ) : viewMode === 'grid' ? (
             <motion.div
               key="grid"
               initial={{ opacity: 0 }}
@@ -466,6 +467,22 @@ export default function TestCasesPage() {
                 testCases={paginatedTestCases}
                 selectedIds={selectedIds}
                 onSelectRow={handleSelectRow}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="kanban"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TestCasesKanban 
+                testCases={filteredTestCases}
+                onCardClick={(tc) => {
+                  setSelectedTestCase(tc);
+                  setIsDetailDrawerOpen(true);
+                }}
               />
             </motion.div>
           )}
