@@ -4,6 +4,7 @@
  * - Form validation with Zod
  * - "Create another" option
  * - Keyboard accessible
+ * - Template pre-fill support
  */
 
 import { useState, useEffect } from 'react';
@@ -31,6 +32,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import type { PrefilledTestCase } from './utils';
 
 // Zod schema for validation
 const createTestCaseSchema = z.object({
@@ -49,12 +51,14 @@ interface CreateTestCaseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (testCase: CreateTestCaseInput & { id: string }) => void;
+  prefillData?: PrefilledTestCase | null;
 }
 
 export function CreateTestCaseDialog({ 
   open, 
   onOpenChange,
-  onSuccess 
+  onSuccess,
+  prefillData,
 }: CreateTestCaseDialogProps) {
   const [createAnother, setCreateAnother] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,12 +76,22 @@ export function CreateTestCaseDialog({
     },
   });
 
-  // Reset form when dialog closes
+  // Reset form when dialog closes, or pre-fill when data is provided
   useEffect(() => {
     if (!open) {
       form.reset();
+    } else if (prefillData) {
+      form.reset({
+        title: prefillData.title || '',
+        description: prefillData.description || '',
+        type: prefillData.type || 'functional',
+        priority: prefillData.priority || 'medium',
+        release: '',
+        assignee: '',
+        folder: prefillData.folder || '',
+      });
     }
-  }, [open, form]);
+  }, [open, prefillData, form]);
 
   const onSubmit = async (data: CreateTestCaseInput) => {
     setIsSubmitting(true);
@@ -110,7 +124,9 @@ export function CreateTestCaseDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Create Test Case</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            {prefillData ? `Create from Template: ${prefillData.title}` : 'Create Test Case'}
+          </DialogTitle>
         </DialogHeader>
         
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -149,7 +165,7 @@ export function CreateTestCaseDialog({
               </Label>
               <Select
                 value={form.watch('type')}
-                onValueChange={(value) => form.setValue('type', value as any)}
+                onValueChange={(value) => form.setValue('type', value as CreateTestCaseInput['type'])}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
@@ -173,7 +189,7 @@ export function CreateTestCaseDialog({
               </Label>
               <Select
                 value={form.watch('priority')}
-                onValueChange={(value) => form.setValue('priority', value as any)}
+                onValueChange={(value) => form.setValue('priority', value as CreateTestCaseInput['priority'])}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select priority" />
@@ -226,6 +242,9 @@ export function CreateTestCaseDialog({
                   <SelectItem value="user-management">User Management</SelectItem>
                   <SelectItem value="performance">Performance</SelectItem>
                   <SelectItem value="security">Security</SelectItem>
+                  <SelectItem value="core-features">Core Features</SelectItem>
+                  <SelectItem value="ecommerce">E-Commerce</SelectItem>
+                  <SelectItem value="ui-ux">UI/UX</SelectItem>
                 </SelectContent>
               </Select>
             </div>
