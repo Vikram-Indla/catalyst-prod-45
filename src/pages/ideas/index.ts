@@ -7,6 +7,7 @@ export { default as AllIdeasPageElevated } from './AllIdeasPageElevated';
 export { default as AllIdeasPageRebuilt } from './AllIdeasPageRebuilt';
 export { default as IdeaDetailPage } from './IdeaDetailPage';
 export { default as IdeaDetailPageElevated } from './IdeaDetailPageElevated';
+export { default as IdeaDetailPageRebuilt } from './IdeaDetailPageRebuilt';
 export { default as SubmitIdeaPage } from './SubmitIdeaPage';
 export { default as SubmitIdeaPageElevated } from './SubmitIdeaPageElevated';
 export { default as AIInsightsPage } from './AIInsightsPage';
