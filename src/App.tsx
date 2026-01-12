@@ -58,7 +58,7 @@ const AllIdeasPage = lazy(() => import("./pages/ideas/AllIdeasPageElevated"));
 const IdeaDetailPage = lazy(() => import("./pages/ideas/IdeaDetailPageElevated"));
 const InitiativesPage = lazy(() => import("./pages/ideas/InitiativesPage"));
 const InitiativeDetailPage = lazy(() => import("./pages/ideas/InitiativeDetailPage"));
-const SubmitIdeaPage = lazy(() => import("./pages/ideas/SubmitIdeaPage"));
+const SubmitIdeaPage = lazy(() => import("./pages/ideas/SubmitIdeaPageElevated"));
 const ScoringQueuePage = lazy(() => import("./pages/ideas/ScoringQueuePage"));
 const PriorityMatrixPage = lazy(() => import("./pages/ideas/PriorityMatrixPage"));
 const AIInsightsPage = lazy(() => import("./pages/ideas/AIInsightsPage"));

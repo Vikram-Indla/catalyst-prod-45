@@ -65,7 +65,7 @@ export function ImpactScoreCard({ score, factors, className }: ImpactScoreCardPr
             
             {/* Value */}
             <span className="text-sm font-semibold text-slate-700 w-8 text-right">
-              {factor.value.toFixed(1)}
+              {Math.round(factor.value)}
             </span>
           </div>
         ))}
