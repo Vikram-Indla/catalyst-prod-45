@@ -38,6 +38,7 @@ import {
   Command,
   Keyboard,
   Sparkles,
+  Wand2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,6 +63,9 @@ import { BulkActionsBar } from '@/components/releases/test-cases/BulkActionsBar'
 import { ExportTestCasesDialog } from '@/components/releases/test-cases/ExportTestCasesDialog';
 import { ImportTestCasesDialog } from '@/components/releases/test-cases/ImportTestCasesDialog';
 import { TestCaseTemplatesDialog } from '@/components/releases/test-cases/TestCaseTemplatesDialog';
+import { AIGenerateTestCasesDialog } from '@/components/releases/test-cases/AIGenerateTestCasesDialog';
+import { KeyboardShortcutsDialog } from '@/components/releases/test-cases/KeyboardShortcutsDialog';
+import { AdvancedFiltersDialog } from '@/components/releases/test-cases/AdvancedFiltersDialog';
 import { testCasesData } from '@/data/testCasesData';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
@@ -85,6 +89,9 @@ export default function TestCasesPage() {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
+  const [isAIGenerateOpen, setIsAIGenerateOpen] = useState(false);
+  const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = useState(false);
+  const [isAdvancedFiltersOpen, setIsAdvancedFiltersOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // URL-synced filters
@@ -222,6 +229,15 @@ export default function TestCasesPage() {
           </Button>
           <Tooltip>
             <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8" onClick={() => setIsAIGenerateOpen(true)}>
+                <Wand2 className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
+                AI Generate
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Generate test cases with AI</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button variant="outline" size="sm" className="h-8" onClick={() => setIsTemplatesOpen(true)}>
                 <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
                 From Template
@@ -329,7 +345,7 @@ export default function TestCasesPage() {
             </SelectContent>
           </Select>
           
-          <Button variant="ghost" size="sm" className="h-9">
+          <Button variant="ghost" size="sm" className="h-9" onClick={() => setIsAdvancedFiltersOpen(true)}>
             <Filter className="w-4 h-4 mr-1.5" />
             More Filters
           </Button>
@@ -355,17 +371,13 @@ export default function TestCasesPage() {
         <div className="flex items-center gap-3">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 text-muted-foreground">
+              <Button variant="ghost" size="sm" className="h-8 text-muted-foreground" onClick={() => setIsKeyboardShortcutsOpen(true)}>
                 <Keyboard className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="space-y-1">
+            <TooltipContent side="bottom">
               <p className="font-medium text-xs">Keyboard Shortcuts</p>
-              <div className="text-xs text-muted-foreground space-y-0.5">
-                <p><kbd className="bg-muted px-1 rounded">⌘K</kbd> Focus search</p>
-                <p><kbd className="bg-muted px-1 rounded">⌘N</kbd> Create test case</p>
-                <p><kbd className="bg-muted px-1 rounded">Esc</kbd> Clear selection</p>
-              </div>
+              <p className="text-xs text-muted-foreground">Press ? to view all</p>
             </TooltipContent>
           </Tooltip>
           
@@ -610,6 +622,31 @@ export default function TestCasesPage() {
           setIsTemplatesOpen(false);
           setIsCreateOpen(true);
           toast.info(`Template "${template.name}" loaded`);
+        }}
+      />
+
+      {/* AI Generate Dialog */}
+      <AIGenerateTestCasesDialog
+        open={isAIGenerateOpen}
+        onOpenChange={setIsAIGenerateOpen}
+        onTestCasesGenerated={(testCases) => {
+          toast.success(`Added ${testCases.length} AI-generated test cases`);
+        }}
+      />
+
+      {/* Keyboard Shortcuts Dialog */}
+      <KeyboardShortcutsDialog
+        open={isKeyboardShortcutsOpen}
+        onOpenChange={setIsKeyboardShortcutsOpen}
+      />
+
+      {/* Advanced Filters Dialog */}
+      <AdvancedFiltersDialog
+        open={isAdvancedFiltersOpen}
+        onOpenChange={setIsAdvancedFiltersOpen}
+        onApplyFilters={(filters) => {
+          // Apply filters logic
+          toast.success('Filters applied');
         }}
       />
     </div>
