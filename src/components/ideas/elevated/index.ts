@@ -18,3 +18,10 @@ export * from './VoteWidget';
 export * from './PageHeader';
 export * from './ActivityFeed';
 export * from './ConversionFunnel';
+
+// NEW COMPONENTS
+export * from './IdeasStatsGrid';
+export * from './TopPriorityIdeas';
+export * from './QuickActionsGrid';
+export * from './ActiveInitiativesList';
+export * from './RecentActivityFeed';

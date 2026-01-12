@@ -1,6 +1,7 @@
 // Ideas Pages Index
 export { default as IdeasHubPage } from './IdeasHubPage';
 export { default as IdeasHubPageElevated } from './IdeasHubPageElevated';
+export { default as IdeasHubPageRebuilt } from './IdeasHubPageRebuilt';
 export { default as AllIdeasPage } from './AllIdeasPage';
 export { default as AllIdeasPageElevated } from './AllIdeasPageElevated';
 export { default as IdeaDetailPage } from './IdeaDetailPage';
