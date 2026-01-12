@@ -19,9 +19,18 @@ export * from './PageHeader';
 export * from './ActivityFeed';
 export * from './ConversionFunnel';
 
-// NEW COMPONENTS
+// NEW COMPONENTS - Ideas Hub Rebuilt
 export * from './IdeasStatsGrid';
 export * from './TopPriorityIdeas';
 export * from './QuickActionsGrid';
 export * from './ActiveInitiativesList';
 export * from './RecentActivityFeed';
+
+// NEW COMPONENTS - All Ideas List Rebuilt
+export * from './IdeasListHeader';
+export * from './IdeasFilterBarAdvanced';
+export * from './IdeasTabBarAdvanced';
+export * from './BulkActionsBar';
+export * from './IdeaCardRebuilt';
+export * from './IdeasTableRebuilt';
+export * from './IdeasPagination';
