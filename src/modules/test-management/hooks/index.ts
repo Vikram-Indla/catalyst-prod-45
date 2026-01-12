@@ -76,3 +76,12 @@ export { useFolderPanelState } from './useFolderPanelState';
 // Screenshot & Attachments
 export { useScreenshotCapture } from './useScreenshotCapture';
 export { useExecutionAttachments, type ExecutionAttachment } from './useExecutionAttachments';
+
+// Bulk Operations
+export * from './useBulkOperations';
+
+// Realtime
+export * from './useRealtimeExecution';
+
+// Reports
+export * from './useReports';

@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useTestCycle } from '../../../hooks/useCycles';
 import { useTestRun, useCreateRun, useUpdateStepResult, useCompleteRun, useBulkUpdateSteps } from '../../../hooks/useExecution';
 import { useCreateDefect } from '../../../hooks/useDefects';
+import { useRealtimeExecution } from '../../../hooks/useRealtimeExecution';
 import { useExecutionTimer } from '../hooks/useExecutionTimer';
 import { useExecutionKeyboard } from '../hooks/useExecutionKeyboard';
 import { ExecutionHeader } from './ExecutionHeader';
@@ -56,6 +57,9 @@ export function ExecutionRunnerPage() {
 
   // Timer
   const timer = useExecutionTimer(activeRunId, isComplete);
+
+  // Real-time updates
+  useRealtimeExecution({ cycleId, runId: activeRunId || undefined });
 
   // Steps data
   const steps = run?.step_results || [];
