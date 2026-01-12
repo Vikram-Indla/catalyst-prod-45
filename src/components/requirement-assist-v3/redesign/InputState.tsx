@@ -50,7 +50,7 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-50">
+    <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       {/* Header with branding */}
       <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -119,7 +119,7 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
           </div>
 
           {/* Main Card - Add shadow and better borders */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-lg shadow-slate-200/50 overflow-hidden">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/60 overflow-hidden">
             {/* Text Area */}
             <textarea
               value={inputText}
@@ -130,7 +130,7 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
             />
 
             {/* Footer Bar - Proper styling */}
-            <div className="px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 border-t border-slate-100 flex items-center justify-between">
+            <div className="px-6 py-4 bg-gradient-to-r from-slate-50 via-slate-50 to-blue-50/50 border-t border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-slate-500">{wordCount} words</span>
                 <span className="text-xs text-slate-400">{inputText.length} / 3,000</span>
@@ -143,12 +143,12 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
                 className={cn(
                   "h-11 px-6 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200",
                   canGenerate 
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0" 
-                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:-translate-y-0.5" 
+                    : "bg-slate-100 text-slate-500 border border-slate-200 cursor-not-allowed"
                 )}
               >
                 <Sparkles className="w-4 h-4" />
-                {canGenerate ? 'Generate' : wordCount < 10 ? `${10 - wordCount} more` : 'Generate'}
+                {canGenerate ? 'Generate' : wordCount < 10 ? `${10 - wordCount} more words` : 'Generate'}
               </button>
             </div>
 
