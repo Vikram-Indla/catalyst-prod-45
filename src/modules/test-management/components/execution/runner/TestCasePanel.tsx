@@ -145,6 +145,7 @@ export function TestCasePanel({
                   stepResult={stepResult}
                   stepNumber={originalIndex + 1}
                   isActive={originalIndex === currentStepIndex}
+                  runId={run?.id || ''}
                   onSelect={() => onStepSelect(originalIndex)}
                   onSetStatus={onStepStatus}
                   onLogDefect={onLogDefect}

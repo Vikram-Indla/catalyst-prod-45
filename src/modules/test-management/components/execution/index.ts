@@ -8,6 +8,7 @@ export { ExecutionProgress } from './ExecutionProgress';
 export { ExecutionShortcutHints } from './ExecutionShortcutHints';
 export { ExecutionScreenshots } from './ExecutionScreenshots';
 export { QuickDefectDialog } from './QuickDefectDialog';
+export { AttachmentDropzone } from './AttachmentDropzone';
 
 // Full-page runner
 export * from './runner';

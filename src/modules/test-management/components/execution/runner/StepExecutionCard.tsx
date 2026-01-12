@@ -1,8 +1,9 @@
 /**
  * Step Execution Card - Individual step with expand/collapse and actions
+ * Enhanced with screenshot capture and file attachments
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -14,15 +15,20 @@ import {
   SkipForward,
   ChevronDown,
   Bug,
-  Image,
+  Camera,
   Paperclip,
+  Loader2,
 } from 'lucide-react';
 import type { StepResult, ExecutionStatus } from '../../../api/types';
+import { AttachmentDropzone } from '../AttachmentDropzone';
+import { useScreenshotCapture } from '../../../hooks/useScreenshotCapture';
+import { useExecutionAttachments } from '../../../hooks/useExecutionAttachments';
 
 interface StepExecutionCardProps {
   stepResult: StepResult;
   stepNumber: number;
   isActive: boolean;
+  runId: string;
   onSelect: () => void;
   onSetStatus: (status: ExecutionStatus) => void;
   onLogDefect: () => void;
@@ -75,6 +81,7 @@ export function StepExecutionCard({
   stepResult,
   stepNumber,
   isActive,
+  runId,
   onSelect,
   onSetStatus,
   onLogDefect,
@@ -83,9 +90,23 @@ export function StepExecutionCard({
   const status = stepResult.status as ExecutionStatus;
   const isCompleted = ['passed', 'failed', 'blocked', 'skipped'].includes(status);
   
-  // Auto-expand: active steps OR not_run steps should start expanded
   const [isExpanded, setIsExpanded] = useState(isActive || status === 'not_run' || status === 'in_progress');
   const [actualResult, setActualResult] = useState(stepResult.actual_result || '');
+  const [showAttachments, setShowAttachments] = useState(false);
+  
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Screenshot capture
+  const { isCapturing, screenshots, captureScreenshot } = useScreenshotCapture();
+  
+  // File attachments
+  const { 
+    attachments, 
+    isUploading, 
+    uploadProgress, 
+    uploadFiles, 
+    deleteAttachment 
+  } = useExecutionAttachments(runId);
 
   const config = statusConfig[status];
   const step = stepResult.step;
@@ -97,9 +118,36 @@ export function StepExecutionCard({
     }
   }, [isActive, status]);
 
+  // Handle screenshot capture
+  const handleCaptureScreenshot = async () => {
+    // Capture entire viewport as evidence
+    await captureScreenshot(null, { backgroundColor: '#ffffff' });
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (files: File[]) => {
+    await uploadFiles(files, { runId, stepId: stepResult.step_id });
+  };
+
+  // Combine screenshots and file attachments
+  const allAttachments = [
+    ...screenshots.map(s => ({
+      id: s.id,
+      runId,
+      stepId: stepResult.step_id,
+      fileName: s.fileName,
+      fileSize: s.size,
+      mimeType: 'image/png',
+      url: s.url,
+      uploadedAt: s.timestamp,
+    })),
+    ...attachments.filter(a => a.stepId === stepResult.step_id),
+  ];
+
   return (
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
       <div
+        ref={cardRef}
         className={cn(
           'border rounded-2xl overflow-hidden transition-all duration-300 ease-out',
           config.className,
@@ -152,6 +200,14 @@ export function StepExecutionCard({
                 </span>
               </div>
             </div>
+
+            {/* Attachment indicator */}
+            {allAttachments.length > 0 && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                <Paperclip className="h-3 w-3" />
+                {allAttachments.length}
+              </span>
+            )}
 
             {/* Status Badge */}
             <span className={cn(
@@ -229,17 +285,88 @@ export function StepExecutionCard({
               </div>
             )}
 
-            {/* Evidence Attachments */}
+            {/* Evidence Section */}
             {!isCompleted && (
-              <div className="flex items-center gap-2 mb-4">
-                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
-                  <Image className="h-3 w-3" />
-                  Add Screenshot
-                </Button>
-                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
-                  <Paperclip className="h-3 w-3" />
-                  Attach File
-                </Button>
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+                    Evidence & Attachments
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs gap-1.5"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCaptureScreenshot();
+                      }}
+                      disabled={isCapturing}
+                    >
+                      {isCapturing ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Camera className="h-3 w-3" />
+                      )}
+                      Screenshot
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs gap-1.5"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowAttachments(!showAttachments);
+                      }}
+                    >
+                      <Paperclip className="h-3 w-3" />
+                      Attach File
+                    </Button>
+                  </div>
+                </div>
+                
+                {showAttachments && (
+                  <AttachmentDropzone
+                    onUpload={handleFileUpload}
+                    attachments={allAttachments}
+                    onDelete={deleteAttachment}
+                    isUploading={isUploading}
+                    uploadProgress={uploadProgress}
+                  />
+                )}
+
+                {/* Quick preview of attachments when dropzone is hidden */}
+                {!showAttachments && allAttachments.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {allAttachments.slice(0, 4).map(att => (
+                      <a
+                        key={att.id}
+                        href={att.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative group"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {att.mimeType.startsWith('image/') ? (
+                          <img
+                            src={att.url}
+                            alt={att.fileName}
+                            className="h-12 w-12 rounded-lg object-cover border border-border"
+                          />
+                        ) : (
+                          <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center border border-border">
+                            <Paperclip className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        )}
+                      </a>
+                    ))}
+                    {allAttachments.length > 4 && (
+                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
+                        +{allAttachments.length - 4}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
