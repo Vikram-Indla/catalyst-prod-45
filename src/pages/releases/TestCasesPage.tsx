@@ -77,6 +77,8 @@ import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
+import type { ParsedTestCase, PrefilledTestCase } from '@/components/releases/test-cases/utils';
+import { templateToTestCase } from '@/components/releases/test-cases/utils';
 
 type ViewMode = 'list' | 'grid' | 'kanban';
 
@@ -104,6 +106,7 @@ export default function TestCasesPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase | null>(null);
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
+  const [templatePrefillData, setTemplatePrefillData] = useState<PrefilledTestCase | null>(null);
 
   // URL-synced filters
   const { 
@@ -162,6 +165,31 @@ export default function TestCasesPage() {
     bulkCreateTestCases.mutate(inputs, {
       onSuccess: (results) => {
         toast.success(`Successfully created ${results.length} AI-generated test cases`);
+      },
+    });
+  }, [projectId, bulkCreateTestCases]);
+
+  // Handler for imported test cases
+  const handleImportedTestCases = useCallback((parsedTestCases: ParsedTestCase[]) => {
+    const inputs = parsedTestCases.map(tc => ({
+      project_id: projectId,
+      title: tc.title,
+      description: tc.description,
+      preconditions: tc.preconditions,
+      status: (tc.status as 'draft' | 'ready' | 'approved' | 'deprecated') || 'draft',
+      tags: tc.tags,
+      steps: tc.steps 
+        ? tc.steps.split('\n').filter(Boolean).map((step, idx) => ({
+            step_number: idx + 1,
+            action: step.replace(/^\d+\.\s*/, ''),
+            expected_result: '',
+          }))
+        : undefined,
+    }));
+
+    bulkCreateTestCases.mutate(inputs, {
+      onSuccess: (results) => {
+        toast.success(`Successfully imported ${results.length} test cases`);
       },
     });
   }, [projectId, bulkCreateTestCases]);
@@ -251,6 +279,7 @@ export default function TestCasesPage() {
 
   const handleCreateSuccess = useCallback(() => {
     refetch();
+    setTemplatePrefillData(null); // Clear template data after creation
   }, [refetch]);
 
   return (
@@ -691,8 +720,12 @@ export default function TestCasesPage() {
       {/* Create Test Case Dialog */}
       <CreateTestCaseDialog
         open={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
+        onOpenChange={(open) => {
+          setIsCreateOpen(open);
+          if (!open) setTemplatePrefillData(null);
+        }}
         onSuccess={handleCreateSuccess}
+        prefillData={templatePrefillData}
       />
 
       {/* Export Test Cases Dialog */}
@@ -709,10 +742,7 @@ export default function TestCasesPage() {
       <ImportTestCasesDialog
         open={isImportOpen}
         onOpenChange={setIsImportOpen}
-        onImport={(count) => {
-          toast.success(`Imported ${count} test cases`);
-          refetch(); // Refresh the list after import
-        }}
+        onImport={handleImportedTestCases}
       />
 
       {/* Templates Dialog */}
@@ -721,8 +751,8 @@ export default function TestCasesPage() {
         onOpenChange={setIsTemplatesOpen}
         onSelectTemplate={(template) => {
           setIsTemplatesOpen(false);
+          setTemplatePrefillData(templateToTestCase(template));
           setIsCreateOpen(true);
-          toast.info(`Template "${template.name}" loaded`);
         }}
       />
 

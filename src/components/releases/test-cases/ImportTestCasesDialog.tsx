@@ -1,5 +1,6 @@
 /**
  * Import Test Cases Dialog — Upload and map test cases
+ * Now with real file parsing for CSV, JSON, and XLSX
  */
 
 import { useState, useCallback } from 'react';
@@ -26,7 +27,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   Select,
@@ -37,18 +37,19 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { parseImportFile, downloadImportTemplate, type ParsedTestCase, type ParseResult } from './utils';
 
 interface ImportTestCasesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onImport?: (count: number) => void;
+  onImport?: (testCases: ParsedTestCase[]) => void;
 }
 
 interface UploadedFile {
   file: File;
   type: 'xlsx' | 'csv' | 'json';
   status: 'pending' | 'parsing' | 'ready' | 'error';
-  rowCount?: number;
+  parseResult?: ParseResult;
   error?: string;
 }
 
@@ -70,17 +71,20 @@ const targetFields = [
   { value: 'skip', label: '— Skip this field —' },
 ];
 
-const sampleSourceFields = [
-  'Test Case Name',
-  'Description',
-  'Category',
-  'Priority Level',
-  'Current Status',
-  'Folder Path',
-  'Labels',
-  'Prerequisites',
-  'Steps to Reproduce',
-];
+// Smart mapping of common header names to target fields
+const autoMapField = (header: string): string => {
+  const lower = header.toLowerCase();
+  if (lower.includes('title') || lower.includes('name')) return 'title';
+  if (lower.includes('desc')) return 'description';
+  if (lower.includes('type') || lower.includes('category')) return 'type';
+  if (lower.includes('priority')) return 'priority';
+  if (lower.includes('status')) return 'status';
+  if (lower.includes('folder') || lower.includes('path')) return 'folder';
+  if (lower.includes('tag') || lower.includes('label')) return 'tags';
+  if (lower.includes('precondition') || lower.includes('prerequisite')) return 'preconditions';
+  if (lower.includes('step')) return 'steps';
+  return 'skip';
+};
 
 export function ImportTestCasesDialog({ 
   open, 
@@ -92,7 +96,7 @@ export function ImportTestCasesDialog({
   const [mappings, setMappings] = useState<FieldMapping[]>([]);
   const [importProgress, setImportProgress] = useState(0);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
 
@@ -110,20 +114,29 @@ export function ImportTestCasesDialog({
       status: 'parsing',
     });
 
-    // Simulate parsing
-    setTimeout(() => {
+    // Parse the file
+    const result = await parseImportFile(file);
+    
+    if (result.success) {
       setUploadedFile(prev => prev ? {
         ...prev,
         status: 'ready',
-        rowCount: Math.floor(Math.random() * 50) + 10,
+        parseResult: result,
       } : null);
       
-      // Set initial mappings
-      setMappings(sampleSourceFields.map((sourceField, index) => ({
+      // Auto-map headers to target fields
+      setMappings(result.headers.map(sourceField => ({
         sourceField,
-        targetField: targetFields[index]?.value || 'skip',
+        targetField: autoMapField(sourceField),
       })));
-    }, 1500);
+    } else {
+      setUploadedFile(prev => prev ? {
+        ...prev,
+        status: 'error',
+        error: result.error,
+      } : null);
+      toast.error(result.error || 'Failed to parse file');
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -143,19 +156,24 @@ export function ImportTestCasesDialog({
   };
 
   const handleImport = async () => {
+    if (!uploadedFile?.parseResult?.data) return;
+    
     setStep('importing');
     setImportProgress(0);
 
-    // Simulate import progress
-    for (let i = 0; i <= 100; i += 5) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+    const testCases = uploadedFile.parseResult.data;
+    const total = testCases.length;
+
+    // Simulate progress for visual feedback
+    for (let i = 0; i <= 100; i += 10) {
+      await new Promise(resolve => setTimeout(resolve, 50));
       setImportProgress(i);
     }
 
-    const count = uploadedFile?.rowCount || 0;
-    onImport?.(count);
+    // Pass the parsed test cases to the parent
+    onImport?.(testCases);
     onOpenChange(false);
-    toast.success(`Imported ${count} test cases successfully`);
+    toast.success(`Imported ${total} test cases successfully`);
     
     // Reset state
     setStep('upload');
@@ -170,7 +188,8 @@ export function ImportTestCasesDialog({
     setMappings([]);
   };
 
-  const downloadTemplate = () => {
+  const handleDownloadTemplate = () => {
+    downloadImportTemplate();
     toast.success('Template downloaded');
   };
 
@@ -182,6 +201,9 @@ export function ImportTestCasesDialog({
       default: return FileText;
     }
   };
+
+  const rowCount = uploadedFile?.parseResult?.rowCount || 0;
+  const hasTitleMapping = mappings.some(m => m.targetField === 'title');
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -243,8 +265,8 @@ export function ImportTestCasesDialog({
                     exit={{ opacity: 0, y: -10 }}
                     className={cn(
                       "flex items-center gap-3 p-3 rounded-lg border",
-                      uploadedFile.status === 'ready' ? "border-green-200 bg-green-50" :
-                      uploadedFile.status === 'error' ? "border-red-200 bg-red-50" :
+                      uploadedFile.status === 'ready' ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950" :
+                      uploadedFile.status === 'error' ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950" :
                       "border-border bg-muted/50"
                     )}
                   >
@@ -256,7 +278,7 @@ export function ImportTestCasesDialog({
                       <p className="font-medium text-sm truncate">{uploadedFile.file.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {uploadedFile.status === 'parsing' && 'Parsing file...'}
-                        {uploadedFile.status === 'ready' && `${uploadedFile.rowCount} rows detected`}
+                        {uploadedFile.status === 'ready' && `${rowCount} test cases detected`}
                         {uploadedFile.status === 'error' && uploadedFile.error}
                       </p>
                     </div>
@@ -276,6 +298,7 @@ export function ImportTestCasesDialog({
                       onClick={(e) => {
                         e.stopPropagation();
                         setUploadedFile(null);
+                        setMappings([]);
                       }}
                     >
                       <X className="w-4 h-4" />
@@ -286,7 +309,7 @@ export function ImportTestCasesDialog({
 
               {/* Download Template */}
               <div className="flex items-center justify-center pt-2">
-                <Button variant="link" size="sm" onClick={downloadTemplate}>
+                <Button variant="link" size="sm" onClick={handleDownloadTemplate}>
                   <Download className="w-4 h-4 mr-1.5" />
                   Download import template
                 </Button>
@@ -330,6 +353,15 @@ export function ImportTestCasesDialog({
                 ))}
               </div>
 
+              {!hasTitleMapping && (
+                <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-900 rounded-lg">
+                  <AlertCircle className="w-4 h-4 text-amber-600" />
+                  <span className="text-sm text-amber-700 dark:text-amber-400">
+                    Please map at least one column to Title (required)
+                  </span>
+                </div>
+              )}
+
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                 <AlertCircle className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
@@ -344,7 +376,7 @@ export function ImportTestCasesDialog({
             <div className="space-y-4 py-4">
               <div className="text-center">
                 <Loader2 className="w-10 h-10 animate-spin mx-auto text-primary mb-4" />
-                <p className="font-medium">Importing {uploadedFile?.rowCount} test cases...</p>
+                <p className="font-medium">Importing {rowCount} test cases...</p>
                 <p className="text-sm text-muted-foreground">This may take a moment</p>
               </div>
               <Progress value={importProgress} className="h-2" />
@@ -375,8 +407,8 @@ export function ImportTestCasesDialog({
               <Button variant="outline" onClick={() => setStep('upload')}>
                 Back
               </Button>
-              <Button onClick={handleImport}>
-                Import {uploadedFile?.rowCount} Test Cases
+              <Button onClick={handleImport} disabled={!hasTitleMapping}>
+                Import {rowCount} Test Cases
               </Button>
             </>
           )}
