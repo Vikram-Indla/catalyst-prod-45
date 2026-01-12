@@ -11,6 +11,8 @@ export function usePrograms() {
   const programId = useRequirementAssistStore((state) => state.programId);
   const setPrograms = useRequirementAssistStore((state) => state.setPrograms);
   const setProjects = useRequirementAssistStore((state) => state.setProjects);
+  const setProgramId = useRequirementAssistStore((state) => state.setProgramId);
+  const setProjectId = useRequirementAssistStore((state) => state.setProjectId);
   
   // Use ref to track if we've loaded programs
   const programsLoadedRef = useRef(false);
@@ -28,18 +30,26 @@ export function usePrograms() {
         .order('name');
 
       if (!error && data) {
-        setPrograms(data.map(p => ({
+        const programs = data.map(p => ({
           id: p.id,
           name: p.name,
           description: p.description,
           code: p.key,
           color: '#3B82F6', // Default blue color
-        })));
+        }));
+        setPrograms(programs);
+        
+        // Set default program if none selected (prefer Catalyst Epics or first program)
+        const catalystProgram = programs.find(p => p.code === 'CAT' || p.name.toLowerCase().includes('catalyst'));
+        const defaultProgram = catalystProgram || programs[0];
+        if (defaultProgram && !programId) {
+          setProgramId(defaultProgram.id);
+        }
       }
     }
 
     loadPrograms();
-  }, [setPrograms]);
+  }, [setPrograms, setProgramId, programId]);
 
   // Load projects when program changes
   useEffect(() => {
@@ -56,16 +66,25 @@ export function usePrograms() {
         .order('name');
 
       if (!error && data) {
-        setProjects(data.map(p => ({
+        const projects = data.map(p => ({
           id: p.id,
           programId: p.program_id,
           name: p.name,
           description: p.description,
           code: p.key,
-        })));
+        }));
+        setProjects(projects);
+        
+        // Set default project if none selected (prefer DIP or first project)
+        const dipProject = projects.find(p => p.code === 'DIP' || p.name.toLowerCase().includes('digital investor'));
+        const defaultProject = dipProject || projects[0];
+        const currentProjectId = useRequirementAssistStore.getState().projectId;
+        if (defaultProject && !currentProjectId) {
+          setProjectId(defaultProject.id);
+        }
       }
     }
 
     loadProjects();
-  }, [programId, setProjects]);
+  }, [programId, setProjects, setProjectId]);
 }
