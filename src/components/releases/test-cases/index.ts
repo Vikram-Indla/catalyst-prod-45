@@ -23,5 +23,10 @@ export { CollaborationIndicator, CollaboratorCursor } from './CollaborationIndic
 // Phase 8: Detail Drawer
 export { TestCaseDetailDrawer } from './TestCaseDetailDrawer';
 
+// Phase 9: Bulk Actions Dialogs
+export { BulkAssignDialog } from './BulkAssignDialog';
+export { BulkMoveDialog } from './BulkMoveDialog';
+export { BulkTagsDialog } from './BulkTagsDialog';
+
 // Badges
 export * from './badges';
