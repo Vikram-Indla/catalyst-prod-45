@@ -60,6 +60,19 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/industry/table': { section: 'PRODUCT', pageTitle: 'Demand Table' },
   '/industry/roadmaps': { section: 'PRODUCT', pageTitle: 'Product Roadmap' },
   
+  // Ideas routes
+  '/industry/ideas': { section: 'IDEAS', pageTitle: 'Ideas Hub' },
+  '/industry/ideas/all': { section: 'IDEAS', pageTitle: 'All Ideas' },
+  '/industry/ideas/initiatives': { section: 'IDEAS', pageTitle: 'Initiatives' },
+  '/industry/ideas/initiatives/:id': { section: 'IDEAS', pageTitle: 'Initiative Details' },
+  '/industry/ideas/matrix': { section: 'IDEAS', pageTitle: 'Priority Matrix' },
+  '/industry/ideas/scoring': { section: 'IDEAS', pageTitle: 'Scoring Queue' },
+  '/industry/ideas/submit': { section: 'IDEAS', pageTitle: 'Submit Idea' },
+  '/industry/ideas/analytics': { section: 'IDEAS', pageTitle: 'Analytics' },
+  '/industry/ideas/ai-insights': { section: 'IDEAS', pageTitle: 'AI Insights' },
+  '/industry/ideas/admin': { section: 'IDEAS', pageTitle: 'Settings' },
+  '/industry/ideas/:id': { section: 'IDEAS', pageTitle: 'Idea Details' },
+  
   // Program routes
   '/program/:programId/room': { section: 'PROGRAM', pageTitle: 'Program Room' },
   '/program/:programId/epic-backlog': { section: 'PROGRAM', pageTitle: 'Epic Backlog' },

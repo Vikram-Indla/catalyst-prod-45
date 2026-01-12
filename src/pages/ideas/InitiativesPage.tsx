@@ -27,6 +27,7 @@ import { INITIATIVE_STATUS_LABELS, ImprovementInitiativeStatus } from '@/types/i
 import { format, differenceInDays, isPast } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { CreateInitiativeDialog } from '@/components/ideas/CreateInitiativeDialog';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 const statusColors: Record<ImprovementInitiativeStatus, string> = {
   draft: 'bg-gray-500',
@@ -62,22 +63,16 @@ export default function InitiativesPage() {
     return { label: `${days} days left`, color: 'text-muted-foreground' };
   };
 
-  return (
-    <div className="flex flex-col gap-6 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Improvement Initiatives</h1>
-            <p className="text-muted-foreground">
-              Manage idea collection campaigns and track submissions
-            </p>
-          </div>
-          <Button className="gap-2" onClick={() => setShowCreateDialog(true)}>
-            <Plus className="h-4 w-4" />
-            New Initiative
-          </Button>
-        </div>
+  const headerActions = (
+    <Button className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-8 text-sm" onClick={() => setShowCreateDialog(true)}>
+      <Plus className="h-4 w-4" />
+      New Initiative
+    </Button>
+  );
 
+  return (
+    <PageChrome rightActions={headerActions}>
+      <div className="flex flex-col gap-6 p-6">
         {/* Create Initiative Dialog */}
         <CreateInitiativeDialog 
           open={showCreateDialog} 
@@ -234,5 +229,6 @@ export default function InitiativesPage() {
           </div>
         )}
       </div>
+    </PageChrome>
   );
 }
