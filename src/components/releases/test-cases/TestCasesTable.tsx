@@ -1,12 +1,16 @@
 /**
  * TestCasesTable — Data table for list view of test cases
+ * Features: Selection, sorting, row actions, reusable badges
  */
 
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { 
   ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   MoreHorizontal,
   Eye,
   Pencil,
@@ -15,13 +19,6 @@ import {
   FolderInput,
   UserPlus,
   Trash2,
-  AlertTriangle,
-  ArrowUp,
-  Minus,
-  ArrowDown,
-  CheckCircle2,
-  XCircle,
-  Circle,
   ListChecks,
 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -41,6 +38,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { TestCase } from '@/data/testCasesData';
+import { TypeBadge, PriorityBadge, StatusBadge, LastRunBadge } from './badges';
 import { cn } from '@/lib/utils';
 
 interface TestCasesTableProps {
@@ -51,90 +49,24 @@ interface TestCasesTableProps {
   allSelected: boolean;
 }
 
-// Type badge variants
-const typeStyles: Record<string, string> = {
-  functional: 'bg-[#dbeafe] text-[#2563eb] border-[#93c5fd]',
-  regression: 'bg-[#ede9fe] text-[#7c3aed] border-[#c4b5fd]',
-  smoke: 'bg-[#ffedd5] text-[#c2410c] border-[#fdba74]',
-  integration: 'bg-[#ccfbf1] text-[#0d9488] border-[#5eead4]',
-  e2e: 'bg-[#e0e7ff] text-[#4338ca] border-[#a5b4fc]',
-};
-
-// Status badge variants
-const statusVariants: Record<string, 'draft' | 'ready' | 'approved' | 'deprecated'> = {
-  draft: 'draft',
-  ready: 'ready',
-  approved: 'approved',
-  deprecated: 'deprecated',
-};
-
 // Avatar colors
 const avatarColors: Record<string, string> = {
-  blue: 'bg-[#dbeafe] text-[#2563eb]',
-  green: 'bg-[#d1fae5] text-[#059669]',
-  purple: 'bg-[#ede9fe] text-[#7c3aed]',
-  orange: 'bg-[#ffedd5] text-[#c2410c]',
-  teal: 'bg-[#ccfbf1] text-[#0d9488]',
-  red: 'bg-[#fee2e2] text-[#dc2626]',
+  blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  green: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  purple: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
+  orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+  teal: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
+  red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
 };
 
-function PriorityIcon({ priority }: { priority: TestCase['priority'] }) {
-  switch (priority) {
-    case 'critical':
-      return (
-        <span className="flex items-center gap-1 text-[#dc2626]">
-          <AlertTriangle className="w-3.5 h-3.5" />
-          <span className="text-xs font-medium">Critical</span>
-        </span>
-      );
-    case 'high':
-      return (
-        <span className="flex items-center gap-1 text-[#ea580c]">
-          <ArrowUp className="w-3.5 h-3.5" />
-          <span className="text-xs font-medium">High</span>
-        </span>
-      );
-    case 'medium':
-      return (
-        <span className="flex items-center gap-1 text-[#ca8a04]">
-          <Minus className="w-3.5 h-3.5" />
-          <span className="text-xs font-medium">Medium</span>
-        </span>
-      );
-    case 'low':
-      return (
-        <span className="flex items-center gap-1 text-muted-foreground">
-          <ArrowDown className="w-3.5 h-3.5" />
-          <span className="text-xs font-medium">Low</span>
-        </span>
-      );
-  }
-}
+type SortField = 'id' | 'title' | 'priority' | 'status' | 'updated';
+type SortDir = 'asc' | 'desc';
 
-function LastRunBadge({ status }: { status: TestCase['lastRun'] }) {
-  switch (status) {
-    case 'passed':
-      return (
-        <Badge variant="passed" className="gap-1">
-          <CheckCircle2 className="w-3 h-3" />
-          Passed
-        </Badge>
-      );
-    case 'failed':
-      return (
-        <Badge variant="failed" className="gap-1">
-          <XCircle className="w-3 h-3" />
-          Failed
-        </Badge>
-      );
-    case 'not_run':
-      return (
-        <Badge variant="not-run" className="gap-1">
-          <Circle className="w-3 h-3" />
-          Not Run
-        </Badge>
-      );
+function SortIcon({ field, currentField, direction }: { field: SortField; currentField: SortField | null; direction: SortDir }) {
+  if (currentField !== field) {
+    return <ArrowUpDown className="w-3 h-3 opacity-50" />;
   }
+  return direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />;
 }
 
 export function TestCasesTable({ 
@@ -145,6 +77,17 @@ export function TestCasesTable({
   allSelected 
 }: TestCasesTableProps) {
   const navigate = useNavigate();
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDir('asc');
+    }
+  };
 
   const handleRowAction = (action: string, tc: TestCase) => {
     switch (action) {
@@ -171,6 +114,31 @@ export function TestCasesTable({
         break;
     }
   };
+
+  // Sort test cases
+  const sortedCases = [...testCases].sort((a, b) => {
+    if (!sortField) return 0;
+    const dir = sortDir === 'asc' ? 1 : -1;
+    switch (sortField) {
+      case 'id':
+        return a.id.localeCompare(b.id) * dir;
+      case 'title':
+        return a.title.localeCompare(b.title) * dir;
+      case 'priority': {
+        const order = { critical: 0, high: 1, medium: 2, low: 3 };
+        return (order[a.priority] - order[b.priority]) * dir;
+      }
+      case 'status': {
+        const order = { draft: 0, ready: 1, approved: 2, deprecated: 3 };
+        return (order[a.status] - order[b.status]) * dir;
+      }
+      case 'updated':
+        return a.updated.localeCompare(b.updated) * dir;
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="bg-background border rounded-lg overflow-hidden">
       <table className="w-full">
@@ -183,15 +151,22 @@ export function TestCasesTable({
               />
             </th>
             <th className="px-4 py-3 text-left">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 cursor-pointer hover:text-foreground">
+              <button 
+                onClick={() => handleSort('id')}
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
+              >
                 ID
-                <ArrowUpDown className="w-3 h-3" />
-              </span>
+                <SortIcon field="id" currentField={sortField} direction={sortDir} />
+              </button>
             </th>
             <th className="px-4 py-3 text-left">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <button 
+                onClick={() => handleSort('title')}
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
+              >
                 Title
-              </span>
+                <SortIcon field="title" currentField={sortField} direction={sortDir} />
+              </button>
             </th>
             <th className="px-4 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -204,14 +179,22 @@ export function TestCasesTable({
               </span>
             </th>
             <th className="px-4 py-3 text-left">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <button 
+                onClick={() => handleSort('priority')}
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
+              >
                 Priority
-              </span>
+                <SortIcon field="priority" currentField={sortField} direction={sortDir} />
+              </button>
             </th>
             <th className="px-4 py-3 text-left">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <button 
+                onClick={() => handleSort('status')}
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
+              >
                 Status
-              </span>
+                <SortIcon field="status" currentField={sortField} direction={sortDir} />
+              </button>
             </th>
             <th className="px-4 py-3 text-center">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -229,15 +212,19 @@ export function TestCasesTable({
               </span>
             </th>
             <th className="px-4 py-3 text-left">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <button 
+                onClick={() => handleSort('updated')}
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
+              >
                 Updated
-              </span>
+                <SortIcon field="updated" currentField={sortField} direction={sortDir} />
+              </button>
             </th>
             <th className="w-12 px-4 py-3"></th>
           </tr>
         </thead>
         <tbody className="divide-y">
-          {testCases.map((tc, index) => (
+          {sortedCases.map((tc, index) => (
             <motion.tr
               key={tc.id}
               initial={{ opacity: 0, y: 10 }}
@@ -281,20 +268,13 @@ export function TestCasesTable({
                 </Badge>
               </td>
               <td className="px-4 py-3">
-                <span className={cn(
-                  "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border",
-                  typeStyles[tc.type]
-                )}>
-                  {tc.type.charAt(0).toUpperCase() + tc.type.slice(1)}
-                </span>
+                <TypeBadge type={tc.type} />
               </td>
               <td className="px-4 py-3">
-                <PriorityIcon priority={tc.priority} />
+                <PriorityBadge priority={tc.priority} />
               </td>
               <td className="px-4 py-3">
-                <Badge variant={statusVariants[tc.status]}>
-                  {tc.status.charAt(0).toUpperCase() + tc.status.slice(1)}
-                </Badge>
+                <StatusBadge status={tc.status} />
               </td>
               <td className="px-4 py-3 text-center">
                 <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">

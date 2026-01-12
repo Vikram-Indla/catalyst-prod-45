@@ -426,7 +426,11 @@ export default function TestCasesPage() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <TestCasesGrid testCases={paginatedTestCases} />
+              <TestCasesGrid 
+                testCases={paginatedTestCases}
+                selectedIds={selectedIds}
+                onSelectRow={handleSelectRow}
+              />
             </motion.div>
           )}
         </AnimatePresence>
