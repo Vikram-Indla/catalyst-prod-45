@@ -246,7 +246,7 @@ export function RequirementAssistPageRedesign() {
   }, [setGeneration]);
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-slate-50">
+    <div className="h-screen flex flex-col overflow-hidden bg-white">
       {state === 'input' && (
         <InputState 
           onStart={startGeneration} 

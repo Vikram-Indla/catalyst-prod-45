@@ -8,3 +8,4 @@ export { GeneratingState } from './GeneratingState';
 export { ResultsState } from './ResultsState';
 export { ResultsTreeItem } from './ResultsTreeItem';
 export { HistorySlideOver } from './HistorySlideOver';
+export { RichTextEditor } from './RichTextEditor';
