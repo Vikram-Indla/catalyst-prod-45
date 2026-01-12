@@ -2,7 +2,10 @@
 // REQUIREMENT ASSIST V3 COMPONENTS INDEX
 // ============================================================
 
-export { RequirementAssistPage } from './RequirementAssistPage';
+// NEW REDESIGN - 3-State Flow (INPUT → GENERATING → RESULTS)
+export { RequirementAssistPageRedesign as RequirementAssistPage } from './redesign';
+
+// Legacy exports (kept for reference)
 export { Header } from './Header';
 export { InputPanel } from './InputPanel';
 export { OutputPanel } from './OutputPanel';
