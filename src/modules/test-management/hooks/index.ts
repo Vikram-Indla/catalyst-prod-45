@@ -72,3 +72,7 @@ export * from './useSettings';
 
 // Folder Panel State
 export { useFolderPanelState } from './useFolderPanelState';
+
+// Screenshot & Attachments
+export { useScreenshotCapture } from './useScreenshotCapture';
+export { useExecutionAttachments, type ExecutionAttachment } from './useExecutionAttachments';
