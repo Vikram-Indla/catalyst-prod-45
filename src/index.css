@@ -4860,3 +4860,30 @@ button,
 .row-highlight[data-selected="true"] {
   background-color: hsl(var(--primary) / 0.08);
 }
+
+/* === SHIMMER SKELETON ANIMATION === */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* === SLOW BOUNCE FOR EMPTY STATES === */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s ease-in-out infinite;
+}
+
+/* === CHECKBOX POP === */
+@keyframes check-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+input[type="checkbox"]:checked {
+  animation: check-pop 0.2s ease;
+}
