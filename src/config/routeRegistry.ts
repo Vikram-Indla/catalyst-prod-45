@@ -53,6 +53,7 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   // Product routes
   '/product/room': { section: 'PRODUCT', pageTitle: 'Product Room' },
   '/product/capacity': { section: 'PRODUCT', pageTitle: 'Capacity' },
+  '/product/requirement-assist': { section: 'PRODUCT', pageTitle: 'Requirement Assist' },
   
   // Product routes (Industry paths)
   '/industry/backlog': { section: 'PRODUCT', pageTitle: 'Product Backlog' },
