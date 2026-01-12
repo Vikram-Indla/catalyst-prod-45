@@ -2,6 +2,14 @@
  * Mock data for Test Cases
  */
 
+export interface TestCaseStep {
+  id: string;
+  step: number;
+  action: string;
+  expectedResult: string;
+  testData?: string;
+}
+
 export interface TestCase {
   id: string;
   title: string;
@@ -17,6 +25,16 @@ export interface TestCase {
     color: 'blue' | 'green' | 'purple' | 'orange' | 'teal' | 'red';
   };
   updated: string;
+  // Extended fields (optional for backward compatibility)
+  description?: string;
+  preconditions?: string;
+  postconditions?: string;
+  tags?: string[];
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  automationStatus?: 'automated' | 'manual' | 'in_progress';
+  testSteps?: TestCaseStep[];
 }
 
 export const testCasesData: TestCase[] = [

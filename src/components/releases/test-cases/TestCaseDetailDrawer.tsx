@@ -52,6 +52,7 @@ interface TestStep {
   step: number;
   action: string;
   expectedResult: string;
+  testData?: string;
 }
 
 interface TestCase {
@@ -98,13 +99,15 @@ export function TestCaseDetailDrawer({
     toast.success('Test case ID copied');
   };
 
-  // Mock data for demonstration
-  const mockSteps: TestStep[] = testCase.steps || [
-    { id: '1', step: 1, action: 'Navigate to login page', expectedResult: 'Login page is displayed' },
-    { id: '2', step: 2, action: 'Enter valid credentials', expectedResult: 'Credentials are accepted' },
-    { id: '3', step: 3, action: 'Click Sign In button', expectedResult: 'User is redirected to dashboard' },
-    { id: '4', step: 4, action: 'Verify user profile is visible', expectedResult: 'User name and avatar are displayed' },
-  ];
+  // Use real steps if provided, otherwise fallback to mock
+  const displaySteps: TestStep[] = testCase.steps && testCase.steps.length > 0 
+    ? testCase.steps 
+    : [
+        { id: '1', step: 1, action: 'Navigate to login page', expectedResult: 'Login page is displayed' },
+        { id: '2', step: 2, action: 'Enter valid credentials', expectedResult: 'Credentials are accepted' },
+        { id: '3', step: 3, action: 'Click Sign In button', expectedResult: 'User is redirected to dashboard' },
+        { id: '4', step: 4, action: 'Verify user profile is visible', expectedResult: 'User name and avatar are displayed' },
+      ];
 
   const mockHistory = testCase.executionHistory || [
     { date: '2026-01-12 14:30', status: 'passed', executor: 'Sarah Chen', duration: '2m 45s' },
@@ -273,7 +276,7 @@ export function TestCaseDetailDrawer({
             {/* Steps Tab */}
             <TabsContent value="steps" className="mt-0">
               <div className="space-y-3">
-                {mockSteps.map((step, index) => (
+                {displaySteps.map((step, index) => (
                   <motion.div
                     key={step.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -294,6 +297,12 @@ export function TestCaseDetailDrawer({
                           <span className="text-xs text-muted-foreground font-medium uppercase">Expected Result</span>
                           <p className="text-sm mt-0.5 text-muted-foreground">{step.expectedResult}</p>
                         </div>
+                        {step.testData && (
+                          <div>
+                            <span className="text-xs text-muted-foreground font-medium uppercase">Test Data</span>
+                            <p className="text-sm mt-0.5 text-muted-foreground font-mono bg-muted/50 p-2 rounded">{step.testData}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>

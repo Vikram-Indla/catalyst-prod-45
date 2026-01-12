@@ -194,3 +194,77 @@ export function useDuplicateTestCaseApi() {
     },
   });
 }
+
+/**
+ * Hook to get a single test case detail
+ */
+export function useTestCaseDetail(id: string | undefined) {
+  return useQuery({
+    queryKey: testCasesKeys.detail(id || ''),
+    queryFn: async () => {
+      if (!id) throw new Error('No ID provided');
+      const testCase = await casesApi.get(id);
+      return apiToUITestCase(testCase);
+    },
+    enabled: !!id,
+    staleTime: 30000,
+  });
+}
+
+/**
+ * Hook to update a test case
+ */
+export function useUpdateTestCaseApi() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: {
+      id: string;
+      title?: string;
+      description?: string;
+      preconditions?: string;
+      status?: 'draft' | 'ready' | 'approved' | 'deprecated';
+      priority_id?: string;
+      type_id?: string;
+      tags?: string[];
+      steps?: { step_number: number; action: string; expected_result: string; test_data?: string }[];
+    }) => {
+      return casesApi.update(data);
+    },
+    onSuccess: (updatedCase) => {
+      queryClient.invalidateQueries({ queryKey: testCasesKeys.all });
+      queryClient.invalidateQueries({ queryKey: testCasesKeys.detail(updatedCase.id) });
+      toast.success(`Test case ${updatedCase.case_key} updated`);
+    },
+    onError: (error) => {
+      const apiError = parseApiError(error);
+      toast.error('Failed to update test case', {
+        description: apiError.message,
+      });
+    },
+  });
+}
+
+/**
+ * Hook to execute a test case (start a new run)
+ */
+export function useExecuteTestCaseApi() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ caseId, cycleId }: { caseId: string; cycleId?: string }) => {
+      // For now, just toast - full execution will be implemented with test runs
+      return { caseId, cycleId };
+    },
+    onSuccess: ({ caseId }) => {
+      queryClient.invalidateQueries({ queryKey: testCasesKeys.all });
+      toast.success(`Starting execution for test case...`);
+    },
+    onError: (error) => {
+      const apiError = parseApiError(error);
+      toast.error('Failed to start execution', {
+        description: apiError.message,
+      });
+    },
+  });
+}
