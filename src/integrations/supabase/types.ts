@@ -5534,6 +5534,78 @@ export type Database = {
         }
         Relationships: []
       }
+      execution_results: {
+        Row: {
+          cycle_id: string | null
+          duration: number | null
+          environment: string | null
+          executed_at: string
+          executed_by: string
+          id: string
+          notes: string | null
+          status: string
+          test_case_id: string
+        }
+        Insert: {
+          cycle_id?: string | null
+          duration?: number | null
+          environment?: string | null
+          executed_at?: string
+          executed_by: string
+          id?: string
+          notes?: string | null
+          status: string
+          test_case_id: string
+        }
+        Update: {
+          cycle_id?: string | null
+          duration?: number | null
+          environment?: string | null
+          executed_at?: string
+          executed_by?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "execution_results_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       external_entities: {
         Row: {
           contact_info: Json | null
@@ -20282,6 +20354,72 @@ export type Database = {
           },
         ]
       }
+      test_case_activities: {
+        Row: {
+          action: string
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          metadata: Json | null
+          test_case_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          created_by: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          test_case_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_bulk_operations: {
         Row: {
           case_ids: string[]
@@ -20320,6 +20458,83 @@ export type Database = {
           success_count?: number | null
         }
         Relationships: []
+      }
+      test_case_defects: {
+        Row: {
+          defect_id: string
+          id: string
+          linked_at: string
+          linked_by: string
+          step_id: string | null
+          test_case_id: string
+        }
+        Insert: {
+          defect_id: string
+          id?: string
+          linked_at?: string
+          linked_by: string
+          step_id?: string | null
+          test_case_id: string
+        }
+        Update: {
+          defect_id?: string
+          id?: string
+          linked_at?: string
+          linked_by?: string
+          step_id?: string | null
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_defects_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "test_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_case_parameters: {
         Row: {
@@ -20723,12 +20938,20 @@ export type Database = {
           automation_status: string | null
           created_at: string | null
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          estimated_time: number | null
+          execution_count: number | null
           folder_id: string | null
           id: string
+          last_executed_at: string | null
           objective: string | null
+          pass_rate: number | null
           preconditions: string | null
           priority: string | null
           project_id: string
+          release_id: string | null
           reviewer_id: string | null
           status: string | null
           tags: string[] | null
@@ -20736,6 +20959,7 @@ export type Database = {
           test_type: string | null
           title: string
           updated_at: string | null
+          updated_by: string | null
           version: number | null
         }
         Insert: {
@@ -20744,12 +20968,20 @@ export type Database = {
           automation_status?: string | null
           created_at?: string | null
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          estimated_time?: number | null
+          execution_count?: number | null
           folder_id?: string | null
           id?: string
+          last_executed_at?: string | null
           objective?: string | null
+          pass_rate?: number | null
           preconditions?: string | null
           priority?: string | null
           project_id: string
+          release_id?: string | null
           reviewer_id?: string | null
           status?: string | null
           tags?: string[] | null
@@ -20757,6 +20989,7 @@ export type Database = {
           test_type?: string | null
           title: string
           updated_at?: string | null
+          updated_by?: string | null
           version?: number | null
         }
         Update: {
@@ -20765,12 +20998,20 @@ export type Database = {
           automation_status?: string | null
           created_at?: string | null
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          estimated_time?: number | null
+          execution_count?: number | null
           folder_id?: string | null
           id?: string
+          last_executed_at?: string | null
           objective?: string | null
+          pass_rate?: number | null
           preconditions?: string | null
           priority?: string | null
           project_id?: string
+          release_id?: string | null
           reviewer_id?: string | null
           status?: string | null
           tags?: string[] | null
@@ -20778,15 +21019,79 @@ export type Database = {
           test_type?: string | null
           title?: string
           updated_at?: string | null
+          updated_by?: string | null
           version?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "test_cases_folder_id_fkey"
             columns: ["folder_id"]
             isOneToOne: false
             referencedRelation: "test_folders"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -21905,6 +22210,7 @@ export type Database = {
           id: string
           is_shared: boolean | null
           library_step_id: string | null
+          notes: string | null
           step_order: number
           test_case_id: string
           test_data: string | null
@@ -21918,6 +22224,7 @@ export type Database = {
           id?: string
           is_shared?: boolean | null
           library_step_id?: string | null
+          notes?: string | null
           step_order: number
           test_case_id: string
           test_data?: string | null
@@ -21931,6 +22238,7 @@ export type Database = {
           id?: string
           is_shared?: boolean | null
           library_step_id?: string | null
+          notes?: string | null
           step_order?: number
           test_case_id?: string
           test_data?: string | null
@@ -27445,8 +27753,29 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_user_admin: { Args: { user_id: string }; Returns: boolean }
       is_user_approved: { Args: { user_id: string }; Returns: boolean }
+      log_test_case_activity: {
+        Args: {
+          p_action: string
+          p_description: string
+          p_metadata?: Json
+          p_test_case_id: string
+        }
+        Returns: string
+      }
       refresh_home_user_summary: {
         Args: { p_user_id: string }
+        Returns: undefined
+      }
+      reorder_remaining_steps: {
+        Args: { p_deleted_order: number; p_test_case_id: string }
+        Returns: undefined
+      }
+      reorder_test_steps: {
+        Args: { p_step_ids: string[]; p_test_case_id: string }
+        Returns: undefined
+      }
+      shift_steps_down: {
+        Args: { p_after_order: number; p_test_case_id: string }
         Returns: undefined
       }
       show_limit: { Args: never; Returns: number }
