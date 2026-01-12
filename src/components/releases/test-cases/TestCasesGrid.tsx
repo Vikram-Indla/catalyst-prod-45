@@ -16,6 +16,7 @@ interface TestCasesGridProps {
   testCases: TestCase[];
   selectedIds?: Set<string>;
   onSelectRow?: (id: string, checked: boolean) => void;
+  onCardClick?: (testCase: TestCase) => void;
 }
 
 // Avatar colors
@@ -28,7 +29,7 @@ const avatarColors: Record<string, string> = {
   red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
 };
 
-export function TestCasesGrid({ testCases, selectedIds, onSelectRow }: TestCasesGridProps) {
+export function TestCasesGrid({ testCases, selectedIds, onSelectRow, onCardClick }: TestCasesGridProps) {
   const hasSelection = !!selectedIds && !!onSelectRow;
 
   return (
@@ -48,6 +49,7 @@ export function TestCasesGrid({ testCases, selectedIds, onSelectRow }: TestCases
                 ? "border-primary bg-primary/5 ring-1 ring-primary/20" 
                 : "hover:border-primary/30"
             )}
+            onClick={() => onCardClick?.(tc)}
           >
             {/* Selection Checkbox */}
             {hasSelection && (

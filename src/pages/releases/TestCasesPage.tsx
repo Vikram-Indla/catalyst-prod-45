@@ -467,6 +467,10 @@ export default function TestCasesPage() {
                 testCases={paginatedTestCases}
                 selectedIds={selectedIds}
                 onSelectRow={handleSelectRow}
+                onCardClick={(tc) => {
+                  setSelectedTestCase(tc);
+                  setIsDetailDrawerOpen(true);
+                }}
               />
             </motion.div>
           ) : (
@@ -668,8 +672,11 @@ export default function TestCasesPage() {
       <AdvancedFiltersDialog
         open={isAdvancedFiltersOpen}
         onOpenChange={setIsAdvancedFiltersOpen}
-        onApplyFilters={(filters) => {
-          // Apply filters logic
+        onApplyFilters={(advFilters) => {
+          // Map advanced filters to URL-synced filters
+          if (advFilters.statuses.length) setFilter('statuses', advFilters.statuses);
+          if (advFilters.priorities.length) setFilter('priorities', advFilters.priorities);
+          if (advFilters.types.length) setFilter('types', advFilters.types);
           toast.success('Filters applied');
         }}
       />
