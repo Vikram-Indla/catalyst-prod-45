@@ -9,5 +9,10 @@ export { ExportTestCasesDialog } from './ExportTestCasesDialog';
 export { ImportTestCasesDialog } from './ImportTestCasesDialog';
 export { TestCaseTemplatesDialog } from './TestCaseTemplatesDialog';
 
+// Phase 6: AI Generation & Advanced Features
+export { AIGenerateTestCasesDialog } from './AIGenerateTestCasesDialog';
+export { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
+export { AdvancedFiltersDialog } from './AdvancedFiltersDialog';
+
 // Badges
 export * from './badges';
