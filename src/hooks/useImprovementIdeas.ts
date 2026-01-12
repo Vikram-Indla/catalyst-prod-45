@@ -258,13 +258,40 @@ export function useImprovementIdea(id: string | undefined) {
         .select(`
           *,
           initiative:improvement_initiatives(*),
-          impact_score:impact_scores(*)
+          impact_score:impact_scores(*),
+          submitter:profiles!improvement_ideas_submitter_id_fkey(id, full_name, avatar_url),
+          business_request:business_requests(id, request_key, title)
         `)
         .eq('id', id)
         .single();
       
       if (error) throw error;
-      return toIdea(data as unknown as Record<string, unknown>);
+      
+      // Map submitter profile data
+      const row = data as unknown as Record<string, unknown>;
+      const idea = toIdea(row);
+      
+      // Attach submitter profile if available
+      if (row.submitter && typeof row.submitter === 'object') {
+        const submitter = row.submitter as { id?: string; full_name?: string; avatar_url?: string };
+        (idea as any).submitter = {
+          id: submitter.id,
+          full_name: submitter.full_name,
+          avatar_url: submitter.avatar_url
+        };
+      }
+      
+      // Attach business request if available
+      if (row.business_request && typeof row.business_request === 'object') {
+        const br = row.business_request as { id?: string; request_key?: string; title?: string };
+        (idea as any).business_request = {
+          id: br.id,
+          request_key: br.request_key,
+          title: br.title
+        };
+      }
+      
+      return idea;
     },
     enabled: !!id,
   });

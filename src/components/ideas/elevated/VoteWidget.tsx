@@ -44,7 +44,7 @@ export function VoteWidget({
   const sizeConfig = {
     sm: { btn: 'px-2 py-1 text-xs gap-1', icon: 'w-3 h-3', bar: 'w-16 h-1.5' },
     md: { btn: 'px-4 py-2 text-sm gap-2', icon: 'w-4 h-4', bar: 'w-24 h-2' },
-    lg: { btn: 'px-5 py-2.5 text-base gap-2', icon: 'w-5 h-5', bar: 'w-28 h-2' },
+    lg: { btn: 'h-12 px-6 text-base gap-2.5 font-bold', icon: 'w-5 h-5', bar: 'w-32 h-2.5' },
   };
 
   const config = sizeConfig[size];
