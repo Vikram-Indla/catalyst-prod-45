@@ -37,6 +37,7 @@ import {
   Trash2,
   Command,
   Keyboard,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,6 +59,9 @@ import { TestCasesGrid } from '@/components/releases/test-cases/TestCasesGrid';
 import { TestCaseEmptyState } from '@/components/releases/test-cases/TestCaseEmptyState';
 import { CreateTestCaseDialog } from '@/components/releases/test-cases/CreateTestCaseDialog';
 import { BulkActionsBar } from '@/components/releases/test-cases/BulkActionsBar';
+import { ExportTestCasesDialog } from '@/components/releases/test-cases/ExportTestCasesDialog';
+import { ImportTestCasesDialog } from '@/components/releases/test-cases/ImportTestCasesDialog';
+import { TestCaseTemplatesDialog } from '@/components/releases/test-cases/TestCaseTemplatesDialog';
 import { testCasesData } from '@/data/testCasesData';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
@@ -78,6 +82,9 @@ export default function TestCasesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // URL-synced filters
@@ -205,14 +212,23 @@ export default function TestCasesPage() {
             </TooltipTrigger>
             <TooltipContent>Refresh test cases</TooltipContent>
           </Tooltip>
-          <Button variant="outline" size="sm" className="h-8">
+          <Button variant="outline" size="sm" className="h-8" onClick={() => setIsImportOpen(true)}>
             <Upload className="w-3.5 h-3.5 mr-1.5" />
             Import
           </Button>
-          <Button variant="outline" size="sm" className="h-8">
+          <Button variant="outline" size="sm" className="h-8" onClick={() => setIsExportOpen(true)}>
             <Download className="w-3.5 h-3.5 mr-1.5" />
             Export
           </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8" onClick={() => setIsTemplatesOpen(true)}>
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
+                From Template
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Create from template</TooltipContent>
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button size="sm" className="h-8" onClick={() => setIsCreateOpen(true)}>
@@ -559,7 +575,7 @@ export default function TestCasesPage() {
             }}
             onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
             onDuplicate={() => toast.success(`${selectedIds.size} test case(s) duplicated`)}
-            onExport={() => toast.success(`Exporting ${selectedIds.size} test case(s)...`)}
+            onExport={() => setIsExportOpen(true)}
           />
         )}
       </AnimatePresence>
@@ -569,6 +585,32 @@ export default function TestCasesPage() {
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         onSuccess={handleCreateSuccess}
+      />
+
+      {/* Export Test Cases Dialog */}
+      <ExportTestCasesDialog
+        open={isExportOpen}
+        onOpenChange={setIsExportOpen}
+        selectedCount={selectedIds.size}
+        totalCount={filteredTestCases.length}
+      />
+
+      {/* Import Test Cases Dialog */}
+      <ImportTestCasesDialog
+        open={isImportOpen}
+        onOpenChange={setIsImportOpen}
+        onImport={(count) => toast.success(`Imported ${count} test cases`)}
+      />
+
+      {/* Templates Dialog */}
+      <TestCaseTemplatesDialog
+        open={isTemplatesOpen}
+        onOpenChange={setIsTemplatesOpen}
+        onSelectTemplate={(template) => {
+          setIsTemplatesOpen(false);
+          setIsCreateOpen(true);
+          toast.info(`Template "${template.name}" loaded`);
+        }}
       />
     </div>
   );
