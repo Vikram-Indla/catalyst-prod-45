@@ -57,6 +57,7 @@ import { TestCasesTable } from '@/components/releases/test-cases/TestCasesTable'
 import { TestCasesGrid } from '@/components/releases/test-cases/TestCasesGrid';
 import { TestCaseEmptyState } from '@/components/releases/test-cases/TestCaseEmptyState';
 import { CreateTestCaseDialog } from '@/components/releases/test-cases/CreateTestCaseDialog';
+import { BulkActionsBar } from '@/components/releases/test-cases/BulkActionsBar';
 import { testCasesData } from '@/data/testCasesData';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
@@ -544,54 +545,22 @@ export default function TestCasesPage() {
       {/* Bulk Actions Bar */}
       <AnimatePresence>
         {selectedIds.size > 0 && (
-          <motion.div 
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-foreground text-background px-6 py-3 rounded-full shadow-xl flex items-center gap-4 z-50"
-          >
-            <span className="text-sm font-medium">{selectedIds.size} selected</span>
-            {selectedIds.size < filteredTestCases.length && (
-              <button
-                className="text-xs text-primary-foreground/70 hover:text-primary-foreground underline"
-                onClick={() => setSelectedIds(new Set(filteredTestCases.map(tc => tc.id)))}
-              >
-                Select all {filteredTestCases.length}
-              </button>
-            )}
-            <div className="w-px h-5 bg-muted-foreground/30" />
-            <Button variant="ghost" size="sm" className="text-background hover:bg-muted-foreground/20">
-              <FolderInput className="w-4 h-4 mr-2" />
-              Move to Release
-            </Button>
-            <Button variant="ghost" size="sm" className="text-background hover:bg-muted-foreground/20">
-              <UserPlus className="w-4 h-4 mr-2" />
-              Assign
-            </Button>
-            <Button variant="ghost" size="sm" className="text-background hover:bg-muted-foreground/20">
-              <Tags className="w-4 h-4 mr-2" />
-              Add Tags
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-destructive hover:bg-muted-foreground/20"
-              onClick={() => {
-                toast.error(`${selectedIds.size} test case(s) deleted`);
-                setSelectedIds(new Set());
-              }}
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete
-            </Button>
-            <button 
-              className="ml-2 text-muted-foreground hover:text-background transition-colors"
-              onClick={clearSelection}
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </motion.div>
+          <BulkActionsBar
+            selectedCount={selectedIds.size}
+            totalCount={filteredTestCases.length}
+            onSelectAll={() => setSelectedIds(new Set(filteredTestCases.map(tc => tc.id)))}
+            onClear={clearSelection}
+            onMove={() => toast.info('Move to Release dialog coming soon')}
+            onAssign={() => toast.info('Assign dialog coming soon')}
+            onAddTags={() => toast.info('Add Tags dialog coming soon')}
+            onDelete={() => {
+              toast.error(`${selectedIds.size} test case(s) deleted`);
+              setSelectedIds(new Set());
+            }}
+            onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
+            onDuplicate={() => toast.success(`${selectedIds.size} test case(s) duplicated`)}
+            onExport={() => toast.success(`Exporting ${selectedIds.size} test case(s)...`)}
+          />
         )}
       </AnimatePresence>
 
