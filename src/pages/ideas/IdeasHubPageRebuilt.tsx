@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lightbulb, Plus, List } from 'lucide-react';
+import { Plus, List } from 'lucide-react';
 import { SubmitIdeaModalRebuilt } from '@/components/ideas/elevated';
 import { Button } from '@/components/ui/button';
 import { 
@@ -18,7 +18,6 @@ import {
 import { useConvertIdeaToBR } from '@/hooks/ideas/useConvertToBR';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  PageHeader,
   Kbd,
   IdeasStatsGrid,
   QuickWinQueue,
@@ -29,6 +28,7 @@ import {
   ConversionFunnel,
 } from '@/components/ideas/elevated';
 import { IDEA_CATEGORY_LABELS } from '@/types/improvement-ideas';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 export default function IdeasHubPageRebuilt() {
   const navigate = useNavigate();
@@ -193,37 +193,31 @@ export default function IdeasHubPageRebuilt() {
 
   const isLoading = metricsLoading || ideasLoading;
 
+  const headerActions = (
+    <>
+      <Button 
+        variant="outline" 
+        onClick={() => navigate('/industry/ideas/all')}
+        className="gap-2 border-slate-200 bg-white hover:bg-slate-50 group h-8 text-sm"
+      >
+        <List className="w-4 h-4" />
+        View All 
+        <Kbd>G</Kbd>
+      </Button>
+      <Button 
+        onClick={() => setShowSubmitModal(true)}
+        className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-8 text-sm"
+      >
+        <Plus className="w-4 h-4" />
+        Submit Idea 
+        <Kbd className="bg-white/20 border-white/10">N</Kbd>
+      </Button>
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <PageChrome rightActions={headerActions}>
       <div className="p-6 lg:p-10 max-w-[1600px] mx-auto">
-        {/* Header */}
-        <PageHeader
-          icon={Lightbulb}
-          title="Ideas Hub"
-          subtitle="Capture and transform improvement ideas into initiatives"
-          className="mb-8"
-          actions={
-            <>
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/industry/ideas/all')}
-                className="gap-2 border-slate-200 bg-white hover:bg-slate-50 group"
-              >
-                <List className="w-4 h-4" />
-                View All 
-                <Kbd>G</Kbd>
-              </Button>
-              <Button 
-                onClick={() => setShowSubmitModal(true)}
-                className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-600/25 group"
-              >
-                <Plus className="w-4 h-4" />
-                Submit Idea 
-                <Kbd className="bg-white/20 border-white/10">N</Kbd>
-              </Button>
-            </>
-          }
-        />
 
         {/* Stats Grid */}
         <div className="mb-8">
@@ -328,6 +322,6 @@ export default function IdeasHubPageRebuilt() {
         open={showSubmitModal} 
         onOpenChange={setShowSubmitModal} 
       />
-    </div>
+    </PageChrome>
   );
 }

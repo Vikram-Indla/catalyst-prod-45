@@ -41,33 +41,7 @@ import {
   ConvertedBanner,
   ImpactScoreCard,
 } from '@/components/ideas/elevated';
-
-// ============================================================
-// BREADCRUMB COMPONENT
-// ============================================================
-function IdeaBreadcrumb({ ideaCode }: { ideaCode: string }) {
-  const navigate = useNavigate();
-  
-  return (
-    <nav className="flex items-center gap-2 text-sm mb-6">
-      <button 
-        onClick={() => navigate('/industry/ideas')}
-        className="text-slate-500 hover:text-blue-600 transition-colors"
-      >
-        Ideas Hub
-      </button>
-      <ChevronRight className="w-4 h-4 text-slate-300" />
-      <button 
-        onClick={() => navigate('/industry/ideas/all')}
-        className="text-slate-500 hover:text-blue-600 transition-colors"
-      >
-        All Ideas
-      </button>
-      <ChevronRight className="w-4 h-4 text-slate-300" />
-      <span className="font-semibold text-slate-900">{ideaCode}</span>
-    </nav>
-  );
-}
+import { PageChrome } from '@/components/layout/PageChrome';
 
 // ============================================================
 // DETAILS CARD COMPONENT
@@ -292,11 +266,8 @@ export default function IdeaDetailPageRebuilt() {
   const TypeIcon = typeConfig[ideaType as keyof typeof typeConfig]?.icon;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <PageChrome titleOverride={idea.code}>
       <div className="p-6 lg:p-10 max-w-6xl mx-auto">
-        {/* Breadcrumb */}
-        <IdeaBreadcrumb ideaCode={idea.code} />
-
         {/* Main Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
@@ -538,11 +509,10 @@ export default function IdeaDetailPageRebuilt() {
               ]}
             />
 
-            {/* Details Card */}
             <DetailsCard idea={idea} />
           </div>
         </div>
       </div>
-    </div>
+    </PageChrome>
   );
 }

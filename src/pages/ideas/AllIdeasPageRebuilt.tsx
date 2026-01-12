@@ -13,7 +13,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useImprovementIdeas, useImprovementInitiatives } from '@/hooks/useImprovementIdeas';
 import { useAuth } from '@/hooks/useAuth';
 import { 
-  IdeasListHeader,
   IdeasFilterBarAdvanced,
   IdeasTabBarAdvanced,
   BulkActionsBar,
@@ -23,6 +22,7 @@ import {
   SubmitIdeaModalRebuilt
 } from '@/components/ideas/elevated';
 import type { ImprovementIdea } from '@/types/improvement-ideas';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 type ViewMode = 'grid' | 'list';
 type SortOption = 'newest' | 'oldest' | 'votes' | 'impact';
@@ -218,14 +218,19 @@ export default function AllIdeasPageRebuilt() {
     }
   };
 
+  const headerActions = (
+    <Button 
+      onClick={() => setShowSubmitModal(true)}
+      className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-8 text-sm"
+    >
+      <Plus className="w-4 h-4" />
+      Submit Idea
+    </Button>
+  );
+
   return (
-    <>
+    <PageChrome rightActions={headerActions}>
       <div className="p-6 lg:p-10 max-w-[1600px] mx-auto space-y-6">
-        {/* Header */}
-        <IdeasListHeader
-          onSubmitClick={() => setShowSubmitModal(true)}
-          onExport={() => toast({ title: "Export", description: "Export started..." })}
-        />
 
         {/* Filter Bar */}
         <IdeasFilterBarAdvanced
@@ -346,12 +351,12 @@ export default function AllIdeasPageRebuilt() {
           />
         )}
       </div>
-    
+      
       {/* Submit Idea Modal */}
       <SubmitIdeaModalRebuilt 
         open={showSubmitModal} 
         onOpenChange={setShowSubmitModal} 
       />
-    </>
+    </PageChrome>
   );
 }

@@ -5,14 +5,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Target, 
   ChevronRight,
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
   SkipForward,
   Sparkles,
-  AlertCircle,
   Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,6 +28,7 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 interface ScoringCriteria {
   imperative: number;
@@ -140,44 +139,36 @@ export default function ScoringQueuePage() {
     }
   };
 
+  const headerActions = (
+    <>
+      <Badge variant="outline" className="gap-1">
+        <Clock className="h-3 w-3" />
+        {pendingIdeas.length} pending
+      </Badge>
+      <Button variant="outline" onClick={() => navigate('/industry/ideas/matrix')} className="h-8 text-sm">
+        View Matrix
+        <ChevronRight className="ml-1 h-4 w-4" />
+      </Button>
+    </>
+  );
+
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Skeleton className="h-[400px]" />
-          <Skeleton className="h-[400px]" />
+      <PageChrome rightActions={headerActions}>
+        <div className="p-6 space-y-6">
+          <Skeleton className="h-8 w-48" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Skeleton className="h-[400px]" />
+            <Skeleton className="h-[400px]" />
+          </div>
         </div>
-      </div>
+      </PageChrome>
     );
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
-            <Target className="h-6 w-6 text-primary" />
-            Scoring Queue
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Evaluate and score improvement ideas for prioritization
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="outline" className="gap-1">
-            <Clock className="h-3 w-3" />
-            {pendingIdeas.length} pending
-          </Badge>
-          <Button variant="outline" onClick={() => navigate('/industry/ideas/matrix')}>
-            View Matrix
-            <ChevronRight className="ml-1 h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Progress */}
+    <PageChrome rightActions={headerActions}>
+      <div className="flex flex-col gap-6 p-6">
       {pendingIdeas.length > 0 && (
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">
@@ -333,5 +324,6 @@ export default function ScoringQueuePage() {
         </div>
       )}
     </div>
+  </PageChrome>
   );
 }
