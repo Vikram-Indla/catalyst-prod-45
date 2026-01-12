@@ -21,7 +21,8 @@ export interface WorkspaceContext {
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
   // Home - includes /for-you which is the main home route
-  if (pathname === '/' || pathname === '/home' || pathname === '/for-you') {
+  // Also includes /planner which has its own internal navigation
+  if (pathname === '/' || pathname === '/home' || pathname === '/for-you' || pathname.startsWith('/planner')) {
     return 'home';
   }
   
