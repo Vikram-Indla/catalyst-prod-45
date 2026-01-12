@@ -4,6 +4,7 @@
 
 export { TestCasesPage } from './TestCasesPage';
 export { TestCaseEditorPage } from './TestCaseEditorPage';
+export { TestCaseDetailPageWrapper } from './TestCaseDetailPageWrapper';
 export { TestCyclesPage } from './TestCyclesPage';
 export { CycleDetailPage } from './CycleDetailPage';
 export { DefectsPage } from './DefectsPage';
