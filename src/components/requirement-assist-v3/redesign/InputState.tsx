@@ -417,8 +417,16 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
         {/* Left: History Sidebar - Denser */}
         <div className="w-56 bg-white border-r border-slate-200 flex flex-col flex-shrink-0">
           <div className="h-11 px-3 flex items-center justify-between border-b border-slate-100">
-            <span className="text-xs font-semibold text-slate-700">History</span>
-            <span className="text-[10px] text-slate-400">0</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-700">History</span>
+              <span className="text-[10px] text-slate-400">0</span>
+            </div>
+            <button 
+              onClick={onShowHistory}
+              className="text-[10px] font-medium text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              View All →
+            </button>
           </div>
 
           {/* Search */}
@@ -436,16 +444,6 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
           <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
             <Clock className="w-8 h-8 text-slate-200 mb-2" />
             <p className="text-xs text-slate-400">No history yet</p>
-          </div>
-
-          {/* Footer */}
-          <div className="p-2 border-t border-slate-100">
-            <button 
-              onClick={onShowHistory}
-              className="w-full text-center text-[10px] font-medium text-blue-600 hover:text-blue-700"
-            >
-              View All →
-            </button>
           </div>
         </div>
 
