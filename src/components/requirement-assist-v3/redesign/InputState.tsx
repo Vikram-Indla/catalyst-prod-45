@@ -1,10 +1,10 @@
 // ============================================================
 // INPUT STATE COMPONENT
-// Centered single-focus input card (no split view)
+// Centered single-focus input card with visual polish
 // ============================================================
 
 import React, { useState, useMemo } from 'react';
-import { ChevronRight, Sparkles, AlertTriangle, History } from 'lucide-react';
+import { ChevronRight, ChevronDown, Sparkles, AlertTriangle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useStore } from '@/stores/requirementAssistStore';
 
@@ -50,63 +50,76 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-50">
-      {/* Header */}
-      <header className="h-14 px-6 flex items-center justify-between border-b border-slate-200 bg-white flex-shrink-0">
-        <h1 className="text-lg font-semibold text-slate-900">Requirement Assist</h1>
+    <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      {/* Header with branding */}
+      <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          {/* Gradient icon */}
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-base font-semibold text-slate-900">Requirement Assist</span>
+        </div>
         <button 
           onClick={onShowHistory}
-          className="text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2 transition-colors"
+          className="h-9 px-4 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-2"
         >
-          <History className="w-4 h-4" />
+          <Clock className="w-4 h-4" />
           History
         </button>
       </header>
 
       {/* Centered Content */}
-      <div className="flex-1 flex items-center justify-center p-6">
+      <main className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-2xl">
-          {/* Main Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            {/* Destination Row */}
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+          {/* Destination Row - Better styling */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="relative">
               <select
                 value={programId || ''}
                 onChange={(e) => setProgramId(e.target.value || null)}
-                className="h-10 px-4 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="h-11 pl-4 pr-10 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 appearance-none cursor-pointer hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
               >
                 <option value="">Select Program</option>
                 {programs.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            </div>
 
-              <ChevronRight className="w-4 h-4 text-slate-300" />
+            <ChevronRight className="w-4 h-4 text-slate-300" />
 
+            <div className="relative">
               <select
                 value={projectId || ''}
                 onChange={(e) => setProjectId(e.target.value || null)}
                 disabled={!programId}
-                className="h-10 px-4 bg-white border border-slate-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-11 pl-4 pr-10 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 appearance-none cursor-pointer hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <option value="">Select Project</option>
                 {filteredProjects.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
-
-              {programId && projectId && (
-                <div className="ml-auto flex items-center gap-2 text-xs font-medium text-slate-400">
-                  <span className="px-2 py-1 bg-slate-50 rounded">
-                    {selectedProgram?.code || 'PRG'}-XXX
-                  </span>
-                  <span className="px-2 py-1 bg-slate-50 rounded">
-                    {selectedProject?.code || 'PRJ'}-XXX
-                  </span>
-                </div>
-              )}
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             </div>
 
+            {/* ID Preview - Styled properly */}
+            {programId && projectId && (
+              <div className="ml-auto flex items-center gap-2">
+                <span className="px-2.5 py-1 bg-violet-50 border border-violet-200 text-violet-700 text-xs font-mono font-semibold rounded-lg">
+                  {selectedProgram?.code || 'PRG'}-XXX
+                </span>
+                <span className="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono font-semibold rounded-lg">
+                  {selectedProject?.code || 'PRJ'}-XXX
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Main Card - Add shadow and better borders */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-lg shadow-slate-200/50 overflow-hidden">
             {/* Text Area */}
             <textarea
               value={inputText}
@@ -116,50 +129,27 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               className="w-full h-64 p-6 text-base text-slate-900 placeholder:text-slate-400 resize-none focus:outline-none leading-relaxed"
             />
 
-            {/* Footer Bar */}
-            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+            {/* Footer Bar - Proper styling */}
+            <div className="px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 border-t border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <span className="text-sm text-slate-400">{wordCount} words</span>
-                <span className="text-xs text-slate-300">{inputText.length} / 3,000</span>
+                <span className="text-sm font-medium text-slate-500">{wordCount} words</span>
+                <span className="text-xs text-slate-400">{inputText.length} / 3,000</span>
               </div>
 
-              <div className="flex items-center gap-4">
-                {/* Estimates - Only show when ready */}
-                {wordCount >= 10 && (
-                  <div className="flex items-center gap-3 text-xs font-medium">
-                    <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-violet-500" />
-                      <span className="text-slate-500">{estimatedEpics}</span>
-                      <span className="text-slate-400">Epics</span>
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-teal-500" />
-                      <span className="text-slate-500">{estimatedFeatures}</span>
-                      <span className="text-slate-400">Features</span>
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span className="text-slate-500">{estimatedStories}</span>
-                      <span className="text-slate-400">Stories</span>
-                    </span>
-                  </div>
+              {/* Button - Proper disabled/enabled states */}
+              <button
+                onClick={handleGenerate}
+                disabled={!canGenerate}
+                className={cn(
+                  "h-11 px-6 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200",
+                  canGenerate 
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0" 
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
                 )}
-
-                {/* Generate Button */}
-                <button
-                  onClick={handleGenerate}
-                  disabled={!canGenerate}
-                  className={cn(
-                    "h-11 px-6 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all",
-                    canGenerate 
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                      : "bg-slate-100 text-slate-400 cursor-not-allowed"
-                  )}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  {canGenerate ? 'Generate' : wordCount < 10 ? `${10 - wordCount} more` : 'Generate'}
-                </button>
-              </div>
+              >
+                <Sparkles className="w-4 h-4" />
+                {canGenerate ? 'Generate' : wordCount < 10 ? `${10 - wordCount} more` : 'Generate'}
+              </button>
             </div>
 
             {/* Duplicate Warning */}
@@ -174,8 +164,30 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               </div>
             )}
           </div>
+
+          {/* Estimate - When visible, styled properly */}
+          {wordCount >= 10 && (
+            <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+              <div className="flex items-center justify-center gap-10">
+                <div className="text-center">
+                  <p className="text-4xl font-bold text-violet-600">{estimatedEpics}</p>
+                  <p className="text-sm text-slate-600 mt-1 font-medium">Epics</p>
+                </div>
+                <div className="w-px h-14 bg-blue-200" />
+                <div className="text-center">
+                  <p className="text-4xl font-bold text-teal-600">{estimatedFeatures}</p>
+                  <p className="text-sm text-slate-600 mt-1 font-medium">Features</p>
+                </div>
+                <div className="w-px h-14 bg-blue-200" />
+                <div className="text-center">
+                  <p className="text-4xl font-bold text-emerald-600">{estimatedStories}</p>
+                  <p className="text-sm text-slate-600 mt-1 font-medium">Stories</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
