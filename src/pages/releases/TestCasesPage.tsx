@@ -69,14 +69,19 @@ import { KeyboardShortcutsDialog } from '@/components/releases/test-cases/Keyboa
 import { AdvancedFiltersDialog } from '@/components/releases/test-cases/AdvancedFiltersDialog';
 import { TestCaseDetailDrawer } from '@/components/releases/test-cases/TestCaseDetailDrawer';
 import { testCasesData, TestCase } from '@/data/testCasesData';
+import { useTestCasesApi, useDeleteTestCasesApi, useDuplicateTestCaseApi } from '@/hooks/use-test-cases-api';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
+import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 type ViewMode = 'list' | 'grid' | 'kanban';
 
 export default function TestCasesPage() {
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get('programId') || '';
+  
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window !== 'undefined') {
@@ -107,6 +112,28 @@ export default function TestCasesPage() {
     activeFilterCount 
   } = useTestCaseFilters();
 
+  // API hooks with mock fallback
+  const { 
+    testCases: apiTestCases, 
+    total: apiTotal, 
+    totalPages: apiTotalPages, 
+    isLoading, 
+    refetch,
+    isMockData 
+  } = useTestCasesApi({
+    projectId,
+    page: currentPage,
+    limit: itemsPerPage,
+    search: filters.search,
+    status: filters.statuses?.[0],
+    priority: filters.priorities?.[0],
+    type: filters.types?.[0],
+    useMockFallback: true,
+  });
+
+  const deleteTestCases = useDeleteTestCasesApi();
+  const duplicateTestCase = useDuplicateTestCaseApi();
+
   // Keyboard shortcuts
   useTestCaseKeyboardShortcuts({
     onSearch: () => searchInputRef.current?.focus(),
@@ -118,7 +145,8 @@ export default function TestCasesPage() {
     },
     onDelete: () => {
       if (selectedIds.size > 0) {
-        toast.error(`${selectedIds.size} test case(s) deleted`);
+        const ids = Array.from(selectedIds);
+        deleteTestCases.mutate(ids);
         setSelectedIds(new Set());
       }
     },
@@ -129,35 +157,28 @@ export default function TestCasesPage() {
     localStorage.setItem('catalyst-test-cases-view', viewMode);
   }, [viewMode]);
 
-  // Apply filters
+  // Use API data with client-side release filter fallback
   const filteredTestCases = useMemo(() => {
-    return testCasesData.filter(tc => {
-      // Search filter
-      if (filters.search) {
-        const query = filters.search.toLowerCase();
-        if (!tc.id.toLowerCase().includes(query) && !tc.title.toLowerCase().includes(query)) {
-          return false;
-        }
-      }
-      // Release filter
-      if (filters.releases?.length && !filters.releases.includes(tc.release)) return false;
-      // Status filter
-      if (filters.statuses?.length && !filters.statuses.includes(tc.status)) return false;
-      // Priority filter
-      if (filters.priorities?.length && !filters.priorities.includes(tc.priority)) return false;
-      // Type filter
-      if (filters.types?.length && !filters.types.includes(tc.type)) return false;
-      
-      return true;
-    });
-  }, [filters]);
+    let cases = apiTestCases;
+    
+    // Apply release filter on client side (not supported by API params currently)
+    if (filters.releases?.length) {
+      cases = cases.filter(tc => filters.releases!.includes(tc.release));
+    }
+    
+    return cases;
+  }, [apiTestCases, filters.releases]);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredTestCases.length / itemsPerPage);
-  const paginatedTestCases = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filteredTestCases.slice(start, start + itemsPerPage);
-  }, [filteredTestCases, currentPage, itemsPerPage]);
+  // Calculate pagination from filtered results
+  const totalPages = isMockData 
+    ? Math.ceil(filteredTestCases.length / itemsPerPage) 
+    : apiTotalPages;
+  
+  const paginatedTestCases = isMockData
+    ? filteredTestCases.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    : filteredTestCases;
+  
+  const totalCount = isMockData ? filteredTestCases.length : apiTotal;
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -191,14 +212,14 @@ export default function TestCasesPage() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await refetch();
     setIsRefreshing(false);
     toast.success('Test cases refreshed');
   };
 
   const handleCreateSuccess = useCallback(() => {
-    // Could trigger a refetch here in a real app
-  }, []);
+    refetch();
+  }, [refetch]);
 
   return (
     <div className="flex flex-col h-full">
@@ -209,7 +230,7 @@ export default function TestCasesPage() {
           <span className="text-muted-foreground">/</span>
           <span className="font-semibold text-foreground">Test Cases</span>
           <Badge variant="secondary" className="ml-2 text-xs">
-            {filteredTestCases.length} total
+            {totalCount} total{isMockData ? ' (demo)' : ''}
           </Badge>
         </div>
         
@@ -426,7 +447,17 @@ export default function TestCasesPage() {
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-6">
         <AnimatePresence mode="wait">
-          {filteredTestCases.length === 0 ? (
+          {isLoading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center justify-center h-64"
+            >
+              <RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
+            </motion.div>
+          ) : paginatedTestCases.length === 0 ? (
             <motion.div
               key="empty"
               initial={{ opacity: 0 }}
@@ -494,10 +525,10 @@ export default function TestCasesPage() {
       </div>
 
       {/* Pagination */}
-      {filteredTestCases.length > 0 && (
+      {totalCount > 0 && (
         <div className="flex items-center justify-between px-6 py-3 bg-background border-t">
           <span className="text-sm text-muted-foreground">
-            Showing <span className="font-medium text-foreground">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredTestCases.length)}</span> of <span className="font-medium text-foreground">{filteredTestCases.length}</span> test cases
+            Showing <span className="font-medium text-foreground">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalCount)}</span> of <span className="font-medium text-foreground">{totalCount}</span> test cases
           </span>
           
           <div className="flex items-center gap-4">
@@ -603,18 +634,23 @@ export default function TestCasesPage() {
         {selectedIds.size > 0 && (
           <BulkActionsBar
             selectedCount={selectedIds.size}
-            totalCount={filteredTestCases.length}
-            onSelectAll={() => setSelectedIds(new Set(filteredTestCases.map(tc => tc.id)))}
+            totalCount={totalCount}
+            onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.id)))}
             onClear={clearSelection}
             onMove={() => toast.info('Move to Release dialog coming soon')}
             onAssign={() => toast.info('Assign dialog coming soon')}
             onAddTags={() => toast.info('Add Tags dialog coming soon')}
             onDelete={() => {
-              toast.error(`${selectedIds.size} test case(s) deleted`);
+              const ids = Array.from(selectedIds);
+              deleteTestCases.mutate(ids);
               setSelectedIds(new Set());
             }}
             onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
-            onDuplicate={() => toast.success(`${selectedIds.size} test case(s) duplicated`)}
+            onDuplicate={() => {
+              // Duplicate each selected test case
+              const ids = Array.from(selectedIds);
+              ids.forEach(id => duplicateTestCase.mutate({ id }));
+            }}
             onExport={() => setIsExportOpen(true)}
           />
         )}
@@ -632,7 +668,7 @@ export default function TestCasesPage() {
         open={isExportOpen}
         onOpenChange={setIsExportOpen}
         selectedCount={selectedIds.size}
-        totalCount={filteredTestCases.length}
+        totalCount={totalCount}
       />
 
       {/* Import Test Cases Dialog */}
