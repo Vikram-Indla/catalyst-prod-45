@@ -2191,7 +2191,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
               return (
                 <span 
                   key={idx}
-                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold truncate max-w-[120px]"
+                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap"
                   style={{ 
                     backgroundColor: `${theme.accent}15`, 
                     color: theme.accent,
