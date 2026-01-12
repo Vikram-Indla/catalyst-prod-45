@@ -47,6 +47,7 @@ interface TestCasesTableProps {
   onSelectAll: (checked: boolean) => void;
   onSelectRow: (id: string, checked: boolean) => void;
   allSelected: boolean;
+  onRowClick?: (testCase: TestCase) => void;
 }
 
 // Avatar colors
@@ -74,7 +75,8 @@ export function TestCasesTable({
   selectedIds, 
   onSelectAll, 
   onSelectRow,
-  allSelected 
+  allSelected,
+  onRowClick 
 }: TestCasesTableProps) {
   const navigate = useNavigate();
   const [sortField, setSortField] = useState<SortField | null>(null);
@@ -234,6 +236,7 @@ export function TestCasesTable({
                 "hover:bg-muted/30 cursor-pointer transition-colors",
                 selectedIds.has(tc.id) && "bg-primary/5"
               )}
+              onClick={() => onRowClick?.(tc)}
             >
               <td className="px-4 py-3">
                 <Checkbox 

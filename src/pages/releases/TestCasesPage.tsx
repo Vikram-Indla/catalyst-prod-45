@@ -66,7 +66,8 @@ import { TestCaseTemplatesDialog } from '@/components/releases/test-cases/TestCa
 import { AIGenerateTestCasesDialog } from '@/components/releases/test-cases/AIGenerateTestCasesDialog';
 import { KeyboardShortcutsDialog } from '@/components/releases/test-cases/KeyboardShortcutsDialog';
 import { AdvancedFiltersDialog } from '@/components/releases/test-cases/AdvancedFiltersDialog';
-import { testCasesData } from '@/data/testCasesData';
+import { TestCaseDetailDrawer } from '@/components/releases/test-cases/TestCaseDetailDrawer';
+import { testCasesData, TestCase } from '@/data/testCasesData';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
 import { cn } from '@/lib/utils';
@@ -93,6 +94,8 @@ export default function TestCasesPage() {
   const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = useState(false);
   const [isAdvancedFiltersOpen, setIsAdvancedFiltersOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedTestCase, setSelectedTestCase] = useState<TestCase | null>(null);
+  const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
 
   // URL-synced filters
   const { 
@@ -445,6 +448,10 @@ export default function TestCasesPage() {
                 onSelectAll={handleSelectAll}
                 onSelectRow={handleSelectRow}
                 allSelected={selectedIds.size === paginatedTestCases.length && paginatedTestCases.length > 0}
+                onRowClick={(tc) => {
+                  setSelectedTestCase(tc);
+                  setIsDetailDrawerOpen(true);
+                }}
               />
             </motion.div>
           ) : (
@@ -647,6 +654,28 @@ export default function TestCasesPage() {
         onApplyFilters={(filters) => {
           // Apply filters logic
           toast.success('Filters applied');
+        }}
+      />
+
+      {/* Test Case Detail Drawer */}
+      <TestCaseDetailDrawer
+        testCase={selectedTestCase ? {
+          id: selectedTestCase.id,
+          title: selectedTestCase.title,
+          status: selectedTestCase.status,
+          priority: selectedTestCase.priority,
+          type: selectedTestCase.type,
+          lastRunStatus: selectedTestCase.lastRun as any,
+          automationStatus: 'manual',
+        } : null}
+        open={isDetailDrawerOpen}
+        onOpenChange={setIsDetailDrawerOpen}
+        onEdit={() => {
+          setIsDetailDrawerOpen(false);
+          toast.info('Edit mode coming soon');
+        }}
+        onExecute={() => {
+          toast.success(`Starting execution for ${selectedTestCase?.id}...`);
         }}
       />
     </div>
