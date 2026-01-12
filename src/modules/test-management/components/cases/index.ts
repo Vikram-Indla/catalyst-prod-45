@@ -21,5 +21,6 @@ export { ActiveFilterPills } from './ActiveFilterPills';
 export { SortDropdown } from './SortDropdown';
 export { TestCaseHistoryPanel } from './TestCaseHistoryPanel';
 export { VersionComparisonView } from './VersionComparisonView';
+export { TestSetsManager, type TestSet, type SmartQuery } from './TestSetsManager';
 // Only export main editor components, not individual tabs to avoid conflicts with reports module
 export { EditorHeader, EditorToolbar, ContextPanel } from './editor';
