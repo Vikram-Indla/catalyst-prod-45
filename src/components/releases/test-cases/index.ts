@@ -14,5 +14,10 @@ export { AIGenerateTestCasesDialog } from './AIGenerateTestCasesDialog';
 export { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
 export { AdvancedFiltersDialog } from './AdvancedFiltersDialog';
 
+// Phase 7: Collaboration & Comparison
+export { TestCaseComparisonDialog } from './TestCaseComparisonDialog';
+export { DraggableStepsList } from './DraggableStepsList';
+export { CollaborationIndicator, CollaboratorCursor } from './CollaborationIndicator';
+
 // Badges
 export * from './badges';
