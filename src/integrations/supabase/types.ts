@@ -15467,6 +15467,173 @@ export type Database = {
         }
         Relationships: []
       }
+      planner_statuses: {
+        Row: {
+          color: string
+          created_at: string | null
+          id: string
+          is_completed_status: boolean | null
+          is_default: boolean | null
+          name: string
+          position: number
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          is_completed_status?: boolean | null
+          is_default?: boolean | null
+          name: string
+          position?: number
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          is_completed_status?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          position?: number
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      planner_tasks: {
+        Row: {
+          assignee_id: string | null
+          blocked: boolean | null
+          blocked_reason: string | null
+          created_at: string | null
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          key: string
+          position: number
+          priority: string
+          progress: number | null
+          status_id: string
+          title: string
+          updated_at: string | null
+          workstream_id: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          blocked?: boolean | null
+          blocked_reason?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          key: string
+          position?: number
+          priority?: string
+          progress?: number | null
+          status_id: string
+          title: string
+          updated_at?: string | null
+          workstream_id?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          blocked?: boolean | null
+          blocked_reason?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          key?: string
+          position?: number
+          priority?: string
+          progress?: number | null
+          status_id?: string
+          title?: string
+          updated_at?: string | null
+          workstream_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "planner_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_estimation_settings: {
         Row: {
           created_at: string | null
@@ -28019,6 +28186,22 @@ export type Database = {
       }
       refresh_home_user_summary: {
         Args: { p_user_id: string }
+        Returns: undefined
+      }
+      reorder_planner_tasks_down: {
+        Args: {
+          p_new_position: number
+          p_old_position: number
+          p_status_id: string
+        }
+        Returns: undefined
+      }
+      reorder_planner_tasks_up: {
+        Args: {
+          p_new_position: number
+          p_old_position: number
+          p_status_id: string
+        }
         Returns: undefined
       }
       reorder_remaining_steps: {
