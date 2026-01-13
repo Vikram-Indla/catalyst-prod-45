@@ -19239,6 +19239,7 @@ export type Database = {
           remaining_minutes: number | null
           spent_minutes: number | null
           sprint_id: string | null
+          start_date: string | null
           state: string | null
           status: Database["public"]["Enums"]["story_status"] | null
           story_key: string | null
@@ -19273,6 +19274,7 @@ export type Database = {
           remaining_minutes?: number | null
           spent_minutes?: number | null
           sprint_id?: string | null
+          start_date?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["story_status"] | null
           story_key?: string | null
@@ -19307,6 +19309,7 @@ export type Database = {
           remaining_minutes?: number | null
           spent_minutes?: number | null
           sprint_id?: string | null
+          start_date?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["story_status"] | null
           story_key?: string | null

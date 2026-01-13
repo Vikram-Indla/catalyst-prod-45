@@ -64,7 +64,7 @@ const mapPriority = (dbPriority: string | null): TaskPriority => {
 };
 
 // Transform DB row to PlannerTask
-const transformStory = (row: any): PlannerTask => ({
+const transformStory = (row: any, featureInfo?: { name: string; displayId: string }): PlannerTask => ({
   id: row.id,
   key: row.story_key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
   title: row.title || row.name || 'Untitled',
@@ -76,13 +76,14 @@ const transformStory = (row: any): PlannerTask => ({
   assigneeName: row.profiles?.full_name,
   assigneeInitials: row.profiles?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2),
   teamId: row.team_id,
-  startDate: row.created_at,
+  startDate: row.start_date,
   dueDate: row.accepted_at,
   blocked: row.blocked || false,
   blockedReason: row.blocked_reason,
   progress: row.progress_pct || 0,
   comments: 0,
   linkedItemId: row.feature_id,
+  linkedItemTitle: featureInfo ? `${featureInfo.displayId} - ${featureInfo.name}` : undefined,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -127,13 +128,32 @@ export function usePlannerTasks(teamId?: string | null) {
         }, {} as Record<string, string>);
       }
 
-      const transformedData = (data || []).map(row => ({
-        ...transformStory(row),
-        assigneeName: row.assignee_id ? profilesMap[row.assignee_id] : undefined,
-        assigneeInitials: row.assignee_id && profilesMap[row.assignee_id] 
-          ? profilesMap[row.assignee_id].split(' ').map(n => n[0]).join('').slice(0, 2)
-          : undefined,
-      }));
+      // Get unique feature IDs to fetch feature names
+      const featureIds = [...new Set((data || []).map(s => s.feature_id).filter(Boolean))];
+      
+      let featuresMap: Record<string, { name: string; displayId: string }> = {};
+      if (featureIds.length > 0) {
+        const { data: features } = await supabase
+          .from('features')
+          .select('id, name, display_id')
+          .in('id', featureIds);
+        
+        featuresMap = (features || []).reduce((acc, f) => {
+          acc[f.id] = { name: f.name || '', displayId: f.display_id || 'FTR' };
+          return acc;
+        }, {} as Record<string, { name: string; displayId: string }>);
+      }
+
+      const transformedData = (data || []).map(row => {
+        const featureInfo = row.feature_id ? featuresMap[row.feature_id] : undefined;
+        return {
+          ...transformStory(row, featureInfo),
+          assigneeName: row.assignee_id ? profilesMap[row.assignee_id] : undefined,
+          assigneeInitials: row.assignee_id && profilesMap[row.assignee_id] 
+            ? profilesMap[row.assignee_id].split(' ').map(n => n[0]).join('').slice(0, 2)
+            : undefined,
+        };
+      });
       
       // If no data from DB, return seed data
       if (transformedData.length === 0) {
@@ -186,6 +206,10 @@ export function useUpdatePlannerTask() {
 
       if (updates.dueDate !== undefined) {
         dbUpdates.accepted_at = updates.dueDate || null;
+      }
+
+      if (updates.startDate !== undefined) {
+        dbUpdates.start_date = updates.startDate || null;
       }
 
       const { error } = await supabase

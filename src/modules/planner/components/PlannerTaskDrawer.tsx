@@ -190,6 +190,20 @@ export function PlannerTaskDrawer({
               </Select>
             </div>
 
+            {/* Start Date */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Calendar className="w-4 h-4" />
+                Start Date
+              </label>
+              <Input
+                type="date"
+                value={task.startDate ? new Date(task.startDate).toISOString().split('T')[0] : ''}
+                onChange={(e) => onUpdate(task.id, { startDate: e.target.value || undefined })}
+                className="w-full"
+              />
+            </div>
+
             {/* Due Date */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
