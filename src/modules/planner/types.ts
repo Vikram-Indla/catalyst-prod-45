@@ -10,6 +10,7 @@ export type PlannerView =
   | 'weekly-report' 
   | 'team-performance' 
   | 'ai-insights'
+  | 'teams'
   | 'settings';
 
 export type TaskStatus = 'backlog' | 'planned' | 'in-progress' | 'review' | 'done';

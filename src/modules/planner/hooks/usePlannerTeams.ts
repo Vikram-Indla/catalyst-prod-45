@@ -1,6 +1,6 @@
 // ============================================================
 // PLANNER TEAMS HOOK
-// Fetches teams for the team dropdown
+// Fetches teams for the team dropdown with member counts
 // Returns empty list when database is empty (no mock data)
 // ============================================================
 
@@ -12,9 +12,17 @@ export function usePlannerTeams() {
   return useQuery({
     queryKey: ['planner-teams'],
     queryFn: async () => {
+      // Fetch teams with member count
       const { data, error } = await supabase
         .from('teams')
-        .select('id, name, short_name, team_type')
+        .select(`
+          id, 
+          name, 
+          short_name, 
+          team_type,
+          description,
+          team_members(count)
+        `)
         .eq('is_active', true)
         .order('name');
 
@@ -27,7 +35,8 @@ export function usePlannerTeams() {
         id: team.id,
         name: team.name,
         shortName: team.short_name || team.name.slice(0, 3).toUpperCase(),
-        memberCount: 0, // Would need additional query
+        description: team.description || undefined,
+        memberCount: team.team_members?.[0]?.count || 0,
         color: getTeamColor(team.team_type),
       }));
 
@@ -36,7 +45,8 @@ export function usePlannerTeams() {
   });
 }
 
-function getTeamColor(teamType: string): string {
+function getTeamColor(teamType: string | null): string {
+  if (!teamType) return '#6b7280';
   const colors: Record<string, string> = {
     'AGILE': '#10b981',
     'KANBAN': '#3b82f6',
