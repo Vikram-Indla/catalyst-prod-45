@@ -17,10 +17,12 @@ import { PlannerTeamPerformance } from './components/PlannerTeamPerformance';
 import { PlannerAIInsights } from './components/PlannerAIInsights';
 import { PlannerTaskDrawer } from './components/PlannerTaskDrawer';
 import { PlannerCreateModal } from './components/PlannerCreateModal';
+import { PlannerBulkActionBar } from './components/PlannerBulkActionBar';
+import { PlannerBulkDeleteModal } from './components/PlannerBulkDeleteModal';
 
 import { PlannerAIPanel } from './components/PlannerAIPanel';
 import { PlannerSearchBar } from './components/PlannerSearchBar';
-import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask } from './hooks/usePlannerTasks';
+import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/usePlannerTasks';
 import { usePlannerTeams } from './hooks/usePlannerTeams';
 import { usePlannerUsers } from './hooks/usePlannerUsers';
 import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
@@ -63,6 +65,8 @@ export function PlannerPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createDefaultStatus, setCreateDefaultStatus] = useState<TaskStatus>('backlog');
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   // Sync activeView with URL
   useEffect(() => {
@@ -79,6 +83,7 @@ export function PlannerPage() {
   const { data: users = [] } = usePlannerUsers();
   const updateTask = useUpdatePlannerTask();
   const deleteTask = useDeletePlannerTask();
+  const bulkDeleteTasks = useBulkDeletePlannerTasks();
   const createTask = useCreatePlannerTask();
   
   // Realtime subscription for live updates
@@ -238,6 +243,27 @@ export function PlannerPage() {
       }
     }
   }, [tasks]);
+
+  const handleBulkDelete = useCallback(() => {
+    if (selectedTaskIds.size === 0) return;
+    setIsBulkDeleting(true);
+    
+    bulkDeleteTasks.mutate([...selectedTaskIds], {
+      onSuccess: (deletedIds) => {
+        catalystToast.success(
+          'Tasks Deleted', 
+          `${deletedIds.length} task${deletedIds.length > 1 ? 's have' : ' has'} been removed.`
+        );
+        setSelectedTaskIds(new Set());
+        setIsBulkDeleteModalOpen(false);
+        setIsBulkDeleting(false);
+      },
+      onError: () => {
+        catalystToast.error('Delete Failed', 'Could not delete the selected tasks.');
+        setIsBulkDeleting(false);
+      },
+    });
+  }, [selectedTaskIds, bulkDeleteTasks]);
 
   const renderView = () => {
     const viewTasks = filteredTasks;
@@ -402,6 +428,22 @@ export function PlannerPage() {
           insights={insights}
           onViewAll={() => handleViewChange('ai-insights')}
           onInsightAction={handleInsightAction}
+        />
+
+        {/* Bulk Action Bar */}
+        <PlannerBulkActionBar
+          selectedCount={selectedTaskIds.size}
+          onClearSelection={() => setSelectedTaskIds(new Set())}
+          onBulkDelete={() => setIsBulkDeleteModalOpen(true)}
+        />
+
+        {/* Bulk Delete Modal */}
+        <PlannerBulkDeleteModal
+          isOpen={isBulkDeleteModalOpen}
+          onClose={() => setIsBulkDeleteModalOpen(false)}
+          onConfirm={handleBulkDelete}
+          selectedCount={selectedTaskIds.size}
+          isDeleting={isBulkDeleting}
         />
       </div>
     </div>
