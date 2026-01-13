@@ -258,11 +258,13 @@ export function PlannerPage() {
     setIsBulkDeleting(true);
     
     bulkDeleteTasks.mutate([...selectedTaskIds], {
-      onSuccess: (deletedIds) => {
-        catalystToast.success(
-          'Tasks Deleted', 
-          `${deletedIds.length} task${deletedIds.length > 1 ? 's have' : ' has'} been removed.`
-        );
+      onSuccess: (result) => {
+        const count = result.deletedIds.length;
+        const message = result.seedCount > 0 && result.realCount === 0
+          ? `${count} demo task${count > 1 ? 's' : ''} removed from view.`
+          : `${count} task${count > 1 ? 's have' : ' has'} been deleted.`;
+        
+        catalystToast.success('Tasks Deleted', message);
         setSelectedTaskIds(new Set());
         setIsBulkDeleteModalOpen(false);
         setIsBulkDeleting(false);
