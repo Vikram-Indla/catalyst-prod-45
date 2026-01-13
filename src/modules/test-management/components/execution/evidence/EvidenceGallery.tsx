@@ -1,13 +1,14 @@
 /**
  * Evidence Gallery Component
  * Grid display of evidence with thumbnails, metadata, and actions
- * Implements TC-151 to TC-175
+ * Implements TC-151 to TC-175, TC-356 to TC-400 (Bulk), TC-401 to TC-425 (Export)
  */
 
 import React, { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,11 +45,14 @@ import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 import type { Evidence, CaptureMethod } from './types';
 import { EvidenceLightbox } from './EvidenceLightbox';
+import { useBulkOperations, BulkActionsBar } from './bulk';
+import { ExportDialog } from './export';
 
 interface EvidenceGalleryProps {
   evidence: Evidence[];
   onDelete?: (evidence: Evidence) => void;
   onDownload?: (evidence: Evidence) => void;
+  onBulkDelete?: () => void;
   readOnly?: boolean;
   className?: string;
 }
@@ -86,6 +90,7 @@ export function EvidenceGallery({
   evidence,
   onDelete,
   onDownload,
+  onBulkDelete,
   readOnly = false,
   className,
 }: EvidenceGalleryProps) {
@@ -94,6 +99,9 @@ export function EvidenceGallery({
   const [sortBy, setSortBy] = useState<SortBy>('date');
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  // Bulk operations hook
+  const bulk = useBulkOperations(evidence);
 
   // Filter and sort evidence
   const filteredEvidence = useMemo(() => {
@@ -168,8 +176,36 @@ export function EvidenceGallery({
     );
   }
 
+  // Handle bulk delete callback
+  const handleBulkDelete = async () => {
+    const success = await bulk.bulkDelete();
+    if (success && onBulkDelete) {
+      onBulkDelete();
+    }
+  };
+
   return (
     <div className={cn('space-y-3', className)}>
+      {/* Bulk Actions Bar */}
+      {bulk.isSelectMode && (
+        <BulkActionsBar
+          isSelectMode={bulk.isSelectMode}
+          selectedCount={bulk.selectedCount}
+          totalCount={bulk.totalCount}
+          isAllSelected={bulk.isAllSelected}
+          isPartiallySelected={bulk.isPartiallySelected}
+          isBulkDeleting={bulk.isBulkDeleting}
+          isBulkDownloading={bulk.isBulkDownloading}
+          bulkProgress={bulk.bulkProgress}
+          onToggleSelectMode={bulk.toggleSelectMode}
+          onToggleAll={bulk.toggleAll}
+          onBulkDelete={handleBulkDelete}
+          onBulkDownload={bulk.bulkDownload}
+          onCancel={bulk.toggleSelectMode}
+          readOnly={readOnly}
+        />
+      )}
+
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2 flex-1 min-w-[200px]">
@@ -188,6 +224,29 @@ export function EvidenceGallery({
         </div>
 
         <div className="flex items-center gap-1">
+          {/* Bulk select toggle */}
+          {!bulk.isSelectMode && (
+            <BulkActionsBar
+              isSelectMode={false}
+              selectedCount={0}
+              totalCount={evidence.length}
+              isAllSelected={false}
+              isPartiallySelected={false}
+              isBulkDeleting={false}
+              isBulkDownloading={false}
+              bulkProgress={null}
+              onToggleSelectMode={bulk.toggleSelectMode}
+              onToggleAll={() => {}}
+              onBulkDelete={() => {}}
+              onBulkDownload={() => {}}
+              onCancel={() => {}}
+              readOnly={readOnly}
+            />
+          )}
+
+          {/* Export button */}
+          <ExportDialog evidence={evidence} disabled={evidence.length === 0} />
+
           {/* Sort */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -246,10 +305,13 @@ export function EvidenceGallery({
             <GalleryGridItem
               key={item.id}
               item={item}
-              onClick={() => openLightbox(index)}
+              onClick={() => bulk.isSelectMode ? bulk.toggleSelection(item.id) : openLightbox(index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onDelete={readOnly ? undefined : () => onDelete?.(item)}
               onDownload={() => handleDownload(item)}
+              isSelectMode={bulk.isSelectMode}
+              isSelected={bulk.selectedIds.has(item.id)}
+              onToggleSelect={() => bulk.toggleSelection(item.id)}
             />
           ))}
         </div>
@@ -259,10 +321,13 @@ export function EvidenceGallery({
             <GalleryListItem
               key={item.id}
               item={item}
-              onClick={() => openLightbox(index)}
+              onClick={() => bulk.isSelectMode ? bulk.toggleSelection(item.id) : openLightbox(index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onDelete={readOnly ? undefined : () => onDelete?.(item)}
               onDownload={() => handleDownload(item)}
+              isSelectMode={bulk.isSelectMode}
+              isSelected={bulk.selectedIds.has(item.id)}
+              onToggleSelect={() => bulk.toggleSelection(item.id)}
             />
           ))}
         </div>
@@ -288,9 +353,21 @@ interface GalleryItemProps {
   onKeyDown: (e: React.KeyboardEvent) => void;
   onDelete?: () => void;
   onDownload?: () => void;
+  isSelectMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: () => void;
 }
 
-function GalleryGridItem({ item, onClick, onKeyDown, onDelete, onDownload }: GalleryItemProps) {
+function GalleryGridItem({ 
+  item, 
+  onClick, 
+  onKeyDown, 
+  onDelete, 
+  onDownload,
+  isSelectMode = false,
+  isSelected = false,
+  onToggleSelect,
+}: GalleryItemProps) {
   const Icon = getFileIcon(item.fileType);
   const isImage = item.fileType === 'image';
   const MethodIcon = captureMethodConfig[item.captureMethod]?.icon || Upload;
@@ -302,11 +379,27 @@ function GalleryGridItem({ item, onClick, onKeyDown, onDelete, onDownload }: Gal
       className={cn(
         'group relative aspect-square rounded-lg border bg-muted/30 overflow-hidden',
         'cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-        'hover:border-primary/50 transition-colors'
+        'hover:border-primary/50 transition-colors',
+        isSelected && 'ring-2 ring-primary border-primary'
       )}
       onClick={onClick}
       onKeyDown={onKeyDown}
     >
+      {/* Selection checkbox */}
+      {isSelectMode && (
+        <div 
+          className="absolute top-2 left-2 z-20"
+          onClick={(e) => { e.stopPropagation(); onToggleSelect?.(); }}
+        >
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => onToggleSelect?.()}
+            className="h-5 w-5 bg-background/80 backdrop-blur-sm border-2"
+            aria-label={`Select ${item.fileName}`}
+          />
+        </div>
+      )}
+
       {/* Thumbnail */}
       {isImage && item.url ? (
         <img
@@ -322,61 +415,67 @@ function GalleryGridItem({ item, onClick, onKeyDown, onDelete, onDownload }: Gal
       )}
 
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-        <Maximize2 className="h-6 w-6 text-white" />
-      </div>
+      {!isSelectMode && (
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <Maximize2 className="h-6 w-6 text-white" />
+        </div>
+      )}
 
       {/* Capture method badge */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="absolute top-1.5 left-1.5 p-1 rounded bg-black/50 text-white">
-            <MethodIcon className="h-3 w-3" />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent side="right" className="text-xs">
-          {captureMethodConfig[item.captureMethod]?.label || 'Uploaded'}
-        </TooltipContent>
-      </Tooltip>
+      {!isSelectMode && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="absolute top-1.5 left-1.5 p-1 rounded bg-black/50 text-white">
+              <MethodIcon className="h-3 w-3" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="text-xs">
+            {captureMethodConfig[item.captureMethod]?.label || 'Uploaded'}
+          </TooltipContent>
+        </Tooltip>
+      )}
 
       {/* Actions menu */}
-      <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-6 w-6 p-0"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <MoreVertical className="h-3 w-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onClick(); }}>
-              <Eye className="h-3.5 w-3.5 mr-2" />
-              View
-            </DropdownMenuItem>
-            {onDownload && (
-              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDownload(); }}>
-                <Download className="h-3.5 w-3.5 mr-2" />
-                Download
+      {!isSelectMode && (
+        <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreVertical className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onClick(); }}>
+                <Eye className="h-3.5 w-3.5 mr-2" />
+                View
               </DropdownMenuItem>
-            )}
-            {onDelete && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="h-3.5 w-3.5 mr-2" />
-                  Delete
+              {onDownload && (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDownload(); }}>
+                  <Download className="h-3.5 w-3.5 mr-2" />
+                  Download
                 </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+              )}
+              {onDelete && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
 
       {/* File info footer */}
       <div className="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/70 to-transparent">
@@ -392,7 +491,16 @@ function GalleryGridItem({ item, onClick, onKeyDown, onDelete, onDownload }: Gal
 }
 
 // List Item Component
-function GalleryListItem({ item, onClick, onKeyDown, onDelete, onDownload }: GalleryItemProps) {
+function GalleryListItem({ 
+  item, 
+  onClick, 
+  onKeyDown, 
+  onDelete, 
+  onDownload,
+  isSelectMode = false,
+  isSelected = false,
+  onToggleSelect,
+}: GalleryItemProps) {
   const Icon = getFileIcon(item.fileType);
   const isImage = item.fileType === 'image';
   const methodConfig = captureMethodConfig[item.captureMethod];
@@ -405,11 +513,24 @@ function GalleryListItem({ item, onClick, onKeyDown, onDelete, onDownload }: Gal
       className={cn(
         'group flex items-center gap-3 p-2 rounded-lg border bg-muted/30',
         'cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring',
-        'hover:border-primary/50 hover:bg-muted/50 transition-colors'
+        'hover:border-primary/50 hover:bg-muted/50 transition-colors',
+        isSelected && 'ring-2 ring-primary border-primary bg-primary/5'
       )}
       onClick={onClick}
       onKeyDown={onKeyDown}
     >
+      {/* Selection checkbox */}
+      {isSelectMode && (
+        <div onClick={(e) => { e.stopPropagation(); onToggleSelect?.(); }}>
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => onToggleSelect?.()}
+            className="h-5 w-5"
+            aria-label={`Select ${item.fileName}`}
+          />
+        </div>
+      )}
+
       {/* Thumbnail */}
       {isImage && item.url ? (
         <img
