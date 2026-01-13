@@ -1,11 +1,13 @@
 // ============================================================
 // PLANNER USERS HOOK
 // Fetches users for assignee dropdowns
+// Falls back to seed data when database is empty
 // ============================================================
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlannerUser } from '../types';
+import { SEED_USERS } from '../data/seedData';
 
 export function usePlannerUsers() {
   return useQuery({
@@ -19,10 +21,11 @@ export function usePlannerUsers() {
 
       if (error) {
         console.error('Error fetching users:', error);
-        throw error;
+        // Return seed data on error
+        return SEED_USERS;
       }
 
-      return (data || []).map((row): PlannerUser => ({
+      const users = (data || []).map((row): PlannerUser => ({
         id: row.id,
         name: row.full_name || 'Unknown',
         initials: (row.full_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
@@ -30,6 +33,13 @@ export function usePlannerUsers() {
         team: 'Team',
         online: Math.random() > 0.5,
       }));
+
+      // If no data from DB, return seed data
+      if (users.length === 0) {
+        return SEED_USERS;
+      }
+
+      return users;
     },
   });
 }

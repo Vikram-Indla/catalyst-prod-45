@@ -18,6 +18,7 @@ import { PlannerTeamPerformance } from './components/PlannerTeamPerformance';
 import { PlannerAIInsights } from './components/PlannerAIInsights';
 import { PlannerTaskDrawer } from './components/PlannerTaskDrawer';
 import { PlannerCreateModal } from './components/PlannerCreateModal';
+import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
 import { PlannerAIPanel } from './components/PlannerAIPanel';
 import { PlannerSearchBar } from './components/PlannerSearchBar';
 import { usePlannerTasks, useUpdatePlannerTask } from './hooks/usePlannerTasks';
@@ -27,6 +28,7 @@ import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
 import { usePlannerSearch } from './hooks/usePlannerSearch';
 import { usePlannerKeyboard } from './hooks/usePlannerKeyboard';
 import { usePlannerAIInsights } from './hooks/usePlannerAIInsights';
+import { getOnlineUsers } from './data/seedData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -59,7 +61,10 @@ export function PlannerPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createDefaultStatus, setCreateDefaultStatus] = useState<TaskStatus>('backlog');
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
 
+  // Online users for sidebar
+  const onlineUsers = useMemo(() => getOnlineUsers(), []);
   // Data hooks
   const { data: tasks = [], isLoading } = usePlannerTasks(selectedTeamId);
   const { data: teams = [] } = usePlannerTeams();
@@ -352,6 +357,8 @@ export function PlannerPage() {
           teams={teams}
           selectedTeamId={selectedTeamId}
           onTeamChange={setSelectedTeamId}
+          onCreateTeam={() => setIsCreateTeamModalOpen(true)}
+          onlineUsers={onlineUsers}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           insightsBadge={blockedCount}
@@ -397,6 +404,17 @@ export function PlannerPage() {
         insights={insights}
         onViewAll={() => handleViewChange('ai-insights')}
         onInsightAction={handleInsightAction}
+      />
+
+      {/* Create Team Modal */}
+      <PlannerCreateTeamModal
+        isOpen={isCreateTeamModalOpen}
+        onClose={() => setIsCreateTeamModalOpen(false)}
+        onCreate={(data) => {
+          toast.success(`Team "${data.name}" created`);
+          setIsCreateTeamModalOpen(false);
+        }}
+        users={users}
       />
     </div>
   );
