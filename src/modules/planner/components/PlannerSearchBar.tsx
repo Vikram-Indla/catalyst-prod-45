@@ -3,7 +3,8 @@
 // Search and filter toolbar for Planner
 // ============================================================
 
-import { Search, X, Filter, ChevronDown, Users, Layers, Plus } from 'lucide-react';
+import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';
 import type { TaskStatus, TaskPriority, PlannerTeam, GroupByOption } from '../types';
@@ -66,6 +67,7 @@ export function PlannerSearchBar({
   onGroupByChange,
   onCreateTeam,
 }: PlannerSearchBarProps) {
+  const navigate = useNavigate();
   const selectedTeam = teams.find(t => t.id === selectedTeamId);
   const selectedGroupLabel = GROUP_OPTIONS.find(o => o.id === groupBy)?.label || 'None';
   
@@ -132,15 +134,26 @@ export function PlannerSearchBar({
               onClick={() => onTeamChange(team.id)}
               className={cn(selectedTeamId === team.id && "bg-blue-50")}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full">
                 <div
                   className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: team.color }}
                 />
-                <span className="truncate">{team.name}</span>
+                <span className="truncate flex-1">{team.name}</span>
+                <span className="text-xs text-muted-foreground">{team.memberCount}</span>
               </div>
             </DropdownMenuItem>
           ))}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem 
+            onClick={() => navigate('/planner/teams')}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <span className="flex items-center gap-1 text-sm">
+              Manage teams
+              <ArrowRight className="w-3 h-3" />
+            </span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

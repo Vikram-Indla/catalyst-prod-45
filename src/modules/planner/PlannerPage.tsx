@@ -46,6 +46,7 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'weekly-report': 'Weekly Report',
   'team-performance': 'Team Performance',
   'ai-insights': 'AI Insights',
+  'teams': 'Teams',
   'settings': 'Settings',
 };
 
@@ -340,6 +341,8 @@ export function PlannerPage() {
         return <PlannerTeamPerformance tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'ai-insights':
         return <PlannerAIInsights tasks={viewTasks} onTaskClick={handleTaskClick} />;
+      case 'teams':
+        return <PlannerSettings />;
       case 'settings':
         return <PlannerSettings />;
       default:

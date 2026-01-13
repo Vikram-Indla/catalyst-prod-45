@@ -15,6 +15,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  UsersRound,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,10 @@ const INSIGHTS_SECTION = [
   { id: 'weekly-report', title: 'Weekly Report', path: '/planner/weekly-report', icon: FileText },
   { id: 'team-performance', title: 'Team Performance', path: '/planner/team-performance', icon: Users },
   { id: 'ai-insights', title: 'AI Insights', path: '/planner/ai-insights', icon: Sparkles, hasBadge: true },
+];
+
+const WORKSPACE_SECTION = [
+  { id: 'teams', title: 'Teams', path: '/planner/teams', icon: UsersRound },
 ];
 
 export function PlannerSidebar({
@@ -302,6 +307,26 @@ export function PlannerSidebar({
               </div>
             )}
             {INSIGHTS_SECTION.map(renderMenuItem)}
+          </div>
+
+          {/* Workspace Section */}
+          <div>
+            {expanded && (
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  color: 'var(--text-tertiary)',
+                  padding: '8px 12px 4px',
+                  marginTop: '8px',
+                }}
+              >
+                Workspace
+              </div>
+            )}
+            {WORKSPACE_SECTION.map(renderMenuItem)}
           </div>
         </nav>
 
