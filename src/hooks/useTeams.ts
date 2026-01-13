@@ -83,6 +83,7 @@ export function useCreateTeam() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['planner-teams'] });
       queryClient.invalidateQueries({ queryKey: ['accessible-teams'] });
       toast.success('Team created successfully');
     },
