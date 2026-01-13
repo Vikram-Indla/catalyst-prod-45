@@ -51,17 +51,6 @@ export function usePlannerAIInsights(tasks: PlannerTask[]): AIInsight[] {
       });
     });
 
-    // WIP limit warnings
-    const inProgressCount = tasks.filter(t => t.status === 'in-progress').length;
-    if (inProgressCount > 5) {
-      insights.push({
-        id: 'wip-warning',
-        type: 'warning',
-        title: 'WIP Limit Exceeded',
-        message: `${inProgressCount} tasks are in progress. Consider completing existing work before starting new items.`,
-        createdAt: new Date().toISOString(),
-      });
-    }
 
     // Review bottleneck
     const reviewCount = tasks.filter(t => t.status === 'review').length;

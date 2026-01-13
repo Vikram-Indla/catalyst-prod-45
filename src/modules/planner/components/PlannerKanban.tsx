@@ -25,13 +25,11 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { 
-  AlertCircle, 
   MoreHorizontal, 
   Plus, 
   GripVertical,
   Pencil,
   Trash2,
-  Settings,
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
@@ -70,7 +68,6 @@ interface DynamicColumn {
   id: string;
   title: string;
   color: string;
-  wipLimit?: number;
   tasks: PlannerTask[];
   isCustom?: boolean;
 }
@@ -146,7 +143,7 @@ function SortableKanbanColumn({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const isOverWipLimit = column.wipLimit && column.tasks.length > column.wipLimit;
+  
 
   // Create a droppable zone for tasks within this column
   const { setNodeRef: setDropRef } = useDroppable({
@@ -181,14 +178,8 @@ function SortableKanbanColumn({
             style={{ backgroundColor: column.color }}
           />
           <span className="font-medium text-sm text-foreground">{column.title}</span>
-          <span className={cn(
-            "text-xs px-1.5 py-0.5 rounded-full font-medium",
-            isOverWipLimit 
-              ? "bg-destructive/10 text-destructive" 
-              : "bg-muted text-muted-foreground"
-          )}>
+          <span className="text-xs px-1.5 py-0.5 rounded-full font-medium bg-muted text-muted-foreground">
             {column.tasks.length}
-            {column.wipLimit && `/${column.wipLimit}`}
           </span>
         </div>
         
@@ -207,10 +198,6 @@ function SortableKanbanColumn({
               <Pencil className="w-4 h-4 mr-2" />
               Rename Column
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="w-4 h-4 mr-2" />
-              Set WIP Limit
-            </DropdownMenuItem>
             {column.isCustom && onDelete && (
               <>
                 <DropdownMenuSeparator />
@@ -227,15 +214,6 @@ function SortableKanbanColumn({
         </DropdownMenu>
       </div>
 
-      {/* WIP Warning */}
-      {isOverWipLimit && (
-        <div className="px-3 py-2 bg-destructive/5 border-b border-destructive/20 flex items-center gap-2">
-          <AlertCircle className="w-3.5 h-3.5 text-destructive" />
-          <span className="text-[11px] text-destructive font-medium">
-            WIP limit exceeded
-          </span>
-        </div>
-      )}
 
       {/* Cards - droppable area */}
       <div 
@@ -579,7 +557,6 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
       id: col.id,
       title: col.title,
       color: col.color,
-      wipLimit: col.wipLimit,
       tasks: tasks.filter(t => t.status === col.id),
       isCustom: !COLUMN_CONFIG.some(dc => dc.id === col.id),
     }));

@@ -33,7 +33,6 @@ const PRESET_COLORS = [
 export function AddColumnModal({ isOpen, onClose, onAdd, existingColumns }: AddColumnModalProps) {
   const [title, setTitle] = useState('');
   const [color, setColor] = useState(PRESET_COLORS[0]);
-  const [wipLimit, setWipLimit] = useState<string>('');
   const [error, setError] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,13 +57,11 @@ export function AddColumnModal({ isOpen, onClose, onAdd, existingColumns }: AddC
       id,
       title: trimmedTitle,
       color,
-      wipLimit: wipLimit ? parseInt(wipLimit, 10) : undefined,
     });
 
     // Reset form
     setTitle('');
     setColor(PRESET_COLORS[0]);
-    setWipLimit('');
     setError('');
     onClose();
   };
@@ -72,7 +69,6 @@ export function AddColumnModal({ isOpen, onClose, onAdd, existingColumns }: AddC
   const handleClose = () => {
     setTitle('');
     setColor(PRESET_COLORS[0]);
-    setWipLimit('');
     setError('');
     onClose();
   };
@@ -153,26 +149,6 @@ export function AddColumnModal({ isOpen, onClose, onAdd, existingColumns }: AddC
                       />
                     ))}
                   </div>
-                </div>
-
-                {/* WIP Limit */}
-                <div className="space-y-2">
-                  <Label htmlFor="wipLimit" className="text-sm font-medium">
-                    WIP Limit (optional)
-                  </Label>
-                  <Input
-                    id="wipLimit"
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={wipLimit}
-                    onChange={(e) => setWipLimit(e.target.value)}
-                    placeholder="Max tasks in column"
-                    className="h-10 w-32"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Leave empty for no limit
-                  </p>
                 </div>
 
                 {/* Actions */}

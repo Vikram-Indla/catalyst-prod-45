@@ -26,7 +26,6 @@ const toColumnConfig = (row: DbColumnConfig): ColumnConfig => ({
   id: row.column_id,
   title: row.title,
   color: row.color,
-  wipLimit: row.wip_limit ?? undefined,
   order: row.sort_order,
 });
 
@@ -104,7 +103,6 @@ export function useCreatePlannerColumn() {
         column_id: column.id,
         title: column.title,
         color: column.color,
-        wip_limit: column.wipLimit ?? null,
         sort_order: newOrder,
         created_by: userData.user?.id ?? null,
       });
