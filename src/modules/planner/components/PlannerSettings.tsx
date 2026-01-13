@@ -49,6 +49,7 @@ import type { PlannerTeam, PlannerUser } from '../types';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { TeamMembersSection } from './TeamMembersSection';
 
 const COLOR_OPTIONS = [
   { value: '#2563eb', label: 'Blue' },
@@ -408,15 +409,13 @@ export function PlannerSettings() {
           </div>
 
           {/* Members Section */}
-          <div className="bg-surface-0 rounded-lg border border-border p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-medium text-text-primary">Team Members</h2>
-              <Badge variant="secondary">{selectedTeam.memberCount} members</Badge>
-            </div>
-            <p className="text-sm text-text-muted">
-              Member management coming soon. Use the Admin panel to manage team members.
-            </p>
-          </div>
+          <TeamMembersSection 
+            team={selectedTeam} 
+            users={users} 
+            onMembersChange={() => {
+              queryClient.invalidateQueries({ queryKey: ['planner-teams'] });
+            }}
+          />
         </div>
       </div>
     );
