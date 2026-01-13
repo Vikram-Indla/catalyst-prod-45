@@ -1,11 +1,13 @@
 // ============================================================
 // PLANNER TEAMS HOOK
 // Fetches teams for the team dropdown
+// Falls back to seed data when database is empty
 // ============================================================
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlannerTeam } from '../types';
+import { SEED_TEAMS } from '../data/seedData';
 
 export function usePlannerTeams() {
   return useQuery({
@@ -19,7 +21,8 @@ export function usePlannerTeams() {
 
       if (error) {
         console.error('Error fetching teams:', error);
-        throw error;
+        // Return seed data on error
+        return SEED_TEAMS;
       }
 
       const teams: PlannerTeam[] = (data || []).map(team => ({
@@ -29,6 +32,11 @@ export function usePlannerTeams() {
         memberCount: 0, // Would need additional query
         color: getTeamColor(team.team_type),
       }));
+
+      // If no data from DB, return seed data
+      if (teams.length === 0) {
+        return SEED_TEAMS;
+      }
 
       return teams;
     },

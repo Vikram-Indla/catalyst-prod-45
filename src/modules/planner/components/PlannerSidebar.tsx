@@ -1,6 +1,6 @@
 // ============================================================
 // PLANNER SIDEBAR COMPONENT
-// Left navigation with views, insights, and presence
+// Left navigation with views, insights, presence, and team creation
 // ============================================================
 
 import { useState } from 'react';
@@ -14,7 +14,7 @@ import {
   Sparkles,
   Settings,
   ChevronLeft,
-  ChevronDown
+  Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PlannerView, PlannerTeam } from '../types';
@@ -32,6 +32,7 @@ interface PlannerSidebarProps {
   teams: PlannerTeam[];
   selectedTeamId: string | null;
   onTeamChange: (teamId: string | null) => void;
+  onCreateTeam?: () => void;
   onlineUsers?: { id: string; initials: string; color: string }[];
   insightsBadge?: number;
   collapsed?: boolean;
@@ -57,6 +58,7 @@ export function PlannerSidebar({
   teams,
   selectedTeamId,
   onTeamChange,
+  onCreateTeam,
   onlineUsers = [],
   insightsBadge = 0,
   collapsed = false,
@@ -87,12 +89,18 @@ export function PlannerSidebar({
         </button>
       </div>
 
-      {/* Team Dropdown */}
+      {/* Team Dropdown with Create option */}
       {!collapsed && (
         <div className="px-3 py-3 border-b border-border">
           <Select
             value={selectedTeamId || 'all'}
-            onValueChange={(v) => onTeamChange(v === 'all' ? null : v)}
+            onValueChange={(v) => {
+              if (v === 'create-new') {
+                onCreateTeam?.();
+              } else {
+                onTeamChange(v === 'all' ? null : v);
+              }
+            }}
           >
             <SelectTrigger className="w-full h-9 text-sm bg-surface-1">
               <SelectValue placeholder="All Teams" />
@@ -101,9 +109,23 @@ export function PlannerSidebar({
               <SelectItem value="all">All Teams</SelectItem>
               {teams.map(team => (
                 <SelectItem key={team.id} value={team.id}>
-                  {team.name}
+                  <span className="flex items-center gap-2">
+                    <span 
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: team.color }}
+                    />
+                    {team.name}
+                  </span>
                 </SelectItem>
               ))}
+              {onCreateTeam && (
+                <SelectItem value="create-new" className="text-blue-600 font-medium">
+                  <span className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    Create Team
+                  </span>
+                </SelectItem>
+              )}
             </SelectContent>
           </Select>
         </div>
