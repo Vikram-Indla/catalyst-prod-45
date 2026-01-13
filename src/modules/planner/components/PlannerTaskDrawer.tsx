@@ -1,9 +1,10 @@
 // ============================================================
 // PLANNER TASK DRAWER
 // Slide-in drawer for viewing/editing task details
-// Includes AI-powered checklist for progress tracking
+// Uses local state to prevent flickering on field changes
 // ============================================================
 
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Lock, Unlock, Calendar, User, Flag, Activity, AlertTriangle, Trash2 } from 'lucide-react';
 import type { PlannerTask, TaskStatus, TaskPriority, PlannerUser } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
@@ -45,10 +46,99 @@ export function PlannerTaskDrawer({
   onDelete,
   users = [],
 }: PlannerTaskDrawerProps) {
+  // Local state to prevent flickering
+  const [localStatus, setLocalStatus] = useState<TaskStatus | null>(null);
+  const [localPriority, setLocalPriority] = useState<TaskPriority | null>(null);
+  const [localAssigneeId, setLocalAssigneeId] = useState<string | null>(null);
+  const [localStartDate, setLocalStartDate] = useState<string | null>(null);
+  const [localDueDate, setLocalDueDate] = useState<string | null>(null);
+  
+  // Track the task ID to reset local state when task changes
+  const taskIdRef = useRef<string | null>(null);
+
+  // Initialize local state when task changes
+  useEffect(() => {
+    if (task && task.id !== taskIdRef.current) {
+      taskIdRef.current = task.id;
+      setLocalStatus(task.status);
+      setLocalPriority(task.priority);
+      setLocalAssigneeId(task.assigneeId || 'unassigned');
+      setLocalStartDate(task.startDate ? new Date(task.startDate).toISOString().split('T')[0] : '');
+      setLocalDueDate(task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '');
+    }
+  }, [task]);
+
+  // Reset when drawer closes
+  useEffect(() => {
+    if (!isOpen) {
+      taskIdRef.current = null;
+    }
+  }, [isOpen]);
+
+  // Debounced update handler
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debouncedUpdate = useCallback((taskId: string, updates: Partial<PlannerTask>) => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      onUpdate(taskId, updates);
+    }, 300);
+  }, [onUpdate]);
+
+  // Handlers that update local state immediately and debounce DB update
+  const handleStatusChange = useCallback((value: TaskStatus) => {
+    if (!task) return;
+    setLocalStatus(value);
+    debouncedUpdate(task.id, { status: value });
+  }, [task, debouncedUpdate]);
+
+  const handlePriorityChange = useCallback((value: TaskPriority) => {
+    if (!task) return;
+    setLocalPriority(value);
+    debouncedUpdate(task.id, { priority: value });
+  }, [task, debouncedUpdate]);
+
+  const handleAssigneeChange = useCallback((value: string) => {
+    if (!task) return;
+    setLocalAssigneeId(value);
+    const assignee = users.find(u => u.id === value);
+    debouncedUpdate(task.id, { 
+      assigneeId: value === 'unassigned' ? undefined : value,
+      assigneeName: assignee?.name,
+      assigneeInitials: assignee?.initials,
+    });
+  }, [task, users, debouncedUpdate]);
+
+  const handleStartDateChange = useCallback((value: string) => {
+    if (!task) return;
+    setLocalStartDate(value);
+    debouncedUpdate(task.id, { startDate: value || undefined });
+  }, [task, debouncedUpdate]);
+
+  const handleDueDateChange = useCallback((value: string) => {
+    if (!task) return;
+    setLocalDueDate(value);
+    debouncedUpdate(task.id, { dueDate: value || undefined });
+  }, [task, debouncedUpdate]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, []);
+
   if (!task) return null;
 
-  const priorityConfig = PRIORITY_CONFIG[task.priority];
-  const statusConfig = COLUMN_CONFIG.find(c => c.id === task.status);
+  // Use local state values with fallback to task values
+  const displayStatus = localStatus ?? task.status;
+  const displayPriority = localPriority ?? task.priority;
+  const displayAssigneeId = localAssigneeId ?? task.assigneeId ?? 'unassigned';
+  const displayStartDate = localStartDate ?? (task.startDate ? new Date(task.startDate).toISOString().split('T')[0] : '');
+  const displayDueDate = localDueDate ?? (task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '');
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -109,8 +199,8 @@ export function PlannerTaskDrawer({
                 Status
               </label>
               <Select
-                value={task.status}
-                onValueChange={(value: TaskStatus) => onUpdate(task.id, { status: value })}
+                value={displayStatus}
+                onValueChange={handleStatusChange}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -138,8 +228,8 @@ export function PlannerTaskDrawer({
                 Priority
               </label>
               <Select
-                value={task.priority}
-                onValueChange={(value: TaskPriority) => onUpdate(task.id, { priority: value })}
+                value={displayPriority}
+                onValueChange={handlePriorityChange}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -164,12 +254,8 @@ export function PlannerTaskDrawer({
                 Assignee
               </label>
               <Select
-                value={task.assigneeId || 'unassigned'}
-                onValueChange={(value) => onUpdate(task.id, { 
-                  assigneeId: value === 'unassigned' ? undefined : value,
-                  assigneeName: users.find(u => u.id === value)?.name,
-                  assigneeInitials: users.find(u => u.id === value)?.initials,
-                })}
+                value={displayAssigneeId}
+                onValueChange={handleAssigneeChange}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Unassigned" />
@@ -198,8 +284,8 @@ export function PlannerTaskDrawer({
               </label>
               <Input
                 type="date"
-                value={task.startDate ? new Date(task.startDate).toISOString().split('T')[0] : ''}
-                onChange={(e) => onUpdate(task.id, { startDate: e.target.value || undefined })}
+                value={displayStartDate}
+                onChange={(e) => handleStartDateChange(e.target.value)}
                 className="w-full"
               />
             </div>
@@ -212,8 +298,8 @@ export function PlannerTaskDrawer({
               </label>
               <Input
                 type="date"
-                value={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''}
-                onChange={(e) => onUpdate(task.id, { dueDate: e.target.value || undefined })}
+                value={displayDueDate}
+                onChange={(e) => handleDueDateChange(e.target.value)}
                 className="w-full"
               />
             </div>
