@@ -3,14 +3,17 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import { AnnotationEditorProps, Annotation, Point } from './types';
 import { EditorHeader } from './EditorHeader';
 import { AnnotationToolbar } from './AnnotationToolbar';
 import { TextInputDialog } from './TextInputDialog';
+import { DiscardChangesDialog } from './DiscardChangesDialog';
+import { ClearConfirmDialog } from './ClearConfirmDialog';
 import { useAnnotationEditor } from './useAnnotationEditor';
 import { 
   toPercentage, 
-  fromPercentage, 
   renderAnnotation, 
   findAnnotationAt 
 } from './canvasUtils';
@@ -29,9 +32,14 @@ export const AnnotationEditor: React.FC<AnnotationEditorProps> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [textInputPosition, setTextInputPosition] = useState<Point | null>(null);
   const [pendingTextPoint, setPendingTextPoint] = useState<Point | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string | undefined>(undefined);
   
   const {
     annotations,
+    setAnnotations,
     activeTool,
     setActiveTool,
     activeColor,
@@ -51,11 +59,52 @@ export const AnnotationEditor: React.FC<AnnotationEditorProps> = ({
     handleClear,
     handleDeleteSelected,
     addAnnotation,
-    hasChanges
+    hasChanges,
+    initializeHistory
   } = useAnnotationEditor(existingAnnotations);
 
   // Extract filename from URL
-  const fileName = imageUrl.split('/').pop() || 'image';
+  const fileName = imageUrl.split('/').pop()?.split('?')[0] || 'image';
+
+  // Load existing annotations from database
+  useEffect(() => {
+    const loadAnnotations = async () => {
+      const { data, error } = await supabase
+        .from('step_result_attachments')
+        .select('annotations, updated_at')
+        .eq('id', attachmentId)
+        .single();
+      
+      if (error) {
+        console.error('Error loading annotations:', error);
+        return;
+      }
+      
+      if (data?.annotations && Array.isArray(data.annotations)) {
+        // Parse the JSON annotations with proper typing
+        const loadedAnnotations = (data.annotations as unknown as Annotation[]).map(a => ({
+          id: a.id as string,
+          type: a.type as Annotation['type'],
+          points: a.points as { x: number; y: number }[],
+          color: a.color as string,
+          strokeWidth: a.strokeWidth as number,
+          text: a.text as string | undefined,
+          fontSize: a.fontSize as number | undefined,
+          filled: a.filled as boolean | undefined,
+          blurIntensity: a.blurIntensity as number | undefined,
+          createdAt: a.createdAt as string
+        }));
+        setAnnotations(loadedAnnotations);
+        initializeHistory(loadedAnnotations);
+      }
+      
+      if (data?.updated_at) {
+        setLastSaved(data.updated_at);
+      }
+    };
+    
+    loadAnnotations();
+  }, [attachmentId, setAnnotations, initializeHistory]);
 
   // Setup canvas dimensions
   const setupCanvas = useCallback(() => {
@@ -235,10 +284,96 @@ export const AnnotationEditor: React.FC<AnnotationEditorProps> = ({
     setTextInputPosition(null);
   };
 
-  // Handle save
-  const handleSave = () => {
-    onSave(annotations);
+  // Handle save to database
+  const handleSave = async () => {
+    setSaving(true);
+    
+    try {
+      // Convert annotations to JSON-serializable format
+      const annotationData = annotations.map(a => ({
+        id: a.id,
+        type: a.type,
+        points: a.points,
+        color: a.color,
+        strokeWidth: a.strokeWidth,
+        text: a.text,
+        fontSize: a.fontSize,
+        filled: a.filled,
+        blurIntensity: a.blurIntensity,
+        createdAt: a.createdAt
+      }));
+      
+      // Save to database
+      const { error } = await supabase
+        .from('step_result_attachments')
+        .update({ 
+          annotations: annotationData,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', attachmentId);
+      
+      if (error) throw error;
+      
+      const savedAt = new Date().toISOString();
+      setLastSaved(savedAt);
+      toast.success('Annotations saved');
+      onSave(annotations);
+      
+    } catch (error) {
+      toast.error('Failed to save annotations');
+      console.error('Save error:', error);
+    } finally {
+      setSaving(false);
+    }
   };
+
+  // Handle cancel with unsaved changes check
+  const handleCancel = useCallback(() => {
+    if (hasChanges) {
+      setShowDiscardDialog(true);
+    } else {
+      onCancel();
+    }
+  }, [hasChanges, onCancel]);
+
+  // Handle clear with confirmation
+  const handleClearWithConfirmation = useCallback(() => {
+    if (annotations.length === 0) return;
+    setShowClearDialog(true);
+  }, [annotations.length]);
+
+  const confirmClear = useCallback(() => {
+    handleClear();
+    setShowClearDialog(false);
+    toast.success('All annotations cleared');
+  }, [handleClear]);
+
+  // Keyboard shortcuts for save and escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if typing in input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      // Save shortcut
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (hasChanges && !saving) {
+          handleSave();
+        }
+      }
+
+      // Escape to cancel
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        handleCancel();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [hasChanges, saving, handleCancel]);
 
   return (
     <div className="fixed inset-0 bg-foreground/95 z-50 flex flex-col">
@@ -246,9 +381,11 @@ export const AnnotationEditor: React.FC<AnnotationEditorProps> = ({
       <EditorHeader 
         fileName={fileName}
         annotationCount={annotations.length}
+        lastSaved={lastSaved}
         onSave={handleSave}
-        onCancel={onCancel}
+        onCancel={handleCancel}
         hasChanges={hasChanges}
+        saving={saving}
       />
       
       {/* Main Canvas Area */}
@@ -296,11 +433,26 @@ export const AnnotationEditor: React.FC<AnnotationEditorProps> = ({
         onStrokeChange={setStrokeWidth}
         onUndo={handleUndo}
         onRedo={handleRedo}
-        onClear={handleClear}
+        onClear={handleClearWithConfirmation}
         onDelete={handleDeleteSelected}
         canUndo={canUndo}
         canRedo={canRedo}
         hasSelection={selectedId !== null}
+      />
+
+      {/* Discard Changes Dialog */}
+      <DiscardChangesDialog
+        isOpen={showDiscardDialog}
+        onKeepEditing={() => setShowDiscardDialog(false)}
+        onDiscard={onCancel}
+      />
+
+      {/* Clear Confirmation Dialog */}
+      <ClearConfirmDialog
+        isOpen={showClearDialog}
+        annotationCount={annotations.length}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={confirmClear}
       />
     </div>
   );

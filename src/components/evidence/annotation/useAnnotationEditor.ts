@@ -2,8 +2,10 @@
 // ANNOTATION EDITOR HOOK
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Annotation, Tool } from './types';
+
+const MAX_HISTORY_SIZE = 50;
 
 export const useAnnotationEditor = (existingAnnotations: Annotation[]) => {
   const [annotations, setAnnotations] = useState<Annotation[]>(existingAnnotations);
@@ -17,21 +19,41 @@ export const useAnnotationEditor = (existingAnnotations: Annotation[]) => {
   // History for undo/redo
   const [history, setHistory] = useState<Annotation[][]>([existingAnnotations]);
   const [historyIndex, setHistoryIndex] = useState(0);
+  
+  // Track initial state for hasChanges calculation
+  const initialAnnotationsRef = useRef<Annotation[]>(existingAnnotations);
+
+  // Initialize history with loaded annotations
+  const initializeHistory = useCallback((loadedAnnotations: Annotation[]) => {
+    setHistory([loadedAnnotations]);
+    setHistoryIndex(0);
+    initialAnnotationsRef.current = loadedAnnotations;
+  }, []);
 
   // Push current state to history
   const pushHistory = useCallback((newAnnotations: Annotation[]) => {
     setHistory(prev => {
+      // Truncate redo stack
       const newHistory = prev.slice(0, historyIndex + 1);
-      return [...newHistory, newAnnotations];
+      newHistory.push(newAnnotations);
+      
+      // Limit history size
+      if (newHistory.length > MAX_HISTORY_SIZE) {
+        newHistory.shift();
+        return newHistory;
+      }
+      
+      return newHistory;
     });
-    setHistoryIndex(prev => prev + 1);
+    setHistoryIndex(prev => Math.min(prev + 1, MAX_HISTORY_SIZE - 1));
   }, [historyIndex]);
 
   // Undo
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
-      setHistoryIndex(prev => prev - 1);
-      setAnnotations(history[historyIndex - 1]);
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setAnnotations(history[newIndex]);
       setSelectedId(null);
     }
   }, [historyIndex, history]);
@@ -39,8 +61,9 @@ export const useAnnotationEditor = (existingAnnotations: Annotation[]) => {
   // Redo
   const handleRedo = useCallback(() => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex(prev => prev + 1);
-      setAnnotations(history[historyIndex + 1]);
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setAnnotations(history[newIndex]);
       setSelectedId(null);
     }
   }, [historyIndex, history]);
@@ -48,11 +71,12 @@ export const useAnnotationEditor = (existingAnnotations: Annotation[]) => {
   // Clear all annotations
   const handleClear = useCallback(() => {
     if (annotations.length > 0) {
-      setAnnotations([]);
-      pushHistory([]);
+      const newAnnotations: Annotation[] = [];
+      setAnnotations(newAnnotations);
+      pushHistory(newAnnotations);
       setSelectedId(null);
     }
-  }, [annotations, pushHistory]);
+  }, [annotations.length, pushHistory]);
 
   // Delete selected annotation
   const handleDeleteSelected = useCallback(() => {
@@ -70,6 +94,24 @@ export const useAnnotationEditor = (existingAnnotations: Annotation[]) => {
     setAnnotations(newAnnotations);
     pushHistory(newAnnotations);
   }, [annotations, pushHistory]);
+
+  // Calculate if there are unsaved changes
+  const hasChanges = useCallback(() => {
+    const initial = initialAnnotationsRef.current;
+    
+    // Different length means changes
+    if (annotations.length !== initial.length) return true;
+    
+    // Check if any annotation differs
+    return annotations.some((a, i) => {
+      const orig = initial[i];
+      if (!orig) return true;
+      return a.id !== orig.id || 
+             JSON.stringify(a.points) !== JSON.stringify(orig.points) ||
+             a.color !== orig.color ||
+             a.text !== orig.text;
+    });
+  }, [annotations]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -98,6 +140,7 @@ export const useAnnotationEditor = (existingAnnotations: Annotation[]) => {
 
       // Delete
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
+        e.preventDefault();
         handleDeleteSelected();
         return;
       }
@@ -143,6 +186,7 @@ export const useAnnotationEditor = (existingAnnotations: Annotation[]) => {
     handleDeleteSelected,
     addAnnotation,
     pushHistory,
-    hasChanges: historyIndex > 0 || annotations.length !== existingAnnotations.length
+    initializeHistory,
+    hasChanges: hasChanges()
   };
 };
