@@ -1,6 +1,7 @@
 // ============================================================
 // TASK CHECKLIST COMPONENT
 // Displays and manages checklist items with AI generation
+// REVISED: 5-8 high-level items, NO headers, flat list
 // ============================================================
 
 import { useState } from 'react';
@@ -31,10 +32,9 @@ interface TaskChecklistProps {
 
 // AI Analysis animation steps
 const ANALYSIS_STEPS = [
-  { text: 'Analyzing task description...', delay: 0 },
-  { text: 'Identifying key deliverables...', delay: 600 },
-  { text: 'Generating action items...', delay: 1200 },
-  { text: 'Organizing by phase...', delay: 1800 },
+  { text: 'Analyzing task scope...', delay: 0 },
+  { text: 'Identifying key milestones...', delay: 500 },
+  { text: 'Generating action items...', delay: 1000 },
 ];
 
 export function TaskChecklist({ 
@@ -56,10 +56,10 @@ export function TaskChecklist({
   const deleteItem = useDeleteChecklistItem();
   const bulkInsert = useBulkInsertChecklist();
 
-  // Calculate and report progress
+  // Calculate progress - count all items (no headers in new spec)
+  const totalCount = items.length;
+  const completedCount = items.filter(i => i.is_completed).length;
   const progress = calculateChecklistProgress(items);
-  const completableCount = items.filter(i => !i.is_header).length;
-  const completedCount = items.filter(i => !i.is_header && i.is_completed).length;
 
   // Handle AI generation
   const handleAIGenerate = async () => {
@@ -69,7 +69,7 @@ export function TaskChecklist({
     // Animate through steps
     const stepInterval = setInterval(() => {
       setAnalysisStep(prev => Math.min(prev + 1, ANALYSIS_STEPS.length - 1));
-    }, 600);
+    }, 500);
 
     try {
       const { data, error } = await supabase.functions.invoke('generate-checklist', {
@@ -135,8 +135,6 @@ export function TaskChecklist({
 
   // Handle toggling item
   const handleToggle = async (item: ChecklistItem) => {
-    if (item.is_header) return;
-
     try {
       await toggleItem.mutateAsync({
         itemId: item.id,
@@ -178,9 +176,9 @@ export function TaskChecklist({
         <div className="flex items-center gap-2">
           <CheckSquare className="w-4 h-4 text-primary" />
           <span className="text-sm font-medium">Checklist</span>
-          {completableCount > 0 && (
+          {totalCount > 0 && (
             <span className="text-xs text-muted-foreground">
-              ({completedCount} of {completableCount})
+              ({completedCount} of {totalCount})
             </span>
           )}
         </div>
@@ -214,44 +212,24 @@ export function TaskChecklist({
                 <Sparkles className="w-4 h-4 text-primary animate-pulse" />
               </div>
               <span className="text-sm font-medium text-primary">
-                AI is analyzing the task...
+                Generating 5-8 key milestones...
               </span>
             </div>
             
             {/* Progress bar */}
-            <div className="h-1.5 bg-primary/10 rounded-full mb-3 overflow-hidden">
+            <div className="h-1.5 bg-primary/10 rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-primary rounded-full"
                 initial={{ width: '0%' }}
                 animate={{ width: `${((analysisStep + 1) / ANALYSIS_STEPS.length) * 100}%` }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.4 }}
               />
-            </div>
-
-            {/* Steps */}
-            <div className="space-y-1.5">
-              {ANALYSIS_STEPS.map((step, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-xs">
-                  {idx < analysisStep ? (
-                    <CheckSquare className="w-3.5 h-3.5 text-primary" />
-                  ) : idx === analysisStep ? (
-                    <Loader2 className="w-3.5 h-3.5 text-primary animate-spin" />
-                  ) : (
-                    <Square className="w-3.5 h-3.5 text-muted-foreground/50" />
-                  )}
-                  <span className={cn(
-                    idx <= analysisStep ? "text-foreground" : "text-muted-foreground/50"
-                  )}>
-                    {step.text}
-                  </span>
-                </div>
-              ))}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Checklist Items */}
+      {/* Checklist Items - Flat list, no headers */}
       {items.length > 0 ? (
         <div className="space-y-1">
           <AnimatePresence mode="popLayout">
@@ -262,47 +240,30 @@ export function TaskChecklist({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ delay: index * 0.03 }}
-                className={cn(
-                  "group flex items-start gap-2 rounded-md transition-colors",
-                  item.is_header 
-                    ? "pt-3 pb-1" 
-                    : "px-2 py-1.5 hover:bg-muted/50"
-                )}
+                className="group flex items-start gap-2 px-2 py-1.5 rounded-md hover:bg-muted/50 transition-colors"
               >
-                {item.is_header ? (
-                  // Header styling
-                  <div className="flex-1">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      ▬ {item.content}
-                    </span>
-                  </div>
-                ) : (
-                  // Regular item
-                  <>
-                    <button
-                      onClick={() => handleToggle(item)}
-                      className="mt-0.5 flex-shrink-0"
-                    >
-                      {item.is_completed ? (
-                        <CheckSquare className="w-4 h-4 text-primary" />
-                      ) : (
-                        <Square className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
-                      )}
-                    </button>
-                    <span className={cn(
-                      "flex-1 text-sm",
-                      item.is_completed && "line-through text-muted-foreground"
-                    )}>
-                      {item.content}
-                    </span>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-all"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </>
-                )}
+                <button
+                  onClick={() => handleToggle(item)}
+                  className="mt-0.5 flex-shrink-0"
+                >
+                  {item.is_completed ? (
+                    <CheckSquare className="w-4 h-4 text-primary" />
+                  ) : (
+                    <Square className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
+                  )}
+                </button>
+                <span className={cn(
+                  "flex-1 text-sm",
+                  item.is_completed && "line-through text-muted-foreground"
+                )}>
+                  {item.content}
+                </span>
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-all"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -322,7 +283,7 @@ export function TaskChecklist({
           value={newItemText}
           onChange={(e) => setNewItemText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-          placeholder="Add a checklist item..."
+          placeholder="Add item..."
           className="flex-1 h-8 text-sm border-dashed"
         />
         {newItemText.trim() && (
@@ -333,7 +294,7 @@ export function TaskChecklist({
       </div>
 
       {/* Progress indicator (if items exist) */}
-      {completableCount > 0 && (
+      {totalCount > 0 && (
         <div className="pt-2 border-t border-border">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-xs font-medium text-muted-foreground">Progress</span>
