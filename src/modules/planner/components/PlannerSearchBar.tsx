@@ -3,10 +3,10 @@
 // Search and filter toolbar for Planner
 // ============================================================
 
-import { Search, X, Filter, ChevronDown, Users } from 'lucide-react';
+import { Search, X, Filter, ChevronDown, Users, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';
-import type { TaskStatus, TaskPriority, PlannerTeam } from '../types';
+import type { TaskStatus, TaskPriority, PlannerTeam, GroupByOption } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+const GROUP_OPTIONS: { id: GroupByOption | 'none'; label: string }[] = [
+  { id: 'none', label: 'None' },
+  { id: 'status', label: 'Status' },
+  { id: 'assignee', label: 'Assignee' },
+  { id: 'priority', label: 'Priority' },
+  { id: 'reporter', label: 'Reporter' },
+  { id: 'dueDate', label: 'Due Date' },
+];
 
 interface PlannerSearchBarProps {
   filters: PlannerFilters;
@@ -33,6 +42,8 @@ interface PlannerSearchBarProps {
   teams?: PlannerTeam[];
   selectedTeamId: string | null;
   onTeamChange: (teamId: string | null) => void;
+  groupBy?: GroupByOption | 'none';
+  onGroupByChange?: (groupBy: GroupByOption | 'none') => void;
 }
 
 export function PlannerSearchBar({
@@ -50,8 +61,11 @@ export function PlannerSearchBar({
   teams = [],
   selectedTeamId,
   onTeamChange,
+  groupBy = 'none',
+  onGroupByChange,
 }: PlannerSearchBarProps) {
   const selectedTeam = teams.find(t => t.id === selectedTeamId);
+  const selectedGroupLabel = GROUP_OPTIONS.find(o => o.id === groupBy)?.label || 'None';
   
   return (
     <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-surface-0">
@@ -193,6 +207,38 @@ export function PlannerSearchBar({
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Group By Dropdown */}
+      {onGroupByChange && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className={cn(
+              "h-9 gap-2",
+              groupBy !== 'none' && "border-blue-500 text-blue-600"
+            )}>
+              <Layers className="w-4 h-4" />
+              <span className="text-sm">Group</span>
+              {groupBy !== 'none' && (
+                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+                  {selectedGroupLabel}
+                </span>
+              )}
+              <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-44">
+            {GROUP_OPTIONS.map(option => (
+              <DropdownMenuItem
+                key={option.id}
+                onClick={() => onGroupByChange(option.id)}
+                className={cn(groupBy === option.id && "bg-blue-50")}
+              >
+                {option.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Quick Filters */}
       <DropdownMenu>
