@@ -9,157 +9,11 @@ import { InputState } from './InputState';
 import { GeneratingState } from './GeneratingState';
 import { ResultsState } from './ResultsState';
 import { HistorySlideOver } from './HistorySlideOver';
-import { useStore, type Generation } from '@/stores/requirementAssistStore';
-import { useKeyboardShortcuts, usePrograms } from '@/hooks/requirement-assist';
-import { v4 as uuidv4 } from 'uuid';
+import { useRequirementAssistStore, type Generation } from '@/stores/requirementAssistStore';
+import { useKeyboardShortcuts, usePrograms, useGeneration } from '@/hooks/requirement-assist';
 import { useToast } from '@/hooks/use-toast';
 
 type PageState = 'input' | 'generating' | 'results';
-
-// Mock generation function - replace with actual API call
-async function mockGenerateRequirements(
-  requirements: string,
-  programId: string,
-  projectId: string,
-  onProgress?: (progress: number, step: number) => void
-): Promise<Generation> {
-  const id = uuidv4();
-  const wordCount = requirements.trim().split(/\s+/).filter(Boolean).length;
-  
-  // Simulate progress updates
-  for (let i = 0; i <= 100; i += 5) {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const step = i < 25 ? 1 : i < 50 ? 2 : i < 75 ? 3 : 4;
-    onProgress?.(i, step);
-  }
-  
-  // FIXED: Use reasonable estimation with HARD MAXIMUM LIMITS
-  const MAX_EPICS = 5;
-  const MAX_FEATURES = 15;
-  const MAX_STORIES = 50;
-  
-  // Simple estimation based on content size
-  let epicCount: number;
-  if (wordCount < 100) epicCount = 1;
-  else if (wordCount < 300) epicCount = 2;
-  else if (wordCount < 600) epicCount = 3;
-  else if (wordCount < 1000) epicCount = 4;
-  else epicCount = 5; // CAP AT 5, no matter how long!
-  
-  const featureCount = Math.min(epicCount * 3, MAX_FEATURES);
-  const storyCount = Math.min(featureCount * 3, MAX_STORIES);
-  
-  return {
-    id,
-    displayId: `RA-${Date.now().toString(36).toUpperCase()}`,
-    title: null,
-    inputText: requirements,
-    inputWordCount: wordCount,
-    analysis: {
-      actors: [],
-      functions: [],
-      nfrs: [],
-      integrations: [],
-      complexity: 'medium',
-      warnings: [],
-      suggestions: [],
-    },
-    programId,
-    projectId,
-    status: 'completed',
-    progress: 100,
-    currentStep: null,
-    errorMessage: null,
-    epicCount,
-    featureCount,
-    storyCount,
-    totalCount: epicCount + featureCount + storyCount,
-    createdAt: new Date().toISOString(),
-    completedAt: new Date().toISOString(),
-  };
-}
-
-// Mock work items generator
-function generateMockWorkItems(generation: Generation) {
-  const items: any[] = [];
-  const { epicCount, featureCount, storyCount } = generation;
-  
-  // Generate epics
-  for (let e = 0; e < epicCount; e++) {
-    const epicId = uuidv4();
-    items.push({
-      id: epicId,
-      generationId: generation.id,
-      parentId: null,
-      itemType: 'epic',
-      level: 0,
-      sortOrder: e,
-      displayId: `EPIC-${e + 1}`,
-      title: `Epic ${e + 1}: System capability from requirements`,
-      description: 'Auto-generated epic based on input requirements. This epic encompasses the core functionality described in the input.',
-      acceptanceCriteria: [],
-      confidenceScore: 0.85 + Math.random() * 0.1,
-      confidenceReason: null,
-      isSelected: true,
-      isEdited: false,
-      isPublished: false,
-      publishedAt: null,
-    });
-    
-    // Generate features for each epic
-    const featuresPerEpic = Math.ceil(featureCount / epicCount);
-    for (let f = 0; f < featuresPerEpic; f++) {
-      const featureId = uuidv4();
-      items.push({
-        id: featureId,
-        generationId: generation.id,
-        parentId: epicId,
-        itemType: 'feature',
-        level: 1,
-        sortOrder: f,
-        displayId: `FEAT-${e * featuresPerEpic + f + 1}`,
-        title: `Feature ${f + 1}: Supporting capability`,
-        description: 'Auto-generated feature that supports the parent epic functionality.',
-        acceptanceCriteria: [],
-        confidenceScore: 0.80 + Math.random() * 0.1,
-        confidenceReason: null,
-        isSelected: true,
-        isEdited: false,
-        isPublished: false,
-        publishedAt: null,
-      });
-      
-      // Generate stories for each feature
-      const storiesPerFeature = Math.ceil(storyCount / featureCount);
-      for (let s = 0; s < storiesPerFeature && s < 3; s++) {
-        items.push({
-          id: uuidv4(),
-          generationId: generation.id,
-          parentId: featureId,
-          itemType: 'story',
-          level: 2,
-          sortOrder: s,
-          displayId: `STORY-${(e * featuresPerEpic + f) * storiesPerFeature + s + 1}`,
-          title: `User Story ${s + 1}: As a user, I want to perform an action`,
-          description: 'Auto-generated user story with clear acceptance criteria.',
-          acceptanceCriteria: [
-            'Given a precondition is met',
-            'When the user performs an action',
-            'Then the expected outcome occurs'
-          ],
-          confidenceScore: 0.75 + Math.random() * 0.15,
-          confidenceReason: null,
-          isSelected: true,
-          isEdited: false,
-          isPublished: false,
-          publishedAt: null,
-        });
-      }
-    }
-  }
-  
-  return items;
-}
 
 export function RequirementAssistPageRedesign() {
   // Initialize hooks
@@ -167,6 +21,7 @@ export function RequirementAssistPageRedesign() {
   usePrograms();
   
   const { toast } = useToast();
+  const { startGeneration: triggerGeneration, cancelGeneration } = useGeneration();
 
   const [state, setState] = useState<PageState>('input');
   const [showHistory, setShowHistory] = useState(false);
@@ -174,15 +29,19 @@ export function RequirementAssistPageRedesign() {
   
   const { 
     generation, 
-    setGeneration, 
-    setWorkItems,
+    setGeneration,
+    workItems,
     setGenerating,
+    isGenerating,
     resetGeneration,
     inputText,
+    setInputText,
     programId,
+    setProgramId,
     projectId,
+    setProjectId,
     expandAll,
-  } = useStore();
+  } = useRequirementAssistStore();
 
   // Check if we have a previous generation to restore
   useEffect(() => {
@@ -191,48 +50,50 @@ export function RequirementAssistPageRedesign() {
     }
   }, []);
 
-  const startGeneration = useCallback(async (requirements: string, progId: string, projId: string) => {
-    setState('generating');
-    setGenerating(true);
-    
-    try {
-      const result = await mockGenerateRequirements(requirements, progId, projId);
-      setGeneration(result);
-      
-      // Generate mock work items
-      const workItems = generateMockWorkItems(result);
-      setWorkItems(workItems);
-      
-      // Update generation with total count
-      result.totalCount = workItems.length;
-      setGeneration(result);
-      
-      // Expand all items by default
-      expandAll();
-      
-      setState('results');
-      
-      toast({
-        title: "Generation Complete!",
-        description: `Created ${result.epicCount} epics, ${result.featureCount} features, and ${result.storyCount} stories.`,
-      });
-    } catch (error) {
-      console.error('Generation failed:', error);
+  // Watch for generation completion
+  useEffect(() => {
+    // Consider 'draft' as completed when we have work items (edge function sets draft on completion)
+    if (generation?.status === 'draft' || generation?.status === 'generating') {
+      if (workItems.length > 0 && state === 'generating') {
+        setState('results');
+        expandAll();
+        toast({
+          title: "Generation Complete!",
+          description: `Created ${workItems.filter(w => w.itemType === 'epic').length} epics, ${workItems.filter(w => w.itemType === 'feature').length} features, and ${workItems.filter(w => w.itemType === 'story').length} stories.`,
+        });
+      }
+    }
+  }, [generation?.status, workItems.length, state, expandAll, toast]);
+
+  // Watch for generation errors
+  useEffect(() => {
+    if (!isGenerating && state === 'generating' && generation?.errorMessage) {
       toast({
         title: "Generation Failed",
-        description: "An error occurred during generation. Please try again.",
+        description: generation.errorMessage,
         variant: "destructive"
       });
       setState('input');
-    } finally {
-      setGenerating(false);
     }
-  }, [setGeneration, setWorkItems, setGenerating, expandAll, toast]);
+  }, [isGenerating, generation?.errorMessage, state, toast]);
+
+  const startGeneration = useCallback(async (requirements: string, progId: string, projId: string) => {
+    // Update store with input values
+    setInputText(requirements);
+    setProgramId(progId);
+    setProjectId(projId);
+    
+    setState('generating');
+    
+    // Trigger the real AI generation via edge function
+    await triggerGeneration();
+  }, [setInputText, setProgramId, setProjectId, triggerGeneration]);
 
   const handleCancel = useCallback(() => {
+    cancelGeneration();
     setGenerating(false);
     setState('input');
-  }, [setGenerating]);
+  }, [cancelGeneration, setGenerating]);
 
   const handleComplete = useCallback((gen: Generation) => {
     setGeneration(gen);
