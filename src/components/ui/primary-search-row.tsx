@@ -53,8 +53,8 @@ export function PrimarySearchRow({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className={cn(
-          "flex-1 bg-transparent text-sm text-[var(--text-1)]",
-          "placeholder:text-[var(--text-3)]",
+          "flex-1 bg-transparent text-sm text-foreground",
+          "placeholder:text-muted-foreground placeholder:opacity-70",
           "outline-none border-none min-w-0"
         )}
       />
