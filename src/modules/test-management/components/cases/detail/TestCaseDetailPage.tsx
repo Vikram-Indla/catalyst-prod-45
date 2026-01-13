@@ -3,8 +3,8 @@
  * Full test case detail with View/Edit modes
  */
 
-import React, { useState, useCallback } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams, useBeforeUnload, useBlocker } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   ArrowLeft,
   Edit2,
@@ -35,6 +45,9 @@ import {
 import { cn } from '@/lib/utils';
 import { useTestCaseDetail } from '../../../hooks/useTestCaseDetail';
 import { StepEditor } from './StepEditor';
+import { AttachmentsPanel } from './AttachmentsPanel';
+import { ExecutionHistoryPanel } from './ExecutionHistoryPanel';
+import { ActivityPanel } from './ActivityPanel';
 import type {
   TestCaseDetail,
   AutosaveStatus,
@@ -306,22 +319,94 @@ export function TestCaseDetailPage({ projectId: propProjectId }: TestCaseDetailP
   const initialEditMode = searchParams.get('edit') === '1';
   const [isEditing, setIsEditing] = useState(initialEditMode);
   const [activeTab, setActiveTab] = useState<string>('steps');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const {
     testCase,
     isLoading,
     error,
     autosaveStatus,
+    pendingChanges,
     updateTestCase,
+    updateTestCaseImmediate,
     addStep,
     updateStep,
     deleteStep,
     reorderSteps,
     duplicateStep,
+    uploadAttachment,
+    deleteAttachment,
   } = useTestCaseDetail({
     caseId: caseId || '',
     projectId,
   });
+
+  // Track unsaved changes based on autosave status
+  useEffect(() => {
+    setHasUnsavedChanges(autosaveStatus === 'saving' || !!pendingChanges);
+  }, [autosaveStatus, pendingChanges]);
+
+  // Browser close/refresh warning
+  useBeforeUnload(
+    useCallback(
+      (e) => {
+        if (hasUnsavedChanges) {
+          e.preventDefault();
+          return 'You have unsaved changes';
+        }
+      },
+      [hasUnsavedChanges]
+    )
+  );
+
+  // Navigation blocker
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      hasUnsavedChanges && currentLocation.pathname !== nextLocation.pathname
+  );
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip if typing in input/textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        // Only allow Escape in text fields
+        if (e.key !== 'Escape') return;
+      }
+
+      // E = Enter edit mode
+      if (e.key === 'e' && !isEditing && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setIsEditing(true);
+      }
+
+      // Escape = Exit edit mode
+      if (e.key === 'Escape' && isEditing) {
+        e.preventDefault();
+        setIsEditing(false);
+      }
+
+      // Cmd+S = Save (force immediate save)
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        if (isEditing && pendingChanges) {
+          updateTestCaseImmediate(pendingChanges);
+        }
+      }
+
+      // Cmd+Enter = Execute
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (caseId) {
+          navigate(`/tests/cases/${caseId}/execute?projectId=${projectId}`);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isEditing, pendingChanges, updateTestCaseImmediate, caseId, projectId, navigate]);
 
   const handleBack = () => {
     navigate(`/tests/cases?projectId=${projectId}`);
@@ -441,6 +526,22 @@ export function TestCaseDetailPage({ projectId: propProjectId }: TestCaseDetailP
         </div>
       </header>
 
+      {/* Edit Mode Banner */}
+      {isEditing && (
+        <div className="h-10 bg-blue-50 border-b border-blue-100 px-4 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span className="text-sm font-medium text-blue-700">Edit Mode</span>
+            <span className="text-xs text-blue-500">Changes auto-save • Press Esc to exit</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <AutosaveIndicator status={autosaveStatus} />
+            <kbd className="px-1.5 py-0.5 bg-white border border-blue-200 rounded text-[10px] font-mono text-blue-600">⌘S</kbd>
+            <span className="text-[10px] text-blue-500">save</span>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Content Area */}
@@ -535,80 +636,23 @@ export function TestCaseDetailPage({ projectId: propProjectId }: TestCaseDetailP
             </TabsContent>
 
             <TabsContent value="attachments" className="mt-0">
-              <div className="text-center py-12 text-slate-500">
-                <p className="text-sm">No attachments yet.</p>
-              </div>
+              <AttachmentsPanel
+                attachments={testCase.attachments}
+                isEditing={isEditing}
+                onUpload={uploadAttachment}
+                onDelete={deleteAttachment}
+              />
             </TabsContent>
 
             <TabsContent value="history" className="mt-0">
-              {testCase.executionHistory.length > 0 ? (
-                <div className="space-y-2">
-                  {testCase.executionHistory.map((execution) => (
-                    <div
-                      key={execution.id}
-                      className="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200"
-                    >
-                      <div
-                        className={cn(
-                          'w-2 h-2 rounded-full',
-                          execution.status === 'passed' && 'bg-emerald-500',
-                          execution.status === 'failed' && 'bg-red-500',
-                          execution.status === 'blocked' && 'bg-amber-500',
-                          execution.status === 'skipped' && 'bg-slate-400'
-                        )}
-                      />
-                      <div className="flex-1">
-                        <span className="text-sm font-medium capitalize">
-                          {execution.status}
-                        </span>
-                        {execution.cycleName && (
-                          <span className="text-sm text-slate-500 ml-2">
-                            in {execution.cycleName}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-slate-500">
-                        {new Date(execution.executedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-slate-500">
-                  <p className="text-sm">No execution history yet.</p>
-                </div>
-              )}
+              <ExecutionHistoryPanel
+                executions={testCase.executionHistory}
+                onViewExecution={(id) => navigate(`/tests/executions/${id}`)}
+              />
             </TabsContent>
 
             <TabsContent value="activity" className="mt-0">
-              {testCase.activities.length > 0 ? (
-                <div className="space-y-3">
-                  {testCase.activities.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-medium text-slate-600 shrink-0">
-                        {activity.createdByInitials}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-sm font-medium text-slate-700">
-                            {activity.createdByName}
-                          </span>
-                          <span className="text-xs text-slate-500">
-                            {new Date(activity.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="text-sm text-slate-600 capitalize">
-                          {activity.action.replace(/_/g, ' ')}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-slate-500">
-                  <p className="text-sm">No activity yet.</p>
-                </div>
-              )}
+              <ActivityPanel activities={testCase.activities} />
             </TabsContent>
           </Tabs>
         </div>
@@ -620,6 +664,41 @@ export function TestCaseDetailPage({ projectId: propProjectId }: TestCaseDetailP
           onUpdate={updateTestCase}
         />
       </div>
+
+      {/* Unsaved Changes Dialog */}
+      {blocker.state === 'blocked' && (
+        <AlertDialog open={true} onOpenChange={() => blocker.reset?.()}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+              <AlertDialogDescription>
+                You have unsaved changes. What would you like to do?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel onClick={() => blocker.reset?.()}>
+                Cancel
+              </AlertDialogCancel>
+              <Button
+                variant="outline"
+                onClick={() => blocker.proceed?.()}
+              >
+                Discard Changes
+              </Button>
+              <AlertDialogAction
+                onClick={async () => {
+                  if (pendingChanges) {
+                    await updateTestCaseImmediate(pendingChanges);
+                  }
+                  blocker.proceed?.();
+                }}
+              >
+                Save & Leave
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }

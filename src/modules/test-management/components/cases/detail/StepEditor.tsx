@@ -25,6 +25,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   GripVertical,
   Plus,
   Trash2,
@@ -32,6 +42,7 @@ import {
   ChevronDown,
   ChevronUp,
   Save,
+  AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TestStepDetail, CreateStepForm } from '../../../types/test-case-detail';
@@ -268,6 +279,7 @@ export function StepEditor({
 }: StepEditorProps) {
   const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
   const [isAddingStep, setIsAddingStep] = useState(false);
+  const [stepToDelete, setStepToDelete] = useState<string | null>(null);
   const [newStep, setNewStep] = useState<CreateStepForm>({
     action: '',
     expectedResult: '',
@@ -344,7 +356,7 @@ export function StepEditor({
                 isExpanded={expandedSteps.has(step.id)}
                 onToggleExpand={() => toggleExpand(step.id)}
                 onUpdate={(data) => onUpdateStep(step.id, data)}
-                onDelete={() => onDeleteStep(step.id)}
+                onDelete={() => setStepToDelete(step.id)}
                 onDuplicate={() => onDuplicateStep(step.id)}
               />
             ))}
@@ -468,6 +480,37 @@ export function StepEditor({
           Add Step
         </Button>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!stepToDelete} onOpenChange={() => setStepToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-destructive" />
+              Delete Step?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete Step{' '}
+              {stepToDelete ? steps.findIndex(s => s.id === stepToDelete) + 1 : ''}.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (stepToDelete) {
+                  onDeleteStep(stepToDelete);
+                  setStepToDelete(null);
+                }
+              }}
+            >
+              Delete Step
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
