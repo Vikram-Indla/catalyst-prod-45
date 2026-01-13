@@ -20262,6 +20262,7 @@ export type Database = {
           kanban_auto_populate_estimate: boolean | null
           kanban_throughput: number | null
           kanban_wip_limit: number | null
+          lead_id: string | null
           name: string
           parent_portfolio_id: string | null
           parent_program_id: string | null
@@ -20287,6 +20288,7 @@ export type Database = {
           kanban_auto_populate_estimate?: boolean | null
           kanban_throughput?: number | null
           kanban_wip_limit?: number | null
+          lead_id?: string | null
           name: string
           parent_portfolio_id?: string | null
           parent_program_id?: string | null
@@ -20312,6 +20314,7 @@ export type Database = {
           kanban_auto_populate_estimate?: boolean | null
           kanban_throughput?: number | null
           kanban_wip_limit?: number | null
+          lead_id?: string | null
           name?: string
           parent_portfolio_id?: string | null
           parent_program_id?: string | null

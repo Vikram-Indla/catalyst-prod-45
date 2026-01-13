@@ -1,10 +1,10 @@
 // ============================================================
 // CREATE WORKSTREAM MODAL - ENTERPRISE GRADE
-// Multi-select interface with proper avatar colors and no flickering
+// Multi-select interface with workstream lead and member selection
 // ============================================================
 
 import { useState, useMemo } from 'react';
-import { X, Users, Check } from 'lucide-react';
+import { X, Users, Check, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,6 +54,7 @@ export function CreateWorkstreamModal({
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [color, setColor] = useState('#2563eb');
+  const [leadId, setLeadId] = useState<string | null>(null);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -68,10 +69,15 @@ export function CreateWorkstreamModal({
     );
   }, [users, searchQuery]);
 
-  // Selected users info
+  // Selected users info (including lead)
   const selectedUsers = useMemo(() => {
     return users.filter(u => selectedUserIds.includes(u.id));
   }, [users, selectedUserIds]);
+
+  // Get lead user info
+  const leadUser = useMemo(() => {
+    return leadId ? users.find(u => u.id === leadId) : null;
+  }, [users, leadId]);
 
   const handleToggleUser = (userId: string) => {
     setSelectedUserIds(prev =>
@@ -81,13 +87,30 @@ export function CreateWorkstreamModal({
     );
   };
 
+  const handleSetLead = (userId: string) => {
+    if (leadId === userId) {
+      setLeadId(null);
+    } else {
+      setLeadId(userId);
+      // Auto-add lead to members if not already
+      if (!selectedUserIds.includes(userId)) {
+        setSelectedUserIds(prev => [...prev, userId]);
+      }
+    }
+  };
+
   const handleRemoveUser = (userId: string) => {
     setSelectedUserIds(prev => prev.filter(id => id !== userId));
+    // Remove lead if they're being removed from members
+    if (leadId === userId) {
+      setLeadId(null);
+    }
   };
 
   const resetForm = () => {
     setName('');
     setColor('#2563eb');
+    setLeadId(null);
     setSelectedUserIds([]);
     setSearchQuery('');
   };
@@ -100,13 +123,14 @@ export function CreateWorkstreamModal({
 
     setIsSubmitting(true);
     try {
-      // Create workstream
+      // Create workstream with lead
       const { data: workstream, error: workstreamError } = await supabase
         .from('teams')
         .insert({
           name: name.trim(),
           short_name: name.trim().slice(0, 3).toUpperCase(),
           is_active: true,
+          lead_id: leadId,
         })
         .select()
         .single();
@@ -194,6 +218,39 @@ export function CreateWorkstreamModal({
               </div>
             </div>
 
+            {/* Workstream Lead */}
+            {leadUser && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-amber-500" />
+                  Workstream Lead
+                </Label>
+                <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
+                  <Avatar className="w-8 h-8">
+                    <AvatarFallback 
+                      className="text-xs text-white font-medium"
+                      style={{ backgroundColor: getAvatarColor(leadUser.id) }}
+                    >
+                      {leadUser.initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{leadUser.name}</p>
+                    {leadUser.role && (
+                      <p className="text-xs text-muted-foreground">{leadUser.role}</p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setLeadId(null)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Selected Members Preview */}
             {selectedUsers.length > 0 && (
               <div className="space-y-2">
@@ -204,8 +261,16 @@ export function CreateWorkstreamModal({
                   {selectedUsers.map((user) => (
                     <div
                       key={user.id}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted text-sm group"
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm group",
+                        leadId === user.id 
+                          ? "bg-amber-100 border border-amber-300" 
+                          : "bg-muted"
+                      )}
                     >
+                      {leadId === user.id && (
+                        <Crown className="w-3.5 h-3.5 text-amber-600" />
+                      )}
                       <Avatar className="w-5 h-5">
                         <AvatarFallback 
                           className="text-[10px] text-white font-medium"
@@ -244,6 +309,9 @@ export function CreateWorkstreamModal({
                 placeholder="Search members..."
                 className="h-9"
               />
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 Click the crown icon to set a user as workstream lead
+              </p>
             </div>
 
             <ScrollArea className="flex-1 px-6">
@@ -256,26 +324,31 @@ export function CreateWorkstreamModal({
                 ) : (
                   filteredUsers.map((user) => {
                     const isSelected = selectedUserIds.includes(user.id);
+                    const isLead = leadId === user.id;
                     return (
-                      <button
+                      <div
                         key={user.id}
-                        type="button"
-                        onClick={() => handleToggleUser(user.id)}
                         className={cn(
-                          "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left",
+                          "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
                           isSelected
-                            ? "bg-blue-50 border border-blue-200"
+                            ? isLead
+                              ? "bg-amber-50 border border-amber-200"
+                              : "bg-blue-50 border border-blue-200"
                             : "hover:bg-muted/50"
                         )}
                       >
-                        <div className={cn(
-                          "w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0",
-                          isSelected
-                            ? "bg-blue-600 border-blue-600"
-                            : "border-gray-300"
-                        )}>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleUser(user.id)}
+                          className={cn(
+                            "w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0",
+                            isSelected
+                              ? "bg-blue-600 border-blue-600"
+                              : "border-gray-300"
+                          )}
+                        >
                           {isSelected && <Check className="w-3 h-3 text-white" />}
-                        </div>
+                        </button>
                         <Avatar className="w-8 h-8 flex-shrink-0">
                           <AvatarFallback 
                             className="text-xs text-white font-medium"
@@ -287,6 +360,9 @@ export function CreateWorkstreamModal({
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-foreground truncate">
                             {user.name}
+                            {isLead && (
+                              <span className="ml-2 text-xs text-amber-600 font-normal">(Lead)</span>
+                            )}
                           </p>
                           {user.role && (
                             <p className="text-xs text-muted-foreground truncate">
@@ -294,7 +370,20 @@ export function CreateWorkstreamModal({
                             </p>
                           )}
                         </div>
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSetLead(user.id)}
+                          className={cn(
+                            "p-1.5 rounded-lg transition-colors",
+                            isLead
+                              ? "bg-amber-100 text-amber-600"
+                              : "text-gray-400 hover:text-amber-500 hover:bg-amber-50"
+                          )}
+                          title={isLead ? "Remove as lead" : "Set as lead"}
+                        >
+                          <Crown className="w-4 h-4" />
+                        </button>
+                      </div>
                     );
                   })
                 )}
