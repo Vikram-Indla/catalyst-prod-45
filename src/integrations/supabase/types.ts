@@ -19225,9 +19225,11 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           estimate_points: number | null
-          feature_id: string
+          feature_id: string | null
           health: string | null
           id: string
+          linked_work_item_id: string | null
+          linked_work_item_type: string | null
           name: string
           original_minutes: number | null
           owner_id: string | null
@@ -19260,9 +19262,11 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           estimate_points?: number | null
-          feature_id: string
+          feature_id?: string | null
           health?: string | null
           id?: string
+          linked_work_item_id?: string | null
+          linked_work_item_type?: string | null
           name: string
           original_minutes?: number | null
           owner_id?: string | null
@@ -19295,9 +19299,11 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           estimate_points?: number | null
-          feature_id?: string
+          feature_id?: string | null
           health?: string | null
           id?: string
+          linked_work_item_id?: string | null
+          linked_work_item_type?: string | null
           name?: string
           original_minutes?: number | null
           owner_id?: string | null
