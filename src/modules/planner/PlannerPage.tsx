@@ -21,7 +21,7 @@ import { PlannerCreateModal } from './components/PlannerCreateModal';
 
 import { PlannerAIPanel } from './components/PlannerAIPanel';
 import { PlannerSearchBar } from './components/PlannerSearchBar';
-import { usePlannerTasks, useUpdatePlannerTask } from './hooks/usePlannerTasks';
+import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask } from './hooks/usePlannerTasks';
 import { usePlannerTeams } from './hooks/usePlannerTeams';
 import { usePlannerUsers } from './hooks/usePlannerUsers';
 import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
@@ -61,7 +61,13 @@ export function PlannerPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createDefaultStatus, setCreateDefaultStatus] = useState<TaskStatus>('backlog');
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
-  
+
+  // Sync activeView with URL
+  useEffect(() => {
+    if (view && view !== activeView) {
+      setActiveView(view as PlannerView);
+    }
+  }, [view]);
 
   // Online users for sidebar
   const onlineUsers = useMemo(() => getOnlineUsers(), []);
@@ -70,6 +76,7 @@ export function PlannerPage() {
   const { data: teams = [] } = usePlannerTeams();
   const { data: users = [] } = usePlannerUsers();
   const updateTask = useUpdatePlannerTask();
+  const deleteTask = useDeletePlannerTask();
   const createTask = useCreatePlannerTask();
   
   // Search and filter
@@ -185,6 +192,19 @@ export function PlannerPage() {
       }
     );
   }, [updateTask, selectedTask]);
+
+  const handleDeleteTask = useCallback((taskId: string) => {
+    deleteTask.mutate(taskId, {
+      onSuccess: () => {
+        toast.success('Task deleted');
+        setIsDrawerOpen(false);
+        setSelectedTask(null);
+      },
+      onError: () => {
+        toast.error('Failed to delete task');
+      },
+    });
+  }, [deleteTask]);
 
   const handleCreateTask = useCallback((data: {
     title: string;
@@ -367,6 +387,7 @@ export function PlannerPage() {
           }}
           onUpdate={handleTaskUpdate}
           onUnblock={handleUnblock}
+          onDelete={handleDeleteTask}
           users={users}
         />
 

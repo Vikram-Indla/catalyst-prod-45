@@ -147,6 +147,14 @@ export function useUpdatePlannerTask() {
         dbUpdates.progress_pct = updates.progress;
       }
 
+      if (updates.assigneeId !== undefined) {
+        dbUpdates.assignee_id = updates.assigneeId || null;
+      }
+
+      if (updates.dueDate !== undefined) {
+        dbUpdates.accepted_at = updates.dueDate || null;
+      }
+
       const { error } = await supabase
         .from('stories')
         .update(dbUpdates)
@@ -154,7 +162,60 @@ export function useUpdatePlannerTask() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
+    onMutate: async ({ id, updates }) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
+      const previousTasks = queryClient.getQueryData(['planner-tasks']);
+      
+      queryClient.setQueryData(['planner-tasks'], (old: PlannerTask[] | undefined) => {
+        if (!old) return old;
+        return old.map(t => t.id === id ? { ...t, ...updates } : t);
+      });
+      
+      return { previousTasks };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['planner-tasks'], context.previousTasks);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+    },
+  });
+}
+
+export function useDeletePlannerTask() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      // Soft delete by setting deleted_at
+      const { error } = await supabase
+        .from('stories')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onMutate: async (id) => {
+      // Optimistic update - remove from list
+      await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
+      const previousTasks = queryClient.getQueryData(['planner-tasks']);
+      
+      queryClient.setQueryData(['planner-tasks'], (old: PlannerTask[] | undefined) => {
+        if (!old) return old;
+        return old.filter(t => t.id !== id);
+      });
+      
+      return { previousTasks };
+    },
+    onError: (err, id, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['planner-tasks'], context.previousTasks);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
     },
   });

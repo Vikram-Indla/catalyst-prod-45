@@ -32,6 +32,7 @@ interface PlannerTaskDrawerProps {
   onClose: () => void;
   onUpdate: (taskId: string, updates: Partial<PlannerTask>) => void;
   onUnblock: (taskId: string) => void;
+  onDelete?: (taskId: string) => void;
   users?: PlannerUser[];
 }
 
@@ -41,6 +42,7 @@ export function PlannerTaskDrawer({
   onClose,
   onUpdate,
   onUnblock,
+  onDelete,
   users = [],
 }: PlannerTaskDrawerProps) {
   if (!task) return null;
@@ -252,6 +254,11 @@ export function PlannerTaskDrawer({
             <Button
               variant="outline"
               size="sm"
+              onClick={() => {
+                if (window.confirm('Are you sure you want to delete this task?')) {
+                  onDelete?.(task.id);
+                }
+              }}
               className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30"
             >
               <Trash2 className="w-4 h-4 mr-2" />
