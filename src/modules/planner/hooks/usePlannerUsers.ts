@@ -2,12 +2,12 @@
 // PLANNER USERS HOOK
 // Fetches users for assignee dropdowns with roles from /admin/users
 // Roles come from user_product_roles + product_roles tables
+// Returns empty list when database is empty (no mock data)
 // ============================================================
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlannerUser } from '../types';
-import { SEED_USERS } from '../data/seedData';
 
 /**
  * Fetches user roles from user_product_roles + product_roles tables
@@ -52,7 +52,7 @@ export function usePlannerUsers() {
 
       if (profilesResult.error) {
         console.error('Error fetching users:', profilesResult.error);
-        return SEED_USERS;
+        return [];
       }
 
       const users = (profilesResult.data || []).map((row): PlannerUser => ({
@@ -64,10 +64,6 @@ export function usePlannerUsers() {
         team: 'Team',
         online: Math.random() > 0.5,
       }));
-
-      if (users.length === 0) {
-        return SEED_USERS;
-      }
 
       return users;
     },

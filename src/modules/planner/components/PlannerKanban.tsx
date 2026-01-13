@@ -55,7 +55,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { SEED_USERS } from '../data/seedData';
 import { differenceInDays, startOfDay, endOfWeek, isWithinInterval, addWeeks } from 'date-fns';
 
 interface PlannerKanbanProps {
@@ -548,13 +547,15 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
             tasks: assigneeMap.get('unassigned')!,
           });
         }
-        SEED_USERS.forEach(user => {
-          if (assigneeMap.has(user.id)) {
+        // Build lanes from actual task data (no mock users)
+        assigneeMap.forEach((tasksInLane, assigneeId) => {
+          if (assigneeId !== 'unassigned') {
+            const sampleTask = tasksInLane[0];
             assigneeLanes.push({
-              id: user.id,
-              title: user.name,
+              id: assigneeId,
+              title: sampleTask?.assigneeName || 'Unknown',
               color: '#2563eb',
-              tasks: assigneeMap.get(user.id)!,
+              tasks: tasksInLane,
             });
           }
         });
@@ -585,13 +586,15 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
             tasks: reporterMap.get('unknown')!,
           });
         }
-        SEED_USERS.forEach(user => {
-          if (reporterMap.has(user.id)) {
+        // Build lanes from actual task data (no mock users)
+        reporterMap.forEach((tasksInLane, reporterId) => {
+          if (reporterId !== 'unknown') {
+            const sampleTask = tasksInLane[0];
             reporterLanes.push({
-              id: user.id,
-              title: user.name,
+              id: reporterId,
+              title: sampleTask?.reporterName || 'Unknown',
               color: '#0d9488',
-              tasks: reporterMap.get(user.id)!,
+              tasks: tasksInLane,
             });
           }
         });
