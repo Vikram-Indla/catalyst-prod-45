@@ -18,6 +18,7 @@ import { PlannerAIInsights } from './components/PlannerAIInsights';
 import { PlannerSettings } from './components/PlannerSettings';
 import { PlannerTaskDrawer } from './components/PlannerTaskDrawer';
 import { PlannerCreateModal } from './components/PlannerCreateModal';
+import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
 import { PlannerBulkActionBar } from './components/PlannerBulkActionBar';
 import { PlannerBulkDeleteModal } from './components/PlannerBulkDeleteModal';
 
@@ -35,6 +36,7 @@ import { getOnlineUsers } from './data/seedData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
+import { useCreateTeam } from '@/hooks/useTeams';
 
 // View titles for breadcrumb header
 const VIEW_TITLES: Record<PlannerView, string> = {
@@ -68,6 +70,7 @@ export function PlannerPage() {
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
 
   // Sync activeView with URL
   useEffect(() => {
@@ -86,6 +89,7 @@ export function PlannerPage() {
   const deleteTask = useDeletePlannerTask();
   const bulkDeleteTasks = useBulkDeletePlannerTasks();
   const createTask = useCreatePlannerTask();
+  const createTeam = useCreateTeam();
   
   // Realtime subscription for live updates
   usePlannerRealtime(selectedTeamId);
@@ -270,6 +274,25 @@ export function PlannerPage() {
     });
   }, [selectedTaskIds, bulkDeleteTasks]);
 
+  const handleCreateTeam = useCallback((data: {
+    name: string;
+    emoji: string;
+    color: string;
+    memberIds: string[];
+  }) => {
+    createTeam.mutate({
+      name: data.name,
+      short_name: data.name.slice(0, 10).toUpperCase().replace(/\s+/g, ''),
+      team_type: 'AGILE',
+      is_active: true,
+    }, {
+      onSuccess: () => {
+        setIsCreateTeamModalOpen(false);
+        catalystToast.success('Team Created', `"${data.name}" has been created.`);
+      },
+    });
+  }, [createTeam]);
+
   const renderView = () => {
     const viewTasks = filteredTasks;
     
@@ -390,6 +413,7 @@ export function PlannerPage() {
           onTeamChange={setSelectedTeamId}
           groupBy={groupBy}
           onGroupByChange={setGroupBy}
+          onCreateTeam={() => setIsCreateTeamModalOpen(true)}
         />
 
         {/* View content */}
@@ -453,6 +477,14 @@ export function PlannerPage() {
           onConfirm={handleBulkDelete}
           selectedCount={selectedTaskIds.size}
           isDeleting={isBulkDeleting}
+        />
+
+        {/* Create Team Modal */}
+        <PlannerCreateTeamModal
+          isOpen={isCreateTeamModalOpen}
+          onClose={() => setIsCreateTeamModalOpen(false)}
+          onCreate={handleCreateTeam}
+          users={users}
         />
       </div>
     </div>

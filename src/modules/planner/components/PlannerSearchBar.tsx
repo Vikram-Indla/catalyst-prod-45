@@ -3,7 +3,7 @@
 // Search and filter toolbar for Planner
 // ============================================================
 
-import { Search, X, Filter, ChevronDown, Users, Layers } from 'lucide-react';
+import { Search, X, Filter, ChevronDown, Users, Layers, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';
 import type { TaskStatus, TaskPriority, PlannerTeam, GroupByOption } from '../types';
@@ -44,6 +44,7 @@ interface PlannerSearchBarProps {
   onTeamChange: (teamId: string | null) => void;
   groupBy?: GroupByOption | 'none';
   onGroupByChange?: (groupBy: GroupByOption | 'none') => void;
+  onCreateTeam?: () => void;
 }
 
 export function PlannerSearchBar({
@@ -63,6 +64,7 @@ export function PlannerSearchBar({
   onTeamChange,
   groupBy = 'none',
   onGroupByChange,
+  onCreateTeam,
 }: PlannerSearchBarProps) {
   const selectedTeam = teams.find(t => t.id === selectedTeamId);
   const selectedGroupLabel = GROUP_OPTIONS.find(o => o.id === groupBy)?.label || 'None';
@@ -130,6 +132,18 @@ export function PlannerSearchBar({
               </div>
             </DropdownMenuItem>
           ))}
+          {onCreateTeam && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={onCreateTeam}
+                className="text-blue-600 font-medium"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Team
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
