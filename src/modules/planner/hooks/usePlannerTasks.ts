@@ -9,24 +9,35 @@ import { supabase } from '@/integrations/supabase/client';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
 import { SEED_TASKS } from '../data/seedData';
 
-// Map DB status to Planner status
-const mapStatus = (dbStatus: string | null): TaskStatus => {
-  switch (dbStatus?.toLowerCase()) {
-    case 'done':
+// Map DB status/state to Planner status
+const mapStatus = (dbStatus: string | null, dbState: string | null): TaskStatus => {
+  const status = dbStatus?.toLowerCase();
+  const state = dbState?.toLowerCase();
+
+  // "todo" is overloaded in this schema; state differentiates backlog vs planned
+  if (status === 'todo') {
+    if (state === 'backlog') return 'backlog';
+    // default "todo" bucket maps to Planned
+    return 'planned';
+  }
+
+  if (status === 'in_progress') {
+    // use state to represent the Review column
+    if (state === 'review' || state === 'in_review' || state === 'testing') return 'review';
+    return 'in-progress';
+  }
+
+  if (status === 'done') return 'done';
+
+  // Fallbacks for unexpected values
+  switch (status) {
     case 'completed':
     case 'accepted':
       return 'done';
-    case 'in_progress':
-    case 'in-progress':
     case 'active':
       return 'in-progress';
-    case 'review':
-    case 'in_review':
-    case 'testing':
-      return 'review';
     case 'planned':
     case 'ready':
-    case 'todo':
       return 'planned';
     default:
       return 'backlog';
@@ -58,7 +69,7 @@ const transformStory = (row: any): PlannerTask => ({
   key: row.story_key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
   title: row.title || row.name || 'Untitled',
   description: row.description,
-  status: mapStatus(row.status || row.state),
+  status: mapStatus(row.status || row.state, row.state),
   type: 'task',
   priority: mapPriority(row.priority),
   assigneeId: row.assignee_id || row.owner_id,
@@ -139,19 +150,21 @@ export function useUpdatePlannerTask() {
 
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<PlannerTask> }) => {
-      // Map Planner status back to DB status
+      // Map Planner status back to DB status/state
       const dbUpdates: any = {};
-      
+
       if (updates.status) {
-        const statusMap: Record<TaskStatus, string> = {
-          backlog: 'todo',
-          planned: 'todo',
-          'in-progress': 'in_progress',
-          review: 'in_progress',
-          done: 'done',
+        const statusToDb: Record<TaskStatus, { status: 'todo' | 'in_progress' | 'done'; state: string }> = {
+          backlog: { status: 'todo', state: 'backlog' },
+          planned: { status: 'todo', state: 'todo' },
+          'in-progress': { status: 'in_progress', state: 'in_progress' },
+          review: { status: 'in_progress', state: 'review' },
+          done: { status: 'done', state: 'done' },
         };
-        dbUpdates.status = statusMap[updates.status];
-        dbUpdates.state = statusMap[updates.status];
+
+        const mapped = statusToDb[updates.status];
+        dbUpdates.status = mapped.status;
+        dbUpdates.state = mapped.state;
       }
       
       if (updates.priority) {
@@ -183,21 +196,22 @@ export function useUpdatePlannerTask() {
       if (error) throw error;
     },
     onMutate: async ({ id, updates }) => {
-      // Optimistic update
+      // Optimistic update (covers both ['planner-tasks'] and ['planner-tasks', teamId] queries)
       await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
-      const previousTasks = queryClient.getQueryData(['planner-tasks']);
-      
-      queryClient.setQueryData(['planner-tasks'], (old: PlannerTask[] | undefined) => {
+
+      const previous = queryClient.getQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] });
+
+      queryClient.setQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] }, (old) => {
         if (!old) return old;
-        return old.map(t => t.id === id ? { ...t, ...updates } : t);
+        return old.map((t) => (t.id === id ? { ...t, ...updates } : t));
       });
-      
-      return { previousTasks };
+
+      return { previous };
     },
     onError: (err, variables, context) => {
-      if (context?.previousTasks) {
-        queryClient.setQueryData(['planner-tasks'], context.previousTasks);
-      }
+      context?.previous?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
