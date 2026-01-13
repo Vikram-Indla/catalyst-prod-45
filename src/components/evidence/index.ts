@@ -5,6 +5,7 @@
 export { EvidenceUploadZone } from './EvidenceUploadZone';
 export { EvidenceGallery } from './EvidenceGallery';
 export { AnnotationEditor } from './annotation';
+export { OcrPanel, EvidenceSearch } from './ocr';
 export type { 
   EvidenceUploadZoneProps, 
   EvidenceGalleryProps,
