@@ -113,49 +113,6 @@ export function PlannerCreateTeamModal({
             />
           </div>
 
-          {/* Emoji Picker */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Emoji</Label>
-            <div className="flex flex-wrap gap-2">
-              {EMOJI_OPTIONS.map((e) => (
-                <button
-                  key={e}
-                  type="button"
-                  onClick={() => setEmoji(e)}
-                  className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center text-lg transition-all",
-                    emoji === e
-                      ? "bg-blue-100 ring-2 ring-blue-500"
-                      : "bg-muted hover:bg-muted/80"
-                  )}
-                >
-                  {e}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Color Picker */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Color</Label>
-            <div className="flex flex-wrap gap-2">
-              {COLOR_OPTIONS.map((c) => (
-                <button
-                  key={c.value}
-                  type="button"
-                  onClick={() => setColor(c.value)}
-                  className={cn(
-                    "w-8 h-8 rounded-full transition-all",
-                    color === c.value
-                      ? "ring-2 ring-offset-2 ring-blue-500"
-                      : "hover:scale-110"
-                  )}
-                  style={{ backgroundColor: c.value }}
-                  title={c.label}
-                />
-              ))}
-            </div>
-          </div>
 
           {/* Members */}
           <div className="space-y-2">
