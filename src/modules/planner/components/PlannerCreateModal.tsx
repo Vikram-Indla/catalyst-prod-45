@@ -57,7 +57,7 @@ export function PlannerCreateModal({
   const [startDate, setStartDate] = useState('');
   const [dueDate, setDueDate] = useState('');
 
-  // Reset form when modal opens
+  // Reset form when modal opens - only depends on isOpen to prevent flicker
   useEffect(() => {
     if (isOpen) {
       setTitle('');
@@ -65,11 +65,12 @@ export function PlannerCreateModal({
       setStatus(defaultStatus);
       setPriority('medium');
       setAssigneeId('');
-      setReporterId(currentUserId || users[0]?.id || '');
+      setReporterId(currentUserId || '');
       setStartDate('');
       setDueDate('');
     }
-  }, [isOpen, defaultStatus, currentUserId, users]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   // Handle escape key
   useEffect(() => {
