@@ -19,7 +19,9 @@ import {
 import { 
   SortableContext, 
   verticalListSortingStrategy,
+  horizontalListSortingStrategy,
   useSortable,
+  arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { 
@@ -45,6 +47,7 @@ import {
   usePlannerColumnsRealtime,
   useCreatePlannerColumn,
   useDeletePlannerColumn,
+  useUpdatePlannerColumnOrder,
 } from '../hooks/usePlannerColumns';
 import {
   DropdownMenu,
@@ -109,8 +112,8 @@ function SortableTaskCard({
   );
 }
 
-// Droppable Kanban Column
-function KanbanColumn({
+// Sortable Kanban Column wrapper
+function SortableKanbanColumn({
   column,
   onTaskClick,
   isOver,
@@ -121,28 +124,56 @@ function KanbanColumn({
   isOver: boolean;
   onDelete?: (columnId: string) => void;
 }) {
-  const { setNodeRef } = useDroppable({
-    id: `column-${column.id}`,
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: `col-${column.id}`,
     data: {
       type: 'column',
       columnId: column.id,
     },
   });
 
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   const isOverWipLimit = column.wipLimit && column.tasks.length > column.wipLimit;
+
+  // Create a droppable zone for tasks within this column
+  const { setNodeRef: setDropRef } = useDroppable({
+    id: `column-${column.id}`,
+    data: {
+      type: 'column-drop',
+      columnId: column.id,
+    },
+  });
 
   return (
     <div 
       ref={setNodeRef}
+      style={style}
       className={cn(
         "flex-shrink-0 w-[300px] flex flex-col bg-muted/50 rounded-xl transition-all duration-200",
-        isOver && "ring-2 ring-primary ring-offset-2 bg-primary/5"
+        isOver && "ring-2 ring-primary ring-offset-2 bg-primary/5",
+        isDragging && "shadow-xl z-50"
       )}
     >
-      {/* Column Header */}
-      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
+      {/* Column Header - drag handle */}
+      <div 
+        className="flex items-center justify-between px-3 py-2.5 border-b border-border cursor-grab active:cursor-grabbing"
+        {...attributes}
+        {...listeners}
+      >
         <div className="flex items-center gap-2">
-          <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
+          <GripVertical className="w-4 h-4 text-muted-foreground" />
           <div 
             className="w-3 h-3 rounded-full" 
             style={{ backgroundColor: column.color }}
@@ -162,7 +193,10 @@ function KanbanColumn({
         {/* Column Actions */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="p-1 rounded hover:bg-muted text-muted-foreground">
+            <button 
+              className="p-1 rounded hover:bg-muted text-muted-foreground"
+              onClick={(e) => e.stopPropagation()}
+            >
               <MoreHorizontal className="w-4 h-4" />
             </button>
           </DropdownMenuTrigger>
@@ -201,8 +235,11 @@ function KanbanColumn({
         </div>
       )}
 
-      {/* Cards */}
-      <div className="flex-1 p-2 space-y-2 overflow-y-auto min-h-[200px] max-h-[calc(100vh-280px)]">
+      {/* Cards - droppable area */}
+      <div 
+        ref={setDropRef}
+        className="flex-1 p-2 space-y-2 overflow-y-auto min-h-[200px] max-h-[calc(100vh-280px)]"
+      >
         <SortableContext items={column.tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
           <AnimatePresence>
             {column.tasks.map(task => (
@@ -362,9 +399,11 @@ function SwimLaneCell({
 
 export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: PlannerKanbanProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeDragType, setActiveDragType] = useState<'task' | 'column' | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
   const [collapsedLanes, setCollapsedLanes] = useState<Set<string>>(new Set());
+  const [localColumnOrder, setLocalColumnOrder] = useState<string[]>([]);
 
   // ===== Custom columns from backend =====
   const { data: customColumns = [], isLoading: columnsLoading } = usePlannerColumns();
@@ -372,6 +411,7 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
 
   const createColumn = useCreatePlannerColumn();
   const deleteColumnMutation = useDeletePlannerColumn();
+  const updateColumnOrder = useUpdatePlannerColumnOrder();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -534,7 +574,7 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
   const columns = useMemo((): DynamicColumn[] => {
     if (groupBy && groupBy !== 'status') return []; // Using swim lanes instead
 
-    return allColumnConfigs.map(col => ({
+    const baseCols = allColumnConfigs.map(col => ({
       id: col.id,
       title: col.title,
       color: col.color,
@@ -542,10 +582,39 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
       tasks: tasks.filter(t => t.status === col.id),
       isCustom: !COLUMN_CONFIG.some(dc => dc.id === col.id),
     }));
-  }, [tasks, groupBy, allColumnConfigs]);
+
+    // Apply local order if set
+    if (localColumnOrder.length > 0) {
+      const ordered: DynamicColumn[] = [];
+      localColumnOrder.forEach(id => {
+        const col = baseCols.find(c => c.id === id);
+        if (col) ordered.push(col);
+      });
+      // Add any columns not in the order (new columns)
+      baseCols.forEach(col => {
+        if (!ordered.find(c => c.id === col.id)) {
+          ordered.push(col);
+        }
+      });
+      return ordered;
+    }
+
+    return baseCols;
+  }, [tasks, groupBy, allColumnConfigs, localColumnOrder]);
+
+  // Column IDs for sortable context
+  const columnIds = useMemo(() => columns.map(c => `col-${c.id}`), [columns]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
+    const activeIdStr = event.active.id as string;
+    setActiveId(activeIdStr);
+    
+    // Determine if we're dragging a column or a task
+    if (activeIdStr.startsWith('col-')) {
+      setActiveDragType('column');
+    } else {
+      setActiveDragType('task');
+    }
   }, []);
 
   const handleDragOver = useCallback((event: DragOverEvent) => {
@@ -561,7 +630,7 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
     } else if (overId.startsWith('cell-')) {
       // Extract laneId-columnId from cell-laneId-columnId
       setOverColumnId(overId.replace('cell-', ''));
-    } else {
+    } else if (!overId.startsWith('col-')) {
       const overTask = tasks.find(t => t.id === overId);
       if (overTask) {
         if (groupBy && groupBy !== 'status') {
@@ -575,27 +644,61 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
   }, [tasks, groupBy]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const dragType = activeDragType;
     setActiveId(null);
+    setActiveDragType(null);
     setOverColumnId(null);
     
     const { active, over } = event;
     if (!over) return;
 
-    const taskId = active.id as string;
+    const activeIdStr = active.id as string;
+    const overIdStr = over.id as string;
+
+    // Handle column reordering
+    if (dragType === 'column' && activeIdStr.startsWith('col-') && overIdStr.startsWith('col-')) {
+      const activeColId = activeIdStr.replace('col-', '');
+      const overColId = overIdStr.replace('col-', '');
+      
+      if (activeColId !== overColId) {
+        const currentOrder = localColumnOrder.length > 0 ? localColumnOrder : columns.map(c => c.id);
+        const oldIndex = currentOrder.indexOf(activeColId);
+        const newIndex = currentOrder.indexOf(overColId);
+        
+        if (oldIndex !== -1 && newIndex !== -1) {
+          const newOrder = arrayMove(currentOrder, oldIndex, newIndex);
+          setLocalColumnOrder(newOrder);
+          
+          // Persist to backend (only custom columns)
+          const customColsWithOrder = newOrder
+            .map((id, idx) => ({ column_id: id, sort_order: idx }))
+            .filter(item => customColumns.some(c => c.id === item.column_id));
+          
+          if (customColsWithOrder.length > 0) {
+            updateColumnOrder.mutate(customColsWithOrder);
+          }
+          
+          catalystToast.success('Column Reordered', 'Column order has been updated.');
+        }
+      }
+      return;
+    }
+
+    // Handle task moving
+    const taskId = activeIdStr;
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
-    const overId = over.id as string;
     let targetStatus: string | null = null;
 
-    if (overId.startsWith('column-')) {
-      targetStatus = overId.replace('column-', '');
-    } else if (overId.startsWith('cell-')) {
+    if (overIdStr.startsWith('column-')) {
+      targetStatus = overIdStr.replace('column-', '');
+    } else if (overIdStr.startsWith('cell-')) {
       // Extract status from cell-laneId-status
-      const parts = overId.replace('cell-', '').split('-');
+      const parts = overIdStr.replace('cell-', '').split('-');
       targetStatus = parts[parts.length - 1]; // Last part is the status
-    } else {
-      const overTask = tasks.find(t => t.id === overId);
+    } else if (!overIdStr.startsWith('col-')) {
+      const overTask = tasks.find(t => t.id === overIdStr);
       if (overTask) {
         targetStatus = overTask.status;
       }
@@ -604,7 +707,7 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
     if (targetStatus && targetStatus !== task.status) {
       onTaskMove(taskId, targetStatus as TaskStatus);
     }
-  }, [tasks, onTaskMove]);
+  }, [tasks, onTaskMove, activeDragType, localColumnOrder, columns, customColumns, updateColumnOrder]);
 
   const toggleLaneCollapse = useCallback((laneId: string) => {
     setCollapsedLanes(prev => {
@@ -618,7 +721,10 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
     });
   }, []);
 
-  const activeTask = activeId ? tasks.find(t => t.id === activeId) : null;
+  const activeTask = activeId && activeDragType === 'task' ? tasks.find(t => t.id === activeId) : null;
+  const activeColumn = activeId && activeDragType === 'column' 
+    ? columns.find(c => `col-${c.id}` === activeId) 
+    : null;
 
   // Use swim lane layout when groupBy is set (except for status)
   const useSwimLanes = groupBy && groupBy !== 'status' && swimLanes.length > 0;
@@ -672,15 +778,17 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
         ) : (
           /* Vertical Column Layout (default) */
           <div className="flex gap-4 p-4 overflow-x-auto flex-1">
-            {columns.map(column => (
-              <KanbanColumn
-                key={column.id}
-                column={column}
-                onTaskClick={onTaskClick}
-                isOver={overColumnId === column.id}
-                onDelete={column.isCustom ? handleDeleteColumn : undefined}
-              />
-            ))}
+            <SortableContext items={columnIds} strategy={horizontalListSortingStrategy}>
+              {columns.map(column => (
+                <SortableKanbanColumn
+                  key={column.id}
+                  column={column}
+                  onTaskClick={onTaskClick}
+                  isOver={overColumnId === column.id}
+                  onDelete={column.isCustom ? handleDeleteColumn : undefined}
+                />
+              ))}
+            </SortableContext>
             
             {/* Add Column Button */}
             {(!groupBy || groupBy === 'status') && (
@@ -701,6 +809,20 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
           {activeTask && (
             <div className="rotate-3 shadow-2xl">
               <TaskCard task={activeTask} onClick={() => {}} isDragging />
+            </div>
+          )}
+          {activeColumn && (
+            <div className="rotate-2 shadow-2xl opacity-90 w-[300px] bg-muted/80 rounded-xl border border-border p-3">
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: activeColumn.color }}
+                />
+                <span className="font-medium text-sm text-foreground">{activeColumn.title}</span>
+                <span className="text-xs px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
+                  {activeColumn.tasks.length}
+                </span>
+              </div>
             </div>
           )}
         </DragOverlay>
