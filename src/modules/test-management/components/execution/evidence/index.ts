@@ -12,3 +12,6 @@ export { EvidenceLightbox } from './EvidenceLightbox';
 
 // Annotation exports
 export * from './annotations';
+
+// AI exports
+export * from './ai';
