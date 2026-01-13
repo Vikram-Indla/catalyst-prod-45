@@ -31,19 +31,27 @@ export interface PlannerTask {
   assigneeId?: string;
   assigneeName?: string;
   assigneeInitials?: string;
+  assigneeOnline?: boolean;
   reporterId?: string;            // Who created/reported it
   reporterName?: string;
   reporterInitials?: string;
   teamId?: string;
+  teamName?: string;
+  teamEmoji?: string;
+  teamColor?: string;
   startDate?: string;             // Required for timeline
   dueDate?: string;
   blocked: boolean;
   blockedReason?: string;
   progress: number;               // 0-100, manually set
   comments: number;
+  attachments?: number;
+  storyPoints?: number;
   tags?: string[];
   linkedItemId?: string;
   linkedItemTitle?: string;
+  blockedByCount?: number;
+  blocksCount?: number;
   createdAt: string;
   updatedAt: string;
 }
