@@ -80,12 +80,10 @@ export function usePlannerTasks(teamId?: string | null) {
   return useQuery({
     queryKey: ['planner-tasks', teamId],
     queryFn: async () => {
+      // Query stories without the profiles join since there's no FK relationship
       let query = supabase
         .from('stories')
-        .select(`
-          *,
-          profiles:assignee_id(full_name)
-        `)
+        .select('*')
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(200);
@@ -102,7 +100,29 @@ export function usePlannerTasks(teamId?: string | null) {
         return SEED_TASKS;
       }
 
-      const transformedData = (data || []).map(transformStory);
+      // Get unique assignee IDs to fetch names separately
+      const assigneeIds = [...new Set((data || []).map(s => s.assignee_id).filter(Boolean))];
+      
+      let profilesMap: Record<string, string> = {};
+      if (assigneeIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', assigneeIds);
+        
+        profilesMap = (profiles || []).reduce((acc, p) => {
+          acc[p.id] = p.full_name || '';
+          return acc;
+        }, {} as Record<string, string>);
+      }
+
+      const transformedData = (data || []).map(row => ({
+        ...transformStory(row),
+        assigneeName: row.assignee_id ? profilesMap[row.assignee_id] : undefined,
+        assigneeInitials: row.assignee_id && profilesMap[row.assignee_id] 
+          ? profilesMap[row.assignee_id].split(' ').map(n => n[0]).join('').slice(0, 2)
+          : undefined,
+      }));
       
       // If no data from DB, return seed data
       if (transformedData.length === 0) {
