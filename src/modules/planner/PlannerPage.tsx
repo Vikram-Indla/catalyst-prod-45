@@ -254,144 +254,140 @@ export function PlannerPage() {
   const criticalInsightsCount = insights.filter(i => i.type === 'critical').length;
 
   return (
-    <div className="flex flex-col h-full" style={{ backgroundColor: 'var(--bg)' }}>
-      {/* Header with breadcrumb */}
-      <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
-        <div
-          className="flex items-center justify-between px-6"
-          style={{ 
-            height: '52px',
-            borderBottom: '1px solid var(--divider)',
-          }}
-        >
-          {/* Left: Breadcrumb + Title */}
-          <div className="flex items-center gap-2">
-            <span
-              className="text-[11px] font-semibold uppercase tracking-wider"
-              style={{ color: 'var(--text-3)' }}
-            >
-              PLANNER
-            </span>
-            <span 
-              className="text-[14px]" 
-              style={{ color: 'var(--text-4)' }}
-            >
-              /
-            </span>
-            <h1
-              className="text-[18px] font-semibold"
-              style={{ color: 'var(--text-1)' }}
-            >
-              {pageTitle}
-            </h1>
-          </div>
+    <div className="flex h-full min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
+      {/* Sidebar (must start at top of module area, like other modules) */}
+      <PlannerSidebar
+        activeView={activeView}
+        onViewChange={handleViewChange}
+        onlineUsers={onlineUsers}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        insightsBadge={blockedCount}
+      />
 
-          {/* Right: Action Buttons */}
-          <div className="flex items-center gap-2">
-            {/* AI Insights Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsAIPanelOpen(prev => !prev)}
-              className={cn(
-                "h-8 gap-2",
-                isAIPanelOpen && "bg-blue-50 text-blue-600"
-              )}
-            >
-              <Lightbulb className="w-4 h-4" />
-              <span className="text-sm">AI</span>
-              {criticalInsightsCount > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-red-500 text-white rounded-full">
-                  {criticalInsightsCount}
-                </span>
-              )}
-            </Button>
+      {/* Right column: header + search + view content */}
+      <div className="flex flex-col flex-1 min-w-0 min-h-0">
+        {/* Header with breadcrumb */}
+        <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
+          <div
+            className="flex items-center justify-between px-6"
+            style={{
+              height: '52px',
+              borderBottom: '1px solid var(--divider)',
+            }}
+          >
+            {/* Left: Breadcrumb + Title */}
+            <div className="flex items-center gap-2">
+              <span
+                className="text-[11px] font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--text-3)' }}
+              >
+                PLANNER
+              </span>
+              <span className="text-[14px]" style={{ color: 'var(--text-4)' }}>
+                /
+              </span>
+              <h1 className="text-[18px] font-semibold" style={{ color: 'var(--text-1)' }}>
+                {pageTitle}
+              </h1>
+            </div>
 
-            {/* Create Task Button */}
-            <Button
-              size="sm"
-              onClick={() => {
-                setCreateDefaultStatus('backlog');
-                setIsCreateModalOpen(true);
-              }}
-              className="h-8 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm">Create Task</span>
-            </Button>
+            {/* Right: Action Buttons */}
+            <div className="flex items-center gap-2">
+              {/* AI Insights Toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsAIPanelOpen((prev) => !prev)}
+                className={cn("h-8 gap-2", isAIPanelOpen && "bg-blue-50 text-blue-600")}
+              >
+                <Lightbulb className="w-4 h-4" />
+                <span className="text-sm">AI</span>
+                {criticalInsightsCount > 0 && (
+                  <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-red-500 text-white rounded-full">
+                    {criticalInsightsCount}
+                  </span>
+                )}
+              </Button>
+
+              {/* Create Task Button */}
+              <Button
+                size="sm"
+                onClick={() => {
+                  setCreateDefaultStatus('backlog');
+                  setIsCreateModalOpen(true);
+                }}
+                className="h-8 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="text-sm">Create Task</span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Search Bar */}
-      <PlannerSearchBar
-        filters={filters}
-        onSearchChange={setSearch}
-        onStatusChange={setStatusFilter}
-        onPriorityChange={setPriorityFilter}
-        onBlockedChange={setBlockedFilter}
-        onOverdueChange={setOverdueFilter}
-        onClearFilters={clearFilters}
-        hasActiveFilters={hasActiveFilters}
-        filteredCount={filteredCount}
-        totalCount={totalCount}
-        inputRef={searchInputRef}
-        teams={teams}
-        selectedTeamId={selectedTeamId}
-        onTeamChange={setSelectedTeamId}
-      />
-
-      {/* Main content area with sidebar */}
-      <div className="flex flex-1 min-h-0 bg-surface-0">
-        <PlannerSidebar
-          activeView={activeView}
-          onViewChange={handleViewChange}
-          onlineUsers={onlineUsers}
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          insightsBadge={blockedCount}
+        {/* Search Bar */}
+        <PlannerSearchBar
+          filters={filters}
+          onSearchChange={setSearch}
+          onStatusChange={setStatusFilter}
+          onPriorityChange={setPriorityFilter}
+          onBlockedChange={setBlockedFilter}
+          onOverdueChange={setOverdueFilter}
+          onClearFilters={clearFilters}
+          hasActiveFilters={hasActiveFilters}
+          filteredCount={filteredCount}
+          totalCount={totalCount}
+          inputRef={searchInputRef}
+          teams={teams}
+          selectedTeamId={selectedTeamId}
+          onTeamChange={setSelectedTeamId}
         />
-        <main className="flex-1 overflow-hidden">
-          {isLoading ? (
-            <div className="h-full flex items-center justify-center">
-              <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : (
-            renderView()
-          )}
-        </main>
+
+        {/* View content */}
+        <div className="flex flex-1 min-h-0 bg-surface-0">
+          <main className="flex-1 overflow-hidden">
+            {isLoading ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              renderView()
+            )}
+          </main>
+        </div>
+
+        {/* Task Drawer */}
+        <PlannerTaskDrawer
+          task={selectedTask}
+          isOpen={isDrawerOpen}
+          onClose={() => {
+            setIsDrawerOpen(false);
+            setSelectedTask(null);
+          }}
+          onUpdate={handleTaskUpdate}
+          onUnblock={handleUnblock}
+          users={users}
+        />
+
+        {/* Create Modal */}
+        <PlannerCreateModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreate={handleCreateTask}
+          defaultStatus={createDefaultStatus}
+          users={users}
+        />
+
+        {/* AI Panel */}
+        <PlannerAIPanel
+          isOpen={isAIPanelOpen}
+          onClose={() => setIsAIPanelOpen(false)}
+          insights={insights}
+          onViewAll={() => handleViewChange('ai-insights')}
+          onInsightAction={handleInsightAction}
+        />
       </div>
-
-      {/* Task Drawer */}
-      <PlannerTaskDrawer
-        task={selectedTask}
-        isOpen={isDrawerOpen}
-        onClose={() => {
-          setIsDrawerOpen(false);
-          setSelectedTask(null);
-        }}
-        onUpdate={handleTaskUpdate}
-        onUnblock={handleUnblock}
-        users={users}
-      />
-
-      {/* Create Modal */}
-      <PlannerCreateModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onCreate={handleCreateTask}
-        defaultStatus={createDefaultStatus}
-        users={users}
-      />
-
-      {/* AI Panel */}
-      <PlannerAIPanel
-        isOpen={isAIPanelOpen}
-        onClose={() => setIsAIPanelOpen(false)}
-        insights={insights}
-        onViewAll={() => handleViewChange('ai-insights')}
-        onInsightAction={handleInsightAction}
-      />
     </div>
   );
 }
