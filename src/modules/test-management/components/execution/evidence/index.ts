@@ -21,3 +21,6 @@ export * from './bulk';
 
 // Export functionality (TC-401 to TC-425)
 export * from './export';
+
+// Performance optimizations (TC-261 to TC-330)
+export * from './performance';
