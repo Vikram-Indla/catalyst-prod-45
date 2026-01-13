@@ -491,7 +491,12 @@ export function PlannerSettings() {
                 <SelectTrigger className="h-10">
                   <SelectValue placeholder="Select team lead..." />
                 </SelectTrigger>
-                <SelectContent className="bg-background z-50">
+                <SelectContent 
+                  position="popper" 
+                  sideOffset={4}
+                  className="bg-popover z-[9999]"
+                  align="start"
+                >
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       <div className="flex items-center gap-2">
@@ -543,11 +548,16 @@ export function PlannerSettings() {
 
               {/* Add member dropdown */}
               {availableUsers.length > 0 && (
-                <Select onValueChange={handleAddMember}>
+                <Select onValueChange={handleAddMember} value="">
                   <SelectTrigger className="h-10">
                     <SelectValue placeholder="+ Add member" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background z-50">
+                  <SelectContent 
+                    position="popper" 
+                    sideOffset={4}
+                    className="bg-popover z-[9999]"
+                    align="start"
+                  >
                     {availableUsers.map((user) => (
                       <SelectItem key={user.id} value={user.id}>
                         <div className="flex items-center gap-2">
