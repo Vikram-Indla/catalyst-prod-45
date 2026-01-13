@@ -3,7 +3,7 @@
 // Drag-and-drop Kanban with WIP limits and spring animations
 // ============================================================
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { 
   DndContext, 
   closestCenter, 
@@ -13,6 +13,8 @@ import {
   PointerSensor,
   DragStartEvent,
   DragEndEvent,
+  DragOverEvent,
+  useDroppable,
 } from '@dnd-kit/core';
 import { 
   SortableContext, 
@@ -20,7 +22,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { AlertCircle, Lock, MoreHorizontal } from 'lucide-react';
+import { AlertCircle, Lock, MoreHorizontal, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PlannerTask, TaskStatus, ColumnConfig } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
@@ -48,6 +50,7 @@ function TaskCard({
     setNodeRef,
     transform,
     transition,
+    isDragging: isSortableDragging,
   } = useSortable({ id: task.id });
 
   const style = {
@@ -72,7 +75,7 @@ function TaskCard({
         "bg-white rounded-lg border shadow-sm p-3 cursor-pointer transition-all duration-200",
         "hover:shadow-md hover:-translate-y-0.5",
         task.blocked && "border-l-4 border-l-red-500",
-        isDragging && "opacity-50 shadow-lg"
+        (isDragging || isSortableDragging) && "opacity-50 shadow-lg rotate-2"
       )}
     >
       {/* Header: ID + Priority */}
@@ -137,20 +140,36 @@ function TaskCard({
   );
 }
 
-// Kanban Column
+// Droppable Kanban Column
 function KanbanColumn({
   config,
   tasks,
   onTaskClick,
+  isOver,
 }: {
   config: ColumnConfig;
   tasks: PlannerTask[];
   onTaskClick: (task: PlannerTask) => void;
+  isOver: boolean;
 }) {
+  const { setNodeRef } = useDroppable({
+    id: `column-${config.id}`,
+    data: {
+      type: 'column',
+      status: config.id,
+    },
+  });
+
   const isOverWipLimit = config.wipLimit && tasks.length > config.wipLimit;
 
   return (
-    <div className="flex-1 min-w-[280px] max-w-[320px] flex flex-col bg-surface-1 rounded-xl">
+    <div 
+      ref={setNodeRef}
+      className={cn(
+        "flex-1 min-w-[280px] max-w-[320px] flex flex-col bg-surface-1 rounded-xl transition-all duration-200",
+        isOver && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
+      )}
+    >
       {/* Column Header */}
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
         <div className="flex items-center gap-2">
@@ -199,8 +218,13 @@ function KanbanColumn({
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="h-24 flex items-center justify-center border-2 border-dashed border-border rounded-lg">
-            <span className="text-xs text-text-muted">Drop tasks here</span>
+          <div className={cn(
+            "h-24 flex items-center justify-center border-2 border-dashed rounded-lg transition-all",
+            isOver ? "border-blue-400 bg-blue-50" : "border-border"
+          )}>
+            <span className="text-xs text-text-muted">
+              {isOver ? "Drop here" : "Drop tasks here"}
+            </span>
           </div>
         )}
       </div>
@@ -210,6 +234,7 @@ function KanbanColumn({
 
 export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [overColumnId, setOverColumnId] = useState<string | null>(null);
   
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -238,12 +263,33 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
     return grouped;
   }, [tasks]);
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-  };
+  }, []);
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    const { over } = event;
+    if (!over) {
+      setOverColumnId(null);
+      return;
+    }
+
+    // Check if we're over a column
+    const overId = over.id as string;
+    if (overId.startsWith('column-')) {
+      setOverColumnId(overId.replace('column-', ''));
+    } else {
+      // We're over a task, find which column it's in
+      const overTask = tasks.find(t => t.id === overId);
+      if (overTask) {
+        setOverColumnId(overTask.status);
+      }
+    }
+  }, [tasks]);
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     setActiveId(null);
+    setOverColumnId(null);
     
     const { active, over } = event;
     if (!over) return;
@@ -252,12 +298,25 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
-    // Find which column the task was dropped into
-    const overTask = tasks.find(t => t.id === over.id);
-    if (overTask && overTask.status !== task.status) {
-      onTaskMove(taskId, overTask.status);
+    const overId = over.id as string;
+    let newStatus: TaskStatus | null = null;
+
+    // If dropped on a column
+    if (overId.startsWith('column-')) {
+      newStatus = overId.replace('column-', '') as TaskStatus;
+    } else {
+      // Dropped on a task - use that task's column
+      const overTask = tasks.find(t => t.id === overId);
+      if (overTask) {
+        newStatus = overTask.status;
+      }
     }
-  };
+
+    // Only update if status actually changed
+    if (newStatus && newStatus !== task.status) {
+      onTaskMove(taskId, newStatus);
+    }
+  }, [tasks, onTaskMove]);
 
   const activeTask = activeId ? tasks.find(t => t.id === activeId) : null;
 
@@ -266,6 +325,7 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="flex gap-4 p-4 overflow-x-auto h-full">
@@ -275,13 +335,16 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
             config={config}
             tasks={tasksByStatus[config.id]}
             onTaskClick={onTaskClick}
+            isOver={overColumnId === config.id}
           />
         ))}
       </div>
 
       <DragOverlay>
         {activeTask && (
-          <TaskCard task={activeTask} onClick={() => {}} isDragging />
+          <div className="rotate-3 shadow-2xl">
+            <TaskCard task={activeTask} onClick={() => {}} isDragging />
+          </div>
         )}
       </DragOverlay>
     </DndContext>
