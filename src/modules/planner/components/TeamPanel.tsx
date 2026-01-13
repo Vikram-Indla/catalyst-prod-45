@@ -81,13 +81,14 @@ function useTeamDetails(teamId: string | null) {
         `)
         .eq('team_id', teamId);
 
-      // Fetch tasks for this team
-      const { data: tasks } = await supabase
-        .from('tasks')
-        .select('id, title, status, due_date, updated_at, priority, assignee_id')
+      // Fetch stories for this team (use stories table, not tasks)
+      const { data: stories } = await supabase
+        .from('stories')
+        .select('id, title, status, start_date, updated_at, priority, assignee_id, story_key')
         .eq('team_id', teamId)
+        .is('deleted_at', null)
         .not('status', 'eq', 'done')
-        .order('due_date', { ascending: true, nullsFirst: false })
+        .order('start_date', { ascending: true, nullsFirst: false })
         .limit(20);
 
       const now = new Date();
@@ -97,11 +98,12 @@ function useTeamDetails(teamId: string | null) {
       const membersWithStats: TeamMemberWithStats[] = (members || [])
         .filter(m => m.user)
         .map((m, i) => {
-          const memberTasks = (tasks || []).filter(t => t.assignee_id === m.user_id);
-          const overdue = memberTasks.filter(t => t.due_date && isBefore(new Date(t.due_date), now));
+          const memberTasks = (stories || []).filter(t => t.assignee_id === m.user_id);
+          // Use start_date as "due date" for urgency calculations
+          const overdue = memberTasks.filter(t => t.start_date && isBefore(new Date(t.start_date), now));
           const dueSoon = memberTasks.filter(t => {
-            if (!t.due_date) return false;
-            const due = new Date(t.due_date);
+            if (!t.start_date) return false;
+            const due = new Date(t.start_date);
             return isAfter(due, now) && isBefore(due, weekFromNow);
           });
 
@@ -121,21 +123,21 @@ function useTeamDetails(teamId: string | null) {
           };
         });
 
-      // Map tasks to PlannerTask format
-      const mappedTasks: PlannerTask[] = (tasks || []).map(t => ({
+      // Map stories to PlannerTask format
+      const mappedTasks: PlannerTask[] = (stories || []).map(t => ({
         id: t.id,
-        key: `TASK-${t.id.slice(0, 4).toUpperCase()}`,
+        key: t.story_key || `TASK-${t.id.slice(0, 4).toUpperCase()}`,
         title: t.title,
         status: mapStatus(t.status),
         type: 'task' as const,
-        priority: t.priority || 'medium',
+        priority: (t.priority as 'low' | 'medium' | 'high' | 'critical') || 'medium',
         assigneeId: t.assignee_id,
-        dueDate: t.due_date,
+        dueDate: t.start_date,
         blocked: false,
         progress: 0,
         comments: 0,
-        createdAt: t.updated_at,
-        updatedAt: t.updated_at,
+        createdAt: t.updated_at || '',
+        updatedAt: t.updated_at || '',
       }));
 
       // Calculate stats
@@ -178,7 +180,7 @@ function useTeamDetails(teamId: string | null) {
   });
 }
 
-function mapStatus(status: string): TaskStatus {
+function mapStatus(status: string | null): TaskStatus {
   const statusMap: Record<string, TaskStatus> = {
     'backlog': 'backlog',
     'planned': 'planned',
@@ -187,7 +189,7 @@ function mapStatus(status: string): TaskStatus {
     'review': 'review',
     'done': 'done',
   };
-  return statusMap[status] || 'backlog';
+  return statusMap[status || ''] || 'backlog';
 }
 
 export function TeamPanel({ 
