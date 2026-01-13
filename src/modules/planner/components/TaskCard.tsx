@@ -167,37 +167,21 @@ export function TaskCard({ task, onClick, isDragging = false, className }: TaskC
         {/* Divider */}
         <div className="border-t border-border pt-3 mb-3" />
 
-        {/* Assignee & Reporter Row */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          {/* Assignee */}
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-xs font-bold shadow-sm">
-                {task.assigneeInitials || getInitials(task.assigneeName)}
-              </div>
-              {task.assigneeOnline && (
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-card rounded-full" />
-              )}
+        {/* Assignee */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="relative">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-xs font-bold shadow-sm">
+              {task.assigneeInitials || getInitials(task.assigneeName)}
             </div>
-            <div className="min-w-0">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Assignee</p>
-              <p className="text-xs font-semibold text-foreground truncate">
-                {task.assigneeName?.split(' ')[0] || 'Unassigned'}
-              </p>
-            </div>
+            {task.assigneeOnline && (
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-card rounded-full" />
+            )}
           </div>
-
-          {/* Reporter */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-              {task.reporterInitials || getInitials(task.reporterName)}
-            </div>
-            <div className="min-w-0">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Reporter</p>
-              <p className="text-xs font-semibold text-foreground truncate">
-                {task.reporterName?.split(' ')[0] || 'Unknown'}
-              </p>
-            </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Assignee</p>
+            <p className="text-xs font-semibold text-foreground truncate">
+              {task.assigneeName?.split(' ')[0] || 'Unassigned'}
+            </p>
           </div>
         </div>
 
