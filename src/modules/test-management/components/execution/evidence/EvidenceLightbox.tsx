@@ -2,6 +2,7 @@
  * Evidence Lightbox Component
  * Full-screen image viewer with navigation, zoom, and actions
  * Implements TC-152, TC-176 to TC-185, TC-186 to TC-260 (Annotations)
+ * TC-261 to TC-330: AI Analysis integration
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -34,10 +35,14 @@ import {
   Upload,
   MousePointer,
   Pencil,
+  Sparkles,
+  PanelRightOpen,
+  PanelRightClose,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Evidence, CaptureMethod } from './types';
 import { AnnotationEditor } from './annotations';
+import { AIAnalysisPanel } from './ai';
 import type { Annotation } from './annotations/types';
 
 interface EvidenceLightboxProps {
@@ -78,6 +83,7 @@ export function EvidenceLightbox({
   const [showInfo, setShowInfo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showAnnotationEditor, setShowAnnotationEditor] = useState(false);
+  const [showAIPanel, setShowAIPanel] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -312,6 +318,23 @@ export function EvidenceLightbox({
                 </TooltipTrigger>
                 <TooltipContent>Annotate (E)</TooltipContent>
               </Tooltip>
+              {/* AI Analysis button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={showAIPanel ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className={cn(
+                      'h-8 w-8 p-0',
+                      !showAIPanel && 'text-white hover:bg-white/10'
+                    )}
+                    onClick={() => setShowAIPanel(prev => !prev)}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>AI Analysis</TooltipContent>
+              </Tooltip>
             </>
           )}
 
@@ -406,7 +429,12 @@ export function EvidenceLightbox({
       </div>
 
       {/* Main content area */}
-      <div className="flex-1 flex items-center justify-center relative overflow-hidden p-4">
+      <div className="flex-1 flex overflow-hidden">
+        {/* Image viewer area */}
+        <div className={cn(
+          'flex-1 flex items-center justify-center relative overflow-hidden p-4',
+          showAIPanel && 'pr-0'
+        )}>
         {/* Navigation buttons */}
         {evidence.length > 1 && (
           <>
@@ -493,6 +521,17 @@ export function EvidenceLightbox({
                 <span>{format(currentItem.createdAt, 'MMM d, yyyy h:mm a')}</span>
               </div>
             </div>
+          </div>
+        )}
+        </div>
+
+        {/* AI Analysis Panel */}
+        {showAIPanel && isImage && currentItem?.url && (
+          <div className="w-80 shrink-0 bg-background border-l overflow-y-auto">
+            <AIAnalysisPanel
+              imageUrl={currentItem.url}
+              evidenceId={currentItem.id}
+            />
           </div>
         )}
       </div>

@@ -35,6 +35,7 @@ import { toast } from 'sonner';
 
 interface AIAnalysisPanelProps {
   imageUrl: string;
+  evidenceId?: string;  // For persisting results
   onCreateDefect?: (defect: DetectedDefect) => void;
   onApplyTestStep?: (step: { action: string; expectedResult: string }) => void;
 }
@@ -62,6 +63,7 @@ const qualityColors: Record<DefectAnalysisResult['overallQuality'], string> = {
 
 export function AIAnalysisPanel({ 
   imageUrl, 
+  evidenceId,
   onCreateDefect,
   onApplyTestStep 
 }: AIAnalysisPanelProps) {
@@ -75,7 +77,7 @@ export function AIAnalysisPanel({
   const [context, setContext] = useState('');
 
   const handleExtractText = async () => {
-    const result = await extractText(imageUrl);
+    const result = await extractText(imageUrl, undefined, evidenceId);
     if (result) {
       setOcrResult(result);
       setActiveTab('ocr');
@@ -83,7 +85,7 @@ export function AIAnalysisPanel({
   };
 
   const handleDetectDefects = async () => {
-    const result = await detectDefects(imageUrl, undefined, context || undefined);
+    const result = await detectDefects(imageUrl, undefined, context || undefined, evidenceId);
     if (result) {
       setDefectResult(result);
       setActiveTab('defects');
@@ -91,7 +93,7 @@ export function AIAnalysisPanel({
   };
 
   const handleSuggestSteps = async () => {
-    const result = await suggestTestSteps(imageUrl, undefined, context || undefined);
+    const result = await suggestTestSteps(imageUrl, undefined, context || undefined, evidenceId);
     if (result) {
       setStepResult(result);
       setActiveTab('steps');

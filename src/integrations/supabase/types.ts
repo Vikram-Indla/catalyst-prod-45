@@ -21649,6 +21649,11 @@ export type Database = {
       }
       test_evidence: {
         Row: {
+          ai_analysis: Json | null
+          ai_analyzed_at: string | null
+          annotated_file_path: string | null
+          annotations: Json | null
+          annotations_updated_at: string | null
           capture_method: string | null
           created_at: string | null
           deleted_at: string | null
@@ -21662,12 +21667,20 @@ export type Database = {
           id: string
           is_deleted: boolean | null
           mime_type: string
+          ocr_confidence: number | null
+          ocr_processed_at: string | null
+          ocr_text: string | null
           original_file_name: string | null
           storage_path: string | null
           uploaded_by: string
           width: number | null
         }
         Insert: {
+          ai_analysis?: Json | null
+          ai_analyzed_at?: string | null
+          annotated_file_path?: string | null
+          annotations?: Json | null
+          annotations_updated_at?: string | null
           capture_method?: string | null
           created_at?: string | null
           deleted_at?: string | null
@@ -21681,12 +21694,20 @@ export type Database = {
           id?: string
           is_deleted?: boolean | null
           mime_type: string
+          ocr_confidence?: number | null
+          ocr_processed_at?: string | null
+          ocr_text?: string | null
           original_file_name?: string | null
           storage_path?: string | null
           uploaded_by: string
           width?: number | null
         }
         Update: {
+          ai_analysis?: Json | null
+          ai_analyzed_at?: string | null
+          annotated_file_path?: string | null
+          annotations?: Json | null
+          annotations_updated_at?: string | null
           capture_method?: string | null
           created_at?: string | null
           deleted_at?: string | null
@@ -21700,6 +21721,9 @@ export type Database = {
           id?: string
           is_deleted?: boolean | null
           mime_type?: string
+          ocr_confidence?: number | null
+          ocr_processed_at?: string | null
+          ocr_text?: string | null
           original_file_name?: string | null
           storage_path?: string | null
           uploaded_by?: string
@@ -27883,6 +27907,42 @@ export type Database = {
       reorder_test_steps: {
         Args: { p_step_ids: string[]; p_test_case_id: string }
         Returns: undefined
+      }
+      search_evidence_by_ocr: {
+        Args: { execution_step_id?: string; search_query: string }
+        Returns: {
+          ai_analysis: Json | null
+          ai_analyzed_at: string | null
+          annotated_file_path: string | null
+          annotations: Json | null
+          annotations_updated_at: string | null
+          capture_method: string | null
+          created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          execution_step_id: string
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          height: number | null
+          id: string
+          is_deleted: boolean | null
+          mime_type: string
+          ocr_confidence: number | null
+          ocr_processed_at: string | null
+          ocr_text: string | null
+          original_file_name: string | null
+          storage_path: string | null
+          uploaded_by: string
+          width: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "test_evidence"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       shift_steps_down: {
         Args: { p_after_order: number; p_test_case_id: string }
