@@ -1,7 +1,7 @@
 /**
  * Evidence Lightbox Component
  * Full-screen image viewer with navigation, zoom, and actions
- * Implements TC-152, TC-176 to TC-185
+ * Implements TC-152, TC-176 to TC-185, TC-186 to TC-260 (Annotations)
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -33,9 +33,12 @@ import {
   Clipboard,
   Upload,
   MousePointer,
+  Pencil,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Evidence, CaptureMethod } from './types';
+import { AnnotationEditor } from './annotations';
+import type { Annotation } from './annotations/types';
 
 interface EvidenceLightboxProps {
   evidence: Evidence[];
@@ -44,6 +47,7 @@ interface EvidenceLightboxProps {
   onClose: () => void;
   onDelete?: (evidence: Evidence) => void;
   onDownload?: (evidence: Evidence) => void;
+  onSaveAnnotated?: (evidence: Evidence, blob: Blob, annotations: Annotation[]) => void;
 }
 
 const captureMethodLabels: Record<CaptureMethod, { icon: typeof Camera; label: string }> = {
@@ -66,12 +70,14 @@ export function EvidenceLightbox({
   onClose,
   onDelete,
   onDownload,
+  onSaveAnnotated,
 }: EvidenceLightboxProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showAnnotationEditor, setShowAnnotationEditor] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -204,6 +210,14 @@ export function EvidenceLightbox({
     }
   }, [currentItem, onDelete, currentIndex, evidence.length, onClose]);
 
+  // Handle save annotated image
+  const handleSaveAnnotated = useCallback((blob: Blob, annotations: Annotation[]) => {
+    if (onSaveAnnotated && currentItem) {
+      onSaveAnnotated(currentItem, blob, annotations);
+    }
+    setShowAnnotationEditor(false);
+  }, [currentItem, onSaveAnnotated]);
+
   // Handle wheel zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
@@ -283,6 +297,20 @@ export function EvidenceLightbox({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Rotate (R)</TooltipContent>
+              </Tooltip>
+              {/* Annotate button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-white hover:bg-white/10"
+                    onClick={() => setShowAnnotationEditor(true)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Annotate (E)</TooltipContent>
               </Tooltip>
             </>
           )}
@@ -509,5 +537,20 @@ export function EvidenceLightbox({
     </div>
   );
 
-  return createPortal(content, document.body);
+  return (
+    <>
+      {createPortal(content, document.body)}
+      
+      {/* Annotation Editor */}
+      {isImage && currentItem?.url && (
+        <AnnotationEditor
+          open={showAnnotationEditor}
+          onClose={() => setShowAnnotationEditor(false)}
+          imageUrl={currentItem.url}
+          imageName={currentItem.fileName}
+          onSave={handleSaveAnnotated}
+        />
+      )}
+    </>
+  );
 }
