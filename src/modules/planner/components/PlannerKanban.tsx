@@ -128,6 +128,7 @@ function SortableKanbanColumn({
     attributes,
     listeners,
     setNodeRef,
+    setActivatorNodeRef,
     transform,
     transition,
     isDragging,
@@ -160,6 +161,7 @@ function SortableKanbanColumn({
     <div 
       ref={setNodeRef}
       style={style}
+      {...attributes}
       className={cn(
         "flex-shrink-0 w-[300px] flex flex-col bg-muted/50 rounded-xl transition-all duration-200",
         isOver && "ring-2 ring-primary ring-offset-2 bg-primary/5",
@@ -168,8 +170,8 @@ function SortableKanbanColumn({
     >
       {/* Column Header - drag handle */}
       <div 
+        ref={setActivatorNodeRef}
         className="flex items-center justify-between px-3 py-2.5 border-b border-border cursor-grab active:cursor-grabbing"
-        {...attributes}
         {...listeners}
       >
         <div className="flex items-center gap-2">
@@ -399,7 +401,6 @@ function SwimLaneCell({
 
 export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: PlannerKanbanProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeDragType, setActiveDragType] = useState<'task' | 'column' | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
   const [collapsedLanes, setCollapsedLanes] = useState<Set<string>>(new Set());
@@ -606,15 +607,7 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
   const columnIds = useMemo(() => columns.map(c => `col-${c.id}`), [columns]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    const activeIdStr = event.active.id as string;
-    setActiveId(activeIdStr);
-    
-    // Determine if we're dragging a column or a task
-    if (activeIdStr.startsWith('col-')) {
-      setActiveDragType('column');
-    } else {
-      setActiveDragType('task');
-    }
+    setActiveId(event.active.id as string);
   }, []);
 
   const handleDragOver = useCallback((event: DragOverEvent) => {
@@ -644,9 +637,7 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
   }, [tasks, groupBy]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const dragType = activeDragType;
     setActiveId(null);
-    setActiveDragType(null);
     setOverColumnId(null);
     
     const { active, over } = event;
@@ -656,31 +647,42 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
     const overIdStr = over.id as string;
 
     // Handle column reordering
-    if (dragType === 'column' && activeIdStr.startsWith('col-') && overIdStr.startsWith('col-')) {
+    if (activeIdStr.startsWith('col-')) {
       const activeColId = activeIdStr.replace('col-', '');
-      const overColId = overIdStr.replace('col-', '');
-      
-      if (activeColId !== overColId) {
-        const currentOrder = localColumnOrder.length > 0 ? localColumnOrder : columns.map(c => c.id);
-        const oldIndex = currentOrder.indexOf(activeColId);
-        const newIndex = currentOrder.indexOf(overColId);
-        
-        if (oldIndex !== -1 && newIndex !== -1) {
-          const newOrder = arrayMove(currentOrder, oldIndex, newIndex);
-          setLocalColumnOrder(newOrder);
-          
-          // Persist to backend (only custom columns)
-          const customColsWithOrder = newOrder
-            .map((id, idx) => ({ column_id: id, sort_order: idx }))
-            .filter(item => customColumns.some(c => c.id === item.column_id));
-          
-          if (customColsWithOrder.length > 0) {
-            updateColumnOrder.mutate(customColsWithOrder);
-          }
-          
-          catalystToast.success('Column Reordered', 'Column order has been updated.');
-        }
+
+      let overColId: string | null = null;
+      if (overIdStr.startsWith('col-')) {
+        overColId = overIdStr.replace('col-', '');
+      } else if (overIdStr.startsWith('column-')) {
+        // When hovering over the task drop zone inside a column
+        overColId = overIdStr.replace('column-', '');
+      } else if (!overIdStr.startsWith('cell-')) {
+        // When hovering over a task card inside a column
+        const overTask = tasks.find(t => t.id === overIdStr);
+        if (overTask) overColId = overTask.status;
       }
+
+      if (!overColId || activeColId === overColId) return;
+
+      const currentOrder = localColumnOrder.length > 0 ? localColumnOrder : columns.map(c => c.id);
+      const oldIndex = currentOrder.indexOf(activeColId);
+      const newIndex = currentOrder.indexOf(overColId);
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const newOrder = arrayMove(currentOrder, oldIndex, newIndex);
+      setLocalColumnOrder(newOrder);
+
+      // Persist to backend (only custom columns)
+      const customColsWithOrder = newOrder
+        .map((id, idx) => ({ column_id: id, sort_order: idx }))
+        .filter(item => customColumns.some(c => c.id === item.column_id));
+
+      if (customColsWithOrder.length > 0) {
+        updateColumnOrder.mutate(customColsWithOrder);
+      }
+
+      catalystToast.success('Column Reordered', 'Column order has been updated.');
       return;
     }
 
@@ -707,7 +709,7 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
     if (targetStatus && targetStatus !== task.status) {
       onTaskMove(taskId, targetStatus as TaskStatus);
     }
-  }, [tasks, onTaskMove, activeDragType, localColumnOrder, columns, customColumns, updateColumnOrder]);
+  }, [tasks, onTaskMove, localColumnOrder, columns, customColumns, updateColumnOrder]);
 
   const toggleLaneCollapse = useCallback((laneId: string) => {
     setCollapsedLanes(prev => {
@@ -721,9 +723,9 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
     });
   }, []);
 
-  const activeTask = activeId && activeDragType === 'task' ? tasks.find(t => t.id === activeId) : null;
-  const activeColumn = activeId && activeDragType === 'column' 
-    ? columns.find(c => `col-${c.id}` === activeId) 
+  const activeTask = activeId && !activeId.startsWith('col-') ? tasks.find(t => t.id === activeId) : null;
+  const activeColumn = activeId && activeId.startsWith('col-')
+    ? columns.find(c => `col-${c.id}` === activeId)
     : null;
 
   // Use swim lane layout when groupBy is set (except for status)
