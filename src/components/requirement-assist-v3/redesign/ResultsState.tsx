@@ -280,7 +280,8 @@ export function ResultsState({ generation, onRegenerate, onNew, onBack, onNewSes
     selectItem,
     selectedItemId,
     expandedIds,
-    toggleExpanded
+    toggleExpanded,
+    toggleItemSelection
   } = useStore();
   
   const counts = useStore(useShallow(selectItemCounts));
@@ -482,22 +483,22 @@ export function ResultsState({ generation, onRegenerate, onNew, onBack, onNewSes
               </div>
             </div>
 
-            {/* Generated Counts */}
+            {/* Generated Counts - Using counts from workItems for sync */}
             <div>
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
                 Generated
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <div className="p-3 bg-violet-50 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-violet-600">{generation.epicCount}</p>
+                  <p className="text-2xl font-bold text-violet-600">{counts.epics}</p>
                   <p className="text-xs text-violet-500">Epics</p>
                 </div>
                 <div className="p-3 bg-teal-50 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-teal-600">{generation.featureCount}</p>
+                  <p className="text-2xl font-bold text-teal-600">{counts.features}</p>
                   <p className="text-xs text-teal-500">Features</p>
                 </div>
                 <div className="p-3 bg-emerald-50 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-emerald-600">{generation.storyCount}</p>
+                  <p className="text-2xl font-bold text-emerald-600">{counts.stories}</p>
                   <p className="text-xs text-emerald-500">Stories</p>
                 </div>
               </div>
@@ -549,21 +550,84 @@ export function ResultsState({ generation, onRegenerate, onNew, onBack, onNewSes
             </div>
           </div>
 
-          {/* Tree */}
+          {/* Tree - Render based on filter type */}
           <div className="flex-1 overflow-y-auto p-5 bg-slate-50">
             <div className="space-y-3">
-              {filteredTree.map((epic, i) => (
-                <ResultsTreeItem
-                  key={epic.id}
-                  item={epic}
-                  allItems={workItems}
-                  programCode={programCode}
-                  projectCode={projectCode}
-                  level={0}
-                  onItemClick={(item) => selectItem(item.id)}
-                  style={{ animationDelay: `${i * 0.1}s` }}
-                />
-              ))}
+              {filterType === 'all' ? (
+                // Hierarchical view for "All"
+                filteredTree.map((epic, i) => (
+                  <ResultsTreeItem
+                    key={epic.id}
+                    item={epic}
+                    allItems={workItems}
+                    programCode={programCode}
+                    projectCode={projectCode}
+                    level={0}
+                    onItemClick={(item) => selectItem(item.id)}
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  />
+                ))
+              ) : (
+                // Flat list for filtered views
+                (() => {
+                  const filteredItems = workItems.filter(item => item.itemType === filterType);
+                  if (filteredItems.length === 0) {
+                    return (
+                      <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+                        <Layers className="w-12 h-12 mb-3 opacity-50" />
+                        <p className="text-sm font-medium">No {filterType}s found</p>
+                      </div>
+                    );
+                  }
+                  return filteredItems.map((item, i) => (
+                    <div
+                      key={item.id}
+                      onClick={() => selectItem(item.id)}
+                      className={cn(
+                        "p-4 bg-white rounded-xl border border-slate-200 cursor-pointer transition-all hover:shadow-md hover:border-slate-300",
+                        selectedItemId === item.id && "ring-2 ring-blue-500 border-blue-500"
+                      )}
+                      style={{ animationDelay: `${i * 0.05}s` }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={item.isSelected}
+                          onCheckedChange={() => toggleItemSelection(item.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex-shrink-0"
+                        />
+                        <span className={cn(
+                          "px-2.5 py-1 text-xs font-bold rounded-lg font-mono",
+                          filterType === 'epic' ? 'bg-violet-100 text-violet-700' :
+                          filterType === 'feature' ? 'bg-teal-100 text-teal-700' :
+                          'bg-emerald-100 text-emerald-700'
+                        )}>
+                          {item.displayId}
+                        </span>
+                        <span className="text-sm font-medium text-slate-900 flex-1 truncate">
+                          {item.title}
+                        </span>
+                        {/* Parent breadcrumb for features/stories */}
+                        {filterType === 'feature' && item.parentId && (
+                          <span className="text-xs text-slate-400 truncate max-w-[200px]">
+                            ← {workItems.find(w => w.id === item.parentId)?.title || 'Epic'}
+                          </span>
+                        )}
+                        {filterType === 'story' && item.parentId && (
+                          <span className="text-xs text-slate-400 truncate max-w-[200px]">
+                            ← {workItems.find(w => w.id === item.parentId)?.title || 'Feature'}
+                          </span>
+                        )}
+                      </div>
+                      {item.description && (
+                        <p className="mt-2 text-xs text-slate-500 line-clamp-2 ml-9">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                  ));
+                })()
+              )}
             </div>
           </div>
 

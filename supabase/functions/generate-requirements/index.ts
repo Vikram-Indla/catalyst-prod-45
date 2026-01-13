@@ -80,22 +80,32 @@ Your task is to analyze business requirement documents and generate structured o
 - NCA (National Cybersecurity Authority) ECC-2:2018 controls
 - BABOK (Business Analysis Body of Knowledge) v3 guidelines
 
-CRITICAL RULES:
-1. Every title MUST be unique and derived from the actual requirements text
-2. NEVER use generic text like "System capability" or "Supporting capability"
-3. Extract actual business concepts, user roles, and processes from the input
-4. Generate 3-5 Epics maximum
-5. Each Epic should have 2-4 Features
-6. Each Feature should have 2-5 User Stories
-7. Stories MUST follow the format: "As a [specific role], I want [specific goal], so that [specific benefit]"
-8. Acceptance criteria MUST use Given/When/Then format
-9. Confidence scores: 95-100 for clear requirements, 80-94 for inferred, 60-79 for assumed
+CRITICAL RULES - GENERATION LIMITS:
+1. LESS IS MORE - Only create items that are DIRECTLY stated in requirements
+2. DO NOT infer or expand beyond what's written - be MINIMAL
+3. One concept = One Epic (not multiple)
+4. Avoid generic features - be specific to the domain
+
+STRICT LIMITS based on input size:
+- Small input (<100 words): Maximum 1-2 Epics, 2-4 Features, 4-8 Stories
+- Medium input (100-300 words): Maximum 2-3 Epics, 4-8 Features, 8-15 Stories  
+- Large input (300+ words): Maximum 3-5 Epics, 8-12 Features, 15-25 Stories
+
+5. Every title MUST be unique and derived from the actual requirements text
+6. NEVER use generic text like "System capability" or "Supporting capability"
+7. Extract actual business concepts, user roles, and processes from the input
+8. Stories MUST follow the format: "As a [specific role], I want [specific goal], so that [specific benefit]"
+9. Acceptance criteria MUST use Given/When/Then format
+10. Confidence scores: 95-100 for clear requirements, 80-94 for inferred, 60-79 for assumed
 
 For each generated item, provide a confidence score (0-100) based on:
 - Clarity: How clear and unambiguous is the requirement
 - Completeness: Does it have all necessary details
 - Testability: Can it be verified through testing
 - Feasibility: Is it technically achievable
+
+If requirements are vague, generate FEWER items, not more.
+When in doubt, consolidate into fewer, broader items.
 
 Always maintain professional language appropriate for government documentation.
 Use domain-specific terminology from the input requirements.
@@ -198,13 +208,14 @@ IMPORTANT: All string values must be valid JSON strings (escape newlines as \\n)
   }
 }
 
-QUALITY CONSTRAINTS:
-- Generate 3-5 Epics based on major themes in the requirements
-- Generate 2-4 Features per Epic
-- Generate 2-5 Stories per Feature
+QUALITY CONSTRAINTS - STRICT LIMITS:
+- For small inputs (<100 words): Generate ONLY 1-2 Epics, 2-4 Features total, 4-8 Stories total
+- For medium inputs (100-300 words): Generate ONLY 2-3 Epics, 4-8 Features total, 8-15 Stories total
+- For large inputs (300+ words): Generate maximum 3-5 Epics, 8-12 Features total, 15-25 Stories total
 - All titles must be UNIQUE and derived from actual input text
 - Use actual role names mentioned in requirements (e.g., "Applicant", "BO Officer", "License Holder", "Admin")
 - Be specific: "Gold License Application" not "License Application"
+- DO NOT over-generate - when in doubt, create FEWER items
 
 Generate realistic, high-quality requirements appropriate for a government ministry.`;
 
