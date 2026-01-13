@@ -194,7 +194,7 @@ export function PlannerAIInsights({ tasks, onTaskClick }: PlannerAIInsightsProps
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white"
+          className="bg-primary rounded-xl p-6 text-primary-foreground"
         >
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-5 h-5" />
