@@ -7,7 +7,7 @@ import React, { useState, useMemo } from 'react';
 import { 
   Check, RefreshCw, Plus, Download, Upload, ChevronRight, ChevronDown,
   X, Search, Maximize2, FileSpreadsheet, FileText, FileJson, Loader2,
-  AlertTriangle, Layers
+  AlertTriangle, Layers, ArrowLeft, RotateCcw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useStore, type Generation, selectItemCounts } from '@/stores/requirementAssistStore';
@@ -34,6 +34,8 @@ interface ResultsStateProps {
   generation: Generation;
   onRegenerate: () => void;
   onNew: () => void;
+  onBack: () => void;
+  onNewSession: () => void;
 }
 
 interface PublishedItem {
@@ -260,7 +262,7 @@ function PublishModal({
 // ============================================================
 // MAIN RESULTS STATE COMPONENT
 // ============================================================
-export function ResultsState({ generation, onRegenerate, onNew }: ResultsStateProps) {
+export function ResultsState({ generation, onRegenerate, onNew, onBack, onNewSession }: ResultsStateProps) {
   const { 
     workItems, 
     workItemsTree, 
@@ -396,7 +398,18 @@ export function ResultsState({ generation, onRegenerate, onNew }: ResultsStatePr
     <div className="h-full flex flex-col bg-slate-50">
       {/* Header */}
       <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0">
+        {/* Left: Back Button + Status */}
         <div className="flex items-center gap-4">
+          {/* BACK BUTTON */}
+          <button 
+            onClick={onBack}
+            className="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors"
+            title="Back to editor"
+          >
+            <ArrowLeft className="w-4 h-4 text-slate-600" />
+          </button>
+          
+          {/* Status */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
               <Check className="w-5 h-5 text-white" />
@@ -413,11 +426,25 @@ export function ResultsState({ generation, onRegenerate, onNew }: ResultsStatePr
           </div>
         </div>
 
+        {/* Right: Action Buttons */}
         <div className="flex items-center gap-2">
+          {/* NEW SESSION - Clear all and start fresh */}
+          <Button 
+            variant="ghost" 
+            onClick={onNewSession} 
+            className="h-9 text-slate-600 hover:text-red-600 hover:bg-red-50"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            New Session
+          </Button>
+          
+          {/* REGENERATE - Keep input, regenerate output */}
           <Button variant="ghost" onClick={onRegenerate} className="h-9">
             <RefreshCw className="w-4 h-4 mr-2" />
             Regenerate
           </Button>
+          
+          {/* NEW GENERATION - Go to input */}
           <Button onClick={onNew} className="h-9 bg-gradient-to-r from-blue-600 to-indigo-600">
             <Plus className="w-4 h-4 mr-2" />
             New Generation

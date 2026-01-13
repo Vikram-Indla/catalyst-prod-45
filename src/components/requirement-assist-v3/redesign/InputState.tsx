@@ -6,7 +6,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Sparkles, Clock, ChevronRight, Check, AlertTriangle, 
-  Lightbulb, Search, Layers
+  Lightbulb, Search, Layers, X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useStore } from '@/stores/requirementAssistStore';
@@ -374,7 +374,7 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
           <span className="text-base font-semibold text-slate-800">Requirement Assist</span>
         </div>
         
-        {/* Program/Project Selectors + ID Badges */}
+        {/* Program/Project Selectors + ID Badges + Clear Button */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-xs">
             <span className="text-slate-500">Program:</span>
@@ -408,6 +408,17 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Clear Button - Only show if there's content */}
+          {inputText.length > 0 && (
+            <button 
+              onClick={() => setInputText('')}
+              className="h-8 px-3 text-xs font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1.5"
+            >
+              <X className="w-3.5 h-3.5" />
+              Clear
+            </button>
+          )}
 
           {/* ID Preview Badges */}
           <div className="flex items-center gap-2">

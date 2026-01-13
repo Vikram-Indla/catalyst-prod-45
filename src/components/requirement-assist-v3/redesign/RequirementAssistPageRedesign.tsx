@@ -77,6 +77,32 @@ export function RequirementAssistPageRedesign() {
     }
   }, [isGenerating, generation?.errorMessage, state, toast]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Escape to go back to input
+      if (e.key === 'Escape' && state === 'results') {
+        setState('input');
+      }
+      // Cmd+Shift+N for new session
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'n') {
+        e.preventDefault();
+        resetGeneration();
+        setInputText('');
+        setProgramId(null);
+        setProjectId(null);
+        setState('input');
+        toast({
+          title: "Session Cleared",
+          description: "Ready for new requirements.",
+        });
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [state, resetGeneration, setInputText, setProgramId, setProjectId, toast]);
+
   const startGeneration = useCallback(async (requirements: string, progId: string, projId: string) => {
     // Update store with input values
     setInputText(requirements);
@@ -107,9 +133,27 @@ export function RequirementAssistPageRedesign() {
   }, [inputText, programId, projectId, startGeneration]);
 
   const handleNew = useCallback(() => {
-    resetGeneration();
+    // Go back to input but keep the text
     setState('input');
-  }, [resetGeneration]);
+  }, []);
+
+  const handleBack = useCallback(() => {
+    // Go back to input, keep the text
+    setState('input');
+  }, []);
+
+  const handleNewSession = useCallback(() => {
+    // Clear everything and start fresh
+    resetGeneration();
+    setInputText('');
+    setProgramId(null);
+    setProjectId(null);
+    setState('input');
+    toast({
+      title: "Session Cleared",
+      description: "Ready for new requirements.",
+    });
+  }, [resetGeneration, setInputText, setProgramId, setProjectId, toast]);
 
   const loadGeneration = useCallback((gen: Generation) => {
     setGeneration(gen);
@@ -138,6 +182,8 @@ export function RequirementAssistPageRedesign() {
           generation={generation}
           onRegenerate={handleRegenerate}
           onNew={handleNew}
+          onBack={handleBack}
+          onNewSession={handleNewSession}
         />
       )}
 
