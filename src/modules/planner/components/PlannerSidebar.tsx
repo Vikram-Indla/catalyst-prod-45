@@ -1,9 +1,8 @@
 // ============================================================
 // PLANNER SIDEBAR COMPONENT
-// Left navigation with views, insights, presence, and team creation
+// Left navigation with views, insights, and presence
 // ============================================================
 
-import { useState } from 'react';
 import { 
   LayoutGrid, 
   List, 
@@ -14,25 +13,13 @@ import {
   Sparkles,
   Settings,
   ChevronLeft,
-  Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { PlannerView, PlannerTeam } from '../types';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import type { PlannerView } from '../types';
 
 interface PlannerSidebarProps {
   activeView: PlannerView;
   onViewChange: (view: PlannerView) => void;
-  teams: PlannerTeam[];
-  selectedTeamId: string | null;
-  onTeamChange: (teamId: string | null) => void;
-  onCreateTeam?: () => void;
   onlineUsers?: { id: string; initials: string; color: string }[];
   insightsBadge?: number;
   collapsed?: boolean;
@@ -55,10 +42,6 @@ const INSIGHTS_SECTION = [
 export function PlannerSidebar({
   activeView,
   onViewChange,
-  teams,
-  selectedTeamId,
-  onTeamChange,
-  onCreateTeam,
   onlineUsers = [],
   insightsBadge = 0,
   collapsed = false,
@@ -88,48 +71,6 @@ export function PlannerSidebar({
           <ChevronLeft className={cn("w-4 h-4 transition-transform", collapsed && "rotate-180")} />
         </button>
       </div>
-
-      {/* Team Dropdown with Create option */}
-      {!collapsed && (
-        <div className="px-3 py-3 border-b border-border">
-          <Select
-            value={selectedTeamId || 'all'}
-            onValueChange={(v) => {
-              if (v === 'create-new') {
-                onCreateTeam?.();
-              } else {
-                onTeamChange(v === 'all' ? null : v);
-              }
-            }}
-          >
-            <SelectTrigger className="w-full h-9 text-sm bg-surface-1">
-              <SelectValue placeholder="All Teams" />
-            </SelectTrigger>
-            <SelectContent className="bg-surface-0 z-50">
-              <SelectItem value="all">All Teams</SelectItem>
-              {teams.map(team => (
-                <SelectItem key={team.id} value={team.id}>
-                  <span className="flex items-center gap-2">
-                    <span 
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: team.color }}
-                    />
-                    {team.name}
-                  </span>
-                </SelectItem>
-              ))}
-              {onCreateTeam && (
-                <SelectItem value="create-new" className="text-blue-600 font-medium">
-                  <span className="flex items-center gap-2">
-                    <Plus className="w-4 h-4" />
-                    Create Team
-                  </span>
-                </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
 
       {/* Views Section */}
       <div className="flex-1 overflow-y-auto py-2">

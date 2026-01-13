@@ -363,9 +363,6 @@ export function PlannerPage() {
         <PlannerSidebar
           activeView={activeView}
           onViewChange={handleViewChange}
-          teams={teams}
-          selectedTeamId={selectedTeamId}
-          onTeamChange={setSelectedTeamId}
           onlineUsers={onlineUsers}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
