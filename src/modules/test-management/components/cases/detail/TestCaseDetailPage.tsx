@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -29,6 +30,28 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   ArrowLeft,
   Edit2,
   Save,
@@ -41,7 +64,17 @@ import {
   XCircle,
   AlertCircle,
   Loader2,
+  Copy,
+  History,
+  Sparkles,
+  MoreVertical,
+  Keyboard,
+  FileText,
+  ExternalLink,
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { formatDistanceToNow } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { useTestCaseDetail } from '../../../hooks/useTestCaseDetail';
 import { StepEditor } from './StepEditor';
@@ -320,6 +353,15 @@ export function TestCaseDetailPage({ projectId: propProjectId }: TestCaseDetailP
   const [isEditing, setIsEditing] = useState(initialEditMode);
   const [activeTab, setActiveTab] = useState<string>('steps');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  
+  // CTA Dialog States
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [showAIDialog, setShowAIDialog] = useState(false);
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [duplicateTitle, setDuplicateTitle] = useState('');
+  const [isDuplicating, setIsDuplicating] = useState(false);
+  const [isAIGenerating, setIsAIGenerating] = useState(false);
 
   const {
     testCase,
@@ -418,6 +460,114 @@ export function TestCaseDetailPage({ projectId: propProjectId }: TestCaseDetailP
     }
   };
 
+  // Duplicate handler
+  const handleDuplicate = async () => {
+    if (!testCase || !duplicateTitle.trim()) return;
+    
+    setIsDuplicating(true);
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Generate a unique case key (will be overwritten by DB trigger if exists)
+      const tempCaseKey = `TC-${Date.now().toString(36).toUpperCase()}`;
+      
+      // Create duplicate test case
+      const { data: newTestCase, error: tcError } = await supabase
+        .from('tm_test_cases')
+        .insert([{
+          case_key: tempCaseKey,
+          title: duplicateTitle.trim(),
+          description: testCase.description || null,
+          status: 'draft' as const,
+          preconditions: testCase.preconditions || null,
+          estimated_time: testCase.estimatedTime || null,
+          folder_id: testCase.folderId || null,
+          priority_id: testCase.priorityId || null,
+          case_type_id: testCase.typeId || null,
+          assigned_to: testCase.assigneeId || null,
+          project_id: projectId,
+          created_by: user?.id || null,
+        }])
+        .select('id, case_key')
+        .single();
+
+      if (tcError) throw tcError;
+
+      // Copy steps
+      if (testCase.steps?.length > 0) {
+        const newSteps = testCase.steps.map((step, index) => ({
+          test_case_id: newTestCase.id,
+          step_number: index + 1,
+          action: step.action,
+          expected_result: step.expectedResult,
+          test_data: step.testData || null,
+        }));
+
+        const { error: stepsError } = await supabase.from('tm_test_steps').insert(newSteps);
+        if (stepsError) console.error('Failed to copy steps:', stepsError);
+      }
+
+      toast.success(`Created ${newTestCase.case_key}`);
+      setShowDuplicateDialog(false);
+      setDuplicateTitle('');
+      navigate(`/tests/cases/${newTestCase.id}?projectId=${projectId}`);
+    } catch (error) {
+      console.error('Duplicate error:', error);
+      toast.error('Failed to duplicate test case');
+    } finally {
+      setIsDuplicating(false);
+    }
+  };
+
+  // AI Generate Steps handler
+  const handleAIGenerateSteps = async () => {
+    if (!testCase) return;
+    
+    setIsAIGenerating(true);
+    try {
+      // Call edge function for AI generation
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-generate-test-steps`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionData?.session?.access_token}`,
+          },
+          body: JSON.stringify({
+            testCaseId: testCase.id,
+            title: testCase.title,
+            description: testCase.description,
+            preconditions: testCase.preconditions,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('AI generation failed');
+      }
+
+      const result = await response.json();
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      toast.success(`Generated ${result.stepsCreated || 0} steps`);
+      setShowAIDialog(false);
+      // Trigger refetch by navigating to same page
+      window.location.reload();
+    } catch (error) {
+      console.error('AI generation error:', error);
+      toast.error('AI generation is not available. Please add steps manually.');
+    } finally {
+      setIsAIGenerating(false);
+    }
+  };
+
   const handleTitleChange = useCallback(
     (title: string) => {
       updateTestCase({ title });
@@ -498,6 +648,74 @@ export function TestCaseDetailPage({ projectId: propProjectId }: TestCaseDetailP
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Keyboard Shortcuts */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowKeyboardShortcuts(true)}
+            title="Keyboard shortcuts"
+          >
+            <Keyboard className="w-4 h-4" />
+          </Button>
+
+          {/* Version History */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowVersionHistory(true)}
+          >
+            <History className="w-4 h-4 mr-1" />
+            History
+          </Button>
+
+          {/* Duplicate */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setDuplicateTitle(`${testCase.title} (Copy)`);
+              setShowDuplicateDialog(true);
+            }}
+          >
+            <Copy className="w-4 h-4 mr-1" />
+            Duplicate
+          </Button>
+
+          {/* More Actions Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuItem onClick={() => setShowAIDialog(true)}>
+                <Sparkles className="w-4 h-4 mr-2" />
+                AI Generate Steps
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                navigator.clipboard.writeText(testCase.key);
+                toast.success('Copied test case ID');
+              }}>
+                <FileText className="w-4 h-4 mr-2" />
+                Copy ID
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                const url = window.location.href;
+                navigator.clipboard.writeText(url);
+                toast.success('Copied link to clipboard');
+              }}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Copy Link
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setShowVersionHistory(true)}>
+                <History className="w-4 h-4 mr-2" />
+                Version History
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {isEditing ? (
             <Button
               variant="ghost"
@@ -699,6 +917,194 @@ export function TestCaseDetailPage({ projectId: propProjectId }: TestCaseDetailP
           </AlertDialogContent>
         </AlertDialog>
       )}
+
+      {/* Version History Sheet */}
+      <Sheet open={showVersionHistory} onOpenChange={setShowVersionHistory}>
+        <SheetContent className="w-[400px] sm:w-[540px] bg-white">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <History className="w-5 h-5" />
+              Version History
+            </SheetTitle>
+            <SheetDescription>
+              View all changes made to this test case
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-4 max-h-[70vh] overflow-y-auto">
+            {testCase.activities?.length > 0 ? (
+              testCase.activities.map((activity) => (
+                <div key={activity.id} className="flex gap-3 p-3 bg-slate-50 rounded-lg">
+                  <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 shrink-0">
+                    {activity.createdByInitials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-800">{activity.action}</p>
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">
+                      {activity.description}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
+                      {' by '}{activity.createdByName}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 text-slate-500">
+                <History className="w-10 h-10 mx-auto mb-3 text-slate-300" />
+                <p className="text-sm">No version history yet</p>
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Duplicate Dialog */}
+      <Dialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Copy className="w-5 h-5" />
+              Duplicate Test Case
+            </DialogTitle>
+            <DialogDescription>
+              Create a copy of {testCase.key} with all steps.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="duplicateTitle">New Title</Label>
+            <Input
+              id="duplicateTitle"
+              value={duplicateTitle}
+              onChange={(e) => setDuplicateTitle(e.target.value)}
+              className="mt-1"
+              placeholder="Enter title for the duplicate..."
+            />
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDuplicateDialog(false)}
+              disabled={isDuplicating}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleDuplicate}
+              disabled={!duplicateTitle.trim() || isDuplicating}
+            >
+              {isDuplicating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Duplicating...
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 mr-2" />
+                  Duplicate
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Generate Steps Dialog */}
+      <Dialog open={showAIDialog} onOpenChange={setShowAIDialog}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              AI Generate Steps
+            </DialogTitle>
+            <DialogDescription>
+              Generate test steps based on the test case title and description.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            <div className="bg-slate-50 p-3 rounded-lg">
+              <p className="text-xs font-medium text-slate-500 mb-1">Title</p>
+              <p className="text-sm text-slate-800">{testCase.title}</p>
+            </div>
+            {testCase.description && (
+              <div className="bg-slate-50 p-3 rounded-lg">
+                <p className="text-xs font-medium text-slate-500 mb-1">Description</p>
+                <p className="text-sm text-slate-700 whitespace-pre-wrap line-clamp-4">
+                  {testCase.description}
+                </p>
+              </div>
+            )}
+            <p className="text-xs text-slate-500">
+              AI will analyze this information and generate relevant test steps.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAIDialog(false)}
+              disabled={isAIGenerating}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAIGenerateSteps}
+              disabled={isAIGenerating}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {isAIGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Steps
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Keyboard Shortcuts Dialog */}
+      <Dialog open={showKeyboardShortcuts} onOpenChange={setShowKeyboardShortcuts}>
+        <DialogContent className="bg-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Keyboard className="w-5 h-5" />
+              Keyboard Shortcuts
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-2 space-y-2">
+            {[
+              { keys: ['E'], desc: 'Enter edit mode' },
+              { keys: ['Esc'], desc: 'Exit edit mode' },
+              { keys: ['⌘', 'S'], desc: 'Save changes' },
+              { keys: ['⌘', 'Enter'], desc: 'Execute test' },
+            ].map((shortcut, i) => (
+              <div key={i} className="flex items-center justify-between py-2 px-1">
+                <span className="text-sm text-slate-600">{shortcut.desc}</span>
+                <div className="flex items-center gap-1">
+                  {shortcut.keys.map((key, j) => (
+                    <kbd
+                      key={j}
+                      className="px-2 py-1 bg-slate-100 border border-slate-200 rounded text-xs font-mono text-slate-700"
+                    >
+                      {key}
+                    </kbd>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowKeyboardShortcuts(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
