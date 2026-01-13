@@ -172,18 +172,6 @@ export function PlannerPage() {
     );
   }, [updateTask, selectedTask]);
 
-  const handleSubtaskToggle = useCallback((taskId: string, subtaskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (!task) return;
-
-    const updatedSubtasks = task.subtasks.map(s =>
-      s.id === subtaskId ? { ...s, completed: !s.completed } : s
-    );
-    
-    // For now, just update local state since subtasks aren't persisted
-    toast.success('Subtask updated');
-  }, [tasks]);
-
   const handleUnblock = useCallback((taskId: string) => {
     updateTask.mutate(
       { id: taskId, updates: { blocked: false, blockedReason: undefined } },
@@ -383,7 +371,6 @@ export function PlannerPage() {
           setSelectedTask(null);
         }}
         onUpdate={handleTaskUpdate}
-        onSubtaskToggle={handleSubtaskToggle}
         onUnblock={handleUnblock}
         users={users}
       />

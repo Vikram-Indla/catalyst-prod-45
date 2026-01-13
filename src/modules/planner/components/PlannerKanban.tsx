@@ -56,8 +56,6 @@ function TaskCard({
   };
 
   const priorityConfig = PRIORITY_CONFIG[task.priority];
-  const subtasksDone = task.subtasks.filter(s => s.completed).length;
-  const subtasksTotal = task.subtasks.length;
 
   return (
     <motion.div
@@ -99,16 +97,16 @@ function TaskCard({
         {task.title}
       </h4>
 
-      {/* Subtasks Progress */}
-      {subtasksTotal > 0 && (
+      {/* Progress Bar - shows percentage only */}
+      {task.progress > 0 && (
         <div className="mb-2">
           <div className="flex items-center justify-between text-[10px] text-text-muted mb-1">
-            <span>{subtasksDone} of {subtasksTotal}</span>
+            <span>{task.progress}%</span>
           </div>
           <div className="h-1 bg-surface-2 rounded-full overflow-hidden">
             <div 
               className="h-full bg-blue-500 rounded-full transition-all"
-              style={{ width: `${(subtasksDone / subtasksTotal) * 100}%` }}
+              style={{ width: `${task.progress}%` }}
             />
           </div>
         </div>

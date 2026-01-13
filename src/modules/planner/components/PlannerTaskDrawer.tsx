@@ -1,11 +1,10 @@
 // ============================================================
 // PLANNER TASK DRAWER
 // Slide-in drawer for viewing/editing task details
-// Uses Sheet component consistent with other Catalyst modules
+// NO SUBTASKS - Progress is manually set via slider
 // ============================================================
 
-import { Lock, Unlock, Calendar, User, Flag, Activity, Check, AlertTriangle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Lock, Unlock, Calendar, User, Flag, Activity, AlertTriangle, Trash2 } from 'lucide-react';
 import type { PlannerTask, TaskStatus, TaskPriority, PlannerUser } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
 import {
@@ -24,7 +23,6 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -33,7 +31,6 @@ interface PlannerTaskDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdate: (taskId: string, updates: Partial<PlannerTask>) => void;
-  onSubtaskToggle: (taskId: string, subtaskId: string) => void;
   onUnblock: (taskId: string) => void;
   users?: PlannerUser[];
 }
@@ -43,7 +40,6 @@ export function PlannerTaskDrawer({
   isOpen,
   onClose,
   onUpdate,
-  onSubtaskToggle,
   onUnblock,
   users = [],
 }: PlannerTaskDrawerProps) {
@@ -51,8 +47,6 @@ export function PlannerTaskDrawer({
 
   const priorityConfig = PRIORITY_CONFIG[task.priority];
   const statusConfig = COLUMN_CONFIG.find(c => c.id === task.status);
-  const subtasksDone = task.subtasks.filter(s => s.completed).length;
-  const subtasksTotal = task.subtasks.length;
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -208,7 +202,7 @@ export function PlannerTaskDrawer({
               />
             </div>
 
-            {/* Progress */}
+            {/* Progress - Manually set slider */}
             <div className="space-y-2">
               <label className="flex items-center justify-between text-sm font-medium text-muted-foreground">
                 <span>Progress</span>
@@ -224,41 +218,15 @@ export function PlannerTaskDrawer({
             </div>
           </div>
 
-          {/* Subtasks */}
-          {subtasksTotal > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">Subtasks</h3>
-                <span className="text-xs text-muted-foreground">
-                  {subtasksDone} of {subtasksTotal} completed
-                </span>
-              </div>
-              <div className="space-y-2">
-                {task.subtasks.map(subtask => (
-                  <div
-                    key={subtask.id}
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-lg border transition-colors",
-                      subtask.completed 
-                        ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800" 
-                        : "bg-muted/50 border-border hover:border-primary/50"
-                    )}
-                  >
-                    <Checkbox
-                      checked={subtask.completed}
-                      onCheckedChange={() => onSubtaskToggle(task.id, subtask.id)}
-                      className="flex-shrink-0"
-                    />
-                    <span className={cn(
-                      "text-sm flex-1",
-                      subtask.completed && "line-through text-muted-foreground"
-                    )}>
-                      {subtask.title}
-                    </span>
-                    {subtask.completed && (
-                      <Check className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
-                    )}
-                  </div>
+          {/* Tags */}
+          {task.tags && task.tags.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-muted-foreground">Tags</h4>
+              <div className="flex flex-wrap gap-2">
+                {task.tags.map(tag => (
+                  <Badge key={tag} variant="secondary" className="text-xs">
+                    {tag}
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -276,10 +244,19 @@ export function PlannerTaskDrawer({
             </div>
           )}
 
-          {/* Timestamps */}
-          <div className="pt-4 border-t border-border space-y-1 text-xs text-muted-foreground">
-            <p>Created: {new Date(task.createdAt).toLocaleString()}</p>
-            <p>Updated: {new Date(task.updatedAt).toLocaleString()}</p>
+          {/* Footer with Timestamps and Delete */}
+          <div className="pt-4 border-t border-border flex items-center justify-between">
+            <div className="space-y-1 text-xs text-muted-foreground">
+              <p>Created: {new Date(task.createdAt).toLocaleDateString()}</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
           </div>
         </SheetBody>
       </SheetContent>

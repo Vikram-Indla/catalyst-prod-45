@@ -13,7 +13,6 @@ export interface PlannerFilters {
   priority: TaskPriority | null;
   assigneeId: string | null;
   blocked: boolean | null;
-  hasSubtasks: boolean | null;
   overdue: boolean | null;
 }
 
@@ -23,7 +22,6 @@ const DEFAULT_FILTERS: PlannerFilters = {
   priority: null,
   assigneeId: null,
   blocked: null,
-  hasSubtasks: null,
   overdue: null,
 };
 
@@ -70,15 +68,6 @@ export function usePlannerSearch(tasks: PlannerTask[]) {
     // Apply blocked filter
     if (filters.blocked !== null) {
       result = result.filter(t => t.blocked === filters.blocked);
-    }
-
-    // Apply subtasks filter
-    if (filters.hasSubtasks !== null) {
-      result = result.filter(t => 
-        filters.hasSubtasks 
-          ? t.subtasks.length > 0 
-          : t.subtasks.length === 0
-      );
     }
 
     // Apply overdue filter
@@ -128,7 +117,6 @@ export function usePlannerSearch(tasks: PlannerTask[]) {
       filters.priority !== null ||
       filters.assigneeId !== null ||
       filters.blocked !== null ||
-      filters.hasSubtasks !== null ||
       filters.overdue !== null
     );
   }, [filters]);
