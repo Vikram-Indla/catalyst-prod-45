@@ -57,7 +57,8 @@ export const AiAnalysisPanel: React.FC<AiAnalysisPanelProps> = ({
       <Button
         onClick={handleAnalyze}
         disabled={analyzing}
-        className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg flex items-center justify-center gap-2"
+        variant="default"
+        className="w-full py-3 gap-2"
       >
         {analyzing ? (
           <>
