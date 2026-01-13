@@ -197,7 +197,7 @@ export function PlannerTaskList({
   const SortHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
     <button
       onClick={() => handleSort(field)}
-      className="flex items-center gap-1 text-left font-medium text-text-muted hover:text-text-primary transition-colors"
+      className="flex items-center gap-1 text-left font-medium text-muted-foreground hover:text-foreground transition-colors"
     >
       {children}
       {sortField === field ? (
@@ -213,7 +213,7 @@ export function PlannerTaskList({
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Column Visibility Control */}
-      <div className="flex justify-end px-4 py-2 border-b border-border bg-surface-1">
+      <div className="flex justify-end px-4 py-2 border-b border-border bg-card">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2">
@@ -221,7 +221,7 @@ export function PlannerTaskList({
               Columns
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-surface-0">
+          <DropdownMenuContent align="end" className="w-48 bg-popover">
             {ALL_COLUMNS.map(column => (
               <DropdownMenuCheckboxItem
                 key={column.id}
@@ -238,7 +238,7 @@ export function PlannerTaskList({
       {/* Table */}
       <div className="flex-1 overflow-auto">
         <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-surface-1 z-10">
+          <thead className="sticky top-0 bg-card z-10">
             <tr className="border-b border-border">
               <th className="w-10 px-3 py-3">
                 <Checkbox
@@ -271,10 +271,10 @@ export function PlannerTaskList({
                     transition={{ delay: index * 0.02 }}
                     onClick={() => onTaskClick(task)}
                     className={cn(
-                      "border-b border-border cursor-pointer transition-colors group",
-                      isSelected && "bg-blue-50",
-                      task.blocked && "bg-red-50/50",
-                      !isSelected && !task.blocked && "hover:bg-surface-1"
+                      "border-b border-border-subtle cursor-pointer transition-colors group",
+                      isSelected && "bg-brand-primary-light",
+                      task.blocked && "bg-destructive/5",
+                      !isSelected && !task.blocked && "hover:bg-surface-2"
                     )}
                   >
                     <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
@@ -292,7 +292,7 @@ export function PlannerTaskList({
                             e.stopPropagation();
                             onTaskClick(task);
                           }}
-                          className="font-mono text-xs font-semibold text-primary hover:text-primary/80 hover:underline transition-colors"
+                          className="font-mono text-xs font-semibold text-primary hover:text-primary/80 hover:underline transition-colors cursor-pointer"
                         >
                           {task.key.startsWith('PLN-') ? task.key : `PLN-${task.key.replace(/^[A-Z]+-/, '')}`}
                         </button>
@@ -303,8 +303,8 @@ export function PlannerTaskList({
                     {visibleColumns.has('title') && (
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-2">
-                          {task.blocked && <Lock className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />}
-                          <span className="font-medium text-text-primary truncate max-w-[300px]">
+                          {task.blocked && <Lock className="w-3.5 h-3.5 text-destructive flex-shrink-0" />}
+                          <span className="font-medium text-foreground truncate max-w-[300px]">
                             {task.title}
                           </span>
                         </div>
@@ -344,12 +344,12 @@ export function PlannerTaskList({
                         {task.teamName ? (
                           <div className="flex items-center gap-2">
                             <span className="text-sm">{task.teamEmoji || '👥'}</span>
-                            <span className="text-text-secondary truncate text-xs font-medium">
+                            <span className="text-foreground/70 truncate text-xs font-medium">
                               {task.teamName}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-text-muted">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
                     )}
@@ -359,15 +359,13 @@ export function PlannerTaskList({
                       <td className="px-3 py-3">
                         {task.assigneeName ? (
                           <div className="flex items-center gap-2">
-                            <div 
-                              className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-medium"
-                            >
+                            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[10px] font-semibold">
                               {task.assigneeInitials}
                             </div>
-                            <span className="text-text-secondary truncate">{task.assigneeName}</span>
+                            <span className="text-foreground/80 truncate">{task.assigneeName}</span>
                           </div>
                         ) : (
-                          <span className="text-text-muted">Unassigned</span>
+                          <span className="text-muted-foreground">Unassigned</span>
                         )}
                       </td>
                     )}
@@ -376,11 +374,11 @@ export function PlannerTaskList({
                     {visibleColumns.has('startDate') && (
                       <td className="px-3 py-3">
                         {task.startDate ? (
-                          <span className="text-xs font-medium px-2 py-0.5 rounded bg-surface-2 text-text-secondary">
+                          <span className="text-xs font-medium text-foreground/70">
                             {formatDate(task.startDate)}
                           </span>
                         ) : (
-                          <span className="text-text-muted">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
                     )}
@@ -390,15 +388,13 @@ export function PlannerTaskList({
                       <td className="px-3 py-3">
                         {task.dueDate ? (
                           <span className={cn(
-                            "text-xs font-medium px-2 py-0.5 rounded",
-                            isOverdue 
-                              ? "bg-red-100 text-red-700" 
-                              : "bg-surface-2 text-text-secondary"
+                            "text-xs font-medium",
+                            isOverdue ? "text-destructive" : "text-foreground/70"
                           )}>
                             {formatDate(task.dueDate)}
                           </span>
                         ) : (
-                          <span className="text-text-muted">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
                     )}
@@ -407,13 +403,13 @@ export function PlannerTaskList({
                     {visibleColumns.has('progress') && (
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 h-1.5 bg-surface-2 rounded-full overflow-hidden">
+                          <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-blue-500 rounded-full transition-all"
+                              className="h-full bg-primary rounded-full transition-all"
                               style={{ width: `${task.progress}%` }}
                             />
                           </div>
-                          <span className="text-xs text-text-muted w-8">{task.progress}%</span>
+                          <span className="text-xs text-muted-foreground w-8">{task.progress}%</span>
                         </div>
                       </td>
                     )}
@@ -421,10 +417,10 @@ export function PlannerTaskList({
                     {/* Actions */}
                     <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="p-1 rounded hover:bg-surface-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreHorizontal className="w-4 h-4 text-text-muted" />
+                        <DropdownMenuTrigger className="p-1 rounded hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                          <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-surface-0">
+                        <DropdownMenuContent align="end" className="bg-popover">
                           <DropdownMenuItem onClick={() => handleCopyId(task.key)}>
                             Copy ID
                           </DropdownMenuItem>
@@ -442,7 +438,7 @@ export function PlannerTaskList({
         </table>
 
         {tasks.length === 0 && (
-          <div className="flex items-center justify-center h-48 text-text-muted">
+          <div className="flex items-center justify-center h-48 text-muted-foreground">
             No tasks found
           </div>
         )}
