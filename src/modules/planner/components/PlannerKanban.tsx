@@ -3,7 +3,7 @@
 // Enhanced Kanban with Group By, column management, improved cards
 // ============================================================
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { 
   DndContext, 
   closestCenter, 
@@ -20,7 +20,6 @@ import {
   SortableContext, 
   verticalListSortingStrategy,
   useSortable,
-  arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { 
@@ -31,15 +30,15 @@ import {
   Pencil,
   Trash2,
   Settings,
-  ChevronDown,
   Layers
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { PlannerTask, TaskStatus, ColumnConfig, GroupByOption, PlannerUser } from '../types';
+import type { PlannerTask, TaskStatus, ColumnConfig, GroupByOption } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG, DUE_DATE_GROUPS } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TaskCard } from './TaskCard';
-import { Button } from '@/components/ui/button';
+import { AddColumnModal } from './AddColumnModal';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,7 +54,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { SEED_USERS } from '../data/seedData';
-import { differenceInDays, startOfDay, startOfWeek, endOfWeek, isWithinInterval, addWeeks } from 'date-fns';
+import { differenceInDays, startOfDay, endOfWeek, isWithinInterval, addWeeks } from 'date-fns';
 
 interface PlannerKanbanProps {
   tasks: PlannerTask[];
@@ -69,6 +68,7 @@ interface DynamicColumn {
   color: string;
   wipLimit?: number;
   tasks: PlannerTask[];
+  isCustom?: boolean;
 }
 
 // Sortable wrapper for task card
@@ -106,11 +106,13 @@ function KanbanColumn({
   onTaskClick,
   isOver,
   groupBy,
+  onDelete,
 }: {
   column: DynamicColumn;
   onTaskClick: (task: PlannerTask) => void;
   isOver: boolean;
   groupBy: GroupByOption;
+  onDelete?: (columnId: string) => void;
 }) {
   const { setNodeRef } = useDroppable({
     id: `column-${column.id}`,
@@ -166,11 +168,18 @@ function KanbanColumn({
               <Settings className="w-4 h-4 mr-2" />
               Set WIP Limit
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete Column
-            </DropdownMenuItem>
+            {column.isCustom && onDelete && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="text-destructive"
+                  onClick={() => onDelete(column.id)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Column
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -218,7 +227,26 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByOption>('status');
-  const [columnOrder, setColumnOrder] = useState<string[]>(COLUMN_CONFIG.map(c => c.id));
+  const [customColumns, setCustomColumns] = useState<ColumnConfig[]>([]);
+  const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
+  
+  // Persist custom columns to localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('planner-custom-columns');
+    if (saved) {
+      try {
+        setCustomColumns(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse custom columns:', e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (customColumns.length > 0) {
+      localStorage.setItem('planner-custom-columns', JSON.stringify(customColumns));
+    }
+  }, [customColumns]);
   
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -227,6 +255,15 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
       },
     })
   );
+
+  // Combine default and custom columns
+  const allColumnConfigs = useMemo(() => {
+    const combined = [...COLUMN_CONFIG];
+    customColumns.forEach((custom, idx) => {
+      combined.push({ ...custom, order: COLUMN_CONFIG.length + idx });
+    });
+    return combined;
+  }, [customColumns]);
 
   // Get due date group for a task
   const getDueDateGroup = (task: PlannerTask): string => {
@@ -248,16 +285,33 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
     return 'later';
   };
 
+  // Handle adding a new column
+  const handleAddColumn = useCallback((column: Omit<ColumnConfig, 'order'>) => {
+    const newColumn: ColumnConfig = {
+      ...column,
+      order: allColumnConfigs.length,
+    };
+    setCustomColumns(prev => [...prev, newColumn]);
+    catalystToast.success('Column Added', `"${column.title}" column has been created.`);
+  }, [allColumnConfigs.length]);
+
+  // Handle deleting a custom column
+  const handleDeleteColumn = useCallback((columnId: string) => {
+    setCustomColumns(prev => prev.filter(c => c.id !== columnId));
+    catalystToast.success('Column Deleted', 'The column has been removed.');
+  }, []);
+
   // Generate dynamic columns based on groupBy
   const columns = useMemo((): DynamicColumn[] => {
     switch (groupBy) {
       case 'status':
-        return COLUMN_CONFIG.map(col => ({
+        return allColumnConfigs.map(col => ({
           id: col.id,
           title: col.title,
           color: col.color,
           wipLimit: col.wipLimit,
           tasks: tasks.filter(t => t.status === col.id),
+          isCustom: !COLUMN_CONFIG.some(dc => dc.id === col.id),
         }));
       
       case 'assignee':
@@ -438,13 +492,17 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
               onTaskClick={onTaskClick}
               isOver={overColumnId === column.id}
               groupBy={groupBy}
+              onDelete={column.isCustom ? handleDeleteColumn : undefined}
             />
           ))}
           
           {/* Add Column Button */}
           {groupBy === 'status' && (
             <div className="flex-shrink-0 w-[280px]">
-              <button className="w-full h-24 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl text-muted-foreground hover:border-primary hover:text-primary transition-colors">
+              <button 
+                onClick={() => setIsAddColumnOpen(true)}
+                className="w-full h-24 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+              >
                 <Plus className="w-5 h-5" />
                 <span className="text-sm font-medium">Add Column</span>
               </button>
@@ -460,6 +518,14 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
           )}
         </DragOverlay>
       </DndContext>
+
+      {/* Add Column Modal */}
+      <AddColumnModal
+        isOpen={isAddColumnOpen}
+        onClose={() => setIsAddColumnOpen(false)}
+        onAdd={handleAddColumn}
+        existingColumns={allColumnConfigs}
+      />
     </div>
   );
 }

@@ -6,7 +6,6 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, Lightbulb } from 'lucide-react';
-import { toast } from 'sonner';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight } from './types';
 import { PlannerSidebar } from './components/PlannerSidebar';
 import { PlannerKanban } from './components/PlannerKanban';
@@ -28,9 +27,11 @@ import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
 import { usePlannerSearch } from './hooks/usePlannerSearch';
 import { usePlannerKeyboard } from './hooks/usePlannerKeyboard';
 import { usePlannerAIInsights } from './hooks/usePlannerAIInsights';
+import { usePlannerRealtime } from './hooks/usePlannerRealtime';
 import { getOnlineUsers } from './data/seedData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { catalystToast } from '@/lib/catalystToast';
 
 // View titles for breadcrumb header
 const VIEW_TITLES: Record<PlannerView, string> = {
@@ -78,6 +79,9 @@ export function PlannerPage() {
   const updateTask = useUpdatePlannerTask();
   const deleteTask = useDeletePlannerTask();
   const createTask = useCreatePlannerTask();
+  
+  // Realtime subscription for live updates
+  usePlannerRealtime(selectedTeamId);
   
   // Search and filter
   const {
@@ -158,7 +162,7 @@ export function PlannerPage() {
       { id: taskId, updates: { status: newStatus } },
       {
         onSuccess: () => {
-          toast.success(`Task moved to ${newStatus.replace('-', ' ')}`);
+          catalystToast.success('Task Moved', `Moved to ${newStatus.replace('-', ' ')}`);
         },
       }
     );
@@ -169,7 +173,7 @@ export function PlannerPage() {
       { id: taskId, updates },
       {
         onSuccess: () => {
-          toast.success('Task updated');
+          catalystToast.success('Task Updated', 'Changes saved successfully.');
           // Update selected task if it's the one being edited
           if (selectedTask?.id === taskId) {
             setSelectedTask(prev => prev ? { ...prev, ...updates } : null);
@@ -184,7 +188,7 @@ export function PlannerPage() {
       { id: taskId, updates: { blocked: false, blockedReason: undefined } },
       {
         onSuccess: () => {
-          toast.success('Task unblocked');
+          catalystToast.success('Task Unblocked', 'The blocker has been removed.');
           if (selectedTask?.id === taskId) {
             setSelectedTask(prev => prev ? { ...prev, blocked: false, blockedReason: undefined } : null);
           }
@@ -196,12 +200,12 @@ export function PlannerPage() {
   const handleDeleteTask = useCallback((taskId: string) => {
     deleteTask.mutate(taskId, {
       onSuccess: () => {
-        toast.success('Task deleted');
+        catalystToast.success('Task Deleted', 'The task has been removed.');
         setIsDrawerOpen(false);
         setSelectedTask(null);
       },
       onError: () => {
-        toast.error('Failed to delete task');
+        catalystToast.error('Delete Failed', 'Could not delete the task.');
       },
     });
   }, [deleteTask]);
