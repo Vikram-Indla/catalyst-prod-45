@@ -19165,6 +19165,99 @@ export type Database = {
         }
         Relationships: []
       }
+      step_result_attachments: {
+        Row: {
+          ai_analysis: Json | null
+          ai_analyzed_at: string | null
+          ai_has_issues: boolean | null
+          annotations: Json | null
+          capture_method: string
+          created_at: string | null
+          deleted_at: string | null
+          duration_seconds: number | null
+          execution_result_id: string
+          file_name: string
+          file_size: number
+          height: number | null
+          id: string
+          mime_type: string
+          ocr_confidence: number | null
+          ocr_processed_at: string | null
+          ocr_text: string | null
+          step_result_id: string
+          storage_bucket: string
+          storage_path: string
+          updated_at: string | null
+          uploaded_by: string
+          width: number | null
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          ai_analyzed_at?: string | null
+          ai_has_issues?: boolean | null
+          annotations?: Json | null
+          capture_method: string
+          created_at?: string | null
+          deleted_at?: string | null
+          duration_seconds?: number | null
+          execution_result_id: string
+          file_name: string
+          file_size: number
+          height?: number | null
+          id?: string
+          mime_type: string
+          ocr_confidence?: number | null
+          ocr_processed_at?: string | null
+          ocr_text?: string | null
+          step_result_id: string
+          storage_bucket?: string
+          storage_path: string
+          updated_at?: string | null
+          uploaded_by: string
+          width?: number | null
+        }
+        Update: {
+          ai_analysis?: Json | null
+          ai_analyzed_at?: string | null
+          ai_has_issues?: boolean | null
+          annotations?: Json | null
+          capture_method?: string
+          created_at?: string | null
+          deleted_at?: string | null
+          duration_seconds?: number | null
+          execution_result_id?: string
+          file_name?: string
+          file_size?: number
+          height?: number | null
+          id?: string
+          mime_type?: string
+          ocr_confidence?: number | null
+          ocr_processed_at?: string | null
+          ocr_text?: string | null
+          step_result_id?: string
+          storage_bucket?: string
+          storage_path?: string
+          updated_at?: string | null
+          uploaded_by?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "step_result_attachments_execution_result_id_fkey"
+            columns: ["execution_result_id"]
+            isOneToOne: false
+            referencedRelation: "execution_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "step_result_attachments_step_result_id_fkey"
+            columns: ["step_result_id"]
+            isOneToOne: false
+            referencedRelation: "step_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       step_results: {
         Row: {
           actual_result: string | null
@@ -27788,6 +27881,15 @@ export type Database = {
         }[]
       }
       generate_change_number: { Args: never; Returns: string }
+      generate_evidence_path: {
+        Args: {
+          p_execution_id: string
+          p_filename: string
+          p_step_id: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       generate_next_defect_id: { Args: never; Returns: string }
       generate_next_epic_key: {
         Args: { p_program_id: string }
