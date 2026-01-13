@@ -219,13 +219,14 @@ export function AIAnalysisPanel({
 
       if (error) throw error;
 
-      // Link to execution step if available
+      // Link to execution step and attachment if available
       if (executionId && stepId) {
         await supabase
           .from('tm_defect_links')
           .insert({
             defect_id: defect.id,
             step_result_id: stepId,
+            attachment_id: evidenceId || null,
             created_by: user.id,
           });
       }

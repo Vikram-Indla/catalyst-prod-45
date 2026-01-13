@@ -37,6 +37,7 @@ export interface AiSuggestion {
 export interface LinkedEvidence {
   attachmentId: string;
   imageUrl: string;
+  stepResultId?: string;
 }
 
 export interface CreateDefectModalProps {
@@ -148,13 +149,14 @@ export const CreateDefectModal: React.FC<CreateDefectModalProps> = ({
 
       if (error) throw error;
 
-      // Link evidence to defect
+      // Link evidence attachment to defect
       if (linkedEvidence.attachmentId) {
         await supabase
           .from('tm_defect_links')
           .insert({
             defect_id: defect.id,
-            step_result_id: linkedEvidence.attachmentId,
+            attachment_id: linkedEvidence.attachmentId,
+            step_result_id: linkedEvidence.stepResultId || null,
             created_by: user.id,
           });
       }

@@ -96,22 +96,16 @@ export function useCreateDefectFromAI(options: UseCreateDefectFromAIOptions = {}
         throw defectError;
       }
 
-      // Link to execution step if provided
+      // Link to execution step and evidence attachment if provided
       if (options.executionId && options.stepId) {
         await supabase
           .from('tm_defect_links')
           .insert({
             defect_id: defect.id,
             step_result_id: options.stepId,
+            attachment_id: data.attachEvidenceId || null,
             created_by: user.id,
           });
-      }
-
-      // Link evidence to defect using defect_links with test_run_id as workaround
-      // (since there's no dedicated evidence attachment table)
-      if (data.attachEvidenceId && options.executionId) {
-        // Evidence is already linked to execution step, no additional link needed
-        // The defect_link to step_result_id provides the connection
       }
 
       options.onSuccess?.(defect.id);

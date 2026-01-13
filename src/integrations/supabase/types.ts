@@ -23300,6 +23300,7 @@ export type Database = {
       }
       tm_defect_links: {
         Row: {
+          attachment_id: string | null
           created_at: string | null
           created_by: string | null
           defect_id: string
@@ -23308,6 +23309,7 @@ export type Database = {
           test_run_id: string | null
         }
         Insert: {
+          attachment_id?: string | null
           created_at?: string | null
           created_by?: string | null
           defect_id: string
@@ -23316,6 +23318,7 @@ export type Database = {
           test_run_id?: string | null
         }
         Update: {
+          attachment_id?: string | null
           created_at?: string | null
           created_by?: string | null
           defect_id?: string
@@ -23324,6 +23327,13 @@ export type Database = {
           test_run_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_defect_links_attachment_id_fkey"
+            columns: ["attachment_id"]
+            isOneToOne: false
+            referencedRelation: "step_result_attachments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tm_defect_links_created_by_fkey"
             columns: ["created_by"]
