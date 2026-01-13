@@ -14,6 +14,8 @@ const corsHeaders = {
 interface GenerationRequest {
   generationId: string;
   inputText: string;
+  programCode?: string;  // For display ID generation (e.g., "CAT")
+  projectCode?: string;  // For display ID generation (e.g., "DIP")
   outputTypes: {
     prd: boolean;
     epics: boolean;
@@ -241,11 +243,15 @@ serve(async (req) => {
 
     // Parse request
     const request: GenerationRequest = await req.json();
-    const { generationId, inputText, outputTypes, compliance, settings } = request;
+    const { generationId, inputText, programCode, projectCode, outputTypes, compliance, settings } = request;
 
     if (!generationId || !inputText) {
       throw new Error("Missing required fields: generationId, inputText");
     }
+
+    // Get program/project codes for display ID generation
+    const epicFeatureCode = programCode || "ITEM";
+    const storyCode = projectCode || "ITEM";
 
     // Build output types string
     const outputTypesStr = Object.entries(outputTypes)
@@ -416,35 +422,24 @@ serve(async (req) => {
       })
       .eq("id", generationId);
 
-    // Insert generated items
+    // Insert generated items with proper display IDs
     const itemsToInsert: any[] = [];
 
-    // Insert PRD if generated
-    if (aiResponse.prd && outputTypes.prd) {
-      const prdDescription = aiResponse.prd.description + "\n\n" + 
-        Object.entries(aiResponse.prd.sections || {})
-          .map(([key, value]) => `## ${key.charAt(0).toUpperCase() + key.slice(1)}\n${value}`)
-          .join("\n\n");
-          
-      itemsToInsert.push({
-        generation_id: generationId,
-        item_type: "prd",
-        title: aiResponse.prd.title,
-        description: prdDescription,
-        confidence_score: 95,
-        confidence_breakdown: { clarity: 95, completeness: 95, testability: 90, feasibility: 98 },
-        compliance_results: aiResponse.compliance,
-        sort_order: 0,
-      });
-    }
+    // Track sequence numbers for display IDs
+    let epicSequence = 1;
+    let featureSequence = 1;
+    let storySequence = 1;
 
-    // Insert Epics
+    // NOTE: PRD is NOT inserted - it's internal AI processing only, not a publishable item
+
+    // Insert Epics with proper display IDs
     if (outputTypes.epics && aiResponse.epics) {
       for (let i = 0; i < aiResponse.epics.length; i++) {
         const epic = aiResponse.epics[i];
         itemsToInsert.push({
           generation_id: generationId,
           item_type: "epic",
+          display_id: `${epicFeatureCode}-${String(epicSequence++).padStart(3, '0')}`,
           title: epic.title,
           description: epic.description,
           confidence_score: epic.confidence_score || 85,
@@ -470,7 +465,7 @@ serve(async (req) => {
       epicRecords = insertedItems?.filter(item => item.item_type === "epic") || [];
     }
 
-    // Insert Features with parent links
+    // Insert Features with parent links and display IDs
     const featuresToInsert: any[] = [];
     if (outputTypes.features && aiResponse.features) {
       for (let i = 0; i < aiResponse.features.length; i++) {
@@ -480,6 +475,7 @@ serve(async (req) => {
         featuresToInsert.push({
           generation_id: generationId,
           item_type: "feature",
+          display_id: `${epicFeatureCode}-${String(featureSequence++).padStart(3, '0')}`,
           title: feature.title,
           description: feature.description,
           acceptance_criteria: feature.acceptance_criteria,
@@ -504,7 +500,7 @@ serve(async (req) => {
       featureRecords = insertedFeatures || [];
     }
 
-    // Insert Stories with parent links
+    // Insert Stories with parent links and display IDs (use project code for stories)
     const storiesToInsert: any[] = [];
     if (outputTypes.stories && aiResponse.stories) {
       for (let i = 0; i < aiResponse.stories.length; i++) {
@@ -515,6 +511,7 @@ serve(async (req) => {
         storiesToInsert.push({
           generation_id: generationId,
           item_type: "story",
+          display_id: `${storyCode}-${String(storySequence++).padStart(3, '0')}`,
           title: story.title,
           description: story.description,
           acceptance_criteria: story.acceptance_criteria,

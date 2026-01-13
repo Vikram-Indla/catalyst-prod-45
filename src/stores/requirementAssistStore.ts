@@ -223,7 +223,7 @@ const initialAnalysis: Analysis = {
 };
 
 const initialOutputConfig: OutputConfig = {
-  prd: true,
+  prd: false,  // PRD is NOT a publishable item - used internally for AI processing only
   epics: true,
   features: true,
   stories: true,
@@ -239,16 +239,19 @@ const initialOutputConfig: OutputConfig = {
  * Build tree structure from flat work items array
  */
 function buildWorkItemsTree(items: WorkItem[]): WorkItem[] {
+  // Filter out PRD items - they are NOT publishable and should not appear in tree
+  const publishableItems = items.filter(item => item.itemType !== 'prd');
+  
   const itemMap = new Map<string, WorkItem>();
   const roots: WorkItem[] = [];
 
   // First pass: create map and reset children
-  items.forEach((item) => {
+  publishableItems.forEach((item) => {
     itemMap.set(item.id, { ...item, children: [] });
   });
 
   // Second pass: build tree
-  items.forEach((item) => {
+  publishableItems.forEach((item) => {
     const node = itemMap.get(item.id)!;
     if (item.parentId && itemMap.has(item.parentId)) {
       const parent = itemMap.get(item.parentId)!;

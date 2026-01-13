@@ -200,6 +200,12 @@ export function useGeneration() {
 
       subscriptionsRef.current.items = itemsChannel;
 
+      // Get program and project codes for display ID generation
+      const selectedProgram = programs.find(p => p.id === programId);
+      const selectedProject = projects.find(p => p.id === projectId);
+      const programCode = selectedProgram?.code || selectedProgram?.name?.substring(0, 3).toUpperCase() || 'PROG';
+      const projectCode = selectedProject?.code || selectedProject?.name?.substring(0, 3).toUpperCase() || 'PROJ';
+
       // 4. Call edge function to start generation (uses Claude API)
       const { error: invokeError } = await supabase.functions.invoke(
         'generate-requirements',
@@ -207,8 +213,10 @@ export function useGeneration() {
           body: {
             generationId: actualGenerationId,
             inputText,
+            programCode,  // Pass program code for Epic/Feature IDs
+            projectCode,  // Pass project code for Story IDs
             outputTypes: {
-              prd: outputConfig.prd,
+              prd: false,  // PRD is NOT a publishable item - don't generate
               epics: outputConfig.epics,
               features: outputConfig.features,
               stories: outputConfig.stories,
