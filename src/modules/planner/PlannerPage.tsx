@@ -393,37 +393,39 @@ export function PlannerPage() {
               </h1>
             </div>
 
-            {/* Right: Action Buttons */}
-            <div className="flex items-center gap-2">
-              {/* AI Insights Toggle */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsAIPanelOpen((prev) => !prev)}
-                className={cn("h-8 gap-2", isAIPanelOpen && "bg-blue-50 text-blue-600")}
-              >
-                <Lightbulb className="w-4 h-4" />
-                <span className="text-sm">AI</span>
-                {criticalInsightsCount > 0 && (
-                  <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-red-500 text-white rounded-full">
-                    {criticalInsightsCount}
-                  </span>
-                )}
-              </Button>
+            {/* Right: Action Buttons - hidden on teams/settings views */}
+            {activeView !== 'teams' && activeView !== 'settings' && (
+              <div className="flex items-center gap-2">
+                {/* AI Insights Toggle */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsAIPanelOpen((prev) => !prev)}
+                  className={cn("h-8 gap-2", isAIPanelOpen && "bg-blue-50 text-blue-600")}
+                >
+                  <Lightbulb className="w-4 h-4" />
+                  <span className="text-sm">AI</span>
+                  {criticalInsightsCount > 0 && (
+                    <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-red-500 text-white rounded-full">
+                      {criticalInsightsCount}
+                    </span>
+                  )}
+                </Button>
 
-              {/* Create Task Button */}
-              <Button
-                size="sm"
-                onClick={() => {
-                  setCreateDefaultStatus('backlog');
-                  setIsCreateModalOpen(true);
-                }}
-                className="h-8 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="text-sm">Create Task</span>
-              </Button>
-            </div>
+                {/* Create Task Button */}
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setCreateDefaultStatus('backlog');
+                    setIsCreateModalOpen(true);
+                  }}
+                  className="h-8 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="text-sm">Create Task</span>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
