@@ -33,10 +33,21 @@ async function mockGenerateRequirements(
     onProgress?.(i, step);
   }
   
-  const complexity = wordCount / 30;
-  const epicCount = Math.max(1, Math.floor(complexity)) + 1;
-  const featureCount = Math.max(2, Math.floor(complexity * 2)) + 2;
-  const storyCount = Math.max(4, Math.floor(complexity * 4)) + 4;
+  // FIXED: Use reasonable estimation with HARD MAXIMUM LIMITS
+  const MAX_EPICS = 5;
+  const MAX_FEATURES = 15;
+  const MAX_STORIES = 50;
+  
+  // Simple estimation based on content size
+  let epicCount: number;
+  if (wordCount < 100) epicCount = 1;
+  else if (wordCount < 300) epicCount = 2;
+  else if (wordCount < 600) epicCount = 3;
+  else if (wordCount < 1000) epicCount = 4;
+  else epicCount = 5; // CAP AT 5, no matter how long!
+  
+  const featureCount = Math.min(epicCount * 3, MAX_FEATURES);
+  const storyCount = Math.min(featureCount * 3, MAX_STORIES);
   
   return {
     id,

@@ -296,14 +296,30 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
   const canGenerate = wordCount >= 10 && programId && projectId;
   const isActive = wordCount >= 10;
 
-  // Estimates
+  // Estimates - with HARD MAXIMUM LIMITS to prevent absurd numbers
   const estimates = useMemo(() => {
     if (wordCount < 10) return { epics: 0, features: 0, stories: 0 };
-    const complexity = wordCount / 30;
+    
+    // HARD MAXIMUM LIMITS
+    const MAX_EPICS = 5;
+    const MAX_FEATURES = 15;
+    const MAX_STORIES = 50;
+    
+    // Simple, reasonable estimation based on content size
+    let epics: number;
+    if (wordCount < 100) epics = 1;
+    else if (wordCount < 300) epics = 2;
+    else if (wordCount < 600) epics = 3;
+    else if (wordCount < 1000) epics = 4;
+    else epics = 5; // CAP AT 5, no matter how long!
+    
+    const features = epics * 3; // ~3 features per epic
+    const stories = features * 3; // ~3 stories per feature
+    
     return {
-      epics: Math.max(1, Math.floor(complexity)) + 1,
-      features: Math.max(2, Math.floor(complexity * 2)) + 2,
-      stories: Math.max(4, Math.floor(complexity * 4)) + 4
+      epics: Math.min(epics, MAX_EPICS),
+      features: Math.min(features, MAX_FEATURES),
+      stories: Math.min(stories, MAX_STORIES)
     };
   }, [wordCount]);
 
@@ -454,8 +470,8 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
         </div>
 
         {/* Center: Main Editor */}
-        <div className="flex-1 p-5 bg-slate-50 overflow-hidden">
-          <div className="h-full bg-white rounded-xl border border-slate-200 shadow-lg shadow-slate-200/50 flex flex-col overflow-hidden">
+        <div className="flex-1 p-5 bg-slate-50 overflow-hidden flex flex-col min-h-0">
+          <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-lg shadow-slate-200/50 flex flex-col overflow-hidden min-h-0">
             {/* Card Header - Minimal */}
             <div className="h-11 px-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50 flex-shrink-0">
               <div className="flex items-center gap-3">
@@ -466,35 +482,38 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               </div>
             </div>
 
-            {/* Rich Text Editor */}
-            <RichTextEditor
-              value={htmlContent}
-              onChange={handleEditorChange}
-              placeholder="Describe your system requirements in detail. You can paste images directly..."
-            />
+            {/* Rich Text Editor - scrollable content */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <RichTextEditor
+                value={htmlContent}
+                onChange={handleEditorChange}
+                placeholder="Describe your system requirements in detail. You can paste images directly..."
+              />
+            </div>
 
-            {/* Editor Footer with Word Count + Generate Button */}
-            <div className="h-14 px-4 flex items-center justify-between border-t border-slate-100 bg-gradient-to-r from-slate-50 to-white flex-shrink-0">
+            {/* Editor Footer with Word Count + Generate Button - MUST ALWAYS BE VISIBLE */}
+            <div className="h-16 px-4 flex items-center justify-between border-t border-slate-100 bg-gradient-to-r from-slate-50 to-white flex-shrink-0">
               {/* Left: Word count */}
-              <div className="flex items-center gap-3 text-sm text-slate-500">
-                <span><strong className="text-slate-700">{wordCount}</strong> words</span>
+              <div className="flex items-center gap-3 text-sm">
+                <span className="font-bold text-slate-700">{wordCount}</span>
+                <span className="text-slate-400">words</span>
                 <span className="text-slate-300">|</span>
-                <span>{inputText.length} / 3,000</span>
+                <span className="text-slate-500">{inputText.length.toLocaleString()} / 3,000</span>
               </div>
 
-              {/* Right: Generate Button */}
+              {/* Right: Generate Button - ALWAYS VISIBLE */}
               <button
                 disabled={!canGenerate}
                 onClick={handleGenerate}
                 className={cn(
-                  "h-10 px-5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all",
+                  "h-10 px-6 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all",
                   canGenerate
-                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-                    : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
                 )}
               >
                 <Sparkles className="w-4 h-4" />
-                {canGenerate ? 'Generate' : `${10 - wordCount} more words`}
+                {canGenerate ? 'Generate' : wordCount > 0 ? `${10 - wordCount} more words` : 'Enter requirements'}
                 {canGenerate && <kbd className="ml-1 text-[10px] opacity-60">⌘G</kbd>}
               </button>
             </div>
