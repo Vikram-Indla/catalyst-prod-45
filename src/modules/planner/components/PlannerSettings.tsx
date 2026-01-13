@@ -447,17 +447,6 @@ export function PlannerSettings() {
               />
             </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Description</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Enter workstream description..."
-                rows={3}
-              />
-            </div>
-
             {/* Workstream Color */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Workstream Color</Label>
@@ -478,36 +467,6 @@ export function PlannerSettings() {
                   />
                 ))}
               </div>
-            </div>
-
-            {/* Workstream Lead */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Workstream Lead</Label>
-              <Select 
-                value={formData.leadId} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, leadId: value }))}
-              >
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Select workstream lead..." />
-                </SelectTrigger>
-                <SelectContent 
-                  position="popper" 
-                  sideOffset={4}
-                  className="bg-popover z-[9999]"
-                  align="start"
-                >
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                          {user.initials}
-                        </div>
-                        <span>{user.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             {/* Add Members */}
@@ -547,7 +506,11 @@ export function PlannerSettings() {
 
               {/* Add member dropdown */}
               {availableUsers.length > 0 && (
-                <Select onValueChange={handleAddMember} value="">
+                <Select 
+                  key={`add-member-${formData.memberIds.length}`}
+                  onValueChange={handleAddMember} 
+                  value=""
+                >
                   <SelectTrigger className="h-10">
                     <SelectValue placeholder="+ Add member" />
                   </SelectTrigger>
