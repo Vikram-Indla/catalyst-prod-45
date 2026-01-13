@@ -15,3 +15,9 @@ export * from './annotations';
 
 // AI exports
 export * from './ai';
+
+// Bulk operations exports (TC-356 to TC-400)
+export * from './bulk';
+
+// Export functionality (TC-401 to TC-425)
+export * from './export';
