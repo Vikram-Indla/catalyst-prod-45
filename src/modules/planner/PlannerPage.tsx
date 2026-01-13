@@ -159,14 +159,7 @@ export function PlannerPage() {
   }, []);
 
   const handleTaskMove = useCallback((taskId: string, newStatus: TaskStatus) => {
-    updateTask.mutate(
-      { id: taskId, updates: { status: newStatus } },
-      {
-        onSuccess: () => {
-          catalystToast.success('Task Moved', `Moved to ${newStatus.replace('-', ' ')}`);
-        },
-      }
-    );
+    updateTask.mutate({ id: taskId, updates: { status: newStatus } });
   }, [updateTask]);
 
   const handleTaskUpdate = useCallback((taskId: string, updates: Partial<PlannerTask>) => {

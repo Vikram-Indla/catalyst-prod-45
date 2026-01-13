@@ -681,8 +681,6 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
       if (customColsWithOrder.length > 0) {
         updateColumnOrder.mutate(customColsWithOrder);
       }
-
-      catalystToast.success('Column Reordered', 'Column order has been updated.');
       return;
     }
 
