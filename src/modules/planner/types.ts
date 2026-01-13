@@ -79,6 +79,15 @@ export interface PlannerTeam {
   color: string;
 }
 
+export interface AIInsightMeta {
+  sprint?: string;
+  updated?: string;
+  confidence?: string;
+  members?: string;
+  date?: string;
+  dependencies?: string;
+}
+
 export interface AIInsight {
   id: string;
   type: 'critical' | 'warning' | 'info' | 'success';
@@ -87,6 +96,7 @@ export interface AIInsight {
   action?: string;
   taskId?: string;
   createdAt: string;
+  meta?: AIInsightMeta;
 }
 
 export interface ColumnConfig {
