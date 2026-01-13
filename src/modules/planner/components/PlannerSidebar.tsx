@@ -43,10 +43,7 @@ const VIEWS_SECTION = [
   { id: 'calendar', title: 'Calendar', path: '/planner/calendar', icon: Calendar },
 ];
 
-const INSIGHTS_SECTION = [
-  { id: 'weekly-report', title: 'Weekly Report', path: '/planner/weekly-report', icon: FileText },
-  { id: 'workstream-performance', title: 'Workstream Performance', path: '/planner/workstream-performance', icon: Users },
-];
+const INSIGHTS_SECTION: typeof VIEWS_SECTION = [];
 
 const WORKSPACE_SECTION = [
   { id: 'workstreams', title: 'Workstreams', path: '/planner/workstreams', icon: UsersRound },
