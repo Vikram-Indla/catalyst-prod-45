@@ -69,7 +69,6 @@ const transformStory = (row: any): PlannerTask => ({
   dueDate: row.accepted_at,
   blocked: row.blocked || false,
   blockedReason: row.blocked_reason,
-  subtasks: [],
   progress: row.progress_pct || 0,
   comments: 0,
   linkedItemId: row.feature_id,

@@ -34,19 +34,13 @@ export interface PlannerTask {
   dueDate?: string;
   blocked: boolean;
   blockedReason?: string;
-  subtasks: PlannerSubtask[];
-  progress: number;               // 0-100
+  progress: number;               // 0-100, manually set
   comments: number;
+  tags?: string[];
   linkedItemId?: string;
   linkedItemTitle?: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface PlannerSubtask {
-  id: string;
-  title: string;
-  completed: boolean;
 }
 
 export interface PlannerUser {
