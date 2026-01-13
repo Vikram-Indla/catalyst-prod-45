@@ -200,7 +200,7 @@ export function useGeneration() {
 
       subscriptionsRef.current.items = itemsChannel;
 
-      // 4. Call edge function to start generation
+      // 4. Call edge function to start generation (uses Claude API)
       const { error: invokeError } = await supabase.functions.invoke(
         'generate-requirements',
         {
@@ -221,9 +221,9 @@ export function useGeneration() {
               babok: true,
             },
             settings: {
-              model: 'google/gemini-3-flash-preview',
+              model: 'claude-sonnet-4-20250514',
               temperature: 0.7,
-              maxTokens: 4000,
+              maxTokens: 8000,
             },
           },
         }
