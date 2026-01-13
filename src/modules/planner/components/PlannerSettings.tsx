@@ -9,10 +9,8 @@ import {
   Plus, 
   ChevronLeft, 
   Users, 
-  Settings, 
   Trash2,
   Edit2,
-  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -20,19 +18,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,11 +30,12 @@ import {
 } from '@/components/ui/alert-dialog';
 import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
-import type { PlannerTeam, PlannerUser } from '../types';
+import type { PlannerTeam } from '../types';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { WorkstreamMembersSection } from './WorkstreamMembersSection';
+import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 
 const COLOR_OPTIONS = [
   { value: '#2563eb', label: 'Blue' },
@@ -66,8 +52,6 @@ interface WorkstreamFormData {
   name: string;
   description: string;
   color: string;
-  leadId: string;
-  memberIds: string[];
 }
 
 export function PlannerSettings() {
@@ -81,13 +65,11 @@ export function PlannerSettings() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [deleteConfirmWorkstream, setDeleteConfirmWorkstream] = useState<PlannerTeam | null>(null);
   
-  // Form state
+  // Form state for edit mode
   const [formData, setFormData] = useState<WorkstreamFormData>({
     name: '',
     description: '',
     color: '#2563eb',
-    leadId: '',
-    memberIds: [],
   });
 
   // Filter workstreams by search
@@ -105,37 +87,7 @@ export function PlannerSettings() {
       name: '',
       description: '',
       color: '#2563eb',
-      leadId: '',
-      memberIds: [],
     });
-  };
-
-  const handleCreateWorkstream = async () => {
-    if (!formData.name.trim()) {
-      catalystToast.warning('Please enter a workstream name');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('teams')
-        .insert({
-          name: formData.name.trim(),
-          short_name: formData.name.trim().slice(0, 3).toUpperCase(),
-          description: formData.description || null,
-          is_active: true,
-        });
-
-      if (error) throw error;
-
-      catalystToast.success('Workstream created successfully!');
-      queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
-      setIsCreateModalOpen(false);
-      resetForm();
-    } catch (err) {
-      console.error('Error creating workstream:', err);
-      catalystToast.error('Failed to create workstream');
-    }
   };
 
   const handleDeleteWorkstream = async (ws: PlannerTeam) => {
@@ -163,29 +115,9 @@ export function PlannerSettings() {
       name: ws.name,
       description: ws.description || '',
       color: ws.color,
-      leadId: ws.leadId || '',
-      memberIds: [],
     });
     setIsEditMode(false);
   };
-
-  const handleAddMember = (userId: string) => {
-    if (userId && !formData.memberIds.includes(userId)) {
-      setFormData(prev => ({
-        ...prev,
-        memberIds: [...prev.memberIds, userId]
-      }));
-    }
-  };
-
-  const handleRemoveMember = (userId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      memberIds: prev.memberIds.filter(id => id !== userId)
-    }));
-  };
-
-  const availableUsers = users.filter(u => !formData.memberIds.includes(u.id));
 
   // Workstream List View
   const renderWorkstreamsList = () => (
@@ -426,131 +358,11 @@ export function PlannerSettings() {
       {selectedWorkstream ? renderWorkstreamDetail() : renderWorkstreamsList()}
 
       {/* Create Workstream Modal */}
-      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <DialogContent className="sm:max-w-[480px] bg-background">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Create New Workstream</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-5 mt-4">
-            {/* Workstream Name */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                Workstream Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Enter workstream name..."
-                className="h-10"
-                autoFocus
-              />
-            </div>
-
-            {/* Workstream Color */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Workstream Color</Label>
-              <div className="flex flex-wrap gap-2">
-                {COLOR_OPTIONS.map((c) => (
-                  <button
-                    key={c.value}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, color: c.value }))}
-                    className={cn(
-                      "w-8 h-8 rounded-full transition-all",
-                      formData.color === c.value
-                        ? "ring-2 ring-offset-2 ring-blue-500"
-                        : "hover:scale-110"
-                    )}
-                    style={{ backgroundColor: c.value }}
-                    title={c.label}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Add Members */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Add Members</Label>
-              
-              {/* Selected members */}
-              {formData.memberIds.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.memberIds.map((id) => {
-                    const user = users.find(u => u.id === id);
-                    if (!user) return null;
-                    return (
-                      <div
-                        key={id}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted text-sm"
-                      >
-                        <div
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                          style={{ backgroundColor: formData.color }}
-                        >
-                          {user.initials}
-                        </div>
-                        <span>{user.name}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveMember(id)}
-                          className="text-muted-foreground hover:text-foreground"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Add member dropdown */}
-              {availableUsers.length > 0 && (
-                <Select 
-                  key={`add-member-${formData.memberIds.length}`}
-                  onValueChange={handleAddMember} 
-                  value=""
-                >
-                  <SelectTrigger className="h-10">
-                    <SelectValue placeholder="+ Add member" />
-                  </SelectTrigger>
-                  <SelectContent 
-                    position="popper" 
-                    sideOffset={4}
-                    className="bg-popover z-[9999]"
-                    align="start"
-                  >
-                    {availableUsers.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                            {user.initials}
-                          </div>
-                          <span>{user.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-border">
-              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleCreateWorkstream}
-                disabled={!formData.name.trim()}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Create Workstream
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CreateWorkstreamModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+        users={users}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog 
