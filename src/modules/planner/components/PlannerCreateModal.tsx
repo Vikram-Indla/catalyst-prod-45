@@ -5,13 +5,14 @@
 // ============================================================
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Plus, Zap, Paperclip, Link2, Calendar } from 'lucide-react';
+import { X, Plus, Zap, Paperclip, Link2, Calendar, Check, Loader2, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaskStatus, TaskPriority, PlannerUser, PlannerTeam } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
 import { SearchableSelect, SelectOption } from './SearchableSelect';
 import { WorkItemSelector } from './WorkItemSelector';
 import { WorkItemType } from '../hooks/usePlannerWorkItems';
+import { useAIChecklist, ChecklistItem } from '../hooks/useAIChecklist';
 import { cn } from '@/lib/utils';
 
 interface CreateTaskData {
@@ -26,6 +27,7 @@ interface CreateTaskData {
   linkedWorkItemType?: WorkItemType;
   startDate?: string;
   dueDate?: string;
+  checklistItems?: ChecklistItem[];
 }
 
 interface PlannerCreateModalProps {
@@ -75,6 +77,17 @@ export function PlannerCreateModal({
   const [linkedWorkItemType, setLinkedWorkItemType] = useState<WorkItemType | undefined>(undefined);
   const [startDate, setStartDate] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [showLinkItem, setShowLinkItem] = useState(false);
+
+  // AI Checklist hook
+  const { 
+    isGenerating, 
+    checklistItems, 
+    generateChecklist, 
+    clearChecklist, 
+    toggleItem, 
+    removeItem 
+  } = useAIChecklist();
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,6 +107,12 @@ export function PlannerCreateModal({
     }
   }, [teamId, assigneeId, availableAssignees]);
 
+  // Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -106,12 +125,14 @@ export function PlannerCreateModal({
       setTeamId(defaultTeamId || null);
       setLinkedWorkItemId(null);
       setLinkedWorkItemType(undefined);
-      setStartDate('');
+      setStartDate(getTodayDate()); // Default to today
       setDueDate('');
+      setShowLinkItem(false);
+      clearChecklist();
       // Focus title after animation
       setTimeout(() => titleInputRef.current?.focus(), 100);
     }
-  }, [isOpen, defaultStatus, defaultTeamId, currentUserId]);
+  }, [isOpen, defaultStatus, defaultTeamId, currentUserId, clearChecklist]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -154,9 +175,18 @@ export function PlannerCreateModal({
       linkedWorkItemType: linkedWorkItemType,
       startDate: startDate || undefined,
       dueDate: dueDate || undefined,
+      checklistItems: checklistItems.length > 0 ? checklistItems : undefined,
     });
 
     onClose();
+  };
+
+  const handleAIChecklist = () => {
+    if (!title.trim()) {
+      titleInputRef.current?.focus();
+      return;
+    }
+    generateChecklist(title, description);
   };
 
   // Transform data for SearchableSelect
@@ -451,10 +481,22 @@ export function PlannerCreateModal({
                 <div className="flex items-center gap-2 flex-wrap">
                   <button 
                     type="button"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-background border border-border rounded-full text-xs font-medium text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors"
+                    onClick={handleAIChecklist}
+                    disabled={isGenerating || !title.trim()}
+                    className={cn(
+                      "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
+                      checklistItems.length > 0
+                        ? "bg-primary/10 border border-primary text-primary"
+                        : "bg-background border border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5",
+                      (isGenerating || !title.trim()) && "opacity-50 cursor-not-allowed"
+                    )}
                   >
-                    <Zap className="w-3.5 h-3.5" />
-                    AI Checklist
+                    {isGenerating ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Zap className="w-3.5 h-3.5" />
+                    )}
+                    {isGenerating ? 'Generating...' : checklistItems.length > 0 ? `Checklist (${checklistItems.length})` : 'AI Checklist'}
                   </button>
                   <button 
                     type="button"
@@ -465,12 +507,84 @@ export function PlannerCreateModal({
                   </button>
                   <button 
                     type="button"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-background border border-border rounded-full text-xs font-medium text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors"
+                    onClick={() => setShowLinkItem(!showLinkItem)}
+                    className={cn(
+                      "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
+                      showLinkItem
+                        ? "bg-primary/10 border border-primary text-primary"
+                        : "bg-background border border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+                    )}
                   >
                     <Link2 className="w-3.5 h-3.5" />
                     Link Item
                   </button>
                 </div>
+
+                {/* AI Checklist Items */}
+                {checklistItems.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                        AI Generated Checklist
+                      </div>
+                      <button
+                        type="button"
+                        onClick={clearChecklist}
+                        className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        Clear all
+                      </button>
+                    </div>
+                    <div className="space-y-1.5 p-3 bg-muted/30 rounded-xl border border-border">
+                      {checklistItems.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-3 group"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => toggleItem(index)}
+                            className={cn(
+                              "w-5 h-5 rounded-md border flex items-center justify-center transition-colors flex-shrink-0",
+                              item.is_completed
+                                ? "bg-primary border-primary text-primary-foreground"
+                                : "border-border hover:border-primary"
+                            )}
+                          >
+                            {item.is_completed && <Check className="w-3 h-3" />}
+                          </button>
+                          <span
+                            className={cn(
+                              "text-sm flex-1",
+                              item.is_completed && "line-through text-muted-foreground"
+                            )}
+                          >
+                            {item.content}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeItem(index)}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-all"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Additional Link Item section when toggled */}
+                {showLinkItem && (
+                  <div className="p-4 bg-muted/30 rounded-xl border border-border">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                      Additional Linked Items
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Use the "Linked Work Item" selector above to link this task to stories, features, epics, or business requests.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Footer */}
