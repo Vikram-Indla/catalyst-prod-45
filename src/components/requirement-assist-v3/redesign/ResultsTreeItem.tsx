@@ -38,12 +38,8 @@ export function ResultsTreeItem({
   
   const children = allItems.filter(i => i.parentId === item.id);
   
-  // Display ID logic
-  const displayId = item.isPublished 
-    ? item.displayId 
-    : item.itemType === 'story' 
-      ? `${projectCode}-XXX` 
-      : `${programCode}-XXX`;
+  // Display ID: Use the actual display_id from DB (already sequential)
+  const displayId = item.displayId;
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -176,6 +176,10 @@ export function useGeneration() {
             const item = payload.new as any;
             
             // Transform and add to store
+            // Normalize confidence score: DB stores 0-100, UI expects 0-1
+            const rawScore = item.confidence_score || 0;
+            const normalizedScore = rawScore > 1 ? rawScore / 100 : rawScore;
+            
             addWorkItem({
               id: item.id,
               generationId: item.generation_id,
@@ -187,7 +191,7 @@ export function useGeneration() {
               title: item.title,
               description: item.description,
               acceptanceCriteria: item.acceptance_criteria ? item.acceptance_criteria.split('\n').filter(Boolean) : [],
-              confidenceScore: item.confidence_score || 0,
+              confidenceScore: normalizedScore,
               confidenceReason: null,
               isSelected: true,
               isEdited: false,
@@ -309,24 +313,30 @@ export function useGeneration() {
       if (itemsError) throw itemsError;
 
       setWorkItems(
-        (items || []).map((item: any) => ({
-          id: item.id,
-          generationId: item.generation_id,
-          parentId: item.parent_id,
-          itemType: item.item_type,
-          level: item.sort_order < 100 ? 0 : item.sort_order < 10000 ? 1 : 2,
-          sortOrder: item.sort_order,
-          displayId: item.display_id,
-          title: item.title,
-          description: item.description,
-          acceptanceCriteria: item.acceptance_criteria ? item.acceptance_criteria.split('\n').filter(Boolean) : [],
-          confidenceScore: item.confidence_score || 0,
-          confidenceReason: item.confidence_reason || null,
-          isSelected: true,
-          isEdited: false,
-          isPublished: item.is_published || false,
-          publishedAt: item.published_at || null,
-        }))
+        (items || []).map((item: any) => {
+          // Normalize confidence score: DB stores 0-100, UI expects 0-1
+          const rawScore = item.confidence_score || 0;
+          const normalizedScore = rawScore > 1 ? rawScore / 100 : rawScore;
+          
+          return {
+            id: item.id,
+            generationId: item.generation_id,
+            parentId: item.parent_id,
+            itemType: item.item_type,
+            level: item.sort_order < 100 ? 0 : item.sort_order < 10000 ? 1 : 2,
+            sortOrder: item.sort_order,
+            displayId: item.display_id,
+            title: item.title,
+            description: item.description,
+            acceptanceCriteria: item.acceptance_criteria ? item.acceptance_criteria.split('\n').filter(Boolean) : [],
+            confidenceScore: normalizedScore,
+            confidenceReason: item.confidence_reason || null,
+            isSelected: true,
+            isEdited: false,
+            isPublished: item.is_published || false,
+            publishedAt: item.published_at || null,
+          };
+        })
       );
 
       // If generation is in progress, subscribe to updates
