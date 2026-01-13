@@ -13,7 +13,7 @@ import { PlannerTaskList } from './components/PlannerTaskList';
 import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
 import { PlannerWeeklyReport } from './components/PlannerWeeklyReport';
-import { PlannerTeamPerformance } from './components/PlannerTeamPerformance';
+import { PlannerWorkstreamPerformance } from './components/PlannerWorkstreamPerformance';
 import { PlannerAIInsights } from './components/PlannerAIInsights';
 import { PlannerSettings } from './components/PlannerSettings';
 import { PlannerTaskDrawer } from './components/PlannerTaskDrawer';
@@ -25,7 +25,7 @@ import { PlannerBulkDeleteModal } from './components/PlannerBulkDeleteModal';
 
 import { PlannerSearchBar } from './components/PlannerSearchBar';
 import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/usePlannerTasks';
-import { usePlannerTeams } from './hooks/usePlannerTeams';
+import { usePlannerWorkstreams } from './hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from './hooks/usePlannerUsers';
 import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
 import { usePlannerSearch } from './hooks/usePlannerSearch';
@@ -44,9 +44,9 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'timeline': 'Timeline',
   'calendar': 'Calendar',
   'weekly-report': 'Weekly Report',
-  'team-performance': 'Team Performance',
+  'workstream-performance': 'Workstream Performance',
   'ai-insights': 'AI Insights',
-  'teams': 'Teams',
+  'workstreams': 'Workstreams',
   'resources': 'Resources',
   'settings': 'Settings',
 };
@@ -82,7 +82,7 @@ export function PlannerPage() {
 
   // Data hooks
   const { data: tasks = [], isLoading } = usePlannerTasks(selectedTeamId);
-  const { data: teams = [] } = usePlannerTeams();
+  const { data: teams = [] } = usePlannerWorkstreams();
   const { data: users = [] } = usePlannerUsers();
   
   // Online users from real users data (add color for avatar)
@@ -322,11 +322,11 @@ export function PlannerPage() {
         return <PlannerCalendar tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'weekly-report':
         return <PlannerWeeklyReport tasks={viewTasks} onTaskClick={handleTaskClick} />;
-      case 'team-performance':
-        return <PlannerTeamPerformance tasks={viewTasks} onTaskClick={handleTaskClick} />;
+      case 'workstream-performance':
+        return <PlannerWorkstreamPerformance tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'ai-insights':
         return <PlannerAIInsights tasks={viewTasks} onTaskClick={handleTaskClick} />;
-      case 'teams':
+      case 'workstreams':
         return <PlannerSettings />;
       case 'settings':
         return <PlannerSettings />;
@@ -379,7 +379,7 @@ export function PlannerPage() {
             </div>
 
             {/* Right: Action Buttons - hidden on teams/settings views */}
-            {activeView !== 'teams' && activeView !== 'settings' && (
+            {activeView !== 'workstreams' && activeView !== 'settings' && (
               <div className="flex items-center gap-2">
 
                 {/* Create Task Button */}
@@ -400,7 +400,7 @@ export function PlannerPage() {
         </div>
 
         {/* Search Bar - hidden on teams/settings views */}
-        {activeView !== 'teams' && activeView !== 'settings' && (
+        {activeView !== 'workstreams' && activeView !== 'settings' && (
           <PlannerSearchBar
             filters={filters}
             onSearchChange={setSearch}

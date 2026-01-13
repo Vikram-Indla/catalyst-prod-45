@@ -1,6 +1,6 @@
 // ============================================================
-// TEAM MEMBERS SECTION
-// Manage team members with add/remove functionality
+// WORKSTREAM MEMBERS SECTION
+// Manage workstream members with add/remove functionality
 // ============================================================
 
 import { useState, useEffect } from 'react';
@@ -19,13 +19,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import type { PlannerTeam, PlannerUser } from '../types';
 
-interface TeamMembersSectionProps {
-  team: PlannerTeam;
+interface WorkstreamMembersSectionProps {
+  workstream: PlannerTeam;
   users: PlannerUser[];
   onMembersChange: () => void;
 }
 
-interface TeamMember {
+interface WorkstreamMember {
   id: string;
   userId: string;
   name: string;
@@ -33,12 +33,12 @@ interface TeamMember {
   role?: string;
 }
 
-export function TeamMembersSection({ team, users, onMembersChange }: TeamMembersSectionProps) {
-  const [members, setMembers] = useState<TeamMember[]>([]);
+export function WorkstreamMembersSection({ workstream, users, onMembersChange }: WorkstreamMembersSectionProps) {
+  const [members, setMembers] = useState<WorkstreamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
 
-  // Fetch current team members
+  // Fetch current workstream members
   useEffect(() => {
     const fetchMembers = async () => {
       setIsLoading(true);
@@ -53,11 +53,11 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
               full_name
             )
           `)
-          .eq('team_id', team.id);
+          .eq('team_id', workstream.id);
 
         if (error) throw error;
 
-        const fetchedMembers: TeamMember[] = (data || []).map((m: any) => ({
+        const fetchedMembers: WorkstreamMember[] = (data || []).map((m: any) => ({
           id: m.id,
           userId: m.user_id,
           name: m.profiles?.full_name || 'Unknown User',
@@ -66,14 +66,14 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
 
         setMembers(fetchedMembers);
       } catch (err) {
-        console.error('Error fetching team members:', err);
+        console.error('Error fetching workstream members:', err);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchMembers();
-  }, [team.id]);
+  }, [workstream.id]);
 
   const getInitials = (name: string): string => {
     return name
@@ -84,7 +84,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
       .slice(0, 2);
   };
 
-  // Get users not already in the team
+  // Get users not already in the workstream
   const availableUsers = users.filter(
     u => !members.some(m => m.userId === u.id)
   );
@@ -97,7 +97,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
       const { error } = await supabase
         .from('team_members')
         .insert({
-          team_id: team.id,
+          team_id: workstream.id,
           user_id: userId,
         });
 
@@ -117,7 +117,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
       onMembersChange();
     } catch (err: any) {
       if (err?.code === '23505') {
-        catalystToast.warning('This user is already a team member');
+        catalystToast.warning('This user is already a workstream member');
       } else {
         console.error('Error adding member:', err);
         catalystToast.error('Failed to add member');
@@ -137,7 +137,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
       if (error) throw error;
 
       setMembers(prev => prev.filter(m => m.id !== memberId));
-      catalystToast.success(`${memberName} removed from team`);
+      catalystToast.success(`${memberName} removed from workstream`);
       onMembersChange();
     } catch (err) {
       console.error('Error removing member:', err);
@@ -151,7 +151,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-text-muted" />
-          <h2 className="font-medium text-text-primary">Team Members</h2>
+          <h2 className="font-medium text-text-primary">Workstream Members</h2>
         </div>
         <Badge variant="secondary">{members.length} members</Badge>
       </div>
@@ -163,7 +163,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
             <SelectTrigger className="h-10 w-full">
               <div className="flex items-center gap-2 text-text-muted">
                 <UserPlus className="w-4 h-4" />
-                <span>Add team member...</span>
+                <span>Add workstream member...</span>
               </div>
             </SelectTrigger>
             <SelectContent 
@@ -186,7 +186,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
           </Select>
         ) : (
           <p className="text-sm text-text-muted">
-            {members.length > 0 ? 'All users are already members of this team' : 'No users available to add'}
+            {members.length > 0 ? 'All users are already members of this workstream' : 'No users available to add'}
           </p>
         )}
       </div>
@@ -198,7 +198,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
         <div className="text-center py-8">
           <Users className="w-8 h-8 text-text-muted mx-auto mb-2 opacity-50" />
           <p className="text-sm text-text-muted">No members yet</p>
-          <p className="text-xs text-text-muted mt-1">Add team members using the dropdown above</p>
+          <p className="text-xs text-text-muted mt-1">Add workstream members using the dropdown above</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -213,7 +213,7 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
               <div className="flex items-center gap-3">
                 <div 
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                  style={{ backgroundColor: team.color }}
+                  style={{ backgroundColor: workstream.color }}
                 >
                   {member.initials}
                 </div>
@@ -238,3 +238,6 @@ export function TeamMembersSection({ team, users, onMembersChange }: TeamMembers
     </div>
   );
 }
+
+// Alias for backward compatibility
+export const TeamMembersSection = WorkstreamMembersSection;

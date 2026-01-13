@@ -1,6 +1,6 @@
 // ============================================================
-// PLANNER TEAM PERFORMANCE VIEW
-// Team health scores, member table, and AI insights
+// PLANNER WORKSTREAM PERFORMANCE VIEW
+// Workstream health scores, member table, and AI insights
 // Roles sourced from user_product_roles (managed in /admin/users)
 // ============================================================
 
@@ -11,7 +11,7 @@ import type { PlannerTask, PlannerUser } from '../types';
 import { motion } from 'framer-motion';
 import { usePlannerUserRoles } from '../hooks/usePlannerUsers';
 
-interface PlannerTeamPerformanceProps {
+interface PlannerWorkstreamPerformanceProps {
   tasks: PlannerTask[];
   onTaskClick: (task: PlannerTask) => void;
 }
@@ -29,7 +29,7 @@ interface MemberStats {
   onTimePercentage: number;
 }
 
-export function PlannerTeamPerformance({ tasks, onTaskClick }: PlannerTeamPerformanceProps) {
+export function PlannerWorkstreamPerformance({ tasks, onTaskClick }: PlannerWorkstreamPerformanceProps) {
   // Fetch roles from user_product_roles (authoritative source from /admin/users)
   const { data: userRoleMap } = usePlannerUserRoles();
 
@@ -130,7 +130,7 @@ export function PlannerTeamPerformance({ tasks, onTaskClick }: PlannerTeamPerfor
     }
 
     return {
-      message: 'Team performance is steady. Continue monitoring blocked items and overdue tasks.',
+      message: 'Workstream performance is steady. Continue monitoring blocked items and overdue tasks.',
       type: 'info' as const,
     };
   }, [memberStats, teamKPIs]);
@@ -140,7 +140,7 @@ export function PlannerTeamPerformance({ tasks, onTaskClick }: PlannerTeamPerfor
       {/* Header */}
       <div className="sticky top-0 z-10 bg-surface-0 px-6 py-4 border-b border-border">
         <div>
-          <h1 className="text-xl font-semibold text-text-primary">Team Performance</h1>
+          <h1 className="text-xl font-semibold text-text-primary">Workstream Performance</h1>
           <p className="text-sm text-text-muted mt-0.5">
             Sprint 12 • Jan 6 - Jan 19
           </p>

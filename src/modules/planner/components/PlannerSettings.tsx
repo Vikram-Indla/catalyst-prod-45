@@ -1,6 +1,6 @@
 // ============================================================
-// PLANNER SETTINGS - TEAMS MANAGEMENT
-// Settings page with teams list, detail view, and create modal
+// PLANNER SETTINGS - WORKSTREAMS MANAGEMENT
+// Settings page with workstreams list, detail view, and create modal
 // ============================================================
 
 import { useState, useMemo } from 'react';
@@ -43,13 +43,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { usePlannerTeams } from '../hooks/usePlannerTeams';
+import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import type { PlannerTeam, PlannerUser } from '../types';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { TeamMembersSection } from './TeamMembersSection';
+import { WorkstreamMembersSection } from './WorkstreamMembersSection';
 
 const COLOR_OPTIONS = [
   { value: '#2563eb', label: 'Blue' },
@@ -62,7 +62,7 @@ const COLOR_OPTIONS = [
   { value: '#6b7280', label: 'Gray' },
 ];
 
-interface TeamFormData {
+interface WorkstreamFormData {
   name: string;
   description: string;
   color: string;
@@ -72,17 +72,17 @@ interface TeamFormData {
 
 export function PlannerSettings() {
   const queryClient = useQueryClient();
-  const { data: teams = [], isLoading: teamsLoading } = usePlannerTeams();
+  const { data: workstreams = [], isLoading: workstreamsLoading } = usePlannerWorkstreams();
   const { data: users = [] } = usePlannerUsers();
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTeam, setSelectedTeam] = useState<PlannerTeam | null>(null);
+  const [selectedWorkstream, setSelectedWorkstream] = useState<PlannerTeam | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [deleteConfirmTeam, setDeleteConfirmTeam] = useState<PlannerTeam | null>(null);
+  const [deleteConfirmWorkstream, setDeleteConfirmWorkstream] = useState<PlannerTeam | null>(null);
   
   // Form state
-  const [formData, setFormData] = useState<TeamFormData>({
+  const [formData, setFormData] = useState<WorkstreamFormData>({
     name: '',
     description: '',
     color: '#2563eb',
@@ -90,15 +90,15 @@ export function PlannerSettings() {
     memberIds: [],
   });
 
-  // Filter teams by search
-  const filteredTeams = useMemo(() => {
-    if (!searchQuery.trim()) return teams;
+  // Filter workstreams by search
+  const filteredWorkstreams = useMemo(() => {
+    if (!searchQuery.trim()) return workstreams;
     const query = searchQuery.toLowerCase();
-    return teams.filter(team => 
-      team.name.toLowerCase().includes(query) ||
-      team.shortName.toLowerCase().includes(query)
+    return workstreams.filter(ws => 
+      ws.name.toLowerCase().includes(query) ||
+      ws.shortName.toLowerCase().includes(query)
     );
-  }, [teams, searchQuery]);
+  }, [workstreams, searchQuery]);
 
   const resetForm = () => {
     setFormData({
@@ -110,9 +110,9 @@ export function PlannerSettings() {
     });
   };
 
-  const handleCreateTeam = async () => {
+  const handleCreateWorkstream = async () => {
     if (!formData.name.trim()) {
-      catalystToast.warning('Please enter a team name');
+      catalystToast.warning('Please enter a workstream name');
       return;
     }
 
@@ -128,42 +128,42 @@ export function PlannerSettings() {
 
       if (error) throw error;
 
-      catalystToast.success('Team created successfully!');
-      queryClient.invalidateQueries({ queryKey: ['planner-teams'] });
+      catalystToast.success('Workstream created successfully!');
+      queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
       setIsCreateModalOpen(false);
       resetForm();
     } catch (err) {
-      console.error('Error creating team:', err);
-      catalystToast.error('Failed to create team');
+      console.error('Error creating workstream:', err);
+      catalystToast.error('Failed to create workstream');
     }
   };
 
-  const handleDeleteTeam = async (team: PlannerTeam) => {
+  const handleDeleteWorkstream = async (ws: PlannerTeam) => {
     try {
       const { error } = await supabase
         .from('teams')
         .update({ is_active: false })
-        .eq('id', team.id);
+        .eq('id', ws.id);
 
       if (error) throw error;
 
-      catalystToast.success('Team deleted successfully!');
-      queryClient.invalidateQueries({ queryKey: ['planner-teams'] });
-      setSelectedTeam(null);
-      setDeleteConfirmTeam(null);
+      catalystToast.success('Workstream deleted successfully!');
+      queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      setSelectedWorkstream(null);
+      setDeleteConfirmWorkstream(null);
     } catch (err) {
-      console.error('Error deleting team:', err);
-      catalystToast.error('Failed to delete team');
+      console.error('Error deleting workstream:', err);
+      catalystToast.error('Failed to delete workstream');
     }
   };
 
-  const handleSelectTeam = (team: PlannerTeam) => {
-    setSelectedTeam(team);
+  const handleSelectWorkstream = (ws: PlannerTeam) => {
+    setSelectedWorkstream(ws);
     setFormData({
-      name: team.name,
-      description: team.description || '',
-      color: team.color,
-      leadId: team.leadId || '',
+      name: ws.name,
+      description: ws.description || '',
+      color: ws.color,
+      leadId: ws.leadId || '',
       memberIds: [],
     });
     setIsEditMode(false);
@@ -187,15 +187,15 @@ export function PlannerSettings() {
 
   const availableUsers = users.filter(u => !formData.memberIds.includes(u.id));
 
-  // Team List View
-  const renderTeamsList = () => (
+  // Workstream List View
+  const renderWorkstreamsList = () => (
     <div className="flex-1 overflow-y-auto">
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-text-primary">Teams</h1>
-            <p className="text-sm text-text-muted mt-0.5">Organize your workspace into teams</p>
+            <h1 className="text-xl font-semibold text-text-primary">Workstreams</h1>
+            <p className="text-sm text-text-muted mt-0.5">Organize your workspace into workstreams</p>
           </div>
           <Button 
             onClick={() => {
@@ -205,7 +205,7 @@ export function PlannerSettings() {
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create Team
+            Create Workstream
           </Button>
         </div>
 
@@ -215,32 +215,32 @@ export function PlannerSettings() {
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search teams..."
+            placeholder="Search workstreams..."
             className="pl-10 h-10"
           />
         </div>
 
-        {/* Teams Grid */}
-        {teamsLoading ? (
-          <div className="text-center py-12 text-text-muted">Loading teams...</div>
-        ) : filteredTeams.length === 0 ? (
+        {/* Workstreams Grid */}
+        {workstreamsLoading ? (
+          <div className="text-center py-12 text-text-muted">Loading workstreams...</div>
+        ) : filteredWorkstreams.length === 0 ? (
           <div className="text-center py-12">
             <Users className="w-12 h-12 text-text-muted mx-auto mb-3" />
-            <p className="text-text-muted">No teams found</p>
+            <p className="text-text-muted">No workstreams found</p>
             <Button 
               variant="outline" 
               className="mt-4"
               onClick={() => setIsCreateModalOpen(true)}
             >
-              Create your first team
+              Create your first workstream
             </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredTeams.map((team) => (
+            {filteredWorkstreams.map((ws) => (
               <div
-                key={team.id}
-                onClick={() => handleSelectTeam(team)}
+                key={ws.id}
+                onClick={() => handleSelectWorkstream(ws)}
                 className={cn(
                   "p-4 bg-surface-0 rounded-lg border border-border cursor-pointer",
                   "hover:border-blue-300 hover:shadow-sm transition-all"
@@ -249,18 +249,18 @@ export function PlannerSettings() {
                 <div className="flex items-center gap-3 mb-3">
                   <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-medium"
-                    style={{ backgroundColor: team.color }}
+                    style={{ backgroundColor: ws.color }}
                   >
-                    {team.emoji || team.shortName.charAt(0)}
+                    {ws.emoji || ws.shortName.charAt(0)}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-medium text-text-primary truncate">{team.name}</h3>
-                    <p className="text-sm text-text-muted">{team.shortName}</p>
+                    <h3 className="font-medium text-text-primary truncate">{ws.name}</h3>
+                    <p className="text-sm text-text-muted">{ws.shortName}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-text-muted">
                   <Users className="w-4 h-4" />
-                  <span>{team.memberCount} members</span>
+                  <span>{ws.memberCount} members</span>
                 </div>
               </div>
             ))}
@@ -270,34 +270,34 @@ export function PlannerSettings() {
     </div>
   );
 
-  // Team Detail View
-  const renderTeamDetail = () => {
-    if (!selectedTeam) return null;
+  // Workstream Detail View
+  const renderWorkstreamDetail = () => {
+    if (!selectedWorkstream) return null;
 
     return (
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 space-y-6">
           {/* Back Button */}
           <button
-            onClick={() => setSelectedTeam(null)}
+            onClick={() => setSelectedWorkstream(null)}
             className="flex items-center gap-2 text-sm text-text-muted hover:text-text-primary transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
-            Back to Teams
+            Back to Workstreams
           </button>
 
-          {/* Team Header */}
+          {/* Workstream Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div
                 className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-xl font-medium"
-                style={{ backgroundColor: selectedTeam.color }}
+                style={{ backgroundColor: selectedWorkstream.color }}
               >
-                {selectedTeam.emoji || selectedTeam.shortName.charAt(0)}
+                {selectedWorkstream.emoji || selectedWorkstream.shortName.charAt(0)}
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-text-primary">{selectedTeam.name}</h1>
-                <p className="text-sm text-text-muted">{selectedTeam.shortName} • {selectedTeam.memberCount} members</p>
+                <h1 className="text-xl font-semibold text-text-primary">{selectedWorkstream.name}</h1>
+                <p className="text-sm text-text-muted">{selectedWorkstream.shortName} • {selectedWorkstream.memberCount} members</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -312,7 +312,7 @@ export function PlannerSettings() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setDeleteConfirmTeam(selectedTeam)}
+                onClick={() => setDeleteConfirmWorkstream(selectedWorkstream)}
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4" />
@@ -320,16 +320,16 @@ export function PlannerSettings() {
             </div>
           </div>
 
-          {/* Team Info Card */}
+          {/* Workstream Info Card */}
           <div className="bg-surface-0 rounded-lg border border-border p-6 space-y-6">
             {isEditMode ? (
               <>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Team Name</Label>
+                  <Label className="text-sm font-medium">Workstream Name</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter team name..."
+                    placeholder="Enter workstream name..."
                   />
                 </div>
 
@@ -338,13 +338,13 @@ export function PlannerSettings() {
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Enter team description..."
+                    placeholder="Enter workstream description..."
                     rows={3}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Team Color</Label>
+                  <Label className="text-sm font-medium">Workstream Color</Label>
                   <div className="flex flex-wrap gap-2">
                     {COLOR_OPTIONS.map((c) => (
                       <button
@@ -378,15 +378,15 @@ export function PlannerSettings() {
                 <div>
                   <Label className="text-sm font-medium text-text-muted">Description</Label>
                   <p className="mt-1 text-text-primary">
-                    {selectedTeam.description || 'No description provided'}
+                    {selectedWorkstream.description || 'No description provided'}
                   </p>
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium text-text-muted">Team Lead</Label>
+                  <Label className="text-sm font-medium text-text-muted">Workstream Lead</Label>
                   <p className="mt-1 text-text-primary">
-                    {selectedTeam.leadId ? 
-                      users.find(u => u.id === selectedTeam.leadId)?.name || 'Unknown' 
+                    {selectedWorkstream.leadId ? 
+                      users.find(u => u.id === selectedWorkstream.leadId)?.name || 'Unknown' 
                       : 'Not assigned'
                     }
                   </p>
@@ -397,10 +397,10 @@ export function PlannerSettings() {
                   <div className="flex items-center gap-2 mt-1">
                     <div
                       className="w-6 h-6 rounded-full"
-                      style={{ backgroundColor: selectedTeam.color }}
+                      style={{ backgroundColor: selectedWorkstream.color }}
                     />
                     <span className="text-text-primary">
-                      {COLOR_OPTIONS.find(c => c.value === selectedTeam.color)?.label || 'Custom'}
+                      {COLOR_OPTIONS.find(c => c.value === selectedWorkstream.color)?.label || 'Custom'}
                     </span>
                   </div>
                 </div>
@@ -409,11 +409,11 @@ export function PlannerSettings() {
           </div>
 
           {/* Members Section */}
-          <TeamMembersSection 
-            team={selectedTeam} 
+          <WorkstreamMembersSection 
+            workstream={selectedWorkstream} 
             users={users} 
             onMembersChange={() => {
-              queryClient.invalidateQueries({ queryKey: ['planner-teams'] });
+              queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
             }}
           />
         </div>
@@ -423,25 +423,25 @@ export function PlannerSettings() {
 
   return (
     <div className="h-full flex flex-col bg-surface-1">
-      {selectedTeam ? renderTeamDetail() : renderTeamsList()}
+      {selectedWorkstream ? renderWorkstreamDetail() : renderWorkstreamsList()}
 
-      {/* Create Team Modal */}
+      {/* Create Workstream Modal */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent className="sm:max-w-[480px] bg-background">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Create New Team</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">Create New Workstream</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-5 mt-4">
-            {/* Team Name */}
+            {/* Workstream Name */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Team Name <span className="text-red-500">*</span>
+                Workstream Name <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Enter team name..."
+                placeholder="Enter workstream name..."
                 className="h-10"
                 autoFocus
               />
@@ -453,14 +453,14 @@ export function PlannerSettings() {
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Enter team description..."
+                placeholder="Enter workstream description..."
                 rows={3}
               />
             </div>
 
-            {/* Team Color */}
+            {/* Workstream Color */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Team Color</Label>
+              <Label className="text-sm font-medium">Workstream Color</Label>
               <div className="flex flex-wrap gap-2">
                 {COLOR_OPTIONS.map((c) => (
                   <button
@@ -480,15 +480,15 @@ export function PlannerSettings() {
               </div>
             </div>
 
-            {/* Team Lead */}
+            {/* Workstream Lead */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Team Lead</Label>
+              <Label className="text-sm font-medium">Workstream Lead</Label>
               <Select 
                 value={formData.leadId} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, leadId: value }))}
               >
                 <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Select team lead..." />
+                  <SelectValue placeholder="Select workstream lead..." />
                 </SelectTrigger>
                 <SelectContent 
                   position="popper" 
@@ -578,11 +578,11 @@ export function PlannerSettings() {
                 Cancel
               </Button>
               <Button
-                onClick={handleCreateTeam}
+                onClick={handleCreateWorkstream}
                 disabled={!formData.name.trim()}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Create Team
+                Create Workstream
               </Button>
             </div>
           </div>
@@ -591,20 +591,20 @@ export function PlannerSettings() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog 
-        open={!!deleteConfirmTeam} 
-        onOpenChange={() => setDeleteConfirmTeam(null)}
+        open={!!deleteConfirmWorkstream} 
+        onOpenChange={() => setDeleteConfirmWorkstream(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Team</AlertDialogTitle>
+            <AlertDialogTitle>Delete Workstream</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteConfirmTeam?.name}"? This action cannot be undone.
+              Are you sure you want to delete "{deleteConfirmWorkstream?.name}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteConfirmTeam && handleDeleteTeam(deleteConfirmTeam)}
+              onClick={() => deleteConfirmWorkstream && handleDeleteWorkstream(deleteConfirmWorkstream)}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
               Delete

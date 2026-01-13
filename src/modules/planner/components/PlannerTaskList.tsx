@@ -55,7 +55,7 @@ const ALL_COLUMNS: ColumnDef[] = [
   { id: 'title', label: 'Title', field: 'title', width: 'min-w-[200px]', defaultVisible: true },
   { id: 'status', label: 'Status', field: 'status', width: 'w-28', defaultVisible: true },
   { id: 'priority', label: 'Priority', field: 'priority', width: 'w-28', defaultVisible: true },
-  { id: 'teamName', label: 'Team', field: 'teamName', width: 'w-36', defaultVisible: true },
+  { id: 'teamName', label: 'Workstream', field: 'teamName', width: 'w-36', defaultVisible: true },
   { id: 'assigneeName', label: 'Assignee', field: 'assigneeName', width: 'w-36', defaultVisible: true },
   { id: 'startDate', label: 'Start Date', field: 'startDate', width: 'w-28', defaultVisible: true },
   { id: 'dueDate', label: 'Due Date', field: 'dueDate', width: 'w-28', defaultVisible: true },
