@@ -41,6 +41,9 @@ export function useCreatePlannerTask() {
       const taskId = uuidv4();
       const taskKey = `PLN-${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}`;
 
+      // Default start_date to today if not provided
+      const today = new Date().toISOString().split('T')[0];
+
       const { data: result, error } = await supabase
         .from('stories')
         .insert([{
@@ -57,6 +60,7 @@ export function useCreatePlannerTask() {
           feature_id: data.featureId || null,
           team_id: data.teamId || DEFAULT_TEAM_ID,
           story_key: taskKey,
+          start_date: today,
         }])
         .select()
         .single();
@@ -73,6 +77,7 @@ export function useCreatePlannerTask() {
       const tempId = `temp-${uuidv4()}`;
       const tempKey = `PLN-${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}`;
       const now = new Date().toISOString();
+      const today = new Date().toISOString().split('T')[0];
       
       const optimisticTask: PlannerTask = {
         id: tempId,
@@ -89,6 +94,7 @@ export function useCreatePlannerTask() {
         comments: 0,
         createdAt: now,
         updatedAt: now,
+        startDate: today,
         dueDate: data.dueDate,
       };
       
