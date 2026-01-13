@@ -216,6 +216,8 @@ export function PlannerPage() {
     status: TaskStatus;
     priority: string;
     assigneeId?: string;
+    teamId?: string;
+    startDate?: string;
     dueDate?: string;
   }) => {
     // Find assignee name for the toast
@@ -229,7 +231,7 @@ export function PlannerPage() {
       assigneeId: data.assigneeId,
       assigneeName: assignee?.name,
       dueDate: data.dueDate,
-      teamId: selectedTeamId || undefined,
+      teamId: data.teamId || selectedTeamId || undefined,
     });
     // Toast is handled in the hook - no duplicate here
   }, [createTask, users, selectedTeamId]);
@@ -421,7 +423,9 @@ export function PlannerPage() {
           onClose={() => setIsCreateModalOpen(false)}
           onCreate={handleCreateTask}
           defaultStatus={createDefaultStatus}
+          defaultTeamId={selectedTeamId || undefined}
           users={users}
+          teams={teams}
         />
 
         {/* AI Panel */}

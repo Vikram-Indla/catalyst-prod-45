@@ -1,24 +1,16 @@
 // ============================================================
 // PLANNER CREATE TASK MODAL
-// Grand modal with Start Date, Reporter, centered with backdrop blur
+// Enterprise-grade modal with searchable dropdowns, team filtering
+// Follows Catalyst V5 Design System
 // ============================================================
 
-import { useState, useEffect } from 'react';
-import { X, Sparkles, Calendar } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { X, Plus, Zap, Paperclip, Link2, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { TaskStatus, TaskPriority, PlannerUser } from '../types';
+import type { TaskStatus, TaskPriority, PlannerUser, PlannerTeam } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { SearchableSelect, SelectOption } from './SearchableSelect';
+import { cn } from '@/lib/utils';
 
 interface CreateTaskData {
   title: string;
@@ -27,6 +19,7 @@ interface CreateTaskData {
   priority: TaskPriority;
   assigneeId?: string;
   reporterId?: string;
+  teamId?: string;
   startDate?: string;
   dueDate?: string;
 }
@@ -36,8 +29,25 @@ interface PlannerCreateModalProps {
   onClose: () => void;
   onCreate: (data: CreateTaskData) => void;
   defaultStatus?: TaskStatus;
+  defaultTeamId?: string;
   users?: PlannerUser[];
+  teams?: PlannerTeam[];
   currentUserId?: string;
+}
+
+// Avatar color utility
+const AVATAR_COLORS = [
+  '#2563eb', // blue
+  '#0d9488', // teal
+  '#7c3aed', // purple
+  '#d97706', // amber
+  '#dc2626', // red
+  '#059669', // emerald
+];
+
+function getAvatarColor(name: string): string {
+  const index = name.charCodeAt(0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
 }
 
 export function PlannerCreateModal({
@@ -45,47 +55,79 @@ export function PlannerCreateModal({
   onClose,
   onCreate,
   defaultStatus = 'backlog',
+  defaultTeamId,
   users = [],
+  teams = [],
   currentUserId,
 }: PlannerCreateModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TaskStatus>(defaultStatus);
   const [priority, setPriority] = useState<TaskPriority>('medium');
-  const [assigneeId, setAssigneeId] = useState<string>('');
-  const [reporterId, setReporterId] = useState<string>(currentUserId || '');
+  const [assigneeId, setAssigneeId] = useState<string | null>(null);
+  const [reporterId, setReporterId] = useState<string | null>(currentUserId || null);
+  const [teamId, setTeamId] = useState<string | null>(defaultTeamId || null);
   const [startDate, setStartDate] = useState('');
   const [dueDate, setDueDate] = useState('');
 
-  // Reset form when modal opens - only depends on isOpen to prevent flicker
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+  // Filter assignees by selected team
+  const availableAssignees = useMemo(() => {
+    if (!teamId) return users;
+    return users.filter(u => u.teamId === teamId || u.team === teamId);
+  }, [users, teamId]);
+
+  // Reset assignee when team changes (if current assignee not in new team)
+  useEffect(() => {
+    if (teamId && assigneeId) {
+      const assigneeInTeam = availableAssignees.find(u => u.id === assigneeId);
+      if (!assigneeInTeam) {
+        setAssigneeId(null);
+      }
+    }
+  }, [teamId, assigneeId, availableAssignees]);
+
+  // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setTitle('');
       setDescription('');
       setStatus(defaultStatus);
       setPriority('medium');
-      setAssigneeId('');
-      setReporterId(currentUserId || '');
+      setAssigneeId(null);
+      setReporterId(currentUserId || null);
+      setTeamId(defaultTeamId || null);
       setStartDate('');
       setDueDate('');
+      // Focus title after animation
+      setTimeout(() => titleInputRef.current?.focus(), 100);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [isOpen, defaultStatus, defaultTeamId, currentUserId]);
 
-  // Handle escape key
+  // Keyboard shortcuts
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+      
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleSubmit();
+      }
+      if (e.key === 'Escape') {
         onClose();
       }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return;
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, title, onClose]);
+
+  const handleSubmit = () => {
+    if (!title.trim()) {
+      titleInputRef.current?.focus();
+      return;
+    }
 
     onCreate({
       title: title.trim(),
@@ -94,6 +136,7 @@ export function PlannerCreateModal({
       priority,
       assigneeId: assigneeId || undefined,
       reporterId: reporterId || undefined,
+      teamId: teamId || undefined,
       startDate: startDate || undefined,
       dueDate: dueDate || undefined,
     });
@@ -101,11 +144,54 @@ export function PlannerCreateModal({
     onClose();
   };
 
+  // Transform data for SearchableSelect
+  const teamOptions: SelectOption[] = teams.map(t => ({
+    id: t.id,
+    label: t.name,
+    color: t.color,
+    meta: `${t.memberCount} members`,
+  }));
+
+  const userOptions: SelectOption[] = availableAssignees.map(u => ({
+    id: u.id,
+    label: u.name,
+    initials: u.initials,
+    color: getAvatarColor(u.name),
+    groupId: u.teamId || u.team,
+  }));
+
+  const allUserOptions: SelectOption[] = users.map(u => ({
+    id: u.id,
+    label: u.name,
+    initials: u.initials,
+    color: getAvatarColor(u.name),
+    groupId: u.teamId || u.team,
+  }));
+
+  const statusOptions: SelectOption[] = COLUMN_CONFIG.map(s => ({
+    id: s.id,
+    label: s.title,
+    color: s.color,
+  }));
+
+  const priorityOptions: SelectOption[] = (Object.entries(PRIORITY_CONFIG) as [TaskPriority, typeof PRIORITY_CONFIG['critical']][]).map(([key, config]) => ({
+    id: key,
+    label: config.label,
+    color: config.color,
+    emoji: config.emoji,
+  }));
+
+  // Group users by team for ungrouped assignee dropdown
+  const getUserTeamName = (option: SelectOption): string => {
+    const team = teams.find(t => t.id === option.groupId);
+    return team?.name || 'Other';
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop with blur */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -115,7 +201,7 @@ export function PlannerCreateModal({
             aria-hidden="true"
           />
 
-          {/* Modal - Centered */}
+          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -123,12 +209,17 @@ export function PlannerCreateModal({
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="w-full max-w-[560px] bg-background rounded-2xl shadow-2xl overflow-hidden">
+            <div className="w-full max-w-[600px] bg-background rounded-2xl shadow-2xl overflow-hidden">
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-5 border-b border-border">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <h2 className="text-xl font-semibold text-foreground">Create New Task</h2>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Plus className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">Create New Task</h2>
+                    <p className="text-sm text-muted-foreground">Add a task to your planner</p>
+                  </div>
                 </div>
                 <button
                   onClick={onClose}
@@ -139,192 +230,255 @@ export function PlannerCreateModal({
                 </button>
               </div>
 
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+              {/* Form Body */}
+              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
                 {/* Title */}
-                <div className="space-y-2">
-                  <Label htmlFor="title" className="text-sm font-medium text-foreground">
-                    Title <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="title"
+                <div>
+                  <label className="block text-sm font-semibold text-foreground mb-2">
+                    Task Title <span className="text-destructive">*</span>
+                  </label>
+                  <input
+                    ref={titleInputRef}
+                    type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter a clear, actionable task title..."
-                    required
-                    autoFocus
-                    className="w-full h-11"
+                    placeholder="What needs to be done?"
+                    className="w-full px-4 py-3 bg-muted/50 border border-border rounded-xl text-base font-medium text-foreground placeholder:text-muted-foreground focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                   />
                 </div>
 
                 {/* Description */}
-                <div className="space-y-2">
-                  <Label htmlFor="description" className="text-sm font-medium text-foreground">
-                    Description
-                  </Label>
-                  <Textarea
-                    id="description"
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-semibold text-foreground">
+                      Description
+                    </label>
+                    <span className="text-xs text-muted-foreground">Optional</span>
+                  </div>
+                  <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe what needs to be done..."
+                    placeholder="Add more details about this task..."
                     rows={3}
-                    className="w-full resize-none"
+                    className="w-full px-4 py-3 bg-muted/50 border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all resize-none"
                   />
                 </div>
 
-                {/* Status & Priority Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="status" className="text-sm font-medium text-foreground">
-                      Status
-                    </Label>
-                    <Select value={status} onValueChange={(v: TaskStatus) => setStatus(v)}>
-                      <SelectTrigger id="status" className="w-full h-10">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover z-[60]">
-                        {COLUMN_CONFIG.map(col => (
-                          <SelectItem key={col.id} value={col.id}>
-                            <div className="flex items-center gap-2">
-                              <div 
-                                className="w-2.5 h-2.5 rounded-full" 
-                                style={{ backgroundColor: col.color }}
-                              />
-                              {col.title}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                {/* Assignment Section */}
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                    Assignment
                   </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SearchableSelect
+                      label="Team"
+                      placeholder="Select team..."
+                      searchPlaceholder="Search teams..."
+                      options={teamOptions}
+                      value={teamId}
+                      onChange={setTeamId}
+                      renderOption={(option) => (
+                        <div className="flex items-center gap-3">
+                          <span 
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
+                            style={{ background: option.color }}
+                          />
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">{option.label}</div>
+                            {option.meta && (
+                              <div className="text-xs text-muted-foreground">{option.meta}</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    />
 
-                  <div className="space-y-2">
-                    <Label htmlFor="priority" className="text-sm font-medium text-foreground">
-                      Priority
-                    </Label>
-                    <Select value={priority} onValueChange={(v: TaskPriority) => setPriority(v)}>
-                      <SelectTrigger id="priority" className="w-full h-10">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover z-[60]">
-                        {(Object.entries(PRIORITY_CONFIG) as [TaskPriority, typeof PRIORITY_CONFIG['critical']][]).map(([key, config]) => (
-                          <SelectItem key={key} value={key}>
-                            <div className="flex items-center gap-2">
-                              <span>{config.emoji}</span>
-                              {config.label}
+                    <SearchableSelect
+                      label="Assignee"
+                      placeholder="Select assignee..."
+                      searchPlaceholder="Search people..."
+                      options={userOptions}
+                      value={assigneeId}
+                      onChange={setAssigneeId}
+                      groupBy={!teamId ? getUserTeamName : undefined}
+                      renderTrigger={(selected) => (
+                        selected ? (
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
+                              style={{ background: selected.color }}
+                            >
+                              {selected.initials}
                             </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Assignee & Reporter Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="assignee" className="text-sm font-medium text-foreground">
-                      Assignee
-                    </Label>
-                    <Select value={assigneeId || 'unassigned'} onValueChange={setAssigneeId}>
-                      <SelectTrigger id="assignee" className="w-full h-10">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover z-[60]">
-                        <SelectItem value="unassigned">Unassigned</SelectItem>
-                        {users.map(user => (
-                          <SelectItem key={user.id} value={user.id}>
-                            <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[9px] font-medium">
-                                {user.initials}
-                              </div>
-                              {user.name}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="reporter" className="text-sm font-medium text-foreground">
-                      Reporter
-                    </Label>
-                    <Select value={reporterId || 'unknown'} onValueChange={setReporterId}>
-                      <SelectTrigger id="reporter" className="w-full h-10">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover z-[60]">
-                        {users.map(user => (
-                          <SelectItem key={user.id} value={user.id}>
-                            <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 rounded-full bg-teal-600 flex items-center justify-center text-white text-[9px] font-medium">
-                                {user.initials}
-                              </div>
-                              {user.name}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                            <span className="text-foreground truncate">{selected.label}</span>
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">Select assignee...</span>
+                        )
+                      )}
+                      renderOption={(option) => (
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                            style={{ background: option.color }}
+                          >
+                            {option.initials}
+                          </div>
+                          <span className="text-sm font-medium text-foreground truncate">{option.label}</span>
+                        </div>
+                      )}
+                    />
                   </div>
                 </div>
 
-                {/* Start Date & Due Date Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="startDate" className="text-sm font-medium text-foreground">
-                      Start Date
-                    </Label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        id="startDate"
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full h-10 pl-10"
-                      />
+                {/* Classification Section */}
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                    Classification
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SearchableSelect
+                      label="Status"
+                      options={statusOptions}
+                      value={status}
+                      onChange={(v) => setStatus((v as TaskStatus) || 'backlog')}
+                      showSearch={false}
+                      showClear={false}
+                      renderTrigger={(selected) => (
+                        <div className="flex items-center gap-2">
+                          <span 
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{ background: selected?.color }}
+                          />
+                          <span className="text-foreground">{selected?.label || 'Select...'}</span>
+                        </div>
+                      )}
+                    />
+
+                    <SearchableSelect
+                      label="Priority"
+                      options={priorityOptions}
+                      value={priority}
+                      onChange={(v) => setPriority((v as TaskPriority) || 'medium')}
+                      showSearch={false}
+                      showClear={false}
+                      renderTrigger={(selected) => (
+                        <div className="flex items-center gap-2">
+                          <span 
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{ background: selected?.color }}
+                          />
+                          <span className="text-foreground">{selected?.label || 'Select...'}</span>
+                        </div>
+                      )}
+                      renderOption={(option) => (
+                        <div className="flex items-center gap-3">
+                          <span 
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{ background: option.color }}
+                          />
+                          <span className="text-sm font-medium text-foreground">{option.label}</span>
+                        </div>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* Timeline Section */}
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                    Timeline
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-foreground mb-2">
+                        Start Date
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                        <input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full pl-11 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm text-foreground focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-foreground mb-2">
+                        Due Date
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                        <input
+                          type="date"
+                          value={dueDate}
+                          onChange={(e) => setDueDate(e.target.value)}
+                          className="w-full pl-11 pr-4 py-3 bg-muted/50 border border-border rounded-xl text-sm text-foreground focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                        />
+                      </div>
                     </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="dueDate" className="text-sm font-medium text-foreground">
-                      Due Date
-                    </Label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        id="dueDate"
-                        type="date"
-                        value={dueDate}
-                        onChange={(e) => setDueDate(e.target.value)}
-                        className="w-full h-10 pl-10"
-                      />
-                    </div>
-                  </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
-                  <Button
+                {/* Quick Actions */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button 
                     type="button"
-                    variant="outline"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-background border border-border rounded-full text-xs font-medium text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    AI Checklist
+                  </button>
+                  <button 
+                    type="button"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-background border border-border rounded-full text-xs font-medium text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors"
+                  >
+                    <Paperclip className="w-3.5 h-3.5" />
+                    Attach File
+                  </button>
+                  <button 
+                    type="button"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-background border border-border rounded-full text-xs font-medium text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors"
+                  >
+                    <Link2 className="w-3.5 h-3.5" />
+                    Link Item
+                  </button>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-border bg-muted/30 flex items-center justify-between">
+                <div className="text-xs text-muted-foreground">
+                  <kbd className="px-1.5 py-0.5 bg-background border border-border rounded text-[10px] font-medium">⌘</kbd>
+                  {' + '}
+                  <kbd className="px-1.5 py-0.5 bg-background border border-border rounded text-[10px] font-medium">Enter</kbd>
+                  {' to create'}
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
                     onClick={onClose}
-                    className="px-5"
+                    className="px-5 py-2.5 bg-background border border-border rounded-xl text-sm font-semibold text-foreground hover:bg-muted hover:border-border-strong transition-colors"
                   >
                     Cancel
-                  </Button>
-                  <Button
-                    type="submit"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
                     disabled={!title.trim()}
-                    className="px-5 bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                    className={cn(
+                      "px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold",
+                      "hover:bg-primary/90 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30",
+                      "transition-all flex items-center gap-2",
+                      "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                    )}
                   >
-                    <Sparkles className="w-4 h-4" />
+                    <Plus className="w-4 h-4" />
                     Create Task
-                  </Button>
+                  </button>
                 </div>
-              </form>
+              </div>
             </div>
           </motion.div>
         </>
