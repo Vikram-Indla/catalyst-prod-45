@@ -1,12 +1,13 @@
 // ============================================================
 // GENERATING STATE COMPONENT - COMPLETE REDESIGN
 // Full-screen centered with animated progress ring
+// Uses realtime data from store, not mock data
 // ============================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Loader2, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useStore, type Generation } from '@/stores/requirementAssistStore';
+import { useRequirementAssistStore, type Generation } from '@/stores/requirementAssistStore';
 import { Button } from '@/components/ui/button';
 
 interface GeneratingStateProps {
@@ -88,68 +89,90 @@ function LivePreviewItem({
 // MAIN GENERATING STATE COMPONENT
 // ============================================================
 export function GeneratingState({ onCancel, onComplete }: GeneratingStateProps) {
-  const { generation, isGenerating, generationError } = useStore();
+  const { generation, isGenerating, generationError, workItems } = useRequirementAssistStore();
   
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(1);
-  const [liveItems, setLiveItems] = useState<Array<{ id: string; type: string; title: string; loaded: boolean }>>([]);
+  const completedRef = useRef(false);
 
-  // Simulate progress
+  // Calculate progress based on actual work items
+  const epicCount = workItems.filter(w => w.itemType === 'epic').length;
+  const featureCount = workItems.filter(w => w.itemType === 'feature').length;
+  const storyCount = workItems.filter(w => w.itemType === 'story').length;
+  const totalItems = workItems.length;
+
+  // Determine current step based on what's been generated
+  useEffect(() => {
+    if (storyCount > 0) {
+      setCurrentStep(4);
+    } else if (featureCount > 0) {
+      setCurrentStep(3);
+    } else if (epicCount > 0) {
+      setCurrentStep(2);
+    } else {
+      setCurrentStep(1);
+    }
+  }, [epicCount, featureCount, storyCount]);
+
+  // Simulate progress but cap at 95% until complete
   useEffect(() => {
     const progressInterval = setInterval(() => {
       setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
+        // If we have work items, base progress on that
+        if (totalItems > 0) {
+          // Estimate: typically 3-5 epics, 9-15 features, 15-30 stories
+          const estimatedTotal = 30; // Rough estimate
+          const itemProgress = Math.min(95, (totalItems / estimatedTotal) * 100);
+          return Math.max(prev, itemProgress);
+        }
+        // Otherwise increment slowly
+        if (prev >= 50) {
+          return Math.min(prev + 0.5, 95); // Cap at 95% until complete
         }
         return prev + Math.random() * 2;
       });
     }, 150);
 
     return () => clearInterval(progressInterval);
-  }, []);
+  }, [totalItems]);
 
-  // Simulate step progression
+  // Handle completion - check for 'draft' status OR when we have items and generation stopped
   useEffect(() => {
-    const stepInterval = setInterval(() => {
-      setCurrentStep(prev => {
-        if (prev >= GENERATION_STEPS.length) {
-          clearInterval(stepInterval);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 2500);
+    // Prevent double-calling onComplete
+    if (completedRef.current) return;
 
-    return () => clearInterval(stepInterval);
-  }, []);
+    // Check if generation is complete:
+    // 1. Status is 'draft' (edge function sets this on success)
+    // 2. OR we have work items and isGenerating became false
+    const isComplete = 
+      (generation?.status === 'draft' && totalItems > 0) ||
+      (generation?.status === 'completed' && totalItems > 0) ||
+      (!isGenerating && totalItems > 0);
 
-  // Simulate live preview items
-  useEffect(() => {
-    const items = [
-      { id: 'E-001', type: 'epic', title: 'User Management System', loaded: false },
-      { id: 'F-001', type: 'feature', title: 'Authentication & Authorization', loaded: false },
-      { id: 'S-001', type: 'story', title: 'User login with email and password', loaded: false },
-      { id: 'S-002', type: 'story', title: 'Password reset functionality', loaded: false },
-    ];
-
-    setLiveItems(items);
-
-    items.forEach((item, index) => {
+    if (isComplete && generation) {
+      completedRef.current = true;
+      setProgress(100);
+      // Small delay to show 100% before transitioning
       setTimeout(() => {
-        setLiveItems(prev => 
-          prev.map((i, idx) => idx === index ? { ...i, loaded: true } : i)
-        );
-      }, 1500 + (index * 800));
-    });
-  }, []);
-
-  // Handle completion
-  useEffect(() => {
-    if (generation && generation.status === 'completed') {
-      onComplete(generation);
+        onComplete(generation);
+      }, 500);
     }
-  }, [generation, onComplete]);
+  }, [generation, totalItems, isGenerating, onComplete]);
+
+  // Build live items from actual work items
+  const liveItems = workItems.slice(0, 6).map(item => ({
+    id: item.displayId || item.id.substring(0, 5).toUpperCase(),
+    type: item.itemType,
+    title: item.title,
+    loaded: true
+  }));
+
+  // If no items yet, show placeholder
+  const displayItems = liveItems.length > 0 ? liveItems : [
+    { id: 'E-001', type: 'epic', title: '', loaded: false },
+    { id: 'F-001', type: 'feature', title: '', loaded: false },
+    { id: 'S-001', type: 'story', title: '', loaded: false },
+  ];
 
   const displayProgress = Math.min(100, Math.round(progress));
   const currentStepData = GENERATION_STEPS[currentStep - 1] || GENERATION_STEPS[0];
@@ -169,7 +192,12 @@ export function GeneratingState({ onCancel, onComplete }: GeneratingStateProps) 
           </div>
           <div>
             <h1 className="text-base font-bold text-slate-900">Generating Work Items</h1>
-            <p className="text-xs text-slate-500">Please wait while AI processes your requirements</p>
+            <p className="text-xs text-slate-500">
+              {totalItems > 0 
+                ? `Generated ${epicCount} epics, ${featureCount} features, ${storyCount} stories`
+                : 'Please wait while AI processes your requirements'
+              }
+            </p>
           </div>
         </div>
         <Button variant="ghost" onClick={onCancel} className="text-slate-500 hover:text-red-600">
@@ -235,10 +263,10 @@ export function GeneratingState({ onCancel, onComplete }: GeneratingStateProps) 
           {/* Live Preview */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 text-left">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
-              Generating
+              {totalItems > 0 ? `Generated (${totalItems} items)` : 'Generating'}
             </p>
-            <div className="space-y-3">
-              {liveItems.map((item, i) => (
+            <div className="space-y-3 max-h-48 overflow-y-auto">
+              {displayItems.map((item, i) => (
                 <LivePreviewItem key={i} item={item} />
               ))}
             </div>
