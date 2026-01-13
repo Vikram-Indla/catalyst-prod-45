@@ -96,7 +96,14 @@ STRICT LIMITS based on input size:
 5. Every title MUST be unique and derived from the actual requirements text
 6. NEVER use generic text like "System capability" or "Supporting capability"
 7. Extract actual business concepts, user roles, and processes from the input
-8. Stories MUST follow the format: "As a [specific role], I want [specific goal], so that [specific benefit]"
+
+CRITICAL STORY PERSONA RULE:
+8. Stories MUST ONLY use technical developer personas. The ONLY allowed actor is "Developer".
+   - CORRECT: "As a Developer, I want to implement the login API endpoint, so that users can authenticate"
+   - WRONG: "As a Business Analyst...", "As a Product Owner...", "As an Admin..."
+   - Stories are for the TECHNICAL TEAM who will BUILD the feature, not business users
+   - Format: "As a Developer, I want [specific implementation goal], so that [technical benefit]"
+
 9. Acceptance criteria MUST use Given/When/Then format
 10. Confidence scores: 95-100 for clear requirements, 80-94 for inferred, 60-79 for assumed
 
@@ -178,8 +185,8 @@ IMPORTANT: All string values must be valid JSON strings (escape newlines as \\n)
   "stories": [
     {
       "item_type": "story",
-      "title": "As a [specific role from requirements], I want [specific goal], so that [specific benefit]",
-      "description": "Detailed story description with context",
+      "title": "As a Developer, I want [specific implementation goal], so that [technical benefit]",
+      "description": "Detailed story description with technical context for implementation",
       "acceptance_criteria": "Given [context]\\nWhen [action]\\nThen [expected outcome]\\n\\nGiven [another context]\\nWhen [another action]\\nThen [another outcome]",
       "parent_index": 0,
       "confidence_score": 95,
@@ -215,7 +222,8 @@ QUALITY CONSTRAINTS - STRICT LIMITS:
 - For medium inputs (100-300 words): Generate ONLY 2-3 Epics, 4-8 Features total, 8-15 Stories total
 - For large inputs (300+ words): Generate maximum 3-5 Epics, 8-12 Features total, 15-25 Stories total
 - All titles must be UNIQUE and derived from actual input text
-- Use actual role names mentioned in requirements (e.g., "Applicant", "BO Officer", "License Holder", "Admin")
+- STORIES MUST ONLY USE "Developer" AS THE PERSONA - no other roles allowed
+- Story format: "As a Developer, I want [implementation goal], so that [technical benefit]"
 - Be specific: "Gold License Application" not "License Application"
 - DO NOT over-generate - when in doubt, create FEWER items
 
@@ -425,21 +433,45 @@ serve(async (req) => {
     // Insert generated items with proper display IDs
     const itemsToInsert: any[] = [];
 
-    // Track sequence numbers for display IDs
-    let epicSequence = 1;
-    let featureSequence = 1;
-    let storySequence = 1;
+    // Query DB for the next sequence numbers for each code to prevent duplicates
+    // Get max sequence for epic/feature code (program code)
+    const { data: epicFeatureMax } = await supabase
+      .from("ra_generated_items")
+      .select("display_id")
+      .like("display_id", `${epicFeatureCode}-%`)
+      .order("display_id", { ascending: false })
+      .limit(1);
+    
+    // Get max sequence for story code (project code)
+    const { data: storyMax } = await supabase
+      .from("ra_generated_items")
+      .select("display_id")
+      .like("display_id", `${storyCode}-%`)
+      .order("display_id", { ascending: false })
+      .limit(1);
+    
+    // Parse the max sequence numbers from display_ids
+    const parseSequence = (displayId: string | undefined): number => {
+      if (!displayId) return 0;
+      const match = displayId.match(/-(\d+)$/);
+      return match ? parseInt(match[1], 10) : 0;
+    };
+    
+    let epicFeatureSequence = parseSequence(epicFeatureMax?.[0]?.display_id) + 1;
+    let storySequence = parseSequence(storyMax?.[0]?.display_id) + 1;
+    
+    console.log(`Next sequences - ${epicFeatureCode}: ${epicFeatureSequence}, ${storyCode}: ${storySequence}`);
 
     // NOTE: PRD is NOT inserted - it's internal AI processing only, not a publishable item
 
-    // Insert Epics with proper display IDs
+    // Insert Epics with proper display IDs from DB sequence
     if (outputTypes.epics && aiResponse.epics) {
       for (let i = 0; i < aiResponse.epics.length; i++) {
         const epic = aiResponse.epics[i];
         itemsToInsert.push({
           generation_id: generationId,
           item_type: "epic",
-          display_id: `${epicFeatureCode}-${String(epicSequence++).padStart(3, '0')}`,
+          display_id: `${epicFeatureCode}-${String(epicFeatureSequence++).padStart(3, '0')}`,
           title: epic.title,
           description: epic.description,
           confidence_score: epic.confidence_score || 85,
@@ -475,7 +507,7 @@ serve(async (req) => {
         featuresToInsert.push({
           generation_id: generationId,
           item_type: "feature",
-          display_id: `${epicFeatureCode}-${String(featureSequence++).padStart(3, '0')}`,
+          display_id: `${epicFeatureCode}-${String(epicFeatureSequence++).padStart(3, '0')}`,
           title: feature.title,
           description: feature.description,
           acceptance_criteria: feature.acceptance_criteria,
