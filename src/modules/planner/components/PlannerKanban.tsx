@@ -3,7 +3,7 @@
 // Enhanced Kanban with Group By, column management, improved cards
 // ============================================================
 
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { 
   DndContext, 
   closestCenter, 
@@ -39,6 +39,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { TaskCard } from './TaskCard';
 import { AddColumnModal } from './AddColumnModal';
 import { catalystToast } from '@/lib/catalystToast';
+import {
+  usePlannerColumns,
+  usePlannerColumnsRealtime,
+  useCreatePlannerColumn,
+  useDeletePlannerColumn,
+} from '../hooks/usePlannerColumns';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -227,27 +233,15 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByOption>('status');
-  const [customColumns, setCustomColumns] = useState<ColumnConfig[]>([]);
   const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
-  
-  // Persist custom columns to localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('planner-custom-columns');
-    if (saved) {
-      try {
-        setCustomColumns(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to parse custom columns:', e);
-      }
-    }
-  }, []);
 
-  useEffect(() => {
-    if (customColumns.length > 0) {
-      localStorage.setItem('planner-custom-columns', JSON.stringify(customColumns));
-    }
-  }, [customColumns]);
-  
+  // ===== Custom columns from backend =====
+  const { data: customColumns = [], isLoading: columnsLoading } = usePlannerColumns();
+  usePlannerColumnsRealtime(); // realtime sync
+
+  const createColumn = useCreatePlannerColumn();
+  const deleteColumnMutation = useDeletePlannerColumn();
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -285,21 +279,37 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove }: PlannerKanbanP
     return 'later';
   };
 
-  // Handle adding a new column
-  const handleAddColumn = useCallback((column: Omit<ColumnConfig, 'order'>) => {
-    const newColumn: ColumnConfig = {
-      ...column,
-      order: allColumnConfigs.length,
-    };
-    setCustomColumns(prev => [...prev, newColumn]);
-    catalystToast.success('Column Added', `"${column.title}" column has been created.`);
-  }, [allColumnConfigs.length]);
+  // Handle adding a new column (persist to backend)
+  const handleAddColumn = useCallback(
+    (column: Omit<ColumnConfig, 'order'>) => {
+      createColumn.mutate(column, {
+        onSuccess: () => {
+          catalystToast.success('Column Added', `"${column.title}" column has been created.`);
+        },
+        onError: (err) => {
+          console.error('Failed to add column:', err);
+          catalystToast.error('Failed to Add Column', 'Please try again.');
+        },
+      });
+    },
+    [createColumn]
+  );
 
   // Handle deleting a custom column
-  const handleDeleteColumn = useCallback((columnId: string) => {
-    setCustomColumns(prev => prev.filter(c => c.id !== columnId));
-    catalystToast.success('Column Deleted', 'The column has been removed.');
-  }, []);
+  const handleDeleteColumn = useCallback(
+    (columnId: string) => {
+      deleteColumnMutation.mutate(columnId, {
+        onSuccess: () => {
+          catalystToast.success('Column Deleted', 'The column has been removed.');
+        },
+        onError: (err) => {
+          console.error('Failed to delete column:', err);
+          catalystToast.error('Failed to Delete Column', 'Please try again.');
+        },
+      });
+    },
+    [deleteColumnMutation]
+  );
 
   // Generate dynamic columns based on groupBy
   const columns = useMemo((): DynamicColumn[] => {

@@ -15384,6 +15384,39 @@ export type Database = {
           },
         ]
       }
+      planner_column_configs: {
+        Row: {
+          color: string
+          column_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          sort_order: number
+          title: string
+          wip_limit: number | null
+        }
+        Insert: {
+          color: string
+          column_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          sort_order?: number
+          title: string
+          wip_limit?: number | null
+        }
+        Update: {
+          color?: string
+          column_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          sort_order?: number
+          title?: string
+          wip_limit?: number | null
+        }
+        Relationships: []
+      }
       portfolio_estimation_settings: {
         Row: {
           created_at: string | null
