@@ -279,19 +279,33 @@ export function useDeletePlannerTask() {
   });
 }
 
+// Helper to check if ID is a seed data ID (not a valid UUID)
+const isSeedId = (id: string): boolean => {
+  return id.startsWith('seed-') || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+};
+
 export function useBulkDeletePlannerTasks() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (ids: string[]) => {
-      // Soft delete by setting deleted_at for all selected tasks
-      const { error } = await supabase
-        .from('stories')
-        .update({ deleted_at: new Date().toISOString() })
-        .in('id', ids);
+      // Separate real DB IDs from seed data IDs
+      const realIds = ids.filter(id => !isSeedId(id));
+      const seedIds = ids.filter(id => isSeedId(id));
 
-      if (error) throw error;
-      return ids;
+      // Only attempt DB delete for real IDs
+      if (realIds.length > 0) {
+        const { error } = await supabase
+          .from('stories')
+          .update({ deleted_at: new Date().toISOString() })
+          .in('id', realIds);
+
+        if (error) throw error;
+      }
+
+      // Return all IDs (both seed and real) as "deleted" for UI purposes
+      // Seed tasks are demo data and can just be removed from the UI
+      return { deletedIds: ids, seedCount: seedIds.length, realCount: realIds.length };
     },
     onMutate: async (ids) => {
       // Optimistic update - remove all from list
