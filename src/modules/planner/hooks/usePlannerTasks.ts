@@ -248,6 +248,11 @@ export function useDeletePlannerTask() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      // Seed tasks are demo-only and do not exist in the database
+      if (isSeedId(id)) {
+        return { id, seed: true } as const;
+      }
+
       // Soft delete by setting deleted_at
       const { error } = await supabase
         .from('stories')
@@ -255,17 +260,18 @@ export function useDeletePlannerTask() {
         .eq('id', id);
 
       if (error) throw error;
+      return { id, seed: false } as const;
     },
     onMutate: async (id) => {
       // Optimistic update - remove from list
       await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
       const previousTasks = queryClient.getQueryData(['planner-tasks']);
-      
+
       queryClient.setQueryData(['planner-tasks'], (old: PlannerTask[] | undefined) => {
         if (!old) return old;
-        return old.filter(t => t.id !== id);
+        return old.filter((t) => t.id !== id);
       });
-      
+
       return { previousTasks };
     },
     onError: (err, id, context) => {
@@ -273,8 +279,12 @@ export function useDeletePlannerTask() {
         queryClient.setQueryData(['planner-tasks'], context.previousTasks);
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+    onSettled: (data) => {
+      // Only refetch from the backend when we actually touched real rows.
+      // In seed mode we want the optimistic removal to persist.
+      if (data && !data.seed) {
+        queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      }
     },
   });
 }
@@ -289,9 +299,9 @@ export function useBulkDeletePlannerTasks() {
 
   return useMutation({
     mutationFn: async (ids: string[]) => {
-      // Separate real DB IDs from seed data IDs
-      const realIds = ids.filter(id => !isSeedId(id));
-      const seedIds = ids.filter(id => isSeedId(id));
+      // Separate real DB IDs from seed/demo IDs
+      const realIds = ids.filter((id) => !isSeedId(id));
+      const seedIds = ids.filter((id) => isSeedId(id));
 
       // Only attempt DB delete for real IDs
       if (realIds.length > 0) {
@@ -303,20 +313,22 @@ export function useBulkDeletePlannerTasks() {
         if (error) throw error;
       }
 
-      // Return all IDs (both seed and real) as "deleted" for UI purposes
-      // Seed tasks are demo data and can just be removed from the UI
-      return { deletedIds: ids, seedCount: seedIds.length, realCount: realIds.length };
+      return {
+        deletedIds: ids,
+        seedCount: seedIds.length,
+        realCount: realIds.length,
+      } as const;
     },
     onMutate: async (ids) => {
       // Optimistic update - remove all from list
       await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
       const previousTasks = queryClient.getQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] });
-      
+
       queryClient.setQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] }, (old) => {
         if (!old) return old;
-        return old.filter(t => !ids.includes(t.id));
+        return old.filter((t) => !ids.includes(t.id));
       });
-      
+
       return { previousTasks };
     },
     onError: (err, ids, context) => {
@@ -324,8 +336,12 @@ export function useBulkDeletePlannerTasks() {
         queryClient.setQueryData(key, data);
       });
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+    onSettled: (data) => {
+      // Only refetch when we actually changed rows in the backend.
+      // If we're in seed/demo mode, invalidating would re-add the seed tasks.
+      if (data && data.realCount > 0) {
+        queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      }
     },
   });
 }
