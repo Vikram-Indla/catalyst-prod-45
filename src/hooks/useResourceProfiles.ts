@@ -137,15 +137,41 @@ export function useResourceProfiles() {
   const { data: profiles = new Map<string, ResourceProfile>(), isLoading, error, refetch } = useQuery({
     queryKey: ['resource-profiles'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, role, avatar_url, country, country_code, country_flag_svg_url, location, contract_end_date, vendor, department_id');
+      // Fetch profiles and roles in parallel
+      const [profilesResult, userProductRolesResult, productRolesResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, full_name, email, role, avatar_url, country, country_code, country_flag_svg_url, location, contract_end_date, vendor, department_id'),
+        supabase
+          .from('user_product_roles')
+          .select('user_id, role_id'),
+        supabase
+          .from('product_roles')
+          .select('id, name'),
+      ]);
 
-      if (error) throw error;
+      if (profilesResult.error) throw profilesResult.error;
+
+      // Build role lookup maps from user_product_roles (authoritative source from /admin/users)
+      const roleIdToName = new Map<string, string>(
+        (productRolesResult.data || []).map((r) => [r.id, r.name])
+      );
+      const userRoleMap = new Map<string, string>();
+      (userProductRolesResult.data || []).forEach((upr) => {
+        const roleName = roleIdToName.get(upr.role_id);
+        if (roleName && !userRoleMap.has(upr.user_id)) {
+          userRoleMap.set(upr.user_id, roleName);
+        }
+      });
 
       const profileMap = new Map<string, ResourceProfile>();
-      data?.forEach(profile => {
-        profileMap.set(profile.id, profile);
+      profilesResult.data?.forEach(profile => {
+        // Override deprecated profile.role with role from user_product_roles
+        const roleFromAdmin = userRoleMap.get(profile.id) || profile.role;
+        profileMap.set(profile.id, {
+          ...profile,
+          role: roleFromAdmin,
+        });
       });
 
       return profileMap;

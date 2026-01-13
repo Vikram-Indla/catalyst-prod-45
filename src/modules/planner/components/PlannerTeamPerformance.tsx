@@ -1,6 +1,7 @@
 // ============================================================
 // PLANNER TEAM PERFORMANCE VIEW
 // Team health scores, member table, and AI insights
+// Roles sourced from user_product_roles (managed in /admin/users)
 // ============================================================
 
 import { useMemo } from 'react';
@@ -8,6 +9,7 @@ import { Sparkles, TrendingUp, Users, AlertCircle, CheckCircle2 } from 'lucide-r
 import { cn } from '@/lib/utils';
 import type { PlannerTask, PlannerUser } from '../types';
 import { motion } from 'framer-motion';
+import { usePlannerUserRoles } from '../hooks/usePlannerUsers';
 
 interface PlannerTeamPerformanceProps {
   tasks: PlannerTask[];
@@ -28,6 +30,9 @@ interface MemberStats {
 }
 
 export function PlannerTeamPerformance({ tasks, onTaskClick }: PlannerTeamPerformanceProps) {
+  // Fetch roles from user_product_roles (authoritative source from /admin/users)
+  const { data: userRoleMap } = usePlannerUserRoles();
+
   // Calculate member statistics
   const memberStats = useMemo((): MemberStats[] => {
     const statsMap = new Map<string, MemberStats>();
@@ -35,11 +40,14 @@ export function PlannerTeamPerformance({ tasks, onTaskClick }: PlannerTeamPerfor
     tasks.forEach(task => {
       if (!task.assigneeId) return;
 
+      // Get role from user_product_roles map, fallback to Team Member
+      const roleFromAdmin = userRoleMap?.get(task.assigneeId) || 'Team Member';
+
       const existing = statsMap.get(task.assigneeId) || {
         id: task.assigneeId,
         name: task.assigneeName || 'Unknown',
         initials: task.assigneeInitials || '??',
-        role: 'Team Member',
+        role: roleFromAdmin,
         healthScore: 100,
         totalTasks: 0,
         completed: 0,
@@ -76,7 +84,7 @@ export function PlannerTeamPerformance({ tasks, onTaskClick }: PlannerTeamPerfor
     });
 
     return Array.from(statsMap.values()).sort((a, b) => b.healthScore - a.healthScore);
-  }, [tasks]);
+  }, [tasks, userRoleMap]);
 
   // Calculate team-level KPIs
   const teamKPIs = useMemo(() => {
