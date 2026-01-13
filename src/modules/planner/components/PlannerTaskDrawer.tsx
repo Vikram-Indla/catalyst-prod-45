@@ -22,6 +22,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +62,7 @@ export function PlannerTaskDrawer({
   const [localAssigneeId, setLocalAssigneeId] = useState<string | null>(null);
   const [localStartDate, setLocalStartDate] = useState<string | null>(null);
   const [localDueDate, setLocalDueDate] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   // Track the task ID to reset local state when task changes
   const taskIdRef = useRef<string | null>(null);
@@ -349,11 +360,7 @@ export function PlannerTaskDrawer({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                if (window.confirm('Are you sure you want to delete this task?')) {
-                  onDelete?.(task.id);
-                }
-              }}
+              onClick={() => setShowDeleteDialog(true)}
               className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30"
             >
               <Trash2 className="w-4 h-4 mr-2" />
@@ -362,6 +369,30 @@ export function PlannerTaskDrawer({
           </div>
         </SheetBody>
       </SheetContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Task?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{task.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onDelete?.(task.id);
+                setShowDeleteDialog(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }
