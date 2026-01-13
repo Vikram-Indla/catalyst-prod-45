@@ -62,7 +62,8 @@ export function usePlannerUsers() {
         // Role from user_product_roles (managed in /admin/users), fallback to Team Member
         role: userRoleMap.get(row.id) || 'Team Member',
         team: 'Team',
-        online: Math.random() > 0.5,
+        // online presence is handled by real-time presence system, not mocked
+        online: false,
       }));
 
       return users;
