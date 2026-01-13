@@ -98,8 +98,8 @@ export const OcrPanel: React.FC<OcrPanelProps> = ({
             <span className={cn(
               "text-xs px-2 py-0.5 rounded-full",
               ocrConfidence >= 0.8 
-                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" 
-                : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
+                : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
             )}>
               {Math.round(ocrConfidence * 100)}% confidence
             </span>
@@ -110,7 +110,7 @@ export const OcrPanel: React.FC<OcrPanelProps> = ({
             title="Copy text"
           >
             {copied ? (
-              <Check className="w-4 h-4 text-emerald-500" />
+              <Check className="w-4 h-4 text-green-500" />
             ) : (
               <Copy className="w-4 h-4 text-muted-foreground" />
             )}
@@ -152,7 +152,7 @@ const HighlightedText: React.FC<{ text: string }> = ({ text }) => {
     { regex: /https?:\/\/[^\s]+/g, className: 'text-primary underline' },
     { regex: /[\w.-]+@[\w.-]+\.\w+/g, className: 'text-primary' },
     { regex: /\b(404|500|503|401|403)\b/g, className: 'text-destructive font-bold' },
-    { regex: /Success|Passed|PASSED|OK/gi, className: 'text-emerald-600 font-medium' },
+    { regex: /Success|Passed|PASSED|OK/gi, className: 'text-green-600 font-medium' },
   ];
 
   let result = text;
