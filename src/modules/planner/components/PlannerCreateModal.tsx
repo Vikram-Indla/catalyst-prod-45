@@ -255,7 +255,7 @@ export function PlannerCreateModal({
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="w-full max-w-[600px] bg-background rounded-2xl shadow-2xl overflow-hidden">
+            <div className="w-full max-w-[600px] bg-background rounded-2xl shadow-2xl overflow-visible">
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-5 border-b border-border">
                 <div className="flex items-center gap-3">
@@ -277,7 +277,7 @@ export function PlannerCreateModal({
               </div>
 
               {/* Form Body */}
-              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto overflow-x-visible">
                 {/* Title */}
                 <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">
