@@ -49,6 +49,7 @@ const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
 
 import { EpicBalancingPage } from "./modules/epic-balancing";
+import { PlannerPage } from "./modules/planner";
 
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
@@ -448,9 +449,9 @@ const App = () => (
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
               
-              {/* Planner */}
+              {/* Planner Module */}
               <Route path="/planner" element={<Navigate to="/planner/boards" replace />} />
-              <Route path="/planner/:tab" element={<WorkManager />} />
+              <Route path="/planner/:view" element={<PlannerPage />} />
               
               
               {/* Mining */}
