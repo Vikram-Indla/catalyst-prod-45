@@ -15,6 +15,7 @@ import { PlannerCalendar } from './components/PlannerCalendar';
 import { PlannerWeeklyReport } from './components/PlannerWeeklyReport';
 import { PlannerTeamPerformance } from './components/PlannerTeamPerformance';
 import { PlannerAIInsights } from './components/PlannerAIInsights';
+import { PlannerSettings } from './components/PlannerSettings';
 import { PlannerTaskDrawer } from './components/PlannerTaskDrawer';
 import { PlannerCreateModal } from './components/PlannerCreateModal';
 import { PlannerBulkActionBar } from './components/PlannerBulkActionBar';
@@ -283,6 +284,8 @@ export function PlannerPage() {
         return <PlannerTeamPerformance tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'ai-insights':
         return <PlannerAIInsights tasks={viewTasks} onTaskClick={handleTaskClick} />;
+      case 'settings':
+        return <PlannerSettings />;
       default:
         return <PlannerKanban tasks={viewTasks} onTaskClick={handleTaskClick} onTaskMove={handleTaskMove} groupBy={groupBy === 'none' ? undefined : groupBy} />;
     }
