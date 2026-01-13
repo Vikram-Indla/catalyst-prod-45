@@ -225,9 +225,10 @@ export function PlannerPage() {
       assigneeId: data.assigneeId,
       assigneeName: assignee?.name,
       dueDate: data.dueDate,
+      teamId: selectedTeamId || undefined,
     });
     // Toast is handled in the hook - no duplicate here
-  }, [createTask, users]);
+  }, [createTask, users, selectedTeamId]);
 
   const handleInsightAction = useCallback((insight: AIInsight) => {
     if (insight.taskId) {

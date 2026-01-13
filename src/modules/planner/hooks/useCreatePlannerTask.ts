@@ -18,10 +18,13 @@ interface CreateTaskData {
   assigneeName?: string;
   dueDate?: string;
   featureId?: string;
+  teamId?: string;
 }
 
 // Default feature ID for unassigned tasks (first feature from DB or fallback)
 const DEFAULT_FEATURE_ID = '90000000-0001-0001-0001-000000000010';
+// Default team ID for tasks created without team context
+const DEFAULT_TEAM_ID = '20000000-0001-0001-0001-000000000001';
 
 export function useCreatePlannerTask() {
   const queryClient = useQueryClient();
@@ -54,6 +57,7 @@ export function useCreatePlannerTask() {
           progress_pct: 0,
           blocked: false,
           feature_id: data.featureId || DEFAULT_FEATURE_ID,
+          team_id: data.teamId || DEFAULT_TEAM_ID,
           story_key: taskKey,
         }])
         .select()
