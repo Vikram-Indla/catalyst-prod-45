@@ -1,5 +1,6 @@
 // ============================================================
 // PLANNER MODULE - TYPE DEFINITIONS
+// Enhanced with Resources and AI Insights types
 // ============================================================
 
 export type PlannerView = 
@@ -11,6 +12,7 @@ export type PlannerView =
   | 'team-performance' 
   | 'ai-insights'
   | 'teams'
+  | 'resources'
   | 'settings';
 
 export type TaskStatus = 'backlog' | 'planned' | 'in-progress' | 'review' | 'done';
@@ -80,6 +82,10 @@ export interface PlannerTeam {
   color: string;
 }
 
+// ============================================================
+// AI INSIGHTS TYPES
+// ============================================================
+
 export interface AIInsightMeta {
   sprint?: string;
   updated?: string;
@@ -99,6 +105,107 @@ export interface AIInsight {
   createdAt: string;
   meta?: AIInsightMeta;
 }
+
+export interface AIInsightsSummary {
+  overdue: number;
+  dueSoon: number;
+  stale: number;
+  totalActive: number;
+  unassigned: number;
+}
+
+export interface TaskInsight {
+  id: string;
+  taskId: string;
+  taskKey: string;
+  title: string;
+  type: 'overdue' | 'due-soon' | 'stale';
+  dueInfo: string;
+  assigneeId?: string;
+  assigneeName?: string;
+  assigneeInitials?: string;
+  assigneeColor?: string;
+  teamId?: string;
+  teamName?: string;
+  teamColor?: string;
+  status: TaskStatus;
+}
+
+export interface ResourceInsight {
+  userId: string;
+  name: string;
+  initials: string;
+  color: string;
+  totalTasks: number;
+  overdueCount: number;
+  dueSoonCount: number;
+}
+
+export interface TeamInsight {
+  teamId: string;
+  teamName: string;
+  teamColor: string;
+  activeCount: number;
+  overdueCount: number;
+  dueSoonCount: number;
+  members: ResourceInsight[];
+}
+
+export interface UnassignedTask {
+  id: string;
+  taskKey: string;
+  title: string;
+  status: TaskStatus;
+  teamId?: string;
+  teamName?: string;
+}
+
+export interface AIInsightsResult {
+  summary: AIInsightsSummary;
+  overdueTasks: TaskInsight[];
+  dueSoonTasks: TaskInsight[];
+  staleTasks: TaskInsight[];
+  byTeam: TeamInsight[];
+  unassignedTasks: UnassignedTask[];
+  legacyInsights: AIInsight[];
+  isLoading: boolean;
+  refresh: () => void;
+}
+
+// ============================================================
+// RESOURCE TYPES
+// ============================================================
+
+export interface ResourceTeam {
+  teamId: string;
+  teamName: string;
+  teamColor: string;
+  role: 'lead' | 'member';
+  taskCount: number;
+}
+
+export interface PlannerResource {
+  id: string;
+  fullName: string;
+  email: string;
+  initials: string;
+  avatarColor: string;
+  role: string | null;
+  teams: ResourceTeam[];
+  taskCount: number;
+  overdueCount: number;
+  dueSoonCount: number;
+  staleCount: number;
+}
+
+export interface ResourceWithTasks extends PlannerResource {
+  tasks: PlannerTask[];
+  tasksByStatus: Record<TaskStatus, number>;
+}
+
+// ============================================================
+// COLUMN CONFIGURATION
+// ============================================================
 
 export interface ColumnConfig {
   id: TaskStatus | string;
@@ -132,4 +239,18 @@ export const DUE_DATE_GROUPS = [
   { id: 'nextWeek', title: 'Next Week', color: '#0d9488' },
   { id: 'later', title: 'Later', color: '#6b7280' },
   { id: 'noDueDate', title: 'No Due Date', color: '#94a3b8' },
+];
+
+// Status colors for insights
+export const STATUS_COLORS: Record<TaskStatus, string> = {
+  backlog: '#cbd5e1',
+  planned: '#2563eb',
+  'in-progress': '#d97706',
+  review: '#8b5cf6',
+  done: '#10b981',
+};
+
+// Avatar colors for resources
+export const AVATAR_COLORS = [
+  '#2563eb', '#10b981', '#8b5cf6', '#d97706', '#ef4444', '#0d9488', '#ec4899', '#06b6d4',
 ];
