@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Plus, Lightbulb } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
 import { PlannerSidebar } from './components/PlannerSidebar';
 import { PlannerKanban } from './components/PlannerKanban';
@@ -22,7 +22,7 @@ import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
 import { PlannerBulkActionBar } from './components/PlannerBulkActionBar';
 import { PlannerBulkDeleteModal } from './components/PlannerBulkDeleteModal';
 
-import { PlannerAIPanel } from './components/PlannerAIPanel';
+
 import { PlannerSearchBar } from './components/PlannerSearchBar';
 import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/usePlannerTasks';
 import { usePlannerTeams } from './hooks/usePlannerTeams';
@@ -30,7 +30,7 @@ import { usePlannerUsers } from './hooks/usePlannerUsers';
 import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
 import { usePlannerSearch } from './hooks/usePlannerSearch';
 import { usePlannerKeyboard } from './hooks/usePlannerKeyboard';
-import { usePlannerAIInsights } from './hooks/usePlannerAIInsights';
+
 import { usePlannerRealtime } from './hooks/usePlannerRealtime';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -68,7 +68,7 @@ export function PlannerPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createDefaultStatus, setCreateDefaultStatus] = useState<TaskStatus>('backlog');
-  const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
@@ -118,8 +118,6 @@ export function PlannerPage() {
     filteredCount,
   } = usePlannerSearch(tasks);
 
-  // AI Insights
-  const insights = usePlannerAIInsights(tasks);
 
 
   // Task navigation for keyboard shortcuts
@@ -137,9 +135,7 @@ export function PlannerPage() {
     onOpenSearch: () => {
       searchInputRef.current?.focus();
     },
-    onToggleAIPanel: () => {
-      setIsAIPanelOpen(prev => !prev);
-    },
+    onToggleAIPanel: () => {},
     onNavigateNext: () => {
       if (filteredTasks.length === 0) return;
       const nextIndex = taskIndex < 0 ? 0 : Math.min(taskIndex + 1, filteredTasks.length - 1);
@@ -160,8 +156,6 @@ export function PlannerPage() {
         setSelectedTask(null);
       } else if (isCreateModalOpen) {
         setIsCreateModalOpen(false);
-      } else if (isAIPanelOpen) {
-        setIsAIPanelOpen(false);
       }
     },
   });
@@ -262,16 +256,6 @@ export function PlannerPage() {
     // Toast is handled in the hook - no duplicate here
   }, [createTask, users, selectedTeamId]);
 
-  const handleInsightAction = useCallback((insight: AIInsight) => {
-    if (insight.taskId) {
-      const task = tasks.find(t => t.key === insight.taskId || t.id === insight.taskId);
-      if (task) {
-        setSelectedTask(task);
-        setIsDrawerOpen(true);
-        setIsAIPanelOpen(false);
-      }
-    }
-  }, [tasks]);
 
   const handleBulkDelete = useCallback(() => {
     if (selectedTaskIds.size === 0) return;
@@ -353,7 +337,7 @@ export function PlannerPage() {
 
   const pageTitle = VIEW_TITLES[activeView] || 'Boards';
   const blockedCount = tasks.filter(t => t.blocked).length;
-  const criticalInsightsCount = insights.filter(i => i.type === 'critical').length;
+  
 
   return (
     <div className="flex h-full min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
@@ -397,21 +381,6 @@ export function PlannerPage() {
             {/* Right: Action Buttons - hidden on teams/settings views */}
             {activeView !== 'teams' && activeView !== 'settings' && (
               <div className="flex items-center gap-2">
-                {/* AI Insights Toggle */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsAIPanelOpen((prev) => !prev)}
-                  className={cn("h-8 gap-2", isAIPanelOpen && "bg-blue-50 text-blue-600")}
-                >
-                  <Lightbulb className="w-4 h-4" />
-                  <span className="text-sm">AI</span>
-                  {criticalInsightsCount > 0 && (
-                    <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-red-500 text-white rounded-full">
-                      {criticalInsightsCount}
-                    </span>
-                  )}
-                </Button>
 
                 {/* Create Task Button */}
                 <Button
@@ -491,14 +460,6 @@ export function PlannerPage() {
           teams={teams}
         />
 
-        {/* AI Panel */}
-        <PlannerAIPanel
-          isOpen={isAIPanelOpen}
-          onClose={() => setIsAIPanelOpen(false)}
-          insights={insights}
-          onViewAll={() => handleViewChange('ai-insights')}
-          onInsightAction={handleInsightAction}
-        />
 
         {/* Bulk Action Bar */}
         <PlannerBulkActionBar

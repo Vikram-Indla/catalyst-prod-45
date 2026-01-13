@@ -11,7 +11,6 @@ import {
   GanttChartSquare,
   FileText,
   Users,
-  Sparkles,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -47,7 +46,6 @@ const VIEWS_SECTION = [
 const INSIGHTS_SECTION = [
   { id: 'weekly-report', title: 'Weekly Report', path: '/planner/weekly-report', icon: FileText },
   { id: 'team-performance', title: 'Team Performance', path: '/planner/team-performance', icon: Users },
-  { id: 'ai-insights', title: 'AI Insights', path: '/planner/ai-insights', icon: Sparkles, hasBadge: true },
 ];
 
 const WORKSPACE_SECTION = [
