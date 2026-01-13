@@ -176,13 +176,6 @@ export function TreeItem({
           {item.title}
         </span>
 
-        {/* PRD indicator */}
-        {isPRD && (
-          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-medium rounded">
-            Source
-          </span>
-        )}
-
         {/* Confidence (on hover) - not for PRD */}
         {!isPRD && (
           <span className={`
