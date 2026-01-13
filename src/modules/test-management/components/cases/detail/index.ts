@@ -3,7 +3,7 @@
  */
 
 export { TestCaseDetailPage } from './TestCaseDetailPage';
-export { StepEditor, type TestStep } from './StepEditor';
+export { StepEditor } from './StepEditor';
 export { LinkedItemsPanel } from './LinkedItemsPanel';
 export { AttachmentsPanel } from './AttachmentsPanel';
 export { ExecutionHistoryPanel } from './ExecutionHistoryPanel';
