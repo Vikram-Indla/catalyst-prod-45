@@ -47,6 +47,7 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'team-performance': 'Team Performance',
   'ai-insights': 'AI Insights',
   'teams': 'Teams',
+  'resources': 'Resources',
   'settings': 'Settings',
 };
 
