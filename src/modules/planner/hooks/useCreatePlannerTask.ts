@@ -16,7 +16,11 @@ interface CreateTaskData {
   priority: TaskPriority;
   assigneeId?: string;
   dueDate?: string;
+  featureId?: string;
 }
+
+// Default feature ID for unassigned tasks (first feature from DB or fallback)
+const DEFAULT_FEATURE_ID = '90000000-0001-0001-0001-000000000010';
 
 export function useCreatePlannerTask() {
   const queryClient = useQueryClient();
@@ -41,14 +45,15 @@ export function useCreatePlannerTask() {
           id: taskId,
           name: data.title,
           title: data.title,
-          description: data.description,
+          description: data.description || null,
           status: statusMap[data.status],
           state: statusMap[data.status],
           priority: data.priority,
           assignee_id: data.assigneeId || null,
           progress_pct: 0,
           blocked: false,
-          feature_id: null,
+          feature_id: data.featureId || DEFAULT_FEATURE_ID,
+          story_key: taskKey,
         }])
         .select()
         .single();
@@ -91,6 +96,7 @@ export function useCreatePlannerTask() {
       return { previousTasks, tempId };
     },
     onError: (err, data, context) => {
+      console.error('Create task error:', err);
       if (context?.previousTasks) {
         queryClient.setQueryData(['planner-tasks'], context.previousTasks);
       }
