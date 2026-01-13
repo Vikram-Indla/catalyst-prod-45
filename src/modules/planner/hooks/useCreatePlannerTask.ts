@@ -16,26 +16,29 @@ interface CreateTaskData {
   priority: TaskPriority;
   assigneeId?: string;
   assigneeName?: string;
+  startDate?: string;
   dueDate?: string;
+  // Back-compat (older UI)
   featureId?: string;
+  // New polymorphic work-item link
+  linkedWorkItemId?: string;
+  linkedWorkItemType?: 'story' | 'feature' | 'epic' | 'business_request';
   teamId?: string;
 }
 
-// Default team ID for tasks created without team context
-const DEFAULT_TEAM_ID = '20000000-0001-0001-0001-000000000001';
 
 export function useCreatePlannerTask() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: CreateTaskData) => {
-      // Map Planner status to DB status
-      const statusMap: Record<TaskStatus, 'todo' | 'in_progress' | 'done'> = {
-        backlog: 'todo',
-        planned: 'todo',
-        'in-progress': 'in_progress',
-        review: 'in_progress',
-        done: 'done',
+      // Map Planner status/state to DB status/state
+      const statusToDb: Record<TaskStatus, { status: 'todo' | 'in_progress' | 'done'; state: string }> = {
+        backlog: { status: 'todo', state: 'backlog' },
+        planned: { status: 'todo', state: 'todo' },
+        'in-progress': { status: 'in_progress', state: 'in_progress' },
+        review: { status: 'in_progress', state: 'review' },
+        done: { status: 'done', state: 'done' },
       };
 
       const taskId = uuidv4();
@@ -43,6 +46,14 @@ export function useCreatePlannerTask() {
 
       // Default start_date to today if not provided
       const today = new Date().toISOString().split('T')[0];
+      const dbStatus = statusToDb[data.status];
+
+      // Determine linked work item (new columns). Back-compat: featureId.
+      const linkedWorkItemId = data.linkedWorkItemId || data.featureId || null;
+      const linkedWorkItemType = data.linkedWorkItemType || (data.featureId ? 'feature' : null);
+
+      // stories.feature_id is a FK to features; only set it when linking a feature.
+      const featureIdForStory = linkedWorkItemType === 'feature' ? linkedWorkItemId : null;
 
       const { data: result, error } = await supabase
         .from('stories')
@@ -51,17 +62,22 @@ export function useCreatePlannerTask() {
           name: data.title,
           title: data.title,
           description: data.description || null,
-          status: statusMap[data.status],
-          state: statusMap[data.status],
+          status: dbStatus.status,
+          state: dbStatus.state,
           priority: data.priority,
           assignee_id: data.assigneeId || null,
           progress_pct: 0,
           blocked: false,
-          feature_id: data.featureId || null,
-          team_id: data.teamId || DEFAULT_TEAM_ID,
+          feature_id: featureIdForStory,
+          linked_work_item_id: linkedWorkItemId,
+          linked_work_item_type: linkedWorkItemType,
+          team_id: data.teamId || null,
           story_key: taskKey,
-          start_date: today,
+          start_date: data.startDate || today,
+          accepted_at: data.dueDate || null,
         }])
+        .select()
+        .single();
         .select()
         .single();
 
