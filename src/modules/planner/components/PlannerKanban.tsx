@@ -47,6 +47,7 @@ import {
   useDeletePlannerColumn,
   useUpdatePlannerColumnOrder,
 } from '../hooks/usePlannerColumns';
+import { useDeletePlannerTask, useDuplicatePlannerTask } from '../hooks/usePlannerTasks';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -83,10 +84,14 @@ interface SwimLane {
 // Sortable wrapper for task card
 function SortableTaskCard({ 
   task, 
-  onClick 
+  onClick,
+  onDuplicate,
+  onDelete,
 }: { 
   task: PlannerTask; 
   onClick: () => void;
+  onDuplicate?: (task: PlannerTask) => void;
+  onDelete?: (taskId: string) => void;
 }) {
   const {
     attributes,
@@ -104,7 +109,13 @@ function SortableTaskCard({
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard task={task} onClick={onClick} isDragging={isDragging} />
+      <TaskCard 
+        task={task} 
+        onClick={onClick} 
+        onDuplicate={onDuplicate}
+        onDelete={onDelete}
+        isDragging={isDragging} 
+      />
     </div>
   );
 }
@@ -113,11 +124,15 @@ function SortableTaskCard({
 function SortableKanbanColumn({
   column,
   onTaskClick,
+  onTaskDuplicate,
+  onTaskDelete,
   isOver,
   onDelete,
 }: {
   column: DynamicColumn;
   onTaskClick: (task: PlannerTask) => void;
+  onTaskDuplicate?: (task: PlannerTask) => void;
+  onTaskDelete?: (taskId: string) => void;
   isOver: boolean;
   onDelete?: (columnId: string) => void;
 }) {
@@ -227,6 +242,8 @@ function SortableKanbanColumn({
                 key={task.id} 
                 task={task} 
                 onClick={() => onTaskClick(task)}
+                onDuplicate={onTaskDuplicate}
+                onDelete={onTaskDelete}
               />
             ))}
           </AnimatePresence>
@@ -252,6 +269,8 @@ function SwimLaneRow({
   lane,
   statusColumns,
   onTaskClick,
+  onTaskDuplicate,
+  onTaskDelete,
   overColumnId,
   collapsed,
   onToggleCollapse,
@@ -259,6 +278,8 @@ function SwimLaneRow({
   lane: SwimLane;
   statusColumns: ColumnConfig[];
   onTaskClick: (task: PlannerTask) => void;
+  onTaskDuplicate?: (task: PlannerTask) => void;
+  onTaskDelete?: (taskId: string) => void;
   overColumnId: string | null;
   collapsed: boolean;
   onToggleCollapse: () => void;
@@ -310,6 +331,8 @@ function SwimLaneRow({
                 columnId={col.id}
                 tasks={colTasks}
                 onTaskClick={onTaskClick}
+                onTaskDuplicate={onTaskDuplicate}
+                onTaskDelete={onTaskDelete}
                 isOver={isOver}
               />
             );
@@ -326,12 +349,16 @@ function SwimLaneCell({
   columnId,
   tasks,
   onTaskClick,
+  onTaskDuplicate,
+  onTaskDelete,
   isOver,
 }: {
   laneId: string;
   columnId: string;
   tasks: PlannerTask[];
   onTaskClick: (task: PlannerTask) => void;
+  onTaskDuplicate?: (task: PlannerTask) => void;
+  onTaskDelete?: (taskId: string) => void;
   isOver: boolean;
 }) {
   const { setNodeRef } = useDroppable({
@@ -358,6 +385,8 @@ function SwimLaneCell({
               key={task.id} 
               task={task} 
               onClick={() => onTaskClick(task)}
+              onDuplicate={onTaskDuplicate}
+              onDelete={onTaskDelete}
             />
           ))}
         </div>
@@ -391,6 +420,10 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
   const createColumn = useCreatePlannerColumn();
   const deleteColumnMutation = useDeletePlannerColumn();
   const updateColumnOrder = useUpdatePlannerColumnOrder();
+  
+  // Task actions
+  const deleteTaskMutation = useDeletePlannerTask();
+  const duplicateTaskMutation = useDuplicatePlannerTask();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -459,6 +492,38 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
       });
     },
     [deleteColumnMutation]
+  );
+
+  // Handle task duplicate
+  const handleTaskDuplicate = useCallback(
+    (task: PlannerTask) => {
+      duplicateTaskMutation.mutate(task, {
+        onSuccess: (result) => {
+          catalystToast.success('Task Duplicated', `Task ${result.key} has been created.`);
+        },
+        onError: (err) => {
+          console.error('Failed to duplicate task:', err);
+          catalystToast.error('Failed to Duplicate', 'Please try again.');
+        },
+      });
+    },
+    [duplicateTaskMutation]
+  );
+
+  // Handle task delete
+  const handleTaskDelete = useCallback(
+    (taskId: string) => {
+      deleteTaskMutation.mutate(taskId, {
+        onSuccess: () => {
+          catalystToast.success('Task Deleted', 'The task has been removed.');
+        },
+        onError: (err) => {
+          console.error('Failed to delete task:', err);
+          catalystToast.error('Failed to Delete', 'Please try again.');
+        },
+      });
+    },
+    [deleteTaskMutation]
   );
 
   // Generate swim lanes based on groupBy
@@ -745,6 +810,8 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
                   lane={lane}
                   statusColumns={COLUMN_CONFIG}
                   onTaskClick={onTaskClick}
+                  onTaskDuplicate={handleTaskDuplicate}
+                  onTaskDelete={handleTaskDelete}
                   overColumnId={overColumnId}
                   collapsed={collapsedLanes.has(lane.id)}
                   onToggleCollapse={() => toggleLaneCollapse(lane.id)}
@@ -761,6 +828,8 @@ export function PlannerKanban({ tasks, onTaskClick, onTaskMove, groupBy }: Plann
                   key={column.id}
                   column={column}
                   onTaskClick={onTaskClick}
+                  onTaskDuplicate={handleTaskDuplicate}
+                  onTaskDelete={handleTaskDelete}
                   isOver={overColumnId === column.id}
                   onDelete={column.isCustom ? handleDeleteColumn : undefined}
                 />
