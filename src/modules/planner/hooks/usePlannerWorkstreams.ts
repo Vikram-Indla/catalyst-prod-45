@@ -1,6 +1,6 @@
 // ============================================================
-// PLANNER TEAMS HOOK
-// Fetches teams for the team dropdown with member counts
+// PLANNER WORKSTREAMS HOOK
+// Fetches workstreams for the workstream dropdown with member counts
 // Returns empty list when database is empty (no mock data)
 // ============================================================
 
@@ -8,11 +8,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlannerTeam } from '../types';
 
-export function usePlannerTeams() {
+export function usePlannerWorkstreams() {
   return useQuery({
-    queryKey: ['planner-teams'],
+    queryKey: ['planner-workstreams'],
     queryFn: async () => {
-      // Fetch teams with member count
+      // Fetch workstreams (teams table) with member count
       const { data, error } = await supabase
         .from('teams')
         .select(`
@@ -27,25 +27,28 @@ export function usePlannerTeams() {
         .order('name');
 
       if (error) {
-        console.error('Error fetching teams:', error);
+        console.error('Error fetching workstreams:', error);
         return [];
       }
 
-      const teams: PlannerTeam[] = (data || []).map(team => ({
+      const workstreams: PlannerTeam[] = (data || []).map(team => ({
         id: team.id,
         name: team.name,
         shortName: team.short_name || team.name.slice(0, 3).toUpperCase(),
         description: team.description || undefined,
         memberCount: team.team_members?.[0]?.count || 0,
-        color: getTeamColor(team.team_type),
+        color: getWorkstreamColor(team.team_type),
       }));
 
-      return teams;
+      return workstreams;
     },
   });
 }
 
-function getTeamColor(teamType: string | null): string {
+// Alias for backward compatibility
+export const usePlannerTeams = usePlannerWorkstreams;
+
+function getWorkstreamColor(teamType: string | null): string {
   if (!teamType) return '#6b7280';
   const colors: Record<string, string> = {
     'AGILE': '#10b981',

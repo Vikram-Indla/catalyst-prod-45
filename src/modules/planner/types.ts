@@ -9,9 +9,9 @@ export type PlannerView =
   | 'timeline' 
   | 'calendar' 
   | 'weekly-report' 
-  | 'team-performance' 
+  | 'workstream-performance' 
   | 'ai-insights'
-  | 'teams'
+  | 'workstreams'
   | 'resources'
   | 'settings';
 
@@ -71,7 +71,7 @@ export interface PlannerUser {
   email?: string;
 }
 
-export interface PlannerTeam {
+export interface PlannerWorkstream {
   id: string;
   name: string;
   shortName: string;
@@ -81,6 +81,9 @@ export interface PlannerTeam {
   memberCount: number;
   color: string;
 }
+
+// Alias for backward compatibility
+export type PlannerTeam = PlannerWorkstream;
 
 // ============================================================
 // AI INSIGHTS TYPES

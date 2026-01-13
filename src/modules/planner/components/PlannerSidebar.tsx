@@ -45,11 +45,11 @@ const VIEWS_SECTION = [
 
 const INSIGHTS_SECTION = [
   { id: 'weekly-report', title: 'Weekly Report', path: '/planner/weekly-report', icon: FileText },
-  { id: 'team-performance', title: 'Team Performance', path: '/planner/team-performance', icon: Users },
+  { id: 'workstream-performance', title: 'Workstream Performance', path: '/planner/workstream-performance', icon: Users },
 ];
 
 const WORKSPACE_SECTION = [
-  { id: 'teams', title: 'Teams', path: '/planner/teams', icon: UsersRound },
+  { id: 'workstreams', title: 'Workstreams', path: '/planner/workstreams', icon: UsersRound },
 ];
 
 export function PlannerSidebar({
