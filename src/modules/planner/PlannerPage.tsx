@@ -3,7 +3,7 @@
 // Enterprise work planning with 7 views
 // ============================================================
 
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, Lightbulb } from 'lucide-react';
 import { toast } from 'sonner';
@@ -18,7 +18,7 @@ import { PlannerTeamPerformance } from './components/PlannerTeamPerformance';
 import { PlannerAIInsights } from './components/PlannerAIInsights';
 import { PlannerTaskDrawer } from './components/PlannerTaskDrawer';
 import { PlannerCreateModal } from './components/PlannerCreateModal';
-import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
+
 import { PlannerAIPanel } from './components/PlannerAIPanel';
 import { PlannerSearchBar } from './components/PlannerSearchBar';
 import { usePlannerTasks, useUpdatePlannerTask } from './hooks/usePlannerTasks';
@@ -61,7 +61,7 @@ export function PlannerPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createDefaultStatus, setCreateDefaultStatus] = useState<TaskStatus>('backlog');
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
-  const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
+  const [hasAutoOpened, setHasAutoOpened] = useState(false);
 
   // Online users for sidebar
   const onlineUsers = useMemo(() => getOnlineUsers(), []);
@@ -89,6 +89,15 @@ export function PlannerPage() {
 
   // AI Insights
   const insights = usePlannerAIInsights(tasks);
+
+  // Auto-open drawer with first task on load
+  useMemo(() => {
+    if (!hasAutoOpened && !isLoading && filteredTasks.length > 0) {
+      setSelectedTask(filteredTasks[0]);
+      setIsDrawerOpen(true);
+      setHasAutoOpened(true);
+    }
+  }, [hasAutoOpened, isLoading, filteredTasks]);
 
   // Task navigation for keyboard shortcuts
   const taskIndex = useMemo(() => {
@@ -357,7 +366,6 @@ export function PlannerPage() {
           teams={teams}
           selectedTeamId={selectedTeamId}
           onTeamChange={setSelectedTeamId}
-          onCreateTeam={() => setIsCreateTeamModalOpen(true)}
           onlineUsers={onlineUsers}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -404,17 +412,6 @@ export function PlannerPage() {
         insights={insights}
         onViewAll={() => handleViewChange('ai-insights')}
         onInsightAction={handleInsightAction}
-      />
-
-      {/* Create Team Modal */}
-      <PlannerCreateTeamModal
-        isOpen={isCreateTeamModalOpen}
-        onClose={() => setIsCreateTeamModalOpen(false)}
-        onCreate={(data) => {
-          toast.success(`Team "${data.name}" created`);
-          setIsCreateTeamModalOpen(false);
-        }}
-        users={users}
       />
     </div>
   );
