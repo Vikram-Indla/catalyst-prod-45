@@ -6,7 +6,7 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, Lightbulb } from 'lucide-react';
-import type { PlannerView, PlannerTask, TaskStatus, AIInsight } from './types';
+import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
 import { PlannerSidebar } from './components/PlannerSidebar';
 import { PlannerKanban } from './components/PlannerKanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
@@ -54,6 +54,7 @@ export function PlannerPage() {
   const [activeView, setActiveView] = useState<PlannerView>((view as PlannerView) || 'boards');
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
   
   // Drawer/Modal state
@@ -250,7 +251,7 @@ export function PlannerPage() {
     
     switch (activeView) {
       case 'boards':
-        return <PlannerKanban tasks={viewTasks} onTaskClick={handleTaskClick} onTaskMove={handleTaskMove} />;
+        return <PlannerKanban tasks={viewTasks} onTaskClick={handleTaskClick} onTaskMove={handleTaskMove} groupBy={groupBy === 'none' ? undefined : groupBy} />;
       case 'task-list':
         return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} />;
       case 'timeline':
@@ -264,7 +265,7 @@ export function PlannerPage() {
       case 'ai-insights':
         return <PlannerAIInsights tasks={viewTasks} onTaskClick={handleTaskClick} />;
       default:
-        return <PlannerKanban tasks={viewTasks} onTaskClick={handleTaskClick} onTaskMove={handleTaskMove} />;
+        return <PlannerKanban tasks={viewTasks} onTaskClick={handleTaskClick} onTaskMove={handleTaskMove} groupBy={groupBy === 'none' ? undefined : groupBy} />;
     }
   };
 
@@ -361,6 +362,8 @@ export function PlannerPage() {
           teams={teams}
           selectedTeamId={selectedTeamId}
           onTeamChange={setSelectedTeamId}
+          groupBy={groupBy}
+          onGroupByChange={setGroupBy}
         />
 
         {/* View content */}
