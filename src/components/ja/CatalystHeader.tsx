@@ -15,7 +15,7 @@ import { NotificationsPanel } from "./NotificationsPanel";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
 import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
-import { PlannerSelectorDropdown } from "./PlannerSelectorDropdown";
+
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
 import { ReleaseDropdown } from "./ReleaseDropdown";
 import { catalystToast } from "@/lib/catalystToast";
@@ -121,7 +121,7 @@ export function CatalystHeader() {
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM", visibleToProductOwner: false },
     { label: "Releases", path: "/releases/command-center", moduleCode: null, visibleToProductOwner: false }, // Release & Test Management Module
     { label: "Operations", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
-    { label: "Planner", hasDropdown: true, path: "/planner", moduleCode: null, visibleToProductOwner: true }, // Always visible - now with dropdown
+    { label: "Planner", path: "/planner/boards", moduleCode: null, visibleToProductOwner: true }, // Always visible - direct navigation
   ];
 
   // Get all nav items with their enabled status
@@ -437,45 +437,33 @@ export function CatalystHeader() {
                       </Popover>
                     )
                   ) : item.label === "Planner" ? (
-                    // Planner: Dropdown with team selection
-                    <Popover
-                      open={activeDropdown === item.label}
-                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                    // Planner: Direct navigation to planner boards
+                    <button
+                      style={{
+                        ...navButtonStyle,
+                        color: location.pathname.startsWith('/planner') ? 'hsl(var(--primary))' : navButtonStyle.color,
+                        fontWeight: location.pathname.startsWith('/planner') ? 600 : navButtonStyle.fontWeight,
+                        background: location.pathname.startsWith('/planner') ? 'hsl(var(--primary) / 0.08)' : 'transparent',
+                      }}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/planner')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/planner') ? 'hsl(var(--primary) / 0.08)' : 'transparent'; }}
+                      onClick={() => navigate('/planner/boards')}
                     >
-                      <PopoverTrigger asChild>
-                        <button 
+                      {item.label}
+                      {location.pathname.startsWith('/planner') && (
+                        <span 
                           style={{
-                            ...navButtonStyle,
-                            color: location.pathname.startsWith('/planner') ? 'var(--text-primary)' : navButtonStyle.color,
-                            fontWeight: location.pathname.startsWith('/planner') ? 600 : navButtonStyle.fontWeight,
-                            background: location.pathname.startsWith('/planner') ? 'var(--nav-active-bg)' : 'transparent',
+                            position: 'absolute',
+                            bottom: '-10px',
+                            left: '14px',
+                            right: '14px',
+                            height: '2px',
+                            background: 'var(--brand-active)',
+                            borderRadius: '1px',
                           }}
-                          onMouseEnter={(e) => { if (!location.pathname.startsWith('/planner')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/planner') ? 'var(--nav-active-bg)' : 'transparent'; }}
-                        >
-                          {item.label}
-                          <ChevronDown style={{ width: '16px', height: '16px' }} />
-                          {location.pathname.startsWith('/planner') && (
-                            <span 
-                              style={{
-                                position: 'absolute',
-                                bottom: '-10px',
-                                left: '14px',
-                                right: '14px',
-                                height: '2px',
-                                background: 'var(--brand-active)',
-                                borderRadius: '1px',
-                              }}
-                            />
-                          )}
-                        </button>
-                      </PopoverTrigger>
-                      {activeDropdown === item.label && (
-                        <PopoverContent className="p-0 w-auto" align="start">
-                          <PlannerSelectorDropdown onClose={() => setActiveDropdown(null)} />
-                        </PopoverContent>
+                        />
                       )}
-                    </Popover>
+                    </button>
                   ) : item.label === "Releases" ? (
                     // Releases: Direct navigation with active state
                     <button
