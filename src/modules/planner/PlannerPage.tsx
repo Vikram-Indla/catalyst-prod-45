@@ -427,26 +427,28 @@ export function PlannerPage() {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <PlannerSearchBar
-          filters={filters}
-          onSearchChange={setSearch}
-          onStatusChange={setStatusFilter}
-          onPriorityChange={setPriorityFilter}
-          onBlockedChange={setBlockedFilter}
-          onOverdueChange={setOverdueFilter}
-          onClearFilters={clearFilters}
-          hasActiveFilters={hasActiveFilters}
-          filteredCount={filteredCount}
-          totalCount={totalCount}
-          inputRef={searchInputRef}
-          teams={teams}
-          selectedTeamId={selectedTeamId}
-          onTeamChange={setSelectedTeamId}
-          groupBy={groupBy}
-          onGroupByChange={setGroupBy}
-          onCreateTeam={() => setIsCreateTeamModalOpen(true)}
-        />
+        {/* Search Bar - hidden on teams/settings views */}
+        {activeView !== 'teams' && activeView !== 'settings' && (
+          <PlannerSearchBar
+            filters={filters}
+            onSearchChange={setSearch}
+            onStatusChange={setStatusFilter}
+            onPriorityChange={setPriorityFilter}
+            onBlockedChange={setBlockedFilter}
+            onOverdueChange={setOverdueFilter}
+            onClearFilters={clearFilters}
+            hasActiveFilters={hasActiveFilters}
+            filteredCount={filteredCount}
+            totalCount={totalCount}
+            inputRef={searchInputRef}
+            teams={teams}
+            selectedTeamId={selectedTeamId}
+            onTeamChange={setSelectedTeamId}
+            groupBy={groupBy}
+            onGroupByChange={setGroupBy}
+            onCreateTeam={() => setIsCreateTeamModalOpen(true)}
+          />
+        )}
 
         {/* View content */}
         <div className="flex flex-1 min-h-0 bg-surface-0">
