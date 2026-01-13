@@ -108,7 +108,7 @@ export function PlannerSearchBar({
             <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-56">
+        <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-56 max-h-80 overflow-y-auto">
           <DropdownMenuItem 
             onClick={() => onTeamChange(null)}
             className={cn(!selectedTeamId && "bg-blue-50")}
