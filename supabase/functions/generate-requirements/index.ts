@@ -1,9 +1,10 @@
 // supabase/functions/generate-requirements/index.ts
 // Supabase Edge Function for Requirement Assist AI Generation
-// Uses Lovable AI Gateway (no external API key required)
+// Uses Anthropic Claude API for intelligent requirements analysis
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import Anthropic from "https://esm.sh/@anthropic-ai/sdk@0.52.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -71,13 +72,24 @@ interface AIResponse {
   };
 }
 
-const SYSTEM_PROMPT = `You are CATY (Catalyst AI Technology), an expert business analyst AI specialized in analyzing requirements documents and generating SAFe-compliant artifacts for the Saudi Ministry of Industry.
+const SYSTEM_PROMPT = `You are CATY (Catalyst AI Technology), an expert SAFe (Scaled Agile Framework) business analyst AI specialized in analyzing requirements documents and generating structured work items for enterprise government projects.
 
 Your task is to analyze business requirement documents and generate structured outputs following these standards:
 - SAFe (Scaled Agile Framework) methodology
 - DGA (Digital Government Authority) compliance standards
 - NCA (National Cybersecurity Authority) ECC-2:2018 controls
 - BABOK (Business Analysis Body of Knowledge) v3 guidelines
+
+CRITICAL RULES:
+1. Every title MUST be unique and derived from the actual requirements text
+2. NEVER use generic text like "System capability" or "Supporting capability"
+3. Extract actual business concepts, user roles, and processes from the input
+4. Generate 3-5 Epics maximum
+5. Each Epic should have 2-4 Features
+6. Each Feature should have 2-5 User Stories
+7. Stories MUST follow the format: "As a [specific role], I want [specific goal], so that [specific benefit]"
+8. Acceptance criteria MUST use Given/When/Then format
+9. Confidence scores: 95-100 for clear requirements, 80-94 for inferred, 60-79 for assumed
 
 For each generated item, provide a confidence score (0-100) based on:
 - Clarity: How clear and unambiguous is the requirement
@@ -86,15 +98,8 @@ For each generated item, provide a confidence score (0-100) based on:
 - Feasibility: Is it technically achievable
 
 Always maintain professional language appropriate for government documentation.
-Generate outputs in English with Arabic translation support where relevant.
-
-CRITICAL JSON RULES:
-- Return ONLY valid JSON (no markdown/code fences, no commentary)
-- Use double quotes for all keys/strings
-- Do NOT include literal newlines inside JSON strings; use \\n (and \\t) escape sequences
-- Do NOT include unescaped double quotes inside strings
-- Keep text concise to avoid truncation`;
-
+Use domain-specific terminology from the input requirements.
+Extract ACTUAL concepts (license types, user roles, business processes) - do NOT invent features not supported by the requirements.`;
 
 const GENERATION_PROMPT = `Analyze the following business requirements document and generate structured SAFe artifacts.
 
@@ -107,33 +112,32 @@ REQUESTED OUTPUTS: {OUTPUT_TYPES}
 COMPLIANCE FRAMEWORKS: {COMPLIANCE_FRAMEWORKS}
 
 Return a SINGLE JSON object with this exact structure (no markdown, just raw JSON).
-IMPORTANT: All string values must be valid JSON strings (escape newlines as \\n; do not include literal line breaks inside quotes).
-Keep content concise (avoid multi-page outputs) to prevent truncation.
+IMPORTANT: All string values must be valid JSON strings (escape newlines as \\n).
 
 {
   "analysis": {
-    "actors": ["list of identified actors/personas"],
-    "functions": ["list of key functions/capabilities"],
+    "actors": ["list of identified actors/personas from the document"],
+    "functions": ["list of key functions/capabilities mentioned"],
     "complexity": "Low|Medium|High",
     "estimatedEffort": "rough estimate in sprints"
   },
   "prd": {
-    "title": "Product Requirements Document title",
-    "description": "Executive summary",
+    "title": "Product Requirements Document title derived from input",
+    "description": "Executive summary of the requirements",
     "sections": {
-      "overview": "...",
-      "objectives": "...",
-      "scope": "...",
-      "requirements": "...",
-      "compliance": "...",
-      "appendix": "..."
+      "overview": "Brief overview",
+      "objectives": "Key business objectives",
+      "scope": "In-scope and out-of-scope items",
+      "requirements": "Summary of functional requirements",
+      "compliance": "Compliance considerations",
+      "appendix": "Additional notes"
     }
   },
   "epics": [
     {
       "item_type": "epic",
-      "title": "Epic title",
-      "description": "Epic description with business outcome",
+      "title": "Specific epic title from requirements (max 10 words)",
+      "description": "Epic description with clear business outcome",
       "confidence_score": 92,
       "confidence_breakdown": {
         "clarity": 95,
@@ -146,9 +150,9 @@ Keep content concise (avoid multi-page outputs) to prevent truncation.
   "features": [
     {
       "item_type": "feature",
-      "title": "Feature title",
+      "title": "Specific feature title (max 10 words)",
       "description": "Feature description with benefit hypothesis",
-      "acceptance_criteria": "Given/When/Then format (use \\n for line breaks)",
+      "acceptance_criteria": "Given [context]\\nWhen [action]\\nThen [expected result]",
       "parent_index": 0,
       "confidence_score": 89,
       "confidence_breakdown": {
@@ -162,9 +166,9 @@ Keep content concise (avoid multi-page outputs) to prevent truncation.
   "stories": [
     {
       "item_type": "story",
-      "title": "As a [user], I want [goal], so that [benefit]",
-      "description": "Detailed story description",
-      "acceptance_criteria": "Given [context]\\nWhen [action]\\nThen [outcome]",
+      "title": "As a [specific role from requirements], I want [specific goal], so that [specific benefit]",
+      "description": "Detailed story description with context",
+      "acceptance_criteria": "Given [context]\\nWhen [action]\\nThen [expected outcome]\\n\\nGiven [another context]\\nWhen [another action]\\nThen [another outcome]",
       "parent_index": 0,
       "confidence_score": 95,
       "confidence_breakdown": {
@@ -179,29 +183,30 @@ Keep content concise (avoid multi-page outputs) to prevent truncation.
     "dga": {
       "passed": 12,
       "total": 12,
-      "details": ["Data classification: PASS", "Access control: PASS"]
+      "details": ["Data classification: PASS", "Access control: PASS", "Audit logging: PASS"]
     },
     "nca": {
       "passed": 8,
       "total": 8,
-      "details": ["Security classification: PASS"]
+      "details": ["Security classification: PASS", "Data protection: PASS"]
     },
     "babok": {
       "passed": 6,
       "total": 6,
-      "details": ["Requirement structure: PASS"]
+      "details": ["Requirement structure: PASS", "Traceability: PASS"]
     }
   }
 }
 
-Quality + size constraints:
-- Prefer up to 3 epics.
-- Prefer 2-3 features per epic.
-- Prefer 2-3 stories per feature.
-- Keep PRD section text brief.
+QUALITY CONSTRAINTS:
+- Generate 3-5 Epics based on major themes in the requirements
+- Generate 2-4 Features per Epic
+- Generate 2-5 Stories per Feature
+- All titles must be UNIQUE and derived from actual input text
+- Use actual role names mentioned in requirements (e.g., "Applicant", "BO Officer", "License Holder", "Admin")
+- Be specific: "Gold License Application" not "License Application"
 
-Generate realistic, high-quality requirements appropriate for a government ministry. Ensure all items have meaningful confidence scores based on the quality of the input.`;
-
+Generate realistic, high-quality requirements appropriate for a government ministry.`;
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -212,11 +217,16 @@ serve(async (req) => {
   try {
     const startTime = Date.now();
     
-    // Get Lovable AI Gateway API key (auto-provisioned)
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!lovableApiKey) {
-      throw new Error("LOVABLE_API_KEY not configured");
+    // Get Anthropic API key
+    const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!anthropicApiKey) {
+      throw new Error("ANTHROPIC_API_KEY not configured");
     }
+
+    // Initialize Anthropic client
+    const anthropic = new Anthropic({
+      apiKey: anthropicApiKey,
+    });
 
     // Parse request
     const request: GenerationRequest = await req.json();
@@ -244,128 +254,27 @@ serve(async (req) => {
       .replace("{OUTPUT_TYPES}", outputTypesStr || "prd, epics, features, stories")
       .replace("{COMPLIANCE_FRAMEWORKS}", complianceStr || "DGA, NCA, BABOK");
 
-    console.log("Calling Lovable AI Gateway for generation:", generationId);
+    console.log("Calling Claude API for generation:", generationId);
+    console.log("Input text length:", inputText.length, "words:", inputText.split(/\s+/).length);
 
-    const DEFAULT_MODEL = "google/gemini-3-flash-preview";
+    // Call Claude API
+    const response = await anthropic.messages.create({
+      model: settings?.model || "claude-sonnet-4-20250514",
+      max_tokens: settings?.maxTokens || 8000,
+      system: settings?.systemPrompt || SYSTEM_PROMPT,
+      messages: [
+        { role: "user", content: userPrompt }
+      ],
+    });
 
-    const normalizeModel = (requested?: string) => {
-      const m = (requested || "").trim();
-      if (!m) return DEFAULT_MODEL;
+    const content = response.content[0];
+    if (content.type !== "text") {
+      throw new Error("Unexpected response type from Claude");
+    }
 
-      // Only allow models supported by Lovable AI Gateway in this project.
-      // If user UI sends an unsupported model (e.g. Claude), we fall back gracefully.
-      if (m.startsWith("google/") || m.startsWith("openai/")) return m;
+    console.log("Claude response received, parsing JSON...");
 
-      console.warn("Unsupported model requested; falling back to default:", m);
-      return DEFAULT_MODEL;
-    };
-
-    const callAIGateway = async (args: {
-      model: string;
-      maxTokens: number;
-      temperature: number;
-      systemPrompt: string;
-      userPrompt: string;
-    }) => {
-      const model = normalizeModel(args.model);
-
-      const body: Record<string, unknown> = {
-        model,
-        messages: [
-          { role: "system", content: args.systemPrompt },
-          { role: "user", content: args.userPrompt },
-        ],
-      };
-
-      // Some OpenAI models only support the default temperature.
-      // To avoid 400s, we omit temperature for openai/* and only set it for google/*.
-      if (!model.startsWith("openai/")) {
-        body.temperature = args.temperature;
-      }
-
-
-      // Different providers use different token parameter names.
-      // For OpenAI-family models on this gateway, use max_completion_tokens.
-      if (model.startsWith("openai/")) {
-        body.max_completion_tokens = args.maxTokens;
-        body.response_format = { type: "json_object" };
-      } else {
-        body.max_tokens = args.maxTokens;
-      }
-
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${lovableApiKey}`,
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        const errorText = (await response.text()).slice(0, 1500);
-        console.error("Lovable AI Gateway error:", response.status, errorText);
-
-        if (response.status === 429) {
-          throw new Error("Rate limit exceeded. Please try again in a moment.");
-        }
-        if (response.status === 402) {
-          throw new Error("AI credits exhausted. Please add credits to continue.");
-        }
-        throw new Error(`AI Gateway error ${response.status}: ${errorText || "Unknown error"}`);
-      }
-
-      const aiGatewayResponse = await response.json();
-
-      const choice = aiGatewayResponse.choices?.[0];
-      const message = choice?.message;
-
-      const extractText = (value: unknown): string => {
-        if (typeof value === "string") return value;
-        if (Array.isArray(value)) {
-          // Some providers return structured parts: [{ type: 'text', text: '...' }, ...]
-          return value
-            .map((part) => {
-              if (typeof part === "string") return part;
-              if (part && typeof part === "object") {
-                const t = (part as any).text;
-                return typeof t === "string" ? t : "";
-              }
-              return "";
-            })
-            .join("");
-        }
-        return "";
-      };
-
-      const content = extractText(message?.content ?? (choice as any)?.text ?? (aiGatewayResponse as any)?.output_text);
-
-      if (!content || !content.trim()) {
-        // Log a small diagnostic (avoid dumping huge payloads)
-        console.error(
-          "AI response missing content:",
-          JSON.stringify(
-            {
-              hasChoices: Array.isArray(aiGatewayResponse.choices),
-              firstChoiceKeys: choice ? Object.keys(choice) : null,
-              messageKeys: message ? Object.keys(message) : null,
-            },
-            null,
-            2
-          )
-        );
-        throw new Error("No content in AI response");
-      }
-
-      const tokensUsed =
-        (aiGatewayResponse.usage?.prompt_tokens || 0) +
-        (aiGatewayResponse.usage?.completion_tokens || 0);
-
-      return { content: content.trim(), tokensUsed };
-    };
-
-    console.log("AI response received, parsing JSON...");
-
+    // Parse and normalize the JSON response
     const normalizeAIJson = (raw: string) => {
       let s = raw.trim();
 
@@ -378,12 +287,12 @@ serve(async (req) => {
         }
       }
 
-      // Handle case where it starts with "json" (sometimes models emit "json{...")
+      // Handle case where it starts with "json"
       if (s.toLowerCase().startsWith("json")) {
         s = s.slice(4).trim();
       }
 
-      // If there's any leading/trailing chatter, extract the outermost JSON object
+      // Extract the outermost JSON object
       const firstBrace = s.indexOf("{");
       const lastBrace = s.lastIndexOf("}");
       if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
@@ -393,7 +302,7 @@ serve(async (req) => {
       return s;
     };
 
-    // Repair common JSON issues produced by LLMs (unescaped newlines/control chars in strings, trailing commas)
+    // Repair common JSON issues
     const escapeControlCharsInStrings = (input: string) => {
       let out = "";
       let inString = false;
@@ -456,109 +365,30 @@ serve(async (req) => {
 
     const removeTrailingCommas = (input: string) => input.replace(/,\s*([}\]])/g, "$1");
 
-    const tryParseAIResponse = (raw: string) => {
-      const normalized = normalizeAIJson(raw);
+    // Try to parse the response
+    let aiResponse: AIResponse;
+    const normalized = normalizeAIJson(content.text);
+    
+    try {
+      aiResponse = JSON.parse(normalized) as AIResponse;
+    } catch (e1) {
+      console.warn("First parse attempt failed, trying repair...");
+      const repaired = removeTrailingCommas(escapeControlCharsInStrings(normalized));
       try {
-        return {
-          parsed: JSON.parse(normalized) as AIResponse,
-          usedRepair: false,
-          normalized,
-          repaired: null as string | null,
-        };
-      } catch (e1) {
-        const repaired = removeTrailingCommas(escapeControlCharsInStrings(normalized));
-        try {
-          return {
-            parsed: JSON.parse(repaired) as AIResponse,
-            usedRepair: true,
-            normalized,
-            repaired,
-          };
-        } catch (e2) {
-          const err = new Error("AI response JSON parse failed");
-          (err as any).details = { e1, e2, normalized, repaired };
-          throw err;
-        }
-      }
-    };
-
-    const buildParseDebug = (rawJson: string, parseErr: unknown) => {
-      const msg = parseErr instanceof Error ? parseErr.message : String(parseErr);
-      const match = msg.match(/position\s+(\d+)/i);
-      const pos = match ? Number(match[1]) : null;
-      if (pos === null || Number.isNaN(pos)) return { msg };
-      const start = Math.max(0, pos - 160);
-      const end = Math.min(rawJson.length, pos + 160);
-      return { msg, pos, snippet: rawJson.slice(start, end) };
-    };
-
-    // Attempt 1: Primary model (validated). If parsing fails, retry once with a stricter JSON mode model.
-    const requestedMax = settings?.maxTokens ?? 4000;
-    const cappedMax = Math.max(256, Math.min(requestedMax, 4000));
-
-    const attempts = [
-      {
-        name: "primary",
-        model: settings?.model || DEFAULT_MODEL,
-        maxTokens: cappedMax,
-        temperature: settings?.temperature ?? 0.7,
-        systemPrompt: settings?.systemPrompt || SYSTEM_PROMPT,
-        userPrompt,
-      },
-      {
-        name: "retry_strict_json",
-        model: "openai/gpt-5-mini",
-        maxTokens: cappedMax,
-        // Some OpenAI models only support the default temperature.
-        temperature: 1,
-        systemPrompt:
-          (settings?.systemPrompt || SYSTEM_PROMPT) +
-          "\n\nRETRY MODE: Output MUST be a single valid JSON object. No line breaks inside strings; escape as \\n. Output should be compact/minified.",
-        userPrompt: userPrompt + "\n\nRETRY MODE: Return compact JSON only.",
-      },
-    ];
-
-    let aiResponse: AIResponse | null = null;
-    let tokensUsed = 0;
-    let lastError: Error | null = null;
-
-    for (const attempt of attempts) {
-      try {
-        console.log("AI attempt:", attempt.name, attempt.model);
-        const { content, tokensUsed: attemptTokens } = await callAIGateway(attempt);
-
-        // keep last token count for observability
-        tokensUsed = attemptTokens;
-
-        const parsed = tryParseAIResponse(content);
-        aiResponse = parsed.parsed;
-
-        if (parsed.usedRepair) {
-          console.warn("AI JSON required repair:", attempt.name);
-        }
-
-        break; // success
-      } catch (err) {
-        const e = err instanceof Error ? err : new Error(String(err));
-        lastError = e;
-        console.error("AI attempt failed:", attempt.name, e);
-
-        // If it was a parse failure, log precise context to help future debugging.
-        if ((e as any).details) {
-          const details = (e as any).details;
-          console.error("Parse failure (normalized) context:", buildParseDebug(details.normalized, details.e1));
-          console.error("Parse failure (repaired) context:", buildParseDebug(details.repaired, details.e2));
-        }
-
-        // try next attempt
+        aiResponse = JSON.parse(repaired) as AIResponse;
+        console.log("JSON parse succeeded after repair");
+      } catch (e2) {
+        console.error("JSON parse failed:", e1, e2);
+        console.error("Raw response (first 2000 chars):", content.text.slice(0, 2000));
+        throw new Error("Failed to parse Claude response as JSON. Please try again.");
       }
     }
 
     const processingTime = Date.now() - startTime;
+    const tokensUsed = (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0);
 
-    if (!aiResponse) {
-      throw (lastError ?? new Error("Failed to parse AI response as JSON. Please try again."));
-    }
+    console.log("Parsed successfully. Tokens used:", tokensUsed);
+
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -634,7 +464,7 @@ serve(async (req) => {
     if (outputTypes.features && aiResponse.features) {
       for (let i = 0; i < aiResponse.features.length; i++) {
         const feature = aiResponse.features[i];
-        const parentEpic = epicRecords[feature.parent_index || 0];
+        const parentEpic = epicRecords[feature.parent_index || Math.floor(i / 3)];
         
         featuresToInsert.push({
           generation_id: generationId,
@@ -668,7 +498,8 @@ serve(async (req) => {
     if (outputTypes.stories && aiResponse.stories) {
       for (let i = 0; i < aiResponse.stories.length; i++) {
         const story = aiResponse.stories[i];
-        const parentFeature = featureRecords[story.parent_index || Math.floor(i / 3)];
+        // Distribute stories across features more evenly
+        const parentFeature = featureRecords[story.parent_index ?? Math.floor(i / Math.max(1, Math.ceil(aiResponse.stories.length / featureRecords.length)))];
         
         storiesToInsert.push({
           generation_id: generationId,
