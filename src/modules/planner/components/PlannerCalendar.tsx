@@ -7,8 +7,9 @@ import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import type { PlannerTask } from '../types';
-import { PRIORITY_CONFIG } from '../types';
+import { PRIORITY_CONFIG, COLUMN_CONFIG } from '../types';
 import { motion } from 'framer-motion';
 import { 
   startOfMonth, 
@@ -31,6 +32,11 @@ interface PlannerCalendarProps {
 }
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+// Helper to get status config
+const getStatusConfig = (status: string) => {
+  return COLUMN_CONFIG.find(col => col.id === status) || { title: status, color: '#94a3b8' };
+};
 
 export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -137,7 +143,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
                   transition={{ delay: index * 0.005 }}
                   onClick={() => handleDateClick(date)}
                   className={cn(
-                    "min-h-[100px] p-2 rounded-lg border cursor-pointer transition-all",
+                    "min-h-[100px] p-2 rounded-lg border cursor-pointer transition-all overflow-hidden",
                     "hover:border-blue-300 hover:bg-blue-50/30",
                     isCurrentMonth ? "bg-surface-0" : "bg-surface-1/50",
                     isSelected && "border-blue-500 bg-blue-50",
@@ -153,9 +159,9 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
                     {format(date, 'd')}
                   </div>
 
-                  {/* Task Dots */}
-                  <div className="flex flex-wrap gap-1">
-                    {dayTasks.slice(0, 3).map(task => (
+                  {/* Task Cards with Names */}
+                  <div className="space-y-1">
+                    {dayTasks.slice(0, 2).map(task => (
                       <div
                         key={task.id}
                         onClick={(e) => {
@@ -163,15 +169,23 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
                           onTaskClick(task);
                         }}
                         className={cn(
-                          "w-2 h-2 rounded-full cursor-pointer hover:scale-125 transition-transform"
+                          "text-[10px] px-1.5 py-0.5 rounded cursor-pointer truncate",
+                          "hover:opacity-80 transition-opacity"
                         )}
-                        style={{ backgroundColor: PRIORITY_CONFIG[task.priority].color }}
-                        title={task.title}
-                      />
+                        style={{ 
+                          backgroundColor: `${PRIORITY_CONFIG[task.priority].color}15`,
+                          borderLeft: `2px solid ${PRIORITY_CONFIG[task.priority].color}`
+                        }}
+                        title={`${task.title}${task.assigneeName ? ` - ${task.assigneeName}` : ''}`}
+                      >
+                        <span className="font-medium text-text-primary truncate block">
+                          {task.assigneeName || task.title}
+                        </span>
+                      </div>
                     ))}
-                    {dayTasks.length > 3 && (
-                      <span className="text-[10px] text-text-muted font-medium">
-                        +{dayTasks.length - 3}
+                    {dayTasks.length > 2 && (
+                      <span className="text-[10px] text-text-muted font-medium pl-1">
+                        +{dayTasks.length - 2} more
                       </span>
                     )}
                   </div>
@@ -183,7 +197,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
 
         {/* Selected Date Tasks Panel */}
         {selectedDate && (
-          <div className="w-[280px] border-l border-border bg-surface-1 overflow-y-auto">
+          <div className="w-[300px] border-l border-border bg-surface-1 overflow-y-auto">
             <div className="p-4 border-b border-border sticky top-0 bg-surface-1 z-10">
               <h3 className="font-semibold text-text-primary">
                 {format(selectedDate, 'EEEE, MMMM d')}
@@ -196,6 +210,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
             <div className="p-2 space-y-2">
               {selectedDateTasks.map(task => {
                 const priorityConfig = PRIORITY_CONFIG[task.priority];
+                const statusConfig = getStatusConfig(task.status);
                 return (
                   <motion.div
                     key={task.id}
@@ -204,12 +219,25 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
                     onClick={() => onTaskClick(task)}
                     className="p-3 bg-surface-0 rounded-lg border border-border cursor-pointer hover:border-blue-300 hover:shadow-sm transition-all"
                   >
-                    <div className="flex items-center gap-2 mb-1">
-                      <div
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: priorityConfig.color }}
-                      />
-                      <span className="text-[10px] font-mono text-text-muted">{task.key}</span>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div
+                          className="w-2 h-2 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: priorityConfig.color }}
+                        />
+                        <span className="text-[10px] font-mono text-text-muted">{task.key}</span>
+                      </div>
+                      <Badge 
+                        variant="secondary" 
+                        className="text-[9px] px-1.5 py-0 h-4 flex-shrink-0"
+                        style={{ 
+                          backgroundColor: `${statusConfig.color}20`,
+                          color: statusConfig.color,
+                          borderColor: `${statusConfig.color}40`
+                        }}
+                      >
+                        {statusConfig.title}
+                      </Badge>
                     </div>
                     <p className="text-sm font-medium text-text-primary line-clamp-2">
                       {task.title}
