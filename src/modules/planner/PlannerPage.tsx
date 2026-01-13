@@ -214,26 +214,20 @@ export function PlannerPage() {
     assigneeId?: string;
     dueDate?: string;
   }) => {
-    createTask.mutate(
-      {
-        title: data.title,
-        description: data.description,
-        status: data.status,
-        priority: data.priority as any,
-        assigneeId: data.assigneeId,
-        dueDate: data.dueDate,
-      },
-      {
-        onSuccess: () => {
-          toast.success('Task created successfully');
-        },
-        onError: (error) => {
-          toast.error('Failed to create task');
-          console.error('Create task error:', error);
-        },
-      }
-    );
-  }, [createTask]);
+    // Find assignee name for the toast
+    const assignee = users.find(u => u.id === data.assigneeId);
+    
+    createTask.mutate({
+      title: data.title,
+      description: data.description,
+      status: data.status,
+      priority: data.priority as any,
+      assigneeId: data.assigneeId,
+      assigneeName: assignee?.name,
+      dueDate: data.dueDate,
+    });
+    // Toast is handled in the hook - no duplicate here
+  }, [createTask, users]);
 
   const handleInsightAction = useCallback((insight: AIInsight) => {
     if (insight.taskId) {

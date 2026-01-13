@@ -6,7 +6,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { TaskStatus, TaskPriority, PlannerTask } from '../types';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { v4 as uuidv4 } from 'uuid';
 
 interface CreateTaskData {
@@ -15,6 +15,7 @@ interface CreateTaskData {
   status: TaskStatus;
   priority: TaskPriority;
   assigneeId?: string;
+  assigneeName?: string;
   dueDate?: string;
   featureId?: string;
 }
@@ -60,7 +61,7 @@ export function useCreatePlannerTask() {
 
       if (error) throw error;
 
-      return { ...result, key: taskKey, id: taskId };
+      return { ...result, key: taskKey, id: taskId, assigneeName: data.assigneeName };
     },
     onMutate: async (data) => {
       // Optimistic update - add task immediately
@@ -80,6 +81,7 @@ export function useCreatePlannerTask() {
         type: 'task',
         priority: data.priority,
         assigneeId: data.assigneeId,
+        assigneeName: data.assigneeName,
         blocked: false,
         progress: 0,
         comments: 0,
@@ -100,7 +102,7 @@ export function useCreatePlannerTask() {
       if (context?.previousTasks) {
         queryClient.setQueryData(['planner-tasks'], context.previousTasks);
       }
-      toast.error('Failed to create task');
+      catalystToast.error('Failed to create task', 'Please try again.');
     },
     onSuccess: (result, data, context) => {
       // Replace temp task with real one
@@ -108,7 +110,13 @@ export function useCreatePlannerTask() {
         if (!old) return old;
         return old.map(t => t.id === context?.tempId ? { ...t, id: result.id, key: result.key } : t);
       });
-      toast.success(`Task ${result.key || 'created'} created successfully`);
+      
+      // Show single Catalyst toast with task key and assignee
+      const assigneeText = result.assigneeName ? ` assigned to ${result.assigneeName}` : '';
+      catalystToast.success(
+        `Task ${result.key} created`,
+        `Task has been created successfully${assigneeText}.`
+      );
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
