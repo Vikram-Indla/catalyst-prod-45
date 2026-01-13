@@ -3,10 +3,10 @@
 // Search and filter toolbar for Planner
 // ============================================================
 
-import { Search, X, Filter, ChevronDown } from 'lucide-react';
+import { Search, X, Filter, ChevronDown, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';
-import type { TaskStatus, TaskPriority, PlannerUser } from '../types';
+import type { TaskStatus, TaskPriority, PlannerTeam } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,9 @@ interface PlannerSearchBarProps {
   filteredCount: number;
   totalCount: number;
   inputRef?: React.RefObject<HTMLInputElement>;
+  teams?: PlannerTeam[];
+  selectedTeamId: string | null;
+  onTeamChange: (teamId: string | null) => void;
 }
 
 export function PlannerSearchBar({
@@ -44,7 +47,12 @@ export function PlannerSearchBar({
   filteredCount,
   totalCount,
   inputRef,
+  teams = [],
+  selectedTeamId,
+  onTeamChange,
 }: PlannerSearchBarProps) {
+  const selectedTeam = teams.find(t => t.id === selectedTeamId);
+  
   return (
     <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-surface-0">
       {/* Search Input */}
@@ -67,6 +75,49 @@ export function PlannerSearchBar({
           </button>
         )}
       </div>
+
+      {/* Team Switcher */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className={cn(
+            "h-9 gap-2 min-w-[140px] justify-between",
+            selectedTeamId && "border-blue-500 text-blue-600"
+          )}>
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              <span className="text-sm truncate max-w-[100px]">
+                {selectedTeam?.name || 'All Teams'}
+              </span>
+            </div>
+            <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-56">
+          <DropdownMenuItem 
+            onClick={() => onTeamChange(null)}
+            className={cn(!selectedTeamId && "bg-blue-50")}
+          >
+            <Users className="w-4 h-4 mr-2 text-muted-foreground" />
+            All Teams
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {teams.map(team => (
+            <DropdownMenuItem
+              key={team.id}
+              onClick={() => onTeamChange(team.id)}
+              className={cn(selectedTeamId === team.id && "bg-blue-50")}
+            >
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: team.color }}
+                />
+                <span className="truncate">{team.name}</span>
+              </div>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Status Filter */}
       <DropdownMenu>

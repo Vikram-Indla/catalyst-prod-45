@@ -348,6 +348,9 @@ export function PlannerPage() {
         filteredCount={filteredCount}
         totalCount={totalCount}
         inputRef={searchInputRef}
+        teams={teams}
+        selectedTeamId={selectedTeamId}
+        onTeamChange={setSelectedTeamId}
       />
 
       {/* Main content area with sidebar */}
