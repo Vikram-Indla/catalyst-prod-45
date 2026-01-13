@@ -78,8 +78,6 @@ export function useCreatePlannerTask() {
         }])
         .select()
         .single();
-        .select()
-        .single();
 
       if (error) throw error;
 
