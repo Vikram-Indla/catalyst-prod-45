@@ -61,7 +61,7 @@ export function PlannerPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createDefaultStatus, setCreateDefaultStatus] = useState<TaskStatus>('backlog');
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
-  const [hasAutoOpened, setHasAutoOpened] = useState(false);
+  
 
   // Online users for sidebar
   const onlineUsers = useMemo(() => getOnlineUsers(), []);
@@ -90,14 +90,6 @@ export function PlannerPage() {
   // AI Insights
   const insights = usePlannerAIInsights(tasks);
 
-  // Auto-open drawer with first task on load
-  useMemo(() => {
-    if (!hasAutoOpened && !isLoading && filteredTasks.length > 0) {
-      setSelectedTask(filteredTasks[0]);
-      setIsDrawerOpen(true);
-      setHasAutoOpened(true);
-    }
-  }, [hasAutoOpened, isLoading, filteredTasks]);
 
   // Task navigation for keyboard shortcuts
   const taskIndex = useMemo(() => {
