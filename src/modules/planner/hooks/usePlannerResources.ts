@@ -37,10 +37,11 @@ export function usePlannerResources() {
           team:teams(id, name)
         `);
 
-      // Fetch all tasks with assignees
-      const { data: tasks } = await supabase
-        .from('tasks')
-        .select('id, title, status, due_date, updated_at, assignee_id, team_id')
+      // Fetch all stories with assignees (use stories table, not tasks)
+      const { data: stories } = await supabase
+        .from('stories')
+        .select('id, title, status, start_date, updated_at, assignee_id, team_id')
+        .is('deleted_at', null)
         .not('status', 'eq', 'done');
 
       const now = new Date();
@@ -52,34 +53,34 @@ export function usePlannerResources() {
         const userTeamMemberships = (teamMembers || [])
           .filter(tm => tm.user_id === profile.id && tm.team)
           .map(tm => ({
-            teamId: tm.team.id,
-            teamName: tm.team.name,
+            teamId: tm.team!.id,
+            teamName: tm.team!.name,
             teamColor: getTeamColor(index),
             role: (tm.role as 'lead' | 'member') || 'member',
             taskCount: 0, // Will be calculated below
           }));
 
-        // Get tasks assigned to this user
-        const userTasks = (tasks || []).filter(t => t.assignee_id === profile.id);
+        // Get stories assigned to this user
+        const userStories = (stories || []).filter(t => t.assignee_id === profile.id);
         
         // Calculate task counts for each team
         userTeamMemberships.forEach(tm => {
-          tm.taskCount = userTasks.filter(t => t.team_id === tm.teamId).length;
+          tm.taskCount = userStories.filter(t => t.team_id === tm.teamId).length;
         });
 
-        // Calculate stats
-        const overdueCount = userTasks.filter(t => 
-          t.due_date && isBefore(new Date(t.due_date), now)
+        // Calculate stats using start_date as "due date"
+        const overdueCount = userStories.filter(t => 
+          t.start_date && isBefore(new Date(t.start_date), now)
         ).length;
 
-        const dueSoonCount = userTasks.filter(t => {
-          if (!t.due_date) return false;
-          const due = new Date(t.due_date);
+        const dueSoonCount = userStories.filter(t => {
+          if (!t.start_date) return false;
+          const due = new Date(t.start_date);
           return isAfter(due, now) && isBefore(due, weekFromNow);
         }).length;
 
-        const staleCount = userTasks.filter(t => 
-          isBefore(new Date(t.updated_at), weekAgo)
+        const staleCount = userStories.filter(t => 
+          t.updated_at && isBefore(new Date(t.updated_at), weekAgo)
         ).length;
 
         const initials = (profile.full_name || 'U')
@@ -97,7 +98,7 @@ export function usePlannerResources() {
           avatarColor: AVATAR_COLORS[index % AVATAR_COLORS.length],
           role: null, // Will be fetched from user_product_roles if needed
           teams: userTeamMemberships,
-          taskCount: userTasks.length,
+          taskCount: userStories.length,
           overdueCount,
           dueSoonCount,
           staleCount,
@@ -136,43 +137,43 @@ export function usePlannerResource(userId: string | null) {
         `)
         .eq('user_id', userId);
 
-      // Fetch tasks assigned to this user
-      const { data: tasksData } = await supabase
-        .from('tasks')
+      // Fetch stories assigned to this user (use stories table, not tasks)
+      const { data: storiesData } = await supabase
+        .from('stories')
         .select(`
           id,
           title,
           status,
-          due_date,
+          start_date,
           updated_at,
           priority,
           team_id,
-          teams(id, name)
+          story_key
         `)
         .eq('assignee_id', userId)
+        .is('deleted_at', null)
         .not('status', 'eq', 'done')
-        .order('due_date', { ascending: true, nullsFirst: false });
+        .order('start_date', { ascending: true, nullsFirst: false });
 
       const now = new Date();
       const weekFromNow = addDays(now, DUE_SOON_DAYS);
       const weekAgo = addDays(now, -STALE_DAYS);
 
-      // Map tasks to PlannerTask format
-      const tasks: PlannerTask[] = (tasksData || []).map((t: any) => ({
+      // Map stories to PlannerTask format
+      const tasks: PlannerTask[] = (storiesData || []).map((t) => ({
         id: t.id,
-        key: `TASK-${t.id.slice(0, 4).toUpperCase()}`,
+        key: t.story_key || `TASK-${t.id.slice(0, 4).toUpperCase()}`,
         title: t.title,
         status: mapStatus(t.status),
         type: 'task' as const,
-        priority: t.priority || 'medium',
+        priority: (t.priority as 'low' | 'medium' | 'high' | 'critical') || 'medium',
         teamId: t.team_id,
-        teamName: t.teams?.name,
-        dueDate: t.due_date,
+        dueDate: t.start_date,
         blocked: false,
         progress: 0,
         comments: 0,
-        createdAt: t.updated_at,
-        updatedAt: t.updated_at,
+        createdAt: t.updated_at || '',
+        updatedAt: t.updated_at || '',
       }));
 
       // Sort tasks: overdue first, then by due date
@@ -209,11 +210,11 @@ export function usePlannerResource(userId: string | null) {
       const userTeamMemberships = (teamMembers || [])
         .filter(tm => tm.team)
         .map((tm, i) => ({
-          teamId: tm.team.id,
-          teamName: tm.team.name,
+          teamId: tm.team!.id,
+          teamName: tm.team!.name,
           teamColor: getTeamColor(i),
           role: (tm.role as 'lead' | 'member') || 'member',
-          taskCount: tasks.filter(t => t.teamId === tm.team.id).length,
+          taskCount: tasks.filter(t => t.teamId === tm.team!.id).length,
         }));
 
       return {
@@ -241,7 +242,7 @@ export function usePlannerResource(userId: string | null) {
 }
 
 // Helper to map DB status to TaskStatus
-function mapStatus(status: string): TaskStatus {
+function mapStatus(status: string | null): TaskStatus {
   const statusMap: Record<string, TaskStatus> = {
     'backlog': 'backlog',
     'planned': 'planned',
@@ -250,7 +251,7 @@ function mapStatus(status: string): TaskStatus {
     'review': 'review',
     'done': 'done',
   };
-  return statusMap[status] || 'backlog';
+  return statusMap[status || ''] || 'backlog';
 }
 
 function getTeamColor(index: number): string {
