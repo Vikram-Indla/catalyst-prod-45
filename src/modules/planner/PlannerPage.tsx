@@ -256,21 +256,30 @@ export function PlannerPage() {
   const handleBulkDelete = useCallback(() => {
     if (selectedTaskIds.size === 0) return;
     setIsBulkDeleting(true);
-    
+
     bulkDeleteTasks.mutate([...selectedTaskIds], {
-      onSuccess: (result) => {
-        const count = result.deletedIds.length;
-        const message = result.seedCount > 0 && result.realCount === 0
+      onSuccess: (result: any) => {
+        // Backward/forward compatible: handle older array return + newer object return
+        const deletedIds: string[] = Array.isArray(result)
+          ? result
+          : (result?.deletedIds as string[]) || [];
+
+        const seedCount: number | undefined = !Array.isArray(result) ? result?.seedCount : undefined;
+        const realCount: number | undefined = !Array.isArray(result) ? result?.realCount : undefined;
+
+        const count = deletedIds.length;
+        const message = typeof seedCount === 'number' && typeof realCount === 'number' && seedCount > 0 && realCount === 0
           ? `${count} demo task${count > 1 ? 's' : ''} removed from view.`
           : `${count} task${count > 1 ? 's have' : ' has'} been deleted.`;
-        
+
         catalystToast.success('Tasks Deleted', message);
         setSelectedTaskIds(new Set());
         setIsBulkDeleteModalOpen(false);
         setIsBulkDeleting(false);
       },
-      onError: () => {
-        catalystToast.error('Delete Failed', 'Could not delete the selected tasks.');
+      onError: (err: any) => {
+        console.error('Bulk delete failed:', err);
+        catalystToast.error('Delete Failed', err?.message || 'Could not delete the selected tasks.');
         setIsBulkDeleting(false);
       },
     });
