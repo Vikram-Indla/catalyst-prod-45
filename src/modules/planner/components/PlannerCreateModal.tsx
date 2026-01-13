@@ -5,11 +5,12 @@
 // ============================================================
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Plus, Zap, Paperclip, Link2, Calendar } from 'lucide-react';
+import { X, Plus, Zap, Paperclip, Link2, Calendar, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaskStatus, TaskPriority, PlannerUser, PlannerTeam } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
 import { SearchableSelect, SelectOption } from './SearchableSelect';
+import { usePlannerFeatures, PlannerFeature } from '../hooks/usePlannerFeatures';
 import { cn } from '@/lib/utils';
 
 interface CreateTaskData {
@@ -20,6 +21,7 @@ interface CreateTaskData {
   assigneeId?: string;
   reporterId?: string;
   teamId?: string;
+  featureId?: string;
   startDate?: string;
   dueDate?: string;
 }
@@ -67,8 +69,12 @@ export function PlannerCreateModal({
   const [assigneeId, setAssigneeId] = useState<string | null>(null);
   const [reporterId, setReporterId] = useState<string | null>(currentUserId || null);
   const [teamId, setTeamId] = useState<string | null>(defaultTeamId || null);
+  const [featureId, setFeatureId] = useState<string | null>(null);
   const [startDate, setStartDate] = useState('');
   const [dueDate, setDueDate] = useState('');
+  
+  // Fetch features
+  const { data: features = [] } = usePlannerFeatures();
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -98,6 +104,7 @@ export function PlannerCreateModal({
       setAssigneeId(null);
       setReporterId(currentUserId || null);
       setTeamId(defaultTeamId || null);
+      setFeatureId(null);
       setStartDate('');
       setDueDate('');
       // Focus title after animation
@@ -121,11 +128,16 @@ export function PlannerCreateModal({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, title, onClose]);
+  }, [isOpen, title, featureId, onClose]);
 
   const handleSubmit = () => {
     if (!title.trim()) {
       titleInputRef.current?.focus();
+      return;
+    }
+
+    // Feature is required
+    if (!featureId) {
       return;
     }
 
@@ -137,6 +149,7 @@ export function PlannerCreateModal({
       assigneeId: assigneeId || undefined,
       reporterId: reporterId || undefined,
       teamId: teamId || undefined,
+      featureId: featureId || undefined,
       startDate: startDate || undefined,
       dueDate: dueDate || undefined,
     });
@@ -179,6 +192,14 @@ export function PlannerCreateModal({
     label: config.label,
     color: config.color,
     emoji: config.emoji,
+  }));
+
+  // Feature options
+  const featureOptions: SelectOption[] = features.map(f => ({
+    id: f.id,
+    label: f.name,
+    meta: f.displayId,
+    color: '#8b5cf6', // Purple for features
   }));
 
   // Group users by team for ungrouped assignee dropdown
@@ -329,6 +350,40 @@ export function PlannerCreateModal({
                       )}
                     />
                   </div>
+                </div>
+
+                {/* Linked Feature Section */}
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                    Linked Feature <span className="text-destructive">*</span>
+                  </div>
+                  <SearchableSelect
+                    placeholder="Select a feature..."
+                    searchPlaceholder="Search features..."
+                    options={featureOptions}
+                    value={featureId}
+                    onChange={setFeatureId}
+                    renderTrigger={(selected) => (
+                      selected ? (
+                        <div className="flex items-center gap-2">
+                          <Layers className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                          <span className="text-foreground truncate">{selected.label}</span>
+                          <span className="text-xs text-muted-foreground">({selected.meta})</span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">Select a feature...</span>
+                      )
+                    )}
+                    renderOption={(option) => (
+                      <div className="flex items-center gap-3">
+                        <Layers className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-foreground truncate">{option.label}</div>
+                          <div className="text-xs text-muted-foreground">{option.meta}</div>
+                        </div>
+                      </div>
+                    )}
+                  />
                 </div>
 
                 {/* Classification Section */}
