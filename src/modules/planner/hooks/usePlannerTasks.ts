@@ -278,3 +278,40 @@ export function useDeletePlannerTask() {
     },
   });
 }
+
+export function useBulkDeletePlannerTasks() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      // Soft delete by setting deleted_at for all selected tasks
+      const { error } = await supabase
+        .from('stories')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', ids);
+
+      if (error) throw error;
+      return ids;
+    },
+    onMutate: async (ids) => {
+      // Optimistic update - remove all from list
+      await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
+      const previousTasks = queryClient.getQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] });
+      
+      queryClient.setQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] }, (old) => {
+        if (!old) return old;
+        return old.filter(t => !ids.includes(t.id));
+      });
+      
+      return { previousTasks };
+    },
+    onError: (err, ids, context) => {
+      context?.previousTasks?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+    },
+  });
+}
