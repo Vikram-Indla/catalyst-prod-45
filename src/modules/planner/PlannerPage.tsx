@@ -228,12 +228,23 @@ export function PlannerPage() {
     priority: string;
     assigneeId?: string;
     teamId?: string;
-    featureId?: string;
+    linkedWorkItemId?: string;
+    linkedWorkItemType?: string;
     startDate?: string;
     dueDate?: string;
   }) => {
     // Find assignee name for the toast
     const assignee = users.find(u => u.id === data.assigneeId);
+    
+    // For now, we need a feature_id (NOT NULL in DB)
+    // Use the linked work item if it's a feature, otherwise we need a default
+    let featureId = data.linkedWorkItemId;
+    
+    // If no work item linked, we can't create (DB constraint)
+    if (!featureId) {
+      catalystToast.error('Feature required', 'Please link a work item to create a task.');
+      return;
+    }
     
     createTask.mutate({
       title: data.title,
@@ -243,7 +254,7 @@ export function PlannerPage() {
       assigneeId: data.assigneeId,
       assigneeName: assignee?.name,
       dueDate: data.dueDate,
-      featureId: data.featureId,
+      featureId: featureId,
       teamId: data.teamId || selectedTeamId || undefined,
     });
     // Toast is handled in the hook - no duplicate here
