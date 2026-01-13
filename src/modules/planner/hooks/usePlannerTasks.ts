@@ -315,3 +315,48 @@ export function useBulkDeletePlannerTasks() {
     },
   });
 }
+
+export function useDuplicatePlannerTask() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (task: PlannerTask) => {
+      // Map status back to DB format
+      const statusMap: Record<TaskStatus, 'todo' | 'in_progress' | 'done'> = {
+        backlog: 'todo',
+        planned: 'todo',
+        'in-progress': 'in_progress',
+        review: 'in_progress',
+        done: 'done',
+      };
+
+      const newKey = `PLN-${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}`;
+
+      const { data, error } = await supabase
+        .from('stories')
+        .insert([{
+          name: `${task.title} (Copy)`,
+          title: `${task.title} (Copy)`,
+          description: task.description || null,
+          status: statusMap[task.status],
+          state: statusMap[task.status],
+          priority: task.priority,
+          assignee_id: task.assigneeId || null,
+          progress_pct: 0,
+          blocked: false,
+          team_id: task.teamId || '20000000-0001-0001-0001-000000000001',
+          story_key: newKey,
+          start_date: task.startDate || new Date().toISOString().split('T')[0],
+          feature_id: task.linkedItemId || null,
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { ...data, key: newKey };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+    },
+  });
+}

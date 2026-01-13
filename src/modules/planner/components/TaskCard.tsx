@@ -21,6 +21,8 @@ import {
 interface TaskCardProps {
   task: PlannerTask;
   onClick: () => void;
+  onDuplicate?: (task: PlannerTask) => void;
+  onDelete?: (taskId: string) => void;
   isDragging?: boolean;
   className?: string;
 }
@@ -32,7 +34,7 @@ const priorityConfig: Record<TaskPriority, { bg: string; text: string; border: s
   low: { bg: 'bg-slate-50', text: 'text-slate-600', border: 'border-slate-200', dot: 'bg-slate-400', label: 'Low' },
 };
 
-export function TaskCard({ task, onClick, isDragging = false, className }: TaskCardProps) {
+export function TaskCard({ task, onClick, onDuplicate, onDelete, isDragging = false, className }: TaskCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const priority = priorityConfig[task.priority];
 
@@ -263,7 +265,10 @@ export function TaskCard({ task, onClick, isDragging = false, className }: TaskC
               <Pencil className="w-4 h-4 mr-2" />
               Edit Task
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem onClick={(e) => { 
+              e.stopPropagation(); 
+              onDuplicate?.(task);
+            }}>
               <Copy className="w-4 h-4 mr-2" />
               Duplicate
             </DropdownMenuItem>
@@ -277,7 +282,13 @@ export function TaskCard({ task, onClick, isDragging = false, className }: TaskC
               Move to Bottom
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()} className="text-destructive focus:text-destructive">
+            <DropdownMenuItem 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                onDelete?.(task.id);
+              }} 
+              className="text-destructive focus:text-destructive"
+            >
               <Trash2 className="w-4 h-4 mr-2" />
               Delete
             </DropdownMenuItem>
