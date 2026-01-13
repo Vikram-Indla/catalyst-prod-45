@@ -137,3 +137,31 @@ export function useDeletePlannerColumn() {
     },
   });
 }
+
+/**
+ * Update column order (for drag-and-drop reordering)
+ */
+export function useUpdatePlannerColumnOrder() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (columns: { column_id: string; sort_order: number }[]) => {
+      // Update each column's sort_order
+      const updates = columns.map(col => 
+        supabase
+          .from('planner_column_configs')
+          .update({ sort_order: col.sort_order })
+          .eq('column_id', col.column_id)
+      );
+
+      const results = await Promise.all(updates);
+      const errors = results.filter(r => r.error);
+      if (errors.length > 0) {
+        throw errors[0].error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
