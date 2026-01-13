@@ -3,7 +3,7 @@
 // Generates AI-powered checklist from task title using edge function
 // ============================================================
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -17,10 +17,10 @@ export function useAIChecklist() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
 
-  const generateChecklist = async (title: string, description?: string) => {
+  const generateChecklist = useCallback(async (title: string, description?: string) => {
     if (!title.trim()) {
       toast.error('Please enter a task title first');
-      return [];
+      return [] as ChecklistItem[];
     }
 
     setIsGenerating(true);
@@ -38,7 +38,7 @@ export function useAIChecklist() {
         } else {
           toast.error('Failed to generate checklist. Please try again.');
         }
-        return [];
+        return [] as ChecklistItem[];
       }
 
       if (data?.items && Array.isArray(data.items)) {
@@ -52,31 +52,32 @@ export function useAIChecklist() {
         return items;
       }
 
-      return [];
+      return [] as ChecklistItem[];
     } catch (err) {
       console.error('AI checklist error:', err);
       toast.error('Failed to generate checklist');
-      return [];
+      return [] as ChecklistItem[];
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, []);
 
-  const clearChecklist = () => {
+  const clearChecklist = useCallback(() => {
     setChecklistItems([]);
-  };
+  }, []);
 
-  const toggleItem = (index: number) => {
-    setChecklistItems(prev => 
-      prev.map((item, i) => 
+  const toggleItem = useCallback((index: number) => {
+    setChecklistItems(prev =>
+      prev.map((item, i) =>
         i === index ? { ...item, is_completed: !item.is_completed } : item
       )
     );
-  };
+  }, []);
 
-  const removeItem = (index: number) => {
+  const removeItem = useCallback((index: number) => {
     setChecklistItems(prev => prev.filter((_, i) => i !== index));
-  };
+  }, []);
+
 
   return {
     isGenerating,
