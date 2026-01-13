@@ -4887,3 +4887,9 @@ button,
 input[type="checkbox"]:checked {
   animation: check-pop 0.2s ease;
 }
+
+/* === SCREEN CAPTURE FLASH === */
+@keyframes flash {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
