@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import type { PlannerTask, TaskPriority } from '../types';
 import { motion } from 'framer-motion';
 import { differenceInDays, format, startOfDay } from 'date-fns';
+import { ChecklistIndicator } from './ChecklistIndicator';
 
 interface TaskCardProps {
   task: PlannerTask;
@@ -132,7 +133,7 @@ export function TaskCard({ task, onClick, isDragging = false, className }: TaskC
         )}
 
         {/* Progress Bar */}
-        <div className="mb-4">
+        <div className="mb-3">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-xs font-medium text-muted-foreground">Progress</span>
             <span className="text-xs font-bold text-foreground">{task.progress}%</span>
@@ -150,6 +151,9 @@ export function TaskCard({ task, onClick, isDragging = false, className }: TaskC
             />
           </div>
         </div>
+
+        {/* Checklist Indicator */}
+        <ChecklistIndicator storyId={task.id} className="mb-3" />
 
         {/* Team Badge */}
         {task.teamName && (

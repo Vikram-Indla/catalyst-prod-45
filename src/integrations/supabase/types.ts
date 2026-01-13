@@ -15384,6 +15384,56 @@ export type Database = {
           },
         ]
       }
+      planner_checklist_items: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_completed: boolean
+          is_header: boolean
+          sort_order: number
+          story_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_completed?: boolean
+          is_header?: boolean
+          sort_order?: number
+          story_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_completed?: boolean
+          is_header?: boolean
+          sort_order?: number
+          story_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planner_checklist_items_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       planner_column_configs: {
         Row: {
           color: string
