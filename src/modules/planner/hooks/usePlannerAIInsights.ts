@@ -1,19 +1,17 @@
 // ============================================================
 // PLANNER AI INSIGHTS HOOK
 // Generates AI-style insights based on task data
-// Uses seed data for static insights when appropriate
+// No mock data - returns empty insights when no tasks exist
 // ============================================================
 
 import { useMemo } from 'react';
 import type { PlannerTask, AIInsight } from '../types';
-import { SEED_AI_INSIGHTS, SEED_TASKS } from '../data/seedData';
 
 export function usePlannerAIInsights(tasks: PlannerTask[]): AIInsight[] {
   return useMemo(() => {
-    // If using seed data (check by ID prefix), return seed insights
-    const usingSeedData = tasks.some(t => t.id.startsWith('seed-'));
-    if (usingSeedData) {
-      return SEED_AI_INSIGHTS;
+    // Return empty if no tasks
+    if (!tasks || tasks.length === 0) {
+      return [];
     }
 
     const insights: AIInsight[] = [];
@@ -51,7 +49,6 @@ export function usePlannerAIInsights(tasks: PlannerTask[]): AIInsight[] {
       });
     });
 
-
     // Review bottleneck
     const reviewCount = tasks.filter(t => t.status === 'review').length;
     if (reviewCount > 3) {
@@ -64,7 +61,7 @@ export function usePlannerAIInsights(tasks: PlannerTask[]): AIInsight[] {
       });
     }
 
-    // Positive insight
+    // Positive insight - tasks completed this week
     const completedThisWeek = tasks.filter(t => {
       if (t.status !== 'done') return false;
       const updated = new Date(t.updatedAt);
@@ -79,11 +76,6 @@ export function usePlannerAIInsights(tasks: PlannerTask[]): AIInsight[] {
         message: `${completedThisWeek} tasks completed this week. Team is maintaining good momentum.`,
         createdAt: new Date().toISOString(),
       });
-    }
-
-    // If no dynamic insights, use seed insights as fallback
-    if (insights.length === 0) {
-      return SEED_AI_INSIGHTS;
     }
 
     return insights;

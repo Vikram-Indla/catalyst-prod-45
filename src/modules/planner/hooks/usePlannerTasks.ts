@@ -1,13 +1,12 @@
 // ============================================================
 // PLANNER TASKS HOOK
 // Fetches tasks from stories table and transforms to Planner format
-// Falls back to seed data when database is empty
+// Returns empty list when database is empty (no mock data)
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
-import { SEED_TASKS } from '../data/seedData';
 
 // Map DB status/state to Planner status
 const mapStatus = (dbStatus: string | null, dbState: string | null): TaskStatus => {
@@ -108,8 +107,7 @@ export function usePlannerTasks(teamId?: string | null) {
 
       if (error) {
         console.error('Error fetching planner tasks:', error);
-        // Return seed data on error
-        return SEED_TASKS;
+        return [];
       }
 
       // Get unique assignee IDs to fetch names separately
@@ -155,10 +153,7 @@ export function usePlannerTasks(teamId?: string | null) {
         };
       });
       
-      // If no data from DB, return seed data
-      if (transformedData.length === 0) {
-        return SEED_TASKS;
-      }
+      // Return empty list if no tasks (no mock data)
 
       return transformedData;
     },

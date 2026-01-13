@@ -32,7 +32,6 @@ import { usePlannerSearch } from './hooks/usePlannerSearch';
 import { usePlannerKeyboard } from './hooks/usePlannerKeyboard';
 import { usePlannerAIInsights } from './hooks/usePlannerAIInsights';
 import { usePlannerRealtime } from './hooks/usePlannerRealtime';
-import { getOnlineUsers } from './data/seedData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
@@ -79,12 +78,20 @@ export function PlannerPage() {
     }
   }, [view]);
 
-  // Online users for sidebar
-  const onlineUsers = useMemo(() => getOnlineUsers(), []);
   // Data hooks
   const { data: tasks = [], isLoading } = usePlannerTasks(selectedTeamId);
   const { data: teams = [] } = usePlannerTeams();
   const { data: users = [] } = usePlannerUsers();
+  
+  // Online users from real users data (add color for avatar)
+  const avatarColors = ['#2563eb', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#0d9488'];
+  const onlineUsers = useMemo(() => 
+    users.filter(u => u.online).map((u, i) => ({
+      id: u.id,
+      initials: u.initials,
+      color: avatarColors[i % avatarColors.length],
+    })),
+  [users]);
   const updateTask = useUpdatePlannerTask();
   const deleteTask = useDeletePlannerTask();
   const bulkDeleteTasks = useBulkDeletePlannerTasks();
