@@ -527,7 +527,11 @@ export function EvidenceLightbox({
 
         {/* AI Analysis Panel */}
         {showAIPanel && isImage && currentItem?.url && (
-          <div className="w-80 shrink-0 bg-background border-l overflow-y-auto">
+          <div 
+            className="w-80 shrink-0 bg-background border-l overflow-y-auto"
+            role="complementary"
+            aria-label="AI Analysis sidebar"
+          >
             <AIAnalysisPanel
               imageUrl={currentItem.url}
               evidenceId={currentItem.id}
