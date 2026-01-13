@@ -386,14 +386,115 @@ export function useTestCaseDetail(
     },
   });
 
-  // Attachments (placeholder - would need storage bucket setup)
-  const uploadAttachment = useCallback(async (_file: File, _stepId?: string) => {
-    toast.info('Attachment upload coming soon');
-  }, []);
+  // Attachments - Full Supabase Storage implementation
+  const uploadAttachment = useCallback(async (file: File, stepId?: string) => {
+    // Validate file size (5MB max)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('File size exceeds 5MB limit');
+      return;
+    }
 
-  const deleteAttachment = useCallback(async (_attachmentId: string) => {
-    toast.info('Attachment delete coming soon');
-  }, []);
+    // Validate file type
+    const allowedTypes = [
+      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+      'application/pdf', 'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/plain', 'text/csv'
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('File type not allowed');
+      return;
+    }
+
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const storagePath = stepId 
+        ? `test-cases/${caseId}/steps/${stepId}/${fileName}`
+        : `test-cases/${caseId}/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('attachments')
+        .upload(storagePath, file, { contentType: file.type });
+
+      if (uploadError) {
+        toast.error('Upload failed: ' + uploadError.message);
+        return;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('attachments')
+        .getPublicUrl(storagePath);
+
+      // Insert record into attachments table
+      const { error: insertError } = await supabase
+        .from('attachments')
+        .insert({
+          file_name: file.name,
+          file_path: storagePath,
+          file_size: file.size,
+          mime_type: file.type,
+          entity_type: stepId ? 'test_step' : 'test_case',
+          entity_id: stepId || caseId,
+          uploaded_by: user?.id,
+        });
+
+      if (insertError) {
+        toast.error('Failed to save attachment record');
+        return;
+      }
+
+      toast.success('Attachment uploaded');
+      queryClient.invalidateQueries({ queryKey: ['test-case-detail', caseId] });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Upload failed');
+    }
+  }, [caseId, queryClient]);
+
+  const deleteAttachment = useCallback(async (attachmentId: string) => {
+    try {
+      // Get attachment record to find storage path
+      const { data: attachment } = await supabase
+        .from('attachments')
+        .select('file_path')
+        .eq('id', attachmentId)
+        .single();
+
+      if (attachment?.file_path) {
+        // Delete from storage
+        await supabase.storage
+          .from('attachments')
+          .remove([attachment.file_path]);
+      }
+
+      // Delete record
+      const { error } = await supabase
+        .from('attachments')
+        .delete()
+        .eq('id', attachmentId);
+
+      if (error) {
+        toast.error('Delete failed');
+        return;
+      }
+
+      toast.success('Attachment deleted');
+      queryClient.invalidateQueries({ queryKey: ['test-case-detail', caseId] });
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Delete failed');
+    }
+  }, [caseId, queryClient]);
 
   // Cleanup autosave timer
   useEffect(() => {

@@ -30,12 +30,13 @@ interface EditorHeaderProps {
   disabled?: boolean;
 }
 
+// Status colors using semantic tokens (V5 compliant - no banned colors)
 const STATUS_STYLES: Record<CaseStatus, string> = {
-  draft: 'bg-[#dc2626] text-white',
-  ready: 'bg-[#0d9488] text-white',
-  approved: 'bg-[#059669] text-white',
-  needs_update: 'bg-[#d97706] text-white',
-  deprecated: 'bg-[#6b7280] text-white',
+  draft: 'bg-red-600 text-white',
+  ready: 'bg-teal-600 text-white',
+  approved: 'bg-teal-600 text-white',
+  needs_update: 'bg-amber-600 text-white',
+  deprecated: 'bg-slate-500 text-white',
 };
 
 export function EditorHeader({
@@ -93,15 +94,11 @@ export function EditorHeader({
 
       {/* Right side */}
       <div className="flex items-center gap-2">
-        {/* Save button - green with +5 badge */}
+        {/* Save button - teal (V5 compliant) */}
         <Button
           onClick={onSave}
           disabled={disabled || isSaving}
-          className="h-9 px-4 gap-2 text-white"
-          style={{
-            background: '#059669',
-            borderRadius: '6px',
-          }}
+          className="h-9 px-4 gap-2 text-white bg-teal-600 hover:bg-teal-700 rounded-md"
         >
           <Save className="h-4 w-4" />
           <span>{isSaving ? 'Saving...' : 'Saved'}</span>
