@@ -1,9 +1,10 @@
 /**
  * Evidence Uploader Component
  * Unified upload zone with screen capture, clipboard paste, drag & drop, and file browser
+ * With integrated gallery view toggle
  */
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,9 @@ import {
   Video,
   File,
   Loader2,
+  Grid3X3,
+  List,
+  Maximize2,
 } from 'lucide-react';
 import { 
   Tooltip,
@@ -25,9 +29,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import type { PendingEvidence, Evidence, UploadProgress, CaptureMethod } from './types';
-import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from './types';
+import { MAX_FILE_SIZE } from './types';
 import { useScreenCapture } from './useScreenCapture';
 import { useClipboardPaste } from './useClipboardPaste';
+import { EvidenceGallery } from './EvidenceGallery';
 
 interface EvidenceUploaderProps {
   pendingEvidence: PendingEvidence[];
@@ -39,6 +44,7 @@ interface EvidenceUploaderProps {
   onDeleteEvidence: (evidence: Evidence) => void;
   disabled?: boolean;
   compact?: boolean;
+  showGallery?: boolean;
 }
 
 // File icon mapping
@@ -56,6 +62,8 @@ const formatFileSize = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+type ViewMode = 'inline' | 'gallery';
+
 export function EvidenceUploader({
   pendingEvidence,
   uploadedEvidence,
@@ -66,8 +74,10 @@ export function EvidenceUploader({
   onDeleteEvidence,
   disabled = false,
   compact = false,
+  showGallery = true,
 }: EvidenceUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('inline');
 
   // Screen capture hook
   const { captureScreen, isCapturing, isSupported: screenCaptureSupported } = useScreenCapture({
@@ -125,6 +135,7 @@ export function EvidenceUploader({
   ];
 
   const hasItems = allItems.length > 0;
+  const hasUploadedItems = uploadedEvidence.length > 0;
 
   // Compact mode - just show a button row
   if (compact && !hasItems && !isDragActive) {
@@ -179,45 +190,79 @@ export function EvidenceUploader({
   return (
     <div className="space-y-3">
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 flex-wrap">
-        {screenCaptureSupported && (
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          {screenCaptureSupported && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCaptureScreen}
+                  disabled={disabled || isCapturing}
+                  className="h-8"
+                >
+                  {isCapturing ? (
+                    <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                  ) : (
+                    <Camera className="h-3.5 w-3.5 mr-1.5" />
+                  )}
+                  Capture Screen
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Capture your screen, window, or tab</TooltipContent>
+            </Tooltip>
+          )}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={handleCaptureScreen}
-                disabled={disabled || isCapturing}
+                onClick={() => readClipboard()}
+                disabled={disabled}
                 className="h-8"
               >
-                {isCapturing ? (
-                  <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                ) : (
-                  <Camera className="h-3.5 w-3.5 mr-1.5" />
-                )}
-                Capture Screen
+                <Clipboard className="h-3.5 w-3.5 mr-1.5" />
+                Paste from Clipboard
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Capture your screen, window, or tab</TooltipContent>
+            <TooltipContent>Paste image from clipboard (or use Ctrl+V)</TooltipContent>
           </Tooltip>
+        </div>
+
+        {/* View toggle - only show if we have uploaded items */}
+        {showGallery && hasUploadedItems && (
+          <div className="flex items-center border rounded-md">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={viewMode === 'inline' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-7 w-7 p-0 rounded-r-none"
+                  onClick={() => setViewMode('inline')}
+                >
+                  <List className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Inline view</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={viewMode === 'gallery' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-7 w-7 p-0 rounded-l-none"
+                  onClick={() => setViewMode('gallery')}
+                >
+                  <Grid3X3 className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Gallery view</TooltipContent>
+            </Tooltip>
+          </div>
         )}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => readClipboard()}
-              disabled={disabled}
-              className="h-8"
-            >
-              <Clipboard className="h-3.5 w-3.5 mr-1.5" />
-              Paste from Clipboard
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Paste image from clipboard (or use Ctrl+V)</TooltipContent>
-        </Tooltip>
       </div>
 
       {/* Dropzone */}
@@ -281,40 +326,27 @@ export function EvidenceUploader({
         </div>
       )}
 
-      {/* Pending & Uploaded Items */}
-      {hasItems && (
+      {/* Pending Items - always show inline */}
+      {pendingEvidence.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Evidence ({allItems.length})
+            Pending Upload ({pendingEvidence.length})
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {allItems.map(({ type, item }) => {
-              const isPending = type === 'pending';
-              const pending = isPending ? item as PendingEvidence : null;
-              const uploaded = !isPending ? item as Evidence : null;
-
-              const preview = pending?.preview || uploaded?.url;
-              const fileName = pending?.file.name || uploaded?.fileName || 'Unknown';
-              const fileSize = pending?.file.size || uploaded?.fileSize || 0;
-              const mimeType = pending?.file.type || uploaded?.mimeType || 'application/octet-stream';
-              const isImage = mimeType.startsWith('image/');
-              const Icon = getFileIcon(mimeType);
+            {pendingEvidence.map(pending => {
+              const isImage = pending.file.type.startsWith('image/');
+              const Icon = getFileIcon(pending.file.type);
 
               return (
                 <div
-                  key={pending?.id || uploaded?.id}
-                  className={cn(
-                    'group relative flex items-center gap-2 p-2 rounded-lg border transition-colors',
-                    isPending 
-                      ? 'bg-muted/30 border-dashed border-muted-foreground/30' 
-                      : 'bg-muted/50 border-border hover:border-primary/30'
-                  )}
+                  key={pending.id}
+                  className="group relative flex items-center gap-2 p-2 rounded-lg border bg-muted/30 border-dashed border-muted-foreground/30"
                 >
                   {/* Thumbnail */}
-                  {isImage && preview ? (
+                  {isImage && pending.preview ? (
                     <img
-                      src={preview}
-                      alt={fileName}
+                      src={pending.preview}
+                      alt={pending.file.name}
                       className="h-10 w-10 rounded object-cover flex-shrink-0"
                     />
                   ) : (
@@ -325,12 +357,10 @@ export function EvidenceUploader({
 
                   {/* File info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">{fileName}</p>
+                    <p className="text-xs font-medium truncate">{pending.file.name}</p>
                     <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                      <span>{formatFileSize(fileSize)}</span>
-                      {isPending && (
-                        <span className="text-amber-600 dark:text-amber-400">• Pending</span>
-                      )}
+                      <span>{formatFileSize(pending.file.size)}</span>
+                      <span className="text-amber-600 dark:text-amber-400">• Pending</span>
                     </div>
                   </div>
 
@@ -341,11 +371,7 @@ export function EvidenceUploader({
                     className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity absolute -top-1 -right-1 bg-background border shadow-sm hover:bg-destructive hover:text-destructive-foreground"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (isPending) {
-                        onRemovePending(pending!.id);
-                      } else {
-                        onDeleteEvidence(uploaded!);
-                      }
+                      onRemovePending(pending.id);
                     }}
                   >
                     <X className="h-3 w-3" />
@@ -355,6 +381,82 @@ export function EvidenceUploader({
             })}
           </div>
         </div>
+      )}
+
+      {/* Uploaded Items - inline or gallery view */}
+      {hasUploadedItems && (
+        viewMode === 'gallery' && showGallery ? (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Evidence ({uploadedEvidence.length})
+            </p>
+            <EvidenceGallery
+              evidence={uploadedEvidence}
+              onDelete={onDeleteEvidence}
+              readOnly={disabled}
+            />
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Uploaded ({uploadedEvidence.length})
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {uploadedEvidence.map(uploaded => {
+                const isImage = uploaded.mimeType.startsWith('image/');
+                const Icon = getFileIcon(uploaded.mimeType);
+
+                return (
+                  <div
+                    key={uploaded.id}
+                    className="group relative flex items-center gap-2 p-2 rounded-lg border bg-muted/50 border-border hover:border-primary/30 transition-colors"
+                  >
+                    {/* Thumbnail */}
+                    {isImage && uploaded.url ? (
+                      <div className="relative h-10 w-10 rounded overflow-hidden flex-shrink-0">
+                        <img
+                          src={uploaded.url}
+                          alt={uploaded.fileName}
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Maximize2 className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-10 w-10 rounded bg-background flex items-center justify-center flex-shrink-0">
+                        <Icon className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    )}
+
+                    {/* File info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">{uploaded.fileName}</p>
+                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                        <span>{formatFileSize(uploaded.fileSize)}</span>
+                      </div>
+                    </div>
+
+                    {/* Delete button */}
+                    {!disabled && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity absolute -top-1 -right-1 bg-background border shadow-sm hover:bg-destructive hover:text-destructive-foreground"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteEvidence(uploaded);
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )
       )}
     </div>
   );
