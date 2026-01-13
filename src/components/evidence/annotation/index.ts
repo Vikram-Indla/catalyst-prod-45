@@ -1,15 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// EVIDENCE SYSTEM EXPORTS
+// ANNOTATION EDITOR EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════
 
-export { EvidenceUploadZone } from './EvidenceUploadZone';
-export { EvidenceGallery } from './EvidenceGallery';
-export { AnnotationEditor } from './annotation';
-export type { 
-  EvidenceUploadZoneProps, 
-  EvidenceGalleryProps,
-  Attachment, 
-  UploadProgress 
-} from './types';
-export type { Annotation, AnnotationEditorProps, Tool } from './annotation';
-export { ALLOWED_TYPES, MAX_FILE_SIZE } from './types';
+export { AnnotationEditor } from './AnnotationEditor';
+export type { Annotation, AnnotationEditorProps, Tool } from './types';
