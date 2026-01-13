@@ -37,12 +37,11 @@ import { useTestRun, useCreateRun, useUpdateStepResult, useCompleteRun, useBulkU
 import type { ExecutionStatus, StepResult } from '../../api/types';
 import { useExecutionTimer } from './hooks/useExecutionTimer';
 import { useExecutionKeyboard } from './hooks/useExecutionKeyboard';
-import { useScreenshotPaste } from './hooks/useScreenshotPaste';
 import { ExecutionTimer } from './ExecutionTimer';
 import { ExecutionProgress } from './ExecutionProgress';
 import { ExecutionShortcutHints } from './ExecutionShortcutHints';
-import { ExecutionScreenshots } from './ExecutionScreenshots';
 import { QuickDefectDialog } from './QuickDefectDialog';
+import { EvidenceUploader, useEvidenceUpload } from './evidence';
 import { toast } from 'sonner';
 
 interface ExecutionModalProps {
@@ -108,8 +107,8 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
   // Timer hook
   const timer = useExecutionTimer(activeRunId, isComplete);
 
-  // Screenshot paste hook
-  const screenshots = useScreenshotPaste(true);
+  // Evidence upload hook
+  const evidence = useEvidenceUpload();
 
   // Create a run if we don't have one
   useEffect(() => {
@@ -137,13 +136,18 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
   // Reset actual result when step changes
   useEffect(() => {
     setActualResult(currentStep?.actual_result || '');
-    screenshots.clearScreenshots();
+    evidence.clearPendingEvidence();
   }, [currentStep?.id]);
 
   const handleStepResult = useCallback(async (status: ExecutionStatus) => {
     if (!activeRunId || !currentStep) return;
 
     timer.recordActivity();
+
+    // Upload pending evidence first
+    if (evidence.pendingEvidence.length > 0 && currentStep.id) {
+      await evidence.uploadAllPending({ executionStepId: currentStep.id });
+    }
 
     await updateStep.mutateAsync({
       runId: activeRunId,
@@ -158,7 +162,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
     if (currentStepIndex < totalSteps - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
       setActualResult('');
-      screenshots.clearScreenshots();
+      evidence.clearPendingEvidence();
     } else {
       // Check if all steps are complete
       const allComplete = steps.every((s, i) => 
@@ -171,7 +175,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
         onClose();
       }
     }
-  }, [activeRunId, currentStep, currentStepIndex, totalSteps, actualResult, timer, updateStep, completeRun, steps, screenshots, onClose]);
+  }, [activeRunId, currentStep, currentStepIndex, totalSteps, actualResult, timer, updateStep, completeRun, steps, evidence, onClose]);
 
   const handlePreviousStep = useCallback(() => {
     if (currentStepIndex > 0) {
@@ -245,7 +249,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
 
   const handleDefectSubmit = async (data: any) => {
     // TODO: Integrate with defect API
-    console.log('Defect data:', data, 'Screenshots:', screenshots.getFiles());
+    console.log('Defect data:', data, 'Evidence:', evidence.pendingEvidence);
     toast.success('Defect logged successfully');
   };
 
@@ -363,10 +367,16 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
                     />
                   </div>
 
-                  {/* Screenshot paste area */}
-                  <ExecutionScreenshots
-                    screenshots={screenshots.screenshots}
-                    onRemove={screenshots.removeScreenshot}
+                  {/* Evidence upload area */}
+                  <EvidenceUploader
+                    pendingEvidence={evidence.pendingEvidence}
+                    uploadedEvidence={evidence.uploadedEvidence}
+                    uploadProgress={evidence.uploadProgress}
+                    isUploading={evidence.isUploading}
+                    onAddPending={(file, method) => evidence.addPendingEvidence(file, method)}
+                    onRemovePending={evidence.removePendingEvidence}
+                    onDeleteEvidence={evidence.deleteEvidence}
+                    disabled={isComplete}
                   />
                 </div>
               </ScrollArea>

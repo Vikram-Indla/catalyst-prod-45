@@ -21649,37 +21649,61 @@ export type Database = {
       }
       test_evidence: {
         Row: {
+          capture_method: string | null
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           execution_step_id: string
           file_name: string
           file_path: string
           file_size: number
           file_type: string
+          height: number | null
           id: string
+          is_deleted: boolean | null
           mime_type: string
+          original_file_name: string | null
+          storage_path: string | null
           uploaded_by: string
+          width: number | null
         }
         Insert: {
+          capture_method?: string | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           execution_step_id: string
           file_name: string
           file_path: string
           file_size: number
           file_type: string
+          height?: number | null
           id?: string
+          is_deleted?: boolean | null
           mime_type: string
+          original_file_name?: string | null
+          storage_path?: string | null
           uploaded_by: string
+          width?: number | null
         }
         Update: {
+          capture_method?: string | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           execution_step_id?: string
           file_name?: string
           file_path?: string
           file_size?: number
           file_type?: string
+          height?: number | null
           id?: string
+          is_deleted?: boolean | null
           mime_type?: string
+          original_file_name?: string | null
+          storage_path?: string | null
           uploaded_by?: string
+          width?: number | null
         }
         Relationships: []
       }
