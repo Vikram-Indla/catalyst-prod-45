@@ -12,7 +12,7 @@ import { Check } from 'lucide-react';
 
 export function InputPanel() {
   return (
-    <div className="flex flex-col bg-white border-r border-slate-200 overflow-hidden">
+    <div className="flex flex-col bg-white border-r border-slate-200 overflow-hidden h-full">
       {/* Panel Header */}
       <div className="px-4 py-3 border-b border-slate-100 flex-shrink-0">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -20,8 +20,8 @@ export function InputPanel() {
         </span>
       </div>
       
-      {/* Panel Body - Scrollable */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Panel Body - Scrollable with min-h-0 for proper flex scroll */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {/* Editor */}
         <Editor />
         
@@ -35,8 +35,8 @@ export function InputPanel() {
         <ComplianceTags />
       </div>
       
-      {/* Generate Button - Fixed at Bottom */}
-      <div className="p-4 border-t border-slate-100 flex-shrink-0 bg-white">
+      {/* Generate Button - Fixed at Bottom - MUST ALWAYS BE VISIBLE */}
+      <div className="flex-shrink-0 border-t border-slate-100 bg-white">
         <GenerateButton />
       </div>
     </div>
