@@ -12,7 +12,7 @@ export function usePlannerWorkstreams() {
   return useQuery({
     queryKey: ['planner-workstreams'],
     queryFn: async () => {
-      // Fetch workstreams (teams table) with member count
+      // Fetch workstreams (teams table) with member count and lead
       const { data, error } = await supabase
         .from('teams')
         .select(`
@@ -21,6 +21,7 @@ export function usePlannerWorkstreams() {
           short_name, 
           team_type,
           description,
+          lead_id,
           team_members(count)
         `)
         .eq('is_active', true)
@@ -38,6 +39,7 @@ export function usePlannerWorkstreams() {
         description: team.description || undefined,
         memberCount: team.team_members?.[0]?.count || 0,
         color: getWorkstreamColor(team.team_type),
+        leadId: team.lead_id || undefined,
       }));
 
       return workstreams;
