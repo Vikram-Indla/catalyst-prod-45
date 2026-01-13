@@ -4,12 +4,19 @@
 // ============================================================
 
 import { useMemo, useState } from 'react';
-import { AlertTriangle, Calendar, Link2, MessageSquare, Paperclip, MoreVertical, Pencil } from 'lucide-react';
+import { AlertTriangle, Calendar, Link2, MessageSquare, Paperclip, MoreVertical, Pencil, Copy, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PlannerTask, TaskPriority } from '../types';
 import { motion } from 'framer-motion';
 import { differenceInDays, format, startOfDay } from 'date-fns';
 import { ChecklistIndicator } from './ChecklistIndicator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface TaskCardProps {
   task: PlannerTask;
@@ -242,12 +249,40 @@ export function TaskCard({ task, onClick, isDragging = false, className }: TaskC
         >
           <Pencil className="w-4 h-4" />
         </button>
-        <button
-          className="w-7 h-7 bg-card border border-border rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors shadow-sm"
-          onClick={(e) => { e.stopPropagation(); }}
-        >
-          <MoreVertical className="w-4 h-4" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="w-7 h-7 bg-card border border-border rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors shadow-sm"
+              onClick={(e) => { e.stopPropagation(); }}
+            >
+              <MoreVertical className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 bg-popover">
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onClick(); }}>
+              <Pencil className="w-4 h-4 mr-2" />
+              Edit Task
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+              <Copy className="w-4 h-4 mr-2" />
+              Duplicate
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+              <ArrowUp className="w-4 h-4 mr-2" />
+              Move to Top
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+              <ArrowDown className="w-4 h-4 mr-2" />
+              Move to Bottom
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()} className="text-destructive focus:text-destructive">
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </motion.div>
   );
