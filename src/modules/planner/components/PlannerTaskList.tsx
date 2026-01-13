@@ -290,12 +290,11 @@ export function PlannerTaskList({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleCopyId(task.key);
+                            onTaskClick(task);
                           }}
-                          className="flex items-center gap-1 font-mono text-xs text-text-muted hover:text-text-primary group/id"
+                          className="font-mono text-xs font-semibold text-primary hover:text-primary/80 hover:underline transition-colors"
                         >
-                          {task.key}
-                          <Copy className="w-3 h-3 opacity-0 group-hover/id:opacity-100 transition-opacity" />
+                          {task.key.startsWith('PLN-') ? task.key : `PLN-${task.key.replace(/^[A-Z]+-/, '')}`}
                         </button>
                       </td>
                     )}
