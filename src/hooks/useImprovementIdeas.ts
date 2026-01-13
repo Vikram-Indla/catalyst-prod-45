@@ -253,31 +253,49 @@ export function useImprovementIdea(id: string | undefined) {
     queryKey: ['improvement-idea', id],
     queryFn: async () => {
       if (!id) return null;
+      
+      // First fetch the idea
       const { data, error } = await supabase
         .from('improvement_ideas')
         .select(`
           *,
           initiative:improvement_initiatives(*),
           impact_score:impact_scores(*),
-          submitter:profiles!improvement_ideas_submitter_id_fkey(id, full_name, avatar_url),
           business_request:business_requests(id, request_key, title)
         `)
         .eq('id', id)
         .single();
       
       if (error) throw error;
+      if (!data) return null;
+      
+      // Then fetch submitter profile separately (no FK constraint exists)
+      let submitterProfile = null;
+      if (data.submitter_id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .eq('id', data.submitter_id)
+          .single();
+        submitterProfile = profile;
+      }
+      
+      // Merge submitter into data
+      const mergedData = {
+        ...data,
+        submitter: submitterProfile
+      };
       
       // Map submitter profile data
-      const row = data as unknown as Record<string, unknown>;
+      const row = mergedData as unknown as Record<string, unknown>;
       const idea = toIdea(row);
       
       // Attach submitter profile if available
-      if (row.submitter && typeof row.submitter === 'object') {
-        const submitter = row.submitter as { id?: string; full_name?: string; avatar_url?: string };
+      if (submitterProfile) {
         (idea as any).submitter = {
-          id: submitter.id,
-          full_name: submitter.full_name,
-          avatar_url: submitter.avatar_url
+          id: submitterProfile.id,
+          full_name: submitterProfile.full_name,
+          avatar_url: submitterProfile.avatar_url
         };
       }
       
