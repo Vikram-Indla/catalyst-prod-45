@@ -217,6 +217,7 @@ export function PlannerPage() {
     priority: string;
     assigneeId?: string;
     teamId?: string;
+    featureId?: string;
     startDate?: string;
     dueDate?: string;
   }) => {
@@ -231,6 +232,7 @@ export function PlannerPage() {
       assigneeId: data.assigneeId,
       assigneeName: assignee?.name,
       dueDate: data.dueDate,
+      featureId: data.featureId,
       teamId: data.teamId || selectedTeamId || undefined,
     });
     // Toast is handled in the hook - no duplicate here
