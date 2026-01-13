@@ -143,7 +143,7 @@ export function PlannerSearchBar({
           {COLUMN_CONFIG.map(col => (
             <DropdownMenuItem
               key={col.id}
-              onClick={() => onStatusChange(col.id)}
+              onClick={() => onStatusChange(col.id as TaskStatus)}
               className={cn(filters.status === col.id && "bg-blue-50")}
             >
               <div className="flex items-center gap-2">

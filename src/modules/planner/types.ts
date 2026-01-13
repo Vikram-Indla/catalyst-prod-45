@@ -18,6 +18,8 @@ export type TaskPriority = 'critical' | 'high' | 'medium' | 'low';
 
 export type TaskType = 'project' | 'task' | 'general';
 
+export type GroupByOption = 'status' | 'assignee' | 'priority' | 'reporter' | 'dueDate';
+
 export interface PlannerTask {
   id: string;
   key: string;                    // e.g., "PLN-001"
@@ -29,8 +31,11 @@ export interface PlannerTask {
   assigneeId?: string;
   assigneeName?: string;
   assigneeInitials?: string;
+  reporterId?: string;            // Who created/reported it
+  reporterName?: string;
+  reporterInitials?: string;
   teamId?: string;
-  startDate?: string;
+  startDate?: string;             // Required for timeline
   dueDate?: string;
   blocked: boolean;
   blockedReason?: string;
@@ -49,14 +54,19 @@ export interface PlannerUser {
   initials: string;
   role: string;
   team: string;
+  teamId?: string;
   online: boolean;
   avatarUrl?: string;
+  email?: string;
 }
 
 export interface PlannerTeam {
   id: string;
   name: string;
   shortName: string;
+  description?: string;
+  emoji?: string;
+  leadId?: string;
   memberCount: number;
   color: string;
 }
@@ -72,19 +82,20 @@ export interface AIInsight {
 }
 
 export interface ColumnConfig {
-  id: TaskStatus;
+  id: TaskStatus | string;
   title: string;
   color: string;
   wipLimit?: number;
+  order: number;
 }
 
 // Column configuration following spec
 export const COLUMN_CONFIG: ColumnConfig[] = [
-  { id: 'backlog', title: 'Backlog', color: '#94a3b8' },
-  { id: 'planned', title: 'Planned', color: '#3b82f6' },
-  { id: 'in-progress', title: 'In Progress', color: '#d97706', wipLimit: 5 },
-  { id: 'review', title: 'Review', color: '#7c3aed', wipLimit: 3 },
-  { id: 'done', title: 'Done', color: '#10b981' },
+  { id: 'backlog', title: 'Backlog', color: '#94a3b8', order: 0 },
+  { id: 'planned', title: 'Planned', color: '#3b82f6', order: 1 },
+  { id: 'in-progress', title: 'In Progress', color: '#d97706', wipLimit: 5, order: 2 },
+  { id: 'review', title: 'Review', color: '#7c3aed', wipLimit: 3, order: 3 },
+  { id: 'done', title: 'Done', color: '#10b981', order: 4 },
 ];
 
 // Priority configuration
@@ -94,3 +105,13 @@ export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: strin
   medium: { label: 'Medium', color: '#3b82f6', emoji: '🔵' },
   low: { label: 'Low', color: '#6b7280', emoji: '⚪' },
 };
+
+// Due date groups for grouping
+export const DUE_DATE_GROUPS = [
+  { id: 'overdue', title: 'Overdue', color: '#ef4444' },
+  { id: 'today', title: 'Due Today', color: '#f97316' },
+  { id: 'thisWeek', title: 'This Week', color: '#3b82f6' },
+  { id: 'nextWeek', title: 'Next Week', color: '#0d9488' },
+  { id: 'later', title: 'Later', color: '#6b7280' },
+  { id: 'noDueDate', title: 'No Due Date', color: '#94a3b8' },
+];
