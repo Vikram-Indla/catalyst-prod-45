@@ -196,8 +196,8 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
       <div className="flex-1 flex min-h-0 overflow-hidden">
         
         {/* Center: Main Editor */}
-        <div className="flex-1 p-5 bg-slate-50 overflow-hidden flex flex-col min-h-0">
-          <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-lg shadow-slate-200/50 flex flex-col overflow-hidden min-h-0">
+        <div className="flex-1 p-5 bg-slate-50 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-lg shadow-slate-200/50 flex flex-col min-h-0 overflow-hidden">
             {/* Card Header */}
             <div className="h-11 px-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50 flex-shrink-0">
               <div className="flex items-center gap-3">
@@ -208,8 +208,8 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               </div>
             </div>
 
-            {/* Rich Text Editor - scrollable content */}
-            <div className="flex-1 overflow-y-auto min-h-0">
+            {/* Rich Text Editor - scrollable content area with explicit height constraint */}
+            <div className="flex-1 overflow-y-auto min-h-0" style={{ maxHeight: 'calc(100% - 7rem)' }}>
               <RichTextEditor
                 value={htmlContent}
                 onChange={handleEditorChange}
@@ -217,7 +217,7 @@ export function InputState({ onStart, onShowHistory }: InputStateProps) {
               />
             </div>
 
-            {/* Editor Footer with Word Count + Generate Button */}
+            {/* Editor Footer with Word Count + Generate Button - ALWAYS VISIBLE */}
             <div className="h-16 px-4 flex items-center justify-between border-t border-slate-100 bg-gradient-to-r from-slate-50 to-white flex-shrink-0">
               {/* Left: Word count */}
               <div className="flex items-center gap-3 text-sm">
