@@ -116,6 +116,15 @@ export function PlannerSearchBar({
             <Users className="w-4 h-4 mr-2 text-muted-foreground" />
             All Teams
           </DropdownMenuItem>
+          {onCreateTeam && (
+            <DropdownMenuItem 
+              onClick={onCreateTeam}
+              className="text-blue-600 font-medium"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Team
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           {teams.map(team => (
             <DropdownMenuItem
@@ -132,18 +141,6 @@ export function PlannerSearchBar({
               </div>
             </DropdownMenuItem>
           ))}
-          {onCreateTeam && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={onCreateTeam}
-                className="text-blue-600 font-medium"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Team
-              </DropdownMenuItem>
-            </>
-          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
