@@ -12,6 +12,10 @@ export interface Attachment {
   width?: number;
   height?: number;
   thumbnailUrl?: string;
+  annotations?: any[];
+  ocrText?: string;
+  aiHasIssues?: boolean;
+  createdAt?: string;
 }
 
 export interface UploadProgress {
@@ -33,6 +37,14 @@ export interface EvidenceUploadZoneProps {
   onUploadError: (error: string) => void;
   disabled?: boolean;
   maxFiles?: number;
+}
+
+export interface EvidenceGalleryProps {
+  stepResultId: string;
+  attachments: Attachment[];
+  onDelete: (id: string) => void;
+  onAnnotate: (id: string) => void;
+  onRefresh: () => void;
 }
 
 export const ALLOWED_TYPES = [
