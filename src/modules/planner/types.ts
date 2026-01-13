@@ -93,7 +93,6 @@ export interface ColumnConfig {
   id: TaskStatus | string;
   title: string;
   color: string;
-  wipLimit?: number;
   order: number;
 }
 
@@ -101,8 +100,8 @@ export interface ColumnConfig {
 export const COLUMN_CONFIG: ColumnConfig[] = [
   { id: 'backlog', title: 'Backlog', color: '#94a3b8', order: 0 },
   { id: 'planned', title: 'Planned', color: '#3b82f6', order: 1 },
-  { id: 'in-progress', title: 'In Progress', color: '#d97706', wipLimit: 5, order: 2 },
-  { id: 'review', title: 'Review', color: '#7c3aed', wipLimit: 3, order: 3 },
+  { id: 'in-progress', title: 'In Progress', color: '#d97706', order: 2 },
+  { id: 'review', title: 'Review', color: '#7c3aed', order: 3 },
   { id: 'done', title: 'Done', color: '#10b981', order: 4 },
 ];
 
