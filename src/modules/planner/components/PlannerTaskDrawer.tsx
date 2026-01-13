@@ -1,7 +1,7 @@
 // ============================================================
 // PLANNER TASK DRAWER
 // Slide-in drawer for viewing/editing task details
-// NO SUBTASKS - Progress is manually set via slider
+// Includes AI-powered checklist for progress tracking
 // ============================================================
 
 import { Lock, Unlock, Calendar, User, Flag, Activity, AlertTriangle, Trash2 } from 'lucide-react';
@@ -22,9 +22,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { TaskChecklist } from './TaskChecklist';
 
 interface PlannerTaskDrawerProps {
   task: PlannerTask | null;
@@ -203,21 +203,16 @@ export function PlannerTaskDrawer({
                 className="w-full"
               />
             </div>
+          </div>
 
-            {/* Progress - Manually set slider */}
-            <div className="space-y-2">
-              <label className="flex items-center justify-between text-sm font-medium text-muted-foreground">
-                <span>Progress</span>
-                <span className="text-primary">{task.progress}%</span>
-              </label>
-              <Slider
-                value={[task.progress]}
-                onValueChange={([value]) => onUpdate(task.id, { progress: value })}
-                max={100}
-                step={5}
-                className="w-full"
-              />
-            </div>
+          {/* Checklist Section */}
+          <div className="pt-4 border-t border-border">
+            <TaskChecklist
+              storyId={task.id}
+              taskTitle={task.title}
+              taskDescription={task.description}
+              onProgressChange={(progress) => onUpdate(task.id, { progress })}
+            />
           </div>
 
           {/* Tags */}
