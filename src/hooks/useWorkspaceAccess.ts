@@ -94,7 +94,7 @@ export function useWorkspaceAccess() {
           name, 
           description,
           program_id,
-          programs (id, name)
+          programs (id, key, name)
         `)
         .order('name');
       if (error) throw error;
