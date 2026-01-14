@@ -1,12 +1,14 @@
 // ============================================================
 // KANBAN CARD COMPONENT
 // Draggable task card for the Kanban board
+// Catalyst V5 semantic colors with priority-based styling
 // ============================================================
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { MoreHorizontal, MessageSquare, Paperclip, AlertTriangle } from 'lucide-react';
+import { MoreHorizontal, AlertTriangle } from 'lucide-react';
 import type { KanbanTask } from '../../types/kanban';
+import { PRIORITY_STYLES, getProgressColor } from '../../types/kanban';
 import { PriorityBadge } from './PriorityBadge';
 import { DueDateBadge } from './DueDateBadge';
 import { AssigneeAvatar } from './AssigneeAvatar';
@@ -43,6 +45,8 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
   };
 
   const isCompleted = task.status?.is_completed_status;
+  const priorityStyle = PRIORITY_STYLES[task.priority];
+  const progressColor = getProgressColor(task.progress);
 
   return (
     <div
@@ -52,12 +56,21 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
       {...listeners}
       onClick={onClick}
       className={cn(
-        'group bg-card border border-border rounded-lg p-3 cursor-pointer',
-        'hover:border-primary/50 hover:shadow-md transition-all duration-150',
+        'group bg-card rounded-lg p-3 cursor-pointer overflow-hidden',
+        'border border-border',
+        'hover:border-primary/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-150',
         (isDragging || isSortableDragging) && 'opacity-50 shadow-lg rotate-2',
         task.blocked && 'border-l-4 border-l-destructive'
       )}
     >
+      {/* Priority stripe on left (only if not blocked) */}
+      {!task.blocked && (
+        <div 
+          className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg"
+          style={{ backgroundColor: priorityStyle.borderLeft }}
+        />
+      )}
+      
       {/* Top row: Key + Priority + Menu */}
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
@@ -113,24 +126,28 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
         </div>
       )}
 
-      {/* Bottom row: Due date, comments, attachments, assignee */}
-      <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-border/50">
-        <div className="flex items-center gap-2">
-          <DueDateBadge dueDate={task.due_date} isCompleted={isCompleted} />
-          
-          {/* Progress indicator */}
-          {task.progress > 0 && task.progress < 100 && (
-            <div className="flex items-center gap-1">
-              <div className="w-12 h-1.5 bg-muted rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary rounded-full transition-all"
-                  style={{ width: `${task.progress}%` }}
-                />
-              </div>
-              <span className="text-[10px] text-muted-foreground">{task.progress}%</span>
-            </div>
-          )}
+      {/* Progress bar - always show if progress > 0 or in progress */}
+      {(task.progress > 0 || task.status?.slug === 'in-progress') && (
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-medium text-muted-foreground">Progress</span>
+            <span className="text-[10px] font-bold text-foreground">{task.progress}%</span>
+          </div>
+          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-full rounded-full transition-all duration-300"
+              style={{ 
+                width: `${task.progress}%`,
+                backgroundColor: progressColor 
+              }}
+            />
+          </div>
         </div>
+      )}
+
+      {/* Bottom row: Due date, assignee */}
+      <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-border/50">
+        <DueDateBadge dueDate={task.due_date} isCompleted={isCompleted} />
 
         {/* Assignee */}
         <AssigneeAvatar profile={task.assignee} size="sm" showName={false} />

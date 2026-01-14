@@ -1,13 +1,15 @@
 // ============================================================
 // PLANNER TIMELINE (GANTT) VIEW
 // Gantt chart with zoom controls and drag-to-reschedule
+// Catalyst V5 semantic colors with priority-based styling
 // ============================================================
 
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import type { PlannerTask } from '../types';
+import type { PlannerTask, TaskPriority } from '../types';
+import { PRIORITY_CONFIG, getProgressColor } from '../types';
 import { motion } from 'framer-motion';
 import { addDays, startOfWeek, format, differenceInDays, isToday, isWeekend } from 'date-fns';
 
@@ -18,34 +20,26 @@ interface PlannerTimelineProps {
 
 type ZoomLevel = 'day' | 'week' | 'month';
 
-// Catalyst v5 workstream colors (Atlassian Design System)
-const WORKSTREAM_COLORS: Record<string, string> = {
-  'Catalyst Track': '#0065FF',      // Blue 500
-  'MIM': '#22A06B',                 // Green 500  
-  'MIM Website Track': '#00A3BF',   // Teal 500
-  'Senaie Track': '#8270DB',        // Purple 500
-  'Tahommona Track': '#E34935',     // Red 500
-  'Stand-Alone Projects Track': '#CF9F02', // Yellow 600
-  'Data & AI Track': '#D97008',     // Orange 500
-  'Delivery Track': '#1D7F71',      // Teal 700
+// Priority-based bar colors for Gantt bars
+const PRIORITY_BAR_COLORS: Record<TaskPriority, { bg: string; fill: string }> = {
+  critical: { bg: 'rgba(239, 68, 68, 0.25)', fill: '#ef4444' },   // red-500
+  high: { bg: 'rgba(217, 119, 6, 0.25)', fill: '#d97706' },       // amber-600
+  medium: { bg: 'rgba(37, 99, 235, 0.25)', fill: '#2563eb' },     // blue-600
+  low: { bg: 'rgba(156, 163, 175, 0.25)', fill: '#9ca3af' },      // gray-400
 };
 
-const FALLBACK_COLORS = ['#0065FF', '#22A06B', '#8270DB', '#00A3BF', '#E34935', '#CF9F02', '#D97008', '#1D7F71'];
-
-const getWorkstreamColor = (workstreamName?: string, workstreamId?: string): string => {
-  if (workstreamName && WORKSTREAM_COLORS[workstreamName]) {
-    return WORKSTREAM_COLORS[workstreamName];
-  }
-  if (workstreamId) {
-    const index = workstreamId.charCodeAt(0) % FALLBACK_COLORS.length;
-    return FALLBACK_COLORS[index];
-  }
-  return '#0065FF';
+// Priority icons
+const PRIORITY_ICONS: Record<TaskPriority, string> = {
+  critical: '⚠️',
+  high: '🔥',
+  medium: '●',
+  low: '○',
 };
 
 export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('week');
   const [viewStart, setViewStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 0 }));
+  const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
 
   // Generate date columns based on zoom level
   const dateColumns = useMemo(() => {
@@ -84,6 +78,9 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   };
 
   const columnWidth = zoomLevel === 'day' ? 60 : zoomLevel === 'week' ? 40 : 20;
+
+  // Calculate today line position
+  const todayPosition = differenceInDays(new Date(), viewStart) * columnWidth + columnWidth / 2;
 
   return (
     <div className="h-full flex flex-col bg-surface-0">
@@ -128,14 +125,14 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
       {/* Timeline Content */}
       <div className="flex-1 overflow-auto">
         <div className="flex min-h-full">
-          {/* Task List Column */}
+          {/* Task List Column (Left Panel) */}
           <div className="w-[320px] flex-shrink-0 border-r border-border bg-surface-0">
             <div className="h-10 border-b border-border bg-surface-1 flex items-center px-3">
               <span className="text-xs font-semibold text-text-muted uppercase">Tasks</span>
             </div>
             <div>
               {tasks.map((task, index) => {
-                const wsColor = getWorkstreamColor(task.teamName, task.teamId);
+                const priorityConfig = PRIORITY_CONFIG[task.priority];
                 return (
                   <motion.div
                     key={task.id}
@@ -143,32 +140,55 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.02 }}
                     onClick={() => onTaskClick(task)}
-                    className="flex items-center gap-2 px-3 py-2 border-b border-border hover:bg-surface-1 cursor-pointer h-10"
+                    onMouseEnter={() => setHoveredTaskId(task.id)}
+                    onMouseLeave={() => setHoveredTaskId(null)}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-2 border-b border-border cursor-pointer h-16",
+                      "hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors"
+                    )}
                   >
-                    {/* Workstream color indicator */}
+                    {/* Priority bar indicator */}
                     <div 
-                      className="w-1 h-5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: wsColor }}
+                      className="w-1 h-10 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: priorityConfig.color }}
                     />
                     {/* Task info */}
-                    <div className="flex-1 min-w-0 flex flex-col">
-                      <span className="text-sm text-text-primary truncate">{task.title}</span>
-                      <div className="flex items-center gap-1.5 text-[10px] text-text-muted">
+                    <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px]">{PRIORITY_ICONS[task.priority]}</span>
+                        <span className="text-sm font-semibold text-text-primary truncate">{task.title}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono font-semibold text-muted-foreground">{task.key}</span>
                         {task.assigneeName && (
-                          <span className="truncate max-w-[80px]">{task.assigneeName}</span>
+                          <>
+                            <span className="text-muted-foreground">•</span>
+                            <div className="flex items-center gap-1">
+                              <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[8px] font-bold">
+                                {task.assigneeInitials}
+                              </div>
+                              <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">
+                                {task.assigneeName}
+                              </span>
+                            </div>
+                          </>
                         )}
-                        {task.assigneeName && task.teamName && <span>•</span>}
                         {task.teamName && (
-                          <span 
-                            className="truncate max-w-[100px] font-medium"
-                            style={{ color: wsColor }}
-                          >
-                            {task.teamName}
-                          </span>
+                          <>
+                            <span className="text-muted-foreground">•</span>
+                            <span 
+                              className="text-[10px] font-semibold truncate max-w-[80px] px-1.5 py-0.5 rounded"
+                              style={{ 
+                                backgroundColor: `${task.teamColor}15`,
+                                color: task.teamColor || '#6b7280'
+                              }}
+                            >
+                              {task.teamName}
+                            </span>
+                          </>
                         )}
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono text-text-muted flex-shrink-0">{task.key}</span>
                   </motion.div>
                 );
               })}
@@ -184,8 +204,8 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                   key={i}
                   className={cn(
                     "flex-shrink-0 flex flex-col items-center justify-center border-r border-border text-[10px]",
-                    isToday(date) && "bg-blue-50",
-                    isWeekend(date) && "bg-surface-2"
+                    isToday(date) && "bg-blue-50 dark:bg-blue-950/30",
+                    isWeekend(date) && !isToday(date) && "bg-muted/50"
                   )}
                   style={{ width: columnWidth }}
                 >
@@ -209,31 +229,36 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                     key={i}
                     className={cn(
                       "flex-shrink-0 border-r border-border",
-                      isToday(date) && "bg-blue-50/30",
-                      isWeekend(date) && "bg-surface-2/50"
+                      isToday(date) && "bg-blue-50/30 dark:bg-blue-950/10",
+                      isWeekend(date) && !isToday(date) && "bg-muted/30"
                     )}
                     style={{ width: columnWidth }}
                   />
                 ))}
               </div>
 
-              {/* Today Line */}
-              <div
-                className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20"
-                style={{
-                  left: differenceInDays(new Date(), viewStart) * columnWidth + columnWidth / 2,
-                }}
-              />
+              {/* Today Line - Bold blue with dot */}
+              {todayPosition > 0 && todayPosition < dateColumns.length * columnWidth && (
+                <div
+                  className="absolute top-0 bottom-0 w-0.5 bg-blue-600 z-20"
+                  style={{ left: todayPosition }}
+                >
+                  {/* Dot at top */}
+                  <div className="absolute -top-1 -left-1 w-2.5 h-2.5 bg-blue-600 rounded-full" />
+                </div>
+              )}
 
               {/* Task Bars */}
               {tasks.map((task, index) => {
                 const bar = getTaskBar(task);
-                const wsColor = getWorkstreamColor(task.teamName, task.teamId);
+                const barColors = PRIORITY_BAR_COLORS[task.priority];
+                const progressColor = getProgressColor(task.progress);
+                const isHovered = hoveredTaskId === task.id;
 
                 return (
                   <div
                     key={task.id}
-                    className="relative h-10 border-b border-border"
+                    className="relative h-16 border-b border-border"
                     style={{ width: dateColumns.length * columnWidth }}
                   >
                     <motion.div
@@ -241,26 +266,81 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                       animate={{ opacity: 1, scaleX: 1 }}
                       transition={{ delay: index * 0.03, type: 'spring' }}
                       onClick={() => onTaskClick(task)}
+                      onMouseEnter={() => setHoveredTaskId(task.id)}
+                      onMouseLeave={() => setHoveredTaskId(null)}
                       className={cn(
-                        "absolute top-1.5 h-7 rounded border cursor-pointer",
-                        "flex items-center px-2 text-xs font-medium truncate",
-                        "hover:bg-surface-1 transition-all bg-surface-0",
-                        task.blocked && "opacity-50"
+                        "absolute top-3 h-10 rounded-md cursor-pointer",
+                        "flex items-center px-2.5 text-xs font-medium truncate",
+                        "transition-all duration-200",
+                        isHovered && "shadow-lg -translate-y-0.5",
+                        task.blocked && "opacity-60"
                       )}
                       style={{
                         left: Math.max(0, bar.left),
-                        width: bar.width,
-                        borderColor: wsColor,
-                        borderLeftWidth: 3,
+                        width: Math.max(40, bar.width),
+                        backgroundColor: barColors.bg,
                         transformOrigin: 'left',
                       }}
                     >
                       {/* Progress Fill */}
                       <div
-                        className="absolute inset-0 rounded-l opacity-10"
-                        style={{ width: `${task.progress}%`, backgroundColor: wsColor }}
+                        className="absolute inset-0 rounded-md"
+                        style={{ 
+                          width: `${task.progress}%`, 
+                          backgroundColor: barColors.fill,
+                          opacity: 0.6
+                        }}
                       />
-                      <span className="relative z-10 truncate text-text-primary">{task.title}</span>
+                      
+                      {/* Content */}
+                      <div className="relative z-10 flex items-center justify-between w-full gap-2">
+                        <span 
+                          className="truncate font-semibold drop-shadow-sm"
+                          style={{ color: barColors.fill }}
+                        >
+                          {bar.width > 80 ? task.title : task.key}
+                        </span>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <span 
+                            className="text-[10px] font-bold drop-shadow-sm"
+                            style={{ color: barColors.fill }}
+                          >
+                            {task.progress}%
+                          </span>
+                          {task.assigneeInitials && (
+                            <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center text-[10px] font-bold text-gray-700 shadow-sm">
+                              {task.assigneeInitials}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Hover Tooltip */}
+                      {isHovered && bar.width < 200 && (
+                        <div className="absolute bottom-full left-0 mb-2 bg-gray-900 text-white p-3 rounded-lg text-xs min-w-[200px] z-50 shadow-xl">
+                          <div className="font-semibold mb-2">{task.title}</div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-gray-400">Key</span>
+                            <span>{task.key}</span>
+                          </div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-gray-400">Dates</span>
+                            <span>{task.startDate ? format(new Date(task.startDate), 'MMM d') : '—'} – {task.dueDate ? format(new Date(task.dueDate), 'MMM d') : '—'}</span>
+                          </div>
+                          {task.teamName && (
+                            <div className="flex justify-between mb-1">
+                              <span className="text-gray-400">Workstream</span>
+                              <span>{task.teamName}</span>
+                            </div>
+                          )}
+                          <div className="mt-2 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full rounded-full"
+                              style={{ width: `${task.progress}%`, backgroundColor: progressColor }}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </motion.div>
                   </div>
                 );

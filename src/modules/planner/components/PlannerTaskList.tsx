@@ -1,17 +1,16 @@
 // ============================================================
 // PLANNER TASK LIST VIEW
 // Sortable table with configurable columns
+// Catalyst V5 semantic colors with priority-based styling
 // ============================================================
 
 import { useState, useMemo } from 'react';
 import { 
   ArrowUpDown, 
-  Copy, 
   Lock, 
   MoreHorizontal,
   ChevronUp,
-  ChevronDown,
-  Check
+  ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,9 +20,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
-import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
+import { COLUMN_CONFIG, PRIORITY_CONFIG, getProgressColor } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -57,20 +55,15 @@ const ALL_COLUMNS: ColumnDef[] = [
   { id: 'assigneeName', label: 'Assignee', field: 'assigneeName', width: 'w-36', defaultVisible: true },
   { id: 'startDate', label: 'Start Date', field: 'startDate', width: 'w-28', defaultVisible: true },
   { id: 'dueDate', label: 'Due Date', field: 'dueDate', width: 'w-28', defaultVisible: true },
-  { id: 'progress', label: 'Progress', field: 'progress', width: 'w-28', defaultVisible: true },
+  { id: 'progress', label: 'Progress', field: 'progress', width: 'w-32', defaultVisible: true },
 ];
 
-// Load from localStorage or use defaults
-const getInitialVisibleColumns = (): Set<string> => {
-  try {
-    const stored = localStorage.getItem('planner-visible-columns');
-    if (stored) {
-      return new Set(JSON.parse(stored));
-    }
-  } catch {
-    // ignore
-  }
-  return new Set(ALL_COLUMNS.filter(c => c.defaultVisible).map(c => c.id));
+// Priority row stripe colors (left border)
+const PRIORITY_ROW_STYLES: Record<TaskPriority, string> = {
+  critical: 'shadow-[inset_4px_0_0_#ef4444]',
+  high: 'shadow-[inset_4px_0_0_#d97706]',
+  medium: 'shadow-[inset_4px_0_0_#2563eb]',
+  low: 'shadow-[inset_4px_0_0_#d1d5db]',
 };
 
 export function PlannerTaskList({
@@ -175,6 +168,16 @@ export function PlannerTaskList({
     });
   };
 
+  const getDueDateStatus = (dueDate?: string): 'overdue' | 'urgent' | 'safe' => {
+    if (!dueDate) return 'safe';
+    const due = new Date(dueDate);
+    const now = new Date();
+    const diffDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return 'overdue';
+    if (diffDays <= 2) return 'urgent';
+    return 'safe';
+  };
+
   const SortHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
     <button
       onClick={() => handleSort(field)}
@@ -219,6 +222,8 @@ export function PlannerTaskList({
                 const priorityConfig = PRIORITY_CONFIG[task.priority];
                 const isSelected = selectedTaskIds.has(task.id);
                 const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
+                const dueDateStatus = getDueDateStatus(task.dueDate);
+                const progressColor = getProgressColor(task.progress);
 
                 return (
                   <motion.tr
@@ -230,9 +235,10 @@ export function PlannerTaskList({
                     onClick={() => onTaskClick(task)}
                     className={cn(
                       "border-b border-border-subtle cursor-pointer transition-colors group",
-                      isSelected && "bg-brand-primary-light",
-                      task.blocked && "bg-destructive/5",
-                      !isSelected && !task.blocked && "hover:bg-surface-2"
+                      PRIORITY_ROW_STYLES[task.priority],
+                      isSelected && "bg-blue-50 dark:bg-blue-950/30",
+                      task.blocked && "bg-red-50/50 dark:bg-red-950/20",
+                      !isSelected && !task.blocked && "hover:bg-blue-50 dark:hover:bg-blue-950/20"
                     )}
                   >
                     <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
@@ -269,41 +275,42 @@ export function PlannerTaskList({
                       </td>
                     )}
 
-                    {/* Status - Softer pill style */}
+                    {/* Status - Colored badge with dot */}
                     {visibleColumns.has('status') && (
                       <td className="px-3 py-3">
                         <span 
-                          className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold"
                           style={{ 
                             backgroundColor: `${statusConfig?.color}15`,
                             color: statusConfig?.color 
                           }}
                         >
+                          <span 
+                            className="w-2 h-2 rounded-full" 
+                            style={{ backgroundColor: statusConfig?.color }}
+                          />
                           {statusConfig?.title}
                         </span>
                       </td>
                     )}
 
-                    {/* Priority - Softer pill style */}
+                    {/* Priority - Colored badge with icon */}
                     {visibleColumns.has('priority') && (
                       <td className="px-3 py-3">
                         <span 
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold"
                           style={{ 
-                            backgroundColor: `${priorityConfig.color}12`,
+                            backgroundColor: priorityConfig.bgColor,
                             color: priorityConfig.color 
                           }}
                         >
-                          <span 
-                            className="w-1.5 h-1.5 rounded-full" 
-                            style={{ backgroundColor: priorityConfig.color }}
-                          />
+                          <span className="text-[10px]">{priorityConfig.emoji}</span>
                           {priorityConfig.label}
                         </span>
                       </td>
                     )}
 
-                    {/* Team */}
+                    {/* Team/Workstream */}
                     {visibleColumns.has('teamName') && (
                       <td className="px-3 py-3">
                         {task.teamName ? (
@@ -348,15 +355,18 @@ export function PlannerTaskList({
                       </td>
                     )}
 
-                    {/* Due Date */}
+                    {/* Due Date - Colored by urgency */}
                     {visibleColumns.has('dueDate') && (
                       <td className="px-3 py-3">
                         {task.dueDate ? (
                           <span className={cn(
-                            "text-xs font-medium",
-                            isOverdue ? "text-destructive" : "text-foreground/70"
+                            "inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded",
+                            dueDateStatus === 'overdue' && "bg-red-50 text-red-600 dark:bg-red-950/30 dark:text-red-400",
+                            dueDateStatus === 'urgent' && "bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400",
+                            dueDateStatus === 'safe' && "text-foreground/70"
                           )}>
                             {formatDate(task.dueDate)}
+                            {dueDateStatus === 'overdue' && ' ⚠'}
                           </span>
                         ) : (
                           <span className="text-muted-foreground">—</span>
@@ -364,17 +374,22 @@ export function PlannerTaskList({
                       </td>
                     )}
 
-                    {/* Progress */}
+                    {/* Progress - Visual bar with colored fill */}
                     {visibleColumns.has('progress') && (
                       <td className="px-3 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="flex items-center gap-2.5 min-w-[120px]">
+                          <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-primary rounded-full transition-all"
-                              style={{ width: `${task.progress}%` }}
+                              className="h-full rounded-full transition-all"
+                              style={{ 
+                                width: `${task.progress}%`,
+                                backgroundColor: progressColor
+                              }}
                             />
                           </div>
-                          <span className="text-xs text-muted-foreground w-8">{task.progress}%</span>
+                          <span className="text-xs font-semibold text-foreground min-w-[36px] text-right">
+                            {task.progress}%
+                          </span>
                         </div>
                       </td>
                     )}
