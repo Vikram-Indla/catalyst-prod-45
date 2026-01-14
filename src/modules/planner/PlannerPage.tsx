@@ -35,6 +35,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
 import { useCreateTeam } from '@/hooks/useTeams';
+import { exportPlannerToPDF, exportPlannerToExcel } from './utils/plannerExport';
 
 // View titles for breadcrumb header
 const VIEW_TITLES: Record<PlannerView, string> = {
@@ -455,41 +456,64 @@ export function PlannerPage() {
               </h1>
             </div>
 
-            {/* Right: Export Buttons for Insight Views */}
-            {isInsightView(activeView) && (
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    catalystToast.success('PDF export started');
-                    // TODO: Implement actual PDF export
-                  }}
-                  className="h-8 gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  <span className="text-sm">PDF</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    catalystToast.success('Excel export started');
-                    // TODO: Implement actual Excel export
-                  }}
-                  className="h-8 gap-2"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span className="text-sm">Excel</span>
-                </Button>
-              </div>
-            )}
+            {/* Right: Export + Action Buttons */}
+            <div className="flex items-center gap-2">
+              {/* Export Buttons - Show on all views except workstreams/settings */}
+              {activeView !== 'workstreams' && activeView !== 'settings' && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        catalystToast.success('Generating PDF...', 'Please wait');
+                        await exportPlannerToPDF({
+                          title: pageTitle,
+                          viewType: pageTitle,
+                          tasks: filteredTasks,
+                          filters: {
+                            Status: filters.status || '',
+                            Priority: filters.priority || '',
+                            Search: filters.search || '',
+                          },
+                        });
+                        catalystToast.success('PDF Exported', 'Report downloaded successfully');
+                      } catch (err) {
+                        console.error('PDF export error:', err);
+                        catalystToast.error('Export Failed', 'Could not generate PDF');
+                      }
+                    }}
+                    className="h-8 gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span className="text-sm">PDF</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      try {
+                        exportPlannerToExcel({
+                          title: pageTitle,
+                          viewType: pageTitle,
+                          tasks: filteredTasks,
+                        });
+                        catalystToast.success('Excel Exported', 'Report downloaded successfully');
+                      } catch (err) {
+                        console.error('Excel export error:', err);
+                        catalystToast.error('Export Failed', 'Could not generate Excel');
+                      }
+                    }}
+                    className="h-8 gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span className="text-sm">Excel</span>
+                  </Button>
+                </>
+              )}
 
-            {/* Right: Action Buttons - hidden on teams/settings/insight views */}
-            {activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
-              <div className="flex items-center gap-2">
-
-                {/* Create Task Button */}
+              {/* Create Task Button - hidden on teams/settings/insight views */}
+              {activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
                 <Button
                   size="sm"
                   onClick={() => {
@@ -501,8 +525,8 @@ export function PlannerPage() {
                   <Plus className="w-4 h-4" />
                   <span className="text-sm">Create Task</span>
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
