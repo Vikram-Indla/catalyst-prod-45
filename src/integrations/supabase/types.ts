@@ -15685,10 +15685,46 @@ export type Database = {
             foreignKeyName: "planner_tasks_workstream_id_fkey"
             columns: ["workstream_id"]
             isOneToOne: false
-            referencedRelation: "teams"
+            referencedRelation: "planner_workstreams"
             referencedColumns: ["id"]
           },
         ]
+      }
+      planner_workstreams: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       portfolio_estimation_settings: {
         Row: {
