@@ -14,3 +14,5 @@ export { PriorityBadge } from './PriorityBadge';
 export { DueDateBadge } from './DueDateBadge';
 export { AssigneeAvatar } from './AssigneeAvatar';
 export { WorkstreamBadge } from './WorkstreamBadge';
+export { SwimlaneRow } from './SwimlaneRow';
+export { SwimlaneCard } from './SwimlaneCard';
