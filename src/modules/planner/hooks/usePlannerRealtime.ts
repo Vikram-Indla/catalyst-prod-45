@@ -11,32 +11,39 @@ export function usePlannerRealtime(teamId?: string | null) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Create a unique channel name
+    // Create a unique channel name (scoped by workstream/team filter)
     const channelName = `planner-tasks-${teamId || 'all'}`;
+
+    // Debounce invalidations to avoid UI flicker during rapid updates
+    let invalidateTimer: number | null = null;
+    const scheduleInvalidate = () => {
+      if (invalidateTimer) return;
+      invalidateTimer = window.setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['planner-tasks', teamId] });
+        queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
+        invalidateTimer = null;
+      }, 150);
+    };
 
     const channel = supabase
       .channel(channelName)
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to INSERT, UPDATE, DELETE
+          event: '*',
           schema: 'public',
-          table: 'stories',
-          ...(teamId ? { filter: `team_id=eq.${teamId}` } : {}),
+          table: 'planner_tasks',
+          ...(teamId ? { filter: `workstream_id=eq.${teamId}` } : {}),
         },
-        (payload) => {
-          console.log('Realtime update:', payload.eventType, payload);
-          
-          // Invalidate and refetch on any change
-          queryClient.invalidateQueries({ queryKey: ['planner-tasks', teamId] });
+        () => {
+          scheduleInvalidate();
         }
       )
-      .subscribe((status) => {
-        console.log('Realtime subscription status:', status);
-      });
+      .subscribe();
 
     // Cleanup on unmount
     return () => {
+      if (invalidateTimer) window.clearTimeout(invalidateTimer);
       supabase.removeChannel(channel);
     };
   }, [teamId, queryClient]);

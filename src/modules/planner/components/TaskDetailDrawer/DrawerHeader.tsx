@@ -48,38 +48,47 @@ function useStatuses() {
   });
 }
 
-function StatusSelect({ 
-  currentStatus, 
-  onChange 
-}: { 
-  currentStatus: any; 
+function StatusSelect({
+  currentStatus,
+  currentStatusId,
+  onChange,
+}: {
+  currentStatus: any;
+  currentStatusId?: string | null;
   onChange: (statusId: string) => void;
 }) {
   const { data: statuses = [] } = useStatuses();
   const [open, setOpen] = useState(false);
-  
-  const slug = currentStatus?.slug || 'backlog';
+
+  const resolvedCurrent =
+    statuses.find((s: any) => s.id === currentStatusId) || currentStatus;
+
+  const slug = resolvedCurrent?.slug || 'backlog';
   const config = STATUS_CONFIG[slug] || STATUS_CONFIG.backlog;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className={cn(
-          "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all hover:ring-2 hover:ring-offset-1 hover:ring-gray-300",
-          config.bg, config.text
-        )}>
-          <span 
-            className="w-1.5 h-1.5 rounded-full" 
-            style={{ backgroundColor: config.color }} 
+        <button
+          className={cn(
+            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all hover:ring-2 hover:ring-offset-1 hover:ring-gray-300",
+            config.bg,
+            config.text
+          )}
+        >
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: config.color }}
           />
-          {currentStatus?.name || config.label}
+          {resolvedCurrent?.name || config.label}
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-44 p-1 z-[500] bg-popover" align="start">
         {statuses.map((status: any) => {
           const statusSlug = status.slug || 'backlog';
           const cfg = STATUS_CONFIG[statusSlug] || STATUS_CONFIG.backlog;
-          
+          const isSelected = (currentStatusId || resolvedCurrent?.id) === status.id;
+
           return (
             <button
               key={status.id}
@@ -89,14 +98,12 @@ function StatusSelect({
               }}
               className={cn(
                 "w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors",
-                currentStatus?.id === status.id ? "bg-muted" : "hover:bg-muted/50"
+                isSelected ? 'bg-muted' : 'hover:bg-muted/50'
               )}
             >
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cfg.color }} />
               <span className={cfg.text}>{status.name}</span>
-              {currentStatus?.id === status.id && (
-                <Check className="w-4 h-4 ml-auto text-primary" />
-              )}
+              {isSelected && <Check className="w-4 h-4 ml-auto text-primary" />}
             </button>
           );
         })}
@@ -137,7 +144,8 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: D
         </span>
         
         <StatusSelect 
-          currentStatus={task.status} 
+          currentStatus={task.status}
+          currentStatusId={task.status_id}
           onChange={onStatusChange} 
         />
       </div>
