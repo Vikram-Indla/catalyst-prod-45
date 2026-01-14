@@ -93,6 +93,12 @@ export function usePlannerTasks(teamId?: string | null) {
 
       return (data || []).map(transformPlannerTask);
     },
+    // GUARDRAIL: Treat as "reference-ish" list to avoid flicker during field edits.
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 
