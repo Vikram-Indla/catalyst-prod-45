@@ -152,8 +152,8 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
       <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-border/50">
         <DueDateBadge dueDate={task.due_date} isCompleted={isCompleted} />
 
-        {/* Assignee */}
-        <AssigneeAvatar profile={task.assignee} size="sm" showName={false} />
+        {/* Assignee - use workstream color */}
+        <AssigneeAvatar profile={task.assignee} size="sm" showName={false} workstream={task.workstream} />
       </div>
     </div>
   );

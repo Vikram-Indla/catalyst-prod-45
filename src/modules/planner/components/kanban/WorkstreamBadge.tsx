@@ -21,17 +21,14 @@ export function WorkstreamBadge({ workstream, className }: WorkstreamBadgeProps)
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full',
+        'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full',
         colors.bg, // bg-teal-50 for Catalyst, bg-indigo-50 for Senaie, etc.
         className
       )}
     >
       <span
-        className={cn(
-          'w-1.5 h-1.5 rounded-full flex-shrink-0',
-          colors.bg.replace('-50', '-500') // Convert bg-teal-50 to bg-teal-500 for dot
-        )}
-        style={{ backgroundColor: colors.hex }} // Fallback to hex color
+        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        style={{ backgroundColor: colors.hex }}
       />
       <span 
         className={cn(

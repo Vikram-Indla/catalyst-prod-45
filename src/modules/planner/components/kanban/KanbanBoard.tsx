@@ -297,9 +297,6 @@ export function KanbanBoard({
             Swimlane
           </button>
         </div>
-        <span className="text-sm text-muted-foreground ml-auto">
-          {tasks.length} task{tasks.length !== 1 ? 's' : ''}
-        </span>
       </div>
       
       {/* Board Content */}
