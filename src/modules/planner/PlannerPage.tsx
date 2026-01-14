@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, Download, FileText } from 'lucide-react';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
 import { PlannerSidebar } from './components/PlannerSidebar';
 import { KanbanBoard } from './components/kanban';
@@ -41,13 +41,17 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'task-list': 'Task List',
   'timeline': 'Timeline',
   'calendar': 'Calendar',
-  'weekly-report': 'Weekly Report',
-  'workstream-performance': 'Workstream Performance',
-  'ai-insights': 'AI Insights',
+  'weekly-report': 'Weekly Summary',
+  'workstream-performance': 'Daily Scorecard',
+  'ai-insights': 'Monthly Chronicle',
   'workstreams': 'Workstreams',
   'resources': 'Resources',
   'settings': 'Settings',
 };
+
+// Check if view is an insight view
+const isInsightView = (view: PlannerView) => 
+  view === 'weekly-report' || view === 'workstream-performance' || view === 'ai-insights';
 
 export function PlannerPage() {
   const navigate = useNavigate();
@@ -372,9 +376,38 @@ export function PlannerPage() {
               </h1>
             </div>
 
+            {/* Right: Export Buttons for Insight Views */}
+            {isInsightView(activeView) && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    catalystToast.success('PDF export started');
+                    // TODO: Implement actual PDF export
+                  }}
+                  className="h-8 gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  <span className="text-sm">PDF</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    catalystToast.success('Excel export started');
+                    // TODO: Implement actual Excel export
+                  }}
+                  className="h-8 gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span className="text-sm">Excel</span>
+                </Button>
+              </div>
+            )}
+
             {/* Right: Action Buttons - hidden on teams/settings/insight views */}
-            {activeView !== 'workstreams' && activeView !== 'settings' && 
-             activeView !== 'weekly-report' && activeView !== 'workstream-performance' && activeView !== 'ai-insights' && (
+            {activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
               <div className="flex items-center gap-2">
 
                 {/* Create Task Button */}
@@ -395,8 +428,7 @@ export function PlannerPage() {
         </div>
 
         {/* Search Bar - hidden on teams/settings/boards/insight views */}
-        {activeView !== 'workstreams' && activeView !== 'settings' && activeView !== 'boards' && 
-         activeView !== 'weekly-report' && activeView !== 'workstream-performance' && activeView !== 'ai-insights' && (
+        {activeView !== 'workstreams' && activeView !== 'settings' && activeView !== 'boards' && !isInsightView(activeView) && (
           <PlannerSearchBar
             filters={filters}
             onSearchChange={setSearch}
