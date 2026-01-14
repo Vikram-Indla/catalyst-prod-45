@@ -1,46 +1,24 @@
 // ============================================================
 // PLANNER TASKS HOOK
-// Fetches tasks from stories table and transforms to Planner format
-// Returns empty list when database is empty (no mock data)
+// Fetches tasks from planner_tasks table and transforms to Planner format
+// Now unified with Kanban to use the same data source
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
 
-// Map DB status/state to Planner status
-const mapStatus = (dbStatus: string | null, dbState: string | null): TaskStatus => {
-  const status = dbStatus?.toLowerCase();
-  const state = dbState?.toLowerCase();
-
-  // "todo" is overloaded in this schema; state differentiates backlog vs planned
-  if (status === 'todo') {
-    if (state === 'backlog') return 'backlog';
-    // default "todo" bucket maps to Planned
-    return 'planned';
-  }
-
-  if (status === 'in_progress') {
-    // use state to represent the Review column
-    if (state === 'review' || state === 'in_review' || state === 'testing') return 'review';
-    return 'in-progress';
-  }
-
-  if (status === 'done') return 'done';
-
-  // Fallbacks for unexpected values
-  switch (status) {
-    case 'completed':
-    case 'accepted':
-      return 'done';
-    case 'active':
-      return 'in-progress';
-    case 'planned':
-    case 'ready':
-      return 'planned';
-    default:
-      return 'backlog';
-  }
+// Map planner_statuses to Planner TaskStatus
+const mapStatusFromPlannerStatuses = (statusName: string | null): TaskStatus => {
+  const name = statusName?.toLowerCase() || '';
+  
+  if (name.includes('backlog')) return 'backlog';
+  if (name.includes('planned') || name.includes('to do') || name.includes('todo')) return 'planned';
+  if (name.includes('progress') || name.includes('active') || name.includes('doing')) return 'in-progress';
+  if (name.includes('review') || name.includes('testing') || name.includes('qa')) return 'review';
+  if (name.includes('done') || name.includes('complete') || name.includes('closed')) return 'done';
+  
+  return 'backlog';
 };
 
 // Map DB priority to Planner priority
@@ -62,27 +40,26 @@ const mapPriority = (dbPriority: string | null): TaskPriority => {
   }
 };
 
-// Transform DB row to PlannerTask
-const transformStory = (row: any, featureInfo?: { name: string; displayId: string }): PlannerTask => ({
+// Transform planner_tasks row to PlannerTask
+const transformPlannerTask = (row: any): PlannerTask => ({
   id: row.id,
-  key: row.story_key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
-  title: row.title || row.name || 'Untitled',
-  description: row.description,
-  status: mapStatus(row.status || row.state, row.state),
+  key: row.key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
+  title: row.title || 'Untitled',
+  description: row.description || '',
+  status: mapStatusFromPlannerStatuses(row.status?.name),
   type: 'task',
   priority: mapPriority(row.priority),
-  assigneeId: row.assignee_id || row.owner_id,
-  assigneeName: row.profiles?.full_name,
-  assigneeInitials: row.profiles?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2),
-  teamId: row.team_id,
-  startDate: row.start_date,
-  dueDate: row.accepted_at,
+  assigneeId: row.assignee_id,
+  assigneeName: row.assignee?.full_name,
+  assigneeInitials: row.assignee?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2),
+  teamId: row.workstream_id,
+  teamName: row.workstream?.name,
+  startDate: undefined, // planner_tasks doesn't have start_date
+  dueDate: row.due_date,
   blocked: row.blocked || false,
   blockedReason: row.blocked_reason,
-  progress: row.progress_pct || 0,
+  progress: row.progress || 0,
   comments: 0,
-  linkedItemId: row.feature_id,
-  linkedItemTitle: featureInfo ? `${featureInfo.displayId} - ${featureInfo.name}` : undefined,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -91,16 +68,20 @@ export function usePlannerTasks(teamId?: string | null) {
   return useQuery({
     queryKey: ['planner-tasks', teamId],
     queryFn: async () => {
-      // Query stories without the profiles join since there's no FK relationship
       let query = supabase
-        .from('stories')
-        .select('*')
+        .from('planner_tasks')
+        .select(`
+          *,
+          status:planner_statuses(*),
+          workstream:teams(id, name),
+          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
+        `)
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(200);
 
       if (teamId) {
-        query = query.eq('team_id', teamId);
+        query = query.eq('workstream_id', teamId);
       }
 
       const { data, error } = await query;
@@ -110,52 +91,7 @@ export function usePlannerTasks(teamId?: string | null) {
         return [];
       }
 
-      // Get unique assignee IDs to fetch names separately
-      const assigneeIds = [...new Set((data || []).map(s => s.assignee_id).filter(Boolean))];
-      
-      let profilesMap: Record<string, string> = {};
-      if (assigneeIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', assigneeIds);
-        
-        profilesMap = (profiles || []).reduce((acc, p) => {
-          acc[p.id] = p.full_name || '';
-          return acc;
-        }, {} as Record<string, string>);
-      }
-
-      // Get unique feature IDs to fetch feature names
-      const featureIds = [...new Set((data || []).map(s => s.feature_id).filter(Boolean))];
-      
-      let featuresMap: Record<string, { name: string; displayId: string }> = {};
-      if (featureIds.length > 0) {
-        const { data: features } = await supabase
-          .from('features')
-          .select('id, name, display_id')
-          .in('id', featureIds);
-        
-        featuresMap = (features || []).reduce((acc, f) => {
-          acc[f.id] = { name: f.name || '', displayId: f.display_id || 'FTR' };
-          return acc;
-        }, {} as Record<string, { name: string; displayId: string }>);
-      }
-
-      const transformedData = (data || []).map(row => {
-        const featureInfo = row.feature_id ? featuresMap[row.feature_id] : undefined;
-        return {
-          ...transformStory(row, featureInfo),
-          assigneeName: row.assignee_id ? profilesMap[row.assignee_id] : undefined,
-          assigneeInitials: row.assignee_id && profilesMap[row.assignee_id] 
-            ? profilesMap[row.assignee_id].split(' ').map(n => n[0]).join('').slice(0, 2)
-            : undefined,
-        };
-      });
-      
-      // Return empty list if no tasks (no mock data)
-
-      return transformedData;
+      return (data || []).map(transformPlannerTask);
     },
   });
 }
@@ -165,22 +101,7 @@ export function useUpdatePlannerTask() {
 
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<PlannerTask> }) => {
-      // Map Planner status back to DB status/state
       const dbUpdates: any = {};
-
-      if (updates.status) {
-        const statusToDb: Record<TaskStatus, { status: 'todo' | 'in_progress' | 'done'; state: string }> = {
-          backlog: { status: 'todo', state: 'backlog' },
-          planned: { status: 'todo', state: 'todo' },
-          'in-progress': { status: 'in_progress', state: 'in_progress' },
-          review: { status: 'in_progress', state: 'review' },
-          done: { status: 'done', state: 'done' },
-        };
-
-        const mapped = statusToDb[updates.status];
-        dbUpdates.status = mapped.status;
-        dbUpdates.state = mapped.state;
-      }
       
       if (updates.priority) {
         dbUpdates.priority = updates.priority;
@@ -192,7 +113,7 @@ export function useUpdatePlannerTask() {
       }
 
       if (updates.progress !== undefined) {
-        dbUpdates.progress_pct = updates.progress;
+        dbUpdates.progress = updates.progress;
       }
 
       if (updates.assigneeId !== undefined) {
@@ -200,22 +121,25 @@ export function useUpdatePlannerTask() {
       }
 
       if (updates.dueDate !== undefined) {
-        dbUpdates.accepted_at = updates.dueDate || null;
+        dbUpdates.due_date = updates.dueDate || null;
       }
 
-      if (updates.startDate !== undefined) {
-        dbUpdates.start_date = updates.startDate || null;
+      if (updates.title !== undefined) {
+        dbUpdates.title = updates.title;
+      }
+
+      if (updates.description !== undefined) {
+        dbUpdates.description = updates.description;
       }
 
       const { error } = await supabase
-        .from('stories')
+        .from('planner_tasks')
         .update(dbUpdates)
         .eq('id', id);
 
       if (error) throw error;
     },
     onMutate: async ({ id, updates }) => {
-      // Optimistic update (covers both ['planner-tasks'] and ['planner-tasks', teamId] queries)
       await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
 
       const previous = queryClient.getQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] });
@@ -234,6 +158,7 @@ export function useUpdatePlannerTask() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
     },
   });
 }
@@ -243,22 +168,16 @@ export function useDeletePlannerTask() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      // Seed tasks are demo-only and do not exist in the database
-      if (isSeedId(id)) {
-        return { id, seed: true } as const;
-      }
-
       // Soft delete by setting deleted_at
       const { error } = await supabase
-        .from('stories')
+        .from('planner_tasks')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw error;
-      return { id, seed: false } as const;
+      return { id };
     },
     onMutate: async (id) => {
-      // Optimistic update - remove from list
       await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
       const previousTasks = queryClient.getQueryData(['planner-tasks']);
 
@@ -274,12 +193,9 @@ export function useDeletePlannerTask() {
         queryClient.setQueryData(['planner-tasks'], context.previousTasks);
       }
     },
-    onSettled: (data) => {
-      // Only refetch from the backend when we actually touched real rows.
-      // In seed mode we want the optimistic removal to persist.
-      if (data && !data.seed) {
-        queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
-      }
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
     },
   });
 }
@@ -294,28 +210,16 @@ export function useBulkDeletePlannerTasks() {
 
   return useMutation({
     mutationFn: async (ids: string[]) => {
-      // Separate real DB IDs from seed/demo IDs
-      const realIds = ids.filter((id) => !isSeedId(id));
-      const seedIds = ids.filter((id) => isSeedId(id));
+      const { error } = await supabase
+        .from('planner_tasks')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', ids);
 
-      // Only attempt DB delete for real IDs
-      if (realIds.length > 0) {
-        const { error } = await supabase
-          .from('stories')
-          .update({ deleted_at: new Date().toISOString() })
-          .in('id', realIds);
+      if (error) throw error;
 
-        if (error) throw error;
-      }
-
-      return {
-        deletedIds: ids,
-        seedCount: seedIds.length,
-        realCount: realIds.length,
-      } as const;
+      return { deletedIds: ids };
     },
     onMutate: async (ids) => {
-      // Optimistic update - remove all from list
       await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
       const previousTasks = queryClient.getQueriesData<PlannerTask[]>({ queryKey: ['planner-tasks'] });
 
@@ -331,12 +235,9 @@ export function useBulkDeletePlannerTasks() {
         queryClient.setQueryData(key, data);
       });
     },
-    onSettled: (data) => {
-      // Only refetch when we actually changed rows in the backend.
-      // If we're in seed/demo mode, invalidating would re-add the seed tasks.
-      if (data && data.realCount > 0) {
-        queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
-      }
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
     },
   });
 }
@@ -346,42 +247,41 @@ export function useDuplicatePlannerTask() {
 
   return useMutation({
     mutationFn: async (task: PlannerTask) => {
-      // Map status back to DB format
-      const statusMap: Record<TaskStatus, 'todo' | 'in_progress' | 'done'> = {
-        backlog: 'todo',
-        planned: 'todo',
-        'in-progress': 'in_progress',
-        review: 'in_progress',
-        done: 'done',
-      };
+      // Get the first status as default
+      const { data: statuses } = await supabase
+        .from('planner_statuses')
+        .select('id')
+        .order('position', { ascending: true })
+        .limit(1);
+      
+      const defaultStatusId = statuses?.[0]?.id;
+      if (!defaultStatusId) throw new Error('No statuses found');
 
-      const newKey = `PLN-${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}`;
-
+      const newKey = `PLN-${Date.now()}`;
+      
       const { data, error } = await supabase
-        .from('stories')
+        .from('planner_tasks')
         .insert([{
-          name: `${task.title} (Copy)`,
+          key: newKey,
           title: `${task.title} (Copy)`,
           description: task.description || null,
-          status: statusMap[task.status],
-          state: statusMap[task.status],
+          status_id: defaultStatusId,
           priority: task.priority,
           assignee_id: task.assigneeId || null,
-          progress_pct: 0,
+          workstream_id: task.teamId || null,
+          progress: 0,
           blocked: false,
-          team_id: task.teamId || '20000000-0001-0001-0001-000000000001',
-          story_key: newKey,
-          start_date: task.startDate || new Date().toISOString().split('T')[0],
-          feature_id: task.linkedItemId || null,
+          due_date: task.dueDate || null,
         }])
         .select()
         .single();
 
       if (error) throw error;
-      return { ...data, key: newKey };
+      return data;
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
     },
   });
 }
