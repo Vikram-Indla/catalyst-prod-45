@@ -1,10 +1,10 @@
 // ============================================================
-// ATTACHMENTS SECTION - POLISHED
-// Better upload zone with icon circle, drag feedback
+// ATTACHMENTS SECTION - CONTENT ONLY (no header, wrapped by CollapsibleSection)
+// Compact upload zone, no huge box for empty state
 // ============================================================
 
 import { useState, useCallback } from 'react';
-import { Paperclip, Upload, FileText, X } from 'lucide-react';
+import { Upload, FileText, X, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TaskAttachment } from '../../hooks/useTaskDetails';
 import { useDeleteAttachment } from '../../hooks/useTaskDetails';
@@ -33,27 +33,19 @@ export function AttachmentsSection({ taskId, attachments }: AttachmentsSectionPr
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    // File upload would go here - requires storage bucket setup
     console.log('Files dropped:', e.dataTransfer.files);
   }, []);
 
+  const hasAttachments = attachments && attachments.length > 0;
+
+  // CONTENT ONLY - no header (CollapsibleSection provides the header)
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Paperclip className="w-4 h-4 text-gray-400" />
-        <span className="text-sm font-semibold text-gray-700">Attachments</span>
-        {attachments && attachments.length > 0 && (
-          <span className="px-1.5 py-0.5 bg-gray-100 rounded text-[11px] font-semibold text-gray-500">
-            {attachments.length}
-          </span>
-        )}
-      </div>
-      
-      {/* Attachment Grid */}
-      {attachments && attachments.length > 0 && (
-        <div className="grid grid-cols-3 gap-2">
+    <div className="space-y-2">
+      {/* Attachment List */}
+      {hasAttachments && (
+        <div className="space-y-1.5">
           {attachments.map(att => (
-            <AttachmentCard
+            <AttachmentItem
               key={att.id}
               attachment={att}
               onDelete={() => deleteAttachment.mutate(att.id)}
@@ -62,37 +54,29 @@ export function AttachmentsSection({ taskId, attachments }: AttachmentsSectionPr
         </div>
       )}
 
-      {/* STYLED Upload Zone */}
+      {/* COMPACT Upload Zone - not huge box */}
       <label
         className={cn(
-          "flex flex-col items-center gap-2 p-6 border-2 border-dashed rounded-xl cursor-pointer transition-all",
+          "flex items-center gap-2 p-3 border border-dashed rounded-lg cursor-pointer transition-all",
           isDragging 
-            ? "border-primary bg-blue-50" 
-            : "border-gray-300 hover:border-primary hover:bg-gray-50"
+            ? "border-primary bg-primary/5" 
+            : "border-muted-foreground/30 hover:border-primary hover:bg-primary/5"
         )}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
       >
         <input type="file" multiple className="hidden" />
-        <div className={cn(
-          "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
-          isDragging ? "bg-primary/10" : "bg-gray-100"
-        )}>
-          <Upload className={cn("w-5 h-5", isDragging ? "text-primary" : "text-gray-400")} />
-        </div>
-        <div className="text-center">
-          <span className="text-sm text-gray-600">
-            <span className="text-primary font-medium">Click to upload</span> or drag and drop
-          </span>
-          <p className="text-xs text-gray-400 mt-0.5">PNG, JPG, PDF up to 10MB</p>
-        </div>
+        <Upload className={cn("w-4 h-4", isDragging ? "text-primary" : "text-muted-foreground")} />
+        <span className="text-xs text-muted-foreground">
+          Drop files here or <span className="text-primary font-medium">click to upload</span>
+        </span>
       </label>
     </div>
   );
 }
 
-function AttachmentCard({ 
+function AttachmentItem({ 
   attachment, 
   onDelete 
 }: { 
@@ -102,8 +86,9 @@ function AttachmentCard({
   const isImage = attachment.file_type?.startsWith('image/');
   
   return (
-    <div className="group relative bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:border-primary hover:shadow-sm transition-all">
-      <div className="aspect-video flex items-center justify-center bg-gray-100">
+    <div className="group flex items-center gap-2 px-2 py-1.5 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
+      {/* Thumbnail or Icon */}
+      <div className="w-8 h-8 rounded bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
         {isImage && attachment.file_url ? (
           <img 
             src={attachment.file_url} 
@@ -111,20 +96,22 @@ function AttachmentCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <FileText className="w-8 h-8 text-gray-400" />
+          <FileText className="w-4 h-4 text-muted-foreground" />
         )}
       </div>
       
-      <div className="p-2">
-        <p className="text-xs font-medium text-gray-700 truncate">{attachment.file_name}</p>
-        <p className="text-[10px] text-gray-400">
+      {/* File Info */}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-medium text-foreground truncate">{attachment.file_name}</p>
+        <p className="text-[10px] text-muted-foreground">
           {formatFileSize(attachment.file_size)}
         </p>
       </div>
       
+      {/* Delete */}
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(); }}
-        className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center bg-white/90 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all"
+        className="w-5 h-5 flex items-center justify-center rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
       >
         <X className="w-3 h-3" />
       </button>

@@ -192,7 +192,6 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                     <ChecklistSection
                       taskId={effectiveTaskId!}
                       items={checklist || []}
-                      taskDescription={task.description || ''}
                     />
                   </CollapsibleSection>
 
