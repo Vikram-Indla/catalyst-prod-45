@@ -46,7 +46,8 @@ export function KanbanColumn({
       <div className="flex items-center justify-between p-3 border-b border-border/50">
         <div className="flex items-center gap-2">
           <span
-            className="w-2.5 h-2.5 rounded-full bg-muted-foreground/40"
+            className="w-2.5 h-2.5 rounded-full"
+            style={{ backgroundColor: status.color }}
           />
           <h3 className="font-semibold text-sm text-foreground">{status.name}</h3>
           <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
