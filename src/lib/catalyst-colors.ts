@@ -468,3 +468,109 @@ export const ALLOCATION_SEGMENT_COLORS = [
   '#14b8a6', // Teal Light
   '#64748b', // Slate
 ];
+
+// =====================================================
+// DEFECT SEVERITY COLORS
+// =====================================================
+export const DEFECT_SEVERITY_COLORS = {
+  critical: {
+    dot: CATALYST_V5.danger,
+    bg: CATALYST_V5.dangerLight,
+    text: CATALYST_V5.danger,
+    border: `${CATALYST_V5.danger}30`,
+  },
+  high: {
+    dot: CATALYST_V5.warning,
+    bg: CATALYST_V5.warningLight,
+    text: CATALYST_V5.warning,
+    border: `${CATALYST_V5.warning}30`,
+  },
+  medium: {
+    dot: CATALYST_V5.primary,
+    bg: CATALYST_V5.primaryLight,
+    text: CATALYST_V5.primary,
+    border: `${CATALYST_V5.primary}30`,
+  },
+  low: {
+    dot: CATALYST_V5.slate[400],
+    bg: CATALYST_V5.slate[100],
+    text: CATALYST_V5.slate[500],
+    border: `${CATALYST_V5.slate[400]}30`,
+  },
+} as const;
+
+// =====================================================
+// DEFECT STATUS COLORS
+// =====================================================
+export const DEFECT_STATUS_COLORS = {
+  new: {
+    bg: CATALYST_V5.dangerLighter,
+    text: CATALYST_V5.danger,
+    border: `${CATALYST_V5.danger}30`,
+  },
+  triaged: {
+    bg: CATALYST_V5.warningLighter,
+    text: CATALYST_V5.warning,
+    border: `${CATALYST_V5.warning}30`,
+  },
+  in_progress: {
+    bg: CATALYST_V5.primaryLighter,
+    text: CATALYST_V5.primary,
+    border: `${CATALYST_V5.primary}30`,
+  },
+  fixed: {
+    bg: CATALYST_V5.tealLighter,
+    text: CATALYST_V5.teal,
+    border: `${CATALYST_V5.teal}30`,
+  },
+  verified: {
+    bg: CATALYST_V5.tealLighter,
+    text: CATALYST_V5.teal,
+    border: `${CATALYST_V5.teal}30`,
+  },
+  closed: {
+    bg: CATALYST_V5.slate[100],
+    text: CATALYST_V5.slate[500],
+    border: `${CATALYST_V5.slate[300]}30`,
+  },
+  rejected: {
+    bg: CATALYST_V5.slate[100],
+    text: CATALYST_V5.slate[500],
+    border: `${CATALYST_V5.slate[300]}30`,
+  },
+  reopened: {
+    bg: CATALYST_V5.warningLighter,
+    text: CATALYST_V5.warning,
+    border: `${CATALYST_V5.warning}30`,
+  },
+} as const;
+
+// =====================================================
+// DEFECT PRIORITY COLORS
+// =====================================================
+export const DEFECT_PRIORITY_COLORS = {
+  critical: {
+    bg: '#fff1f2', // rose-50
+    text: '#e11d48', // rose-600
+    border: '#e11d4830',
+    colorful: true,
+  },
+  high: {
+    bg: CATALYST_V5.warningLighter,
+    text: CATALYST_V5.warning,
+    border: `${CATALYST_V5.warning}30`,
+    colorful: true,
+  },
+  medium: {
+    bg: 'transparent',
+    text: CATALYST_V5.slate[600],
+    border: 'transparent',
+    colorful: false,
+  },
+  low: {
+    bg: 'transparent',
+    text: CATALYST_V5.slate[400],
+    border: 'transparent',
+    colorful: false,
+  },
+} as const;
