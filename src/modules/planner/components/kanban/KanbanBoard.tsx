@@ -1,6 +1,7 @@
 // ============================================================
 // KANBAN BOARD COMPONENT
 // Main board with drag-and-drop, search, and swimlane grouping
+// Enhanced with collapsible rows and workstream colors
 // ============================================================
 
 import { useState, useCallback, useMemo } from 'react';
@@ -22,10 +23,12 @@ import { useKanbanStatuses, useKanbanStatusesRealtime } from '../../hooks/useKan
 import { useKanbanTasks, useKanbanTasksRealtime, useMoveKanbanTask } from '../../hooks/useKanbanTasks';
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
+import { SwimlaneRow } from './SwimlaneRow';
 import { KanbanFilters, SwimlaneGrouping, KanbanViewMode } from './KanbanFilters';
 import { AddColumnButton } from './AddColumnButton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Loader2, User, Flag, Layers } from 'lucide-react';
+import { getWorkstreamColor } from '@/lib/workstream-colors';
 
 interface KanbanBoardProps {
   onTaskClick?: (task: any) => void;
@@ -56,8 +59,23 @@ export function KanbanBoard({
     assignee_id: 'all',
     workstream_id: 'all',
   });
-  const [swimlane, setSwimlane] = useState<SwimlaneGrouping>('none');
+  const [swimlane, setSwimlane] = useState<SwimlaneGrouping>('workstream');
   const [viewMode, setViewMode] = useState<KanbanViewMode>('board');
+  
+  // Collapsed swimlane rows state
+  const [collapsedRows, setCollapsedRows] = useState<Set<string>>(new Set());
+  
+  const toggleRowCollapse = useCallback((key: string) => {
+    setCollapsedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
   
   // Merge internal and external filters - external takes precedence
   const filters: KanbanTaskFilters = useMemo(() => ({
@@ -183,19 +201,32 @@ export function KanbanBoard({
     let targetStatusId: string;
     let targetPosition: number;
 
-    // Check if dropping on a column
-    const targetStatus = statuses.find((s) => s.id === overId);
-    if (targetStatus) {
-      targetStatusId = targetStatus.id;
-      const tasksInColumn = tasks.filter((t) => t.status_id === targetStatusId);
-      targetPosition = tasksInColumn.length;
+    // Check if dropping on a swimlane cell (format: "groupKey:statusId")
+    if (overId.includes(':')) {
+      const [, statusId] = overId.split(':');
+      const targetStatus = statuses.find((s) => s.id === statusId);
+      if (targetStatus) {
+        targetStatusId = targetStatus.id;
+        const tasksInColumn = tasks.filter((t) => t.status_id === targetStatusId);
+        targetPosition = tasksInColumn.length;
+      } else {
+        return;
+      }
     } else {
-      // Dropping on another task
-      const overTask = tasks.find((t) => t.id === overId);
-      if (!overTask) return;
-      
-      targetStatusId = overTask.status_id;
-      targetPosition = overTask.position;
+      // Check if dropping on a column
+      const targetStatus = statuses.find((s) => s.id === overId);
+      if (targetStatus) {
+        targetStatusId = targetStatus.id;
+        const tasksInColumn = tasks.filter((t) => t.status_id === targetStatusId);
+        targetPosition = tasksInColumn.length;
+      } else {
+        // Dropping on another task
+        const overTask = tasks.find((t) => t.id === overId);
+        if (!overTask) return;
+        
+        targetStatusId = overTask.status_id;
+        targetPosition = overTask.position;
+      }
     }
 
     // Only move if something changed
@@ -312,59 +343,25 @@ export function KanbanBoard({
           ) : (
             // Swimlane View Mode - horizontal rows grouped by workstream/assignee
             <div className="p-4 space-y-4">
-              {swimlaneGroups.map((group) => (
-                <div key={group.key} className="border border-border rounded-xl overflow-hidden">
-                  {/* Swimlane Header */}
-                  <div className="flex items-center gap-3 px-4 py-3 bg-card border-b border-border">
-                    {getSwimlaneIcon()}
-                    <span className="font-semibold text-sm">{group.label}</span>
-                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                      {group.tasks.length} tasks
-                    </span>
-                  </div>
-                  
-                  {/* Swimlane Body - Horizontal columns */}
-                  <div className="flex gap-0 overflow-x-auto bg-muted/30">
-                    {statuses.map((status, idx) => {
-                      const columnTasks = getTasksByStatus(group.tasks)[status.id] || [];
-                      return (
-                        <div 
-                          key={status.id} 
-                          className={`flex-1 min-w-[200px] p-3 ${idx < statuses.length - 1 ? 'border-r border-border' : ''}`}
-                        >
-                          {/* Mini Column Header */}
-                          <div className="flex items-center gap-2 mb-2">
-                            <span
-                              className="w-2 h-2 rounded-full"
-                              style={{ backgroundColor: status.color }}
-                            />
-                            <span className="text-xs font-medium text-muted-foreground">{status.name}</span>
-                            <span className="text-xs text-muted-foreground">({columnTasks.length})</span>
-                          </div>
-                          
-                          {/* Tasks */}
-                          <div className="space-y-2">
-                            {columnTasks.length > 0 ? (
-                              columnTasks.map((task) => (
-                                <div
-                                  key={task.id}
-                                  onClick={() => onTaskClick?.(task)}
-                                  className="p-2 bg-card rounded-lg border border-border cursor-pointer hover:shadow-sm transition-shadow"
-                                >
-                                  <div className="text-xs text-muted-foreground mb-1">{task.key}</div>
-                                  <div className="text-sm font-medium line-clamp-2">{task.title}</div>
-                                </div>
-                              ))
-                            ) : (
-                              <div className="text-xs text-muted-foreground text-center py-4">No tasks</div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {swimlaneGroups.length === 0 ? (
+                <div className="flex items-center justify-center py-12 text-muted-foreground">
+                  No tasks match the current filters
                 </div>
-              ))}
+              ) : (
+                swimlaneGroups.map((group) => (
+                  <SwimlaneRow
+                    key={group.key}
+                    groupKey={group.key}
+                    groupLabel={group.label}
+                    tasks={group.tasks}
+                    statuses={statuses}
+                    isCollapsed={collapsedRows.has(group.key)}
+                    onToggleCollapse={() => toggleRowCollapse(group.key)}
+                    onTaskClick={onTaskClick}
+                    swimlaneType={effectiveSwimlane}
+                  />
+                ))
+              )}
             </div>
           )}
 

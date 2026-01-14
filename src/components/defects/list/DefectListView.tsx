@@ -43,7 +43,7 @@ export function DefectListView({ projectId }: DefectListViewProps) {
         severity: filters.severities.length > 0 ? filters.severities[0] as any : undefined,
         search: filters.search || undefined,
         page: filters.page,
-        page_size: filters.pageSize,
+        limit: filters.pageSize,
       });
       return response;
     },
