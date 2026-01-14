@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Gauge, Columns, Table, Calendar, BarChart3,
-  Download, RefreshCw, Pause, CheckCircle, ArrowLeft
+  Download, RefreshCw, Pause, CheckCircle, ArrowLeft, Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,6 +22,7 @@ import { CycleKanbanView } from '@/components/releases/cycle-command-center/Cycl
 import { CycleTableView } from '@/components/releases/cycle-command-center/CycleTableView';
 import { CycleCalendarView } from '@/components/releases/cycle-command-center/CycleCalendarView';
 import { CycleReportsView } from '@/components/releases/cycle-command-center/CycleReportsView';
+import { AddTestsSlideOver } from '@/components/releases/add-tests';
 
 // Hooks
 import { useCycleDetails } from '@/hooks/test-cycles/useCycleDetails';
@@ -42,6 +43,7 @@ export default function CycleCommandCenter() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<CycleViewTab>('command');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [isAddTestsOpen, setIsAddTestsOpen] = useState(false);
 
   // Mock data for now - will be replaced with real hooks
   const { cycle, stats, isLoading, error, refetch } = useCycleDetails(cycleId || '');
@@ -118,6 +120,10 @@ export default function CycleCommandCenter() {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
+          <Button size="sm" onClick={() => setIsAddTestsOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Tests
+          </Button>
           {cycle?.status === 'active' && (
             <>
               <Button variant="outline" size="sm" onClick={handlePauseCycle}>
@@ -189,6 +195,19 @@ export default function CycleCommandCenter() {
           />
         )}
       </div>
+
+      {/* Add Tests Slide-over */}
+      <AddTestsSlideOver
+        cycleId={cycleId || ''}
+        cycleName={cycle?.name || 'Test Cycle'}
+        cycleEndDate={cycle?.endDate}
+        isOpen={isAddTestsOpen}
+        onClose={() => setIsAddTestsOpen(false)}
+        onSuccess={(count) => {
+          toast.success(`Added ${count} tests to cycle`);
+          refetch();
+        }}
+      />
     </div>
   );
 }
