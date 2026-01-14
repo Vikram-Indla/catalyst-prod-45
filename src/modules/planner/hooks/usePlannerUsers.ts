@@ -58,7 +58,12 @@ export function usePlannerUsers() {
       const users = (profilesResult.data || []).map((row): PlannerUser => ({
         id: row.id,
         name: row.full_name || 'Unknown',
-        initials: (row.full_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+        initials: (row.full_name || 'U')
+          .split(' ')
+          .map((n) => n[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase(),
         // Role from user_product_roles (managed in /admin/users), fallback to Team Member
         role: userRoleMap.get(row.id) || 'Team Member',
         team: 'Team',
@@ -68,6 +73,12 @@ export function usePlannerUsers() {
 
       return users;
     },
+    // GUARDRAIL: Assignee dropdown uses this — keep it stable to prevent UI flicker.
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 

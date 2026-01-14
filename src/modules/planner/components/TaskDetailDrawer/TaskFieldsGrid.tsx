@@ -237,17 +237,24 @@ function AssigneeSelect({
 }) {
   const [open, setOpen] = useState(false);
 
+  // Prefer the selected profile from the cached profiles list.
+  // This prevents UI "flicker" / stale label during background refetches.
+  const displayAssignee = useMemo(() => {
+    if (!value) return null;
+    return profiles.find((p) => p.id === value) || currentAssignee || null;
+  }, [profiles, value, currentAssignee]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button className="w-full flex items-center gap-2.5 text-left">
-          {currentAssignee ? (
+          {displayAssignee ? (
             <>
               <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-semibold text-primary-foreground">
-                {currentAssignee.full_name?.charAt(0) || '?'}
+                {displayAssignee.full_name?.charAt(0) || '?'}
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-medium text-gray-700 truncate">{currentAssignee.full_name}</div>
+                <div className="text-sm font-medium text-gray-700 truncate">{displayAssignee.full_name}</div>
               </div>
             </>
           ) : (
@@ -264,7 +271,10 @@ function AssigneeSelect({
         <ScrollArea className="max-h-64">
           <div className="p-1">
             <button
-              onClick={() => { onChange(null); setOpen(false); }}
+              onClick={() => {
+                onChange(null);
+                setOpen(false);
+              }}
               className="w-full flex items-center gap-2.5 px-2 py-2 rounded hover:bg-muted/50"
             >
               <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
@@ -275,7 +285,10 @@ function AssigneeSelect({
             {profiles.map((profile) => (
               <button
                 key={profile.id}
-                onClick={() => { onChange(profile.id); setOpen(false); }}
+                onClick={() => {
+                  onChange(profile.id);
+                  setOpen(false);
+                }}
                 className={cn(
                   "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
                   value === profile.id ? "bg-muted" : "hover:bg-muted/50"

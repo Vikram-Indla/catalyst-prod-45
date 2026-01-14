@@ -496,7 +496,7 @@ export function PlannerPage() {
         {/* View content */}
         <div className="flex flex-1 min-h-0 bg-surface-0">
           <main className="flex-1 overflow-hidden">
-            {isLoading ? (
+            {(isLoading && tasks.length === 0) ? (
               <div className="h-full flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
               </div>
