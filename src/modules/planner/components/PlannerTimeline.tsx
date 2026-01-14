@@ -18,31 +18,29 @@ interface PlannerTimelineProps {
 
 type ZoomLevel = 'day' | 'week' | 'month';
 
-// Catalyst v5 workstream colors
+// Catalyst v5 workstream colors (Atlassian Design System)
 const WORKSTREAM_COLORS: Record<string, string> = {
-  'Catalyst Track': '#0052CC',      // Blue
-  'MIM': '#36B37E',                 // Green  
-  'MIM Website Track': '#00B8D9',   // Cyan
-  'Senaie Track': '#6554C0',        // Purple
-  'Tahommona Track': '#FF5630',     // Red
-  'Stand-Alone Projects Track': '#FFAB00', // Yellow
-  'Data & AI Track': '#FF8B00',     // Orange
-  'Delivery Track': '#00875A',      // Teal
+  'Catalyst Track': '#0065FF',      // Blue 500
+  'MIM': '#22A06B',                 // Green 500  
+  'MIM Website Track': '#00A3BF',   // Teal 500
+  'Senaie Track': '#8270DB',        // Purple 500
+  'Tahommona Track': '#E34935',     // Red 500
+  'Stand-Alone Projects Track': '#CF9F02', // Yellow 600
+  'Data & AI Track': '#D97008',     // Orange 500
+  'Delivery Track': '#1D7F71',      // Teal 700
 };
 
-// Fallback colors for unknown workstreams
-const FALLBACK_COLORS = ['#0052CC', '#36B37E', '#6554C0', '#00B8D9', '#FF5630', '#FFAB00', '#FF8B00', '#00875A'];
+const FALLBACK_COLORS = ['#0065FF', '#22A06B', '#8270DB', '#00A3BF', '#E34935', '#CF9F02', '#D97008', '#1D7F71'];
 
 const getWorkstreamColor = (workstreamName?: string, workstreamId?: string): string => {
   if (workstreamName && WORKSTREAM_COLORS[workstreamName]) {
     return WORKSTREAM_COLORS[workstreamName];
   }
-  // Fallback: use ID to pick a consistent color
   if (workstreamId) {
     const index = workstreamId.charCodeAt(0) % FALLBACK_COLORS.length;
     return FALLBACK_COLORS[index];
   }
-  return '#0052CC';
+  return '#0065FF';
 };
 
 export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
@@ -147,13 +145,11 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                     onClick={() => onTaskClick(task)}
                     className="flex items-center gap-2 px-3 py-2 border-b border-border hover:bg-surface-1 cursor-pointer h-10"
                   >
-                    {/* Avatar with workstream color */}
+                    {/* Workstream color indicator */}
                     <div 
-                      className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0"
+                      className="w-1 h-5 rounded-full flex-shrink-0"
                       style={{ backgroundColor: wsColor }}
-                    >
-                      {task.assigneeInitials || '?'}
-                    </div>
+                    />
                     {/* Task info */}
                     <div className="flex-1 min-w-0 flex flex-col">
                       <span className="text-sm text-text-primary truncate">{task.title}</span>
@@ -164,7 +160,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                         {task.assigneeName && task.teamName && <span>•</span>}
                         {task.teamName && (
                           <span 
-                            className="truncate max-w-[80px] font-medium"
+                            className="truncate max-w-[100px] font-medium"
                             style={{ color: wsColor }}
                           >
                             {task.teamName}
@@ -246,24 +242,25 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                       transition={{ delay: index * 0.03, type: 'spring' }}
                       onClick={() => onTaskClick(task)}
                       className={cn(
-                        "absolute top-1.5 h-7 rounded cursor-pointer",
-                        "flex items-center px-2 text-white text-xs font-medium truncate",
-                        "hover:brightness-110 transition-all",
+                        "absolute top-1.5 h-7 rounded border cursor-pointer",
+                        "flex items-center px-2 text-xs font-medium truncate",
+                        "hover:bg-surface-1 transition-all bg-surface-0",
                         task.blocked && "opacity-50"
                       )}
                       style={{
                         left: Math.max(0, bar.left),
                         width: bar.width,
-                        backgroundColor: wsColor,
+                        borderColor: wsColor,
+                        borderLeftWidth: 3,
                         transformOrigin: 'left',
                       }}
                     >
                       {/* Progress Fill */}
                       <div
-                        className="absolute inset-0 bg-white/20 rounded-l"
-                        style={{ width: `${task.progress}%` }}
+                        className="absolute inset-0 rounded-l opacity-10"
+                        style={{ width: `${task.progress}%`, backgroundColor: wsColor }}
                       />
-                      <span className="relative z-10 truncate">{task.title}</span>
+                      <span className="relative z-10 truncate text-text-primary">{task.title}</span>
                     </motion.div>
                   </div>
                 );
