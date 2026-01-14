@@ -1,10 +1,9 @@
 // ============================================================
-// COLLAPSIBLE SECTION - LINEAR-INSPIRED
-// Auto-collapses when empty, clean expand/collapse behavior
+// COLLAPSIBLE SECTION - ONE HEADER, COLLAPSED BY DEFAULT IF EMPTY
 // ============================================================
 
-import { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CollapsibleSectionProps {
@@ -13,7 +12,6 @@ interface CollapsibleSectionProps {
   icon: React.ReactNode;
   children: React.ReactNode;
   defaultOpen?: boolean;
-  onAdd?: () => void;
 }
 
 export function CollapsibleSection({ 
@@ -22,78 +20,47 @@ export function CollapsibleSection({
   icon,
   children,
   defaultOpen = false,
-  onAdd,
 }: CollapsibleSectionProps) {
+  // Auto-expand if has items, otherwise collapsed
   const [isOpen, setIsOpen] = useState(defaultOpen || count > 0);
 
-  // Auto-collapse when count becomes 0
-  useEffect(() => {
-    if (count === 0 && !defaultOpen) {
-      setIsOpen(false);
-    }
-  }, [count, defaultOpen]);
-
-  // Collapsed state - minimal footprint for empty sections
-  if (!isOpen && count === 0) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-full flex items-center justify-between px-3 py-2 -mx-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-      >
-        <div className="flex items-center gap-2">
-          <ChevronRight className="w-4 h-4" />
-          {icon}
-          <span className="text-sm font-medium">{title}</span>
-          <span className="text-xs text-muted-foreground">({count})</span>
-        </div>
-        {onAdd && (
-          <Plus 
-            className="w-4 h-4 opacity-0 group-hover:opacity-100" 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              onAdd(); 
-              setIsOpen(true);
-            }} 
-          />
-        )}
-      </button>
-    );
-  }
-
   return (
-    <div className="space-y-2">
-      {/* Header */}
+    <div>
+      {/* SINGLE Header Row */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-2 -mx-3 rounded-lg hover:bg-muted/50 transition-colors"
+        className="w-full flex items-center justify-between py-2.5 hover:bg-muted/30 -mx-1 px-1 rounded-lg transition-colors"
       >
-        <div className="flex items-center gap-2 text-foreground">
-          {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-          {icon}
-          <span className="text-sm font-semibold">{title}</span>
-          {count > 0 && (
-            <span className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-semibold text-muted-foreground">
-              {count}
-            </span>
-          )}
-        </div>
-        {onAdd && (
-          <Plus 
+        <div className="flex items-center gap-2">
+          {/* Chevron */}
+          <ChevronRight 
             className={cn(
-              "w-4 h-4 text-muted-foreground hover:text-foreground transition-colors",
-              isOpen ? "opacity-100" : "opacity-0"
-            )}
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              onAdd(); 
-            }} 
+              "w-4 h-4 text-muted-foreground transition-transform",
+              isOpen && "rotate-90"
+            )} 
           />
-        )}
+          
+          {/* Icon */}
+          <span className="text-muted-foreground">{icon}</span>
+          
+          {/* Title - ONCE */}
+          <span className={cn(
+            "text-sm font-medium",
+            count > 0 ? "text-foreground" : "text-muted-foreground"
+          )}>
+            {title}
+          </span>
+          
+          {/* Count */}
+          <span className="text-xs text-muted-foreground">
+            ({count})
+          </span>
+        </div>
       </button>
       
-      {/* Content */}
+      {/* Content - NO nested headers */}
       {isOpen && (
-        <div className="pl-6">
+        <div className="pl-6 pb-2">
           {children}
         </div>
       )}
