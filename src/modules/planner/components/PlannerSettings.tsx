@@ -209,11 +209,20 @@ export function PlannerSettings() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium flex items-center gap-2"><Crown className="w-4 h-4 text-amber-500" />Workstream Lead</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {users.slice(0, 10).map((user) => (
-                      <button key={user.id} type="button" onClick={() => setFormData(prev => ({ ...prev, leadId: prev.leadId === user.id ? null : user.id }))} className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors text-sm", formData.leadId === user.id ? "bg-amber-50 border-amber-300" : "border-border hover:border-amber-300 hover:bg-amber-50/50")}>
-                        {formData.leadId === user.id && <Crown className="w-3.5 h-3.5 text-amber-500" />}
-                        <span>{user.name}</span>
+                  <div className="flex flex-wrap gap-2 p-3 rounded-lg bg-surface-1 border border-border max-h-[200px] overflow-y-auto">
+                    {users.map((user) => (
+                      <button 
+                        key={user.id} 
+                        type="button" 
+                        onClick={() => setFormData(prev => ({ ...prev, leadId: prev.leadId === user.id ? null : user.id }))} 
+                        className={cn(
+                          "px-3 py-1.5 rounded-full border transition-all text-sm font-medium",
+                          formData.leadId === user.id 
+                            ? "bg-blue-50 border-blue-400 text-blue-700 ring-2 ring-blue-200" 
+                            : "border-border bg-surface-0 text-text-primary hover:border-blue-300 hover:bg-blue-50/50"
+                        )}
+                      >
+                        {user.name}
                       </button>
                     ))}
                   </div>
