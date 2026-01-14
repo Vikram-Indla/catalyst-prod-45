@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { CATALYST, getUtilizationColor } from '@/lib/catalyst-colors';
 import { formatDistanceToNow } from 'date-fns';
+import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 
 export type PrimaryView = 'resources' | 'projects' | 'contracts';
 export type ResourceViewMode = 'cards' | 'table' | 'timeline' | 'heatmap';
@@ -46,7 +47,7 @@ interface SleekCapacityHeaderProps {
   timelinePeriod: 'weekly' | 'monthly' | 'quarterly';
   searchQuery: string;
   activeFilter?: 'all' | 'available' | 'atCapacity' | 'over';
-  departmentFilter?: 'all' | 'delivery' | 'product' | 'support';
+  departmentFilter?: string;
   onViewModeChange?: (mode: 'cards' | 'table' | 'timeline') => void;
   onGroupByChange: (groupBy: string) => void;
   onTimelinePeriodChange: (period: 'weekly' | 'monthly' | 'quarterly') => void;
@@ -55,7 +56,66 @@ interface SleekCapacityHeaderProps {
   onExport: () => void;
   onPresentationMode?: () => void;
   onFilterChange?: (filter: 'all' | 'available' | 'atCapacity' | 'over') => void;
-  onDepartmentFilterChange?: (filter: 'all' | 'delivery' | 'product' | 'support') => void;
+  onDepartmentFilterChange?: (filter: string) => void;
+}
+
+// Dynamic Track Filter Component
+function TrackFilterDropdown({ 
+  departmentFilter, 
+  onDepartmentFilterChange 
+}: { 
+  departmentFilter?: string; 
+  onDepartmentFilterChange?: (filter: string) => void;
+}) {
+  const { departments, isLoading } = useCapacityDepartments();
+  
+  const currentDeptName = departmentFilter === 'all' 
+    ? 'All Tracks' 
+    : departments.find(d => d.name.toLowerCase() === departmentFilter?.toLowerCase())?.name || departmentFilter;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className={cn(
+            "h-9 px-4 text-sm gap-2 rounded-lg transition-colors",
+            "bg-card dark:bg-[var(--surface-3)] border-border dark:border-[var(--border-default)] text-foreground dark:text-[var(--text-primary)]",
+            "hover:bg-muted dark:hover:bg-[var(--surface-elevated)]",
+            departmentFilter !== 'all' && "border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
+          )}
+        >
+          <Filter className="h-4 w-4" />
+          <span className="font-medium">
+            {currentDeptName}
+          </span>
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground dark:text-[var(--text-secondary)]" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-lg">
+        <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Track</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem 
+          onClick={() => onDepartmentFilterChange?.('all')}
+          className={cn(departmentFilter === 'all' && "bg-primary/10")}
+        >
+          <Users className="w-4 h-4 mr-2" />
+          All Tracks
+        </DropdownMenuItem>
+        {!isLoading && departments.map((dept) => (
+          <DropdownMenuItem 
+            key={dept.id}
+            onClick={() => onDepartmentFilterChange?.(dept.name.toLowerCase())}
+            className={cn(departmentFilter?.toLowerCase() === dept.name.toLowerCase() && "bg-primary/10")}
+          >
+            <Briefcase className="w-4 h-4 mr-2" />
+            {dept.name}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 export function SleekCapacityHeader({
@@ -293,61 +353,11 @@ export function SleekCapacityHeader({
 
         {/* Right: Filters + Utilization */}
         <div className="flex items-center gap-3">
-          {/* Track Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className={cn(
-                  "h-9 px-4 text-sm gap-2 rounded-lg transition-colors",
-                  "bg-card dark:bg-[var(--surface-3)] border-border dark:border-[var(--border-default)] text-foreground dark:text-[var(--text-primary)]",
-                  "hover:bg-muted dark:hover:bg-[var(--surface-elevated)]",
-                  departmentFilter !== 'all' && "border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
-                )}
-              >
-                <Filter className="h-4 w-4" />
-                <span className="font-medium">
-                  {departmentFilter === 'all' ? 'All Tracks' : 
-                   departmentFilter === 'delivery' ? 'Delivery' :
-                   departmentFilter === 'product' ? 'Product' : 'Support'}
-                </span>
-                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground dark:text-[var(--text-secondary)]" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-lg">
-              <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Track</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={() => onDepartmentFilterChange?.('all')}
-                className={cn(departmentFilter === 'all' && "bg-primary/10")}
-              >
-                <Users className="w-4 h-4 mr-2" />
-                All Tracks
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDepartmentFilterChange?.('delivery')}
-                className={cn(departmentFilter === 'delivery' && "bg-primary/10")}
-              >
-                <Briefcase className="w-4 h-4 mr-2" />
-                Delivery
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDepartmentFilterChange?.('product')}
-                className={cn(departmentFilter === 'product' && "bg-primary/10")}
-              >
-                <LayoutGrid className="w-4 h-4 mr-2" />
-                Product
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDepartmentFilterChange?.('support')}
-                className={cn(departmentFilter === 'support' && "bg-primary/10")}
-              >
-                <Users className="w-4 h-4 mr-2" />
-                Support
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Track Filter - Dynamic from database */}
+          <TrackFilterDropdown 
+            departmentFilter={departmentFilter}
+            onDepartmentFilterChange={onDepartmentFilterChange}
+          />
 
           {/* Group By */}
           <DropdownMenu>
