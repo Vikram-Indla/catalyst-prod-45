@@ -107,6 +107,8 @@ import ReleasesTestCasesLibraryPage from "./pages/releases/TestCasesLibraryPage"
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
+import ReleasesCycleCommandCenter from "./pages/releases/CycleCommandCenter";
+import ReleasesCycleTemplatesPage from "./pages/releases/CycleTemplatesPage";
 import ReleasesDefectsPage from "./pages/releases/DefectsPage";
 const ReleasesDefectDetailPage = lazy(() => import("./pages/releases/DefectDetailPage"));
 const WorkloadDashboard = lazy(() => import("./pages/WorkloadDashboard"));
@@ -784,6 +786,8 @@ const App = () => (
               <Route path="/releases/tests" element={<ReleasesTestCasesLibraryPage />} />
               <Route path="/releases/tests/:id" element={<ReleasesTestCaseDetailPage />} />
               <Route path="/releases/test-cycles" element={<ReleasesTestCyclesPage />} />
+              <Route path="/releases/test-cycles/:cycleId" element={<ReleasesCycleCommandCenter />} />
+              <Route path="/releases/templates" element={<ReleasesCycleTemplatesPage />} />
               <Route path="/releases/workload" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkloadDashboard /></Suspense>} />
               <Route path="/releases/execution" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/execution/:cycleId/:testCaseId" element={<ReleasesTestExecutionPage />} />
