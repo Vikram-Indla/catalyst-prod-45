@@ -1,7 +1,7 @@
 // ============================================================
 // PLANNER WORKSTREAMS HOOK
-// Fetches workstreams for the workstream dropdown with member counts
-// Returns empty list when database is empty (no mock data)
+// Fetches workstreams from planner_workstreams with task counts
+// Must use planner_workstreams (not teams) to match planner_tasks.workstream_id
 // ============================================================
 
 import { useQuery } from '@tanstack/react-query';
@@ -12,48 +12,43 @@ export function usePlannerWorkstreams() {
   return useQuery({
     queryKey: ['planner-workstreams'],
     queryFn: async () => {
-      // Fetch workstreams (teams table) with lead info
-      const { data: teamsData, error: teamsError } = await supabase
-        .from('teams')
-        .select(`
-          id, 
-          name, 
-          short_name, 
-          team_type,
-          description,
-          lead_id
-        `)
-        .eq('is_active', true)
+      // Fetch from planner_workstreams (the correct FK target for planner_tasks)
+      const { data: workstreamsData, error: workstreamsError } = await supabase
+        .from('planner_workstreams')
+        .select('id, name')
         .order('name');
 
-      if (teamsError) {
-        console.error('Error fetching workstreams:', teamsError);
+      if (workstreamsError) {
+        console.error('Error fetching planner workstreams:', workstreamsError);
         return [];
       }
 
-      // Fetch member counts separately for accuracy
-      const { data: memberCounts, error: countError } = await supabase
-        .from('team_members')
-        .select('team_id');
+      // Fetch task counts per workstream
+      const { data: taskCounts, error: countError } = await supabase
+        .from('planner_tasks')
+        .select('workstream_id')
+        .is('deleted_at', null);
 
       if (countError) {
-        console.error('Error fetching member counts:', countError);
+        console.error('Error fetching task counts:', countError);
       }
 
-      // Count members per team
+      // Count tasks per workstream
       const countMap: Record<string, number> = {};
-      (memberCounts || []).forEach((m: any) => {
-        countMap[m.team_id] = (countMap[m.team_id] || 0) + 1;
+      (taskCounts || []).forEach((t: any) => {
+        if (t.workstream_id) {
+          countMap[t.workstream_id] = (countMap[t.workstream_id] || 0) + 1;
+        }
       });
 
-      const workstreams: PlannerTeam[] = (teamsData || []).map(team => ({
-        id: team.id,
-        name: team.name,
-        shortName: team.short_name || team.name.slice(0, 3).toUpperCase(),
-        description: team.description || undefined,
-        memberCount: countMap[team.id] || 0,
-        color: getWorkstreamColor(team.team_type),
-        leadId: team.lead_id || undefined,
+      const workstreams: PlannerTeam[] = (workstreamsData || []).map(ws => ({
+        id: ws.id,
+        name: ws.name,
+        shortName: ws.name.slice(0, 3).toUpperCase(),
+        description: undefined,
+        memberCount: countMap[ws.id] || 0, // Shows task count, not member count
+        color: '#10b981', // Default green
+        leadId: undefined,
       }));
 
       return workstreams;
@@ -63,15 +58,3 @@ export function usePlannerWorkstreams() {
 
 // Alias for backward compatibility
 export const usePlannerTeams = usePlannerWorkstreams;
-
-function getWorkstreamColor(teamType: string | null): string {
-  if (!teamType) return '#6b7280';
-  const colors: Record<string, string> = {
-    'AGILE': '#10b981',
-    'KANBAN': '#3b82f6',
-    'COP': '#d97706',
-    'PROGRAM': '#7c3aed',
-    'PORTFOLIO': '#6366f1',
-  };
-  return colors[teamType] || '#6b7280';
-}
