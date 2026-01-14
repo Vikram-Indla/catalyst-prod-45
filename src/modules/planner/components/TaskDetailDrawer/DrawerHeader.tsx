@@ -1,15 +1,15 @@
 // ============================================================
-// DRAWER HEADER COMPONENT
-// Cover gradient, breadcrumb, key, status, inline title
+// DRAWER HEADER COMPONENT - POLISHED
+// Clean header with breadcrumb, styled status pill, inline title
 // ============================================================
 
 import { useState } from 'react';
-import { X, ChevronRight } from 'lucide-react';
+import { X, ChevronRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { CATALYST_COLORS, PRIORITY_STYLES } from '../../types/kanban';
-import { InlineEditable } from './InlineEditable';
-import { StatusDropdown } from './StatusDropdown';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface DrawerHeaderProps {
   task: any;
@@ -18,74 +18,132 @@ interface DrawerHeaderProps {
   onStatusChange: (statusId: string) => void;
 }
 
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; text: string }> = {
+  backlog: { label: 'Backlog', color: '#9ca3af', bg: 'bg-gray-100', text: 'text-gray-600' },
+  planned: { label: 'Planned', color: '#2563eb', bg: 'bg-blue-50', text: 'text-blue-600' },
+  'in-progress': { label: 'In Progress', color: '#d97706', bg: 'bg-amber-50', text: 'text-amber-600' },
+  in_progress: { label: 'In Progress', color: '#d97706', bg: 'bg-amber-50', text: 'text-amber-600' },
+  review: { label: 'Review', color: '#8b5cf6', bg: 'bg-purple-50', text: 'text-purple-600' },
+  done: { label: 'Done', color: '#10b981', bg: 'bg-emerald-50', text: 'text-emerald-600' },
+};
+
+function useStatuses() {
+  return useQuery({
+    queryKey: ['planner-statuses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('planner_statuses')
+        .select('*')
+        .order('position');
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+function StatusSelect({ 
+  currentStatus, 
+  onChange 
+}: { 
+  currentStatus: any; 
+  onChange: (statusId: string) => void;
+}) {
+  const { data: statuses = [] } = useStatuses();
+  const [open, setOpen] = useState(false);
+  
+  const slug = currentStatus?.slug || 'backlog';
+  const config = STATUS_CONFIG[slug] || STATUS_CONFIG.backlog;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className={cn(
+          "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all hover:ring-2 hover:ring-offset-1 hover:ring-gray-300",
+          config.bg, config.text
+        )}>
+          <span 
+            className="w-1.5 h-1.5 rounded-full" 
+            style={{ backgroundColor: config.color }} 
+          />
+          {currentStatus?.name || config.label}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-44 p-1" align="start">
+        {statuses.map((status: any) => {
+          const statusSlug = status.slug || 'backlog';
+          const cfg = STATUS_CONFIG[statusSlug] || STATUS_CONFIG.backlog;
+          
+          return (
+            <button
+              key={status.id}
+              onClick={() => {
+                onChange(status.id);
+                setOpen(false);
+              }}
+              className={cn(
+                "w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors",
+                currentStatus?.id === status.id ? "bg-gray-100" : "hover:bg-gray-50"
+              )}
+            >
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cfg.color }} />
+              <span className={cfg.text}>{status.name}</span>
+              {currentStatus?.id === status.id && (
+                <Check className="w-4 h-4 ml-auto text-primary" />
+              )}
+            </button>
+          );
+        })}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: DrawerHeaderProps) {
   return (
-    <div className="relative">
-      {/* Gradient Cover */}
-      <div 
-        className="h-28 relative overflow-hidden"
-        style={{
-          background: `linear-gradient(135deg, ${CATALYST_COLORS.primary} 0%, ${CATALYST_COLORS.teal} 100%)`
-        }}
+    <div className="px-6 pt-5 pb-4 bg-white border-b border-gray-100">
+      {/* Close button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClose}
+        className="absolute top-3 right-3 w-8 h-8 rounded-full hover:bg-gray-100"
       >
-        {/* Decorative patterns */}
-        <div 
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `radial-gradient(circle at 20% 50%, white 1px, transparent 1px),
-                             radial-gradient(circle at 80% 20%, white 1px, transparent 1px),
-                             radial-gradient(circle at 40% 80%, white 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }}
-        />
-        
-        {/* Close button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white"
-        >
-          <X className="w-4 h-4" />
-        </Button>
-      </div>
-      
-      {/* Content overlay */}
-      <div className="px-5 -mt-8 relative z-10">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-xs mb-2">
-          {task.workstream && (
-            <>
-              <span className="text-white/80 font-medium">
-                {task.workstream.name}
-              </span>
-              <ChevronRight className="w-3 h-3 text-white/50" />
-            </>
-          )}
-          <span className="text-white font-semibold">
-            {task.key}
+        <X className="w-4 h-4" />
+      </Button>
+
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-xs mb-3">
+        {task.workstream && (
+          <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-teal-50 rounded text-teal-700 font-semibold text-[11px]">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+            {task.workstream.name}
           </span>
-        </div>
-        
-        {/* Status Badge */}
-        <div className="mb-3">
-          <StatusDropdown
-            currentStatusId={task.status_id}
-            currentStatus={task.status}
-            onChange={onStatusChange}
-          />
-        </div>
-        
-        {/* Title */}
-        <div className="bg-card rounded-lg px-4 py-3 shadow-sm border border-border">
-          <InlineEditable
-            value={task.title}
-            onChange={onTitleChange}
-            className="text-lg font-semibold text-foreground"
-            placeholder="Task title..."
-          />
-        </div>
+        )}
+        <ChevronRight className="w-3 h-3 text-gray-300" />
+        <span className="text-gray-600 font-medium">{task.key}</span>
       </div>
+
+      {/* Meta row: Key badge + Status pill */}
+      <div className="flex items-center gap-3 mb-3">
+        <span className="px-2 py-1 bg-gray-100 rounded text-xs font-mono font-semibold text-gray-500">
+          {task.key}
+        </span>
+        
+        <StatusSelect 
+          currentStatus={task.status} 
+          onChange={onStatusChange} 
+        />
+      </div>
+
+      {/* Title - Clean inline editable, NO border box */}
+      <h1 
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={(e) => onTitleChange(e.currentTarget.textContent || '')}
+        className="text-xl font-bold text-gray-900 outline-none focus:bg-blue-50 focus:px-2 focus:-mx-2 rounded transition-colors"
+      >
+        {task.title}
+      </h1>
     </div>
   );
 }

@@ -1,18 +1,11 @@
 // ============================================================
-// DRAWER FOOTER COMPONENT
-// Created/updated meta + Delete/Duplicate actions
+// DRAWER FOOTER - POLISHED
+// Visible Duplicate/Delete buttons, proper meta display
 // ============================================================
 
 import { formatDistanceToNow, format } from 'date-fns';
-import { Trash2, Copy, MoreHorizontal } from 'lucide-react';
+import { Trash2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 interface DrawerFooterProps {
   task: any;
@@ -22,40 +15,37 @@ interface DrawerFooterProps {
 
 export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps) {
   return (
-    <div className="px-5 py-4 border-t border-border bg-muted/20">
-      <div className="flex items-center justify-between">
-        {/* Meta info */}
-        <div className="text-xs text-muted-foreground space-y-0.5">
-          <div>
-            Created {formatDistanceToNow(new Date(task.created_at), { addSuffix: true })}
-          </div>
-          <div>
-            Updated {formatDistanceToNow(new Date(task.updated_at), { addSuffix: true })}
-          </div>
+    <div className="px-6 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+      {/* Meta */}
+      <div className="text-[11px] text-gray-400 leading-relaxed">
+        <div>
+          Created <span className="text-gray-600 font-medium">{format(new Date(task.created_at), 'MMM d, yyyy')}</span>
         </div>
-        
-        {/* Actions */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={onDuplicate}>
-              <Copy className="w-4 h-4 mr-2" />
-              Duplicate
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={onDelete}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div>
+          Updated <span className="text-gray-600 font-medium">{formatDistanceToNow(new Date(task.updated_at), { addSuffix: true })}</span>
+        </div>
+      </div>
+
+      {/* Actions - Visible buttons, NOT a menu */}
+      <div className="flex items-center gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-7 text-xs"
+          onClick={onDuplicate}
+        >
+          <Copy className="w-3.5 h-3.5 mr-1.5" />
+          Duplicate
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-7 text-xs text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+          onClick={onDelete}
+        >
+          <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+          Delete
+        </Button>
       </div>
     </div>
   );

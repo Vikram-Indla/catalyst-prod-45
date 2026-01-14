@@ -1,14 +1,12 @@
 // ============================================================
-// DEPENDENCIES SECTION COMPONENT
-// Blocked by, Blocks, Related task links
+// DEPENDENCIES SECTION - POLISHED
+// All 3 sections: Blocked by, Blocks, Related to
 // ============================================================
 
-import { useMemo, useState } from 'react';
-import { Ban, Layers, Link2, Plus, X } from 'lucide-react';
+import { useMemo } from 'react';
+import { Ban, Layers, Link2, Plus, X, GitBranch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SectionHeader } from './SectionHeader';
 import { cn } from '@/lib/utils';
-import { CATALYST_COLORS } from '../../types/kanban';
 import type { TaskDependency } from '../../hooks/useTaskDetails';
 import { useRemoveDependency } from '../../hooks/useTaskDetails';
 
@@ -17,85 +15,88 @@ interface DependenciesSectionProps {
   dependencies: TaskDependency[];
 }
 
-const DEP_TYPES = {
-  blocked_by: { 
+const DEPENDENCY_TYPES = [
+  { 
+    type: 'blocked_by', 
     label: 'Blocked by', 
     icon: Ban, 
-    color: CATALYST_COLORS.danger 
+    color: 'text-red-500',
+    description: 'Tasks that must complete first'
   },
-  blocks: { 
+  { 
+    type: 'blocks', 
     label: 'Blocks', 
     icon: Layers, 
-    color: CATALYST_COLORS.warning 
+    color: 'text-amber-500',
+    description: 'Tasks waiting on this'
   },
-  related: { 
+  { 
+    type: 'related', 
     label: 'Related to', 
     icon: Link2, 
-    color: CATALYST_COLORS.gray500 
+    color: 'text-gray-500',
+    description: 'Related tasks'
   },
-} as const;
+];
 
 export function DependenciesSection({ taskId, dependencies }: DependenciesSectionProps) {
   const removeDependency = useRemoveDependency();
   
   const grouped = useMemo(() => {
-    const result: Record<string, TaskDependency[]> = {
-      blocked_by: [],
-      blocks: [],
-      related: [],
-    };
-    dependencies?.forEach(d => {
-      if (result[d.dependency_type]) {
-        result[d.dependency_type].push(d);
-      }
-    });
+    const result: Record<string, TaskDependency[]> = { blocked_by: [], blocks: [], related: [] };
+    dependencies?.forEach(d => result[d.dependency_type]?.push(d));
     return result;
   }, [dependencies]);
 
+  const totalCount = dependencies?.length || 0;
+
   return (
     <div className="space-y-4">
-      <SectionHeader 
-        icon={Link2} 
-        title="Dependencies" 
-        badge={dependencies?.length || 0}
-        action={
-          <Button variant="ghost" size="sm" className="h-7 text-xs">
-            <Plus className="w-3.5 h-3.5 mr-1" />
-            Add
-          </Button>
-        }
-      />
-      
-      <div className="space-y-4">
-        {Object.entries(DEP_TYPES).map(([type, config]) => {
+      {/* Section Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <GitBranch className="w-4 h-4 text-gray-400" />
+          <span className="text-sm font-semibold text-gray-700">Dependencies</span>
+          {totalCount > 0 && (
+            <span className="px-1.5 py-0.5 bg-gray-100 rounded text-[11px] font-semibold text-gray-500">
+              {totalCount}
+            </span>
+          )}
+        </div>
+        <Button variant="outline" size="sm" className="h-7 text-xs">
+          <Plus className="w-3.5 h-3.5 mr-1" />
+          Add
+        </Button>
+      </div>
+
+      {/* ALL THREE Dependency Groups */}
+      <div className="space-y-3">
+        {DEPENDENCY_TYPES.map(({ type, label, icon: Icon, color }) => {
           const items = grouped[type] || [];
-          const Icon = config.icon;
-          
-          if (items.length === 0 && type !== 'related') return null;
           
           return (
-            <div key={type} className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Icon className="w-3.5 h-3.5" style={{ color: config.color }} />
-                {config.label}
+            <div key={type} className="bg-gray-50 rounded-lg p-3">
+              <div className={cn("flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider mb-2", color)}>
+                <Icon className="w-3 h-3" />
+                {label}
               </div>
               
-              <div className="space-y-1.5 pl-5">
-                {items.map(dep => (
-                  <DependencyItem 
-                    key={dep.id} 
-                    dependency={dep}
-                    onRemove={() => removeDependency.mutate(dep.id)}
-                  />
-                ))}
-                
-                {items.length === 0 && (
-                  <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
-                    <Plus className="w-3 h-3" />
-                    Add {type.replace('_', ' ')}
-                  </button>
-                )}
-              </div>
+              {items.length > 0 ? (
+                <div className="space-y-1.5">
+                  {items.map(dep => (
+                    <DependencyCard 
+                      key={dep.id} 
+                      dependency={dep} 
+                      onRemove={() => removeDependency.mutate(dep.id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <button className="w-full flex items-center justify-center gap-1.5 p-2.5 border border-dashed border-gray-300 rounded-md text-xs text-gray-400 hover:border-primary hover:text-primary hover:bg-blue-50/50 transition-all">
+                  <Plus className="w-3 h-3" />
+                  Add {label.toLowerCase()}
+                </button>
+              )}
             </div>
           );
         })}
@@ -104,38 +105,33 @@ export function DependenciesSection({ taskId, dependencies }: DependenciesSectio
   );
 }
 
-function DependencyItem({ 
-  dependency, 
-  onRemove 
-}: { 
-  dependency: TaskDependency;
-  onRemove: () => void;
-}) {
-  const statusColor = {
-    done: CATALYST_COLORS.success,
-    'in-progress': CATALYST_COLORS.warning,
-    planned: CATALYST_COLORS.primary,
-    review: CATALYST_COLORS.purple,
-    backlog: CATALYST_COLORS.gray400,
-  }[dependency.linked_task.status?.slug || 'backlog'];
+function DependencyCard({ dependency, onRemove }: { dependency: TaskDependency; onRemove: () => void }) {
+  const statusColors: Record<string, string> = {
+    done: 'bg-emerald-500',
+    'in-progress': 'bg-amber-500',
+    in_progress: 'bg-amber-500',
+    review: 'bg-purple-500',
+    planned: 'bg-blue-500',
+    backlog: 'bg-gray-400',
+  };
 
   return (
-    <div className="group flex items-center gap-2 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
-      <span className="text-xs font-mono text-primary font-medium">
-        {dependency.linked_task.key}
+    <div className="group flex items-center gap-2.5 p-2 bg-white border border-gray-200 rounded-md hover:border-primary hover:shadow-sm transition-all cursor-pointer">
+      <span className="text-[10px] font-bold text-gray-400 font-mono">
+        {dependency.linked_task?.key || 'N/A'}
       </span>
-      <span className="text-sm text-foreground/80 truncate flex-1">
-        {dependency.linked_task.title}
+      <span className="flex-1 text-xs text-gray-700 truncate">
+        {dependency.linked_task?.title || 'Unknown task'}
       </span>
-      <span 
-        className="w-2 h-2 rounded-full flex-shrink-0" 
-        style={{ backgroundColor: statusColor }}
-      />
-      <button 
-        onClick={onRemove}
-        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-muted rounded transition-opacity"
+      <span className={cn(
+        "w-1.5 h-1.5 rounded-full",
+        statusColors[dependency.linked_task?.status?.slug || 'backlog'] || 'bg-gray-400'
+      )} />
+      <button
+        onClick={(e) => { e.stopPropagation(); onRemove(); }}
+        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-100 rounded transition-opacity"
       >
-        <X className="w-3 h-3 text-muted-foreground" />
+        <X className="w-3 h-3 text-gray-400" />
       </button>
     </div>
   );
