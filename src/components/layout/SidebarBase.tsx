@@ -34,6 +34,10 @@ export interface SidebarMenuItem {
   badge?: number;
   /** Badge variant for color styling */
   badgeVariant?: 'info' | 'danger';
+  /** Text badge (e.g., "NEW", "BETA") - takes precedence over numeric badge */
+  textBadge?: string;
+  /** Text badge variant for color styling */
+  textBadgeVariant?: 'new' | 'beta' | 'info';
 }
 
 export interface SidebarSection {
@@ -383,8 +387,34 @@ function renderMenuItem(
           )}
         </>
       )}
-      {/* Badge */}
-      {item.badge !== undefined && item.badge > 0 && (
+      {/* Text Badge (NEW, BETA, etc.) */}
+      {item.textBadge && (
+        <span 
+          style={{
+            fontSize: '9px',
+            fontWeight: 700,
+            padding: '2px 6px',
+            borderRadius: '4px',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+            background: item.textBadgeVariant === 'new' 
+              ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+              : item.textBadgeVariant === 'beta'
+              ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+              : 'hsl(var(--brand-primary))',
+            color: '#ffffff',
+            marginRight: expanded ? '0' : '0',
+            position: expanded ? 'relative' : 'absolute',
+            top: expanded ? 'auto' : '4px',
+            right: expanded ? 'auto' : '4px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+          }}
+        >
+          {item.textBadge}
+        </span>
+      )}
+      {/* Numeric Badge */}
+      {!item.textBadge && item.badge !== undefined && item.badge > 0 && (
         <span 
           style={{
             fontSize: '11px',
