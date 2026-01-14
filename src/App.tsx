@@ -109,6 +109,7 @@ import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
 import ReleasesDefectsPage from "./pages/releases/DefectsPage";
 const ReleasesDefectDetailPage = lazy(() => import("./pages/releases/DefectDetailPage"));
+const WorkloadDashboard = lazy(() => import("./pages/WorkloadDashboard"));
 import OrgSetup from "./pages/admin/OrgSetup";
 import HierarchyConfig from "./pages/admin/HierarchyConfig";
 import CustomFields from "./pages/admin/CustomFields";
@@ -783,6 +784,7 @@ const App = () => (
               <Route path="/releases/tests" element={<ReleasesTestCasesLibraryPage />} />
               <Route path="/releases/tests/:id" element={<ReleasesTestCaseDetailPage />} />
               <Route path="/releases/test-cycles" element={<ReleasesTestCyclesPage />} />
+              <Route path="/releases/workload" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkloadDashboard /></Suspense>} />
               <Route path="/releases/execution" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/execution/:cycleId/:testCaseId" element={<ReleasesTestExecutionPage />} />
               <Route path="/releases/ask-ai" element={<ReleasesPlaceholderPage />} />
