@@ -395,7 +395,16 @@ export function PlannerPage() {
     
     switch (activeView) {
       case 'boards':
-        return <KanbanBoard onTaskClick={handleKanbanTaskClick} onTaskEdit={handleKanbanTaskClick} onTaskDelete={(id) => handleDeleteTask(id)} onAddTask={() => setIsCreateModalOpen(true)} />;
+        return <KanbanBoard 
+          onTaskClick={handleKanbanTaskClick} 
+          onTaskEdit={handleKanbanTaskClick} 
+          onTaskDelete={(id) => handleDeleteTask(id)} 
+          onAddTask={() => setIsCreateModalOpen(true)}
+          externalWorkstreamId={selectedTeamId}
+          externalSearch={filters.search}
+          externalPriority={filters.priority}
+          externalAssigneeId={filters.assigneeId}
+        />;
       case 'task-list':
         return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} visibleColumns={visibleColumns} />;
       case 'timeline':
@@ -530,8 +539,8 @@ export function PlannerPage() {
           </div>
         </div>
 
-        {/* Search Bar - hidden on teams/settings/boards/insight views */}
-        {activeView !== 'workstreams' && activeView !== 'settings' && activeView !== 'boards' && !isInsightView(activeView) && (
+        {/* Search Bar - hidden on teams/settings/insight views */}
+        {activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
           <PlannerSearchBar
             filters={filters}
             onSearchChange={setSearch}
