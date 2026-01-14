@@ -36,7 +36,7 @@ function getAvatarColor(userId: string): string {
 interface WorkstreamMembersSectionProps {
   workstream: PlannerTeam;
   users: PlannerUser[];
-  onMembersChange: () => void;
+  onMembersChange: (count: number) => void;
 }
 
 interface WorkstreamMember {
@@ -100,6 +100,7 @@ export function WorkstreamMembersSection({ workstream, users, onMembersChange }:
         }));
 
         setMembers(fetchedMembers);
+        onMembersChange(fetchedMembers.length);
       } catch (err) {
         console.error('Error fetching workstream members:', err);
       } finally {
@@ -173,10 +174,13 @@ export function WorkstreamMembersSection({ workstream, users, onMembersChange }:
           initials: user?.initials || 'U',
         };
       });
-      setMembers(prev => [...prev, ...newMembers]);
+      setMembers(prev => {
+        const updated = [...prev, ...newMembers];
+        onMembersChange(updated.length);
+        return updated;
+      });
 
       catalystToast.success(`${selectedUserIds.length} member(s) added successfully`);
-      onMembersChange();
       setIsAddModalOpen(false);
       setSelectedUserIds([]);
       setSearchQuery('');
@@ -197,9 +201,12 @@ export function WorkstreamMembersSection({ workstream, users, onMembersChange }:
 
       if (error) throw error;
 
-      setMembers(prev => prev.filter(m => m.id !== memberId));
+      setMembers(prev => {
+        const updated = prev.filter(m => m.id !== memberId);
+        onMembersChange(updated.length);
+        return updated;
+      });
       catalystToast.success(`${memberName} removed from workstream`);
-      onMembersChange();
     } catch (err) {
       console.error('Error removing member:', err);
       catalystToast.error('Failed to remove member');

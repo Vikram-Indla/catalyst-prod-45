@@ -66,6 +66,7 @@ export function PlannerSettings() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [deleteConfirmWorkstream, setDeleteConfirmWorkstream] = useState<PlannerTeam | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [liveMemberCount, setLiveMemberCount] = useState<number>(0);
   
   const [formData, setFormData] = useState<WorkstreamFormData>({
     name: '',
@@ -188,7 +189,7 @@ export function PlannerSettings() {
               <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-xl font-medium" style={{ backgroundColor: selectedWorkstream.color }}>{selectedWorkstream.emoji || selectedWorkstream.shortName.charAt(0)}</div>
               <div>
                 <h1 className="text-xl font-semibold text-text-primary">{selectedWorkstream.name}</h1>
-                <p className="text-sm text-text-muted">{selectedWorkstream.shortName} • {selectedWorkstream.memberCount} members</p>
+                <p className="text-sm text-text-muted">{selectedWorkstream.shortName} • {liveMemberCount || selectedWorkstream.memberCount} members</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -240,7 +241,7 @@ export function PlannerSettings() {
               </>
             )}
           </div>
-          <WorkstreamMembersSection workstream={selectedWorkstream} users={users} onMembersChange={() => { queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] }); }} />
+          <WorkstreamMembersSection workstream={selectedWorkstream} users={users} onMembersChange={(count) => { setLiveMemberCount(count); queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] }); }} />
         </div>
       </div>
     );
