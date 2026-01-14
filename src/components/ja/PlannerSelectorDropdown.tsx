@@ -119,14 +119,14 @@ export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdo
           </div>
         ) : (
           <>
-            {/* All Teams option for admin/program_manager */}
+            {/* All Workstreams option for admin/program_manager */}
             {canViewAllTeams && (
               <button
                 onClick={handleSelectAllTeams}
                 className="flex items-center gap-2 w-full px-3 py-2.5 text-left transition-colors hover:bg-muted cursor-pointer border-b border-border/50"
               >
                 <LayoutGrid className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="text-sm font-medium text-foreground">All Teams</span>
+                <span className="text-sm font-medium text-foreground">All Workstreams</span>
               </button>
             )}
 
