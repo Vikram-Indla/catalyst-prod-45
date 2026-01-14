@@ -269,29 +269,36 @@ export function PlannerTaskList({
                       </td>
                     )}
 
-                    {/* Status */}
+                    {/* Status - Softer pill style */}
                     {visibleColumns.has('status') && (
                       <td className="px-3 py-3">
                         <span 
-                          className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white"
-                          style={{ backgroundColor: statusConfig?.color }}
+                          className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium"
+                          style={{ 
+                            backgroundColor: `${statusConfig?.color}15`,
+                            color: statusConfig?.color 
+                          }}
                         >
                           {statusConfig?.title}
                         </span>
                       </td>
                     )}
 
-                    {/* Priority */}
+                    {/* Priority - Softer pill style */}
                     {visibleColumns.has('priority') && (
                       <td className="px-3 py-3">
                         <span 
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium"
                           style={{ 
-                            backgroundColor: `${priorityConfig.color}15`,
+                            backgroundColor: `${priorityConfig.color}12`,
                             color: priorityConfig.color 
                           }}
                         >
-                          {priorityConfig.emoji} {priorityConfig.label}
+                          <span 
+                            className="w-1.5 h-1.5 rounded-full" 
+                            style={{ backgroundColor: priorityConfig.color }}
+                          />
+                          {priorityConfig.label}
                         </span>
                       </td>
                     )}

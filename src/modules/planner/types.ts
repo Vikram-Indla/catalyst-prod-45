@@ -217,39 +217,39 @@ export interface ColumnConfig {
   order: number;
 }
 
-// Column configuration following spec
+// Column configuration following spec - Catalyst V5 softer colors
 export const COLUMN_CONFIG: ColumnConfig[] = [
-  { id: 'backlog', title: 'Backlog', color: '#94a3b8', order: 0 },
-  { id: 'planned', title: 'Planned', color: '#3b82f6', order: 1 },
-  { id: 'in-progress', title: 'In Progress', color: '#d97706', order: 2 },
-  { id: 'review', title: 'Review', color: '#7c3aed', order: 3 },
-  { id: 'done', title: 'Done', color: '#10b981', order: 4 },
+  { id: 'backlog', title: 'Backlog', color: '#64748b', order: 0 },       // slate-500 - neutral gray
+  { id: 'planned', title: 'Planned', color: '#3b82f6', order: 1 },       // blue-500 - primary blue
+  { id: 'in-progress', title: 'In Progress', color: '#0d9488', order: 2 }, // teal-600 - teal accent
+  { id: 'review', title: 'Review', color: '#6366f1', order: 3 },         // indigo-500 - soft indigo
+  { id: 'done', title: 'Done', color: '#10b981', order: 4 },             // emerald-500 - success green
 ];
 
-// Priority configuration
+// Priority configuration - Catalyst V5 unified palette (no emoji circles)
 export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; emoji: string }> = {
-  critical: { label: 'Critical', color: '#ef4444', emoji: '🔴' },
-  high: { label: 'High', color: '#f97316', emoji: '🟠' },
-  medium: { label: 'Medium', color: '#3b82f6', emoji: '🔵' },
-  low: { label: 'Low', color: '#6b7280', emoji: '⚪' },
+  critical: { label: 'Critical', color: '#dc2626', emoji: '' },   // red-600
+  high: { label: 'High', color: '#ea580c', emoji: '' },           // orange-600
+  medium: { label: 'Medium', color: '#3b82f6', emoji: '' },       // blue-500
+  low: { label: 'Low', color: '#64748b', emoji: '' },             // slate-500
 };
 
 // Due date groups for grouping
 export const DUE_DATE_GROUPS = [
-  { id: 'overdue', title: 'Overdue', color: '#ef4444' },
-  { id: 'today', title: 'Due Today', color: '#f97316' },
+  { id: 'overdue', title: 'Overdue', color: '#dc2626' },
+  { id: 'today', title: 'Due Today', color: '#ea580c' },
   { id: 'thisWeek', title: 'This Week', color: '#3b82f6' },
   { id: 'nextWeek', title: 'Next Week', color: '#0d9488' },
-  { id: 'later', title: 'Later', color: '#6b7280' },
+  { id: 'later', title: 'Later', color: '#64748b' },
   { id: 'noDueDate', title: 'No Due Date', color: '#94a3b8' },
 ];
 
-// Status colors for insights
+// Status colors for insights - Catalyst V5 palette
 export const STATUS_COLORS: Record<TaskStatus, string> = {
-  backlog: '#cbd5e1',
-  planned: '#2563eb',
-  'in-progress': '#d97706',
-  review: '#8b5cf6',
+  backlog: '#94a3b8',
+  planned: '#3b82f6',
+  'in-progress': '#0d9488',
+  review: '#6366f1',
   done: '#10b981',
 };
 

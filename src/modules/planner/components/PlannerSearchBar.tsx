@@ -255,7 +255,10 @@ export function PlannerSearchBar({
               className={cn(filters.priority === key && "bg-blue-50")}
             >
               <div className="flex items-center gap-2">
-                <span>{config.emoji}</span>
+                <span 
+                  className="w-2 h-2 rounded-full" 
+                  style={{ backgroundColor: config.color }}
+                />
                 {config.label}
               </div>
             </DropdownMenuItem>
