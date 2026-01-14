@@ -4,13 +4,12 @@
 // ============================================================
 
 import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, CalendarDays } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { PlannerTask } from '../types';
-import { PRIORITY_CONFIG } from '../types';
 import { motion } from 'framer-motion';
-import { addDays, startOfWeek, endOfWeek, format, differenceInDays, isToday, isWeekend } from 'date-fns';
+import { addDays, startOfWeek, format, differenceInDays, isToday, isWeekend } from 'date-fns';
 
 interface PlannerTimelineProps {
   tasks: PlannerTask[];
@@ -18,6 +17,33 @@ interface PlannerTimelineProps {
 }
 
 type ZoomLevel = 'day' | 'week' | 'month';
+
+// Catalyst v5 workstream colors
+const WORKSTREAM_COLORS: Record<string, string> = {
+  'Catalyst Track': '#0052CC',      // Blue
+  'MIM': '#36B37E',                 // Green  
+  'MIM Website Track': '#00B8D9',   // Cyan
+  'Senaie Track': '#6554C0',        // Purple
+  'Tahommona Track': '#FF5630',     // Red
+  'Stand-Alone Projects Track': '#FFAB00', // Yellow
+  'Data & AI Track': '#FF8B00',     // Orange
+  'Delivery Track': '#00875A',      // Teal
+};
+
+// Fallback colors for unknown workstreams
+const FALLBACK_COLORS = ['#0052CC', '#36B37E', '#6554C0', '#00B8D9', '#FF5630', '#FFAB00', '#FF8B00', '#00875A'];
+
+const getWorkstreamColor = (workstreamName?: string, workstreamId?: string): string => {
+  if (workstreamName && WORKSTREAM_COLORS[workstreamName]) {
+    return WORKSTREAM_COLORS[workstreamName];
+  }
+  // Fallback: use ID to pick a consistent color
+  if (workstreamId) {
+    const index = workstreamId.charCodeAt(0) % FALLBACK_COLORS.length;
+    return FALLBACK_COLORS[index];
+  }
+  return '#0052CC';
+};
 
 export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('week');
@@ -105,29 +131,51 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
       <div className="flex-1 overflow-auto">
         <div className="flex min-h-full">
           {/* Task List Column */}
-          <div className="w-[264px] flex-shrink-0 border-r border-border bg-surface-0">
+          <div className="w-[320px] flex-shrink-0 border-r border-border bg-surface-0">
             <div className="h-10 border-b border-border bg-surface-1 flex items-center px-3">
               <span className="text-xs font-semibold text-text-muted uppercase">Tasks</span>
             </div>
             <div>
-              {tasks.map((task, index) => (
-                <motion.div
-                  key={task.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.02 }}
-                  onClick={() => onTaskClick(task)}
-                  className="flex items-center gap-2 px-3 py-2 border-b border-border hover:bg-surface-1 cursor-pointer h-10"
-                >
-                  {task.assigneeInitials && (
-                    <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">
-                      {task.assigneeInitials}
+              {tasks.map((task, index) => {
+                const wsColor = getWorkstreamColor(task.teamName, task.teamId);
+                return (
+                  <motion.div
+                    key={task.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.02 }}
+                    onClick={() => onTaskClick(task)}
+                    className="flex items-center gap-2 px-3 py-2 border-b border-border hover:bg-surface-1 cursor-pointer h-10"
+                  >
+                    {/* Avatar with workstream color */}
+                    <div 
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0"
+                      style={{ backgroundColor: wsColor }}
+                    >
+                      {task.assigneeInitials || '?'}
                     </div>
-                  )}
-                  <span className="text-sm text-text-primary truncate flex-1">{task.title}</span>
-                  <span className="text-[10px] font-mono text-text-muted">{task.key}</span>
-                </motion.div>
-              ))}
+                    {/* Task info */}
+                    <div className="flex-1 min-w-0 flex flex-col">
+                      <span className="text-sm text-text-primary truncate">{task.title}</span>
+                      <div className="flex items-center gap-1.5 text-[10px] text-text-muted">
+                        {task.assigneeName && (
+                          <span className="truncate max-w-[80px]">{task.assigneeName}</span>
+                        )}
+                        {task.assigneeName && task.teamName && <span>•</span>}
+                        {task.teamName && (
+                          <span 
+                            className="truncate max-w-[80px] font-medium"
+                            style={{ color: wsColor }}
+                          >
+                            {task.teamName}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono text-text-muted flex-shrink-0">{task.key}</span>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
 
@@ -184,7 +232,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
               {/* Task Bars */}
               {tasks.map((task, index) => {
                 const bar = getTaskBar(task);
-                const priorityConfig = PRIORITY_CONFIG[task.priority];
+                const wsColor = getWorkstreamColor(task.teamName, task.teamId);
 
                 return (
                   <div
@@ -206,7 +254,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                       style={{
                         left: Math.max(0, bar.left),
                         width: bar.width,
-                        backgroundColor: priorityConfig.color,
+                        backgroundColor: wsColor,
                         transformOrigin: 'left',
                       }}
                     >
