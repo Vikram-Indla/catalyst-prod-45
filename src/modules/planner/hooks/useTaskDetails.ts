@@ -5,7 +5,8 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+// GUARDRAIL: No toasts in hooks - silent operations
+
 
 // ============================================================
 // TASK DEPENDENCIES
@@ -92,10 +93,9 @@ export function useAddDependency() {
     },
     onSuccess: (_, { taskId }) => {
       queryClient.invalidateQueries({ queryKey: ['task-dependencies', taskId] });
-      toast.success('Dependency added');
     },
-    onError: () => {
-      toast.error('Failed to add dependency');
+    onError: (error) => {
+      console.error('Failed to add dependency:', error);
     },
   });
 }
@@ -114,7 +114,6 @@ export function useRemoveDependency() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-dependencies'] });
-      toast.success('Dependency removed');
     },
   });
 }
@@ -265,7 +264,6 @@ export function useDeleteAttachment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-attachments'] });
-      toast.success('Attachment removed');
     },
   });
 }
@@ -323,7 +321,6 @@ export function useAddComment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-comments'] });
-      toast.success('Comment added');
     },
   });
 }

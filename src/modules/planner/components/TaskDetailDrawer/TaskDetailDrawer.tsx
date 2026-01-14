@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+// GUARDRAIL: No toasts in drawer actions - silent operations
 
 import { DrawerHeader } from './DrawerHeader';
 import { QuickActions } from './QuickActions';
@@ -39,6 +39,7 @@ interface TaskDetailDrawerProps {
 }
 
 // Hook to fetch single task with all related data
+// GUARDRAIL: Aggressive caching to prevent flickering
 function useTaskDetail(taskId: string | null) {
   return useQuery({
     queryKey: ['task-detail', taskId],
@@ -60,6 +61,10 @@ function useTaskDetail(taskId: string | null) {
       return data;
     },
     enabled: !!taskId,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -80,8 +85,8 @@ function useUpdateTaskField() {
       queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
     },
-    onError: () => {
-      toast.error('Failed to update task');
+    onError: (error) => {
+      console.error('Failed to update task:', error);
     },
   });
 }
@@ -121,11 +126,11 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
         case 'c':
           if (!e.metaKey && !e.ctrlKey) {
             navigator.clipboard.writeText(`${window.location.origin}/planner/task/${task?.key}`);
-            toast.success('Link copied!');
+            // No toast - silent operation
           }
           break;
         case 'escape':
-          onClose();
+          handleClose();
           break;
       }
     };
@@ -216,11 +221,10 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
             <DrawerFooter
               task={task}
               onDelete={() => {
-                toast.success('Task deleted');
                 handleClose();
               }}
               onDuplicate={() => {
-                toast.success('Task duplicated');
+                // Task duplicated silently
               }}
             />
           </div>
