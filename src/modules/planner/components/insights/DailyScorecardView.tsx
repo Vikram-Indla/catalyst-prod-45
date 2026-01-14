@@ -103,9 +103,9 @@ export function DailyScorecardView() {
                       {team.initial}
                     </div>
                     <div className="flex-1">
-                      <a href={`/planner/workstreams/${team.id}`} className="font-bold text-slate-900 hover:text-blue-600 transition-colors">
+                      <span className="font-bold text-slate-900">
                         {team.name}
-                      </a>
+                      </span>
                       <div className="text-xs text-slate-500 mt-0.5">{team.memberCount} members • {team.taskCount} tasks</div>
                     </div>
                     <div className="text-right">
@@ -130,9 +130,9 @@ export function DailyScorecardView() {
                           {member.initials}
                         </div>
                         <div className="flex-1">
-                          <a href={`/planner/resources/${member.id}`} className="text-sm font-semibold text-slate-800 hover:text-blue-600 transition-colors">
+                          <span className="text-sm font-semibold text-slate-800">
                             {member.name}
-                          </a>
+                          </span>
                           <div className="text-[11px] text-slate-500">{member.role}</div>
                         </div>
                         <div className="flex items-center gap-5">
