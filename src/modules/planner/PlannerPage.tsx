@@ -343,12 +343,8 @@ export function PlannerPage() {
     <div className="flex h-full min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
       {/* Sidebar (must start at top of module area, like other modules) */}
       <PlannerSidebar
-        activeView={activeView}
-        onViewChange={handleViewChange}
-        onlineUsers={onlineUsers}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        insightsBadge={blockedCount}
+        expanded={!sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
       {/* Right column: header + search + view content */}
