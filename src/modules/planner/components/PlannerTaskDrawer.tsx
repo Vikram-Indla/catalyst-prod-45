@@ -249,7 +249,10 @@ export function PlannerTaskDrawer({
                   {(Object.entries(PRIORITY_CONFIG) as [TaskPriority, typeof PRIORITY_CONFIG['critical']][]).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
                       <div className="flex items-center gap-2">
-                        <span>{config.emoji}</span>
+                        <span 
+                          className="w-2 h-2 rounded-full" 
+                          style={{ backgroundColor: config.color }}
+                        />
                         {config.label}
                       </div>
                     </SelectItem>
