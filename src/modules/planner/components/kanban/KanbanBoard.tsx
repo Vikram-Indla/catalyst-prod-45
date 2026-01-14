@@ -269,36 +269,6 @@ export function KanbanBoard({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Compact View Toggle - Board/Swimlane only */}
-      <div className="shrink-0 px-4 py-2 border-b border-border bg-background flex items-center gap-3">
-        <div className="flex items-center bg-muted/50 border border-border rounded-lg p-1">
-          <button
-            onClick={() => setViewMode('board')}
-            className={cn(
-              'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2',
-              viewMode === 'board'
-                ? 'bg-card text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            <LayoutGrid className="w-4 h-4" />
-            Board
-          </button>
-          <button
-            onClick={() => setViewMode('swimlane')}
-            className={cn(
-              'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2',
-              viewMode === 'swimlane'
-                ? 'bg-card text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            <Rows3 className="w-4 h-4" />
-            Swimlane
-          </button>
-        </div>
-      </div>
-      
       {/* Board Content */}
       <ScrollArea className="flex-1">
         <DndContext
