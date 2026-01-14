@@ -1,7 +1,7 @@
 // ============================================================
 // KANBAN BOARD COMPONENT
-// Main board with drag-and-drop, search, and swimlane grouping
-// Enhanced with collapsible rows and workstream colors
+// Main board with drag-and-drop and swimlane view modes
+// Filters provided by parent PlannerSearchBar (no duplicate filters)
 // ============================================================
 
 import { useState, useCallback, useMemo } from 'react';
@@ -24,11 +24,13 @@ import { useKanbanTasks, useKanbanTasksRealtime, useMoveKanbanTask } from '../..
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
 import { SwimlaneRow } from './SwimlaneRow';
-import { KanbanFilters, SwimlaneGrouping, KanbanViewMode } from './KanbanFilters';
 import { AddColumnButton } from './AddColumnButton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Loader2, User, Flag, Layers } from 'lucide-react';
-import { getWorkstreamColor } from '@/lib/workstream-colors';
+import { Loader2, LayoutGrid, Rows3, User, Flag, Layers } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+export type SwimlaneGrouping = 'none' | 'assignee' | 'priority' | 'workstream';
+export type KanbanViewMode = 'board' | 'swimlane';
 
 interface KanbanBoardProps {
   onTaskClick?: (task: any) => void;
@@ -267,20 +269,40 @@ export function KanbanBoard({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Filters */}
-      <div className="shrink-0 px-4 py-3 border-b border-border bg-background">
-        <KanbanFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          taskCount={tasks.length}
-          swimlane={swimlane}
-          onSwimlaneChange={setSwimlane}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        />
+      {/* Compact View Toggle - Board/Swimlane only */}
+      <div className="shrink-0 px-4 py-2 border-b border-border bg-background flex items-center gap-3">
+        <div className="flex items-center bg-muted/50 border border-border rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('board')}
+            className={cn(
+              'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2',
+              viewMode === 'board'
+                ? 'bg-card text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <LayoutGrid className="w-4 h-4" />
+            Board
+          </button>
+          <button
+            onClick={() => setViewMode('swimlane')}
+            className={cn(
+              'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2',
+              viewMode === 'swimlane'
+                ? 'bg-card text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <Rows3 className="w-4 h-4" />
+            Swimlane
+          </button>
+        </div>
+        <span className="text-sm text-muted-foreground ml-auto">
+          {tasks.length} task{tasks.length !== 1 ? 's' : ''}
+        </span>
       </div>
-
-      {/* Board */}
+      
+      {/* Board Content */}
       <ScrollArea className="flex-1">
         <DndContext
           sensors={sensors}
@@ -290,56 +312,22 @@ export function KanbanBoard({
           onDragEnd={handleDragEnd}
         >
           {viewMode === 'board' ? (
-            // Standard Board View
-            effectiveSwimlane === 'none' ? (
-              // No swimlanes - flat board
-              // No swimlanes - flat board
-              <div className="flex gap-4 p-4 min-h-full">
-                {statuses.map((status) => (
-                  <KanbanColumn
-                    key={status.id}
-                    status={status}
-                    tasks={getTasksByStatus(tasks)[status.id] || []}
-                    onTaskClick={onTaskClick}
-                    onTaskEdit={onTaskEdit}
-                    onTaskDelete={onTaskDelete}
-                    onAddTask={onAddTask}
-                  />
-                ))}
-                {/* Add Column Button */}
-                <AddColumnButton />
-              </div>
-            ) : (
-              // Swimlane grouped board
-              <div className="p-4 space-y-6">
-                {swimlaneGroups.map((group) => (
-                  <div key={group.key} className="space-y-2">
-                    {/* Swimlane Header */}
-                    <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/50">
-                      {getSwimlaneIcon()}
-                      <span className="font-medium text-sm">{group.label}</span>
-                      <span className="text-xs text-muted-foreground">
-                        ({group.tasks.length})
-                      </span>
-                    </div>
-                    {/* Swimlane Columns */}
-                    <div className="flex gap-4 overflow-x-auto pb-2">
-                      {statuses.map((status) => (
-                        <KanbanColumn
-                          key={`${group.key}-${status.id}`}
-                          status={status}
-                          tasks={getTasksByStatus(group.tasks)[status.id] || []}
-                          onTaskClick={onTaskClick}
-                          onTaskEdit={onTaskEdit}
-                          onTaskDelete={onTaskDelete}
-                          onAddTask={onAddTask}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )
+            // Standard Board View - always flat, no swimlane grouping in board mode
+            <div className="flex gap-4 p-4 min-h-full">
+              {statuses.map((status) => (
+                <KanbanColumn
+                  key={status.id}
+                  status={status}
+                  tasks={getTasksByStatus(tasks)[status.id] || []}
+                  onTaskClick={onTaskClick}
+                  onTaskEdit={onTaskEdit}
+                  onTaskDelete={onTaskDelete}
+                  onAddTask={onAddTask}
+                />
+              ))}
+              {/* Add Column Button */}
+              <AddColumnButton />
+            </div>
           ) : (
             // Swimlane View Mode - horizontal rows grouped by workstream/assignee
             <div className="p-4 space-y-4">

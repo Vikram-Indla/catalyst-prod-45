@@ -1,10 +1,12 @@
 // ============================================================
 // WORKSTREAM BADGE COMPONENT
-// Displays workstream/team pill with Catalyst V5 color
+// Displays workstream/team pill with proper workstream-specific colors
+// Uses lib/workstream-colors.ts for correct color mapping
+// Catalyst Track = TEAL, Senaie = INDIGO, etc.
 // ============================================================
 
 import type { KanbanWorkstream } from '../../types/kanban';
-import { getWorkstreamColor } from '../../types/kanban';
+import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { cn } from '@/lib/utils';
 
 interface WorkstreamBadgeProps {
@@ -13,25 +15,31 @@ interface WorkstreamBadgeProps {
 }
 
 export function WorkstreamBadge({ workstream, className }: WorkstreamBadgeProps) {
+  // Use proper workstream-specific colors from lib/workstream-colors.ts
   const colors = getWorkstreamColor(workstream.name);
   
   return (
     <div
       className={cn(
         'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full',
+        colors.bg, // bg-teal-50 for Catalyst, bg-indigo-50 for Senaie, etc.
         className
       )}
-      style={{ backgroundColor: colors.bg }}
     >
       <span
-        className="w-1.5 h-1.5 rounded-full"
-        style={{ backgroundColor: colors.dot }}
+        className={cn(
+          'w-1.5 h-1.5 rounded-full flex-shrink-0',
+          colors.bg.replace('-50', '-500') // Convert bg-teal-50 to bg-teal-500 for dot
+        )}
+        style={{ backgroundColor: colors.hex }} // Fallback to hex color
       />
       <span 
-        className="text-[11px] font-semibold"
-        style={{ color: colors.text }}
+        className={cn(
+          'text-[11px] font-semibold',
+          colors.text // text-teal-800 for Catalyst, etc.
+        )}
       >
-        {workstream.name}
+        {workstream.name.replace(' Track', '')}
       </span>
     </div>
   );
