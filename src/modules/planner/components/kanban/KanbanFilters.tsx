@@ -1,9 +1,9 @@
 // ============================================================
 // KANBAN FILTERS COMPONENT
-// Filter bar with search, priority, and swimlane grouping
+// Filter bar with search, priority, assignee, workstream + view switcher
 // ============================================================
 
-import { Search, X, Rows3 } from 'lucide-react';
+import { Search, X, LayoutGrid, Rows3 } from 'lucide-react';
 import type { KanbanTaskFilters, KanbanTaskPriority } from '../../types/kanban';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 
 export type SwimlaneGrouping = 'none' | 'assignee' | 'priority' | 'workstream';
+export type KanbanViewMode = 'board' | 'swimlane';
 
 interface KanbanFiltersProps {
   filters: KanbanTaskFilters;
@@ -23,6 +27,8 @@ interface KanbanFiltersProps {
   taskCount: number;
   swimlane: SwimlaneGrouping;
   onSwimlaneChange: (swimlane: SwimlaneGrouping) => void;
+  viewMode: KanbanViewMode;
+  onViewModeChange: (mode: KanbanViewMode) => void;
 }
 
 const PRIORITY_OPTIONS: { value: KanbanTaskPriority | 'all'; label: string }[] = [
@@ -40,16 +46,53 @@ const SWIMLANE_OPTIONS: { value: SwimlaneGrouping; label: string }[] = [
   { value: 'workstream', label: 'By Workstream' },
 ];
 
+// Fetch profiles for assignee filter
+function useProfiles() {
+  return useQuery({
+    queryKey: ['kanban-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .order('full_name');
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+// Fetch teams/workstreams for filter
+function useWorkstreams() {
+  return useQuery({
+    queryKey: ['kanban-workstreams'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
 export function KanbanFilters({ 
   filters, 
   onFilterChange, 
   taskCount,
   swimlane,
   onSwimlaneChange,
+  viewMode,
+  onViewModeChange,
 }: KanbanFiltersProps) {
+  const { data: profiles = [] } = useProfiles();
+  const { data: workstreams = [] } = useWorkstreams();
+
   const hasActiveFilters = 
     filters.search !== '' || 
-    filters.priority !== 'all';
+    filters.priority !== 'all' ||
+    filters.assignee_id !== 'all' ||
+    filters.workstream_id !== 'all';
 
   const clearFilters = () => {
     onFilterChange({
@@ -62,8 +105,39 @@ export function KanbanFilters({
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
+      {/* View Mode Switcher */}
+      <div className="flex items-center bg-muted/50 p-1 rounded-lg">
+        <button
+          onClick={() => onViewModeChange('board')}
+          className={cn(
+            'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2',
+            viewMode === 'board'
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <LayoutGrid className="w-4 h-4" />
+          Board
+        </button>
+        <button
+          onClick={() => onViewModeChange('swimlane')}
+          className={cn(
+            'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2',
+            viewMode === 'swimlane'
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <Rows3 className="w-4 h-4" />
+          Swimlane
+        </button>
+      </div>
+
+      {/* Divider */}
+      <div className="w-px h-6 bg-border" />
+
       {/* Search */}
-      <div className="relative flex-1 min-w-[200px] max-w-[280px]">
+      <div className="relative flex-1 min-w-[180px] max-w-[240px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder="Search tasks..."
@@ -86,7 +160,7 @@ export function KanbanFilters({
         value={filters.priority}
         onValueChange={(value) => onFilterChange({ priority: value as KanbanTaskPriority | 'all' })}
       >
-        <SelectTrigger className="w-[140px] h-9">
+        <SelectTrigger className="w-[130px] h-9">
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>
@@ -98,20 +172,57 @@ export function KanbanFilters({
         </SelectContent>
       </Select>
 
-      {/* Swimlane Grouping */}
-      <Select value={swimlane} onValueChange={(value) => onSwimlaneChange(value as SwimlaneGrouping)}>
-        <SelectTrigger className="w-[150px] h-9">
-          <Rows3 className="w-4 h-4 mr-2 text-muted-foreground" />
-          <SelectValue placeholder="Swimlanes" />
+      {/* Assignee Filter */}
+      <Select
+        value={filters.assignee_id}
+        onValueChange={(value) => onFilterChange({ assignee_id: value })}
+      >
+        <SelectTrigger className="w-[140px] h-9">
+          <SelectValue placeholder="Assignee" />
         </SelectTrigger>
         <SelectContent>
-          {SWIMLANE_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
+          <SelectItem value="all">All Assignees</SelectItem>
+          {profiles.map((profile) => (
+            <SelectItem key={profile.id} value={profile.id}>
+              {profile.full_name || 'Unnamed'}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
+
+      {/* Workstream Filter */}
+      <Select
+        value={filters.workstream_id}
+        onValueChange={(value) => onFilterChange({ workstream_id: value })}
+      >
+        <SelectTrigger className="w-[150px] h-9">
+          <SelectValue placeholder="Workstream" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Workstreams</SelectItem>
+          {workstreams.map((ws) => (
+            <SelectItem key={ws.id} value={ws.id}>
+              {ws.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Swimlane Grouping - only show in swimlane mode */}
+      {viewMode === 'swimlane' && (
+        <Select value={swimlane} onValueChange={(value) => onSwimlaneChange(value as SwimlaneGrouping)}>
+          <SelectTrigger className="w-[140px] h-9">
+            <SelectValue placeholder="Group by" />
+          </SelectTrigger>
+          <SelectContent>
+            {SWIMLANE_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       {/* Task count & Clear filters */}
       <div className="flex items-center gap-2 ml-auto">
