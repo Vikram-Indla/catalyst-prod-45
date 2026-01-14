@@ -55,11 +55,12 @@ export function WorkstreamMembersSection({ workstream, users, onMembersChange }:
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch current workstream members
+  // Fetch current workstream members with roles
   useEffect(() => {
     const fetchMembers = async () => {
       setIsLoading(true);
       try {
+        // Fetch team members with profile info
         const { data, error } = await supabase
           .from('team_members')
           .select(`
@@ -74,11 +75,28 @@ export function WorkstreamMembersSection({ workstream, users, onMembersChange }:
 
         if (error) throw error;
 
+        // Get user IDs to fetch roles
+        const userIds = (data || []).map((m: any) => m.user_id);
+        
+        // Fetch roles from user_roles table
+        let rolesMap: Record<string, string> = {};
+        if (userIds.length > 0) {
+          const { data: rolesData } = await supabase
+            .from('user_roles')
+            .select('user_id, role')
+            .in('user_id', userIds);
+          
+          (rolesData || []).forEach((r: any) => {
+            rolesMap[r.user_id] = r.role;
+          });
+        }
+
         const fetchedMembers: WorkstreamMember[] = (data || []).map((m: any) => ({
           id: m.id,
           oderId: m.user_id,
           name: m.profiles?.full_name || 'Unknown User',
           initials: getInitials(m.profiles?.full_name || 'U'),
+          role: rolesMap[m.user_id] ? capitalizeRole(rolesMap[m.user_id]) : undefined,
         }));
 
         setMembers(fetchedMembers);
@@ -91,6 +109,11 @@ export function WorkstreamMembersSection({ workstream, users, onMembersChange }:
 
     fetchMembers();
   }, [workstream.id]);
+
+  // Capitalize role for display
+  const capitalizeRole = (role: string): string => {
+    return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+  };
 
   const getInitials = (name: string): string => {
     return name
