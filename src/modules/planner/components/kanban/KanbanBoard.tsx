@@ -1,6 +1,6 @@
 // ============================================================
 // KANBAN BOARD COMPONENT
-// Main board with drag-and-drop functionality
+// Main board with drag-and-drop, search, and swimlane grouping
 // ============================================================
 
 import { useState, useCallback, useMemo } from 'react';
@@ -22,9 +22,9 @@ import { useKanbanStatuses, useKanbanStatusesRealtime } from '../../hooks/useKan
 import { useKanbanTasks, useKanbanTasksRealtime, useMoveKanbanTask } from '../../hooks/useKanbanTasks';
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
-import { KanbanFilters } from './KanbanFilters';
+import { KanbanFilters, SwimlaneGrouping } from './KanbanFilters';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Loader2 } from 'lucide-react';
+import { Loader2, User, Flag, Layers } from 'lucide-react';
 
 interface KanbanBoardProps {
   onTaskClick?: (task: any) => void;
@@ -46,6 +46,7 @@ export function KanbanBoard({
     assignee_id: 'all',
     workstream_id: 'all',
   });
+  const [swimlane, setSwimlane] = useState<SwimlaneGrouping>('none');
 
   // Data hooks
   const { data: statuses = [], isLoading: statusesLoading } = useKanbanStatuses();
@@ -71,16 +72,66 @@ export function KanbanBoard({
     })
   );
 
-  // Group tasks by status
-  const tasksByStatus = useMemo(() => {
+  // Group tasks by swimlane
+  const swimlaneGroups = useMemo(() => {
+    if (swimlane === 'none') {
+      return [{ key: 'all', label: 'All Tasks', tasks }];
+    }
+
+    const groups: Record<string, { label: string; tasks: KanbanTask[] }> = {};
+
+    tasks.forEach((task) => {
+      let groupKey: string;
+      let groupLabel: string;
+
+      switch (swimlane) {
+        case 'assignee':
+          groupKey = task.assignee?.id || 'unassigned';
+          groupLabel = task.assignee?.full_name || 'Unassigned';
+          break;
+        case 'priority':
+          groupKey = task.priority || 'none';
+          groupLabel = task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : 'No Priority';
+          break;
+        case 'workstream':
+          groupKey = task.workstream?.id || 'none';
+          groupLabel = task.workstream?.name || 'No Workstream';
+          break;
+        default:
+          groupKey = 'all';
+          groupLabel = 'All Tasks';
+      }
+
+      if (!groups[groupKey]) {
+        groups[groupKey] = { label: groupLabel, tasks: [] };
+      }
+      groups[groupKey].tasks.push(task);
+    });
+
+    // Sort groups
+    const sortedKeys = Object.keys(groups).sort((a, b) => {
+      if (a === 'unassigned' || a === 'none') return 1;
+      if (b === 'unassigned' || b === 'none') return -1;
+      return groups[a].label.localeCompare(groups[b].label);
+    });
+
+    return sortedKeys.map((key) => ({
+      key,
+      label: groups[key].label,
+      tasks: groups[key].tasks,
+    }));
+  }, [tasks, swimlane]);
+
+  // Group tasks by status for a given swimlane
+  const getTasksByStatus = useCallback((swimlaneTasks: KanbanTask[]) => {
     const grouped: Record<string, KanbanTask[]> = {};
     statuses.forEach((status) => {
-      grouped[status.id] = tasks
+      grouped[status.id] = swimlaneTasks
         .filter((t) => t.status_id === status.id)
         .sort((a, b) => a.position - b.position);
     });
     return grouped;
-  }, [tasks, statuses]);
+  }, [statuses]);
 
   // Drag handlers
   const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -107,7 +158,7 @@ export function KanbanBoard({
     const draggedTask = tasks.find((t) => t.id === taskId);
     if (!draggedTask) return;
 
-    // Determine target status (either over a column or over another task)
+    // Determine target status
     let targetStatusId: string;
     let targetPosition: number;
 
@@ -115,7 +166,7 @@ export function KanbanBoard({
     const targetStatus = statuses.find((s) => s.id === overId);
     if (targetStatus) {
       targetStatusId = targetStatus.id;
-      const tasksInColumn = tasksByStatus[targetStatusId] || [];
+      const tasksInColumn = tasks.filter((t) => t.status_id === targetStatusId);
       targetPosition = tasksInColumn.length;
     } else {
       // Dropping on another task
@@ -137,7 +188,7 @@ export function KanbanBoard({
       newStatusId: targetStatusId,
       newPosition: targetPosition,
     });
-  }, [tasks, statuses, tasksByStatus, moveTask]);
+  }, [tasks, statuses, moveTask]);
 
   const handleFilterChange = useCallback((newFilters: Partial<KanbanTaskFilters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
@@ -153,8 +204,27 @@ export function KanbanBoard({
     );
   }
 
+  const getSwimlaneIcon = () => {
+    switch (swimlane) {
+      case 'assignee': return <User className="w-4 h-4" />;
+      case 'priority': return <Flag className="w-4 h-4" />;
+      case 'workstream': return <Layers className="w-4 h-4" />;
+      default: return null;
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
+      {/* Filters */}
+      <div className="shrink-0 px-4 py-3 border-b border-border bg-background">
+        <KanbanFilters
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          taskCount={tasks.length}
+          swimlane={swimlane}
+          onSwimlaneChange={setSwimlane}
+        />
+      </div>
 
       {/* Board */}
       <ScrollArea className="flex-1">
@@ -165,19 +235,52 @@ export function KanbanBoard({
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-4 p-4 min-h-full">
-            {statuses.map((status) => (
-              <KanbanColumn
-                key={status.id}
-                status={status}
-                tasks={tasksByStatus[status.id] || []}
-                onTaskClick={onTaskClick}
-                onTaskEdit={onTaskEdit}
-                onTaskDelete={onTaskDelete}
-                onAddTask={onAddTask}
-              />
-            ))}
-          </div>
+          {swimlane === 'none' ? (
+            // No swimlanes - flat board
+            <div className="flex gap-4 p-4 min-h-full">
+              {statuses.map((status) => (
+                <KanbanColumn
+                  key={status.id}
+                  status={status}
+                  tasks={getTasksByStatus(tasks)[status.id] || []}
+                  onTaskClick={onTaskClick}
+                  onTaskEdit={onTaskEdit}
+                  onTaskDelete={onTaskDelete}
+                  onAddTask={onAddTask}
+                />
+              ))}
+            </div>
+          ) : (
+            // Swimlane grouped board
+            <div className="p-4 space-y-6">
+              {swimlaneGroups.map((group) => (
+                <div key={group.key} className="space-y-2">
+                  {/* Swimlane Header */}
+                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/50">
+                    {getSwimlaneIcon()}
+                    <span className="font-medium text-sm">{group.label}</span>
+                    <span className="text-xs text-muted-foreground">
+                      ({group.tasks.length})
+                    </span>
+                  </div>
+                  {/* Swimlane Columns */}
+                  <div className="flex gap-4 overflow-x-auto pb-2">
+                    {statuses.map((status) => (
+                      <KanbanColumn
+                        key={`${group.key}-${status.id}`}
+                        status={status}
+                        tasks={getTasksByStatus(group.tasks)[status.id] || []}
+                        onTaskClick={onTaskClick}
+                        onTaskEdit={onTaskEdit}
+                        onTaskDelete={onTaskDelete}
+                        onAddTask={onAddTask}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <DragOverlay>
             {activeTask && (
