@@ -75,8 +75,11 @@ export function KanbanBoard({
   );
 
   // Group tasks by swimlane
+  // In swimlane view mode, always group by workstream if no explicit swimlane is selected
+  const effectiveSwimlane = viewMode === 'swimlane' && swimlane === 'none' ? 'workstream' : swimlane;
+  
   const swimlaneGroups = useMemo(() => {
-    if (swimlane === 'none') {
+    if (effectiveSwimlane === 'none') {
       return [{ key: 'all', label: 'All Tasks', tasks }];
     }
 
@@ -86,7 +89,7 @@ export function KanbanBoard({
       let groupKey: string;
       let groupLabel: string;
 
-      switch (swimlane) {
+      switch (effectiveSwimlane) {
         case 'assignee':
           groupKey = task.assignee?.id || 'unassigned';
           groupLabel = task.assignee?.full_name || 'Unassigned';
@@ -122,7 +125,7 @@ export function KanbanBoard({
       label: groups[key].label,
       tasks: groups[key].tasks,
     }));
-  }, [tasks, swimlane]);
+  }, [tasks, effectiveSwimlane]);
 
   // Group tasks by status for a given swimlane
   const getTasksByStatus = useCallback((swimlaneTasks: KanbanTask[]) => {
@@ -207,7 +210,7 @@ export function KanbanBoard({
   }
 
   const getSwimlaneIcon = () => {
-    switch (swimlane) {
+    switch (effectiveSwimlane) {
       case 'assignee': return <User className="w-4 h-4" />;
       case 'priority': return <Flag className="w-4 h-4" />;
       case 'workstream': return <Layers className="w-4 h-4" />;
@@ -241,7 +244,8 @@ export function KanbanBoard({
         >
           {viewMode === 'board' ? (
             // Standard Board View
-            swimlane === 'none' ? (
+            effectiveSwimlane === 'none' ? (
+              // No swimlanes - flat board
               // No swimlanes - flat board
               <div className="flex gap-4 p-4 min-h-full">
                 {statuses.map((status) => (
