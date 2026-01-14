@@ -1,6 +1,6 @@
 // ============================================================
-// TASK DETAIL DRAWER - MAIN COMPONENT
-// Full-featured task detail slideout panel
+// TASK DETAIL DRAWER - LINEAR-INSPIRED REDESIGN
+// Clean single-column layout with prominent status, progress bar
 // ============================================================
 
 import { useCallback, useEffect, useState } from 'react';
@@ -9,15 +9,16 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-// GUARDRAIL: No toasts in drawer actions - silent operations
+import { CheckSquare, Paperclip, GitBranch, MessageSquare } from 'lucide-react';
 
 import { DrawerHeader } from './DrawerHeader';
-import { QuickActions } from './QuickActions';
 import { TaskDescription } from './TaskDescription';
 import { TaskFieldsGrid } from './TaskFieldsGrid';
-import { DependenciesSection } from './DependenciesSection';
+import { ProgressSection } from './ProgressSection';
+import { CollapsibleSection } from './CollapsibleSection';
 import { ChecklistSection } from './ChecklistSection';
 import { AttachmentsSection } from './AttachmentsSection';
+import { DependenciesSection } from './DependenciesSection';
 import { ActivitySection } from './ActivitySection';
 import { DrawerFooter } from './DrawerFooter';
 
@@ -31,15 +32,13 @@ import {
 
 interface TaskDetailDrawerProps {
   taskId?: string | null;
-  task?: { id: string } | null; // Accept task object for backwards compat
+  task?: { id: string } | null;
   open: boolean;
   onClose?: () => void;
-  onOpenChange?: (open: boolean) => void; // Alias for onClose
+  onOpenChange?: (open: boolean) => void;
   onTaskUpdated?: () => void;
 }
 
-// Hook to fetch single task with all related data
-// GUARDRAIL: Aggressive caching to prevent flickering
 function useTaskDetail(taskId: string | null) {
   return useQuery({
     queryKey: ['task-detail', taskId],
@@ -85,17 +84,12 @@ function useUpdateTaskField() {
       queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
     },
-    onError: (error) => {
-      console.error('Failed to update task:', error);
-    },
   });
 }
 
 export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onClose, onOpenChange, onTaskUpdated }: TaskDetailDrawerProps) {
-  // Support both taskId and task.id for backwards compatibility
   const effectiveTaskId = propTaskId ?? propTask?.id ?? null;
   
-  // Handle close - support both onClose and onOpenChange patterns
   const handleClose = useCallback(() => {
     onClose?.();
     onOpenChange?.(false);
@@ -104,10 +98,8 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const { data: serverTask, isLoading } = useTaskDetail(effectiveTaskId);
   const [draftTask, setDraftTask] = useState<any | null>(null);
 
-  // Keep a local copy so field edits can update instantly (no label flicker)
   useEffect(() => {
     if (!serverTask) return;
-
     setDraftTask((prev) => {
       if (!prev || prev.id !== serverTask.id) return serverTask;
       return { ...prev, ...serverTask };
@@ -126,17 +118,9 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const handleFieldUpdate = useCallback(async (field: string, value: any) => {
     if (!effectiveTaskId) return;
 
-    // Optimistic local update to prevent flicker while DB roundtrip happens
     setDraftTask((prev) => {
       if (!prev) return prev;
-      const next: any = { ...prev, [field]: value };
-
-      // Keep the core FK fields in sync so other components can resolve labels
-      if (field === 'assignee_id') next.assignee_id = value;
-      if (field === 'status_id') next.status_id = value;
-      if (field === 'workstream_id') next.workstream_id = value;
-
-      return next;
+      return { ...prev, [field]: value };
     });
 
     await updateField.mutateAsync({ taskId: effectiveTaskId, field, value });
@@ -146,28 +130,15 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-      
-      switch (e.key.toLowerCase()) {
-        case 'c':
-          if (!e.metaKey && !e.ctrlKey) {
-            navigator.clipboard.writeText(`${window.location.origin}/planner/task/${task?.key}`);
-            // No toast - silent operation
-          }
-          break;
-        case 'escape':
-          handleClose();
-          break;
-      }
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'Escape') handleClose();
     };
     
     if (open) {
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [open, task, handleClose]);
+  }, [open, handleClose]);
 
   if (!effectiveTaskId) return null;
 
@@ -175,13 +146,13 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     <Sheet open={open} onOpenChange={(o) => !o && handleClose()}>
       <SheetContent 
         side="right" 
-        className="w-full sm:max-w-[580px] p-0 gap-0 overflow-hidden"
+        className="w-full sm:max-w-[540px] p-0 gap-0 overflow-hidden"
       >
         {isLoading ? (
           <DrawerSkeleton />
         ) : task ? (
           <div className="flex flex-col h-full">
-            {/* Header with gradient cover */}
+            {/* Header */}
             <DrawerHeader
               task={task}
               onClose={handleClose}
@@ -189,72 +160,83 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
               onStatusChange={(statusId) => handleFieldUpdate('status_id', statusId)}
             />
             
-            {/* Quick Actions */}
-            <QuickActions 
-              taskId={effectiveTaskId!} 
-              taskKey={task.key}
-              currentWorkstreamId={task.workstream_id || null}
-              isStarred={task.is_starred || false}
-              onWorkstreamChange={(workstreamId) => {
-                handleFieldUpdate('workstream_id', workstreamId);
-              }}
-              onStarredChange={(isStarred) => {
-                // Optimistic - already updated in QuickActions
-              }}
-            />
-            
             {/* Scrollable Content */}
             <ScrollArea className="flex-1">
-              <div className="p-5 space-y-6">
+              <div className="p-6 space-y-6">
                 {/* Description */}
                 <TaskDescription
                   value={task.description || ''}
                   onChange={(desc) => handleFieldUpdate('description', desc)}
                 />
                 
-                {/* Fields Grid */}
+                {/* Details - Single Column */}
                 <TaskFieldsGrid
                   task={task}
                   onFieldChange={handleFieldUpdate}
                 />
                 
-                {/* Dependencies */}
-                <DependenciesSection
-                  taskId={effectiveTaskId!}
-                  dependencies={dependencies || []}
+                {/* Progress Bar */}
+                <ProgressSection
+                  task={task}
+                  onUpdate={(updates) => handleFieldUpdate('progress', updates.progress)}
                 />
                 
-                {/* Checklist */}
-                <ChecklistSection
-                  taskId={effectiveTaskId!}
-                  items={checklist || []}
-                  taskDescription={task.description || ''}
-                />
+                {/* Collapsible Sections */}
+                <div className="space-y-2 pt-2 border-t border-border">
+                  {/* Checklist */}
+                  <CollapsibleSection
+                    title="Checklist"
+                    count={checklist?.length || 0}
+                    icon={<CheckSquare className="w-4 h-4" />}
+                  >
+                    <ChecklistSection
+                      taskId={effectiveTaskId!}
+                      items={checklist || []}
+                      taskDescription={task.description || ''}
+                    />
+                  </CollapsibleSection>
+
+                  {/* Relations */}
+                  <CollapsibleSection
+                    title="Relations"
+                    count={dependencies?.length || 0}
+                    icon={<GitBranch className="w-4 h-4" />}
+                  >
+                    <DependenciesSection
+                      taskId={effectiveTaskId!}
+                      dependencies={dependencies || []}
+                    />
+                  </CollapsibleSection>
+
+                  {/* Attachments */}
+                  <CollapsibleSection
+                    title="Attachments"
+                    count={attachments?.length || 0}
+                    icon={<Paperclip className="w-4 h-4" />}
+                  >
+                    <AttachmentsSection
+                      taskId={effectiveTaskId!}
+                      attachments={attachments || []}
+                    />
+                  </CollapsibleSection>
+                </div>
                 
-                {/* Attachments */}
-                <AttachmentsSection
-                  taskId={effectiveTaskId!}
-                  attachments={attachments || []}
-                />
-                
-                {/* Activity & Comments */}
-                <ActivitySection
-                  taskId={effectiveTaskId!}
-                  comments={comments || []}
-                  activity={activity || []}
-                />
+                {/* Activity */}
+                <div className="pt-4 border-t border-border">
+                  <ActivitySection
+                    taskId={effectiveTaskId!}
+                    comments={comments || []}
+                    activity={activity || []}
+                  />
+                </div>
               </div>
             </ScrollArea>
             
             {/* Footer */}
             <DrawerFooter
               task={task}
-              onDelete={() => {
-                handleClose();
-              }}
-              onDuplicate={() => {
-                // Task duplicated silently
-              }}
+              onDelete={handleClose}
+              onDuplicate={() => {}}
             />
           </div>
         ) : (
@@ -269,18 +251,16 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
 function DrawerSkeleton() {
   return (
-    <div className="p-5 space-y-6">
-      <Skeleton className="h-32 w-full rounded-xl" />
+    <div className="p-6 space-y-6">
+      <Skeleton className="h-20 w-full rounded-xl" />
       <Skeleton className="h-8 w-3/4" />
       <Skeleton className="h-4 w-1/2" />
-      <div className="grid grid-cols-2 gap-4">
-        <Skeleton className="h-12" />
+      <div className="space-y-3">
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
         <Skeleton className="h-12" />
       </div>
       <Skeleton className="h-24" />
-      <Skeleton className="h-32" />
     </div>
   );
 }
