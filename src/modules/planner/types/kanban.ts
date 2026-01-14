@@ -24,14 +24,17 @@ export interface KanbanTask {
   workstream_id: string | null;
   assignee_id: string | null;
   due_date: string | null;
+  start_date: string | null;
   position: number;
   blocked: boolean;
   blocked_reason: string | null;
   progress: number;
+  is_starred: boolean;
   created_by: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
+  cover_url: string | null;
   // Joined data
   status?: PlannerStatus;
   workstream?: KanbanWorkstream;

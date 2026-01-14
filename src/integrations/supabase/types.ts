@@ -15565,6 +15565,7 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          is_starred: boolean
           key: string
           position: number
           priority: string
@@ -15586,6 +15587,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          is_starred?: boolean
           key: string
           position?: number
           priority?: string
@@ -15607,6 +15609,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          is_starred?: boolean
           key?: string
           position?: number
           priority?: string
