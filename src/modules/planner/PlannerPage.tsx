@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
 import { PlannerSidebar } from './components/PlannerSidebar';
-import { PlannerKanban } from './components/PlannerKanban';
+import { KanbanBoard } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
 import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
@@ -313,7 +313,7 @@ export function PlannerPage() {
     
     switch (activeView) {
       case 'boards':
-        return <PlannerKanban tasks={viewTasks} onTaskClick={handleTaskClick} onTaskMove={handleTaskMove} groupBy={groupBy === 'none' ? undefined : groupBy} />;
+        return <KanbanBoard onTaskClick={handleTaskClick} onTaskEdit={handleTaskClick} onTaskDelete={(id) => handleDeleteTask(id)} onAddTask={() => setIsCreateModalOpen(true)} />;
       case 'task-list':
         return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} />;
       case 'timeline':
@@ -331,7 +331,7 @@ export function PlannerPage() {
       case 'settings':
         return <PlannerSettings />;
       default:
-        return <PlannerKanban tasks={viewTasks} onTaskClick={handleTaskClick} onTaskMove={handleTaskMove} groupBy={groupBy === 'none' ? undefined : groupBy} />;
+        return <KanbanBoard onTaskClick={handleTaskClick} onTaskEdit={handleTaskClick} onTaskDelete={(id) => handleDeleteTask(id)} onAddTask={() => setIsCreateModalOpen(true)} />;
     }
   };
 
