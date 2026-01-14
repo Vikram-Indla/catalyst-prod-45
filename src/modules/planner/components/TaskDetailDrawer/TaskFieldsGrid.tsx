@@ -3,11 +3,12 @@
 // 2-column grid of editable task fields
 // ============================================================
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   User, 
+  UserCheck,
   Users, 
   Calendar, 
   Flag,
@@ -66,9 +67,31 @@ function useTeams() {
   });
 }
 
+function useCurrentUser() {
+  const [user, setUser] = useState<{ id: string; full_name: string | null } | null>(null);
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .eq('id', authUser.id)
+          .maybeSingle();
+        setUser(profile);
+      }
+    };
+    fetchUser();
+  }, []);
+  
+  return user;
+}
+
 export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
   const { data: profiles = [] } = useProfiles();
   const { data: teams = [] } = useTeams();
+  const currentUser = useCurrentUser();
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -88,6 +111,22 @@ export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
           profiles={profiles}
           onChange={(id) => onFieldChange('assignee_id', id)}
         />
+      </FieldRow>
+
+      {/* Reported By - Read Only */}
+      <FieldRow icon={UserCheck} label="Reported By">
+        <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 rounded-lg text-sm">
+          {currentUser ? (
+            <>
+              <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-semibold text-white">
+                {currentUser.full_name?.charAt(0) || '?'}
+              </div>
+              <span className="font-medium text-muted-foreground truncate">{currentUser.full_name || 'Unknown'}</span>
+            </>
+          ) : (
+            <span className="text-muted-foreground">Loading...</span>
+          )}
+        </div>
       </FieldRow>
 
       {/* Workstream */}
