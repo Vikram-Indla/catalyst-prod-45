@@ -175,12 +175,14 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
   };
 
   // Add tasks table
+  // Add tasks table
   const addTasksTable = () => {
+    // Add spacing prefix for priority to make room for the indicator
     const tableData = tasks.map(task => [
       task.key,
       truncateText(task.title, 40),
       STATUS_LABELS[task.status] || task.status,
-      task.priority.charAt(0).toUpperCase() + task.priority.slice(1),
+      '    ' + task.priority.charAt(0).toUpperCase() + task.priority.slice(1),
       task.teamName || '—',
       task.assigneeName || 'Unassigned',
       formatDate(task.dueDate),
@@ -212,7 +214,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
         0: { cellWidth: 25, fontStyle: 'bold', textColor: BRAND_COLORS.primary },
         1: { cellWidth: 65 },
         2: { cellWidth: 25 },
-        3: { cellWidth: 22 },
+        3: { cellWidth: 28 },
         4: { cellWidth: 35 },
         5: { cellWidth: 35 },
         6: { cellWidth: 25 },
@@ -220,13 +222,13 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       },
       margin: { left: margin, right: margin },
       didDrawCell: (data: any) => {
-        // Color priority cells
+        // Color priority cells with indicator dot
         if (data.section === 'body' && data.column.index === 3) {
-          const priority = data.cell.raw?.toLowerCase();
-          const color = PRIORITY_COLORS[priority];
+          const cellText = String(data.cell.raw || '').trim().toLowerCase();
+          const color = PRIORITY_COLORS[cellText];
           if (color) {
             pdf.setFillColor(color);
-            pdf.circle(data.cell.x + 3, data.cell.y + data.cell.height / 2, 1.5, 'F');
+            pdf.circle(data.cell.x + 4, data.cell.y + data.cell.height / 2, 1.5, 'F');
           }
         }
       },
