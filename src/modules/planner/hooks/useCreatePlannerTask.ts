@@ -81,6 +81,22 @@ export function useCreatePlannerTask() {
 
       if (error) throw error;
 
+      // Auto-create default checklist item with task title
+      const { error: checklistError } = await supabase
+        .from('planner_task_checklist_items')
+        .insert({
+          task_id: taskId,
+          content: data.title,
+          is_header: false,
+          sort_order: 0,
+          is_completed: false,
+        });
+
+      if (checklistError) {
+        console.error('Failed to create default checklist item:', checklistError);
+        // Don't throw - task was created successfully
+      }
+
       return { ...result, key: taskKey, id: taskId, assigneeName: data.assigneeName };
     },
     onMutate: async (data) => {

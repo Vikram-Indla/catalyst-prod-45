@@ -18,9 +18,10 @@ import { ProgressRing } from './ProgressRing';
 interface ChecklistSectionProps {
   taskId: string;
   items: ChecklistItem[];
+  taskDescription?: string;
 }
 
-export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
+export function ChecklistSection({ taskId, items, taskDescription }: ChecklistSectionProps) {
   const toggleItem = useToggleChecklistItem();
   const addItem = useAddChecklistItem();
   const deleteItem = useDeleteChecklistItem();
@@ -55,15 +56,23 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
           </div>
         </div>
         
-        {/* Styled AI Generate Button */}
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-7 text-xs font-medium border-primary text-primary hover:bg-primary hover:text-white transition-colors"
-        >
-          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-          AI Generate
-        </Button>
+        {/* Styled AI Generate Button - enabled only when description has ≥25 words */}
+        {(() => {
+          const wordCount = (taskDescription || '').trim().split(/\s+/).filter(Boolean).length;
+          const isEnabled = wordCount >= 25;
+          return (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              disabled={!isEnabled}
+              title={!isEnabled ? 'Add at least 25 words to description to enable AI generation' : undefined}
+              className="h-7 text-xs font-medium border-primary text-primary hover:bg-primary hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+              AI Generate
+            </Button>
+          );
+        })()}
       </div>
       
       {/* Checklist items */}

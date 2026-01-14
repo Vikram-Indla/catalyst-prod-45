@@ -61,7 +61,7 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
       {/* Top row: Key + Priority + Menu */}
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-mono text-muted-foreground">
+          <span className="text-[11px] font-mono text-[#2563eb] font-semibold">
             {task.key}
           </span>
           <PriorityBadge priority={task.priority} />
