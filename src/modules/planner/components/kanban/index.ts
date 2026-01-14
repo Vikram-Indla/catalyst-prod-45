@@ -6,6 +6,7 @@ export { KanbanBoard } from './KanbanBoard';
 export { KanbanColumn } from './KanbanColumn';
 export { KanbanCard } from './KanbanCard';
 export { KanbanFilters } from './KanbanFilters';
+export { AddColumnButton } from './AddColumnButton';
 export { CreateTaskModal } from './CreateTaskModal';
 export { TaskDetailDrawer } from './TaskDetailDrawer';
 export { PriorityBadge } from './PriorityBadge';

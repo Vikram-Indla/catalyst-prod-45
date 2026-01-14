@@ -22,7 +22,8 @@ import { useKanbanStatuses, useKanbanStatusesRealtime } from '../../hooks/useKan
 import { useKanbanTasks, useKanbanTasksRealtime, useMoveKanbanTask } from '../../hooks/useKanbanTasks';
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
-import { KanbanFilters, SwimlaneGrouping } from './KanbanFilters';
+import { KanbanFilters, SwimlaneGrouping, KanbanViewMode } from './KanbanFilters';
+import { AddColumnButton } from './AddColumnButton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Loader2, User, Flag, Layers } from 'lucide-react';
 
@@ -47,6 +48,7 @@ export function KanbanBoard({
     workstream_id: 'all',
   });
   const [swimlane, setSwimlane] = useState<SwimlaneGrouping>('none');
+  const [viewMode, setViewMode] = useState<KanbanViewMode>('board');
 
   // Data hooks
   const { data: statuses = [], isLoading: statusesLoading } = useKanbanStatuses();
@@ -223,6 +225,8 @@ export function KanbanBoard({
           taskCount={tasks.length}
           swimlane={swimlane}
           onSwimlaneChange={setSwimlane}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
       </div>
 
@@ -235,47 +239,109 @@ export function KanbanBoard({
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          {swimlane === 'none' ? (
-            // No swimlanes - flat board
-            <div className="flex gap-4 p-4 min-h-full">
-              {statuses.map((status) => (
-                <KanbanColumn
-                  key={status.id}
-                  status={status}
-                  tasks={getTasksByStatus(tasks)[status.id] || []}
-                  onTaskClick={onTaskClick}
-                  onTaskEdit={onTaskEdit}
-                  onTaskDelete={onTaskDelete}
-                  onAddTask={onAddTask}
-                />
-              ))}
-            </div>
+          {viewMode === 'board' ? (
+            // Standard Board View
+            swimlane === 'none' ? (
+              // No swimlanes - flat board
+              <div className="flex gap-4 p-4 min-h-full">
+                {statuses.map((status) => (
+                  <KanbanColumn
+                    key={status.id}
+                    status={status}
+                    tasks={getTasksByStatus(tasks)[status.id] || []}
+                    onTaskClick={onTaskClick}
+                    onTaskEdit={onTaskEdit}
+                    onTaskDelete={onTaskDelete}
+                    onAddTask={onAddTask}
+                  />
+                ))}
+                {/* Add Column Button */}
+                <AddColumnButton />
+              </div>
+            ) : (
+              // Swimlane grouped board
+              <div className="p-4 space-y-6">
+                {swimlaneGroups.map((group) => (
+                  <div key={group.key} className="space-y-2">
+                    {/* Swimlane Header */}
+                    <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/50">
+                      {getSwimlaneIcon()}
+                      <span className="font-medium text-sm">{group.label}</span>
+                      <span className="text-xs text-muted-foreground">
+                        ({group.tasks.length})
+                      </span>
+                    </div>
+                    {/* Swimlane Columns */}
+                    <div className="flex gap-4 overflow-x-auto pb-2">
+                      {statuses.map((status) => (
+                        <KanbanColumn
+                          key={`${group.key}-${status.id}`}
+                          status={status}
+                          tasks={getTasksByStatus(group.tasks)[status.id] || []}
+                          onTaskClick={onTaskClick}
+                          onTaskEdit={onTaskEdit}
+                          onTaskDelete={onTaskDelete}
+                          onAddTask={onAddTask}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
           ) : (
-            // Swimlane grouped board
-            <div className="p-4 space-y-6">
+            // Swimlane View Mode - horizontal rows grouped by workstream/assignee
+            <div className="p-4 space-y-4">
               {swimlaneGroups.map((group) => (
-                <div key={group.key} className="space-y-2">
+                <div key={group.key} className="border border-border rounded-xl overflow-hidden">
                   {/* Swimlane Header */}
-                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/50">
+                  <div className="flex items-center gap-3 px-4 py-3 bg-card border-b border-border">
                     {getSwimlaneIcon()}
-                    <span className="font-medium text-sm">{group.label}</span>
-                    <span className="text-xs text-muted-foreground">
-                      ({group.tasks.length})
+                    <span className="font-semibold text-sm">{group.label}</span>
+                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                      {group.tasks.length} tasks
                     </span>
                   </div>
-                  {/* Swimlane Columns */}
-                  <div className="flex gap-4 overflow-x-auto pb-2">
-                    {statuses.map((status) => (
-                      <KanbanColumn
-                        key={`${group.key}-${status.id}`}
-                        status={status}
-                        tasks={getTasksByStatus(group.tasks)[status.id] || []}
-                        onTaskClick={onTaskClick}
-                        onTaskEdit={onTaskEdit}
-                        onTaskDelete={onTaskDelete}
-                        onAddTask={onAddTask}
-                      />
-                    ))}
+                  
+                  {/* Swimlane Body - Horizontal columns */}
+                  <div className="flex gap-0 overflow-x-auto bg-muted/30">
+                    {statuses.map((status, idx) => {
+                      const columnTasks = getTasksByStatus(group.tasks)[status.id] || [];
+                      return (
+                        <div 
+                          key={status.id} 
+                          className={`flex-1 min-w-[200px] p-3 ${idx < statuses.length - 1 ? 'border-r border-border' : ''}`}
+                        >
+                          {/* Mini Column Header */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <span
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: status.color }}
+                            />
+                            <span className="text-xs font-medium text-muted-foreground">{status.name}</span>
+                            <span className="text-xs text-muted-foreground">({columnTasks.length})</span>
+                          </div>
+                          
+                          {/* Tasks */}
+                          <div className="space-y-2">
+                            {columnTasks.length > 0 ? (
+                              columnTasks.map((task) => (
+                                <div
+                                  key={task.id}
+                                  onClick={() => onTaskClick?.(task)}
+                                  className="p-2 bg-card rounded-lg border border-border cursor-pointer hover:shadow-sm transition-shadow"
+                                >
+                                  <div className="text-xs text-muted-foreground mb-1">{task.key}</div>
+                                  <div className="text-sm font-medium line-clamp-2">{task.title}</div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-xs text-muted-foreground text-center py-4">No tasks</div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ))}
