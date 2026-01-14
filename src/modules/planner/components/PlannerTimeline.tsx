@@ -143,27 +143,29 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
             <div className="flex h-10 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
               {dateColumns.map((date, i) => {
                 const isCurrentDay = isToday(date);
-                const isWeekendDay = isWeekend(date);
+                // Saudi weekend is Friday (5) and Saturday (6)
+                const dayOfWeek = date.getDay();
+                const isSaudiWeekend = dayOfWeek === 5 || dayOfWeek === 6;
                 
                 return (
                   <div
                     key={i}
                     className={cn(
                       "flex-shrink-0 flex flex-col items-center justify-center border-r border-gray-100 dark:border-gray-800 text-[10px]",
-                      isCurrentDay && "bg-blue-50 dark:bg-blue-950/30",
-                      isWeekendDay && !isCurrentDay && "bg-gray-100/50 dark:bg-gray-800/50"
+                      isCurrentDay && "bg-blue-100 dark:bg-blue-950/50",
+                      isSaudiWeekend && !isCurrentDay && "bg-gray-200 dark:bg-gray-800"
                     )}
                     style={{ width: columnWidth }}
                   >
                     <span className={cn(
                       "font-medium",
-                      isCurrentDay ? "text-blue-600" : "text-gray-400 dark:text-gray-500"
+                      isCurrentDay ? "text-blue-600" : isSaudiWeekend ? "text-gray-500" : "text-gray-400 dark:text-gray-500"
                     )}>
                       {format(date, 'EEE')}
                     </span>
                     <span className={cn(
                       "font-semibold",
-                      isCurrentDay ? "text-blue-600" : "text-gray-700 dark:text-gray-300"
+                      isCurrentDay ? "text-blue-600" : isSaudiWeekend ? "text-gray-600" : "text-gray-700 dark:text-gray-300"
                     )}>
                       {format(date, 'd')}
                     </span>
@@ -178,15 +180,17 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
               <div className="absolute inset-0 flex pointer-events-none">
                 {dateColumns.map((date, i) => {
                   const isCurrentDay = isToday(date);
-                  const isWeekendDay = isWeekend(date);
+                  // Saudi weekend is Friday (5) and Saturday (6)
+                  const dayOfWeek = date.getDay();
+                  const isSaudiWeekend = dayOfWeek === 5 || dayOfWeek === 6;
                   
                   return (
                     <div
                       key={i}
                       className={cn(
                         "flex-shrink-0 border-r border-gray-100 dark:border-gray-800",
-                        isCurrentDay && "bg-blue-50/30 dark:bg-blue-950/10",
-                        isWeekendDay && !isCurrentDay && "bg-gray-50/50 dark:bg-gray-900/30"
+                        isCurrentDay && "bg-blue-50/50 dark:bg-blue-950/20",
+                        isSaudiWeekend && !isCurrentDay && "bg-gray-100 dark:bg-gray-800/50"
                       )}
                       style={{ width: columnWidth }}
                     />
