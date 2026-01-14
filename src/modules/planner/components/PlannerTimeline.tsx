@@ -1,17 +1,18 @@
 // ============================================================
-// PLANNER TIMELINE (GANTT) VIEW
-// Gantt chart with zoom controls and drag-to-reschedule
-// Catalyst V5 semantic colors with priority-based styling
+// PLANNER TIMELINE (GANTT) VIEW - ENTERPRISE STYLE
+// Clean white bars with workstream-based color stripes
 // ============================================================
 
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import type { PlannerTask, TaskPriority } from '../types';
-import { PRIORITY_CONFIG, getProgressColor } from '../types';
+import type { PlannerTask } from '../types';
 import { motion } from 'framer-motion';
 import { addDays, startOfWeek, format, differenceInDays, isToday, isWeekend } from 'date-fns';
+import { GanttBarEnterprise } from './timeline/GanttBarEnterprise';
+import { TimelineTaskRow } from './timeline/TimelineTaskRow';
+import { TodayLine } from './timeline/TodayLine';
 
 interface PlannerTimelineProps {
   tasks: PlannerTask[];
@@ -20,26 +21,11 @@ interface PlannerTimelineProps {
 
 type ZoomLevel = 'day' | 'week' | 'month';
 
-// Priority-based bar colors for Gantt bars
-const PRIORITY_BAR_COLORS: Record<TaskPriority, { bg: string; fill: string }> = {
-  critical: { bg: 'rgba(239, 68, 68, 0.25)', fill: '#ef4444' },   // red-500
-  high: { bg: 'rgba(217, 119, 6, 0.25)', fill: '#d97706' },       // amber-600
-  medium: { bg: 'rgba(37, 99, 235, 0.25)', fill: '#2563eb' },     // blue-600
-  low: { bg: 'rgba(156, 163, 175, 0.25)', fill: '#9ca3af' },      // gray-400
-};
-
-// Priority icons
-const PRIORITY_ICONS: Record<TaskPriority, string> = {
-  critical: '⚠️',
-  high: '🔥',
-  medium: '●',
-  low: '○',
-};
-
 export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('week');
   const [viewStart, setViewStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 0 }));
   const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   // Generate date columns based on zoom level
   const dateColumns = useMemo(() => {
@@ -52,6 +38,9 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
     return columns;
   }, [viewStart, zoomLevel]);
 
+  // Column width based on zoom
+  const columnWidth = zoomLevel === 'day' ? 60 : zoomLevel === 'week' ? 48 : 24;
+
   // Calculate bar position and width for each task
   const getTaskBar = (task: PlannerTask) => {
     const startDate = task.startDate ? new Date(task.startDate) : new Date();
@@ -59,8 +48,6 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
     
     const startOffset = differenceInDays(startDate, viewStart);
     const duration = Math.max(1, differenceInDays(endDate, startDate) + 1);
-    
-    const columnWidth = zoomLevel === 'day' ? 60 : zoomLevel === 'week' ? 40 : 20;
     
     return {
       left: startOffset * columnWidth,
@@ -77,25 +64,29 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
     setViewStart(startOfWeek(new Date(), { weekStartsOn: 0 }));
   };
 
-  const columnWidth = zoomLevel === 'day' ? 60 : zoomLevel === 'week' ? 40 : 20;
-
   // Calculate today line position
   const todayPosition = differenceInDays(new Date(), viewStart) * columnWidth + columnWidth / 2;
+  const showTodayLine = todayPosition > 0 && todayPosition < dateColumns.length * columnWidth;
+
+  const handleTaskClick = (task: PlannerTask) => {
+    setSelectedTaskId(task.id);
+    onTaskClick(task);
+  };
 
   return (
-    <div className="h-full flex flex-col bg-surface-0">
+    <div className="h-full flex flex-col bg-white dark:bg-gray-950">
       {/* Header Controls */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-1">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={goToToday}>
             <CalendarDays className="w-4 h-4 mr-2" />
             Today
           </Button>
-          <div className="flex items-center border rounded-md">
+          <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900">
             <Button variant="ghost" size="sm" onClick={() => navigateView('prev')}>
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <span className="px-3 text-sm font-medium text-text-primary min-w-[140px] text-center">
+            <span className="px-3 text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[140px] text-center">
               {format(viewStart, 'MMM d')} - {format(addDays(viewStart, dateColumns.length - 1), 'MMM d, yyyy')}
             </span>
             <Button variant="ghost" size="sm" onClick={() => navigateView('next')}>
@@ -104,7 +95,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 bg-surface-2 rounded-md p-0.5">
+        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-md p-0.5">
           {(['day', 'week', 'month'] as const).map(level => (
             <button
               key={level}
@@ -112,8 +103,8 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
               className={cn(
                 "px-3 py-1.5 text-xs font-medium rounded transition-colors capitalize",
                 zoomLevel === level 
-                  ? "bg-white text-text-primary shadow-sm" 
-                  : "text-text-muted hover:text-text-secondary"
+                  ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm" 
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               )}
             >
               {level}
@@ -126,223 +117,111 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
       <div className="flex-1 overflow-auto">
         <div className="flex min-h-full">
           {/* Task List Column (Left Panel) */}
-          <div className="w-[320px] flex-shrink-0 border-r border-border bg-surface-0">
-            <div className="h-10 border-b border-border bg-surface-1 flex items-center px-3">
-              <span className="text-xs font-semibold text-text-muted uppercase">Tasks</span>
+          <div className="w-[320px] flex-shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+            <div className="h-10 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 flex items-center px-3 sticky top-0 z-10">
+              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Tasks ({tasks.length})
+              </span>
             </div>
             <div>
-              {tasks.map((task, index) => {
-                const priorityConfig = PRIORITY_CONFIG[task.priority];
-                return (
-                  <motion.div
-                    key={task.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.02 }}
-                    onClick={() => onTaskClick(task)}
-                    onMouseEnter={() => setHoveredTaskId(task.id)}
-                    onMouseLeave={() => setHoveredTaskId(null)}
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-2 border-b border-border cursor-pointer h-16",
-                      "hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors"
-                    )}
-                  >
-                    {/* Priority bar indicator */}
-                    <div 
-                      className="w-1 h-10 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: priorityConfig.color }}
-                    />
-                    {/* Task info */}
-                    <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px]">{PRIORITY_ICONS[task.priority]}</span>
-                        <span className="text-sm font-semibold text-text-primary truncate">{task.title}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-mono font-semibold text-muted-foreground">{task.key}</span>
-                        {task.assigneeName && (
-                          <>
-                            <span className="text-muted-foreground">•</span>
-                            <div className="flex items-center gap-1">
-                              <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[8px] font-bold">
-                                {task.assigneeInitials}
-                              </div>
-                              <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">
-                                {task.assigneeName}
-                              </span>
-                            </div>
-                          </>
-                        )}
-                        {task.teamName && (
-                          <>
-                            <span className="text-muted-foreground">•</span>
-                            <span 
-                              className="text-[10px] font-semibold truncate max-w-[80px] px-1.5 py-0.5 rounded"
-                              style={{ 
-                                backgroundColor: `${task.teamColor}15`,
-                                color: task.teamColor || '#6b7280'
-                              }}
-                            >
-                              {task.teamName}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+              {tasks.map((task) => (
+                <TimelineTaskRow
+                  key={task.id}
+                  task={task}
+                  isSelected={selectedTaskId === task.id}
+                  isHovered={hoveredTaskId === task.id}
+                  onClick={() => handleTaskClick(task)}
+                  onHover={(hovered) => setHoveredTaskId(hovered ? task.id : null)}
+                />
+              ))}
             </div>
           </div>
 
           {/* Gantt Chart Area */}
           <div className="flex-1 overflow-x-auto">
             {/* Date Headers */}
-            <div className="flex h-10 border-b border-border bg-surface-1 sticky top-0 z-10">
-              {dateColumns.map((date, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "flex-shrink-0 flex flex-col items-center justify-center border-r border-border text-[10px]",
-                    isToday(date) && "bg-blue-50 dark:bg-blue-950/30",
-                    isWeekend(date) && !isToday(date) && "bg-muted/50"
-                  )}
-                  style={{ width: columnWidth }}
-                >
-                  <span className="font-medium text-text-muted">{format(date, 'EEE')}</span>
-                  <span className={cn(
-                    "font-semibold",
-                    isToday(date) ? "text-blue-600" : "text-text-primary"
-                  )}>
-                    {format(date, 'd')}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Task Rows with Bars */}
-            <div className="relative">
-              {/* Grid Background */}
-              <div className="absolute inset-0 flex pointer-events-none">
-                {dateColumns.map((date, i) => (
+            <div className="flex h-10 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
+              {dateColumns.map((date, i) => {
+                const isCurrentDay = isToday(date);
+                const isWeekendDay = isWeekend(date);
+                
+                return (
                   <div
                     key={i}
                     className={cn(
-                      "flex-shrink-0 border-r border-border",
-                      isToday(date) && "bg-blue-50/30 dark:bg-blue-950/10",
-                      isWeekend(date) && !isToday(date) && "bg-muted/30"
+                      "flex-shrink-0 flex flex-col items-center justify-center border-r border-gray-100 dark:border-gray-800 text-[10px]",
+                      isCurrentDay && "bg-blue-50 dark:bg-blue-950/30",
+                      isWeekendDay && !isCurrentDay && "bg-gray-100/50 dark:bg-gray-800/50"
                     )}
                     style={{ width: columnWidth }}
-                  />
-                ))}
+                  >
+                    <span className={cn(
+                      "font-medium",
+                      isCurrentDay ? "text-blue-600" : "text-gray-400 dark:text-gray-500"
+                    )}>
+                      {format(date, 'EEE')}
+                    </span>
+                    <span className={cn(
+                      "font-semibold",
+                      isCurrentDay ? "text-blue-600" : "text-gray-700 dark:text-gray-300"
+                    )}>
+                      {format(date, 'd')}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Task Rows with Bars */}
+            <div className="relative" style={{ minWidth: dateColumns.length * columnWidth }}>
+              {/* Grid Background */}
+              <div className="absolute inset-0 flex pointer-events-none">
+                {dateColumns.map((date, i) => {
+                  const isCurrentDay = isToday(date);
+                  const isWeekendDay = isWeekend(date);
+                  
+                  return (
+                    <div
+                      key={i}
+                      className={cn(
+                        "flex-shrink-0 border-r border-gray-100 dark:border-gray-800",
+                        isCurrentDay && "bg-blue-50/30 dark:bg-blue-950/10",
+                        isWeekendDay && !isCurrentDay && "bg-gray-50/50 dark:bg-gray-900/30"
+                      )}
+                      style={{ width: columnWidth }}
+                    />
+                  );
+                })}
               </div>
 
-              {/* Today Line - Bold blue with dot */}
-              {todayPosition > 0 && todayPosition < dateColumns.length * columnWidth && (
-                <div
-                  className="absolute top-0 bottom-0 w-0.5 bg-blue-600 z-20"
-                  style={{ left: todayPosition }}
-                >
-                  {/* Dot at top */}
-                  <div className="absolute -top-1 -left-1 w-2.5 h-2.5 bg-blue-600 rounded-full" />
-                </div>
-              )}
+              {/* Today Line */}
+              {showTodayLine && <TodayLine position={todayPosition} />}
 
               {/* Task Bars */}
               {tasks.map((task, index) => {
                 const bar = getTaskBar(task);
-                const barColors = PRIORITY_BAR_COLORS[task.priority];
-                const progressColor = getProgressColor(task.progress);
                 const isHovered = hoveredTaskId === task.id;
 
                 return (
-                  <div
+                  <motion.div
                     key={task.id}
-                    className="relative h-16 border-b border-border"
-                    style={{ width: dateColumns.length * columnWidth }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.02 }}
+                    className={cn(
+                      "relative h-16 border-b border-gray-100 dark:border-gray-800",
+                      index % 2 === 1 && "bg-gray-50/30 dark:bg-gray-900/20"
+                    )}
                   >
-                    <motion.div
-                      initial={{ opacity: 0, scaleX: 0 }}
-                      animate={{ opacity: 1, scaleX: 1 }}
-                      transition={{ delay: index * 0.03, type: 'spring' }}
-                      onClick={() => onTaskClick(task)}
-                      onMouseEnter={() => setHoveredTaskId(task.id)}
-                      onMouseLeave={() => setHoveredTaskId(null)}
-                      className={cn(
-                        "absolute top-3 h-10 rounded-md cursor-pointer",
-                        "flex items-center px-2.5 text-xs font-medium truncate",
-                        "transition-all duration-200",
-                        isHovered && "shadow-lg -translate-y-0.5",
-                        task.blocked && "opacity-60"
-                      )}
-                      style={{
-                        left: Math.max(0, bar.left),
-                        width: Math.max(40, bar.width),
-                        backgroundColor: barColors.bg,
-                        transformOrigin: 'left',
-                      }}
-                    >
-                      {/* Progress Fill */}
-                      <div
-                        className="absolute inset-0 rounded-md"
-                        style={{ 
-                          width: `${task.progress}%`, 
-                          backgroundColor: barColors.fill,
-                          opacity: 0.6
-                        }}
-                      />
-                      
-                      {/* Content */}
-                      <div className="relative z-10 flex items-center justify-between w-full gap-2">
-                        <span 
-                          className="truncate font-semibold drop-shadow-sm"
-                          style={{ color: barColors.fill }}
-                        >
-                          {bar.width > 80 ? task.title : task.key}
-                        </span>
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <span 
-                            className="text-[10px] font-bold drop-shadow-sm"
-                            style={{ color: barColors.fill }}
-                          >
-                            {task.progress}%
-                          </span>
-                          {task.assigneeInitials && (
-                            <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center text-[10px] font-bold text-gray-700 shadow-sm">
-                              {task.assigneeInitials}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Hover Tooltip */}
-                      {isHovered && bar.width < 200 && (
-                        <div className="absolute bottom-full left-0 mb-2 bg-gray-900 text-white p-3 rounded-lg text-xs min-w-[200px] z-50 shadow-xl">
-                          <div className="font-semibold mb-2">{task.title}</div>
-                          <div className="flex justify-between mb-1">
-                            <span className="text-gray-400">Key</span>
-                            <span>{task.key}</span>
-                          </div>
-                          <div className="flex justify-between mb-1">
-                            <span className="text-gray-400">Dates</span>
-                            <span>{task.startDate ? format(new Date(task.startDate), 'MMM d') : '—'} – {task.dueDate ? format(new Date(task.dueDate), 'MMM d') : '—'}</span>
-                          </div>
-                          {task.teamName && (
-                            <div className="flex justify-between mb-1">
-                              <span className="text-gray-400">Workstream</span>
-                              <span>{task.teamName}</span>
-                            </div>
-                          )}
-                          <div className="mt-2 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full rounded-full"
-                              style={{ width: `${task.progress}%`, backgroundColor: progressColor }}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </motion.div>
-                  </div>
+                    <GanttBarEnterprise
+                      task={task}
+                      left={bar.left}
+                      width={bar.width}
+                      isHovered={isHovered}
+                      onClick={() => handleTaskClick(task)}
+                      onHover={(hovered) => setHoveredTaskId(hovered ? task.id : null)}
+                    />
+                  </motion.div>
                 );
               })}
             </div>
@@ -351,8 +230,12 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
       </div>
 
       {tasks.length === 0 && (
-        <div className="flex-1 flex items-center justify-center text-text-muted">
-          No tasks to display on timeline
+        <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400">
+          <div className="text-center">
+            <CalendarDays className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+            <p className="text-sm font-medium">No tasks to display on timeline</p>
+            <p className="text-xs text-gray-400 mt-1">Tasks with start dates will appear here</p>
+          </div>
         </div>
       )}
     </div>
