@@ -4,16 +4,8 @@
  */
 
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import type { PlannerTask } from '../types';
-
-// Extend jsPDF with autoTable plugin
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-    lastAutoTable: { finalY: number };
-  }
-}
 
 interface ExportOptions {
   title: string;
@@ -195,7 +187,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       `${task.progress}%`,
     ]);
 
-    pdf.autoTable({
+    autoTable(pdf, {
       startY: currentY,
       head: [['ID', 'Title', 'Status', 'Priority', 'Workstream', 'Assignee', 'Due Date', 'Progress']],
       body: tableData,
@@ -240,7 +232,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       },
     });
 
-    currentY = pdf.lastAutoTable.finalY + 10;
+    currentY = (pdf as any).lastAutoTable.finalY + 10;
   };
 
   // Add footer
