@@ -2,11 +2,12 @@
  * Bulk Assignment Form - Set assignee, priority, due date for selected tests
  */
 
-import React from 'react';
-import { Users, AlertTriangle, Wand2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, AlertTriangle, Wand2, Settings2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 import { 
   Select, 
   SelectContent, 
@@ -15,8 +16,11 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
+import { SmartAssignmentModal } from '@/components/releases/smart-assignment';
 
 interface BulkAssignmentFormProps {
+  cycleId?: string;
+  selectedTestIds?: string[];
   assigneeId: string | null;
   onAssigneeChange: (value: string | null) => void;
   priority: string | null;
@@ -37,6 +41,8 @@ const TEAM_MEMBERS = [
 ];
 
 export function BulkAssignmentForm({
+  cycleId = '',
+  selectedTestIds = [],
   assigneeId,
   onAssigneeChange,
   priority,
@@ -47,6 +53,7 @@ export function BulkAssignmentForm({
   useSmartAssignment,
   onSmartAssignmentChange,
 }: BulkAssignmentFormProps) {
+  const [isSmartModalOpen, setIsSmartModalOpen] = useState(false);
   const isDueDateAfterCycleEnd = cycleEndDate && dueDate && dueDate > cycleEndDate;
 
   return (
@@ -84,11 +91,33 @@ export function BulkAssignmentForm({
             </p>
           </div>
         </div>
-        <Switch
-          checked={useSmartAssignment}
-          onCheckedChange={onSmartAssignmentChange}
-        />
+        <div className="flex items-center gap-2">
+          {useSmartAssignment && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs gap-1"
+              onClick={() => setIsSmartModalOpen(true)}
+              style={{ color: CATALYST_V5.primary }}
+            >
+              <Settings2 className="h-3 w-3" />
+              Configure
+            </Button>
+          )}
+          <Switch
+            checked={useSmartAssignment}
+            onCheckedChange={onSmartAssignmentChange}
+          />
+        </div>
       </div>
+
+      {/* Smart Assignment Modal */}
+      <SmartAssignmentModal
+        cycleId={cycleId}
+        testCaseIds={selectedTestIds}
+        isOpen={isSmartModalOpen}
+        onClose={() => setIsSmartModalOpen(false)}
+      />
 
       {/* Assignee Select */}
       <div className="space-y-1.5">
