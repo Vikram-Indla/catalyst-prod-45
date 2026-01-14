@@ -186,8 +186,8 @@ export function TaskChecklist({
           variant="outline"
           size="sm"
           onClick={handleAIGenerate}
-          disabled={isGenerating || (taskDescription || '').trim().split(/\s+/).filter(Boolean).length < 20}
-          title={(taskDescription || '').trim().split(/\s+/).filter(Boolean).length < 20 ? 'Add at least 20 words to description to enable AI generation' : undefined}
+          disabled={isGenerating || (taskDescription || '').trim().split(/\s+/).filter(Boolean).length < 25}
+          title={(taskDescription || '').trim().split(/\s+/).filter(Boolean).length < 25 ? 'Add at least 25 words to description to enable AI generation' : undefined}
           className="gap-2 text-primary border-primary/30 hover:bg-primary/5 disabled:opacity-50"
         >
           {isGenerating ? (
