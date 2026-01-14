@@ -218,20 +218,31 @@ export interface ColumnConfig {
 }
 
 // Column configuration - Catalyst V5 semantic status colors
+// Balanced approach: colorful for active states, subtle for default states
 export const COLUMN_CONFIG: ColumnConfig[] = [
-  { id: 'backlog', title: 'Backlog', color: '#9ca3af', order: 0 },       // gray-400
-  { id: 'planned', title: 'Planned', color: '#2563eb', order: 1 },       // primary/blue-600
-  { id: 'in-progress', title: 'In Progress', color: '#d97706', order: 2 }, // warning/amber-600
-  { id: 'review', title: 'Review', color: '#0d9488', order: 3 },         // teal-600
-  { id: 'done', title: 'Done', color: '#10b981', order: 4 },             // success/emerald-500
+  { id: 'backlog', title: 'Backlog', color: '#9ca3af', order: 0 },       // gray-400 (subtle)
+  { id: 'planned', title: 'Planned', color: '#6b7280', order: 1 },       // gray-500 (subtle)
+  { id: 'in-progress', title: 'In Progress', color: '#d97706', order: 2 }, // warning/amber-600 (colorful)
+  { id: 'review', title: 'Review', color: '#8b5cf6', order: 3 },         // violet-500 (colorful)
+  { id: 'done', title: 'Done', color: '#10b981', order: 4 },             // success/emerald-500 (colorful)
 ];
 
+// Status style configuration - determines whether status gets colored background
+export const STATUS_STYLE_CONFIG: Record<string, { colorful: boolean; bgColor: string }> = {
+  'backlog': { colorful: false, bgColor: 'transparent' },
+  'planned': { colorful: false, bgColor: 'transparent' },
+  'in-progress': { colorful: true, bgColor: '#fffbeb' },  // amber-50
+  'review': { colorful: true, bgColor: '#f5f3ff' },       // violet-50
+  'done': { colorful: true, bgColor: '#ecfdf5' },         // emerald-50
+};
+
 // Priority configuration - Catalyst V5 semantic priority colors
-export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; emoji: string; bgColor: string }> = {
-  critical: { label: 'Critical', color: '#ef4444', emoji: '⚠️', bgColor: '#fef2f2' },   // danger/red-500
-  high: { label: 'High', color: '#d97706', emoji: '🔥', bgColor: '#fffbeb' },           // warning/amber-600
-  medium: { label: 'Medium', color: '#2563eb', emoji: '●', bgColor: '#eff6ff' },        // primary/blue-600
-  low: { label: 'Low', color: '#9ca3af', emoji: '○', bgColor: '#f3f4f6' },              // gray-400
+// Balanced approach: colorful for urgent (critical/high), subtle for normal (medium/low)
+export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; emoji: string; bgColor: string; colorful: boolean }> = {
+  critical: { label: 'Critical', color: '#e11d48', emoji: '⚠️', bgColor: '#fff1f2', colorful: true },  // rose-600
+  high: { label: 'High', color: '#d97706', emoji: '🔥', bgColor: '#fffbeb', colorful: true },          // amber-600
+  medium: { label: 'Medium', color: '#6b7280', emoji: '●', bgColor: 'transparent', colorful: false },  // gray-500 (subtle)
+  low: { label: 'Low', color: '#9ca3af', emoji: '○', bgColor: 'transparent', colorful: false },        // gray-400 (subtle)
 };
 
 // Due date groups for grouping

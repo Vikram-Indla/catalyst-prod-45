@@ -21,7 +21,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
-import { COLUMN_CONFIG, PRIORITY_CONFIG, getProgressColor } from '../types';
+import { COLUMN_CONFIG, PRIORITY_CONFIG, STATUS_STYLE_CONFIG } from '../types';
+import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -57,14 +58,6 @@ const ALL_COLUMNS: ColumnDef[] = [
   { id: 'dueDate', label: 'Due Date', field: 'dueDate', width: 'w-28', defaultVisible: true },
   { id: 'progress', label: 'Progress', field: 'progress', width: 'w-32', defaultVisible: true },
 ];
-
-// Priority row stripe colors (left border)
-const PRIORITY_ROW_STYLES: Record<TaskPriority, string> = {
-  critical: 'shadow-[inset_4px_0_0_#ef4444]',
-  high: 'shadow-[inset_4px_0_0_#d97706]',
-  medium: 'shadow-[inset_4px_0_0_#2563eb]',
-  low: 'shadow-[inset_4px_0_0_#d1d5db]',
-};
 
 export function PlannerTaskList({
   tasks,
@@ -219,11 +212,13 @@ export function PlannerTaskList({
             <AnimatePresence>
               {sortedTasks.map((task, index) => {
                 const statusConfig = COLUMN_CONFIG.find(c => c.id === task.status);
+                const statusStyle = STATUS_STYLE_CONFIG[task.status] || { colorful: false, bgColor: 'transparent' };
                 const priorityConfig = PRIORITY_CONFIG[task.priority];
                 const isSelected = selectedTaskIds.has(task.id);
                 const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
                 const dueDateStatus = getDueDateStatus(task.dueDate);
-                const progressColor = getProgressColor(task.progress);
+                const workstreamColors = getWorkstreamColor(task.teamName);
+                // Progress bar uses workstream color
 
                 return (
                   <motion.tr
@@ -235,11 +230,13 @@ export function PlannerTaskList({
                     onClick={() => onTaskClick(task)}
                     className={cn(
                       "border-b border-border-subtle cursor-pointer transition-colors group",
-                      PRIORITY_ROW_STYLES[task.priority],
                       isSelected && "bg-blue-50 dark:bg-blue-950/30",
                       task.blocked && "bg-red-50/50 dark:bg-red-950/20",
-                      !isSelected && !task.blocked && "hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                      !isSelected && !task.blocked && "hover:bg-blue-50/50 dark:hover:bg-blue-950/20"
                     )}
+                    style={{
+                      boxShadow: `inset 5px 0 0 ${workstreamColors.hex}`,
+                    }}
                   >
                     <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
                       <Checkbox
@@ -275,14 +272,18 @@ export function PlannerTaskList({
                       </td>
                     )}
 
-                    {/* Status - Colored badge with dot */}
+                    {/* Status - Conditional styling: colorful for active, subtle for default */}
                     {visibleColumns.has('status') && (
                       <td className="px-3 py-3">
                         <span 
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold"
+                          className={cn(
+                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold",
+                            !statusStyle.colorful && "bg-transparent"
+                          )}
                           style={{ 
-                            backgroundColor: `${statusConfig?.color}15`,
-                            color: statusConfig?.color 
+                            backgroundColor: statusStyle.colorful ? statusStyle.bgColor : 'transparent',
+                            color: statusConfig?.color,
+                            border: statusStyle.colorful ? `1px solid ${statusConfig?.color}30` : 'none',
                           }}
                         >
                           <span 
@@ -294,14 +295,18 @@ export function PlannerTaskList({
                       </td>
                     )}
 
-                    {/* Priority - Colored badge with icon */}
+                    {/* Priority - Conditional styling: colorful for urgent, subtle for normal */}
                     {visibleColumns.has('priority') && (
                       <td className="px-3 py-3">
                         <span 
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold"
+                          className={cn(
+                            "inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold",
+                            !priorityConfig.colorful && "bg-transparent"
+                          )}
                           style={{ 
-                            backgroundColor: priorityConfig.bgColor,
-                            color: priorityConfig.color 
+                            backgroundColor: priorityConfig.colorful ? priorityConfig.bgColor : 'transparent',
+                            color: priorityConfig.color,
+                            border: priorityConfig.colorful ? `1px solid ${priorityConfig.color}30` : 'none',
                           }}
                         >
                           <span className="text-[10px]">{priorityConfig.emoji}</span>
@@ -310,16 +315,23 @@ export function PlannerTaskList({
                       </td>
                     )}
 
-                    {/* Team/Workstream */}
+                    {/* Team/Workstream - Always colorful with workstream colors */}
                     {visibleColumns.has('teamName') && (
                       <td className="px-3 py-3">
                         {task.teamName ? (
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm">{task.teamEmoji || '👥'}</span>
-                            <span className="text-foreground/70 truncate text-xs font-medium">
-                              {task.teamName}
-                            </span>
-                          </div>
+                          <span 
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+                            style={{
+                              backgroundColor: workstreamColors.hexLight,
+                              color: workstreamColors.hex,
+                            }}
+                          >
+                            <span 
+                              className="w-1.5 h-1.5 rounded-full" 
+                              style={{ backgroundColor: workstreamColors.hex }}
+                            />
+                            {task.teamName}
+                          </span>
                         ) : (
                           <span className="text-muted-foreground">—</span>
                         )}
@@ -383,7 +395,7 @@ export function PlannerTaskList({
                               className="h-full rounded-full transition-all"
                               style={{ 
                                 width: `${task.progress}%`,
-                                backgroundColor: progressColor
+                                backgroundColor: workstreamColors.hex
                               }}
                             />
                           </div>
