@@ -135,7 +135,7 @@ export function PlannerSearchBar({
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               <span className="text-sm truncate max-w-[100px]">
-                {selectedTeam?.name || 'All Teams'}
+                {selectedTeam?.name || 'All Workstreams'}
               </span>
             </div>
             <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
@@ -147,7 +147,7 @@ export function PlannerSearchBar({
             className={cn(!selectedTeamId && "bg-blue-50")}
           >
             <Users className="w-4 h-4 mr-2 text-muted-foreground" />
-            All Teams
+            All Workstreams
           </DropdownMenuItem>
           {onCreateTeam && (
             <DropdownMenuItem 
@@ -155,7 +155,7 @@ export function PlannerSearchBar({
               className="text-blue-600 font-medium"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create Team
+              Create Workstream
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
@@ -181,7 +181,7 @@ export function PlannerSearchBar({
             className="text-muted-foreground hover:text-foreground"
           >
             <span className="flex items-center gap-1 text-sm">
-              Manage teams
+              Manage workstreams
               <ArrowRight className="w-3 h-3" />
             </span>
           </DropdownMenuItem>

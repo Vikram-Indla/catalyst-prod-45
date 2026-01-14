@@ -15,7 +15,7 @@ import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
 import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './components/insights';
 import { PlannerSettings } from './components/PlannerSettings';
-import { PlannerTaskDrawer } from './components/PlannerTaskDrawer';
+
 import { PlannerCreateModal } from './components/PlannerCreateModal';
 import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
 import { PlannerBulkActionBar } from './components/PlannerBulkActionBar';
@@ -95,9 +95,7 @@ export function PlannerPage() {
   }, []);
   
   // Drawer/Modal state
-  const [selectedTask, setSelectedTask] = useState<PlannerTask | null>(null);
   const [selectedKanbanTask, setSelectedKanbanTask] = useState<KanbanTask | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isKanbanDrawerOpen, setIsKanbanDrawerOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createDefaultStatus, setCreateDefaultStatus] = useState<TaskStatus>('backlog');
@@ -156,9 +154,9 @@ export function PlannerPage() {
 
   // Task navigation for keyboard shortcuts
   const taskIndex = useMemo(() => {
-    if (!selectedTask) return -1;
-    return filteredTasks.findIndex(t => t.id === selectedTask.id);
-  }, [selectedTask, filteredTasks]);
+    if (!selectedKanbanTask) return -1;
+    return filteredTasks.findIndex(t => t.id === selectedKanbanTask.id);
+  }, [selectedKanbanTask, filteredTasks]);
 
   // Keyboard shortcuts
   usePlannerKeyboard({
@@ -174,20 +172,22 @@ export function PlannerPage() {
       if (filteredTasks.length === 0) return;
       const nextIndex = taskIndex < 0 ? 0 : Math.min(taskIndex + 1, filteredTasks.length - 1);
       const nextTask = filteredTasks[nextIndex];
-      setSelectedTask(nextTask);
-      setIsDrawerOpen(true);
+      const kanbanTask = convertToKanbanTask(nextTask);
+      setSelectedKanbanTask(kanbanTask);
+      setIsKanbanDrawerOpen(true);
     },
     onNavigatePrev: () => {
       if (filteredTasks.length === 0) return;
       const prevIndex = taskIndex < 0 ? 0 : Math.max(taskIndex - 1, 0);
       const prevTask = filteredTasks[prevIndex];
-      setSelectedTask(prevTask);
-      setIsDrawerOpen(true);
+      const kanbanTask = convertToKanbanTask(prevTask);
+      setSelectedKanbanTask(kanbanTask);
+      setIsKanbanDrawerOpen(true);
     },
     onEscape: () => {
-      if (isDrawerOpen) {
-        setIsDrawerOpen(false);
-        setSelectedTask(null);
+      if (isKanbanDrawerOpen) {
+        setIsKanbanDrawerOpen(false);
+        setSelectedKanbanTask(null);
       } else if (isCreateModalOpen) {
         setIsCreateModalOpen(false);
       }
@@ -200,10 +200,58 @@ export function PlannerPage() {
     navigate(`/planner/${view}`);
   }, [navigate]);
 
-  const handleTaskClick = useCallback((task: PlannerTask) => {
-    setSelectedTask(task);
-    setIsDrawerOpen(true);
+  // Convert PlannerTask to KanbanTask for unified drawer
+  const convertToKanbanTask = useCallback((task: PlannerTask): KanbanTask => {
+    // Map status slug to status_id (need to find the status ID)
+    const statusSlugMap: Record<string, string> = {
+      'backlog': '27c811be-5405-4934-a2aa-8a58ea0530bc',
+      'planned': '86d97ec0-70f7-400f-8a70-ae176046c1c3',
+      'in-progress': '564fb550-b156-419f-beed-453b1b44e0ff',
+      'review': 'f449cabf-17a2-4dbe-9321-16fb81097adb',
+      'done': 'fb0f917c-10f5-401f-a66a-9b77db3fbaed',
+    };
+    
+    return {
+      id: task.id,
+      key: task.key,
+      title: task.title,
+      description: task.description || null,
+      status_id: statusSlugMap[task.status] || statusSlugMap['backlog'],
+      priority: task.priority,
+      workstream_id: task.teamId || null,
+      assignee_id: task.assigneeId || null,
+      due_date: task.dueDate || null,
+      start_date: task.startDate || null,
+      position: 0,
+      blocked: task.blocked || false,
+      blocked_reason: task.blockedReason || null,
+      progress: task.progress || 0,
+      is_starred: false,
+      created_by: null,
+      created_at: task.createdAt || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      deleted_at: null,
+      cover_url: null,
+      // Include joined data
+      assignee: task.assigneeId ? {
+        id: task.assigneeId,
+        full_name: task.assigneeName || null,
+        email: null,
+        avatar_url: null,
+      } : undefined,
+      workstream: task.teamId ? {
+        id: task.teamId,
+        name: task.teamName || '',
+      } : undefined,
+    };
   }, []);
+
+  const handleTaskClick = useCallback((task: PlannerTask) => {
+    // Use unified TaskDetailDrawer for all views
+    const kanbanTask = convertToKanbanTask(task);
+    setSelectedKanbanTask(kanbanTask);
+    setIsKanbanDrawerOpen(true);
+  }, [convertToKanbanTask]);
 
   // Handler for Kanban board task clicks (KanbanTask type)
   const handleKanbanTaskClick = useCallback((task: KanbanTask) => {
@@ -221,14 +269,10 @@ export function PlannerPage() {
       {
         onSuccess: () => {
           catalystToast.success('Task Updated', 'Changes saved successfully.');
-          // Update selected task if it's the one being edited
-          if (selectedTask?.id === taskId) {
-            setSelectedTask(prev => prev ? { ...prev, ...updates } : null);
-          }
         },
       }
     );
-  }, [updateTask, selectedTask]);
+  }, [updateTask]);
 
   const handleUnblock = useCallback((taskId: string) => {
     updateTask.mutate(
@@ -236,20 +280,17 @@ export function PlannerPage() {
       {
         onSuccess: () => {
           catalystToast.success('Task Unblocked', 'The blocker has been removed.');
-          if (selectedTask?.id === taskId) {
-            setSelectedTask(prev => prev ? { ...prev, blocked: false, blockedReason: undefined } : null);
-          }
         },
       }
     );
-  }, [updateTask, selectedTask]);
+  }, [updateTask]);
 
   const handleDeleteTask = useCallback((taskId: string) => {
     deleteTask.mutate(taskId, {
       onSuccess: () => {
         catalystToast.success('Task Deleted', 'The task has been removed.');
-        setIsDrawerOpen(false);
-        setSelectedTask(null);
+        setIsKanbanDrawerOpen(false);
+        setSelectedKanbanTask(null);
       },
       onError: () => {
         catalystToast.error('Delete Failed', 'Could not delete the task.');
@@ -506,21 +547,7 @@ export function PlannerPage() {
           </main>
         </div>
 
-        {/* Task Drawer for non-boards views */}
-        <PlannerTaskDrawer
-          task={selectedTask}
-          isOpen={isDrawerOpen}
-          onClose={() => {
-            setIsDrawerOpen(false);
-            setSelectedTask(null);
-          }}
-          onUpdate={handleTaskUpdate}
-          onUnblock={handleUnblock}
-          onDelete={handleDeleteTask}
-          users={users}
-        />
-
-        {/* Task Detail Drawer for boards view (KanbanTask type) */}
+        {/* Task Detail Drawer (unified for all views) */}
         <TaskDetailDrawer
           task={selectedKanbanTask}
           open={isKanbanDrawerOpen}
