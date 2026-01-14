@@ -41,9 +41,9 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'task-list': 'Task List',
   'timeline': 'Timeline',
   'calendar': 'Calendar',
-  'weekly-report': 'Weekly Summary',
-  'workstream-performance': 'Daily Scorecard',
-  'ai-insights': 'Monthly Chronicle',
+  'daily-scorecard': 'Daily Scorecard',
+  'weekly-summary': 'Weekly Summary',
+  'monthly-chronicle': 'Monthly Chronicle',
   'workstreams': 'Workstreams',
   'resources': 'Resources',
   'settings': 'Settings',
@@ -51,7 +51,7 @@ const VIEW_TITLES: Record<PlannerView, string> = {
 
 // Check if view is an insight view
 const isInsightView = (view: PlannerView) => 
-  view === 'weekly-report' || view === 'workstream-performance' || view === 'ai-insights';
+  view === 'daily-scorecard' || view === 'weekly-summary' || view === 'monthly-chronicle';
 
 export function PlannerPage() {
   const navigate = useNavigate();
@@ -322,11 +322,11 @@ export function PlannerPage() {
         return <PlannerTimeline tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'calendar':
         return <PlannerCalendar tasks={viewTasks} onTaskClick={handleTaskClick} />;
-      case 'weekly-report':
+      case 'weekly-summary':
         return <WeeklySummaryView />;
-      case 'workstream-performance':
+      case 'daily-scorecard':
         return <DailyScorecardView />;
-      case 'ai-insights':
+      case 'monthly-chronicle':
         return <MonthlyChronicleView />;
       case 'workstreams':
         return <PlannerSettings />;
