@@ -15503,6 +15503,56 @@ export type Database = {
         }
         Relationships: []
       }
+      planner_task_checklist_items: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_completed: boolean | null
+          is_header: boolean | null
+          sort_order: number | null
+          task_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_completed?: boolean | null
+          is_header?: boolean | null
+          sort_order?: number | null
+          task_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_completed?: boolean | null
+          is_header?: boolean | null
+          sort_order?: number | null
+          task_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planner_task_checklist_items_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       planner_tasks: {
         Row: {
           assignee_id: string | null

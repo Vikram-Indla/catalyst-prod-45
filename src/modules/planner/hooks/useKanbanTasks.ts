@@ -135,11 +135,11 @@ export function useCreateKanbanTask() {
       
       // Create a default checklist item with the task title
       const { error: checklistError } = await supabase
-        .from('planner_checklist_items')
+        .from('planner_task_checklist_items')
         .insert([{
-          story_id: data.id,
+          task_id: data.id,
           content: task.title!,
-          is_done: false,
+          is_completed: false,
           sort_order: 0,
         }]);
       

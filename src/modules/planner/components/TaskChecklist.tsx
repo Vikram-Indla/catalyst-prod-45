@@ -24,7 +24,7 @@ import {
 } from '../hooks/usePlannerChecklist';
 
 interface TaskChecklistProps {
-  storyId: string;
+  taskId: string;
   taskTitle: string;
   taskDescription?: string;
   onProgressChange?: (progress: number) => void;
@@ -38,7 +38,7 @@ const ANALYSIS_STEPS = [
 ];
 
 export function TaskChecklist({ 
-  storyId, 
+  taskId, 
   taskTitle, 
   taskDescription,
   onProgressChange 
@@ -48,8 +48,8 @@ export function TaskChecklist({
   const [analysisStep, setAnalysisStep] = useState(0);
 
   // Queries and mutations
-  const { data: items = [], isLoading } = usePlannerChecklist(storyId);
-  usePlannerChecklistRealtime(storyId);
+  const { data: items = [], isLoading } = usePlannerChecklist(taskId);
+  usePlannerChecklistRealtime(taskId);
   
   const toggleItem = useToggleChecklistItem();
   const addItem = useAddChecklistItem();
@@ -94,7 +94,7 @@ export function TaskChecklist({
       }
 
       // Insert generated items
-      await bulkInsert.mutateAsync({ storyId, items: data.items });
+      await bulkInsert.mutateAsync({ taskId, items: data.items });
       
       catalystToast.success('Checklist Generated', `Created ${data.items.length} items`);
 
@@ -122,7 +122,7 @@ export function TaskChecklist({
         : 0;
 
       await addItem.mutateAsync({
-        storyId,
+        taskId,
         content: text,
         sortOrder: maxOrder,
       });

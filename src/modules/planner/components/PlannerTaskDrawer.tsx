@@ -319,7 +319,7 @@ export function PlannerTaskDrawer({
           {/* Checklist Section */}
           <div className="pt-4 border-t border-border">
             <TaskChecklist
-              storyId={task.id}
+              taskId={task.id}
               taskTitle={task.title}
               taskDescription={task.description}
               onProgressChange={(progress) => onUpdate(task.id, { progress })}

@@ -327,7 +327,7 @@ export function TaskDetailDrawer({ task, open, onOpenChange }: TaskDetailDrawerP
 
             {/* Checklist Section */}
             <TaskChecklist
-              storyId={task.id}
+              taskId={task.id}
               taskTitle={task.title}
               taskDescription={description}
               onProgressChange={(progress) => updateTask.mutate({ id: task.id, progress })}

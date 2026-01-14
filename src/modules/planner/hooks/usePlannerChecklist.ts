@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 export interface ChecklistItem {
   id: string;
-  story_id: string;
+  task_id: string;
   content: string;
   is_header: boolean;
   is_completed: boolean;
@@ -20,21 +20,21 @@ export interface ChecklistItem {
   created_by: string | null;
 }
 
-const QUERY_KEY = 'planner-checklist';
+const QUERY_KEY = 'planner-task-checklist';
 
 /**
  * Fetch checklist items for a specific task
  */
-export function usePlannerChecklist(storyId: string | undefined) {
+export function usePlannerChecklist(taskId: string | undefined) {
   return useQuery({
-    queryKey: [QUERY_KEY, storyId],
+    queryKey: [QUERY_KEY, taskId],
     queryFn: async () => {
-      if (!storyId) return [];
+      if (!taskId) return [];
       
       const { data, error } = await supabase
-        .from('planner_checklist_items')
+        .from('planner_task_checklist_items')
         .select('*')
-        .eq('story_id', storyId)
+        .eq('task_id', taskId)
         .order('sort_order', { ascending: true });
 
       if (error) {
@@ -44,31 +44,31 @@ export function usePlannerChecklist(storyId: string | undefined) {
 
       return data as ChecklistItem[];
     },
-    enabled: !!storyId,
+    enabled: !!taskId,
   });
 }
 
 /**
  * Subscribe to realtime changes for a task's checklist
  */
-export function usePlannerChecklistRealtime(storyId: string | undefined) {
+export function usePlannerChecklistRealtime(taskId: string | undefined) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!storyId) return;
+    if (!taskId) return;
 
     const channel = supabase
-      .channel(`checklist-${storyId}`)
+      .channel(`task-checklist-${taskId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'planner_checklist_items',
-          filter: `story_id=eq.${storyId}`,
+          table: 'planner_task_checklist_items',
+          filter: `task_id=eq.${taskId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: [QUERY_KEY, storyId] });
+          queryClient.invalidateQueries({ queryKey: [QUERY_KEY, taskId] });
         }
       )
       .subscribe();
@@ -76,7 +76,7 @@ export function usePlannerChecklistRealtime(storyId: string | undefined) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [storyId, queryClient]);
+  }, [taskId, queryClient]);
 }
 
 /**
@@ -90,7 +90,7 @@ export function useToggleChecklistItem() {
       const { data: userData } = await supabase.auth.getUser();
       
       const { error } = await supabase
-        .from('planner_checklist_items')
+        .from('planner_task_checklist_items')
         .update({
           is_completed: isCompleted,
           completed_at: isCompleted ? new Date().toISOString() : null,
@@ -100,8 +100,7 @@ export function useToggleChecklistItem() {
 
       if (error) throw error;
     },
-    onSuccess: (_, variables) => {
-      // Invalidate all checklist queries since we don't know the story_id
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });
@@ -115,12 +114,12 @@ export function useAddChecklistItem() {
 
   return useMutation({
     mutationFn: async ({ 
-      storyId, 
+      taskId, 
       content, 
       isHeader = false,
       sortOrder 
     }: { 
-      storyId: string; 
+      taskId: string; 
       content: string; 
       isHeader?: boolean;
       sortOrder: number;
@@ -128,9 +127,9 @@ export function useAddChecklistItem() {
       const { data: userData } = await supabase.auth.getUser();
       
       const { error } = await supabase
-        .from('planner_checklist_items')
+        .from('planner_task_checklist_items')
         .insert({
-          story_id: storyId,
+          task_id: taskId,
           content,
           is_header: isHeader,
           sort_order: sortOrder,
@@ -154,7 +153,7 @@ export function useDeleteChecklistItem() {
   return useMutation({
     mutationFn: async (itemId: string) => {
       const { error } = await supabase
-        .from('planner_checklist_items')
+        .from('planner_task_checklist_items')
         .delete()
         .eq('id', itemId);
 
@@ -174,25 +173,25 @@ export function useBulkInsertChecklist() {
 
   return useMutation({
     mutationFn: async ({ 
-      storyId, 
+      taskId, 
       items 
     }: { 
-      storyId: string; 
+      taskId: string; 
       items: { content: string; is_header: boolean; sort_order: number }[];
     }) => {
       const { data: userData } = await supabase.auth.getUser();
       
       // First, delete existing items
       const { error: deleteError } = await supabase
-        .from('planner_checklist_items')
+        .from('planner_task_checklist_items')
         .delete()
-        .eq('story_id', storyId);
+        .eq('task_id', taskId);
 
       if (deleteError) throw deleteError;
 
       // Then insert new items
       const insertItems = items.map(item => ({
-        story_id: storyId,
+        task_id: taskId,
         content: item.content,
         is_header: item.is_header,
         sort_order: item.sort_order,
@@ -200,7 +199,7 @@ export function useBulkInsertChecklist() {
       }));
 
       const { error: insertError } = await supabase
-        .from('planner_checklist_items')
+        .from('planner_task_checklist_items')
         .insert(insertItems);
 
       if (insertError) throw insertError;
