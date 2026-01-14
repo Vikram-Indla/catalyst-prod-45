@@ -40,6 +40,7 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
         items: [
           { id: 'weekly-report', title: 'Weekly Report', path: '/planner/weekly-report', icon: FileText, exact: true },
           { id: 'workstream-performance', title: 'Performance', path: '/planner/workstream-performance', icon: Users, exact: true },
+          { id: 'ai-insights', title: 'Monthly Chronicle', path: '/planner/ai-insights', icon: FileText, exact: true, textBadge: 'NEW', textBadgeVariant: 'new' },
         ],
       },
       {
