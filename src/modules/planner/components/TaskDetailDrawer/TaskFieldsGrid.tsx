@@ -223,7 +223,7 @@ function PrioritySelect({ value, onChange }: { value: string; onChange: (v: stri
   );
 }
 
-// Assignee Select with avatar and scroll
+// Assignee Select with avatar, search, and scroll
 function AssigneeSelect({ 
   value, 
   currentAssignee, 
@@ -236,6 +236,7 @@ function AssigneeSelect({
   onChange: (id: string | null) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
 
   // Prefer the selected profile from the cached profiles list.
   // This prevents UI "flicker" / stale label during background refetches.
@@ -244,8 +245,18 @@ function AssigneeSelect({
     return profiles.find((p) => p.id === value) || currentAssignee || null;
   }, [profiles, value, currentAssignee]);
 
+  // Filter profiles by search
+  const filteredProfiles = useMemo(() => {
+    if (!search.trim()) return profiles;
+    const lower = search.toLowerCase();
+    return profiles.filter(p => 
+      p.full_name?.toLowerCase().includes(lower) || 
+      p.email?.toLowerCase().includes(lower)
+    );
+  }, [profiles, search]);
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(''); }}>
       <PopoverTrigger asChild>
         <button className="w-full flex items-center gap-2.5 text-left">
           {displayAssignee ? (
@@ -267,8 +278,19 @@ function AssigneeSelect({
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-56 p-0 z-[500] bg-popover" align="start">
-        <ScrollArea className="max-h-64">
+      <PopoverContent className="w-64 p-0 z-[500] bg-popover" align="start">
+        {/* Search Input */}
+        <div className="p-2 border-b border-border">
+          <input
+            type="text"
+            placeholder="Search by name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-2.5 py-1.5 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+            autoFocus
+          />
+        </div>
+        <ScrollArea className="max-h-72">
           <div className="p-1">
             <button
               onClick={() => {
@@ -282,28 +304,32 @@ function AssigneeSelect({
               </div>
               <span className="text-sm text-gray-400">Unassigned</span>
             </button>
-            {profiles.map((profile) => (
-              <button
-                key={profile.id}
-                onClick={() => {
-                  onChange(profile.id);
-                  setOpen(false);
-                }}
-                className={cn(
-                  "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
-                  value === profile.id ? "bg-muted" : "hover:bg-muted/50"
-                )}
-              >
-                <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-[10px] font-semibold text-primary-foreground flex-shrink-0">
-                  {profile.full_name?.charAt(0) || '?'}
-                </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="text-sm font-medium text-gray-700 truncate">{profile.full_name || 'Unnamed'}</div>
-                  <div className="text-[11px] text-gray-400 truncate">{profile.email}</div>
-                </div>
-                {value === profile.id && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
-              </button>
-            ))}
+            {filteredProfiles.length === 0 ? (
+              <div className="py-4 text-center text-sm text-muted-foreground">No results found</div>
+            ) : (
+              filteredProfiles.map((profile) => (
+                <button
+                  key={profile.id}
+                  onClick={() => {
+                    onChange(profile.id);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
+                    value === profile.id ? "bg-muted" : "hover:bg-muted/50"
+                  )}
+                >
+                  <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-[10px] font-semibold text-primary-foreground flex-shrink-0">
+                    {profile.full_name?.charAt(0) || '?'}
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="text-sm font-medium text-gray-700 truncate">{profile.full_name || 'Unnamed'}</div>
+                    <div className="text-[11px] text-gray-400 truncate">{profile.email}</div>
+                  </div>
+                  {value === profile.id && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
+                </button>
+              ))
+            )}
           </div>
         </ScrollArea>
       </PopoverContent>
