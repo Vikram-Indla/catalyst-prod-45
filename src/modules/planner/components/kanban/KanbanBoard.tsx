@@ -47,7 +47,7 @@ export function KanbanBoard({
     assignee_id: 'all',
     workstream_id: 'all',
   });
-  const [swimlane, setSwimlane] = useState<SwimlaneGrouping>('none');
+  const [swimlane, setSwimlane] = useState<SwimlaneGrouping>('workstream');
   const [viewMode, setViewMode] = useState<KanbanViewMode>('board');
 
   // Data hooks
