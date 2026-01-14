@@ -38,8 +38,8 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
       {
         title: 'Insights',
         items: [
-          { id: 'weekly-report', title: 'Weekly Report', path: '/planner/weekly-report', icon: FileText, exact: true },
-          { id: 'workstream-performance', title: 'Performance', path: '/planner/workstream-performance', icon: Users, exact: true },
+          { id: 'workstream-performance', title: 'Daily Scorecard', path: '/planner/workstream-performance', icon: Users, exact: true },
+          { id: 'weekly-report', title: 'Weekly Summary', path: '/planner/weekly-report', icon: FileText, exact: true },
           { id: 'ai-insights', title: 'Monthly Chronicle', path: '/planner/ai-insights', icon: FileText, exact: true },
         ],
       },
