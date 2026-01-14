@@ -172,7 +172,7 @@ export function TaskDetailDrawer({ task, open, onOpenChange }: TaskDetailDrawerP
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[500px] sm:max-w-[500px] overflow-y-auto">
+        <SheetContent side="right" className="w-full sm:w-[500px] sm:max-w-[500px] overflow-y-auto p-6">
           <SheetHeader className="space-y-4">
             {/* Task Key & Actions */}
             <div className="flex items-center justify-between">
