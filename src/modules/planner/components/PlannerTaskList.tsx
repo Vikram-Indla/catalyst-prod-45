@@ -11,7 +11,6 @@ import {
   MoreHorizontal,
   ChevronUp,
   ChevronDown,
-  Columns3,
   Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -21,8 +20,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
@@ -36,6 +33,7 @@ interface PlannerTaskListProps {
   onTaskUpdate: (taskId: string, updates: Partial<PlannerTask>) => void;
   selectedTaskIds: Set<string>;
   onSelectionChange: (ids: Set<string>) => void;
+  visibleColumns: Set<string>;
 }
 
 type SortField = 'key' | 'title' | 'status' | 'priority' | 'assigneeName' | 'teamName' | 'startDate' | 'dueDate' | 'progress';
@@ -81,10 +79,10 @@ export function PlannerTaskList({
   onTaskUpdate,
   selectedTaskIds,
   onSelectionChange,
+  visibleColumns,
 }: PlannerTaskListProps) {
   const [sortField, setSortField] = useState<SortField>('priority');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(getInitialVisibleColumns);
 
   // Priority order for sorting
   const priorityOrder: Record<TaskPriority, number> = {
@@ -92,23 +90,6 @@ export function PlannerTaskList({
     high: 1,
     medium: 2,
     low: 3,
-  };
-
-  // Update visible columns and persist
-  const toggleColumn = (columnId: string) => {
-    setVisibleColumns(prev => {
-      const next = new Set(prev);
-      if (next.has(columnId)) {
-        // Don't allow hiding all columns - keep at least title
-        if (next.size > 1 || columnId !== 'title') {
-          next.delete(columnId);
-        }
-      } else {
-        next.add(columnId);
-      }
-      localStorage.setItem('planner-visible-columns', JSON.stringify([...next]));
-      return next;
-    });
   };
 
   // Sorted tasks
@@ -212,29 +193,6 @@ export function PlannerTaskList({
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      {/* Column Visibility Control */}
-      <div className="flex justify-end px-4 py-2 border-b border-border bg-card">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Columns3 className="w-4 h-4" />
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-popover">
-            {ALL_COLUMNS.map(column => (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                checked={visibleColumns.has(column.id)}
-                onCheckedChange={() => toggleColumn(column.id)}
-              >
-                {column.label}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
       {/* Table */}
       <div className="flex-1 overflow-auto">
         <table className="w-full text-sm">

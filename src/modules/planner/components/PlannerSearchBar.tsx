@@ -3,7 +3,7 @@
 // Search and filter toolbar for Planner
 // ============================================================
 
-import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight } from 'lucide-react';
+import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight, Columns3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';
@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 
 const GROUP_OPTIONS: { id: GroupByOption | 'none'; label: string }[] = [
@@ -26,6 +27,24 @@ const GROUP_OPTIONS: { id: GroupByOption | 'none'; label: string }[] = [
   { id: 'priority', label: 'Priority' },
   { id: 'reporter', label: 'Reporter' },
   { id: 'dueDate', label: 'Due Date' },
+];
+
+// Column definitions for task list
+export interface ColumnDef {
+  id: string;
+  label: string;
+}
+
+export const ALL_COLUMNS: ColumnDef[] = [
+  { id: 'key', label: 'ID' },
+  { id: 'title', label: 'Title' },
+  { id: 'status', label: 'Status' },
+  { id: 'priority', label: 'Priority' },
+  { id: 'teamName', label: 'Workstream' },
+  { id: 'assigneeName', label: 'Assignee' },
+  { id: 'startDate', label: 'Start Date' },
+  { id: 'dueDate', label: 'Due Date' },
+  { id: 'progress', label: 'Progress' },
 ];
 
 interface PlannerSearchBarProps {
@@ -46,6 +65,10 @@ interface PlannerSearchBarProps {
   groupBy?: GroupByOption | 'none';
   onGroupByChange?: (groupBy: GroupByOption | 'none') => void;
   onCreateTeam?: () => void;
+  // Columns visibility (for task-list view)
+  visibleColumns?: Set<string>;
+  onToggleColumn?: (columnId: string) => void;
+  showColumnsButton?: boolean;
 }
 
 export function PlannerSearchBar({
@@ -66,6 +89,9 @@ export function PlannerSearchBar({
   groupBy = 'none',
   onGroupByChange,
   onCreateTeam,
+  visibleColumns,
+  onToggleColumn,
+  showColumnsButton = false,
 }: PlannerSearchBarProps) {
   const navigate = useNavigate();
   const selectedTeam = teams.find(t => t.id === selectedTeamId);
@@ -313,6 +339,29 @@ export function PlannerSearchBar({
           <span>{totalCount} tasks</span>
         )}
       </div>
+
+      {/* Columns Toggle (for task-list view) */}
+      {showColumnsButton && visibleColumns && onToggleColumn && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-9 gap-2">
+              <Columns3 className="w-4 h-4" />
+              Columns
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 bg-popover z-50">
+            {ALL_COLUMNS.map(column => (
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                checked={visibleColumns.has(column.id)}
+                onCheckedChange={() => onToggleColumn(column.id)}
+              >
+                {column.label}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 }
