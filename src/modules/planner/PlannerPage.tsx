@@ -143,6 +143,7 @@ export function PlannerPage() {
     setSearch,
     setStatusFilter,
     setPriorityFilter,
+    setAssigneeFilter,
     setBlockedFilter,
     setOverdueFilter,
     clearFilters,
@@ -471,6 +472,7 @@ export function PlannerPage() {
             onSearchChange={setSearch}
             onStatusChange={setStatusFilter}
             onPriorityChange={setPriorityFilter}
+            onAssigneeChange={setAssigneeFilter}
             onBlockedChange={setBlockedFilter}
             onOverdueChange={setOverdueFilter}
             onClearFilters={clearFilters}
@@ -479,6 +481,7 @@ export function PlannerPage() {
             totalCount={totalCount}
             inputRef={searchInputRef}
             teams={teams}
+            users={users}
             selectedTeamId={selectedTeamId}
             onTeamChange={setSelectedTeamId}
             groupBy={groupBy}
