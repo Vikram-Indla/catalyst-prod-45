@@ -26,6 +26,7 @@ export const boardKeys = {
 
 // -----------------------------------------------------
 // Get Board Data
+// GUARDRAIL: Stable caching to prevent UI flickering
 // -----------------------------------------------------
 export function useBoardData(projectId: string, filters?: BoardFilters) {
   return useQuery({
@@ -33,28 +34,39 @@ export function useBoardData(projectId: string, filters?: BoardFilters) {
     queryFn: () => getBoardData(projectId, filters),
     enabled: !!projectId,
     refetchInterval: 30000, // Refresh every 30 seconds
+    staleTime: 30000, // Data is fresh for 30 seconds
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }
 
 // -----------------------------------------------------
 // Get Board Stats
+// GUARDRAIL: Stable caching to prevent UI flickering
 // -----------------------------------------------------
 export function useBoardStats(projectId: string) {
   return useQuery({
     queryKey: boardKeys.stats(projectId),
     queryFn: () => getBoardStats(projectId),
     enabled: !!projectId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }
 
 // -----------------------------------------------------
 // Get Releases for Board Filters
+// GUARDRAIL: Stable caching to prevent UI flickering
 // -----------------------------------------------------
 export function useBoardReleases(projectId: string) {
   return useQuery({
     queryKey: boardKeys.releases(projectId),
     queryFn: () => getReleasesForProject(projectId),
     enabled: !!projectId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }
 
