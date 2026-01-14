@@ -7,7 +7,7 @@ import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight, Column
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';
-import type { TaskStatus, TaskPriority, PlannerTeam, GroupByOption } from '../types';
+import type { TaskStatus, TaskPriority, PlannerTeam, GroupByOption, PlannerUser } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -52,6 +52,7 @@ interface PlannerSearchBarProps {
   onSearchChange: (search: string) => void;
   onStatusChange: (status: TaskStatus | null) => void;
   onPriorityChange: (priority: TaskPriority | null) => void;
+  onAssigneeChange?: (assigneeId: string | null) => void;
   onBlockedChange: (blocked: boolean | null) => void;
   onOverdueChange: (overdue: boolean | null) => void;
   onClearFilters: () => void;
@@ -60,6 +61,7 @@ interface PlannerSearchBarProps {
   totalCount: number;
   inputRef?: React.RefObject<HTMLInputElement>;
   teams?: PlannerTeam[];
+  users?: PlannerUser[];
   selectedTeamId: string | null;
   onTeamChange: (teamId: string | null) => void;
   groupBy?: GroupByOption | 'none';
@@ -76,6 +78,7 @@ export function PlannerSearchBar({
   onSearchChange,
   onStatusChange,
   onPriorityChange,
+  onAssigneeChange,
   onBlockedChange,
   onOverdueChange,
   onClearFilters,
@@ -84,6 +87,7 @@ export function PlannerSearchBar({
   totalCount,
   inputRef,
   teams = [],
+  users = [],
   selectedTeamId,
   onTeamChange,
   groupBy = 'none',
@@ -95,6 +99,7 @@ export function PlannerSearchBar({
 }: PlannerSearchBarProps) {
   const navigate = useNavigate();
   const selectedTeam = teams.find(t => t.id === selectedTeamId);
+  const selectedAssignee = users.find(u => u.id === filters.assigneeId);
   const selectedGroupLabel = GROUP_OPTIONS.find(o => o.id === groupBy)?.label || 'None';
   
   return (
@@ -257,6 +262,49 @@ export function PlannerSearchBar({
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Assignee Filter */}
+      {onAssigneeChange && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className={cn(
+              "h-9 gap-2",
+              filters.assigneeId && "border-blue-500 text-blue-600"
+            )}>
+              <span className="text-sm">Assignee</span>
+              {selectedAssignee && (
+                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 truncate max-w-[80px]">
+                  {selectedAssignee.name}
+                </span>
+              )}
+              <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-56 max-h-80 overflow-y-auto">
+            <DropdownMenuItem 
+              onClick={() => onAssigneeChange(null)}
+              className={cn(!filters.assigneeId && "bg-blue-50")}
+            >
+              All Assignees
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            {users.map(user => (
+              <DropdownMenuItem
+                key={user.id}
+                onClick={() => onAssigneeChange(user.id)}
+                className={cn(filters.assigneeId === user.id && "bg-blue-50")}
+              >
+                <div className="flex items-center gap-2 w-full">
+                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium flex-shrink-0">
+                    {user.initials}
+                  </div>
+                  <span className="truncate flex-1">{user.name}</span>
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Group By Dropdown */}
       {onGroupByChange && (
