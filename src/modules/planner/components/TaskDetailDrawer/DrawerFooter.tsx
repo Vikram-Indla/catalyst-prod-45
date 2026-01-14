@@ -19,7 +19,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
 interface DrawerFooterProps {
@@ -31,6 +30,7 @@ interface DrawerFooterProps {
 export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDuplicating, setIsDuplicating] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const queryClient = useQueryClient();
 
   const handleDelete = async () => {
@@ -50,6 +50,7 @@ export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps)
       queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
       
+      setShowDeleteConfirm(false);
       onDelete();
     } catch (error) {
       console.error('Failed to delete task:', error);
@@ -105,69 +106,73 @@ export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps)
   };
 
   return (
-    <div className="px-6 py-3 border-t border-border bg-muted/30 flex items-center justify-between">
-      {/* Meta */}
-      <div className="text-[11px] text-muted-foreground leading-relaxed">
-        <div>
-          Created <span className="text-foreground font-medium">{format(new Date(task.created_at), 'MMM d, yyyy')}</span>
+    <>
+      <div className="px-6 py-3 border-t border-border bg-muted/30 flex items-center justify-between">
+        {/* Meta */}
+        <div className="text-[11px] text-muted-foreground leading-relaxed">
+          <div>
+            Created <span className="text-foreground font-medium">{format(new Date(task.created_at), 'MMM d, yyyy')}</span>
+          </div>
+          <div>
+            Updated <span className="text-foreground font-medium">{formatDistanceToNow(new Date(task.updated_at), { addSuffix: true })}</span>
+          </div>
         </div>
-        <div>
-          Updated <span className="text-foreground font-medium">{formatDistanceToNow(new Date(task.updated_at), { addSuffix: true })}</span>
+
+        {/* Actions - Visible buttons, NOT a menu */}
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-7 text-xs"
+            onClick={handleDuplicate}
+            disabled={isDuplicating}
+          >
+            {isDuplicating ? (
+              <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <Copy className="w-3.5 h-3.5 mr-1.5" />
+            )}
+            Duplicate
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-7 text-xs text-destructive border-destructive/30 hover:bg-destructive/10 hover:border-destructive/50"
+            disabled={isDeleting}
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            {isDeleting ? (
+              <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+            )}
+            Delete
+          </Button>
         </div>
       </div>
 
-      {/* Actions - Visible buttons, NOT a menu */}
-      <div className="flex items-center gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-7 text-xs"
-          onClick={handleDuplicate}
-          disabled={isDuplicating}
-        >
-          {isDuplicating ? (
-            <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-          ) : (
-            <Copy className="w-3.5 h-3.5 mr-1.5" />
-          )}
-          Duplicate
-        </Button>
-        
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-7 text-xs text-destructive border-destructive/30 hover:bg-destructive/10 hover:border-destructive/50"
+      {/* Delete Confirmation Dialog - Outside the Sheet for proper z-index */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="z-[9999]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete task?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will move "{task.title}" to trash. You can restore it later if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDelete}
               disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? (
-                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-              ) : (
-                <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-              )}
-              Delete
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete task?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will move "{task.title}" to trash. You can restore it later if needed.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={handleDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </div>
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
