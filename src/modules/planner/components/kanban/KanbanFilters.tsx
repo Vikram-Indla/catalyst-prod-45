@@ -106,7 +106,7 @@ export function KanbanFilters({
   return (
     <div className="flex items-center gap-3 flex-wrap">
       {/* View Mode Switcher */}
-      <div className="flex items-center bg-muted/50 p-1 rounded-lg">
+      <div className="flex items-center bg-muted/50 border border-border rounded-lg p-1">
         <button
           onClick={() => onViewModeChange('board')}
           className={cn(
@@ -134,16 +134,16 @@ export function KanbanFilters({
       </div>
 
       {/* Divider */}
-      <div className="w-px h-6 bg-border" />
+      <div className="w-px h-8 bg-border" />
 
       {/* Search */}
-      <div className="relative flex-1 min-w-[180px] max-w-[240px]">
+      <div className="relative flex-1 min-w-[180px] max-w-[280px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder="Search tasks..."
           value={filters.search}
           onChange={(e) => onFilterChange({ search: e.target.value })}
-          className="pl-9 h-9"
+          className="pl-9 h-9 bg-background border-border"
         />
         {filters.search && (
           <button
@@ -160,7 +160,7 @@ export function KanbanFilters({
         value={filters.priority}
         onValueChange={(value) => onFilterChange({ priority: value as KanbanTaskPriority | 'all' })}
       >
-        <SelectTrigger className="w-[130px] h-9">
+        <SelectTrigger className="w-[140px] h-9 bg-background border-border">
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>
@@ -177,7 +177,7 @@ export function KanbanFilters({
         value={filters.assignee_id}
         onValueChange={(value) => onFilterChange({ assignee_id: value })}
       >
-        <SelectTrigger className="w-[140px] h-9">
+        <SelectTrigger className="w-[150px] h-9 bg-background border-border">
           <SelectValue placeholder="Assignee" />
         </SelectTrigger>
         <SelectContent>
@@ -195,7 +195,7 @@ export function KanbanFilters({
         value={filters.workstream_id}
         onValueChange={(value) => onFilterChange({ workstream_id: value })}
       >
-        <SelectTrigger className="w-[150px] h-9">
+        <SelectTrigger className="w-[160px] h-9 bg-background border-border">
           <SelectValue placeholder="Workstream" />
         </SelectTrigger>
         <SelectContent>
@@ -211,7 +211,7 @@ export function KanbanFilters({
       {/* Swimlane Grouping - only show in swimlane mode */}
       {viewMode === 'swimlane' && (
         <Select value={swimlane} onValueChange={(value) => onSwimlaneChange(value as SwimlaneGrouping)}>
-          <SelectTrigger className="w-[140px] h-9">
+          <SelectTrigger className="w-[150px] h-9 bg-background border-border">
             <SelectValue placeholder="Group by" />
           </SelectTrigger>
           <SelectContent>
