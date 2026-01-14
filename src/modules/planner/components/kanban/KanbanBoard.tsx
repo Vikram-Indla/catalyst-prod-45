@@ -32,6 +32,11 @@ interface KanbanBoardProps {
   onTaskEdit?: (task: any) => void;
   onTaskDelete?: (taskId: string) => void;
   onAddTask?: (statusId?: string) => void;
+  // External filters from parent (PlannerPage)
+  externalWorkstreamId?: string | null;
+  externalSearch?: string;
+  externalPriority?: string | null;
+  externalAssigneeId?: string | null;
 }
 
 export function KanbanBoard({
@@ -39,9 +44,13 @@ export function KanbanBoard({
   onTaskEdit,
   onTaskDelete,
   onAddTask,
+  externalWorkstreamId,
+  externalSearch,
+  externalPriority,
+  externalAssigneeId,
 }: KanbanBoardProps) {
-  // Filters state
-  const [filters, setFilters] = useState<KanbanTaskFilters>({
+  // Internal filters state (merged with external)
+  const [internalFilters, setInternalFilters] = useState<KanbanTaskFilters>({
     search: '',
     priority: 'all',
     assignee_id: 'all',
@@ -49,6 +58,14 @@ export function KanbanBoard({
   });
   const [swimlane, setSwimlane] = useState<SwimlaneGrouping>('none');
   const [viewMode, setViewMode] = useState<KanbanViewMode>('board');
+  
+  // Merge internal and external filters - external takes precedence
+  const filters: KanbanTaskFilters = useMemo(() => ({
+    search: externalSearch || internalFilters.search,
+    priority: (externalPriority as KanbanTaskFilters['priority']) || internalFilters.priority,
+    assignee_id: externalAssigneeId || internalFilters.assignee_id,
+    workstream_id: externalWorkstreamId || internalFilters.workstream_id,
+  }), [externalSearch, externalPriority, externalAssigneeId, externalWorkstreamId, internalFilters]);
 
   // Data hooks
   const { data: statuses = [], isLoading: statusesLoading } = useKanbanStatuses();
@@ -195,7 +212,7 @@ export function KanbanBoard({
   }, [tasks, statuses, moveTask]);
 
   const handleFilterChange = useCallback((newFilters: Partial<KanbanTaskFilters>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setInternalFilters((prev) => ({ ...prev, ...newFilters }));
   }, []);
 
   const isLoading = statusesLoading || tasksLoading;
