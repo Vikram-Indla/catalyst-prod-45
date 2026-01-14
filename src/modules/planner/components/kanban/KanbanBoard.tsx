@@ -27,10 +27,10 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Loader2 } from 'lucide-react';
 
 interface KanbanBoardProps {
-  onTaskClick: (task: KanbanTask) => void;
-  onTaskEdit?: (task: KanbanTask) => void;
+  onTaskClick?: (task: any) => void;
+  onTaskEdit?: (task: any) => void;
   onTaskDelete?: (taskId: string) => void;
-  onAddTask?: (statusId: string) => void;
+  onAddTask?: (statusId?: string) => void;
 }
 
 export function KanbanBoard({

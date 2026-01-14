@@ -15,10 +15,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface KanbanColumnProps {
   status: PlannerStatus;
   tasks: KanbanTask[];
-  onTaskClick: (task: KanbanTask) => void;
-  onTaskEdit?: (task: KanbanTask) => void;
+  onTaskClick?: (task: any) => void;
+  onTaskEdit?: (task: any) => void;
   onTaskDelete?: (taskId: string) => void;
-  onAddTask?: (statusId: string) => void;
+  onAddTask?: (statusId?: string) => void;
 }
 
 export function KanbanColumn({
@@ -76,7 +76,7 @@ export function KanbanColumn({
               <KanbanCard
                 key={task.id}
                 task={task}
-                onClick={() => onTaskClick(task)}
+                onClick={() => onTaskClick?.(task)}
                 onEdit={() => onTaskEdit?.(task)}
                 onDelete={() => onTaskDelete?.(task.id)}
               />
