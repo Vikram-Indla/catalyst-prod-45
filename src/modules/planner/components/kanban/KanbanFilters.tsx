@@ -60,13 +60,13 @@ function useProfiles() {
   });
 }
 
-// Fetch teams/workstreams for filter
+// Fetch workstreams for filter
 function useWorkstreams() {
   return useQuery({
     queryKey: ['kanban-workstreams'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('teams')
+        .from('planner_workstreams')
         .select('id, name')
         .order('name');
       if (error) throw error;
