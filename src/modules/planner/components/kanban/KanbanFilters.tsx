@@ -1,9 +1,9 @@
 // ============================================================
 // KANBAN FILTERS COMPONENT
-// Filter bar for the Kanban board
+// Filter bar with search, priority, and swimlane grouping
 // ============================================================
 
-import { Search, X, Filter } from 'lucide-react';
+import { Search, X, Rows3 } from 'lucide-react';
 import type { KanbanTaskFilters, KanbanTaskPriority } from '../../types/kanban';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,12 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+
+export type SwimlaneGrouping = 'none' | 'assignee' | 'priority' | 'workstream';
 
 interface KanbanFiltersProps {
   filters: KanbanTaskFilters;
   onFilterChange: (filters: Partial<KanbanTaskFilters>) => void;
   taskCount: number;
+  swimlane: SwimlaneGrouping;
+  onSwimlaneChange: (swimlane: SwimlaneGrouping) => void;
 }
 
 const PRIORITY_OPTIONS: { value: KanbanTaskPriority | 'all'; label: string }[] = [
@@ -30,12 +33,23 @@ const PRIORITY_OPTIONS: { value: KanbanTaskPriority | 'all'; label: string }[] =
   { value: 'low', label: 'Low' },
 ];
 
-export function KanbanFilters({ filters, onFilterChange, taskCount }: KanbanFiltersProps) {
+const SWIMLANE_OPTIONS: { value: SwimlaneGrouping; label: string }[] = [
+  { value: 'none', label: 'No Swimlanes' },
+  { value: 'assignee', label: 'By Assignee' },
+  { value: 'priority', label: 'By Priority' },
+  { value: 'workstream', label: 'By Workstream' },
+];
+
+export function KanbanFilters({ 
+  filters, 
+  onFilterChange, 
+  taskCount,
+  swimlane,
+  onSwimlaneChange,
+}: KanbanFiltersProps) {
   const hasActiveFilters = 
     filters.search !== '' || 
-    filters.priority !== 'all' || 
-    filters.assignee_id !== 'all' || 
-    filters.workstream_id !== 'all';
+    filters.priority !== 'all';
 
   const clearFilters = () => {
     onFilterChange({
@@ -46,17 +60,10 @@ export function KanbanFilters({ filters, onFilterChange, taskCount }: KanbanFilt
     });
   };
 
-  const activeFilterCount = [
-    filters.search !== '',
-    filters.priority !== 'all',
-    filters.assignee_id !== 'all',
-    filters.workstream_id !== 'all',
-  ].filter(Boolean).length;
-
   return (
     <div className="flex items-center gap-3 flex-wrap">
       {/* Search */}
-      <div className="relative flex-1 min-w-[200px] max-w-[300px]">
+      <div className="relative flex-1 min-w-[200px] max-w-[280px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder="Search tasks..."
@@ -79,11 +86,26 @@ export function KanbanFilters({ filters, onFilterChange, taskCount }: KanbanFilt
         value={filters.priority}
         onValueChange={(value) => onFilterChange({ priority: value as KanbanTaskPriority | 'all' })}
       >
-        <SelectTrigger className="w-[150px] h-9">
+        <SelectTrigger className="w-[140px] h-9">
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>
           {PRIORITY_OPTIONS.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Swimlane Grouping */}
+      <Select value={swimlane} onValueChange={(value) => onSwimlaneChange(value as SwimlaneGrouping)}>
+        <SelectTrigger className="w-[150px] h-9">
+          <Rows3 className="w-4 h-4 mr-2 text-muted-foreground" />
+          <SelectValue placeholder="Swimlanes" />
+        </SelectTrigger>
+        <SelectContent>
+          {SWIMLANE_OPTIONS.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
@@ -98,20 +120,14 @@ export function KanbanFilters({ filters, onFilterChange, taskCount }: KanbanFilt
         </span>
 
         {hasActiveFilters && (
-          <>
-            <Badge variant="secondary" className="gap-1">
-              <Filter className="w-3 h-3" />
-              {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
-            </Badge>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearFilters}
-              className="h-8 text-muted-foreground hover:text-foreground"
-            >
-              Clear all
-            </Button>
-          </>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="h-8 text-muted-foreground hover:text-foreground"
+          >
+            Clear filters
+          </Button>
         )}
       </div>
     </div>
