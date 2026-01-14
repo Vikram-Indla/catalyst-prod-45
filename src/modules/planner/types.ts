@@ -217,21 +217,21 @@ export interface ColumnConfig {
   order: number;
 }
 
-// Column configuration following spec - Catalyst V5 softer colors
+// Column configuration - Neutral gray (only workstream has color)
 export const COLUMN_CONFIG: ColumnConfig[] = [
-  { id: 'backlog', title: 'Backlog', color: '#64748b', order: 0 },       // slate-500 - neutral gray
-  { id: 'planned', title: 'Planned', color: '#3b82f6', order: 1 },       // blue-500 - primary blue
-  { id: 'in-progress', title: 'In Progress', color: '#0d9488', order: 2 }, // teal-600 - teal accent
-  { id: 'review', title: 'Review', color: '#6366f1', order: 3 },         // indigo-500 - soft indigo
-  { id: 'done', title: 'Done', color: '#10b981', order: 4 },             // emerald-500 - success green
+  { id: 'backlog', title: 'Backlog', color: '#9ca3af', order: 0 },       // gray-400
+  { id: 'planned', title: 'Planned', color: '#6b7280', order: 1 },       // gray-500
+  { id: 'in-progress', title: 'In Progress', color: '#4b5563', order: 2 }, // gray-600
+  { id: 'review', title: 'Review', color: '#374151', order: 3 },         // gray-700
+  { id: 'done', title: 'Done', color: '#374151', order: 4 },             // gray-700
 ];
 
-// Priority configuration - Catalyst V5 unified palette (no emoji circles)
+// Priority configuration - All neutral gray (only workstream has color)
 export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; emoji: string }> = {
-  critical: { label: 'Critical', color: '#dc2626', emoji: '' },   // red-600
-  high: { label: 'High', color: '#ea580c', emoji: '' },           // orange-600
-  medium: { label: 'Medium', color: '#3b82f6', emoji: '' },       // blue-500
-  low: { label: 'Low', color: '#64748b', emoji: '' },             // slate-500
+  critical: { label: 'Critical', color: '#374151', emoji: '' },   // gray-700
+  high: { label: 'High', color: '#4b5563', emoji: '' },           // gray-600
+  medium: { label: 'Medium', color: '#6b7280', emoji: '' },       // gray-500
+  low: { label: 'Low', color: '#9ca3af', emoji: '' },             // gray-400
 };
 
 // Due date groups for grouping
@@ -244,13 +244,13 @@ export const DUE_DATE_GROUPS = [
   { id: 'noDueDate', title: 'No Due Date', color: '#94a3b8' },
 ];
 
-// Status colors for insights - Catalyst V5 palette
+// Status colors for insights - Neutral gray (only workstream has color)
 export const STATUS_COLORS: Record<TaskStatus, string> = {
-  backlog: '#94a3b8',
-  planned: '#3b82f6',
-  'in-progress': '#0d9488',
-  review: '#6366f1',
-  done: '#10b981',
+  backlog: '#9ca3af',
+  planned: '#6b7280',
+  'in-progress': '#4b5563',
+  review: '#374151',
+  done: '#374151',
 };
 
 // Avatar colors for resources
