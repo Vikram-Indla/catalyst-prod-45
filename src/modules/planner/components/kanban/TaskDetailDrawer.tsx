@@ -78,7 +78,7 @@ export function TaskDetailDrawer({ task, open, onOpenChange }: TaskDetailDrawerP
       setLocalStatusId(task.status_id);
       setLocalPriority(task.priority);
       setLocalAssigneeId(task.assignee_id || 'unassigned');
-      setLocalStartDate(''); // planner_tasks doesn't have start_date column
+      setLocalStartDate(task.start_date ? task.start_date.split('T')[0] : '');
       setLocalDueDate(task.due_date ? task.due_date.split('T')[0] : '');
     }
   }, [task]);
@@ -138,6 +138,11 @@ export function TaskDetailDrawer({ task, open, onOpenChange }: TaskDetailDrawerP
     setLocalAssigneeId(value);
     const newAssigneeId = value === 'unassigned' ? null : value;
     debouncedUpdate(task.id, { assignee_id: newAssigneeId });
+  };
+  
+  const handleStartDateChange = (value: string) => {
+    setLocalStartDate(value);
+    debouncedUpdate(task.id, { start_date: value || null });
   };
   
   const handleDueDateChange = (value: string) => {
@@ -307,6 +312,20 @@ export function TaskDetailDrawer({ task, open, onOpenChange }: TaskDetailDrawerP
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Start Date */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="w-4 h-4" />
+                Start Date
+              </Label>
+              <Input
+                type="date"
+                value={localStartDate}
+                onChange={(e) => handleStartDateChange(e.target.value)}
+                className="w-full"
+              />
             </div>
 
             {/* Due Date */}

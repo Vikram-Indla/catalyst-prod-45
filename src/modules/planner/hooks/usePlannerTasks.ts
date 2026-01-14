@@ -54,7 +54,7 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   assigneeInitials: row.assignee?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2),
   teamId: row.workstream_id,
   teamName: row.workstream?.name,
-  startDate: undefined, // planner_tasks doesn't have start_date
+  startDate: row.start_date,
   dueDate: row.due_date,
   blocked: row.blocked || false,
   blockedReason: row.blocked_reason,
@@ -128,6 +128,10 @@ export function useUpdatePlannerTask() {
 
       if (updates.dueDate !== undefined) {
         dbUpdates.due_date = updates.dueDate || null;
+      }
+
+      if (updates.startDate !== undefined) {
+        dbUpdates.start_date = updates.startDate || null;
       }
 
       if (updates.title !== undefined) {
