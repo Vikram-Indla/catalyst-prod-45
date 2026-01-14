@@ -65,6 +65,34 @@ export function PlannerPage() {
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
   
+  // Column visibility state for task list
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem('planner-visible-columns');
+      if (stored) {
+        return new Set(JSON.parse(stored));
+      }
+    } catch {
+      // ignore
+    }
+    return new Set(['key', 'title', 'status', 'priority', 'teamName', 'assigneeName', 'startDate', 'dueDate', 'progress']);
+  });
+  
+  const toggleColumn = useCallback((columnId: string) => {
+    setVisibleColumns(prev => {
+      const next = new Set(prev);
+      if (next.has(columnId)) {
+        if (next.size > 1 || columnId !== 'title') {
+          next.delete(columnId);
+        }
+      } else {
+        next.add(columnId);
+      }
+      localStorage.setItem('planner-visible-columns', JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+  
   // Drawer/Modal state
   const [selectedTask, setSelectedTask] = useState<PlannerTask | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -317,7 +345,7 @@ export function PlannerPage() {
       case 'boards':
         return <KanbanBoard onTaskClick={handleTaskClick} onTaskEdit={handleTaskClick} onTaskDelete={(id) => handleDeleteTask(id)} onAddTask={() => setIsCreateModalOpen(true)} />;
       case 'task-list':
-        return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} />;
+        return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} visibleColumns={visibleColumns} />;
       case 'timeline':
         return <PlannerTimeline tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'calendar':
@@ -447,6 +475,9 @@ export function PlannerPage() {
             groupBy={groupBy}
             onGroupByChange={setGroupBy}
             onCreateTeam={() => setIsCreateTeamModalOpen(true)}
+            visibleColumns={visibleColumns}
+            onToggleColumn={toggleColumn}
+            showColumnsButton={activeView === 'task-list'}
           />
         )}
 
