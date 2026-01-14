@@ -12,8 +12,8 @@ export function usePlannerWorkstreams() {
   return useQuery({
     queryKey: ['planner-workstreams'],
     queryFn: async () => {
-      // Fetch workstreams (teams table) with member count and lead
-      const { data, error } = await supabase
+      // Fetch workstreams (teams table) with lead info
+      const { data: teamsData, error: teamsError } = await supabase
         .from('teams')
         .select(`
           id, 
@@ -21,23 +21,37 @@ export function usePlannerWorkstreams() {
           short_name, 
           team_type,
           description,
-          lead_id,
-          team_members(count)
+          lead_id
         `)
         .eq('is_active', true)
         .order('name');
 
-      if (error) {
-        console.error('Error fetching workstreams:', error);
+      if (teamsError) {
+        console.error('Error fetching workstreams:', teamsError);
         return [];
       }
 
-      const workstreams: PlannerTeam[] = (data || []).map(team => ({
+      // Fetch member counts separately for accuracy
+      const { data: memberCounts, error: countError } = await supabase
+        .from('team_members')
+        .select('team_id');
+
+      if (countError) {
+        console.error('Error fetching member counts:', countError);
+      }
+
+      // Count members per team
+      const countMap: Record<string, number> = {};
+      (memberCounts || []).forEach((m: any) => {
+        countMap[m.team_id] = (countMap[m.team_id] || 0) + 1;
+      });
+
+      const workstreams: PlannerTeam[] = (teamsData || []).map(team => ({
         id: team.id,
         name: team.name,
         shortName: team.short_name || team.name.slice(0, 3).toUpperCase(),
         description: team.description || undefined,
-        memberCount: team.team_members?.[0]?.count || 0,
+        memberCount: countMap[team.id] || 0,
         color: getWorkstreamColor(team.team_type),
         leadId: team.lead_id || undefined,
       }));
