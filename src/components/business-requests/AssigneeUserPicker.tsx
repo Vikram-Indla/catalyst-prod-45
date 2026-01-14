@@ -50,6 +50,7 @@ export function AssigneeUserPicker({
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch users from profiles table
+  // GUARDRAIL: Aggressive caching to prevent UI flickering
   const { data: users, isLoading, error } = useQuery({
     queryKey: ['user-profiles-active'],
     queryFn: async () => {
@@ -62,7 +63,10 @@ export function AssigneeUserPicker({
       if (error) throw error;
       return data as UserProfile[];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   // Filter users based on search query

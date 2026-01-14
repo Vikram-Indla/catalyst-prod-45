@@ -42,6 +42,7 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Fetch available users - only active (approved) users
+  // GUARDRAIL: Aggressive caching to prevent UI flickering
   const { data: users = [] } = useQuery({
     queryKey: ['profiles-for-assignment-active'],
     queryFn: async () => {
@@ -53,7 +54,10 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
       if (error) throw error;
       return (data || []) as Profile[];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

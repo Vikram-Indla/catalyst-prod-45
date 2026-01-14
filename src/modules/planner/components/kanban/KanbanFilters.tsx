@@ -45,7 +45,7 @@ const SWIMLANE_OPTIONS: { value: SwimlaneGrouping; label: string }[] = [
   { value: 'priority', label: 'By Priority' },
 ];
 
-// Fetch profiles for assignee filter
+// Fetch profiles for assignee filter with stable caching
 function useProfiles() {
   return useQuery({
     queryKey: ['kanban-profiles'],
@@ -57,10 +57,15 @@ function useProfiles() {
       if (error) throw error;
       return data;
     },
+    // GUARDRAIL: Stable caching to prevent flickering
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }
 
-// Fetch workstreams for filter
+// Fetch workstreams for filter with stable caching
 function useWorkstreams() {
   return useQuery({
     queryKey: ['kanban-workstreams'],
@@ -72,6 +77,11 @@ function useWorkstreams() {
       if (error) throw error;
       return data;
     },
+    // GUARDRAIL: Stable caching to prevent flickering
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }
 
