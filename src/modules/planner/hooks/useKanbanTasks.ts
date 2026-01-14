@@ -119,6 +119,7 @@ export function useCreateKanbanTask() {
           priority: task.priority || 'medium',
           workstream_id: task.workstream_id || null,
           assignee_id: task.assignee_id || null,
+          start_date: task.start_date || null,
           due_date: task.due_date || null,
           position: nextPosition,
           created_by: userData.user?.id || null,
