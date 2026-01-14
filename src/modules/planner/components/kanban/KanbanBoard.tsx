@@ -74,9 +74,8 @@ export function KanbanBoard({
     })
   );
 
-  // Group tasks by swimlane
-  // In swimlane view mode, always group by workstream if no explicit swimlane is selected
-  const effectiveSwimlane = viewMode === 'swimlane' && swimlane === 'none' ? 'workstream' : swimlane;
+  // Group tasks by swimlane - respect user's explicit choice
+  const effectiveSwimlane = swimlane;
   
   const swimlaneGroups = useMemo(() => {
     if (effectiveSwimlane === 'none') {
