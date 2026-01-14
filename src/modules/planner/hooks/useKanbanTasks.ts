@@ -24,7 +24,7 @@ export function useKanbanTasks(filters?: KanbanTaskFilters) {
           *,
           status:planner_statuses(*),
           workstream:teams(id, name),
-          assignee:profiles(id, full_name, email, avatar_url)
+          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .is('deleted_at', null)
         .order('position', { ascending: true });
@@ -127,7 +127,7 @@ export function useCreateKanbanTask() {
           *,
           status:planner_statuses(*),
           workstream:teams(id, name),
-          assignee:profiles(id, full_name, email, avatar_url)
+          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .single();
       
@@ -160,7 +160,7 @@ export function useUpdateKanbanTask() {
           *,
           status:planner_statuses(*),
           workstream:teams(id, name),
-          assignee:profiles(id, full_name, email, avatar_url)
+          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .single();
       
