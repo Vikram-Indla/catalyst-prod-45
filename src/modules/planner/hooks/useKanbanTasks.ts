@@ -23,7 +23,7 @@ export function useKanbanTasks(filters?: KanbanTaskFilters) {
         .select(`
           *,
           status:planner_statuses(*),
-          workstream:teams(id, name),
+          workstream:planner_workstreams(id, name),
           assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .is('deleted_at', null)
@@ -126,7 +126,7 @@ export function useCreateKanbanTask() {
         .select(`
           *,
           status:planner_statuses(*),
-          workstream:teams(id, name),
+          workstream:planner_workstreams(id, name),
           assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .single();
@@ -174,7 +174,7 @@ export function useUpdateKanbanTask() {
         .select(`
           *,
           status:planner_statuses(*),
-          workstream:teams(id, name),
+          workstream:planner_workstreams(id, name),
           assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .single();

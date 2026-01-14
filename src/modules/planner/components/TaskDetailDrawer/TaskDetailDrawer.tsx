@@ -50,7 +50,7 @@ function useTaskDetail(taskId: string | null) {
         .select(`
           *,
           status:planner_statuses(*),
-          workstream:teams!planner_tasks_workstream_id_fkey(id, name),
+          workstream:planner_workstreams(id, name),
           assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .eq('id', taskId)

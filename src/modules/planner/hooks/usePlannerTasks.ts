@@ -73,7 +73,7 @@ export function usePlannerTasks(teamId?: string | null) {
         .select(`
           *,
           status:planner_statuses(*),
-          workstream:teams(id, name),
+          workstream:planner_workstreams(id, name),
           assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .is('deleted_at', null)
