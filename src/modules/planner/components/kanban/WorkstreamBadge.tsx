@@ -1,10 +1,10 @@
 // ============================================================
 // WORKSTREAM BADGE COMPONENT
-// Displays workstream/team pill with color
+// Displays workstream/team pill with Catalyst V5 color
 // ============================================================
 
 import type { KanbanWorkstream } from '../../types/kanban';
-import { CATALYST_COLORS } from '../../types/kanban';
+import { getWorkstreamColor } from '../../types/kanban';
 import { cn } from '@/lib/utils';
 
 interface WorkstreamBadgeProps {
@@ -13,7 +13,7 @@ interface WorkstreamBadgeProps {
 }
 
 export function WorkstreamBadge({ workstream, className }: WorkstreamBadgeProps) {
-  const color = CATALYST_COLORS.teal;
+  const colors = getWorkstreamColor(workstream.name);
   
   return (
     <div
@@ -21,15 +21,15 @@ export function WorkstreamBadge({ workstream, className }: WorkstreamBadgeProps)
         'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full',
         className
       )}
-      style={{ backgroundColor: CATALYST_COLORS.tealLight }}
+      style={{ backgroundColor: colors.bg }}
     >
       <span
         className="w-1.5 h-1.5 rounded-full"
-        style={{ backgroundColor: color }}
+        style={{ backgroundColor: colors.dot }}
       />
       <span 
         className="text-[11px] font-semibold"
-        style={{ color: CATALYST_COLORS.teal }}
+        style={{ color: colors.text }}
       >
         {workstream.name}
       </span>

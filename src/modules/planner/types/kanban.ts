@@ -94,19 +94,35 @@ export const CATALYST_COLORS = {
   gray900: '#111827',
 } as const;
 
-// Status color mapping by slug
+// Status color mapping by slug - Neutral gray (only workstream has color)
 export const STATUS_COLORS: Record<string, string> = {
   backlog: CATALYST_COLORS.gray400,
-  planned: CATALYST_COLORS.primary,
-  'in-progress': CATALYST_COLORS.warning,
-  review: CATALYST_COLORS.purple,
-  done: CATALYST_COLORS.success,
+  planned: CATALYST_COLORS.gray500,
+  'in-progress': CATALYST_COLORS.gray600,
+  review: CATALYST_COLORS.gray700,
+  done: CATALYST_COLORS.gray700,
 };
 
-// Priority styles
+// Priority styles - Neutral gray (only workstream has color)
 export const PRIORITY_STYLES: Record<KanbanTaskPriority, { bg: string; text: string; border: string }> = {
-  critical: { bg: CATALYST_COLORS.dangerLight, text: CATALYST_COLORS.danger, border: CATALYST_COLORS.danger },
-  high: { bg: CATALYST_COLORS.warningLight, text: CATALYST_COLORS.warning, border: CATALYST_COLORS.warning },
-  medium: { bg: CATALYST_COLORS.primaryLight, text: CATALYST_COLORS.primary, border: CATALYST_COLORS.primary },
+  critical: { bg: CATALYST_COLORS.gray100, text: CATALYST_COLORS.gray700, border: CATALYST_COLORS.gray300 },
+  high: { bg: CATALYST_COLORS.gray100, text: CATALYST_COLORS.gray700, border: CATALYST_COLORS.gray300 },
+  medium: { bg: CATALYST_COLORS.gray100, text: CATALYST_COLORS.gray600, border: CATALYST_COLORS.gray300 },
   low: { bg: CATALYST_COLORS.gray100, text: CATALYST_COLORS.gray500, border: CATALYST_COLORS.gray300 },
 };
+
+// Workstream colors - Catalyst V5 palette for differentiation
+export const WORKSTREAM_COLORS = [
+  { bg: CATALYST_COLORS.tealLight, text: CATALYST_COLORS.teal, dot: CATALYST_COLORS.teal },
+  { bg: CATALYST_COLORS.primaryLight, text: CATALYST_COLORS.primary, dot: CATALYST_COLORS.primary },
+  { bg: CATALYST_COLORS.warningLight, text: CATALYST_COLORS.warning, dot: CATALYST_COLORS.warning },
+  { bg: CATALYST_COLORS.purpleLight, text: CATALYST_COLORS.purple, dot: CATALYST_COLORS.purple },
+  { bg: CATALYST_COLORS.successLight, text: CATALYST_COLORS.success, dot: CATALYST_COLORS.success },
+  { bg: CATALYST_COLORS.dangerLight, text: CATALYST_COLORS.danger, dot: CATALYST_COLORS.danger },
+];
+
+// Get workstream color by index (consistent per workstream name)
+export function getWorkstreamColor(workstreamName: string) {
+  const hash = workstreamName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return WORKSTREAM_COLORS[hash % WORKSTREAM_COLORS.length];
+}
