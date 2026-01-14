@@ -1,13 +1,12 @@
 // ============================================================
-// CHECKLIST SECTION COMPONENT
-// Progress ring + toggleable checklist items
+// CHECKLIST SECTION - POLISHED
+// Larger progress ring, styled AI button, better add item
 // ============================================================
 
 import { useState } from 'react';
 import { CheckSquare, Plus, X, Check, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { CATALYST_COLORS } from '../../types/kanban';
 import type { ChecklistItem } from '../../hooks/useTaskDetails';
 import { 
   useToggleChecklistItem, 
@@ -39,30 +38,36 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
   };
 
   return (
-    <div className="space-y-3">
-      {/* Header with progress */}
+    <div className="space-y-4">
+      {/* Header with Progress Ring */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <ProgressRing progress={progress} size={40} strokeWidth={4} />
+        <div className="flex items-center gap-4">
+          {/* LARGER Progress Ring - 48px */}
+          <ProgressRing progress={progress} size={48} strokeWidth={4} />
           <div>
             <div className="flex items-center gap-2">
-              <CheckSquare className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-semibold text-foreground">Checklist</span>
+              <CheckSquare className="w-4 h-4 text-gray-400" />
+              <span className="text-sm font-semibold text-gray-700">Checklist</span>
             </div>
-            <span className="text-xs text-muted-foreground">
-              {completedCount} of {totalCount} completed
+            <span className="text-xs text-gray-400">
+              {totalCount > 0 ? `${completedCount} of ${totalCount} completed` : 'No items yet'}
             </span>
           </div>
         </div>
         
-        <Button variant="ghost" size="sm" className="h-7 text-xs">
-          <Sparkles className="w-3.5 h-3.5 mr-1" />
+        {/* Styled AI Generate Button */}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-7 text-xs font-medium border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+        >
+          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
           AI Generate
         </Button>
       </div>
       
       {/* Checklist items */}
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         {items?.map(item => (
           <ChecklistItemRow
             key={item.id}
@@ -72,9 +77,10 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
           />
         ))}
         
-        {/* Add item input */}
+        {/* Styled Add Item */}
         {isAdding ? (
-          <div className="flex items-center gap-2 pl-7">
+          <div className="flex items-center gap-2.5 p-2.5 border border-primary bg-blue-50/50 rounded-lg">
+            <Plus className="w-4 h-4 text-primary" />
             <input
               autoFocus
               value={newItemText}
@@ -90,7 +96,7 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
                 if (!newItemText.trim()) setIsAdding(false);
               }}
               placeholder="Add checklist item..."
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400"
             />
             <Button 
               size="sm" 
@@ -98,16 +104,16 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
               className="h-6 w-6 p-0"
               onClick={handleAddItem}
             >
-              <Check className="w-3.5 h-3.5" />
+              <Check className="w-3.5 h-3.5 text-primary" />
             </Button>
           </div>
         ) : (
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors py-2 pl-7"
+            className="w-full flex items-center gap-2.5 p-2.5 border border-dashed border-gray-300 rounded-lg text-xs text-gray-400 hover:border-primary hover:text-primary hover:bg-blue-50/50 transition-all"
           >
-            <Plus className="w-3.5 h-3.5" />
-            Add item
+            <Plus className="w-4 h-4" />
+            Add checklist item...
           </button>
         )}
       </div>
@@ -126,7 +132,7 @@ function ChecklistItemRow({
 }) {
   return (
     <div 
-      className="group flex items-center gap-2 py-1.5 px-2 -mx-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+      className="group flex items-center gap-2.5 py-2 px-2.5 -mx-0.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
       onClick={onToggle}
     >
       <div 
@@ -134,7 +140,7 @@ function ChecklistItemRow({
           "w-5 h-5 rounded border-2 flex items-center justify-center transition-all",
           item.is_completed 
             ? "bg-primary border-primary" 
-            : "border-muted-foreground/30 hover:border-primary/50"
+            : "border-gray-300 hover:border-primary/50"
         )}
       >
         {item.is_completed && <Check className="w-3 h-3 text-primary-foreground" />}
@@ -143,7 +149,7 @@ function ChecklistItemRow({
       <span 
         className={cn(
           "flex-1 text-sm transition-colors",
-          item.is_completed && "line-through text-muted-foreground"
+          item.is_completed && "line-through text-gray-400"
         )}
       >
         {item.text}
@@ -151,7 +157,7 @@ function ChecklistItemRow({
       
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(); }}
-        className="w-6 h-6 flex items-center justify-center rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+        className="w-6 h-6 flex items-center justify-center rounded opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all"
       >
         <X className="w-3.5 h-3.5" />
       </button>

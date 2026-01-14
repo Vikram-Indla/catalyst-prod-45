@@ -1,17 +1,15 @@
 // ============================================================
-// ACTIVITY SECTION COMPONENT
-// Tabs for Comments + Activity feed
+// ACTIVITY SECTION - POLISHED
+// Tabs for All/Comments/History with styled feed
 // ============================================================
 
 import { useState } from 'react';
-import { MessageSquare, Activity, Send } from 'lucide-react';
+import { MessageSquare, Send, History, ListFilter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import type { TaskComment, TaskActivity } from '../../hooks/useTaskDetails';
 import { useAddComment } from '../../hooks/useTaskDetails';
-import { CATALYST_COLORS } from '../../types/kanban';
 
 interface ActivitySectionProps {
   taskId: string;
@@ -20,94 +18,126 @@ interface ActivitySectionProps {
 }
 
 export function ActivitySection({ taskId, comments, activity }: ActivitySectionProps) {
-  const [activeTab, setActiveTab] = useState('comments');
+  const [activeTab, setActiveTab] = useState<'all' | 'comments' | 'history'>('all');
   const [newComment, setNewComment] = useState('');
   const addComment = useAddComment();
 
   const handleSubmitComment = () => {
     if (!newComment.trim()) return;
-    // Would need current user ID from auth context
     addComment.mutate({ 
       taskId, 
       content: newComment.trim(),
-      authorId: '' // Placeholder - would come from auth
+      authorId: ''
     });
     setNewComment('');
   };
 
+  // Combine and sort all items for "all" tab
+  const allItems = [...comments.map(c => ({ ...c, type: 'comment' as const })), 
+                    ...activity.map(a => ({ ...a, type: 'activity' as const }))]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
   return (
-    <div className="space-y-3">
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 h-9">
-          <TabsTrigger value="comments" className="text-xs">
-            <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
-            Comments ({comments.length})
-          </TabsTrigger>
-          <TabsTrigger value="activity" className="text-xs">
-            <Activity className="w-3.5 h-3.5 mr-1.5" />
-            Activity ({activity.length})
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="comments" className="mt-3 space-y-3">
-          {/* Comment input */}
-          <div className="flex gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground flex-shrink-0">
-              U
-            </div>
-            <div className="flex-1 relative">
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmitComment();
-                  }
-                }}
-                placeholder="Add a comment... (@mention someone)"
-                rows={2}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
-              />
-              <Button
-                size="sm"
-                onClick={handleSubmitComment}
-                disabled={!newComment.trim()}
-                className="absolute bottom-2 right-2 h-7"
-              >
-                <Send className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-          </div>
-          
-          {/* Comments list */}
-          <div className="space-y-3">
-            {comments.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No comments yet. Be the first to comment!
-              </p>
-            ) : (
-              comments.map(comment => (
-                <CommentItem key={comment.id} comment={comment} />
-              ))
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex items-center gap-2">
+        <MessageSquare className="w-4 h-4 text-gray-400" />
+        <span className="text-sm font-semibold text-gray-700">Activity</span>
+      </div>
+
+      {/* Styled Tabs */}
+      <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
+        {([
+          { key: 'all', label: 'All', icon: ListFilter },
+          { key: 'comments', label: 'Comments', icon: MessageSquare },
+          { key: 'history', label: 'History', icon: History },
+        ] as const).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+              activeTab === tab.key 
+                ? "bg-white text-gray-800 shadow-sm" 
+                : "text-gray-500 hover:text-gray-700"
             )}
-          </div>
-        </TabsContent>
+          >
+            <tab.icon className="w-3.5 h-3.5" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Activity Feed */}
+      <div className="space-y-4 max-h-64 overflow-y-auto">
+        {activeTab === 'all' && (
+          allItems.length === 0 ? (
+            <div className="text-center py-8 text-sm text-gray-400">
+              No activity yet
+            </div>
+          ) : (
+            allItems.map(item => (
+              item.type === 'comment' 
+                ? <CommentItem key={`c-${item.id}`} comment={item as TaskComment} />
+                : <ActivityItem key={`a-${item.id}`} activity={item as TaskActivity} />
+            ))
+          )
+        )}
         
-        <TabsContent value="activity" className="mt-3">
-          <div className="space-y-2">
-            {activity.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No activity recorded yet.
-              </p>
-            ) : (
-              activity.map(item => (
-                <ActivityItem key={item.id} activity={item} />
-              ))
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
+        {activeTab === 'comments' && (
+          comments.length === 0 ? (
+            <div className="text-center py-8 text-sm text-gray-400">
+              No comments yet. Be the first to comment!
+            </div>
+          ) : (
+            comments.map(comment => (
+              <CommentItem key={comment.id} comment={comment} />
+            ))
+          )
+        )}
+        
+        {activeTab === 'history' && (
+          activity.length === 0 ? (
+            <div className="text-center py-8 text-sm text-gray-400">
+              No activity recorded yet.
+            </div>
+          ) : (
+            activity.map(item => (
+              <ActivityItem key={item.id} activity={item} />
+            ))
+          )
+        )}
+      </div>
+
+      {/* Comment Input */}
+      <div className="flex gap-3">
+        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground flex-shrink-0">
+          U
+        </div>
+        <div className="flex-1 relative">
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmitComment();
+              }
+            }}
+            placeholder="Write a comment... Type @ to mention"
+            rows={2}
+            className="w-full px-3 py-2 pr-12 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+          />
+          <Button
+            size="icon"
+            onClick={handleSubmitComment}
+            disabled={!newComment.trim()}
+            className="absolute bottom-2 right-2 h-7 w-7"
+          >
+            <Send className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -117,20 +147,20 @@ function CommentItem({ comment }: { comment: TaskComment }) {
   const initials = authorName.split(' ').map(n => n[0]).join('').slice(0, 2);
   
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-3">
       <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground flex-shrink-0">
         {initials}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">{authorName}</span>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-sm font-semibold text-gray-700">{authorName}</span>
+          <span className="text-[11px] text-gray-400">
             {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
           </span>
         </div>
-        <p className="text-sm text-foreground/80 mt-0.5 whitespace-pre-wrap">
+        <div className="mt-1.5 p-3 bg-gray-50 rounded-lg text-sm text-gray-600 leading-relaxed">
           {comment.content}
-        </p>
+        </div>
       </div>
     </div>
   );
@@ -138,6 +168,7 @@ function CommentItem({ comment }: { comment: TaskComment }) {
 
 function ActivityItem({ activity }: { activity: TaskActivity }) {
   const actorName = activity.actor?.full_name || 'System';
+  const initials = actorName.split(' ').map(n => n[0]).join('').slice(0, 2);
   
   const getActionText = () => {
     switch (activity.action_type) {
@@ -159,16 +190,17 @@ function ActivityItem({ activity }: { activity: TaskActivity }) {
   };
   
   return (
-    <div className="flex items-start gap-2 py-1.5 text-sm">
-      <div 
-        className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
-        style={{ backgroundColor: CATALYST_COLORS.gray400 }}
-      />
-      <div className="flex-1 min-w-0">
-        <span className="font-medium">{actorName}</span>
-        {' '}
-        <span className="text-muted-foreground">{getActionText()}</span>
-        <span className="text-xs text-muted-foreground ml-2">
+    <div className="flex items-start gap-3">
+      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-500 flex-shrink-0">
+        {initials}
+      </div>
+      <div className="flex-1 min-w-0 py-1">
+        <span className="text-sm">
+          <span className="font-semibold text-gray-700">{actorName}</span>
+          {' '}
+          <span className="text-gray-500">{getActionText()}</span>
+        </span>
+        <span className="text-[11px] text-gray-400 ml-2">
           {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
         </span>
       </div>
