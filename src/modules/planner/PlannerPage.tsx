@@ -7,8 +7,9 @@ import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, Download, FileText } from 'lucide-react';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
+import type { KanbanTask } from './types/kanban';
 import { PlannerSidebar } from './components/PlannerSidebar';
-import { KanbanBoard } from './components/kanban';
+import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
 import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
@@ -95,7 +96,9 @@ export function PlannerPage() {
   
   // Drawer/Modal state
   const [selectedTask, setSelectedTask] = useState<PlannerTask | null>(null);
+  const [selectedKanbanTask, setSelectedKanbanTask] = useState<KanbanTask | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isKanbanDrawerOpen, setIsKanbanDrawerOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createDefaultStatus, setCreateDefaultStatus] = useState<TaskStatus>('backlog');
   
@@ -199,6 +202,12 @@ export function PlannerPage() {
   const handleTaskClick = useCallback((task: PlannerTask) => {
     setSelectedTask(task);
     setIsDrawerOpen(true);
+  }, []);
+
+  // Handler for Kanban board task clicks (KanbanTask type)
+  const handleKanbanTaskClick = useCallback((task: KanbanTask) => {
+    setSelectedKanbanTask(task);
+    setIsKanbanDrawerOpen(true);
   }, []);
 
   const handleTaskMove = useCallback((taskId: string, newStatus: TaskStatus) => {
@@ -343,7 +352,7 @@ export function PlannerPage() {
     
     switch (activeView) {
       case 'boards':
-        return <KanbanBoard onTaskClick={handleTaskClick} onTaskEdit={handleTaskClick} onTaskDelete={(id) => handleDeleteTask(id)} onAddTask={() => setIsCreateModalOpen(true)} />;
+        return <KanbanBoard onTaskClick={handleKanbanTaskClick} onTaskEdit={handleKanbanTaskClick} onTaskDelete={(id) => handleDeleteTask(id)} onAddTask={() => setIsCreateModalOpen(true)} />;
       case 'task-list':
         return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} visibleColumns={visibleColumns} />;
       case 'timeline':
@@ -494,7 +503,7 @@ export function PlannerPage() {
           </main>
         </div>
 
-        {/* Task Drawer */}
+        {/* Task Drawer for non-boards views */}
         <PlannerTaskDrawer
           task={selectedTask}
           isOpen={isDrawerOpen}
@@ -506,6 +515,16 @@ export function PlannerPage() {
           onUnblock={handleUnblock}
           onDelete={handleDeleteTask}
           users={users}
+        />
+
+        {/* Task Detail Drawer for boards view (KanbanTask type) */}
+        <TaskDetailDrawer
+          task={selectedKanbanTask}
+          open={isKanbanDrawerOpen}
+          onOpenChange={(open) => {
+            setIsKanbanDrawerOpen(open);
+            if (!open) setSelectedKanbanTask(null);
+          }}
         />
 
         {/* Create Modal */}
