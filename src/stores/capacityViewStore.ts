@@ -14,7 +14,7 @@ export type ProjectViewMode = 'cards' | 'timeline';
 export type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 export type GroupByType = 'none' | 'assignment' | 'department';
 export type ActiveFilterType = 'all' | 'available' | 'atCapacity' | 'over';
-export type DepartmentFilterType = 'all' | 'delivery' | 'product' | 'support';
+export type DepartmentFilterType = string; // 'all' or department name (e.g., 'Governance', 'Delivery', etc.)
 
 export interface CapacityViewState {
   // Route context

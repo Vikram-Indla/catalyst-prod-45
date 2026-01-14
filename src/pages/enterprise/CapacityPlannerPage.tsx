@@ -111,7 +111,7 @@ export default function CapacityPlannerPage() {
   const [period, setPeriodLocal] = useState<PeriodType>(capacityStore.timeline.period);
   const [groupBy, setGroupByLocal] = useState<GroupByType>(capacityStore.filters.groupBy);
   const [searchQuery, setSearchQueryLocal] = useState(capacityStore.filters.searchQuery);
-  const [departmentFilter, setDepartmentFilterLocal] = useState<'all' | 'delivery' | 'product' | 'support'>(capacityStore.filters.departmentFilter);
+  const [departmentFilter, setDepartmentFilterLocal] = useState<string>(capacityStore.filters.departmentFilter);
   const [activeFilter, setActiveFilterLocal] = useState<'all' | 'available' | 'atCapacity' | 'over'>(capacityStore.filters.activeFilter);
   const [isCollapsed, setIsCollapsedLocal] = useState(capacityStore.ui.isCollapsed);
   const [compactMode, setCompactModeLocal] = useState(capacityStore.ui.compactMode);
@@ -150,7 +150,7 @@ export default function CapacityPlannerPage() {
     capacityStore.setSearchQuery(q);
   }, [capacityStore]);
 
-  const setDepartmentFilter = useCallback((f: 'all' | 'delivery' | 'product' | 'support') => {
+  const setDepartmentFilter = useCallback((f: string) => {
     setDepartmentFilterLocal(f);
     capacityStore.setDepartmentFilter(f);
   }, [capacityStore]);
