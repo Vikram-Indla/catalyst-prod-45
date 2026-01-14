@@ -38,9 +38,9 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
       {
         title: 'Insights',
         items: [
-          { id: 'daily-scorecard', title: 'Daily Scorecard', path: '/planner/daily-scorecard', icon: Users, exact: true },
-          { id: 'weekly-summary', title: 'Weekly Summary', path: '/planner/weekly-summary', icon: FileText, exact: true },
-          { id: 'monthly-chronicle', title: 'Monthly Chronicle', path: '/planner/monthly-chronicle', icon: FileText, exact: true },
+          { id: 'workstream-performance', title: 'Daily Scorecard', path: '/planner/workstream-performance', icon: Users, exact: true },
+          { id: 'weekly-report', title: 'Weekly Summary', path: '/planner/weekly-report', icon: FileText, exact: true },
+          { id: 'ai-insights', title: 'Monthly Chronicle', path: '/planner/ai-insights', icon: FileText, exact: true },
         ],
       },
       {

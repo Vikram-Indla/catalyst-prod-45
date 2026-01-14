@@ -8,9 +8,9 @@ export type PlannerView =
   | 'task-list' 
   | 'timeline' 
   | 'calendar' 
-  | 'daily-scorecard' 
-  | 'weekly-summary' 
-  | 'monthly-chronicle'
+  | 'weekly-report' 
+  | 'workstream-performance' 
+  | 'ai-insights'
   | 'workstreams'
   | 'resources'
   | 'settings';
