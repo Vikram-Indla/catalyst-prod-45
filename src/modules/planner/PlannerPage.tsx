@@ -372,8 +372,9 @@ export function PlannerPage() {
               </h1>
             </div>
 
-            {/* Right: Action Buttons - hidden on teams/settings views */}
-            {activeView !== 'workstreams' && activeView !== 'settings' && (
+            {/* Right: Action Buttons - hidden on teams/settings/insight views */}
+            {activeView !== 'workstreams' && activeView !== 'settings' && 
+             activeView !== 'weekly-report' && activeView !== 'workstream-performance' && activeView !== 'ai-insights' && (
               <div className="flex items-center gap-2">
 
                 {/* Create Task Button */}
@@ -393,8 +394,9 @@ export function PlannerPage() {
           </div>
         </div>
 
-        {/* Search Bar - hidden on teams/settings/boards views */}
-        {activeView !== 'workstreams' && activeView !== 'settings' && activeView !== 'boards' && (
+        {/* Search Bar - hidden on teams/settings/boards/insight views */}
+        {activeView !== 'workstreams' && activeView !== 'settings' && activeView !== 'boards' && 
+         activeView !== 'weekly-report' && activeView !== 'workstream-performance' && activeView !== 'ai-insights' && (
           <PlannerSearchBar
             filters={filters}
             onSearchChange={setSearch}
