@@ -40,10 +40,9 @@ const PRIORITY_OPTIONS: { value: KanbanTaskPriority | 'all'; label: string }[] =
 ];
 
 const SWIMLANE_OPTIONS: { value: SwimlaneGrouping; label: string }[] = [
-  { value: 'none', label: 'No Swimlanes' },
+  { value: 'workstream', label: 'By Workstream' },
   { value: 'assignee', label: 'By Assignee' },
   { value: 'priority', label: 'By Priority' },
-  { value: 'workstream', label: 'By Workstream' },
 ];
 
 // Fetch profiles for assignee filter
