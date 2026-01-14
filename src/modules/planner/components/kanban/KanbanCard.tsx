@@ -1,14 +1,15 @@
 // ============================================================
 // KANBAN CARD COMPONENT
 // Draggable task card for the Kanban board
-// Catalyst V5 semantic colors with priority-based styling
+// Catalyst V5 semantic colors with WORKSTREAM-based left stripe
 // ============================================================
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal, AlertTriangle } from 'lucide-react';
 import type { KanbanTask } from '../../types/kanban';
-import { PRIORITY_STYLES, getProgressColor } from '../../types/kanban';
+import { getProgressColor } from '../../types/kanban';
+import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { PriorityBadge } from './PriorityBadge';
 import { DueDateBadge } from './DueDateBadge';
 import { AssigneeAvatar } from './AssigneeAvatar';
@@ -45,8 +46,10 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
   };
 
   const isCompleted = task.status?.is_completed_status;
-  const priorityStyle = PRIORITY_STYLES[task.priority];
   const progressColor = getProgressColor(task.progress);
+  
+  // Get workstream color for left stripe
+  const workstreamColors = getWorkstreamColor(task.workstream?.name);
 
   return (
     <div
@@ -56,18 +59,18 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
       {...listeners}
       onClick={onClick}
       className={cn(
-        'group bg-card rounded-lg p-3 cursor-pointer overflow-hidden',
+        'group relative bg-card rounded-lg p-3 pl-4 cursor-pointer overflow-hidden',
         'border border-border',
         'hover:border-primary/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-150',
         (isDragging || isSortableDragging) && 'opacity-50 shadow-lg rotate-2',
         task.blocked && 'border-l-4 border-l-destructive'
       )}
     >
-      {/* Priority stripe on left (only if not blocked) */}
+      {/* Workstream stripe on left (4px) - only if not blocked */}
       {!task.blocked && (
         <div 
           className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg"
-          style={{ backgroundColor: priorityStyle.borderLeft }}
+          style={{ backgroundColor: workstreamColors.hex }}
         />
       )}
       
