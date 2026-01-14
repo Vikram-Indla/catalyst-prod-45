@@ -155,14 +155,6 @@ export function KanbanBoard({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Filters */}
-      <div className="shrink-0 p-4 border-b border-border">
-        <KanbanFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          taskCount={tasks.length}
-        />
-      </div>
 
       {/* Board */}
       <ScrollArea className="flex-1">
