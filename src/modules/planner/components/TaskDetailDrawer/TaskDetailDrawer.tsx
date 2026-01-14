@@ -157,7 +157,18 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
             />
             
             {/* Quick Actions */}
-            <QuickActions taskId={effectiveTaskId!} taskKey={task.key} />
+            <QuickActions 
+              taskId={effectiveTaskId!} 
+              taskKey={task.key}
+              currentWorkstreamId={task.workstream_id || null}
+              isStarred={task.is_starred || false}
+              onWorkstreamChange={(workstreamId) => {
+                handleFieldUpdate('workstream_id', workstreamId);
+              }}
+              onStarredChange={(isStarred) => {
+                // Optimistic - already updated in QuickActions
+              }}
+            />
             
             {/* Scrollable Content */}
             <ScrollArea className="flex-1">
