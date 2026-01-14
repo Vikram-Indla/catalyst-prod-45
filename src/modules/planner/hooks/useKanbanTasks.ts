@@ -217,9 +217,7 @@ export function useDeleteKanbanTask() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('planner_tasks')
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('id', id);
+        .rpc('soft_delete_planner_task', { p_task_id: id });
       
       if (error) throw error;
     },

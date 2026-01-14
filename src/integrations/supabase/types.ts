@@ -28659,6 +28659,14 @@ export type Database = {
         Args: { p_incident_id: string }
         Returns: undefined
       }
+      soft_delete_planner_task: {
+        Args: { p_task_id: string }
+        Returns: undefined
+      }
+      soft_delete_planner_tasks: {
+        Args: { p_task_ids: string[] }
+        Returns: number
+      }
       text2ltree: { Args: { "": string }; Returns: unknown }
       tm_calculate_run_status: {
         Args: { p_run_id: string }

@@ -38,11 +38,9 @@ export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps)
     setIsDeleting(true);
 
     try {
-      // Soft delete - set deleted_at
+      // Soft delete via backend function (bypasses RLS edge-cases)
       const { error } = await supabase
-        .from('planner_tasks')
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('id', task.id);
+        .rpc('soft_delete_planner_task', { p_task_id: task.id });
 
       if (error) throw error;
 
