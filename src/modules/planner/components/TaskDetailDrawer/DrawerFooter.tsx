@@ -1,11 +1,26 @@
 // ============================================================
 // DRAWER FOOTER - POLISHED
-// Visible Duplicate/Delete buttons, proper meta display
+// Visible Duplicate/Delete buttons with actual implementations
+// NO TOASTS - silent operations as per guardrail
 // ============================================================
 
+import { useState } from 'react';
 import { formatDistanceToNow, format } from 'date-fns';
-import { Trash2, Copy } from 'lucide-react';
+import { Trash2, Copy, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface DrawerFooterProps {
   task: any;
@@ -14,15 +29,90 @@ interface DrawerFooterProps {
 }
 
 export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDuplicating, setIsDuplicating] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleDelete = async () => {
+    if (isDeleting) return;
+    setIsDeleting(true);
+
+    try {
+      // Soft delete - set deleted_at
+      const { error } = await supabase
+        .from('planner_tasks')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', task.id);
+
+      if (error) throw error;
+
+      // Invalidate caches
+      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      
+      onDelete();
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDuplicate = async () => {
+    if (isDuplicating) return;
+    setIsDuplicating(true);
+
+    try {
+      // Generate new key
+      const { data: lastTask } = await supabase
+        .from('planner_tasks')
+        .select('key')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      const lastNum = lastTask?.key ? parseInt(lastTask.key.replace(/\D/g, '')) || 0 : 0;
+      const newKey = `TASK-${lastNum + 1}`;
+
+      // Clone task without id, key, timestamps
+      const { error } = await supabase
+        .from('planner_tasks')
+        .insert({
+          title: `${task.title} (Copy)`,
+          description: task.description,
+          status_id: task.status_id,
+          workstream_id: task.workstream_id,
+          assignee_id: task.assignee_id,
+          priority: task.priority,
+          due_date: task.due_date,
+          start_date: task.start_date,
+          key: newKey,
+          position: task.position + 1,
+        });
+
+      if (error) throw error;
+
+      // Invalidate caches
+      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      
+      onDuplicate();
+    } catch (error) {
+      console.error('Failed to duplicate task:', error);
+    } finally {
+      setIsDuplicating(false);
+    }
+  };
+
   return (
-    <div className="px-6 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+    <div className="px-6 py-3 border-t border-border bg-muted/30 flex items-center justify-between">
       {/* Meta */}
-      <div className="text-[11px] text-gray-400 leading-relaxed">
+      <div className="text-[11px] text-muted-foreground leading-relaxed">
         <div>
-          Created <span className="text-gray-600 font-medium">{format(new Date(task.created_at), 'MMM d, yyyy')}</span>
+          Created <span className="text-foreground font-medium">{format(new Date(task.created_at), 'MMM d, yyyy')}</span>
         </div>
         <div>
-          Updated <span className="text-gray-600 font-medium">{formatDistanceToNow(new Date(task.updated_at), { addSuffix: true })}</span>
+          Updated <span className="text-foreground font-medium">{formatDistanceToNow(new Date(task.updated_at), { addSuffix: true })}</span>
         </div>
       </div>
 
@@ -32,20 +122,51 @@ export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps)
           variant="outline" 
           size="sm" 
           className="h-7 text-xs"
-          onClick={onDuplicate}
+          onClick={handleDuplicate}
+          disabled={isDuplicating}
         >
-          <Copy className="w-3.5 h-3.5 mr-1.5" />
+          {isDuplicating ? (
+            <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+          ) : (
+            <Copy className="w-3.5 h-3.5 mr-1.5" />
+          )}
           Duplicate
         </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-7 text-xs text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-          onClick={onDelete}
-        >
-          <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-          Delete
-        </Button>
+        
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-7 text-xs text-destructive border-destructive/30 hover:bg-destructive/10 hover:border-destructive/50"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+              )}
+              Delete
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete task?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will move "{task.title}" to trash. You can restore it later if needed.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

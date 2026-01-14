@@ -1,6 +1,7 @@
 // ============================================================
 // DRAWER HEADER COMPONENT - POLISHED
 // Clean header with breadcrumb, styled status pill, inline title
+// GUARDRAIL: Aggressive caching to prevent flickering
 // ============================================================
 
 import { useState } from 'react';
@@ -27,17 +28,23 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   done: { label: 'Done', color: '#10b981', bg: 'bg-emerald-50', text: 'text-emerald-600' },
 };
 
+// GUARDRAIL: Aggressive caching to prevent flickering
 function useStatuses() {
   return useQuery({
-    queryKey: ['planner-statuses'],
+    queryKey: ['drawer-statuses'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('planner_statuses')
         .select('*')
         .order('position');
       if (error) throw error;
-      return data;
+      return data || [];
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 
@@ -68,7 +75,7 @@ function StatusSelect({
           {currentStatus?.name || config.label}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1" align="start">
+      <PopoverContent className="w-44 p-1 z-[500] bg-popover" align="start">
         {statuses.map((status: any) => {
           const statusSlug = status.slug || 'backlog';
           const cfg = STATUS_CONFIG[statusSlug] || STATUS_CONFIG.backlog;
@@ -82,7 +89,7 @@ function StatusSelect({
               }}
               className={cn(
                 "w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors",
-                currentStatus?.id === status.id ? "bg-gray-100" : "hover:bg-gray-50"
+                currentStatus?.id === status.id ? "bg-muted" : "hover:bg-muted/50"
               )}
             >
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cfg.color }} />
@@ -100,13 +107,13 @@ function StatusSelect({
 
 export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: DrawerHeaderProps) {
   return (
-    <div className="px-6 pt-5 pb-4 bg-white border-b border-gray-100">
+    <div className="px-6 pt-5 pb-4 bg-background border-b border-border">
       {/* Close button */}
       <Button
         variant="ghost"
         size="icon"
         onClick={onClose}
-        className="absolute top-3 right-3 w-8 h-8 rounded-full hover:bg-gray-100"
+        className="absolute top-3 right-3 w-8 h-8 rounded-full hover:bg-muted"
       >
         <X className="w-4 h-4" />
       </Button>
@@ -119,13 +126,13 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: D
             {task.workstream.name}
           </span>
         )}
-        <ChevronRight className="w-3 h-3 text-gray-300" />
-        <span className="text-gray-600 font-medium">{task.key}</span>
+        <ChevronRight className="w-3 h-3 text-muted-foreground" />
+        <span className="text-muted-foreground font-medium">{task.key}</span>
       </div>
 
       {/* Meta row: Key badge + Status pill */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="px-2 py-1 bg-gray-100 rounded text-xs font-mono font-semibold text-gray-500">
+        <span className="px-2 py-1 bg-muted rounded text-xs font-mono font-semibold text-muted-foreground">
           {task.key}
         </span>
         
@@ -140,7 +147,7 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: D
         contentEditable
         suppressContentEditableWarning
         onBlur={(e) => onTitleChange(e.currentTarget.textContent || '')}
-        className="text-xl font-bold text-gray-900 outline-none focus:bg-blue-50 focus:px-2 focus:-mx-2 rounded transition-colors"
+        className="text-xl font-bold text-foreground outline-none focus:bg-accent/50 focus:px-2 focus:-mx-2 rounded transition-colors"
       >
         {task.title}
       </h1>

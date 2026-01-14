@@ -1,6 +1,7 @@
 // ============================================================
 // TASK FIELDS GRID - POLISHED
 // Field cards with hover states, priority icons, assignee avatar
+// GUARDRAIL: All queries use aggressive caching to prevent flickering
 // ============================================================
 
 import { useState, useEffect, useMemo } from 'react';
@@ -19,6 +20,7 @@ import {
 import { format, differenceInDays } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
 interface TaskFieldsGridProps {
@@ -33,31 +35,43 @@ const PRIORITY_CONFIG = {
   low: { icon: '○', label: 'Low', bg: 'bg-gray-100', text: 'text-gray-500', dot: 'bg-gray-400' },
 } as const;
 
+// GUARDRAIL: Aggressive caching to prevent flickering
 function useProfiles() {
   return useQuery({
-    queryKey: ['all-profiles'],
+    queryKey: ['drawer-profiles'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url, email')
         .order('full_name');
       if (error) throw error;
-      return data;
+      return data || [];
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 
-function useTeams() {
+// GUARDRAIL: Fetch from planner_workstreams with aggressive caching
+function useWorkstreams() {
   return useQuery({
-    queryKey: ['all-teams'],
+    queryKey: ['drawer-workstreams'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('teams')
+        .from('planner_workstreams')
         .select('id, name')
         .order('name');
       if (error) throw error;
-      return data;
+      return data || [];
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 
@@ -65,18 +79,20 @@ function useCurrentUser() {
   const [user, setUser] = useState<{ id: string; full_name: string | null } | null>(null);
   
   useEffect(() => {
+    let mounted = true;
     const fetchUser = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (authUser) {
+      if (authUser && mounted) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('id, full_name')
           .eq('id', authUser.id)
           .maybeSingle();
-        setUser(profile);
+        if (mounted) setUser(profile);
       }
     };
     fetchUser();
+    return () => { mounted = false; };
   }, []);
   
   return user;
@@ -84,7 +100,7 @@ function useCurrentUser() {
 
 export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
   const { data: profiles = [] } = useProfiles();
-  const { data: teams = [] } = useTeams();
+  const { data: workstreams = [] } = useWorkstreams();
   const currentUser = useCurrentUser();
 
   return (
@@ -130,7 +146,7 @@ export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
         <WorkstreamSelect
           value={task.workstream_id}
           currentWorkstream={task.workstream}
-          teams={teams}
+          workstreams={workstreams}
           onChange={(id) => onFieldChange('workstream_id', id)}
         />
       </FieldCard>
@@ -186,14 +202,14 @@ function PrioritySelect({ value, onChange }: { value: string; onChange: (v: stri
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1" align="start">
+      <PopoverContent className="w-44 p-1 z-[500] bg-popover" align="start">
         {Object.entries(PRIORITY_CONFIG).map(([key, cfg]) => (
           <button
             key={key}
             onClick={() => { onChange(key); setOpen(false); }}
             className={cn(
               "w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors",
-              value === key ? "bg-gray-100" : "hover:bg-gray-50"
+              value === key ? "bg-muted" : "hover:bg-muted/50"
             )}
           >
             <span className={cn("px-2 py-0.5 rounded text-xs font-semibold", cfg.bg, cfg.text)}>
@@ -207,7 +223,7 @@ function PrioritySelect({ value, onChange }: { value: string; onChange: (v: stri
   );
 }
 
-// Assignee Select with avatar
+// Assignee Select with avatar and scroll
 function AssigneeSelect({ 
   value, 
   currentAssignee, 
@@ -244,50 +260,54 @@ function AssigneeSelect({
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-56 p-1" align="start">
-        <button
-          onClick={() => { onChange(null); setOpen(false); }}
-          className="w-full flex items-center gap-2.5 px-2 py-2 rounded hover:bg-gray-50"
-        >
-          <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
-            <User className="w-3.5 h-3.5 text-gray-400" />
+      <PopoverContent className="w-56 p-0 z-[500] bg-popover" align="start">
+        <ScrollArea className="max-h-64">
+          <div className="p-1">
+            <button
+              onClick={() => { onChange(null); setOpen(false); }}
+              className="w-full flex items-center gap-2.5 px-2 py-2 rounded hover:bg-muted/50"
+            >
+              <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
+                <User className="w-3.5 h-3.5 text-gray-400" />
+              </div>
+              <span className="text-sm text-gray-400">Unassigned</span>
+            </button>
+            {profiles.map((profile) => (
+              <button
+                key={profile.id}
+                onClick={() => { onChange(profile.id); setOpen(false); }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
+                  value === profile.id ? "bg-muted" : "hover:bg-muted/50"
+                )}
+              >
+                <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-[10px] font-semibold text-primary-foreground flex-shrink-0">
+                  {profile.full_name?.charAt(0) || '?'}
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="text-sm font-medium text-gray-700 truncate">{profile.full_name || 'Unnamed'}</div>
+                  <div className="text-[11px] text-gray-400 truncate">{profile.email}</div>
+                </div>
+                {value === profile.id && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
+              </button>
+            ))}
           </div>
-          <span className="text-sm text-gray-400">Unassigned</span>
-        </button>
-        {profiles.map((profile) => (
-          <button
-            key={profile.id}
-            onClick={() => { onChange(profile.id); setOpen(false); }}
-            className={cn(
-              "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
-              value === profile.id ? "bg-gray-100" : "hover:bg-gray-50"
-            )}
-          >
-            <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-[10px] font-semibold text-primary-foreground">
-              {profile.full_name?.charAt(0) || '?'}
-            </div>
-            <div className="flex-1 min-w-0 text-left">
-              <div className="text-sm font-medium text-gray-700 truncate">{profile.full_name || 'Unnamed'}</div>
-              <div className="text-[11px] text-gray-400 truncate">{profile.email}</div>
-            </div>
-            {value === profile.id && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
-          </button>
-        ))}
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );
 }
 
-// Workstream Select
+// Workstream Select - uses planner_workstreams with scroll
 function WorkstreamSelect({ 
   value, 
   currentWorkstream, 
-  teams, 
+  workstreams, 
   onChange 
 }: { 
   value: string | null; 
   currentWorkstream: any; 
-  teams: any[]; 
+  workstreams: any[]; 
   onChange: (id: string | null) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -302,26 +322,30 @@ function WorkstreamSelect({
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-52 p-1 max-h-64 overflow-auto" align="start">
-        <button
-          onClick={() => { onChange(null); setOpen(false); }}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-50"
-        >
-          <span className="text-sm text-gray-400">No workstream</span>
-        </button>
-        {teams.map((team) => (
-          <button
-            key={team.id}
-            onClick={() => { onChange(team.id); setOpen(false); }}
-            className={cn(
-              "w-full flex items-center justify-between px-3 py-2 rounded transition-colors",
-              value === team.id ? "bg-gray-100" : "hover:bg-gray-50"
-            )}
-          >
-            <span className="text-sm text-gray-700">{team.name}</span>
-            {value === team.id && <Check className="w-4 h-4 text-primary" />}
-          </button>
-        ))}
+      <PopoverContent className="w-52 p-0 z-[500] bg-popover" align="start">
+        <ScrollArea className="max-h-64">
+          <div className="p-1">
+            <button
+              onClick={() => { onChange(null); setOpen(false); }}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded hover:bg-muted/50"
+            >
+              <span className="text-sm text-gray-400">No workstream</span>
+            </button>
+            {workstreams.map((ws) => (
+              <button
+                key={ws.id}
+                onClick={() => { onChange(ws.id); setOpen(false); }}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2 rounded transition-colors",
+                  value === ws.id ? "bg-muted" : "hover:bg-muted/50"
+                )}
+              >
+                <span className="text-sm text-gray-700">{ws.name}</span>
+                {value === ws.id && <Check className="w-4 h-4 text-primary" />}
+              </button>
+            ))}
+          </div>
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );
@@ -348,7 +372,7 @@ function DatePicker({
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="start">
         <CalendarComponent
           mode="single"
           selected={value ? new Date(value) : undefined}
@@ -395,7 +419,7 @@ function DueDatePicker({ value, onChange }: { value: string | null; onChange: (d
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="start">
         <CalendarComponent
           mode="single"
           selected={value ? new Date(value) : undefined}
