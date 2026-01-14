@@ -216,7 +216,7 @@ export function PlannerTaskDrawer({
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                 <SelectContent className="z-[600] bg-popover">
                   {COLUMN_CONFIG.map(col => (
                     <SelectItem key={col.id} value={col.id}>
                       <div className="flex items-center gap-2">
@@ -245,7 +245,7 @@ export function PlannerTaskDrawer({
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                 <SelectContent className="z-[600] bg-popover">
                   {(Object.entries(PRIORITY_CONFIG) as [TaskPriority, typeof PRIORITY_CONFIG['critical']][]).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
                       <div className="flex items-center gap-2">
@@ -274,7 +274,7 @@ export function PlannerTaskDrawer({
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Unassigned" />
                 </SelectTrigger>
-                <SelectContent>
+                 <SelectContent className="z-[600] bg-popover">
                   <SelectItem value="unassigned">Unassigned</SelectItem>
                   {users.map(user => (
                     <SelectItem key={user.id} value={user.id}>

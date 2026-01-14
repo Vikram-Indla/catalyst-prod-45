@@ -101,7 +101,21 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     onOpenChange?.(false);
   }, [onClose, onOpenChange]);
 
-  const { data: task, isLoading } = useTaskDetail(effectiveTaskId);
+  const { data: serverTask, isLoading } = useTaskDetail(effectiveTaskId);
+  const [draftTask, setDraftTask] = useState<any | null>(null);
+
+  // Keep a local copy so field edits can update instantly (no label flicker)
+  useEffect(() => {
+    if (!serverTask) return;
+
+    setDraftTask((prev) => {
+      if (!prev || prev.id !== serverTask.id) return serverTask;
+      return { ...prev, ...serverTask };
+    });
+  }, [serverTask?.id, serverTask?.updated_at]);
+
+  const task = draftTask ?? serverTask;
+
   const updateField = useUpdateTaskField();
   const { data: dependencies } = useTaskDependencies(effectiveTaskId);
   const { data: checklist } = useTaskChecklist(effectiveTaskId);
@@ -111,6 +125,20 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   const handleFieldUpdate = useCallback(async (field: string, value: any) => {
     if (!effectiveTaskId) return;
+
+    // Optimistic local update to prevent flicker while DB roundtrip happens
+    setDraftTask((prev) => {
+      if (!prev) return prev;
+      const next: any = { ...prev, [field]: value };
+
+      // Keep the core FK fields in sync so other components can resolve labels
+      if (field === 'assignee_id') next.assignee_id = value;
+      if (field === 'status_id') next.status_id = value;
+      if (field === 'workstream_id') next.workstream_id = value;
+
+      return next;
+    });
+
     await updateField.mutateAsync({ taskId: effectiveTaskId, field, value });
     onTaskUpdated?.();
   }, [effectiveTaskId, updateField, onTaskUpdated]);
