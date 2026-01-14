@@ -12,9 +12,7 @@ import { KanbanBoard } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
 import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
-import { PlannerWeeklyReport } from './components/PlannerWeeklyReport';
-import { PlannerWorkstreamPerformance } from './components/PlannerWorkstreamPerformance';
-import { PlannerAIInsights } from './components/PlannerAIInsights';
+import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './components/insights';
 import { PlannerSettings } from './components/PlannerSettings';
 import { PlannerTaskDrawer } from './components/PlannerTaskDrawer';
 import { PlannerCreateModal } from './components/PlannerCreateModal';
@@ -321,11 +319,11 @@ export function PlannerPage() {
       case 'calendar':
         return <PlannerCalendar tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'weekly-report':
-        return <PlannerWeeklyReport tasks={viewTasks} onTaskClick={handleTaskClick} />;
+        return <WeeklySummaryView />;
       case 'workstream-performance':
-        return <PlannerWorkstreamPerformance tasks={viewTasks} onTaskClick={handleTaskClick} />;
+        return <DailyScorecardView />;
       case 'ai-insights':
-        return <PlannerAIInsights tasks={viewTasks} onTaskClick={handleTaskClick} />;
+        return <MonthlyChronicleView />;
       case 'workstreams':
         return <PlannerSettings />;
       case 'settings':
