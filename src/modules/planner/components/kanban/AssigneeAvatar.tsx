@@ -3,18 +3,19 @@
 // Displays user avatar with initials fallback
 // ============================================================
 
-import type { KanbanProfile } from '../../types/kanban';
-import { CATALYST_COLORS } from '../../types/kanban';
+import type { KanbanProfile, KanbanWorkstream } from '../../types/kanban';
 import { cn } from '@/lib/utils';
+import { getWorkstreamColor } from '@/lib/workstream-colors';
 
 interface AssigneeAvatarProps {
   profile: KanbanProfile | null | undefined;
   size?: 'sm' | 'md';
   showName?: boolean;
   className?: string;
+  workstream?: KanbanWorkstream | null;
 }
 
-export function AssigneeAvatar({ profile, size = 'md', showName = true, className }: AssigneeAvatarProps) {
+export function AssigneeAvatar({ profile, size = 'md', showName = true, className, workstream }: AssigneeAvatarProps) {
   if (!profile) return null;
   
   const name = profile.full_name || profile.email || 'Unknown';
@@ -28,6 +29,9 @@ export function AssigneeAvatar({ profile, size = 'md', showName = true, classNam
   const sizeClasses = size === 'sm' 
     ? 'w-5 h-5 text-[8px]' 
     : 'w-[26px] h-[26px] text-[10px]';
+  
+  // Get workstream color for avatar background
+  const colors = getWorkstreamColor(workstream?.name);
   
   return (
     <div className={cn('flex items-center gap-2', className)}>
@@ -43,9 +47,7 @@ export function AssigneeAvatar({ profile, size = 'md', showName = true, classNam
             'rounded-full flex items-center justify-center text-white font-semibold',
             sizeClasses
           )}
-          style={{
-            background: `linear-gradient(135deg, ${CATALYST_COLORS.primary}, ${CATALYST_COLORS.teal})`,
-          }}
+          style={{ backgroundColor: colors.hex }}
         >
           {initials}
         </div>
