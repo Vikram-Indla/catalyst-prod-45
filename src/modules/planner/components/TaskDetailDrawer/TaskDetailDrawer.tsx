@@ -30,9 +30,11 @@ import {
 } from '../../hooks/useTaskDetails';
 
 interface TaskDetailDrawerProps {
-  taskId: string | null;
+  taskId?: string | null;
+  task?: { id: string } | null; // Accept task object for backwards compat
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
+  onOpenChange?: (open: boolean) => void; // Alias for onClose
   onTaskUpdated?: () => void;
 }
 
@@ -84,20 +86,29 @@ function useUpdateTaskField() {
   });
 }
 
-export function TaskDetailDrawer({ taskId, open, onClose, onTaskUpdated }: TaskDetailDrawerProps) {
-  const { data: task, isLoading } = useTaskDetail(taskId);
+export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onClose, onOpenChange, onTaskUpdated }: TaskDetailDrawerProps) {
+  // Support both taskId and task.id for backwards compatibility
+  const effectiveTaskId = propTaskId ?? propTask?.id ?? null;
+  
+  // Handle close - support both onClose and onOpenChange patterns
+  const handleClose = useCallback(() => {
+    onClose?.();
+    onOpenChange?.(false);
+  }, [onClose, onOpenChange]);
+
+  const { data: task, isLoading } = useTaskDetail(effectiveTaskId);
   const updateField = useUpdateTaskField();
-  const { data: dependencies } = useTaskDependencies(taskId);
-  const { data: checklist } = useTaskChecklist(taskId);
-  const { data: attachments } = useTaskAttachments(taskId);
-  const { data: comments } = useTaskComments(taskId);
-  const { data: activity } = useTaskActivity(taskId);
+  const { data: dependencies } = useTaskDependencies(effectiveTaskId);
+  const { data: checklist } = useTaskChecklist(effectiveTaskId);
+  const { data: attachments } = useTaskAttachments(effectiveTaskId);
+  const { data: comments } = useTaskComments(effectiveTaskId);
+  const { data: activity } = useTaskActivity(effectiveTaskId);
 
   const handleFieldUpdate = useCallback(async (field: string, value: any) => {
-    if (!taskId) return;
-    await updateField.mutateAsync({ taskId, field, value });
+    if (!effectiveTaskId) return;
+    await updateField.mutateAsync({ taskId: effectiveTaskId, field, value });
     onTaskUpdated?.();
-  }, [taskId, updateField, onTaskUpdated]);
+  }, [effectiveTaskId, updateField, onTaskUpdated]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -123,12 +134,12 @@ export function TaskDetailDrawer({ taskId, open, onClose, onTaskUpdated }: TaskD
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [open, task, onClose]);
+  }, [open, task, handleClose]);
 
-  if (!taskId) return null;
+  if (!effectiveTaskId) return null;
 
   return (
-    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+    <Sheet open={open} onOpenChange={(o) => !o && handleClose()}>
       <SheetContent 
         side="right" 
         className="w-full sm:max-w-[580px] p-0 gap-0 overflow-hidden"
@@ -140,13 +151,13 @@ export function TaskDetailDrawer({ taskId, open, onClose, onTaskUpdated }: TaskD
             {/* Header with gradient cover */}
             <DrawerHeader
               task={task}
-              onClose={onClose}
+              onClose={handleClose}
               onTitleChange={(title) => handleFieldUpdate('title', title)}
               onStatusChange={(statusId) => handleFieldUpdate('status_id', statusId)}
             />
             
             {/* Quick Actions */}
-            <QuickActions taskId={taskId} taskKey={task.key} />
+            <QuickActions taskId={effectiveTaskId!} taskKey={task.key} />
             
             {/* Scrollable Content */}
             <ScrollArea className="flex-1">
@@ -165,25 +176,25 @@ export function TaskDetailDrawer({ taskId, open, onClose, onTaskUpdated }: TaskD
                 
                 {/* Dependencies */}
                 <DependenciesSection
-                  taskId={taskId}
+                  taskId={effectiveTaskId!}
                   dependencies={dependencies || []}
                 />
                 
                 {/* Checklist */}
                 <ChecklistSection
-                  taskId={taskId}
+                  taskId={effectiveTaskId!}
                   items={checklist || []}
                 />
                 
                 {/* Attachments */}
                 <AttachmentsSection
-                  taskId={taskId}
+                  taskId={effectiveTaskId!}
                   attachments={attachments || []}
                 />
                 
                 {/* Activity & Comments */}
                 <ActivitySection
-                  taskId={taskId}
+                  taskId={effectiveTaskId!}
                   comments={comments || []}
                   activity={activity || []}
                 />
@@ -195,7 +206,7 @@ export function TaskDetailDrawer({ taskId, open, onClose, onTaskUpdated }: TaskD
               task={task}
               onDelete={() => {
                 toast.success('Task deleted');
-                onClose();
+                handleClose();
               }}
               onDuplicate={() => {
                 toast.success('Task duplicated');

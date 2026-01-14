@@ -37,6 +37,11 @@ export function KanbanPage() {
     setIsCreateOpen(true);
   }, []);
 
+  const handleDrawerClose = useCallback(() => {
+    setIsDetailOpen(false);
+    setSelectedTask(null);
+  }, []);
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
@@ -63,11 +68,11 @@ export function KanbanPage() {
         />
       </div>
 
-      {/* Task Detail Drawer */}
+      {/* Task Detail Drawer - uses new GOD-TIER drawer */}
       <TaskDetailDrawer
         task={selectedTask}
         open={isDetailOpen}
-        onOpenChange={setIsDetailOpen}
+        onClose={handleDrawerClose}
       />
 
       {/* Create Task Modal */}
