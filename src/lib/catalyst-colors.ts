@@ -35,7 +35,53 @@ export const CATALYST_V5 = {
     bg: 'rgba(239, 68, 68, 0.08)',
     bgSolid: '#fef2f2',
   },
+  // Additional colors for Test Cycle Command Center
+  primary: '#2563eb',
+  primaryHover: '#1d4ed8',
+  primaryLight: '#dbeafe',
+  primaryLighter: '#eff6ff',
+  teal: '#0d9488',
+  tealHover: '#0f766e',
+  tealLight: '#ccfbf1',
+  tealLighter: '#f0fdfa',
+  warning: '#d97706',
+  warningHover: '#b45309',
+  warningLight: '#fef3c7',
+  warningLighter: '#fffbeb',
+  danger: '#ef4444',
+  dangerHover: '#dc2626',
+  dangerLight: '#fee2e2',
+  dangerLighter: '#fef2f2',
+  slate: {
+    50: '#f8fafc',
+    100: '#f1f5f9',
+    200: '#e2e8f0',
+    300: '#cbd5e1',
+    400: '#94a3b8',
+    500: '#64748b',
+    600: '#475569',
+    700: '#334155',
+    800: '#1e293b',
+    900: '#0f172a',
+  },
 };
+
+// Test Cycle Status Colors - Catalyst V5
+export const TEST_STATUS_COLORS = {
+  passed: { bg: '#ccfbf1', text: '#0d9488', border: '#0d9488' },
+  failed: { bg: '#fee2e2', text: '#ef4444', border: '#ef4444' },
+  blocked: { bg: '#fef3c7', text: '#d97706', border: '#d97706' },
+  in_progress: { bg: '#dbeafe', text: '#2563eb', border: '#2563eb' },
+  not_started: { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' },
+} as const;
+
+// Test Priority Colors - Catalyst V5
+export const TEST_PRIORITY_COLORS = {
+  critical: { bg: '#fee2e2', text: '#ef4444' },
+  high: { bg: '#fef3c7', text: '#d97706' },
+  medium: { bg: '#dbeafe', text: '#2563eb' },
+  low: { bg: '#f1f5f9', text: '#475569' },
+} as const;
 
 // Legacy export for backwards compatibility - DEPRECATED
 export const CATALYST_GOLDEN_HOUR = {
