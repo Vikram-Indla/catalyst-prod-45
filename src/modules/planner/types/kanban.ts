@@ -97,21 +97,58 @@ export const CATALYST_COLORS = {
   gray900: '#111827',
 } as const;
 
-// Status color mapping by slug - Neutral gray (only workstream has color)
+// Status color mapping by slug - Catalyst V5 semantic colors
 export const STATUS_COLORS: Record<string, string> = {
   backlog: CATALYST_COLORS.gray400,
-  planned: CATALYST_COLORS.gray500,
-  'in-progress': CATALYST_COLORS.gray600,
-  review: CATALYST_COLORS.gray700,
-  done: CATALYST_COLORS.gray700,
+  planned: CATALYST_COLORS.primary,
+  'in-progress': CATALYST_COLORS.warning,
+  review: CATALYST_COLORS.teal,
+  done: CATALYST_COLORS.success,
 };
 
-// Priority styles - Neutral gray (only workstream has color)
-export const PRIORITY_STYLES: Record<KanbanTaskPriority, { bg: string; text: string; border: string }> = {
-  critical: { bg: CATALYST_COLORS.gray100, text: CATALYST_COLORS.gray700, border: CATALYST_COLORS.gray300 },
-  high: { bg: CATALYST_COLORS.gray100, text: CATALYST_COLORS.gray700, border: CATALYST_COLORS.gray300 },
-  medium: { bg: CATALYST_COLORS.gray100, text: CATALYST_COLORS.gray600, border: CATALYST_COLORS.gray300 },
-  low: { bg: CATALYST_COLORS.gray100, text: CATALYST_COLORS.gray500, border: CATALYST_COLORS.gray300 },
+// Priority styles - Catalyst V5 semantic priority colors with icons
+export const PRIORITY_STYLES: Record<KanbanTaskPriority, { 
+  bg: string; 
+  text: string; 
+  border: string; 
+  icon: string;
+  borderLeft: string;
+}> = {
+  critical: { 
+    bg: CATALYST_COLORS.dangerLight, 
+    text: CATALYST_COLORS.danger, 
+    border: CATALYST_COLORS.danger,
+    icon: '⚠️',
+    borderLeft: CATALYST_COLORS.danger,
+  },
+  high: { 
+    bg: CATALYST_COLORS.warningLight, 
+    text: CATALYST_COLORS.warning, 
+    border: CATALYST_COLORS.warning,
+    icon: '🔥',
+    borderLeft: CATALYST_COLORS.warning,
+  },
+  medium: { 
+    bg: CATALYST_COLORS.primaryLight, 
+    text: CATALYST_COLORS.primary, 
+    border: CATALYST_COLORS.primary,
+    icon: '●',
+    borderLeft: CATALYST_COLORS.primary,
+  },
+  low: { 
+    bg: CATALYST_COLORS.gray100, 
+    text: CATALYST_COLORS.gray500, 
+    border: CATALYST_COLORS.gray300,
+    icon: '○',
+    borderLeft: CATALYST_COLORS.gray400,
+  },
+};
+
+// Progress color helper - returns color based on percentage
+export const getProgressColor = (progress: number): string => {
+  if (progress >= 67) return CATALYST_COLORS.teal;
+  if (progress >= 34) return CATALYST_COLORS.warning;
+  return CATALYST_COLORS.gray400;
 };
 
 // Workstream colors - Catalyst V5 palette for differentiation
