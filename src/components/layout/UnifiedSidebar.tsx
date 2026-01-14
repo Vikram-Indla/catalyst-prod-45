@@ -2,6 +2,12 @@
  * Unified Sidebar Component
  * Single sidebar component for Program and Project workspaces
  * Replaces ProgramSidebar and ProjectSidebar with shared structure
+ * 
+ * CATALYST V5 HARDENED:
+ * - Item height: 44px (h-11) for proper touch targets
+ * - Icons: 18×18 with strokeWidth 1.75
+ * - Active state: 3px left border, bg-blue-50/60, text-brand-primary
+ * - Footer separator: border-t border-divider
  */
 
 import { useEffect, useRef } from 'react';
@@ -9,14 +15,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  ChevronLeft, 
-  ChevronRight, 
+  ChevronsLeft, 
+  ChevronsRight, 
   LayoutDashboard,
   Network,
   GitBranch,
   Map,
   Grid3x3,
-  Users as UsersIcon,
   Calendar,
   FileText,
   Settings,
@@ -25,8 +30,16 @@ import {
   Layers,
   LayoutList,
   FlaskConical,
+  Star,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { useFavorites } from '@/hooks/useFavorites';
 
 type WorkspaceType = 'program' | 'project';
 
@@ -81,6 +94,7 @@ export function UnifiedSidebar({
 }: UnifiedSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Dev-only instrumentation: prove sidebar doesn't remount on route changes
   const mountRef = useRef({ workspaceType, entityId });
@@ -134,10 +148,6 @@ export function UnifiedSidebar({
     performance.mark?.('program_nav_click');
     const resolvedPath = pathTemplate.replace(':id', entityId);
     navigate({ pathname: resolvedPath, search: buildNextSearch() });
-
-    if (expanded) {
-      onToggle();
-    }
   };
 
   const isActive = (pathTemplate: string) => {
@@ -148,147 +158,116 @@ export function UnifiedSidebar({
   const settingsPath = workspaceType === 'program' ? '/admin/portfolios' : '/admin/programs';
 
   return (
-    <aside 
-      style={{
-        width: expanded ? '220px' : '60px',
-        height: '100%',
-        background: 'var(--surface-1)',
-        borderRight: '1px solid var(--divider)',
-        transition: 'all 0.3s ease',
-        flexShrink: 0,
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-      className={className}
-    >
-      {/* Toggle Handle */}
-      <button
-        type="button"
-        onClick={onToggle}
-        style={{
-          position: 'absolute',
-          right: '-12px',
-          top: '24px',
-          zIndex: 50,
-          width: '24px',
-          height: '24px',
-          borderRadius: '9999px',
-          background: 'var(--surface-1)',
-          border: '1px solid var(--divider)',
-          boxShadow: 'var(--card-shadow)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          color: 'var(--icon-default)',
-        }}
-        aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
-      >
-        {expanded ? (
-          <ChevronLeft style={{ width: '16px', height: '16px' }} />
-        ) : (
-          <ChevronRight style={{ width: '16px', height: '16px' }} />
+    <TooltipProvider delayDuration={0}>
+      <aside 
+        className={cn(
+          'h-full flex-shrink-0 relative flex flex-col',
+          'transition-all duration-200 ease-in-out',
+          className
         )}
-      </button>
-
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* Sidebar Header - 52px per reference */}
+        style={{
+          width: expanded ? '240px' : '64px',
+          background: 'var(--surface-1)',
+          borderRight: '1px solid var(--divider)',
+        }}
+      >
+        {/* Header with collapse toggle */}
         <div 
+          className="h-[52px] flex items-center justify-between border-b flex-shrink-0"
           style={{ 
-            height: '52px', 
+            borderColor: 'var(--divider)',
             padding: expanded ? '0 12px' : '0',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: expanded ? 'flex-start' : 'center',
-            flexShrink: 0,
+            justifyContent: expanded ? 'space-between' : 'center',
           }}
         >
-          {expanded ? (
-            <div style={{ width: '100%' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div 
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '6px',
-                    background: 'var(--brand-active)',
-                    color: 'var(--text-inverse, #ffffff)',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
-                </div>
-                {/* Section label */}
-                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)' }}>
-                  {entity?.name || entityLabel}
-                </span>
-              </div>
-              {/* Mini divider - only visible when expanded */}
-              <div 
-                style={{
-                  marginTop: '8px',
-                  width: '100%',
-                  height: '1px',
-                  background: 'var(--divider)',
-                }}
-              />
-            </div>
-          ) : (
+          <div className="flex items-center gap-2.5 overflow-hidden">
             <div 
+              className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
               style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '6px',
                 background: 'var(--brand-active)',
                 color: 'var(--text-inverse, #ffffff)',
                 fontSize: '11px',
                 fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
             </div>
-          )}
+            {expanded && (
+              <span 
+                className="text-sm font-semibold truncate"
+                style={{ color: 'var(--text-1)' }}
+              >
+                {entity?.name || entityLabel}
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onToggle}
+            className="w-7 h-7 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
+            style={{ color: 'var(--text-tertiary)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--nav-hover-bg)';
+              e.currentTarget.style.color = 'var(--text-1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-tertiary)';
+            }}
+            aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            {expanded ? (
+              <ChevronsLeft size={16} />
+            ) : (
+              <ChevronsRight size={16} />
+            )}
+          </button>
         </div>
 
         {/* Navigation Menu */}
-        <nav style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
+        <nav className="flex-1 overflow-y-auto" style={{ padding: '8px' }}>
+          {/* Section header - Views */}
+          {expanded && (
+            <div className="px-3 pt-2 pb-1">
+              <span 
+                className="text-xs font-medium tracking-wide"
+                style={{ color: 'var(--text-tertiary)' }}
+              >
+                Views
+              </span>
+            </div>
+          )}
+          
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.pathTemplate);
+            const resolvedPath = item.pathTemplate.replace(':id', entityId);
+            const starred = isFavorite(resolvedPath);
 
-            return (
+            const menuButton = (
               <button
                 type="button"
                 key={item.id}
                 onClick={() => handleNavigation(item.pathTemplate)}
+                className="group"
                 style={{
                   width: '100%',
-                  height: '40px',
+                  height: '44px', // 44px = h-11
                   padding: expanded ? '0 12px' : '0',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  borderRadius: '6px',
+                  gap: '10px',
+                  borderRadius: '8px',
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'background 0.15s ease, color 0.15s ease',
                   marginBottom: '2px',
                   position: 'relative',
                   justifyContent: expanded ? 'flex-start' : 'center',
-                  // Active state: use nav-active-bg, text-1 for text
-                  background: active ? 'var(--nav-active-bg)' : 'transparent',
-                  color: active ? 'var(--text-1)' : 'var(--text-2)',
-                  fontWeight: active ? 600 : 500,
-                  fontSize: '14px',
+                  background: active ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
+                  color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
+                  fontWeight: active ? 500 : 400,
+                  fontSize: '13px',
                   fontFamily: 'inherit',
                   outline: 'none',
                 }}
@@ -296,34 +275,69 @@ export function UnifiedSidebar({
                   if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
                 }}
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
+                  e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.08)' : 'transparent'; 
                 }}
-                title={!expanded ? item.label : undefined}
               >
-                {/* Left indicator bar for active state - 2px brand-active */}
+                {/* Left indicator bar for active state - 3px */}
                 {active && (
                   <span 
                     style={{
                       position: 'absolute',
                       left: 0,
-                      top: '8px',
-                      bottom: '8px',
-                      width: '2px',
-                      background: 'var(--brand-active)',
-                      borderRadius: '0 1px 1px 0',
+                      top: expanded ? '8px' : '12px',
+                      bottom: expanded ? '8px' : '12px',
+                      width: '3px',
+                      background: 'hsl(var(--brand-primary))',
+                      borderRadius: '0 2px 2px 0',
                     }}
                   />
                 )}
-                <Icon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? 'var(--text-1)' : 'var(--icon-default)' }} />
+                {/* Icon - 18×18 */}
+                <Icon 
+                  style={{ 
+                    width: '18px', 
+                    height: '18px', 
+                    flexShrink: 0, 
+                    color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)',
+                    strokeWidth: 1.75,
+                  }} 
+                />
                 {expanded && (
                   <>
-                    <span style={{ textAlign: 'left', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
+                    <span className="flex-1 text-left truncate">{item.label}</span>
+                    {/* Star button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFavorite(resolvedPath);
+                      }}
+                      className={cn(
+                        "w-5 h-5 flex items-center justify-center rounded transition-opacity",
+                        starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                      )}
+                      style={{ color: starred ? '#f59e0b' : 'var(--text-4)' }}
+                      onMouseEnter={(e) => {
+                        if (!starred) {
+                          e.currentTarget.style.color = '#f59e0b';
+                          e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!starred) {
+                          e.currentTarget.style.color = 'var(--text-4)';
+                          e.currentTarget.style.background = 'transparent';
+                        }
+                      }}
+                    >
+                      <Star size={14} fill={starred ? "currentColor" : "none"} />
+                    </button>
                     {item.badge && (
                       <span style={{ 
                         padding: '2px 6px', 
                         fontSize: '11px', 
                         fontWeight: 600, 
-                        background: 'var(--brand-active)', 
+                        background: 'hsl(var(--brand-primary))', 
                         color: '#ffffff',
                         borderRadius: '4px',
                         textTransform: 'uppercase',
@@ -335,42 +349,89 @@ export function UnifiedSidebar({
                 )}
               </button>
             );
+
+            if (!expanded) {
+              return (
+                <Tooltip key={item.id}>
+                  <TooltipTrigger asChild>
+                    {menuButton}
+                  </TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={8}>
+                    {item.label}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            return menuButton;
           })}
         </nav>
 
-        {/* Footer */}
-        {expanded && (
-          <div style={{ borderTop: '1px solid var(--divider)', padding: '12px 8px' }}>
+        {/* Footer - Settings */}
+        <div 
+          className="border-t pt-2 mt-2"
+          style={{ borderColor: 'var(--divider)', padding: '8px' }}
+        >
+          {expanded ? (
             <button 
               type="button"
+              className="group"
               style={{
                 width: '100%',
-                height: '40px',
+                height: '44px',
                 padding: '0 12px',
                 display: 'flex',
-                borderRadius: '6px',
+                alignItems: 'center',
+                gap: '10px',
+                borderRadius: '8px',
                 border: 'none',
                 background: 'transparent',
-                color: 'var(--text-2)',
-                fontSize: '14px',
-                fontWeight: 500,
+                color: 'hsl(var(--foreground))',
+                fontSize: '13px',
+                fontWeight: 400,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
                 fontFamily: 'inherit',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-              onClick={() => {
-                navigate(settingsPath);
-                onToggle();
-              }}
+              onClick={() => navigate(settingsPath)}
             >
-              <Settings style={{ width: '20px', height: '20px', color: 'var(--icon-default)' }} />
-              <span style={{ textAlign: 'left' }}>{entityLabel} Settings</span>
+              <Settings style={{ width: '18px', height: '18px', color: 'hsl(var(--foreground) / 0.7)', strokeWidth: 1.75 }} />
+              <span className="text-left">{entityLabel} Settings</span>
             </button>
-          </div>
-        )}
-      </div>
-    </aside>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  type="button"
+                  style={{
+                    width: '100%',
+                    height: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'hsl(var(--foreground))',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  onClick={() => navigate(settingsPath)}
+                >
+                  <Settings style={{ width: '18px', height: '18px', color: 'hsl(var(--foreground) / 0.7)', strokeWidth: 1.75 }} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                {entityLabel} Settings
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+      </aside>
+    </TooltipProvider>
   );
 }
