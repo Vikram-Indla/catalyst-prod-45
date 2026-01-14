@@ -8,3 +8,6 @@ export { DefectFilterDropdown, getStatusOptions, getSeverityOptions, getPriority
 export { DefectViewTabs } from './DefectViewTabs';
 export { DefectTableRow } from './DefectTableRow';
 export { DefectBulkActionBar } from './DefectBulkActionBar';
+export { DefectTable } from './DefectTable';
+export { DefectListHeader } from './DefectListHeader';
+export { DefectListView } from './DefectListView';
