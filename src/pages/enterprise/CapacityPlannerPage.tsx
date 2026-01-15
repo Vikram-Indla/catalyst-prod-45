@@ -839,7 +839,7 @@ export default function CapacityPlannerPage() {
                     groupedByAssignment={groupedByAssignment}
                     groupedByDepartment={groupedByDepartment}
                     allocations={allocations}
-                    onResourceClick={openResourceDrawer}
+                    onResourceClick={(r: ResourceMetric) => handleOpenAllocationModal(r.id)}
                     onEditResource={handleOpenAllocationModal}
                     onDeleteResource={(resource) => {
                       setResourceToDelete(resource);
