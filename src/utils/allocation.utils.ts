@@ -240,7 +240,8 @@ export function getTimelineStart(contractStart: string, weekOffset: number = 0):
 
 /**
  * Calculate default forecast boundary (e.g., 8 weeks from today)
+ * Returns ISO date string
  */
-export function getDefaultForecastBoundary(today: Date = new Date()): Date {
-  return addWeeks(startOfWeek(today, { weekStartsOn: 1 }), 8);
+export function getDefaultForecastBoundary(today: Date = new Date()): string {
+  return format(addWeeks(startOfWeek(today, { weekStartsOn: 1 }), 8), 'yyyy-MM-dd');
 }
