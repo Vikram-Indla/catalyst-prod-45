@@ -19,18 +19,30 @@
    ════════════════════════════════════════════════════════════════════════════ */
 html {
   scrollbar-gutter: stable;
+  overflow-y: scroll !important;
 }
 
-/* Prevent Radix UI scroll-lock from causing layout shifts */
+/* Prevent Radix UI scroll-lock from causing layout shifts on body */
 body[data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  overflow: visible !important;
+}
+
+/* Prevent Radix from hiding overflow on html element */
+html[data-scroll-locked],
+html:has(body[data-scroll-locked]) {
+  overflow: scroll !important;
+  overflow-y: scroll !important;
   margin-right: 0 !important;
   padding-right: 0 !important;
 }
 
-/* Ensure html doesn't shift when body is scroll-locked */
+/* Prevent any width changes during scroll-lock */
+body[data-scroll-locked],
+html[data-scroll-locked],
 html:has(body[data-scroll-locked]) {
-  overflow: auto !important;
-  margin-right: 0 !important;
+  --removed-body-scroll-bar-size: 0px !important;
 }
 
 @layer base {
