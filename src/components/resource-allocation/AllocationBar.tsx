@@ -5,6 +5,7 @@
  */
 
 import { cn } from '@/lib/utils';
+import { Pencil, Trash2 } from 'lucide-react';
 import type { TimelineBar } from '@/types/resource-allocation.types';
 import {
   Tooltip,
@@ -12,81 +13,130 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 
 interface AllocationBarProps {
   bar: TimelineBar;
   columnWidth: number;
   onClick: () => void;
+  onDelete?: () => void;
 }
 
-export function AllocationBar({ bar, columnWidth, onClick }: AllocationBarProps) {
+export function AllocationBar({ bar, columnWidth, onClick, onDelete }: AllocationBarProps) {
   const left = bar.startIndex * columnWidth;
   const width = bar.spanCount * columnWidth - 8; // 8px padding
   
   const isCommitted = bar.status === 'committed';
   
   return (
-    <TooltipProvider delayDuration={200}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            onClick={onClick}
-            className={cn(
-              "absolute top-2 h-8 rounded-md flex items-center justify-center",
-              "text-[11px] font-bold text-white",
-              "transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer",
-              "focus:outline-none focus:ring-2 focus:ring-offset-2",
-              // Committed = solid, Forecast = striped
-              isCommitted 
-                ? "shadow-[0_2px_6px_rgba(0,0,0,0.15)]"
-                : "opacity-80"
-            )}
-            style={{
-              left: left + 4,
-              width: Math.max(40, width),
-              backgroundColor: isCommitted ? bar.assignmentColor : 'transparent',
-              background: isCommitted 
-                ? bar.assignmentColor 
-                : `repeating-linear-gradient(
-                    45deg,
-                    ${bar.assignmentColor}40,
-                    ${bar.assignmentColor}40 4px,
-                    ${bar.assignmentColor}70 4px,
-                    ${bar.assignmentColor}70 8px
-                  )`,
-              border: isCommitted ? 'none' : `2px dashed ${bar.assignmentColor}`,
-              color: isCommitted ? 'white' : bar.assignmentColor,
-            }}
-            aria-label={`${bar.assignmentName}: ${bar.percentage}% ${bar.status}`}
+    <Popover>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <PopoverTrigger asChild>
+            <TooltipTrigger asChild>
+              <button
+                className={cn(
+                  "absolute top-2 h-8 rounded-md flex items-center justify-center",
+                  "text-[11px] font-bold text-white",
+                  "transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer",
+                  "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                  // Committed = solid, Forecast = striped
+                  isCommitted 
+                    ? "shadow-[0_2px_6px_rgba(0,0,0,0.15)]"
+                    : "opacity-80"
+                )}
+                style={{
+                  left: left + 4,
+                  width: Math.max(40, width),
+                  backgroundColor: isCommitted ? bar.assignmentColor : 'transparent',
+                  background: isCommitted 
+                    ? bar.assignmentColor 
+                    : `repeating-linear-gradient(
+                        45deg,
+                        ${bar.assignmentColor}40,
+                        ${bar.assignmentColor}40 4px,
+                        ${bar.assignmentColor}70 4px,
+                        ${bar.assignmentColor}70 8px
+                      )`,
+                  border: isCommitted ? 'none' : `2px dashed ${bar.assignmentColor}`,
+                  color: isCommitted ? 'white' : bar.assignmentColor,
+                }}
+                aria-label={`${bar.assignmentName}: ${bar.percentage}% ${bar.status}`}
+              >
+                <span className={cn(
+                  "px-2 truncate",
+                  !isCommitted && "font-extrabold"
+                )}>
+                  {bar.percentage}%
+                </span>
+              </button>
+            </TooltipTrigger>
+          </PopoverTrigger>
+          <TooltipContent 
+            side="top" 
+            className="bg-foreground text-background p-3 rounded-lg shadow-xl max-w-[250px]"
           >
-            <span className={cn(
-              "px-2 truncate",
-              !isCommitted && "font-extrabold"
-            )}>
-              {bar.percentage}%
-            </span>
-          </button>
-        </TooltipTrigger>
-        <TooltipContent 
-          side="top" 
-          className="bg-foreground text-background p-3 rounded-lg shadow-xl max-w-[250px]"
-        >
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div 
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: bar.assignmentColor }}
-              />
-              <span className="font-bold text-[13px]">{bar.assignmentName}</span>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: bar.assignmentColor }}
+                />
+                <span className="font-bold text-[13px]">{bar.assignmentName}</span>
+              </div>
+              <div className="text-[11px] opacity-80 space-y-0.5">
+                <div>Allocation: <span className="font-semibold">{bar.percentage}%</span></div>
+                <div>Status: <span className="font-semibold capitalize">{bar.status}</span></div>
+                <div>Period: <span className="font-semibold">{bar.startDate} → {bar.endDate}</span></div>
+              </div>
+              <div className="text-[10px] opacity-60 pt-1 border-t border-white/20 mt-2">
+                Click for actions
+              </div>
             </div>
-            <div className="text-[11px] opacity-80 space-y-0.5">
-              <div>Allocation: <span className="font-semibold">{bar.percentage}%</span></div>
-              <div>Status: <span className="font-semibold capitalize">{bar.status}</span></div>
-              <div>Period: <span className="font-semibold">{bar.startDate} → {bar.endDate}</span></div>
-            </div>
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      {/* Popover with Edit/Delete actions */}
+      <PopoverContent 
+        side="top" 
+        align="center"
+        className="w-auto p-1.5 bg-card border border-border shadow-xl"
+      >
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-3 gap-2 text-xs font-medium hover:bg-primary/10 hover:text-primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            Edit
+          </Button>
+          {onDelete && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-3 gap-2 text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Delete
+            </Button>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
