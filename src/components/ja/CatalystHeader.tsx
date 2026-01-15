@@ -152,6 +152,9 @@ export function CatalystHeader() {
           fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
           backgroundColor: 'var(--nav-bg)',
           boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',
+          // GPU layer promotion to prevent flicker when portals mount
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
         }}
       >
         {/* ===== LOGO ZONE - Split color treatment ===== */}

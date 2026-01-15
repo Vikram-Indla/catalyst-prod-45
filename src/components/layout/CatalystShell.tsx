@@ -207,8 +207,8 @@ function CatalystShellContent() {
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="relative flex-shrink-0">
+        {/* Sidebar - GPU layer for stability */}
+        <div className="relative flex-shrink-0" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
           {renderSidebar()}
         </div>
 
