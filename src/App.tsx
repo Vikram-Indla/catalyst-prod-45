@@ -102,6 +102,7 @@ import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
 import ReleasesCommandCenter from "./pages/releases/CommandCenter";
 import ReleasesPlaceholderPage from "./pages/releases/PlaceholderPage";
+import AllReleasesPage from "./pages/releases/AllReleasesPage";
 import ReleasesTestCasesPage from "./pages/releases/TestCasesPage";
 import ReleasesTestCasesLibraryPage from "./pages/releases/TestCasesLibraryPage";
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
@@ -778,7 +779,7 @@ const App = () => (
               <Route path="/releases/command-center" element={<ReleasesCommandCenter />} />
               <Route path="/releases/dashboard" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/my-scope" element={<ReleasesPlaceholderPage />} />
-              <Route path="/releases/all" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/all" element={<AllReleasesPage />} />
               <Route path="/releases/calendar" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/compare" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/test-cases" element={<ReleasesTestCasesPage />} />
