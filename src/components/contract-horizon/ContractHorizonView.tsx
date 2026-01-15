@@ -10,9 +10,8 @@ import { FilterBar } from './FilterBar';
 import { TimelineHeader } from './TimelineHeader';
 import { DepartmentRow } from './DepartmentRow';
 import { ResourceDrawer } from './ResourceDrawer';
-import { AllocationDrawer } from '@/components/resource-allocation';
+import { AllocationModal } from '@/components/resource-allocation';
 import { Loader2 } from 'lucide-react';
-import { addWeeks, format } from 'date-fns';
 import type { AllocationResource } from '@/types/resource-allocation.types';
 
 export function ContractHorizonView() {
@@ -30,6 +29,27 @@ export function ContractHorizonView() {
     isLoading,
     currentMonth
   } = useContractHorizon();
+
+  // State for Allocation Modal
+  const [allocationResource, setAllocationResource] = useState<AllocationResource | null>(null);
+
+  // Convert ContractResourceWithStatus to AllocationResource
+  const handleResourceClick = (resource: any) => {
+    const allocResource: AllocationResource = {
+      id: resource.id,
+      name: resource.name,
+      initials: resource.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+      role: resource.role || 'Resource',
+      department: resource.department || 'Delivery',
+      vendor: resource.vendor || 'Unknown',
+      country: resource.country || 'Saudi Arabia',
+      location: resource.location || 'On-site',
+      contractStart: resource.contractStart || new Date().toISOString().split('T')[0],
+      contractEnd: resource.contractEnd,
+      forecastBoundary: resource.forecastBoundary || '',
+    };
+    setAllocationResource(allocResource);
+  };
 
   if (isLoading) {
     return (
@@ -83,7 +103,7 @@ export function ContractHorizonView() {
             stats={stats}
             isExpanded={expandedDepartments.has(stats.department)}
             onToggle={() => toggleDepartment(stats.department)}
-            onResourceClick={setSelectedResource}
+            onResourceClick={handleResourceClick}
           />
         ))}
         
@@ -96,11 +116,19 @@ export function ContractHorizonView() {
         )}
       </div>
       
-      {/* Resource Detail Drawer */}
+      {/* Resource Detail Drawer (legacy) */}
       {selectedResource && (
         <ResourceDrawer 
           resource={selectedResource}
           onClose={() => setSelectedResource(null)}
+        />
+      )}
+
+      {/* Resource Allocation Modal */}
+      {allocationResource && (
+        <AllocationModal 
+          resource={allocationResource}
+          onClose={() => setAllocationResource(null)}
         />
       )}
     </div>
