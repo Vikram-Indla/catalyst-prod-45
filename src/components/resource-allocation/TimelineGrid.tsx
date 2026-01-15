@@ -36,7 +36,7 @@ interface TimelineGridProps {
   firstForecastIndex: number;
   onAddClick: () => void;
   onEditBar: (allocationId: string) => void;
-  onDeleteBar: (allocationId: string) => void;
+  onDeleteBar: (allocationId: string) => Promise<void> | void;
   resourceName?: string;
 }
 
@@ -83,11 +83,17 @@ export function TimelineGrid({
     });
   };
 
-  const confirmDelete = () => {
-    if (deleteConfirm.allocationId) {
-      onDeleteBar(deleteConfirm.allocationId);
+  const confirmDelete = async () => {
+    const allocationId = deleteConfirm.allocationId;
+    if (!allocationId) return;
+
+    try {
+      await onDeleteBar(allocationId);
+      setDeleteConfirm({ open: false, allocationId: null, assignmentName: '' });
+    } catch {
+      // If deletion fails, keep dialog open (toast is handled by mutation onError)
+      setDeleteConfirm((prev) => ({ ...prev, open: true }));
     }
-    setDeleteConfirm({ open: false, allocationId: null, assignmentName: '' });
   };
 
   const cancelDelete = () => {
@@ -324,7 +330,10 @@ export function TimelineGrid({
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => !open && cancelDelete()}>
+      <AlertDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Assignment?</AlertDialogTitle>
