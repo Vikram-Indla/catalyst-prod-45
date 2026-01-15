@@ -2412,7 +2412,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     <div className="flex flex-col h-full min-h-0">
       {/* Bulk Action Bar */}
       {selectedIds.length > 0 && (
-        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 border border-border rounded-lg bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
+        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 border border-border rounded-lg bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
           <span className="text-sm font-medium text-foreground">
             {selectedIds.length} resource{selectedIds.length > 1 ? 's' : ''} selected
           </span>

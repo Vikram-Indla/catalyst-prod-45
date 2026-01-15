@@ -441,7 +441,7 @@ export function PlannerPage() {
       {/* Right column: header + search + view content */}
       <div className="flex flex-col flex-1 min-w-0 min-h-0">
         {/* Header with breadcrumb */}
-        <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
+        <div className="shrink-0" style={{ backgroundColor: 'var(--bg)', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
           <div
             className="flex items-center justify-between px-6"
             style={{

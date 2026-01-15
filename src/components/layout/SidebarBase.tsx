@@ -110,6 +110,9 @@ export function SidebarBase({
           background: 'var(--surface-elevated, var(--surface-1))',
           borderRight: '1px solid var(--divider)',
           boxShadow: '1px 0 3px 0 rgba(0, 0, 0, 0.03)',
+          // GPU layer promotion to prevent flicker when portals mount
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
         }}
       >
         {/* Header with collapse toggle */}
