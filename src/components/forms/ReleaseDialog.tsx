@@ -93,6 +93,7 @@ export function ReleaseDialog({ open, onClose, releaseId }: ReleaseDialogProps) 
         status: data.status,
         readiness_pct: data.readiness_pct || 0,
         notes: data.notes || null,
+        version: 'v1.0', // Required field - default version
       };
 
       if (isEdit) {
