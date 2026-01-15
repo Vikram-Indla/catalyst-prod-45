@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -329,18 +329,25 @@ export function TimelineGrid({
         )}
       </div>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Confirmation Dialog - Catalyst V5 Style */}
       <AlertDialog
         open={deleteConfirm.open}
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
       >
-        <AlertDialogContent className="z-[1105]">
+        <AlertDialogContent className="z-[1105] max-w-[400px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Assignment?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will remove <span className="font-semibold text-foreground">{deleteConfirm.assignmentName}</span> allocation
-              for <span className="font-semibold text-foreground">{resourceName}</span>.
-              This action cannot be undone.
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              Delete Assignment
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                Are you sure you want to delete the <span className="font-semibold text-foreground">{deleteConfirm.assignmentName}</span> allocation
+                for <span className="font-semibold text-foreground">{resourceName}</span>?
+              </p>
+              <p className="text-muted-foreground">
+                This action cannot be undone. The allocation will be permanently removed.
+              </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
