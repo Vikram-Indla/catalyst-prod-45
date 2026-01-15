@@ -19,7 +19,10 @@ import {
   ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock, Eye, Copy, Check, RotateCcw, Play,
   Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2, X, RefreshCw, AlertCircle
 } from 'lucide-react';
-import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf, AllocationBookingModal } from '@/modules/capacity-planner';
+import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { AllocationModal } from '@/components/resource-allocation';
+import type { AllocationResource } from '@/types/resource-allocation.types';
+import { getDefaultForecastBoundary } from '@/utils/allocation.utils';
 
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation, ResourceAllocation, AllocationBookingInput } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
@@ -1465,21 +1468,34 @@ export default function CapacityPlannerPage() {
           }))}
         />
 
-        {/* Allocation Booking Modal */}
-        <AllocationBookingModal
-          isOpen={allocationModalOpen}
-          onClose={() => {
-            setAllocationModalOpen(false);
-            setAllocationModalResource(null);
-          }}
-          resource={allocationModalResource}
-          existingAllocations={allocationModalResource ? getResourceAllocations(allocationModalResource.id, (allocationModalResource as any).resourceInventoryId) : []}
-          resourceAssignments={resourceAssignments.map(a => ({ id: a.id, name: a.name || '' }))}
-          departments={departments}
-          onSave={handleSaveAllocations}
-          onUpdateDepartment={handleUpdateDepartment}
-          mode={allocationModalResource && getResourceAllocations(allocationModalResource.id, (allocationModalResource as any).resourceInventoryId).length > 0 ? 'edit' : 'add'}
-        />
+        {/* Resource Allocation Modal - Weekly Grid View */}
+        {allocationModalOpen && allocationModalResource && (() => {
+          // Map ResourceMetric to AllocationResource
+          const initials = allocationModalResource.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          const allocationResource: AllocationResource = {
+            id: allocationModalResource.id,
+            name: allocationModalResource.name,
+            initials,
+            role: allocationModalResource.role || 'Resource',
+            department: allocationModalResource.department || 'Delivery',
+            vendor: allocationModalResource.vendor_name || 'Internal',
+            country: allocationModalResource.country || 'Saudi Arabia',
+            location: allocationModalResource.location || 'On-site',
+            contractStart: allocationModalResource.contract_start_date || new Date().toISOString().split('T')[0],
+            contractEnd: allocationModalResource.contract_end_date || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            forecastBoundary: getDefaultForecastBoundary(),
+            profileId: allocationModalResource.id,
+          };
+          return (
+            <AllocationModal 
+              resource={allocationResource}
+              onClose={() => {
+                setAllocationModalOpen(false);
+                setAllocationModalResource(null);
+              }}
+            />
+          );
+        })()}
 
         <div className="fixed bottom-6 right-6 z-50">
           <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />

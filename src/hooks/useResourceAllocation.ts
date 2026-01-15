@@ -53,7 +53,7 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
     );
     const forecastBoundary = resource.forecastBoundary 
       ? parseISO(resource.forecastBoundary)
-      : getDefaultForecastBoundary(today);
+      : parseISO(getDefaultForecastBoundary(today));
     
     return generateVisibleWeeks(startDate, forecastBoundary, today);
   }, [resource.contractStart, resource.forecastBoundary, weekOffset, today]);
