@@ -74,8 +74,8 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
     }
   });
 
-  // Fetch assignments for this resource
-  const { data: serverAssignmentsRaw = [], isLoading: loadingAssignments } = useQuery({
+  // Fetch assignments for this resource (with color assignment in select to avoid hook ordering issues)
+  const { data: serverAssignments = [], isLoading: loadingAssignments } = useQuery({
     queryKey: ['resource-assignments-for-allocation', resource.id],
     queryFn: async () => {
       // Get all assignments this resource is allocated to
@@ -98,7 +98,6 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
           .limit(4);
         
         if (error) throw error;
-        
         return (allAssignments || []).map(a => ({ id: a.id, name: a.name }));
       }
       
@@ -110,21 +109,13 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
         .order('sort_order');
       
       if (error) throw error;
-      
       return (data || []).map(a => ({ id: a.id, name: a.name }));
-    }
+    },
+    // Use select to transform data - this runs on cached data too, avoiding re-fetch loops
+    select: (data) => assignColorsToAssignments(
+      data.map(a => ({ id: a.id, name: a.name, color: 'primary' as const }))
+    ),
   });
-
-  // Memoize colored assignments to avoid infinite re-renders
-  const serverAssignments = useMemo(() => {
-    return assignColorsToAssignments(
-      serverAssignmentsRaw.map(a => ({
-        id: a.id,
-        name: a.name,
-        color: 'primary' as const
-      }))
-    );
-  }, [serverAssignmentsRaw]);
 
   // Fetch allocations for this resource
   const { data: serverAllocations = [], isLoading: loadingAllocations, refetch } = useQuery({
