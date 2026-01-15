@@ -9,8 +9,10 @@ import { CriticalAlert } from './CriticalAlert';
 import { FilterBar } from './FilterBar';
 import { TimelineHeader } from './TimelineHeader';
 import { DepartmentRow } from './DepartmentRow';
+import { ResourceDrawer } from './ResourceDrawer';
 import { AllocationDrawer } from '@/components/resource-allocation';
 import { Loader2 } from 'lucide-react';
+import { addWeeks, format } from 'date-fns';
 import type { AllocationResource } from '@/types/resource-allocation.types';
 
 export function ContractHorizonView() {
@@ -94,22 +96,10 @@ export function ContractHorizonView() {
         )}
       </div>
       
-      {/* Resource Allocation Drawer */}
+      {/* Resource Detail Drawer */}
       {selectedResource && (
-        <AllocationDrawer 
-          resource={{
-            id: selectedResource.id,
-            name: selectedResource.name,
-            initials: selectedResource.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
-            role: selectedResource.role,
-            department: selectedResource.department,
-            vendor: selectedResource.vendor,
-            country: selectedResource.country || 'Unknown',
-            location: (selectedResource.location || 'On-site') as 'On-site' | 'Off-shore',
-            contractStart: selectedResource.contractStart,
-            contractEnd: selectedResource.contractEnd,
-            forecastBoundary: selectedResource.contractEnd,
-          }}
+        <ResourceDrawer 
+          resource={selectedResource}
           onClose={() => setSelectedResource(null)}
         />
       )}

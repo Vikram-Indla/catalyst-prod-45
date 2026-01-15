@@ -4,17 +4,16 @@
  * Catalyst V5 Enterprise Design System
  */
 
-import { useEffect, useMemo } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect } from 'react';
+import { X, ChevronLeft, ChevronRight, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO, getISOWeek } from 'date-fns';
 import { useResourceAllocation } from '@/hooks/useResourceAllocation';
-import type { AllocationResource, Assignment, Allocation, WeekColumn, AllocationStatus } from '@/types/resource-allocation.types';
+import type { AllocationResource, Assignment, Allocation, WeekColumn } from '@/types/resource-allocation.types';
 import { DEPARTMENT_GRADIENTS, ASSIGNMENT_COLORS } from '@/types/resource-allocation.types';
-import { getVisualState, isCellEditable, getAllocationForCell, getTotalForWeek } from '@/utils/allocation.utils';
+import { getVisualState, isCellEditable, validateWeek, getAllocationForCell, getTotalForWeek } from '@/utils/allocation.utils';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { EditAllocationModal } from './EditAllocationModal';
 
 interface AllocationDrawerProps {
   resource: AllocationResource;
@@ -262,31 +261,6 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
               </div>
             </div>
           )}
-
-          {/* Edit Modal */}
-          {editingCell && (() => {
-            const assignment = assignments.find(a => a.id === editingCell.assignmentId);
-            const week = visibleWeeks.find(w => w.weekStart === editingCell.weekStart);
-            const allocation = getAllocationForCell(allocations, editingCell.assignmentId, editingCell.weekStart);
-            const colorKeys = ['primary', 'teal', 'orange', 'purple'] as const;
-            const colorKey = colorKeys[assignments.findIndex(a => a.id === editingCell.assignmentId) % colorKeys.length];
-            
-            if (!assignment || !week) return null;
-            
-            return (
-              <EditAllocationModal
-                allocation={allocation || null}
-                assignmentName={assignment.name}
-                weekLabel={week.label}
-                weekDateRange={week.dateRange}
-                assignmentColor={colorKey}
-                onSave={(percentage, status) => {
-                  updateAllocation(editingCell.assignmentId, editingCell.weekStart, percentage, status);
-                }}
-                onClose={() => setEditingCell(null)}
-              />
-            );
-          })()}
         </div>
 
         {/* Footer - 56px */}
