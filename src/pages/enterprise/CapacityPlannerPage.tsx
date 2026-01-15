@@ -493,14 +493,18 @@ export default function CapacityPlannerPage() {
   const handleOpenAllocationModal = useCallback((resourceId: string) => {
     const resource = metrics.resources.find(r => r.id === resourceId);
     if (resource) {
+      // IMPORTANT: Use resourceInventoryId for querying resource_allocations table
+      // resource.id is profile_id, but allocations table uses resource_inventory.id
+      const inventoryId = (resource as any).resourceInventoryId || resource.id;
+      
       // Convert ResourceMetric to AllocationResource format
       const allocationResource: AllocationResource = {
-        id: resource.id,
+        id: inventoryId, // Use resourceInventoryId for database queries
         name: resource.name,
         initials: resource.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
         role: resource.role || 'Team Member',
         department: (resource.department || 'Delivery') as 'Delivery' | 'Product' | 'Operations' | 'Technical Support',
-        vendor: (resource as any).vendor || 'Internal',
+        vendor: (resource as any).vendor_name || (resource as any).vendor || 'Internal',
         country: (resource as any).country || 'Saudi Arabia',
         location: ((resource as any).location || 'On-site') as 'On-site' | 'Off-shore',
         contractStart: (resource as any).contract_start_date || (resource as any).contractStart || new Date().toISOString().split('T')[0],
