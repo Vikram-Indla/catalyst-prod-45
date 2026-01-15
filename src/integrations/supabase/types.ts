@@ -18065,6 +18065,7 @@ export type Database = {
           id: string
           resource_id: string
           start_date: string
+          status: string
           updated_at: string
           updated_by: string | null
         }
@@ -18077,6 +18078,7 @@ export type Database = {
           id?: string
           resource_id: string
           start_date?: string
+          status?: string
           updated_at?: string
           updated_by?: string | null
         }
@@ -18089,6 +18091,7 @@ export type Database = {
           id?: string
           resource_id?: string
           start_date?: string
+          status?: string
           updated_at?: string
           updated_by?: string | null
         }

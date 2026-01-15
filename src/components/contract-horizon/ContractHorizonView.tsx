@@ -3,13 +3,17 @@
  * Main container for the contract timeline visualization
  */
 
+import { useState } from 'react';
 import { useContractHorizon } from '@/hooks/useContractHorizon';
 import { CriticalAlert } from './CriticalAlert';
 import { FilterBar } from './FilterBar';
 import { TimelineHeader } from './TimelineHeader';
 import { DepartmentRow } from './DepartmentRow';
 import { ResourceDrawer } from './ResourceDrawer';
+import { AllocationDrawer } from '@/components/resource-allocation';
 import { Loader2 } from 'lucide-react';
+import { addWeeks, format } from 'date-fns';
+import type { AllocationResource } from '@/types/resource-allocation.types';
 
 export function ContractHorizonView() {
   const {
