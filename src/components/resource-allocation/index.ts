@@ -1,4 +1,10 @@
 export { AllocationDrawer } from './AllocationDrawer';
-export { AllocationModal } from './AllocationModal';
+export { AllocationModal } from './ResourceAllocationModal';
+export { ResourceAllocationModal } from './ResourceAllocationModal';
 export { EditAllocationModal } from './EditAllocationModal';
+export { AddAssignmentModal } from './AddAssignmentModal';
+export { TimelineGrid } from './TimelineGrid';
+export { ViewToggle } from './ViewToggle';
+export { StatusLegend } from './StatusLegend';
+export { AllocationBar } from './AllocationBar';
 export { default } from './AllocationDrawer';

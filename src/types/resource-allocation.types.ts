@@ -1,99 +1,237 @@
 /**
  * Resource Allocation Types
- * Type definitions for the Resource Allocation View
+ * Type definitions for the Linear/Notion-style Resource Allocation Timeline
  * Catalyst V5 Enterprise Design System
  */
 
-// Resource (from Contract Horizon)
+// ============================================
+// Base Types
+// ============================================
+
+export type PeriodType = 'weekly' | 'monthly';
+export type AllocationStatus = 'committed' | 'forecast';
+export type VisualState = 'actual' | 'committed' | 'forecast';
+export type TimelineView = 'weeks' | 'months';
+
+// ============================================
+// Resource (from resource_inventory)
+// ============================================
+
 export interface AllocationResource {
   id: string;
   name: string;
   initials: string;
   role: string;
-  department: 'Delivery' | 'Product' | 'Operations' | 'Technical Support' | string;
+  department: string;
   vendor: string;
   country: string;
-  location: 'On-site' | 'Off-shore' | string;
+  location: string;
   contractStart: string;  // ISO date
   contractEnd: string;    // ISO date
-  forecastBoundary: string; // ISO date - when forecast period begins
+  forecastBoundary: string; // ISO date
   profileId?: string;
 }
 
-// Assignment (project/program)
+// ============================================
+// Assignment (from resource_assignments / projects)
+// ============================================
+
 export interface Assignment {
   id: string;
   name: string;
-  color: 'primary' | 'teal' | 'orange' | 'purple';
+  color: string; // Hex color for timeline bar
 }
 
-// Allocation status
-export type AllocationStatus = 'committed' | 'forecast';
+export interface AssignmentWithAllocation extends Assignment {
+  startDate: string;
+  endDate: string;
+  percentage: number;
+  status: AllocationStatus;
+}
 
-// Computed visual state (not stored)
-export type VisualState = 'actual' | 'committed' | 'forecast';
+// ============================================
+// Allocation (from resource_allocations)
+// ============================================
 
-// Allocation entry
 export interface Allocation {
   id: string;
   resourceId: string;
   assignmentId: string;
-  weekStart: string;      // ISO date (Monday of the week)
-  percentage: number;     // 0-100
+  startDate: string;
+  endDate: string;
+  percentage: number;
   status: AllocationStatus;
 }
 
-// Week column data
+// Weekly allocation (virtual for grid display)
+export interface WeeklyAllocation {
+  id: string;
+  resourceId: string;
+  assignmentId: string;
+  weekStart: string;
+  percentage: number;
+  status: AllocationStatus;
+}
+
+// ============================================
+// Timeline Period (column in the grid)
+// ============================================
+
+export interface TimelinePeriod {
+  id: string;
+  type: PeriodType;
+  label: string;           // "W3" or "Jan"
+  shortLabel: string;      // "Jan 13-19" or "January 2026"
+  date: string;            // Start date of period
+  weekNumber?: number;
+  monthNumber?: number;
+  year: number;
+  isCurrent: boolean;
+  isPast: boolean;
+  isForecast: boolean;
+}
+
+// ============================================
+// Timeline Bar (horizontal bar in the grid)
+// ============================================
+
+export interface TimelineBar {
+  allocationId: string;
+  assignmentId: string;
+  assignmentName: string;
+  assignmentColor: string;
+  startIndex: number;
+  endIndex: number;
+  spanCount: number;
+  percentage: number;
+  status: AllocationStatus;
+  startDate: string;
+  endDate: string;
+}
+
+// ============================================
+// Capacity per Period
+// ============================================
+
+export interface PeriodCapacity {
+  periodId: string;
+  periodDate: string;
+  total: number;
+  committed: number;
+  forecast: number;
+  status: 'ok' | 'full' | 'over';
+}
+
+// ============================================
+// Week Column (legacy, for backward compat)
+// ============================================
+
 export interface WeekColumn {
   weekNumber: number;
   weekStart: string;
   weekEnd: string;
-  label: string;          // "W3"
-  dateRange: string;      // "Jan 13-19"
+  label: string;
+  dateRange: string;
   isPast: boolean;
   isCurrent: boolean;
   isForecast: boolean;
 }
 
-// Validation result per week
-export interface WeekValidation {
-  weekStart: string;
-  committedTotal: number;
-  forecastTotal: number;
-  grandTotal: number;
-  available: number;      // 100 - committedTotal
-  isOverCommitted: boolean;  // committedTotal > 100
-  isOverForecasted: boolean; // grandTotal > 100 but committedTotal <= 100
-}
+// ============================================
+// Validation
+// ============================================
 
-// State for the allocation view
-export interface AllocationViewState {
-  resource: AllocationResource;
-  assignments: Assignment[];
-  allocations: Allocation[];
-  visibleWeeks: WeekColumn[];
-  weekOffset: number;      // For timeline navigation
-  editingCell: {
-    assignmentId: string;
-    weekStart: string;
-  } | null;
-  isDirty: boolean;        // Has unsaved changes
-  isSaving: boolean;
-}
-
-// Validation result
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
   warnings: string[];
 }
 
-// Assignment colors
-export const ASSIGNMENT_COLORS: Record<string, string> = {
-  primary: '#2563eb',   // Blue - Default/first assignment
-  teal: '#0d9488',      // Teal - Second assignment
-  orange: '#ea580c',    // Orange - Third assignment
-  purple: '#7c3aed',    // Purple - Fourth assignment
+export interface WeekValidation {
+  weekStart: string;
+  committedTotal: number;
+  forecastTotal: number;
+  grandTotal: number;
+  available: number;
+  isOverCommitted: boolean;
+  isOverForecasted: boolean;
+}
+
+// ============================================
+// Form Types
+// ============================================
+
+export interface CreateAllocationInput {
+  resource_id: string;
+  assignment_id: string;
+  period_type: PeriodType;
+  start_week?: number;
+  end_week?: number;
+  start_month?: number;
+  end_month?: number;
+  start_year: number;
+  end_year: number;
+  allocation_percentage: number;
+  status: AllocationStatus;
+  notes?: string;
+}
+
+export interface UpdateAllocationInput extends Partial<CreateAllocationInput> {
+  id: string;
+}
+
+// ============================================
+// Component Props
+// ============================================
+
+export interface ResourceAllocationModalProps {
+  resource: AllocationResource;
+  onClose: () => void;
+  onSave?: () => void;
+}
+
+export interface AddAssignmentModalProps {
+  resourceId: string;
+  resourceName: string;
+  existingAssignmentIds: string[];
+  onAdd: (data: CreateAllocationInput) => Promise<void>;
+  onClose: () => void;
+  defaultView?: TimelineView;
+}
+
+export interface TimelineGridProps {
+  allocations: Allocation[];
+  assignments: Assignment[];
+  periods: TimelinePeriod[];
+  view: TimelineView;
+  onEditAllocation: (allocationId: string) => void;
+  onDeleteAllocation: (allocationId: string) => void;
+}
+
+// ============================================
+// Constants
+// ============================================
+
+// Assignment colors (cycle through for different projects)
+export const ASSIGNMENT_COLORS: string[] = [
+  '#2563eb', // Blue
+  '#0d9488', // Teal
+  '#7c3aed', // Purple
+  '#ea580c', // Orange
+  '#db2777', // Pink
+  '#059669', // Emerald
+  '#8b5cf6', // Violet
+];
+
+// Named colors for legacy compat
+export const ASSIGNMENT_COLOR_MAP: Record<string, string> = {
+  primary: '#2563eb',
+  teal: '#0d9488',
+  orange: '#ea580c',
+  purple: '#7c3aed',
+  pink: '#db2777',
+  emerald: '#059669',
+  violet: '#8b5cf6',
 };
 
 // Department gradients for avatars
@@ -103,4 +241,16 @@ export const DEPARTMENT_GRADIENTS: Record<string, string> = {
   Operations: 'linear-gradient(145deg, #f97316, #ea580c)',
   'Technical Support': 'linear-gradient(145deg, #14b8a6, #0d9488)',
   Support: 'linear-gradient(145deg, #14b8a6, #0d9488)',
+  Engineering: 'linear-gradient(145deg, #06b6d4, #0891b2)',
+  Design: 'linear-gradient(145deg, #ec4899, #db2777)',
 };
+
+// Get gradient for department (with fallback)
+export function getDepartmentGradient(department: string): string {
+  return DEPARTMENT_GRADIENTS[department] || DEPARTMENT_GRADIENTS.Delivery;
+}
+
+// Get color at index (cycles through)
+export function getColorAtIndex(index: number): string {
+  return ASSIGNMENT_COLORS[index % ASSIGNMENT_COLORS.length];
+}
