@@ -16,11 +16,10 @@ import {
 interface AllocationBarProps {
   bar: TimelineBar;
   columnWidth: number;
-  leftOffset: number;
   onClick: () => void;
 }
 
-export function AllocationBar({ bar, columnWidth, leftOffset, onClick }: AllocationBarProps) {
+export function AllocationBar({ bar, columnWidth, onClick }: AllocationBarProps) {
   const left = bar.startIndex * columnWidth;
   const width = bar.spanCount * columnWidth - 8; // 8px padding
   
