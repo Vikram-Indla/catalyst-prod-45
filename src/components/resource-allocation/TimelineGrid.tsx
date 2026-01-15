@@ -334,12 +334,12 @@ export function TimelineGrid({
         open={deleteConfirm.open}
         onOpenChange={(open) => setDeleteConfirm((prev) => ({ ...prev, open }))}
       >
-        <AlertDialogContent>
+        <AlertDialogContent className="z-[1105]">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Assignment?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove <span className="font-semibold text-foreground">{deleteConfirm.assignmentName}</span> allocation 
-              for <span className="font-semibold text-foreground">{resourceName}</span>. 
+              This will remove <span className="font-semibold text-foreground">{deleteConfirm.assignmentName}</span> allocation
+              for <span className="font-semibold text-foreground">{resourceName}</span>.
               This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
