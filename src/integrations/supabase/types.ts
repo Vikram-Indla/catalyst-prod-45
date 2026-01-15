@@ -17692,39 +17692,147 @@ export type Database = {
       }
       releases: {
         Row: {
+          blocked_reason: string | null
+          coverage_percent: number | null
           created_at: string | null
+          created_by: string | null
+          defects_open: number | null
+          description: string | null
+          health: string | null
           id: string
+          is_blocked: boolean | null
           name: string
           notes: string | null
+          owner_id: string | null
+          progress: number | null
+          project_id: string | null
           readiness_pct: number | null
+          release_date: string | null
           release_vehicle_id: string
+          start_date: string | null
           status: Database["public"]["Enums"]["release_status"] | null
           target_date: string | null
+          test_cases_passed: number | null
+          test_cases_total: number | null
           updated_at: string | null
+          version: string
         }
         Insert: {
+          blocked_reason?: string | null
+          coverage_percent?: number | null
           created_at?: string | null
+          created_by?: string | null
+          defects_open?: number | null
+          description?: string | null
+          health?: string | null
           id?: string
+          is_blocked?: boolean | null
           name: string
           notes?: string | null
+          owner_id?: string | null
+          progress?: number | null
+          project_id?: string | null
           readiness_pct?: number | null
+          release_date?: string | null
           release_vehicle_id: string
+          start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
           target_date?: string | null
+          test_cases_passed?: number | null
+          test_cases_total?: number | null
           updated_at?: string | null
+          version: string
         }
         Update: {
+          blocked_reason?: string | null
+          coverage_percent?: number | null
           created_at?: string | null
+          created_by?: string | null
+          defects_open?: number | null
+          description?: string | null
+          health?: string | null
           id?: string
+          is_blocked?: boolean | null
           name?: string
           notes?: string | null
+          owner_id?: string | null
+          progress?: number | null
+          project_id?: string | null
           readiness_pct?: number | null
+          release_date?: string | null
           release_vehicle_id?: string
+          start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
           target_date?: string | null
+          test_cases_passed?: number | null
+          test_cases_total?: number | null
           updated_at?: string | null
+          version?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "releases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "releases_release_vehicle_id_fkey"
             columns: ["release_vehicle_id"]

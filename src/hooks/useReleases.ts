@@ -60,7 +60,8 @@ export function useCreateRelease() {
           name: input.name,
           target_date: input.target_date || null,
           notes: input.notes || null,
-          status: 'planned'
+          status: 'planned',
+          version: 'v1.0'
         })
         .select()
         .single();
