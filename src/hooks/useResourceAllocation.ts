@@ -70,7 +70,7 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
         .order('sort_order');
       
       if (error) throw error;
-      return (data || []).map(a => ({ id: a.id, name: a.name, key: a.id.substring(0, 8) }));
+      return (data || []).map(a => ({ id: a.id, name: a.name }));
     }
   });
 
