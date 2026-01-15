@@ -3,7 +3,11 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@/lib/utils";
 
-const Popover = PopoverPrimitive.Root;
+// Wrapper to disable modal behavior (prevents scroll lock and layout shift)
+const Popover = ({ modal = false, ...props }: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Root>) => (
+  <PopoverPrimitive.Root modal={modal} {...props} />
+);
+Popover.displayName = "Popover";
 
 const PopoverTrigger = PopoverPrimitive.Trigger;
 

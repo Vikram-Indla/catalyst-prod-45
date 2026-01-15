@@ -14,6 +14,25 @@
    Plus Jakarta Sans Typography
    ════════════════════════════════════════════════════════════════════════════ */
 
+/* ════════════════════════════════════════════════════════════════════════════
+   GLOBAL SCROLL STABILITY — Prevents layout shifts when modals/dropdowns open
+   ════════════════════════════════════════════════════════════════════════════ */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Prevent Radix UI scroll-lock from causing layout shifts */
+body[data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Ensure html doesn't shift when body is scroll-locked */
+html:has(body[data-scroll-locked]) {
+  overflow: auto !important;
+  margin-right: 0 !important;
+}
+
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════
