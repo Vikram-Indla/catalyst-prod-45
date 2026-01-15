@@ -40,6 +40,7 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
   const [weekOffset, setWeekOffset] = useState(0);
   const [editingCell, setEditingCell] = useState<{ assignmentId: string; weekStart: string } | null>(null);
   const [localAllocations, setLocalAllocations] = useState<Allocation[]>([]);
+  const [localAssignments, setLocalAssignments] = useState<Assignment[]>([]);
   const [isDirty, setIsDirty] = useState(false);
   
   // Current date context: January 15, 2026
@@ -58,8 +59,23 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
     return generateVisibleWeeks(startDate, forecastBoundary, today);
   }, [resource.contractStart, resource.forecastBoundary, weekOffset, today]);
 
+  // Fetch all available projects/assignments for add assignment modal
+  const { data: availableProjects = [] } = useQuery({
+    queryKey: ['all-resource-assignments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_assignments')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      
+      if (error) throw error;
+      return (data || []).map(a => ({ id: a.id, name: a.name, key: a.id.substring(0, 8) }));
+    }
+  });
+
   // Fetch assignments for this resource
-  const { data: assignments = [], isLoading: loadingAssignments } = useQuery({
+  const { data: serverAssignments = [], isLoading: loadingAssignments } = useQuery({
     queryKey: ['resource-assignments-for-allocation', resource.id],
     queryFn: async () => {
       // Get all assignments this resource is allocated to
@@ -152,12 +168,18 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
     }
   });
 
-  // Sync server allocations to local state
+  // Sync server data to local state when not dirty
   useEffect(() => {
-    if (serverAllocations.length > 0 && !isDirty) {
+    if (!isDirty) {
       setLocalAllocations(serverAllocations);
     }
   }, [serverAllocations, isDirty]);
+
+  useEffect(() => {
+    if (!isDirty && serverAssignments.length > 0) {
+      setLocalAssignments(serverAssignments);
+    }
+  }, [serverAssignments, isDirty]);
 
   // Save mutation
   const saveMutation = useMutation({
@@ -253,6 +275,27 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
     setIsDirty(true);
   }, [resource.id]);
 
+  // Add a new assignment to the grid
+  const addAssignment = useCallback((assignment: Assignment) => {
+    setLocalAssignments(prev => {
+      // Check if already exists
+      if (prev.some(a => a.id === assignment.id)) {
+        toast.info('Assignment already added');
+        return prev;
+      }
+      return [...prev, assignment];
+    });
+    setIsDirty(true);
+    toast.success(`Added ${assignment.name} to allocations`);
+  }, []);
+
+  // Remove an assignment from the grid
+  const removeAssignment = useCallback((assignmentId: string) => {
+    setLocalAssignments(prev => prev.filter(a => a.id !== assignmentId));
+    setLocalAllocations(prev => prev.filter(a => a.assignmentId !== assignmentId));
+    setIsDirty(true);
+  }, []);
+
   // Navigate timeline
   const navigateWeeks = useCallback((direction: 'prev' | 'next') => {
     setWeekOffset(prev => prev + (direction === 'next' ? 4 : -4));
@@ -281,9 +324,10 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
   // Discard changes
   const discardChanges = useCallback(() => {
     setLocalAllocations(serverAllocations);
+    setLocalAssignments(serverAssignments);
     setIsDirty(false);
     setEditingCell(null);
-  }, [serverAllocations]);
+  }, [serverAllocations, serverAssignments]);
 
   // Validation
   const validation = useMemo(() => 
@@ -294,10 +338,11 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
   return {
     // Data
     resource,
-    assignments,
+    assignments: localAssignments,
     allocations: localAllocations,
     visibleWeeks,
     today,
+    availableProjects,
     
     // State
     weekOffset,
@@ -310,6 +355,8 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
     // Actions
     setEditingCell,
     updateAllocation,
+    addAssignment,
+    removeAssignment,
     navigateWeeks,
     goToToday,
     saveChanges,

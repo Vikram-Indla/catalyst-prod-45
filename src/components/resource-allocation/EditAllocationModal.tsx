@@ -14,8 +14,10 @@ import type { Allocation, AllocationStatus } from '@/types/resource-allocation.t
 interface EditAllocationModalProps {
   assignmentId: string;
   assignmentName: string;
+  assignmentColor?: string;
   weekStart: string;
   weekLabel: string;
+  weekDateRange?: string;
   currentAllocation?: Allocation;
   onApply: (percentage: number, status: AllocationStatus) => void;
   onClose: () => void;
@@ -24,8 +26,10 @@ interface EditAllocationModalProps {
 export function EditAllocationModal({
   assignmentId,
   assignmentName,
+  assignmentColor = '#2563eb',
   weekStart,
   weekLabel,
+  weekDateRange,
   currentAllocation,
   onApply,
   onClose,
@@ -75,7 +79,7 @@ export function EditAllocationModal({
         className="fixed inset-0 z-[1101] flex items-center justify-center p-4 animate-in fade-in slide-in-from-bottom-2 duration-200"
       >
         <div 
-          className="bg-card rounded-xl w-full max-w-[320px] shadow-[0_16px_48px_rgba(0,0,0,0.2)] border border-border"
+          className="bg-card rounded-xl w-full max-w-[340px] shadow-[0_16px_48px_rgba(0,0,0,0.2)] border border-border"
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
@@ -83,14 +87,21 @@ export function EditAllocationModal({
         >
           {/* Header */}
           <div className="px-5 pt-5 pb-4 border-b border-border">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 id="edit-modal-title" className="text-[14px] font-bold text-foreground">
-                  Edit {status === 'committed' ? 'Committed' : 'Forecast'} Allocation
-                </h3>
-                <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
-                  {weekLabel} • {assignmentName}
-                </p>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                {/* Color dot */}
+                <div 
+                  className="w-3 h-3 rounded-full mt-1 flex-shrink-0"
+                  style={{ backgroundColor: assignmentColor }}
+                />
+                <div>
+                  <h3 id="edit-modal-title" className="text-[14px] font-bold text-foreground">
+                    Edit {status === 'committed' ? 'Committed' : 'Forecast'} Allocation
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
+                    {weekLabel} {weekDateRange && `(${weekDateRange})`} • {assignmentName}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={onClose}
@@ -112,7 +123,7 @@ export function EditAllocationModal({
 
               {/* Hero Number */}
               <div className="text-center mb-6">
-                <span className="text-[32px] font-extrabold text-foreground tracking-[-0.03em]">
+                <span className="text-[40px] font-extrabold text-foreground tracking-[-0.03em]">
                   {percentage}%
                 </span>
               </div>
@@ -136,7 +147,7 @@ export function EditAllocationModal({
                     key={preset}
                     onClick={() => setPercentage(preset)}
                     className={cn(
-                      "flex-1 h-9 rounded-md text-[11px] font-bold transition-all",
+                      "flex-1 h-10 rounded-[8px] text-[12px] font-bold transition-all",
                       percentage === preset
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : "bg-muted/50 border border-border text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary"
@@ -151,48 +162,57 @@ export function EditAllocationModal({
             {/* Section: Status Toggle */}
             <div>
               <label className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.08em] block mb-3">
-                Status
+                Allocation Status
               </label>
 
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setStatus('committed')}
                   className={cn(
-                    "p-3 rounded-lg border-2 text-left transition-all",
+                    "p-4 rounded-[10px] border-2 text-center transition-all",
                     status === 'committed'
-                      ? "bg-primary/8 border-primary"
+                      ? "bg-primary/[0.06] border-primary"
                       : "bg-card border-border hover:border-muted-foreground/50"
                   )}
                 >
                   <div className={cn(
-                    "text-[11px] font-bold",
+                    "text-[12px] font-bold",
                     status === 'committed' ? "text-primary" : "text-foreground"
                   )}>
                     Committed
                   </div>
-                  <div className="text-[9px] text-muted-foreground mt-0.5">
-                    Agreed allocation
+                  <div className="text-[9px] text-muted-foreground mt-0.5 mb-2">
+                    Confirmed allocation
                   </div>
+                  {/* Preview bar - solid */}
+                  <div className="w-full h-2 rounded bg-primary" />
                 </button>
 
                 <button
                   onClick={() => setStatus('forecast')}
                   className={cn(
-                    "p-3 rounded-lg border-2 text-left transition-all",
+                    "p-4 rounded-[10px] border-2 text-center transition-all",
                     status === 'forecast'
-                      ? "bg-primary/8 border-primary"
+                      ? "bg-primary/[0.06] border-primary"
                       : "bg-card border-border hover:border-muted-foreground/50"
                   )}
                 >
                   <div className={cn(
-                    "text-[11px] font-bold",
+                    "text-[12px] font-bold",
                     status === 'forecast' ? "text-primary" : "text-foreground"
                   )}>
                     Forecast
                   </div>
-                  <div className="text-[9px] text-muted-foreground mt-0.5">
+                  <div className="text-[9px] text-muted-foreground mt-0.5 mb-2">
                     Projected allocation
                   </div>
+                  {/* Preview bar - striped with dashed border */}
+                  <div 
+                    className="w-full h-2 rounded border border-dashed border-primary"
+                    style={{
+                      background: 'repeating-linear-gradient(-45deg, rgba(37,99,235,0.3), rgba(37,99,235,0.3) 2px, rgba(37,99,235,0.5) 2px, rgba(37,99,235,0.5) 4px)'
+                    }}
+                  />
                 </button>
               </div>
             </div>
