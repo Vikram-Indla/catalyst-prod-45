@@ -53,7 +53,7 @@ export function TimelineGrid({
   resourceName = 'this resource',
 }: TimelineGridProps) {
   const columnWidth = view === 'weeks' ? 72 : 120;
-  const assignmentColumnWidth = 220;
+  const assignmentColumnWidth = 280; // Increased to fit action buttons
   
   // Delete confirmation state
   const [deleteConfirm, setDeleteConfirm] = useState<{
@@ -157,7 +157,7 @@ export function TimelineGrid({
             >
               {/* Assignment Name with Details and Hover Actions */}
               <div 
-                className="flex-shrink-0 px-4 py-3 flex items-center gap-2" 
+                className="flex-shrink-0 px-3 py-3 flex items-center gap-2 overflow-visible" 
                 style={{ width: assignmentColumnWidth }}
                 role="rowheader"
               >
@@ -190,7 +190,7 @@ export function TimelineGrid({
                 
                 {/* Action buttons - show on hover */}
                 {firstBar && (
-                  <div className="opacity-0 group-hover:opacity-100 flex gap-0.5 transition-opacity flex-shrink-0">
+                  <div className="hidden group-hover:flex gap-0.5 flex-shrink-0 ml-auto">
                     <Button 
                       variant="ghost" 
                       size="icon"
