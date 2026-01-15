@@ -8,10 +8,8 @@ import {
   startOfWeek, 
   endOfWeek, 
   addWeeks, 
-  addDays,
   getISOWeek,
   isBefore,
-  isAfter,
   isSameWeek,
   parseISO,
   startOfDay
@@ -23,7 +21,8 @@ import type {
   WeekColumn, 
   WeekValidation,
   ValidationResult,
-  Assignment
+  Assignment,
+  WeeklyAllocation,
 } from '@/types/resource-allocation.types';
 import { ASSIGNMENT_COLORS } from '@/types/resource-allocation.types';
 
@@ -31,18 +30,19 @@ import { ASSIGNMENT_COLORS } from '@/types/resource-allocation.types';
  * Determine visual state based on allocation and current date
  */
 export function getVisualState(
-  allocation: Allocation, 
+  allocation: Allocation | WeeklyAllocation, 
   today: Date = new Date()
 ): VisualState {
-  const weekStart = parseISO(allocation.weekStart);
+  const allocationDate = 'weekStart' in allocation 
+    ? parseISO((allocation as WeeklyAllocation).weekStart)
+    : parseISO(allocation.startDate);
   const todayStart = startOfDay(today);
   
-  // Past + Committed = Actual (locked)
-  if (allocation.status === 'committed' && isBefore(weekStart, startOfWeek(todayStart, { weekStartsOn: 1 }))) {
+  if (allocation.status === 'committed' && isBefore(allocationDate, startOfWeek(todayStart, { weekStartsOn: 1 }))) {
     return 'actual';
   }
   
-  return allocation.status; // 'committed' or 'forecast'
+  return allocation.status;
 }
 
 /**
@@ -55,10 +55,8 @@ export function isCellEditable(
   const todayStart = startOfDay(today);
   const currentWeekStart = startOfWeek(todayStart, { weekStartsOn: 1 });
   
-  // Past weeks are never editable
   if (isBefore(weekStart, currentWeekStart)) return false;
   
-  // Current and future weeks are editable
   return true;
 }
 
@@ -66,7 +64,7 @@ export function isCellEditable(
  * Calculate week validation
  */
 export function validateWeek(
-  allocations: Allocation[], 
+  allocations: WeeklyAllocation[], 
   weekStart: string
 ): WeekValidation {
   const weekAllocations = allocations.filter(a => a.weekStart === weekStart);
@@ -95,27 +93,24 @@ export function validateWeek(
 /**
  * Validate all allocations before save
  */
-export function validateBeforeSave(allocations: Allocation[]): ValidationResult {
+export function validateBeforeSave(allocations: WeeklyAllocation[]): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
   
-  // Group by week
   const byWeek = allocations.reduce((acc, alloc) => {
     if (!acc[alloc.weekStart]) acc[alloc.weekStart] = [];
     acc[alloc.weekStart].push(alloc);
     return acc;
-  }, {} as Record<string, Allocation[]>);
+  }, {} as Record<string, WeeklyAllocation[]>);
   
   for (const [weekStart, weekAllocations] of Object.entries(byWeek)) {
     const validation = validateWeek(weekAllocations, weekStart);
     
-    // ERROR: Over-committed (blocks save)
     if (validation.isOverCommitted) {
       const weekDate = parseISO(weekStart);
       errors.push(`Week ${getISOWeek(weekDate)} exceeds 100% committed allocation (${validation.committedTotal}%)`);
     }
     
-    // WARNING: Over-forecasted (allows save)
     if (validation.isOverForecasted) {
       const weekDate = parseISO(weekStart);
       warnings.push(`Week ${getISOWeek(weekDate)} has overlapping forecasts (${validation.grandTotal}%)`);
@@ -177,14 +172,20 @@ export function formatDateRange(start: Date, end: Date): string {
  * Get color for assignment
  */
 export function getAssignmentColor(color: string): string {
-  return ASSIGNMENT_COLORS[color] || ASSIGNMENT_COLORS.primary;
+  const colorMap: Record<string, string> = {
+    primary: '#2563eb',
+    teal: '#0d9488',
+    orange: '#ea580c',
+    purple: '#7c3aed',
+  };
+  return colorMap[color] || color || ASSIGNMENT_COLORS[0];
 }
 
 /**
  * Assign colors to assignments based on order
  */
 export function assignColorsToAssignments(assignments: Assignment[]): Assignment[] {
-  const colorOrder: Array<'primary' | 'teal' | 'orange' | 'purple'> = ['primary', 'teal', 'orange', 'purple'];
+  const colorOrder = ['#2563eb', '#0d9488', '#ea580c', '#7c3aed'];
   
   return assignments.map((assignment, index) => ({
     ...assignment,
@@ -196,10 +197,10 @@ export function assignColorsToAssignments(assignments: Assignment[]): Assignment
  * Get allocation for a specific cell
  */
 export function getAllocationForCell(
-  allocations: Allocation[],
+  allocations: WeeklyAllocation[],
   assignmentId: string,
   weekStart: string
-): Allocation | undefined {
+): WeeklyAllocation | undefined {
   return allocations.find(
     a => a.assignmentId === assignmentId && a.weekStart === weekStart
   );
@@ -209,7 +210,7 @@ export function getAllocationForCell(
  * Calculate total allocation for a week across all assignments
  */
 export function getTotalForWeek(
-  allocations: Allocation[],
+  allocations: WeeklyAllocation[],
   weekStart: string
 ): { committed: number; forecast: number; total: number } {
   const weekAllocations = allocations.filter(a => a.weekStart === weekStart);
@@ -240,7 +241,6 @@ export function getTimelineStart(contractStart: string, weekOffset: number = 0):
 
 /**
  * Calculate default forecast boundary (e.g., 8 weeks from today)
- * Returns ISO date string
  */
 export function getDefaultForecastBoundary(today: Date = new Date()): string {
   return format(addWeeks(startOfWeek(today, { weekStartsOn: 1 }), 8), 'yyyy-MM-dd');
