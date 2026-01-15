@@ -227,6 +227,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
                 onAddClick={() => setShowAddAssignment(true)}
                 onEditBar={(allocationId) => setEditingAllocationId(allocationId)}
                 onDeleteBar={(allocationId) => deleteAllocation(allocationId)}
+                resourceName={resource.name}
               />
             )}
           </div>
