@@ -5,13 +5,13 @@
  */
 
 import { useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, Circle } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO, getISOWeek } from 'date-fns';
-import { useResourceAllocation } from '@/hooks/useResourceAllocation';
-import type { AllocationResource, Assignment, Allocation, WeekColumn } from '@/types/resource-allocation.types';
+import { useAllocationDrawer } from '@/hooks/useAllocationDrawer';
+import type { AllocationResource, Assignment, WeeklyAllocation, WeekColumn, VisualState } from '@/types/resource-allocation.types';
 import { DEPARTMENT_GRADIENTS, ASSIGNMENT_COLORS } from '@/types/resource-allocation.types';
-import { getVisualState, isCellEditable, validateWeek, getAllocationForCell, getTotalForWeek } from '@/utils/allocation.utils';
+import { getVisualState, isCellEditable, getAllocationForCell, getTotalForWeek } from '@/utils/allocation.utils';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
@@ -38,7 +38,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
     goToToday,
     saveChanges,
     discardChanges,
-  } = useResourceAllocation({ resource, onClose });
+  } = useAllocationDrawer({ resource, onClose });
 
   // Handle escape key
   useEffect(() => {
@@ -329,15 +329,14 @@ function AllocationRow({
   onCellClick 
 }: { 
   assignment: Assignment;
-  allocations: Allocation[];
+  allocations: WeeklyAllocation[];
   visibleWeeks: WeekColumn[];
   today: Date;
   colorIndex: number;
   onCellClick: (weekStart: string) => void;
 }) {
-  const colorKeys = ['primary', 'teal', 'orange', 'purple'];
-  const colorKey = colorKeys[colorIndex % colorKeys.length];
-  const color = ASSIGNMENT_COLORS[colorKey];
+  const colors = ['#2563eb', '#0d9488', '#ea580c', '#7c3aed'];
+  const color = assignment.color || colors[colorIndex % colors.length];
 
   return (
     <div className="flex border-b border-border hover:bg-muted/20 transition-colors" role="row">
@@ -383,9 +382,9 @@ function AllocationBlock({
   visualState,
   isLocked
 }: { 
-  allocation: Allocation | undefined;
+  allocation: WeeklyAllocation | undefined;
   color: string;
-  visualState: 'actual' | 'committed' | 'forecast' | null;
+  visualState: VisualState | null;
   isLocked: boolean;
 }) {
   if (!allocation || allocation.percentage === 0) {
