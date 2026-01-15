@@ -75,18 +75,18 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
   });
 
   // Fetch assignments for this resource
-  const { data: serverAssignments = [], isLoading: loadingAssignments } = useQuery({
+  const { data: serverAssignmentsRaw = [], isLoading: loadingAssignments } = useQuery({
     queryKey: ['resource-assignments-for-allocation', resource.id],
     queryFn: async () => {
       // Get all assignments this resource is allocated to
-      const { data: allocations, error: allocError } = await supabase
+      const { data: allocs, error: allocError } = await supabase
         .from('resource_allocations')
         .select('assignment_id')
         .eq('resource_id', resource.id);
       
       if (allocError) throw allocError;
       
-      const assignmentIds = [...new Set(allocations?.map(a => a.assignment_id) || [])];
+      const assignmentIds = [...new Set(allocs?.map(a => a.assignment_id).filter(Boolean) || [])];
       
       if (assignmentIds.length === 0) {
         // Fallback: get all active assignments
@@ -99,13 +99,7 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
         
         if (error) throw error;
         
-        return assignColorsToAssignments(
-          (allAssignments || []).map(a => ({
-            id: a.id,
-            name: a.name,
-            color: 'primary' as const
-          }))
-        );
+        return (allAssignments || []).map(a => ({ id: a.id, name: a.name }));
       }
       
       const { data, error } = await supabase
@@ -117,15 +111,20 @@ export function useResourceAllocation({ resource, onClose }: UseResourceAllocati
       
       if (error) throw error;
       
-      return assignColorsToAssignments(
-        (data || []).map(a => ({
-          id: a.id,
-          name: a.name,
-          color: 'primary' as const
-        }))
-      );
+      return (data || []).map(a => ({ id: a.id, name: a.name }));
     }
   });
+
+  // Memoize colored assignments to avoid infinite re-renders
+  const serverAssignments = useMemo(() => {
+    return assignColorsToAssignments(
+      serverAssignmentsRaw.map(a => ({
+        id: a.id,
+        name: a.name,
+        color: 'primary' as const
+      }))
+    );
+  }, [serverAssignmentsRaw]);
 
   // Fetch allocations for this resource
   const { data: serverAllocations = [], isLoading: loadingAllocations, refetch } = useQuery({
