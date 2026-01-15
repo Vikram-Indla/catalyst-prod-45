@@ -19,7 +19,9 @@ import {
   ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock, Eye, Copy, Check, RotateCcw, Play,
   Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2, X, RefreshCw, AlertCircle
 } from 'lucide-react';
-import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf, AllocationBookingModal } from '@/modules/capacity-planner';
+import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { AllocationDrawer } from '@/components/resource-allocation';
+import type { AllocationResource } from '@/types/resource-allocation.types';
 
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation, ResourceAllocation, AllocationBookingInput } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
@@ -225,9 +227,8 @@ export default function CapacityPlannerPage() {
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const [resourcesToBulkEdit, setResourcesToBulkEdit] = useState<ResourceMetric[]>([]);
   
-  // Allocation booking modal state
-  const [allocationModalOpen, setAllocationModalOpen] = useState(false);
-  const [allocationModalResource, setAllocationModalResource] = useState<ResourceMetric | null>(null);
+  // Allocation drawer state (new design)
+  const [allocationDrawerResource, setAllocationDrawerResource] = useState<AllocationResource | null>(null);
 
   // Add resource form state (simplified - no longer need assignment/allocation, configured via booking modal)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -488,12 +489,25 @@ export default function CapacityPlannerPage() {
     });
   };
   
-  // Handler to open allocation booking modal
+  // Handler to open allocation drawer (new design)
   const handleOpenAllocationModal = useCallback((resourceId: string) => {
     const resource = metrics.resources.find(r => r.id === resourceId);
     if (resource) {
-      setAllocationModalResource(resource);
-      setAllocationModalOpen(true);
+      // Convert ResourceMetric to AllocationResource format
+      const allocationResource: AllocationResource = {
+        id: resource.id,
+        name: resource.name,
+        initials: resource.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
+        role: resource.role || 'Team Member',
+        department: (resource.department || 'Delivery') as 'Delivery' | 'Product' | 'Operations' | 'Technical Support',
+        vendor: (resource as any).vendor || 'Internal',
+        country: (resource as any).country || 'Saudi Arabia',
+        location: ((resource as any).location || 'On-site') as 'On-site' | 'Off-shore',
+        contractStart: (resource as any).contract_start_date || (resource as any).contractStart || new Date().toISOString().split('T')[0],
+        contractEnd: (resource as any).contract_end_date || (resource as any).contractEnd || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        forecastBoundary: (resource as any).forecastBoundary || new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      };
+      setAllocationDrawerResource(allocationResource);
     }
   }, [metrics.resources]);
 
@@ -1465,21 +1479,13 @@ export default function CapacityPlannerPage() {
           }))}
         />
 
-        {/* Allocation Booking Modal */}
-        <AllocationBookingModal
-          isOpen={allocationModalOpen}
-          onClose={() => {
-            setAllocationModalOpen(false);
-            setAllocationModalResource(null);
-          }}
-          resource={allocationModalResource}
-          existingAllocations={allocationModalResource ? getResourceAllocations(allocationModalResource.id, (allocationModalResource as any).resourceInventoryId) : []}
-          resourceAssignments={resourceAssignments.map(a => ({ id: a.id, name: a.name || '' }))}
-          departments={departments}
-          onSave={handleSaveAllocations}
-          onUpdateDepartment={handleUpdateDepartment}
-          mode={allocationModalResource && getResourceAllocations(allocationModalResource.id, (allocationModalResource as any).resourceInventoryId).length > 0 ? 'edit' : 'add'}
-        />
+        {/* Allocation Drawer (New Design) */}
+        {allocationDrawerResource && (
+          <AllocationDrawer
+            resource={allocationDrawerResource}
+            onClose={() => setAllocationDrawerResource(null)}
+          />
+        )}
 
         <div className="fixed bottom-6 right-6 z-50">
           <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
