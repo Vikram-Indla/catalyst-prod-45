@@ -7,7 +7,8 @@ import { useState, useEffect } from 'react';
 import { 
   Search, Download, Plus, Filter, ChevronDown, Clock, 
   LayoutGrid, Table2, CalendarDays, Grid3X3, 
-  Presentation, Briefcase, Users, Layers, FileText
+  Presentation, Briefcase, Users, Layers, FileText, Calendar,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,13 @@ import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapa
 export type PrimaryView = 'resources' | 'projects' | 'contracts';
 export type ResourceViewMode = 'cards' | 'table' | 'timeline' | 'heatmap';
 export type ProjectViewMode = 'cards' | 'timeline';
+
+type PeriodType = 'weekly' | 'monthly';
+interface PeriodRange {
+  start: Date;
+  end: Date;
+  label: string;
+}
 
 interface SleekCapacityHeaderProps {
   summary: { 
@@ -57,6 +65,11 @@ interface SleekCapacityHeaderProps {
   onPresentationMode?: () => void;
   onFilterChange?: (filter: 'all' | 'available' | 'atCapacity' | 'over') => void;
   onDepartmentFilterChange?: (filter: string) => void;
+  // Project period navigation
+  projectPeriodType?: PeriodType;
+  projectPeriodRange?: PeriodRange;
+  onProjectPeriodTypeChange?: (type: PeriodType) => void;
+  onProjectPeriodNavigate?: (direction: 1 | -1) => void;
 }
 
 // Dynamic Track Filter Component
@@ -141,6 +154,10 @@ export function SleekCapacityHeader({
   onPresentationMode,
   onFilterChange,
   onDepartmentFilterChange,
+  projectPeriodType = 'weekly',
+  projectPeriodRange,
+  onProjectPeriodTypeChange,
+  onProjectPeriodNavigate,
 }: SleekCapacityHeaderProps) {
   const [lastRefresh] = useState(() => new Date());
   const [timeAgo, setTimeAgo] = useState('just now');
@@ -281,7 +298,7 @@ export function SleekCapacityHeader({
           <Input
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search resources..."
+            placeholder={primaryView === 'projects' ? "Search projects..." : "Search resources..."}
             className="w-56 h-10 pl-10 pr-3 text-sm bg-muted/50 border-transparent rounded-xl focus:bg-background focus:border-primary/30 focus:ring-2 focus:ring-primary/10 transition-all"
           />
         </div>
@@ -315,8 +332,8 @@ export function SleekCapacityHeader({
         <div className="w-56" />
       </div>
 
-      {/* ROW 3: Stats + Filters + Utilization (hidden for contracts view) */}
-      {primaryView !== 'contracts' && (
+      {/* ROW 3: Stats + Filters (resources/allocations/gantt) OR Period Navigator (projects) - hidden for contracts view */}
+      {primaryView !== 'contracts' && primaryView !== 'projects' && (
       <div className="flex items-center justify-between px-5 py-2.5 bg-muted/50 dark:bg-[var(--surface-2)] border-b border-border/30 dark:border-[var(--border-subtle)]">
         {/* Left: Clickable Stat Chips */}
         <div className="flex items-center gap-2">
@@ -410,6 +427,70 @@ export function SleekCapacityHeader({
 
           {/* Utilization Badge - Larger */}
           <UtilizationBadge value={summary.utilizationPercentage} />
+        </div>
+      </div>
+      )}
+
+      {/* ROW 3 for Projects: Period Navigator */}
+      {primaryView === 'projects' && projectPeriodRange && (
+      <div className="flex items-center px-5 py-2.5 bg-muted/50 dark:bg-[var(--surface-2)] border-b border-border/30 dark:border-[var(--border-subtle)]">
+        <div className="flex items-center gap-3">
+          {/* Period Type Toggle */}
+          <div className="flex items-center bg-muted/80 dark:bg-[var(--surface-3)] rounded-lg p-0.5 border border-border dark:border-[var(--border-default)]">
+            <button
+              onClick={() => onProjectPeriodTypeChange?.('weekly')}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all",
+                projectPeriodType === 'weekly'
+                  ? "bg-card dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] shadow-sm"
+                  : "text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)]"
+              )}
+            >
+              <CalendarDays className="w-3.5 h-3.5" />
+              Weekly
+            </button>
+            <button
+              onClick={() => onProjectPeriodTypeChange?.('monthly')}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all",
+                projectPeriodType === 'monthly'
+                  ? "bg-card dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] shadow-sm"
+                  : "text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)]"
+              )}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              Monthly
+            </button>
+          </div>
+
+          {/* Period Navigation */}
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-muted"
+              onClick={() => onProjectPeriodNavigate?.(-1)}
+              aria-label="Previous period"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="min-w-[160px] text-center">
+              <span className="text-sm font-medium text-foreground dark:text-[var(--text-primary)]">
+                {projectPeriodRange.label}
+              </span>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-muted"
+              onClick={() => onProjectPeriodNavigate?.(1)}
+              aria-label="Next period"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
       )}
