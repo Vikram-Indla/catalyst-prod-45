@@ -2100,58 +2100,68 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       id: 'name',
       header: 'Name',
       accessor: 'name',
-      width: '220px',
+      width: '240px',
       sortable: true,
       render: (value: string, row: ResourceMetric) => {
         const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-        const avatarColor = getAssignmentColor(row.assignmentName);
         const profile = getProfile(row.id);
-        const contractStatus = profile?.contractStatus?.status || 'permanent';
         
-        // Use resource data (from resource_inventory) with fallback to profile
+        // Location detection - check for onsite/offshore
+        const locationName = row.location || profile?.location || '';
+        const isOnsite = locationName.toLowerCase().includes('onsite') || locationName.toLowerCase().includes('riyadh');
+        const avatarBg = isOnsite ? '#0d9488' : '#c2410c'; // Teal for onsite, Orange for offshore
+        const locLabel = isOnsite ? 'Onsite' : locationName.toLowerCase().includes('offshore') ? 'Off-Shore' : locationName;
+        const locLabelColor = isOnsite ? '#115e59' : '#c2410c';
+        
+        // Country flag
         const countryCode = row.country_code || profile?.country_code;
         const countryName = row.country || profile?.country;
-        const locationName = row.location || profile?.location;
-        
-        // Generate flag URL from country code if available
         const flagUrl = countryCode 
           ? `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`
-          : profile?.country_flag_svg_url;
+          : null;
+        
+        // Online status indicator
+        const isOnline = true; // Assume online for demo
         
         return (
           <div className="flex items-center gap-3">
-            <div 
-              className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0 ring-[3px]",
-                getRingStyle(contractStatus),
-                contractStatus === 'critical' && "animate-pulse"
-              )}
-              style={{ backgroundColor: avatarColor }}
-            >
-              {initials}
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-medium text-sm text-[#0a0a0a] dark:text-foreground">{value}</span>
-                {flagUrl && (
+            {/* Avatar with flag overlay */}
+            <div className="relative flex-shrink-0">
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white"
+                style={{ backgroundColor: avatarBg }}
+              >
+                {initials}
+              </div>
+              {/* Flag overlay */}
+              {flagUrl && (
+                <span 
+                  className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
+                  style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
+                >
                   <img 
                     src={flagUrl} 
                     alt={countryName || ''} 
-                    className="w-4 h-3 object-cover rounded-sm"
-                    title={countryName || ''}
+                    className="w-3.5 h-3.5 object-cover rounded-sm"
                   />
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-[14px] text-[#0f172a] dark:text-foreground truncate">{value}</span>
+                {/* Online indicator */}
+                {isOnline && (
+                  <span className="w-2 h-2 rounded-full bg-[#059669] flex-shrink-0" />
                 )}
               </div>
-              {locationName && (
+              {/* Location label */}
+              {locLabel && (
                 <span 
-                  className={cn(
-                    "text-[9px] font-medium px-1 py-0.5 rounded",
-                    locationName.toLowerCase().includes('onsite') || locationName.toLowerCase().includes('riyadh')
-                      ? "bg-[#0d9488]/10 text-[#0d9488]" 
-                      : "bg-[#2563eb]/10 text-[#2563eb]"
-                  )}
+                  className="text-[11px] font-bold tracking-wide"
+                  style={{ color: locLabelColor }}
                 >
-                  {locationName}
+                  {locLabel}
                 </span>
               )}
             </div>
@@ -2163,11 +2173,10 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       id: 'vendor',
       header: 'Vendor',
       accessor: (row: ResourceMetric) => row.vendor_name || '',
-      width: '120px',
+      width: '80px',
       sortable: true,
       filterable: true,
       filterOptions: (() => {
-        // Build unique vendor options from resources
         const uniqueVendors = new Set<string>();
         resources.forEach(r => {
           if (r.vendor_name) uniqueVendors.add(r.vendor_name);
@@ -2177,48 +2186,65 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       render: (_: any, row: ResourceMetric) => {
         const vendor = row.vendor_name;
         if (!vendor) {
-          return <span className="text-xs text-muted-foreground">-</span>;
+          return <span className="text-[13px] text-[#475569]">-</span>;
         }
         return (
-          <span className="text-sm font-medium text-foreground">{vendor}</span>
+          <span className="text-[13px] font-medium text-[#334155]">{vendor}</span>
         );
       },
     },
     {
       id: 'assignments',
-      header: 'Assignment',
+      header: 'Assignment (Monthly)',
       accessor: (row: ResourceMetric) => {
-        // Get assignment names from allocations table (source of truth)
         const names = getAssignmentNamesForResource(row.id);
         return names.length > 0 ? names.join(', ') : (row.assignmentName || 'Unassigned');
       },
-      width: '280px',
+      width: '300px',
       sortable: true,
       render: (_: any, row: ResourceMetric) => {
-        // Get assignment names from allocations table (source of truth)
-        const names = getAssignmentNamesForResource(row.id);
-        const allNames = names.length > 0 ? names : [row.assignmentName || 'Unassigned'];
+        // Get allocations with percentages
+        const resourceAllocations = allocations.filter(
+          a => a.profile_id === row.id || a.resource_id === row.id
+        );
         
-        // Show all assignment labels
+        if (resourceAllocations.length === 0) {
+          return (
+            <span className="text-[13px] font-medium text-[#475569]">No assignments this month</span>
+          );
+        }
+        
+        // Show assignment tags with left accent bar
         return (
-          <div className="flex flex-wrap items-center gap-1">
-            {allNames.map((name, idx) => {
-              const theme = getAssignmentTheme(name);
+          <div className="flex flex-col gap-1.5">
+            {resourceAllocations.slice(0, 3).map((alloc, idx) => {
+              // Determine if committed or forecast based on dates (forecast if start_date is in the future)
+              const now = new Date();
+              const startDate = new Date(alloc.start_date);
+              const isCommitted = startDate <= now;
+              const accentColor = isCommitted ? '#2563eb' : '#f59e0b'; // Blue for committed, Amber for forecast
+              const pctColor = isCommitted ? '#2563eb' : '#92400e';
+              
               return (
                 <span 
                   key={idx}
-                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap"
+                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[#334155]"
                   style={{ 
-                    backgroundColor: `${theme.accent}15`, 
-                    color: theme.accent,
-                    borderLeft: `2px solid ${theme.accent}`
+                    border: '1px solid #e2e8f0',
+                    borderLeftWidth: '3px',
+                    borderLeftColor: accentColor,
                   }}
-                  title={name}
                 >
-                  {name}
+                  <span className="truncate max-w-[160px]">{alloc.assignment_name}</span>
+                  <span className="font-bold text-[12px]" style={{ color: pctColor }}>
+                    {alloc.allocation_percent}%
+                  </span>
                 </span>
               );
             })}
+            {resourceAllocations.length > 3 && (
+              <span className="text-[11px] text-[#64748b]">+{resourceAllocations.length - 3} more</span>
+            )}
           </div>
         );
       },
@@ -2227,31 +2253,44 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       id: 'role',
       header: 'Role',
       accessor: 'role',
-      width: '160px',
+      width: '130px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-sm text-slate-600 dark:text-slate-300">{value || '-'}</span>
+        <span className="text-[13px] font-medium text-[#334155] dark:text-slate-300">{value || '-'}</span>
       ),
     },
     {
       id: 'department',
       header: 'Department',
       accessor: 'department',
-      width: '140px',
+      width: '110px',
       sortable: true,
       filterable: true,
       filterOptions: [
         { value: 'Product', label: 'Product' },
         { value: 'Delivery', label: 'Delivery' },
+        { value: 'Operations', label: 'Operations' },
         { value: 'Support', label: 'Support' },
         { value: 'Unassigned', label: 'Unassigned' },
       ],
       render: (value: string) => {
         const dept = value || 'Unassigned';
+        const deptUpper = dept.toUpperCase();
+        
+        // Department-specific colors from style guide
+        const deptStyles: Record<string, { bg: string; text: string }> = {
+          'OPERATIONS': { bg: 'rgba(13,148,136,0.15)', text: '#115e59' },
+          'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: '#6d28d9' },
+          'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
+          'SUPPORT': { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
+        };
+        
+        const style = deptStyles[deptUpper] || { bg: 'rgba(100,116,139,0.12)', text: '#475569' };
+        
         return (
           <span
-            className="px-2.5 py-1 rounded text-xs font-semibold uppercase"
-            style={{ backgroundColor: CATALYST.blue.bg, color: CATALYST.blue.primary }}
+            className="inline-block px-2.5 py-1.5 rounded text-[11px] font-bold uppercase tracking-wide"
+            style={{ backgroundColor: style.bg, color: style.text }}
           >
             {dept}
           </span>
@@ -2262,13 +2301,13 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       id: 'contractEndDate',
       header: 'Contract End',
       accessor: (row: ResourceMetric) => row.contract_end_date || null,
-      width: '130px',
+      width: '110px',
       sortable: true,
       render: (_: any, row: ResourceMetric) => {
         const endDate = row.contract_end_date;
         
         if (!endDate) {
-          return <span className="text-xs text-muted-foreground">Permanent</span>;
+          return <span className="text-[13px] text-[#334155]">Permanent</span>;
         }
         
         const endDateObj = new Date(endDate);
@@ -2288,19 +2327,23 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
             ? 'Expires today' 
             : `Expired ${Math.abs(daysRemaining)} days ago`;
         
-        // Calculate status based on days remaining
-        const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 60 ? 'warning' : 'healthy';
+        // Calculate status based on days remaining - Catalyst V1 style guide
+        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (#334155)
+        const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
+        const textColors: Record<string, string> = {
+          critical: '#b91c1c',
+          warning: '#92400e', 
+          safe: '#334155',
+          expired: '#64748b',
+        };
         
         return (
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className={cn(
-                "text-xs font-medium px-2 py-1 rounded cursor-help",
-                status === 'critical' && 'bg-red-100 text-[#be123c]',
-                status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
-                status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
-                status === 'expired' && 'bg-muted text-muted-foreground'
-              )}>
+              <span 
+                className="text-[13px] font-semibold cursor-help"
+                style={{ color: textColors[status] }}
+              >
                 {formatted}
               </span>
             </TooltipTrigger>
@@ -2315,15 +2358,15 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       id: 'actions',
       header: 'Actions',
       accessor: 'id',
-      width: '100px',
+      width: '80px',
       sortable: false,
       render: (_: any, row: ResourceMetric) => {
         return (
-        <div className="flex items-center gap-1">
-          {/* Edit - NO duplicate avatar */}
+        <div className="flex items-center gap-0.5">
+          {/* Edit */}
           <button 
             onClick={(e) => { e.stopPropagation(); onEditResource(row.id); }}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[#475569] hover:text-[#0f172a] hover:bg-[#f1f5f9] transition-colors"
             title="Edit resource"
           >
             <Pencil className="w-4 h-4" />
@@ -2331,7 +2374,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
           {/* Delete */}
           <button 
             onClick={(e) => { e.stopPropagation(); onDeleteResource(row); }}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[#475569] hover:text-[#0f172a] hover:bg-[#f1f5f9] transition-colors"
             title="Remove from Capacity Planner"
           >
             <Trash2 className="w-4 h-4" />
@@ -2340,7 +2383,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         );
       },
     },
-  ], [projects, onResourceClick, onEditResource, onDeleteResource, getProfile, getAssignmentNamesForResource, resources]);
+  ], [projects, onResourceClick, onEditResource, onDeleteResource, getProfile, getAssignmentNamesForResource, resources, allocations]);
 
   const handleSelectionChange = (ids: string[]) => {
     setSelectedIds(ids);
