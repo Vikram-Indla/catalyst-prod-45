@@ -915,7 +915,7 @@ export default function CapacityPlannerPage() {
                 assignments={resourceAssignments.map(a => ({
                   id: a.id,
                   name: a.name,
-                  color: a.color,
+                  color: '#3b82f6', // Default blue color
                   required_fte: 1 // Default requirement
                 }))}
                 allocations={allocations.map(a => ({
@@ -1612,13 +1612,30 @@ export default function CapacityPlannerPage() {
                 />
               )}
               
-              {/* Projects Primary View */}
+              {/* Projects Primary View - Now using Catalyst View 2 */}
               {primaryView === 'projects' && (
-                <ProjectStaffingView
-                  assignments={resourceAssignments}
-                  allocations={allocations}
-                  filteredResourceIds={new Set(activeResources.map(r => r.id))}
-                  onAssignResource={() => {}}
+                <ProjectCapacityView
+                  assignments={resourceAssignments.map(a => ({
+                    id: a.id,
+                    name: a.name,
+                    color: '#3b82f6',
+                    required_fte: 1
+                  }))}
+                  allocations={allocations.map(a => ({
+                    id: a.id,
+                    resource_id: a.resource_id,
+                    profile_id: a.profile_id,
+                    resource_name: (a as any).resource_inventory?.name || (a as any).resource_name,
+                    profile_name: (a as any).profile_name,
+                    role_name: (a as any).resource_inventory?.role_name || (a as any).role_name,
+                    assignment_id: a.assignment_id,
+                    assignment_name: (a as any).resource_assignments?.name || (a as any).assignment_name,
+                    allocation_percent: a.allocation_percent,
+                    allocation_type: 'committed' as const,
+                    start_date: a.start_date,
+                    end_date: a.end_date,
+                    department: (a as any).department
+                  }))}
                 />
               )}
               
