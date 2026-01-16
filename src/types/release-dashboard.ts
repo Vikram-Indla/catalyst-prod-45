@@ -101,6 +101,12 @@ export interface RequirementCoverage {
   }>;
 }
 
+export interface CoverageItem {
+  requirementId: string;
+  requirementName: string;
+  testStatuses: TestCaseStatus[];
+}
+
 // =====================================================
 // TRACEABILITY TYPES
 // =====================================================
@@ -118,14 +124,14 @@ export interface TraceabilityNode {
 // ACTIVITY TYPES
 // =====================================================
 
-export type ActivityType = 'passed' | 'failed' | 'blocked' | 'defect-logged' | 'started' | 'comment';
+export type ActivityType = 'test-passed' | 'test-failed' | 'defect-logged' | 'test-blocked' | 'execution-started';
 
 export interface ActivityItem {
   id: string;
   type: ActivityType;
   userId: string;
   userName: string;
-  action: string;
+  description: string;
   timestamp: string;
   testCaseId?: string;
   defectId?: string;
@@ -171,6 +177,32 @@ export interface EnvironmentMetrics {
   notRun: number;
   total: number;
   passRate: number;
+}
+
+export interface EnvironmentStats {
+  name: string;
+  passed: number;
+  failed: number;
+  blocked: number;
+  notRun: number;
+}
+
+// =====================================================
+// RELEASE (for ReleaseHeader)
+// =====================================================
+
+export interface Release {
+  id: string;
+  version: string;
+  name: string;
+  description: string | null;
+  status: 'draft' | 'active' | 'completed' | 'archived';
+  startDate: string;
+  targetDate: string;
+  sprintId?: string;
+  ownerId: string | null;
+  testCycles: { id: string; name: string; testCount: number; passedCount: number }[];
+  qualityGates: QualityGate[];
 }
 
 // =====================================================
