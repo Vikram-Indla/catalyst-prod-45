@@ -111,6 +111,7 @@ import { TestExecutionFocusPage } from "./features/test-execution";
 import MyTestScopePage from "./pages/releases/MyTestScopePage";
 import CalendarPage from "./pages/releases/CalendarPage";
 import ComparePage from "./pages/releases/ComparePage";
+import ReleaseDashboardV5Page from "./pages/releases/ReleaseDashboardV5Page";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
 import ReleasesCycleCommandCenter from "./pages/releases/CycleCommandCenter";
 import ReleasesCycleTemplatesPage from "./pages/releases/CycleTemplatesPage";
@@ -803,6 +804,7 @@ const App = () => (
               <Route path="/releases/rtm" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/defects" element={<ReleasesDefectsPage />} />
               <Route path="/releases/defects/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesDefectDetailPage /></Suspense>} />
+              <Route path="/releases/:releaseId" element={<ReleaseDashboardV5Page />} />
               
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
