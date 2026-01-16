@@ -784,7 +784,7 @@ const App = () => (
               <Route path="/releases/my-scope" element={<MyTestScopePage />} />
               <Route path="/releases/all" element={<AllReleasesPage />} />
               <Route path="/releases/calendar" element={<CalendarPage />} />
-              <Route path="/releases/compare" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/compare" element={<ComparePage />} />
               <Route path="/releases/test-cases" element={<ReleasesTestCasesPage />} />
               <Route path="/releases/test-cases/:id" element={<ReleasesTestCaseDetailPage />} />
               <Route path="/releases/tests" element={<ReleasesTestCasesLibraryPage />} />
