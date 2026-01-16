@@ -350,6 +350,13 @@ export default function CapacityPlannerPage() {
         roleLower === 'admin';
       if (isManagement || isSuperAdmin) return false;
 
+      // Check if contract is expired
+      const hasExpiredContract = r.contract_end_date && new Date(r.contract_end_date) < today;
+
+      // Exclude expired contracts from default view to match baseSummary total count
+      // This ensures "Total" stat and table "requests" count are aligned
+      if (activeFilter === 'all' && hasExpiredContract) return false;
+
       const matchesSearch =
         r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.role?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -363,9 +370,6 @@ export default function CapacityPlannerPage() {
       // - over_allocated: allocation > 100
       const currentAllocation =
         currentAllocationByResourceId.get(r.id) ?? (r.allocation || 0);
-
-      // Check if contract is expired
-      const hasExpiredContract = r.contract_end_date && new Date(r.contract_end_date) < today;
 
       let matchesFilter = true;
       if (activeFilter === 'available') {
