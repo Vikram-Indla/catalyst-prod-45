@@ -84,7 +84,7 @@ export interface MyTestScopeData {
   workload: WorkloadAnalysis;
 }
 
-export type TestScopeTab = 'summary' | 'tests' | 'defects' | 'incidents' | 'workload';
+export type TestScopeTab = 'tests' | 'defects' | 'incidents' | 'traceability' | 'workload';
 
 export interface TestScopeFilters {
   status: string[];

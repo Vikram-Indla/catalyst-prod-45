@@ -64,10 +64,12 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
   // Fetch defects linked to user's test cases
   let linkedDefects: LinkedDefect[] = [];
   if (testCaseIds.length > 0) {
-    const { data: defectLinks } = await supabase
+    // Use filter with or condition for test_case_ids to avoid deep type inference
+    const defectQuery = supabase
       .from('tm_defects')
-      .select('id, defect_key, title, severity, status, test_case_id')
-      .in('test_case_id', testCaseIds);
+      .select('id, defect_key, title, severity, status, test_case_id');
+    
+    const { data: defectLinks } = await (defectQuery as any).in('test_case_id', testCaseIds);
     
     // Group defects by defect ID
     const defectMap = new Map<string, LinkedDefect>();
