@@ -79,7 +79,7 @@ export function ProjectViewModal({ open, onClose, utilization, periodRange }: Pr
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Staffing Level</span>
               <span className="text-sm text-muted-foreground">
-                {formatFTE(totalFTE)} / {formatFTE(requiredFTE)} FTE ({Math.round((totalFTE / requiredFTE) * 100)}%)
+                {formatFTE(totalFTE)} / {formatFTE(requiredFTE)} FTE
               </span>
             </div>
             <div className="h-3 bg-muted rounded-full overflow-hidden flex">
