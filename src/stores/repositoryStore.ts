@@ -4,7 +4,16 @@
 
 import { create } from 'zustand';
 import type { TreeNode, TestSuite, RepositoryTestCase } from '@/types/test-repository';
-import { mockTreeData, mockSuites, mockTestCases } from '@/data/mockTestRepositoryData';
+import { mockTreeData, mockSuites, mockTestCases, mockFolders } from '@/data/mockTestRepositoryData';
+
+// Modal target info
+interface ModalTarget {
+  id: string;
+  name: string;
+  type: 'folder' | 'suite' | 'test';
+  parentId?: string | null;
+  childCount?: number;
+}
 
 interface RepositoryStore {
   // Tree State
@@ -24,6 +33,14 @@ interface RepositoryStore {
   contextMenuTarget: { id: string; type: string; x: number; y: number } | null;
   renamingId: string | null;
   searchQuery: string;
+
+  // Modal State
+  newFolderModalOpen: boolean;
+  newSuiteModalOpen: boolean;
+  newTestModalOpen: boolean;
+  moveModalOpen: boolean;
+  deleteModalOpen: boolean;
+  modalTarget: ModalTarget | null;
 
   // Actions
   toggleFolder: (folderId: string) => void;
@@ -49,6 +66,14 @@ interface RepositoryStore {
   startRename: (id: string) => void;
   finishRename: (newName: string) => void;
   cancelRename: () => void;
+
+  // Modal Actions
+  openNewFolderModal: (parentId?: string | null, parentName?: string) => void;
+  openNewSuiteModal: (parentId?: string | null, parentName?: string) => void;
+  openNewTestModal: () => void;
+  openMoveModal: (id: string, name: string, type: 'folder' | 'suite' | 'test', parentId?: string | null) => void;
+  openDeleteModal: (id: string, name: string, type: 'folder' | 'suite' | 'test', childCount?: number) => void;
+  closeModals: () => void;
 }
 
 // Collect all folder IDs for expandAll
@@ -80,6 +105,14 @@ export const useRepositoryStore = create<RepositoryStore>((set, get) => ({
   contextMenuTarget: null,
   renamingId: null,
   searchQuery: '',
+
+  // Modal State
+  newFolderModalOpen: false,
+  newSuiteModalOpen: false,
+  newTestModalOpen: false,
+  moveModalOpen: false,
+  deleteModalOpen: false,
+  modalTarget: null,
 
   // Actions
   toggleFolder: (folderId) => {
@@ -190,5 +223,63 @@ export const useRepositoryStore = create<RepositoryStore>((set, get) => ({
 
   cancelRename: () => {
     set({ renamingId: null });
+  },
+
+  // Modal Actions
+  openNewFolderModal: (parentId, parentName) => {
+    set({
+      newFolderModalOpen: true,
+      modalTarget: parentId 
+        ? { id: parentId, name: parentName || '', type: 'folder', parentId }
+        : null,
+    });
+  },
+
+  openNewSuiteModal: (parentId, parentName) => {
+    set({
+      newSuiteModalOpen: true,
+      modalTarget: parentId
+        ? { id: parentId, name: parentName || '', type: 'folder', parentId }
+        : null,
+    });
+  },
+
+  openNewTestModal: () => {
+    const { currentSuite } = get();
+    if (currentSuite) {
+      set({
+        newTestModalOpen: true,
+        modalTarget: {
+          id: currentSuite.id,
+          name: currentSuite.name,
+          type: 'suite',
+        },
+      });
+    }
+  },
+
+  openMoveModal: (id, name, type, parentId) => {
+    set({
+      moveModalOpen: true,
+      modalTarget: { id, name, type, parentId },
+    });
+  },
+
+  openDeleteModal: (id, name, type, childCount) => {
+    set({
+      deleteModalOpen: true,
+      modalTarget: { id, name, type, childCount },
+    });
+  },
+
+  closeModals: () => {
+    set({
+      newFolderModalOpen: false,
+      newSuiteModalOpen: false,
+      newTestModalOpen: false,
+      moveModalOpen: false,
+      deleteModalOpen: false,
+      modalTarget: null,
+    });
   },
 }));

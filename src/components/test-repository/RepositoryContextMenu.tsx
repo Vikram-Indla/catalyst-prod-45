@@ -14,7 +14,14 @@ interface RepositoryContextMenuProps {
 }
 
 export function RepositoryContextMenu({ target, onClose }: RepositoryContextMenuProps) {
-  const { startRename } = useRepositoryStore();
+  const { 
+    startRename, 
+    openNewFolderModal, 
+    openNewSuiteModal, 
+    openMoveModal, 
+    openDeleteModal,
+    tree,
+  } = useRepositoryStore();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,22 +47,57 @@ export function RepositoryContextMenu({ target, onClose }: RepositoryContextMenu
 
   const isFolder = target.type === 'folder';
 
+  // Find the item name
+  const findNode = (nodes: any[], id: string): any => {
+    for (const node of nodes) {
+      if (node.id === id) return node;
+      if (node.children) {
+        const found = findNode(node.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+  const node = findNode(tree, target.id);
+  const itemName = node?.name || 'Item';
+
   const handleRename = () => {
     startRename(target.id);
     onClose();
   };
 
+  const handleNewFolder = () => {
+    openNewFolderModal(target.id, itemName);
+    onClose();
+  };
+
+  const handleNewSuite = () => {
+    openNewSuiteModal(target.id, itemName);
+    onClose();
+  };
+
+  const handleMove = () => {
+    openMoveModal(target.id, itemName, target.type as 'folder' | 'suite', node?.parentId);
+    onClose();
+  };
+
+  const handleDelete = () => {
+    const childCount = node?.children?.length || node?.testCount || 0;
+    openDeleteModal(target.id, itemName, target.type as 'folder' | 'suite', childCount);
+    onClose();
+  };
+
   const menuItems = [
     ...(isFolder ? [
-      { icon: FolderPlus, label: 'New Folder', onClick: () => onClose() },
-      { icon: FileText, label: 'New Test Suite', onClick: () => onClose() },
+      { icon: FolderPlus, label: 'New Folder', onClick: handleNewFolder },
+      { icon: FileText, label: 'New Test Suite', onClick: handleNewSuite },
       { divider: true },
     ] : []),
     { icon: Edit, label: 'Rename', onClick: handleRename },
     { icon: Copy, label: 'Duplicate', onClick: () => onClose() },
-    { icon: FolderInput, label: 'Move to...', onClick: () => onClose() },
+    { icon: FolderInput, label: 'Move to...', onClick: handleMove },
     { divider: true },
-    { icon: Trash2, label: 'Delete', onClick: () => onClose(), danger: true },
+    { icon: Trash2, label: 'Delete', onClick: handleDelete, danger: true },
   ];
 
   // Position the menu
