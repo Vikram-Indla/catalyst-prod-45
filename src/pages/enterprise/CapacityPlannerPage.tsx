@@ -931,7 +931,7 @@ export default function CapacityPlannerPage() {
                   allocation_type: (a as any).allocation_type || 'committed',
                   start_date: a.start_date,
                   end_date: a.end_date,
-                  department: (a as any).department
+                  department: (a as any).department_name || (a as any).department
                 }))}
               />
             </motion.div>
@@ -1634,7 +1634,7 @@ export default function CapacityPlannerPage() {
                     allocation_type: 'committed' as const,
                     start_date: a.start_date,
                     end_date: a.end_date,
-                    department: (a as any).department
+                    department: (a as any).department_name || (a as any).department
                   }))}
                 />
               )}
