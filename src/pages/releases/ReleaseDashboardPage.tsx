@@ -145,9 +145,11 @@ export default function ReleaseDashboardPage() {
       <main className="max-w-[1600px] mx-auto px-5 py-4">
         {/* Release Header */}
         <ReleaseHeader 
-          release={mockRelease}
-          daysLeft={daysLeft}
-          progress={mockScorecardMetrics.passRate}
+          release={{
+            ...mockRelease,
+            testCycles: [{ id: 'cycle-1', name: 'Cycle 1', testCount: mockScorecardMetrics.total, passedCount: mockScorecardMetrics.passed }],
+            qualityGates: mockQualityGates,
+          }}
         />
 
         {/* Scorecard Bar */}
@@ -159,8 +161,8 @@ export default function ReleaseDashboardPage() {
         >
           <ScorecardBar 
             metrics={mockScorecardMetrics}
-            onStatusClick={handleScorecardClick}
-            activeStatus={filters.status}
+            onFilterByStatus={handleScorecardClick}
+            activeFilter={filters.status}
           />
         </motion.div>
 
@@ -172,9 +174,25 @@ export default function ReleaseDashboardPage() {
           className="mt-4"
         >
           <FilterBar 
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClear={handleClearFilters}
+            filters={{
+              cycle: filters.cycle || 'all',
+              environment: filters.environment || 'all',
+              assignee: filters.assignee || 'all',
+              status: filters.status || 'all',
+              priority: filters.priority || 'all',
+            }}
+            onFiltersChange={(newFilters) => {
+              setFilters({
+                cycle: newFilters.cycle === 'all' ? null : newFilters.cycle,
+                environment: newFilters.environment === 'all' ? null : newFilters.environment,
+                assignee: newFilters.assignee === 'all' ? null : newFilters.assignee,
+                status: newFilters.status === 'all' ? null : newFilters.status as any,
+                priority: newFilters.priority === 'all' ? null : newFilters.priority as any,
+              });
+            }}
+            cycles={[{ id: 'cycle-1', name: 'Cycle 1 - Smoke' }, { id: 'cycle-2', name: 'Cycle 2 - Regression' }]}
+            environments={['Staging', 'UAT', 'Production']}
+            assignees={[{ id: 'user-001', name: 'Sarah Chen' }, { id: 'user-002', name: 'Mike Johnson' }]}
           />
         </motion.div>
 
@@ -188,8 +206,8 @@ export default function ReleaseDashboardPage() {
             className="col-span-8"
           >
             <TestExecutionTable 
-              testCases={filteredTestCases}
-              onTestCaseClick={handleTestCaseClick}
+              tests={filteredTestCases}
+              onTestClick={handleTestCaseClick}
             />
           </motion.div>
 
@@ -208,7 +226,11 @@ export default function ReleaseDashboardPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <CoverageMatrixWidget requirements={mockCoverageMatrix} />
+              <CoverageMatrixWidget coverage={mockCoverageMatrix.map(r => ({
+                requirementId: r.id,
+                requirementName: r.name,
+                testStatuses: r.testCases.map(tc => tc.status),
+              }))} />
             </motion.div>
 
             <motion.div
@@ -232,10 +254,9 @@ export default function ReleaseDashboardPage() {
 
       {/* Test Detail Drawer */}
       <TestDetailDrawer
-        testCase={selectedTestCase}
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        traceabilityChain={selectedTestCase?.id === 'TC-2401' ? mockTraceabilityChain : undefined}
+        test={selectedTestCase}
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
       />
     </div>
   );
