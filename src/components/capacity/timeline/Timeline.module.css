@@ -56,10 +56,10 @@
 }
 
 .resourceColumnHeader {
-  width: 224px;
-  min-width: 224px;
+  width: 220px;
+  min-width: 220px;
   flex-shrink: 0;
-  padding: 16px;
+  padding: 12px 16px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -70,6 +70,9 @@
   left: 0;
   background: linear-gradient(180deg, rgba(250, 250, 250, 0.97) 0%, rgba(245, 245, 245, 0.97) 100%);
   z-index: 21;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .monthsContainer {
@@ -78,16 +81,20 @@
 }
 
 .monthHeader {
-  width: 120px;
-  min-width: 120px;
+  width: 110px;
+  min-width: 110px;
   flex-shrink: 0;
-  padding: 16px 8px;
+  padding: 12px 8px;
   text-align: center;
   border-right: 1px solid rgba(0, 0, 0, 0.04);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.01em;
   color: #374151; /* gray-700 */
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .monthHeaderCurrent {
@@ -118,7 +125,8 @@
   transition: 
     background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.15s ease;
-  min-height: 72px;
+  min-height: 56px;
+  height: 56px;
   position: relative;
   /* Clip content to row boundaries */
   overflow: hidden;
@@ -196,18 +204,18 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .resourceColumn {
-  width: 224px;
-  min-width: 224px;
+  width: 220px;
+  min-width: 220px;
   flex-shrink: 0;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
   background: white;
   position: sticky;
   left: 0;
   z-index: 10;
-  padding: 12px 16px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .resourceInfo {
@@ -225,14 +233,14 @@
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
   color: white;
@@ -240,30 +248,33 @@
 }
 
 .avatarPrimary {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); /* primary gradient */
+  background: #2563eb; /* primary-600 */
   /* Multi-layer shadow for premium depth */
   box-shadow: 
     0 1px 2px rgba(37, 99, 235, 0.1),
-    0 2px 4px rgba(37, 99, 235, 0.1),
-    0 4px 8px rgba(37, 99, 235, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 2px 4px rgba(37, 99, 235, 0.1);
+}
+
+.avatarOffshore {
+  background: #ea580c; /* orange-600 */
+  box-shadow: 
+    0 1px 2px rgba(234, 88, 12, 0.1),
+    0 2px 4px rgba(234, 88, 12, 0.1);
 }
 
 .avatarTeal {
   background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); /* teal gradient */
   box-shadow: 
     0 1px 2px rgba(13, 148, 136, 0.1),
-    0 2px 4px rgba(13, 148, 136, 0.1),
-    0 4px 8px rgba(13, 148, 136, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 2px 4px rgba(13, 148, 136, 0.1);
 }
 
 /* Contract Ring with improved animation */
 .avatarRing {
   position: absolute;
-  inset: -4px;
-  border-radius: 16px;
-  border: 3px solid var(--ring-color, #9ca3af);
+  inset: -3px;
+  border-radius: 11px;
+  border: 2px solid var(--ring-color, #9ca3af);
   pointer-events: none;
   transition: border-color 0.2s ease;
 }
@@ -301,80 +312,43 @@
   position: relative;
   overflow: visible; /* Allow bars to extend */
   isolation: isolate; /* Create stacking context */
-  min-height: 72px;
+  min-height: 56px;
 }
 
 .timelineCell {
-  width: 120px;
-  min-width: 120px;
+  width: 110px;
+  min-width: 110px;
   flex-shrink: 0;
   border-right: 1px solid rgba(0, 0, 0, 0.04);
   position: relative;
-  min-height: 72px;
+  min-height: 56px;
 }
 
 .timelineCellCurrent {
-  background: rgba(37, 99, 235, 0.02);
+  background: rgba(37, 99, 235, 0.04);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ALLOCATION BAR — Gradient with depth + glass effect
+   ALLOCATION BAR — V10 Gantt Spec (Committed vs Forecast)
    ═══════════════════════════════════════════════════════════════ */
 
 .allocationBar {
-  height: 32px;
+  height: 36px;
   border-radius: 6px;
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  justify-content: space-between;
+  padding: 0 10px;
   position: absolute;
-  /* top is set via inline styles for proper stacking */
   transition: 
     box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.15s ease,
+    border-color 0.15s ease;
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
-  font-size: 12px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.01em;
-  color: white;
   z-index: 10;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-}
-
-/* Top edge glass highlight */
-.allocationBar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.25) 20%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.25) 80%,
-    transparent 100%
-  );
-  border-radius: 6px 6px 0 0;
-  pointer-events: none;
-}
-
-/* Bottom edge subtle shadow inside */
-.allocationBar::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.12);
-  border-radius: 0 0 6px 6px;
-  pointer-events: none;
 }
 
 .allocationBar:hover {
@@ -387,80 +361,145 @@
   outline: none;
   box-shadow: 
     0 0 0 2px white,
-    0 0 0 4px #2563eb,
-    0 4px 12px rgba(37, 99, 235, 0.25);
+    0 0 0 4px #2563eb;
 }
 
-/* Bar Colors — CATALYST V5 with multi-layer shadows */
+/* ═══════════════════════════════════════════════════════════════
+   COMMITTED ALLOCATION BARS — Solid style
+   ═══════════════════════════════════════════════════════════════ */
+
+.barCommitted {
+  background: rgba(37, 99, 235, 0.22);
+  border: 2px solid rgba(37, 99, 235, 0.45);
+}
+
+.barCommitted:hover {
+  background: rgba(37, 99, 235, 0.3);
+  border-color: rgba(37, 99, 235, 0.6);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+.barCommitted .barText {
+  color: #1e40af;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.barCommitted .barBadge {
+  background: #2563eb;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FORECAST ALLOCATION BARS — Dashed style
+   ═══════════════════════════════════════════════════════════════ */
+
+.barForecast {
+  background: rgba(37, 99, 235, 0.1);
+  border: 2px dashed rgba(37, 99, 235, 0.35);
+}
+
+.barForecast:hover {
+  background: rgba(37, 99, 235, 0.16);
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+.barForecast .barText {
+  color: #1e40af;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.barForecast .barBadge {
+  background: rgba(37, 99, 235, 0.6);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LEGACY BAR COLORS — Keep for backward compatibility
+   ═══════════════════════════════════════════════════════════════ */
+
 .barPrimary {
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-  box-shadow: 
-    0 1px 2px rgba(37, 99, 235, 0.15),
-    0 2px 4px rgba(37, 99, 235, 0.12),
-    0 4px 8px rgba(37, 99, 235, 0.1);
+  background: rgba(37, 99, 235, 0.22);
+  border: 2px solid rgba(37, 99, 235, 0.45);
 }
 .barPrimary:hover {
-  box-shadow: 
-    0 2px 4px rgba(37, 99, 235, 0.2),
-    0 4px 8px rgba(37, 99, 235, 0.18),
-    0 8px 16px rgba(37, 99, 235, 0.15);
+  background: rgba(37, 99, 235, 0.3);
+  border-color: rgba(37, 99, 235, 0.6);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
 .barTeal {
-  background: linear-gradient(180deg, #14b8a6 0%, #0d9488 100%);
-  box-shadow: 
-    0 1px 2px rgba(13, 148, 136, 0.15),
-    0 2px 4px rgba(13, 148, 136, 0.12),
-    0 4px 8px rgba(13, 148, 136, 0.1);
+  background: rgba(13, 148, 136, 0.22);
+  border: 2px solid rgba(13, 148, 136, 0.45);
 }
 .barTeal:hover {
-  box-shadow: 
-    0 2px 4px rgba(13, 148, 136, 0.2),
-    0 4px 8px rgba(13, 148, 136, 0.18),
-    0 8px 16px rgba(13, 148, 136, 0.15);
+  background: rgba(13, 148, 136, 0.3);
+  border-color: rgba(13, 148, 136, 0.6);
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.2);
 }
 
 .barWarning {
-  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-  box-shadow: 
-    0 1px 2px rgba(217, 119, 6, 0.15),
-    0 2px 4px rgba(217, 119, 6, 0.12),
-    0 4px 8px rgba(217, 119, 6, 0.1);
+  background: rgba(217, 119, 6, 0.22);
+  border: 2px solid rgba(217, 119, 6, 0.45);
 }
 .barWarning:hover {
-  box-shadow: 
-    0 2px 4px rgba(217, 119, 6, 0.2),
-    0 4px 8px rgba(217, 119, 6, 0.18),
-    0 8px 16px rgba(217, 119, 6, 0.15);
+  background: rgba(217, 119, 6, 0.3);
+  border-color: rgba(217, 119, 6, 0.6);
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.2);
 }
 
 .barSlate {
-  background: linear-gradient(180deg, #64748b 0%, #475569 100%);
-  box-shadow: 
-    0 1px 2px rgba(71, 85, 105, 0.15),
-    0 2px 4px rgba(71, 85, 105, 0.12),
-    0 4px 8px rgba(71, 85, 105, 0.1);
+  background: rgba(71, 85, 105, 0.22);
+  border: 2px solid rgba(71, 85, 105, 0.45);
 }
 .barSlate:hover {
-  box-shadow: 
-    0 2px 4px rgba(71, 85, 105, 0.2),
-    0 4px 8px rgba(71, 85, 105, 0.18),
-    0 8px 16px rgba(71, 85, 105, 0.15);
+  background: rgba(71, 85, 105, 0.3);
+  border-color: rgba(71, 85, 105, 0.6);
+  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.2);
 }
 
 .barDanger {
-  background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
-  box-shadow: 
-    0 1px 2px rgba(239, 68, 68, 0.15),
-    0 2px 4px rgba(239, 68, 68, 0.12),
-    0 4px 8px rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.22);
+  border: 2px solid rgba(239, 68, 68, 0.45);
 }
 .barDanger:hover {
-  box-shadow: 
-    0 2px 4px rgba(239, 68, 68, 0.2),
-    0 4px 8px rgba(239, 68, 68, 0.18),
-    0 8px 16px rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.6);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
 }
+
+/* Bar text styling for legacy bars */
+.barPrimary .barText,
+.barTeal .barText,
+.barWarning .barText,
+.barSlate .barText,
+.barDanger .barText {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.barPrimary .barText { color: #1e40af; }
+.barTeal .barText { color: #0f766e; }
+.barWarning .barText { color: #b45309; }
+.barSlate .barText { color: #374151; }
+.barDanger .barText { color: #b91c1c; }
+
+/* Bar badge for legacy bars */
+.barPrimary .barBadge { background: #2563eb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barTeal .barBadge { background: #0d9488; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barWarning .barBadge { background: #d97706; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barSlate .barBadge { background: #475569; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barDanger .barBadge { background: #ef4444; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 
 /* ═══════════════════════════════════════════════════════════════
    AVAILABLE CELL — Subtle elegance with refined transitions
