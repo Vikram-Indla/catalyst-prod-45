@@ -417,7 +417,7 @@ export function SleekCapacityHeader({
   );
 }
 
-// Clickable Stat Chip Component
+// Clickable Stat Chip Component - Catalyst V1 Style Guide
 interface StatChipProps {
   value: number;
   label: string;
@@ -428,30 +428,31 @@ interface StatChipProps {
 }
 
 function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipProps) {
+  // Catalyst V1 Style Guide colors
   const colorStyles = {
     default: {
-      dot: 'bg-muted-foreground dark:bg-[var(--text-secondary)]',
-      activeBg: 'bg-card dark:bg-[var(--surface-3)]',
-      activeText: 'text-foreground dark:text-[var(--text-primary)]',
-      inactiveText: 'text-muted-foreground dark:text-[var(--text-secondary)]',
+      dot: 'bg-[#334155]',
+      activeBg: 'bg-white dark:bg-[var(--surface-3)]',
+      activeText: 'text-[#0f172a] dark:text-[var(--text-primary)]',
+      inactiveText: 'text-[#475569] dark:text-[var(--text-secondary)]',
     },
     emerald: {
-      dot: 'bg-emerald-500',
-      activeBg: 'bg-emerald-100 dark:bg-emerald-900/50',
-      activeText: 'text-emerald-700 dark:text-emerald-300',
-      inactiveText: 'text-muted-foreground dark:text-[var(--text-secondary)]',
+      dot: 'bg-[#059669]',
+      activeBg: 'bg-[#ecfdf5] dark:bg-emerald-900/50',
+      activeText: 'text-[#059669] dark:text-emerald-300',
+      inactiveText: 'text-[#475569] dark:text-[var(--text-secondary)]',
     },
     blue: {
-      dot: 'bg-blue-500',
-      activeBg: 'bg-blue-100 dark:bg-blue-900/50',
-      activeText: 'text-blue-700 dark:text-blue-300',
-      inactiveText: 'text-muted-foreground dark:text-[var(--text-secondary)]',
+      dot: 'bg-[#2563eb]',
+      activeBg: 'bg-[#eff6ff] dark:bg-blue-900/50',
+      activeText: 'text-[#2563eb] dark:text-blue-300',
+      inactiveText: 'text-[#475569] dark:text-[var(--text-secondary)]',
     },
     rose: {
-      dot: 'bg-rose-500',
-      activeBg: 'bg-rose-100 dark:bg-rose-900/50',
-      activeText: 'text-rose-700 dark:text-rose-300',
-      inactiveText: 'text-muted-foreground dark:text-[var(--text-secondary)]',
+      dot: 'bg-[#dc2626]',
+      activeBg: 'bg-[#fef2f2] dark:bg-rose-900/50',
+      activeText: 'text-[#dc2626] dark:text-rose-300',
+      inactiveText: 'text-[#475569] dark:text-[var(--text-secondary)]',
     },
   };
   
@@ -466,7 +467,7 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
         "hover:scale-[1.02] active:scale-[0.98]",
         isActive 
           ? cn(styles.activeBg, styles.activeText, "shadow-sm border border-current/20")
-          : cn(styles.inactiveText, "hover:bg-card/50 dark:hover:bg-[var(--surface-3)]")
+          : cn(styles.inactiveText, "hover:bg-white/50 dark:hover:bg-[var(--surface-3)]")
       )}
     >
       <span className={cn(
@@ -476,7 +477,7 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
       )} />
       <span className={cn(
         "font-bold tabular-nums text-base",
-        isZero && "text-muted-foreground dark:text-[var(--text-secondary)]"
+        isZero && "text-[#475569] dark:text-[var(--text-secondary)]"
       )}>
         {value}
       </span>
@@ -485,33 +486,30 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
   );
 }
 
-// Compact Utilization Badge
+// Compact Utilization Badge - Catalyst V1 Style Guide
 function UtilizationBadge({ value }: { value: number }) {
-  const textColor = value > 100 
-    ? 'text-rose-600 dark:text-rose-300' 
-    : value > 90 
-      ? 'text-amber-600 dark:text-amber-300' 
-      : 'text-emerald-600 dark:text-emerald-300';
-  
   const bgColor = value > 100 
-    ? 'bg-rose-500' 
+    ? 'bg-[#dc2626]' 
     : value > 90 
-      ? 'bg-amber-500' 
-      : 'bg-emerald-500';
+      ? 'bg-[#2563eb]' 
+      : 'bg-[#2563eb]';
   
   return (
-    <div className="flex items-center gap-3 pl-4 pr-2 py-2 bg-card dark:bg-[var(--surface-3)] rounded-lg border border-border dark:border-[var(--border-default)] shadow-sm">
+    <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-lg border" style={{
+      background: 'rgba(37, 99, 235, 0.12)',
+      borderColor: 'rgba(37, 99, 235, 0.3)',
+    }}>
       <div className="flex flex-col items-end">
-        <span className={cn("text-xl font-bold tabular-nums leading-none", textColor)}>
+        <span className="text-xl font-extrabold tabular-nums leading-none" style={{ color: '#1e40af' }}>
           {value}%
         </span>
-        <span className="text-[10px] text-muted-foreground dark:text-[var(--text-secondary)] uppercase tracking-wider font-medium">
+        <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: '#334155' }}>
           Utilization
         </span>
       </div>
-      <div className="w-2 h-10 bg-muted dark:bg-[var(--surface-2)] rounded-full overflow-hidden">
+      <div className="w-1 h-7 rounded-sm overflow-hidden" style={{ background: 'rgba(37,99,235,0.25)' }}>
         <div 
-          className={cn("w-full rounded-full transition-all duration-500", bgColor)}
+          className={cn("w-full rounded-sm transition-all duration-500", bgColor)}
           style={{ height: `${Math.min(value, 100)}%`, marginTop: `${100 - Math.min(value, 100)}%` }}
         />
       </div>
