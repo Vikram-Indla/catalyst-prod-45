@@ -110,6 +110,7 @@ import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import { TestExecutionFocusPage } from "./features/test-execution";
 import MyTestScopePage from "./pages/releases/MyTestScopePage";
 import CalendarPage from "./pages/releases/CalendarPage";
+import ComparePage from "./pages/releases/ComparePage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
 import ReleasesCycleCommandCenter from "./pages/releases/CycleCommandCenter";
 import ReleasesCycleTemplatesPage from "./pages/releases/CycleTemplatesPage";
