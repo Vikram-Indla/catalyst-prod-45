@@ -107,6 +107,7 @@ import ReleasesTestCasesPage from "./pages/releases/TestCasesPage";
 import ReleasesTestCasesLibraryPage from "./pages/releases/TestCasesLibraryPage";
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
+import { TestExecutionFocusPage } from "./features/test-execution";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
 import ReleasesCycleCommandCenter from "./pages/releases/CycleCommandCenter";
 import ReleasesCycleTemplatesPage from "./pages/releases/CycleTemplatesPage";
@@ -792,6 +793,7 @@ const App = () => (
               <Route path="/releases/workload" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkloadDashboard /></Suspense>} />
               <Route path="/releases/execution" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/execution/:cycleId/:testCaseId" element={<ReleasesTestExecutionPage />} />
+              <Route path="/releases/execute/:cycleId/:testCaseId" element={<ProtectedRoute><TestExecutionFocusPage /></ProtectedRoute>} />
               <Route path="/releases/ask-ai" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/coverage" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/quality-gates" element={<ReleasesPlaceholderPage />} />
