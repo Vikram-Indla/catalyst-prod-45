@@ -54,7 +54,7 @@ import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
 import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
 import { CapacityHeatmap } from '@/components/capacity-heatmap';
 
-import { ProjectStaffingView } from '@/components/capacity/ProjectStaffingView';
+import { ProjectCapacityView } from '@/components/capacity/ProjectCapacityView';
 import { ContractHorizonView } from '@/components/contract-horizon';
 import { GroupedTableView } from '@/components/capacity/GroupedTableView';
 import { ScaleWarningBanner } from '@/components/capacity/ScaleWarningBanner';
@@ -902,7 +902,7 @@ export default function CapacityPlannerPage() {
             </AnimatePresence>
           )}
 
-          {/* Projects Primary View */}
+          {/* Projects Primary View - Catalyst View 2 */}
           {primaryView === 'projects' && (
             <motion.div
               key="projects"
@@ -911,14 +911,28 @@ export default function CapacityPlannerPage() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <ProjectStaffingView
-                assignments={resourceAssignments}
-                allocations={allocations}
-                filteredResourceIds={new Set(activeResources.map(r => r.id))}
-                onAssignResource={(assignmentId) => {
-                  // Open find availability with project context
-                  setResourceModalOpen(true);
-                }}
+              <ProjectCapacityView
+                assignments={resourceAssignments.map(a => ({
+                  id: a.id,
+                  name: a.name,
+                  color: a.color,
+                  required_fte: 1 // Default requirement
+                }))}
+                allocations={allocations.map(a => ({
+                  id: a.id,
+                  resource_id: a.resource_id,
+                  profile_id: a.profile_id,
+                  resource_name: (a as any).resource_inventory?.name || (a as any).resource_name,
+                  profile_name: (a as any).profile_name,
+                  role_name: (a as any).resource_inventory?.role_name || (a as any).role_name,
+                  assignment_id: a.assignment_id,
+                  assignment_name: (a as any).resource_assignments?.name || (a as any).assignment_name,
+                  allocation_percent: a.allocation_percent,
+                  allocation_type: (a as any).allocation_type || 'committed',
+                  start_date: a.start_date,
+                  end_date: a.end_date,
+                  department: (a as any).department
+                }))}
               />
             </motion.div>
           )}
