@@ -83,7 +83,7 @@ function TrackFilterDropdown({
   const { departments, isLoading } = useCapacityDepartments();
   
   const currentDeptName = departmentFilter === 'all' 
-    ? 'All Tracks' 
+    ? 'All Departments' 
     : departments.find(d => d.name.toLowerCase() === departmentFilter?.toLowerCase())?.name || departmentFilter;
 
   return (
@@ -114,7 +114,7 @@ function TrackFilterDropdown({
           className={cn(departmentFilter === 'all' && "bg-primary/10")}
         >
           <Users className="w-4 h-4 mr-2" />
-          All Tracks
+          All Departments
         </DropdownMenuItem>
         {!isLoading && departments.map((dept) => (
           <DropdownMenuItem 
@@ -376,51 +376,53 @@ export function SleekCapacityHeader({
             onDepartmentFilterChange={onDepartmentFilterChange}
           />
 
-          {/* Group By */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className={cn(
-                  "h-9 px-4 text-sm gap-2 rounded-lg transition-colors",
-                  "bg-card dark:bg-[var(--surface-3)] border-border dark:border-[var(--border-default)] text-foreground dark:text-[var(--text-primary)]",
-                  "hover:bg-muted dark:hover:bg-[var(--surface-elevated)]",
-                  groupBy !== 'none' && "border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
-                )}
-              >
-                <Layers className="h-4 w-4" />
-                <span className="font-medium">
-                  {groupBy === 'none' ? 'No Grouping' : 
-                   groupBy === 'assignment' ? 'By Assignment' : 
-                   groupBy === 'department' ? 'By Department' : groupBy}
-                </span>
-                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground dark:text-[var(--text-secondary)]" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-lg">
-              <DropdownMenuLabel className="text-xs text-muted-foreground">Group Resources</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={() => onGroupByChange('none')}
-                className={cn(groupBy === 'none' && "bg-primary/10")}
-              >
-                No Grouping
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onGroupByChange('assignment')}
-                className={cn(groupBy === 'assignment' && "bg-primary/10")}
-              >
-                By Assignment
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onGroupByChange('department')}
-                className={cn(groupBy === 'department' && "bg-primary/10")}
-              >
-                By Department
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Group By - Hidden in timeline/Gantt view */}
+          {resourceView !== 'timeline' && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className={cn(
+                    "h-9 px-4 text-sm gap-2 rounded-lg transition-colors",
+                    "bg-card dark:bg-[var(--surface-3)] border-border dark:border-[var(--border-default)] text-foreground dark:text-[var(--text-primary)]",
+                    "hover:bg-muted dark:hover:bg-[var(--surface-elevated)]",
+                    groupBy !== 'none' && "border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
+                  )}
+                >
+                  <Layers className="h-4 w-4" />
+                  <span className="font-medium">
+                    {groupBy === 'none' ? 'No Grouping' : 
+                     groupBy === 'assignment' ? 'By Assignment' : 
+                     groupBy === 'department' ? 'By Department' : groupBy}
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground dark:text-[var(--text-secondary)]" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-lg">
+                <DropdownMenuLabel className="text-xs text-muted-foreground">Group Resources</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => onGroupByChange('none')}
+                  className={cn(groupBy === 'none' && "bg-primary/10")}
+                >
+                  No Grouping
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => onGroupByChange('assignment')}
+                  className={cn(groupBy === 'assignment' && "bg-primary/10")}
+                >
+                  By Assignment
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => onGroupByChange('department')}
+                  className={cn(groupBy === 'department' && "bg-primary/10")}
+                >
+                  By Department
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           {/* Divider */}
           <div className="w-px h-8 bg-border" />
