@@ -59,8 +59,8 @@ interface EnhancedTimelineViewProps {
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════
 
-const MONTH_WIDTH = 120; // pixels per month
-const RESOURCE_COLUMN_WIDTH = 224;
+const MONTH_WIDTH = 110; // pixels per month (V10 spec)
+const RESOURCE_COLUMN_WIDTH = 220;
 
 // ═══════════════════════════════════════════════════════════════
 // HELPER COMPONENTS

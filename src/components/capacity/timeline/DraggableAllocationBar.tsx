@@ -269,8 +269,8 @@ export function DraggableAllocationBar({
   const isDragging = dragMode !== 'none';
   const showGhost = isDragging && (Math.abs(currentLeft - originalLeft) > 1 || Math.abs(currentWidth - originalWidth) > 1);
   
-  // Calculate vertical position
-  const baseRowHeight = 72;
+  // Calculate vertical position - V10 spec: 56px row, 36px bar
+  const baseRowHeight = 56;
   const padding = 4;
   const gap = 2;
   
@@ -278,15 +278,15 @@ export function DraggableAllocationBar({
   let topPx: number;
   
   if (totalBars === 1) {
-    barHeight = 32;
+    barHeight = 36;
     topPx = (baseRowHeight - barHeight) / 2;
   } else if (totalBars === 2) {
-    barHeight = 26;
+    barHeight = 24;
     const totalNeeded = (barHeight * 2) + gap;
     const startOffset = (baseRowHeight - totalNeeded) / 2;
     topPx = startOffset + (rowIndex * (barHeight + gap));
   } else {
-    barHeight = Math.max(18, Math.floor((baseRowHeight - padding * 2 - (gap * (totalBars - 1))) / totalBars));
+    barHeight = Math.max(16, Math.floor((baseRowHeight - padding * 2 - (gap * (totalBars - 1))) / totalBars));
     topPx = padding + (rowIndex * (barHeight + gap));
   }
   
@@ -385,9 +385,12 @@ export function DraggableAllocationBar({
           <div className="w-0.5 h-4 bg-white/40 rounded-full" />
         </div>
         
-        {/* Bar content */}
-        <span className="truncate px-2 flex-1">
-          {projectName} ({allocation.allocation_percent}%)
+        {/* Bar content - V10 spec: text + badge */}
+        <span className={cn(styles.barText, "truncate flex-1")}>
+          {projectName}
+        </span>
+        <span className={styles.barBadge}>
+          {allocation.allocation_percent}%
         </span>
         
         {/* Save status indicator */}
