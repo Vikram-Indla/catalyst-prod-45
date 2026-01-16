@@ -5,14 +5,11 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import type { PeriodType, ProjectAllocation, ProjectAssignment, ProjectUtilization, ProjectStaffingStats } from './types';
+import type { PeriodType, PeriodRange, ProjectAllocation, ProjectAssignment, ProjectUtilization, ProjectStaffingStats } from './types';
 import { getPeriodRange, navigatePeriod, getProjectUtilizationForPeriod, getStaffingStatusConfig } from './utils';
-import { PeriodNavigator } from './PeriodNavigator';
 import { ProjectCard } from './ProjectCard';
 import { ProjectViewModal } from './ProjectViewModal';
 
@@ -20,22 +17,23 @@ interface ProjectCapacityViewProps {
   assignments: ProjectAssignment[];
   allocations: ProjectAllocation[];
   className?: string;
+  // Period state lifted from parent
+  periodType: PeriodType;
+  periodRange: PeriodRange;
+  searchQuery: string;
 }
 
 export function ProjectCapacityView({
   assignments,
   allocations,
-  className
+  className,
+  periodType,
+  periodRange,
+  searchQuery
 }: ProjectCapacityViewProps) {
-  // State
-  const [periodType, setPeriodType] = useState<PeriodType>('monthly');
-  const [currentDate, setCurrentDate] = useState(() => new Date(2026, 0, 16)); // Current date per spec
-  const [searchQuery, setSearchQuery] = useState('');
+  // State (only modal state remains local)
   const [selectedProject, setSelectedProject] = useState<ProjectUtilization | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-
-  // Calculate period range
-  const periodRange = useMemo(() => getPeriodRange(currentDate, periodType), [currentDate, periodType]);
 
   // Calculate utilization for all projects
   const projectUtilizations = useMemo(() => {
@@ -70,14 +68,6 @@ export function ProjectCapacityView({
   }, [filteredProjects]);
 
   // Handlers
-  const handlePeriodTypeChange = useCallback((type: PeriodType) => {
-    setPeriodType(type);
-  }, []);
-
-  const handleNavigate = useCallback((direction: 1 | -1) => {
-    setCurrentDate(prev => navigatePeriod(prev, periodType, direction));
-  }, [periodType]);
-
   const handleViewProject = useCallback((utilization: ProjectUtilization) => {
     setSelectedProject(utilization);
     setModalOpen(true);
@@ -90,28 +80,6 @@ export function ProjectCapacityView({
 
   return (
     <div className={cn("space-y-4", className)}>
-      {/* Header Bar */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        {/* Period Navigator */}
-        <PeriodNavigator
-          periodType={periodType}
-          periodRange={periodRange}
-          onPeriodTypeChange={handlePeriodTypeChange}
-          onNavigate={handleNavigate}
-        />
-
-        {/* Search */}
-        <div className="relative w-64">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search projects..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 h-9 text-sm"
-          />
-        </div>
-      </div>
-
       {/* Stats Summary Bar */}
       <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg border border-border">
         <div className="flex items-center gap-2">
@@ -147,7 +115,7 @@ export function ProjectCapacityView({
       <AnimatePresence mode="wait">
         {filteredProjects.length > 0 ? (
           <motion.div
-            key={`projects-${periodType}-${currentDate.toISOString()}`}
+            key={`projects-${periodType}-${periodRange.label}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
