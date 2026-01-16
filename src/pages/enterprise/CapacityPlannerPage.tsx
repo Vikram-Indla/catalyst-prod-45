@@ -36,6 +36,7 @@ import { DraggableCardsView } from '@/components/capacity/DraggableCardsView';
 import { Logo } from '@/components/brand/Logo';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
+type ProjectPeriodType = 'weekly' | 'monthly';
 type GroupByType = 'none' | 'assignment' | 'department';
 
 import { 
@@ -55,6 +56,7 @@ import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
 import { CapacityHeatmap } from '@/components/capacity-heatmap';
 
 import { ProjectCapacityView } from '@/components/capacity/ProjectCapacityView';
+import { getPeriodRange, navigatePeriod } from '@/components/capacity/ProjectCapacityView/utils';
 import { ContractHorizonView } from '@/components/contract-horizon';
 import { GroupedTableView } from '@/components/capacity/GroupedTableView';
 import { ScaleWarningBanner } from '@/components/capacity/ScaleWarningBanner';
@@ -119,6 +121,10 @@ export default function CapacityPlannerPage() {
   const [isCollapsed, setIsCollapsedLocal] = useState(capacityStore.ui.isCollapsed);
   const [compactMode, setCompactModeLocal] = useState(capacityStore.ui.compactMode);
   
+  // Project period state (for Projects tab)
+  const [projectPeriodType, setProjectPeriodType] = useState<ProjectPeriodType>('monthly');
+  const [projectCurrentDate, setProjectCurrentDate] = useState(() => new Date(2026, 0, 16));
+  
   // Presentation mode from URL or store
   const [presentationMode, setPresentationModeLocal] = useState(false);
 
@@ -172,6 +178,17 @@ export default function CapacityPlannerPage() {
     setCompactModeLocal(c);
     capacityStore.setCompactMode(c);
   }, [capacityStore]);
+
+  // Project period range (computed from state)
+  const projectPeriodRange = useMemo(() => 
+    getPeriodRange(projectCurrentDate, projectPeriodType), 
+    [projectCurrentDate, projectPeriodType]
+  );
+
+  // Handler for project period navigation
+  const handleProjectPeriodNavigate = useCallback((direction: 1 | -1) => {
+    setProjectCurrentDate(prev => navigatePeriod(prev, projectPeriodType, direction));
+  }, [projectPeriodType]);
 
   const setPresentationMode = useCallback((mode: boolean) => {
     setPresentationModeLocal(mode);
@@ -738,6 +755,10 @@ export default function CapacityPlannerPage() {
           onPresentationMode={() => setPresentationMode(true)}
           onFilterChange={setActiveFilter}
           onDepartmentFilterChange={setDepartmentFilter}
+          projectPeriodType={projectPeriodType}
+          projectPeriodRange={projectPeriodRange}
+          onProjectPeriodTypeChange={setProjectPeriodType}
+          onProjectPeriodNavigate={handleProjectPeriodNavigate}
         />
 
         {/* Main Content */}
@@ -933,6 +954,9 @@ export default function CapacityPlannerPage() {
                   end_date: a.end_date,
                   department: (a as any).department_name || (a as any).department
                 }))}
+                periodType={projectPeriodType}
+                periodRange={projectPeriodRange}
+                searchQuery={searchQuery}
               />
             </motion.div>
           )}
@@ -1636,6 +1660,9 @@ export default function CapacityPlannerPage() {
                     end_date: a.end_date,
                     department: (a as any).department_name || (a as any).department
                   }))}
+                  periodType={projectPeriodType}
+                  periodRange={projectPeriodRange}
+                  searchQuery={searchQuery}
                 />
               )}
               
