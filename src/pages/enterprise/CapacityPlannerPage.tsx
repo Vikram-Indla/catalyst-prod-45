@@ -2125,28 +2125,35 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         
         return (
           <div className="flex items-center gap-3">
-            {/* Avatar with flag overlay */}
-            <div className="relative flex-shrink-0">
-              <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white"
-                style={{ backgroundColor: avatarBg }}
-              >
-                {initials}
-              </div>
-              {/* Flag overlay */}
-              {flagUrl && (
-                <span 
-                  className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
-                  style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
-                >
-                  <img 
-                    src={flagUrl} 
-                    alt={countryName || ''} 
-                    className="w-3.5 h-3.5 object-cover rounded-sm"
-                  />
-                </span>
-              )}
-            </div>
+            {/* Avatar with flag overlay and country tooltip */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="relative flex-shrink-0 cursor-pointer">
+                  <div 
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white"
+                    style={{ backgroundColor: avatarBg }}
+                  >
+                    {initials}
+                  </div>
+                  {/* Flag overlay */}
+                  {flagUrl && (
+                    <span 
+                      className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
+                      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
+                    >
+                      <img 
+                        src={flagUrl} 
+                        alt={countryName || ''} 
+                        className="w-3.5 h-3.5 object-cover rounded-sm"
+                      />
+                    </span>
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="bg-slate-900 text-white text-xs font-medium px-2.5 py-1.5">
+                {countryName || 'Unknown Country'}
+              </TooltipContent>
+            </Tooltip>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="font-semibold text-[14px] text-[#0f172a] dark:text-foreground truncate">{value}</span>
