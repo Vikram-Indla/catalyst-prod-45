@@ -108,6 +108,7 @@ import ReleasesTestCasesLibraryPage from "./pages/releases/TestCasesLibraryPage"
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import { TestExecutionFocusPage } from "./features/test-execution";
+import MyTestScopePage from "./pages/releases/MyTestScopePage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
 import ReleasesCycleCommandCenter from "./pages/releases/CycleCommandCenter";
 import ReleasesCycleTemplatesPage from "./pages/releases/CycleTemplatesPage";
@@ -779,7 +780,7 @@ const App = () => (
               <Route path="/releases" element={<Navigate to="/releases/command-center" replace />} />
               <Route path="/releases/command-center" element={<ReleasesCommandCenter />} />
               <Route path="/releases/dashboard" element={<ReleasesPlaceholderPage />} />
-              <Route path="/releases/my-scope" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/my-scope" element={<MyTestScopePage />} />
               <Route path="/releases/all" element={<AllReleasesPage />} />
               <Route path="/releases/calendar" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/compare" element={<ReleasesPlaceholderPage />} />
