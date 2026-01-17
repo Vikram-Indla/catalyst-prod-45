@@ -73,9 +73,14 @@ import { BulkAssignDialog } from '@/components/releases/test-cases/BulkAssignDia
 import { BulkMoveDialog } from '@/components/releases/test-cases/BulkMoveDialog';
 import { BulkTagsDialog } from '@/components/releases/test-cases/BulkTagsDialog';
 import { ExecuteTestCaseDialog } from '@/components/releases/test-cases/ExecuteTestCaseDialog';
-import { testCasesData, TestCase } from '@/data/testCasesData';
-import { useTestCasesApi, useDeleteTestCasesApi, useDuplicateTestCaseApi } from '@/hooks/use-test-cases-api';
-import { useBulkCreateTestCasesApi } from '@/hooks/use-create-test-case-api';
+import { TestCase } from '@/data/testCasesData';
+import { 
+  useTestCases, 
+  useBulkDeleteTestCases, 
+  useCloneTestCase,
+  useCreateTestCase,
+} from '@/hooks/test-management';
+import { tmToUITestCases } from '@/lib/adapters/testCaseAdapter';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
 import { useSearchParams } from 'react-router-dom';
@@ -134,82 +139,87 @@ export default function TestCasesPage() {
     activeFilterCount 
   } = useTestCaseFilters();
 
-  // API hooks with mock fallback
+  // Supabase hooks for real data
   const { 
-    testCases: apiTestCases, 
-    total: apiTotal, 
-    totalPages: apiTotalPages, 
+    data: testCasesResult, 
     isLoading, 
     refetch,
-    isMockData 
-  } = useTestCasesApi({
-    projectId,
+  } = useTestCases(projectId || undefined, {
     page: currentPage,
-    limit: itemsPerPage,
+    per_page: itemsPerPage,
     search: filters.search,
-    status: filters.statuses?.[0],
-    priority: filters.priorities?.[0],
-    type: filters.types?.[0],
-    useMockFallback: true,
+    status: filters.statuses?.[0]?.toUpperCase() as any,
   });
 
-  const deleteTestCases = useDeleteTestCasesApi();
-  const duplicateTestCase = useDuplicateTestCaseApi();
-  const bulkCreateTestCases = useBulkCreateTestCasesApi({
-    projectId,
-    onSuccess: () => {
-      refetch();
-    },
-  });
+  // Transform Supabase data to UI format
+  const apiTestCases = useMemo(() => {
+    if (!testCasesResult?.cases) return [];
+    return tmToUITestCases(testCasesResult.cases);
+  }, [testCasesResult?.cases]);
+
+  const apiTotal = testCasesResult?.total || 0;
+  const apiTotalPages = Math.ceil(apiTotal / itemsPerPage);
+
+  const deleteTestCasesMutation = useBulkDeleteTestCases();
+  const duplicateTestCaseMutation = useCloneTestCase();
+  const createTestCaseMutation = useCreateTestCase({ silent: true });
 
   // Handler for AI-generated test cases
   const handleAIGeneratedTestCases = useCallback((generatedTestCases: GeneratedTestCase[]) => {
-    const inputs = generatedTestCases.map(tc => ({
-      project_id: projectId,
-      title: tc.title,
-      description: tc.summary,
-      preconditions: tc.preconditions?.join('\n'),
-      status: 'draft' as const,
-      tags: tc.tags,
-      steps: tc.steps.map((step, idx) => ({
-        step_number: idx + 1,
-        action: step.action,
-        expected_result: step.expectedResult,
-        test_data: step.testData,
-      })),
-    }));
+    // Create each test case sequentially
+    const createPromises = generatedTestCases.map(tc => 
+      createTestCaseMutation.mutateAsync({
+        project_id: projectId,
+        title: tc.title,
+        objective: tc.summary,
+        preconditions: tc.preconditions?.join('\n'),
+        status: 'DRAFT',
+        is_ai_generated: true,
+        steps: tc.steps.map((step, idx) => ({
+          action: step.action,
+          expected_result: step.expectedResult,
+          test_data: step.testData,
+        })),
+      })
+    );
 
-    bulkCreateTestCases.mutate(inputs, {
-      onSuccess: (results) => {
+    Promise.all(createPromises)
+      .then(results => {
         toast.success(`Successfully created ${results.length} AI-generated test cases`);
-      },
-    });
-  }, [projectId, bulkCreateTestCases]);
+        refetch();
+      })
+      .catch(error => {
+        toast.error('Failed to create some test cases');
+      });
+  }, [projectId, createTestCaseMutation, refetch]);
 
   // Handler for imported test cases
   const handleImportedTestCases = useCallback((parsedTestCases: ParsedTestCase[]) => {
-    const inputs = parsedTestCases.map(tc => ({
-      project_id: projectId,
-      title: tc.title,
-      description: tc.description,
-      preconditions: tc.preconditions,
-      status: (tc.status as 'draft' | 'ready' | 'approved' | 'deprecated') || 'draft',
-      tags: tc.tags,
-      steps: tc.steps 
-        ? tc.steps.split('\n').filter(Boolean).map((step, idx) => ({
-            step_number: idx + 1,
-            action: step.replace(/^\d+\.\s*/, ''),
-            expected_result: '',
-          }))
-        : undefined,
-    }));
+    const createPromises = parsedTestCases.map(tc => 
+      createTestCaseMutation.mutateAsync({
+        project_id: projectId,
+        title: tc.title,
+        objective: tc.description,
+        preconditions: tc.preconditions,
+        status: 'DRAFT',
+        steps: tc.steps 
+          ? tc.steps.split('\n').filter(Boolean).map((step, idx) => ({
+              action: step.replace(/^\d+\.\s*/, ''),
+              expected_result: '',
+            }))
+          : undefined,
+      })
+    );
 
-    bulkCreateTestCases.mutate(inputs, {
-      onSuccess: (results) => {
+    Promise.all(createPromises)
+      .then(results => {
         toast.success(`Successfully imported ${results.length} test cases`);
-      },
-    });
-  }, [projectId, bulkCreateTestCases]);
+        refetch();
+      })
+      .catch(error => {
+        toast.error('Failed to import some test cases');
+      });
+  }, [projectId, createTestCaseMutation, refetch]);
 
   // Persist view mode
   useEffect(() => {
@@ -229,15 +239,11 @@ export default function TestCasesPage() {
   }, [apiTestCases, filters.releases]);
 
   // Calculate pagination from filtered results
-  const totalPages = isMockData 
-    ? Math.ceil(filteredTestCases.length / itemsPerPage) 
-    : apiTotalPages;
+  const totalPages = apiTotalPages;
   
-  const paginatedTestCases = isMockData
-    ? filteredTestCases.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-    : filteredTestCases;
+  const paginatedTestCases = filteredTestCases;
   
-  const totalCount = isMockData ? filteredTestCases.length : apiTotal;
+  const totalCount = apiTotal;
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -263,7 +269,7 @@ export default function TestCasesPage() {
     },
     onDuplicate: () => {
       if (selectedIds.size > 0) {
-        Array.from(selectedIds).forEach(id => duplicateTestCase.mutate({ id }));
+        Array.from(selectedIds).forEach(id => duplicateTestCaseMutation.mutate({ id, project_id: projectId }));
         toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
       }
     },
@@ -293,7 +299,7 @@ export default function TestCasesPage() {
     onDelete: () => {
       if (selectedIds.size > 0) {
         const ids = Array.from(selectedIds);
-        deleteTestCases.mutate(ids);
+        deleteTestCasesMutation.mutate({ case_ids: ids, project_id: projectId });
         setSelectedIds(new Set());
       }
     },
@@ -345,7 +351,7 @@ export default function TestCasesPage() {
           <span className="text-muted-foreground">/</span>
           <span className="font-semibold text-foreground">Test Cases</span>
           <Badge variant="secondary" className="ml-2 text-xs">
-            {totalCount} total{isMockData ? ' (demo)' : ''}
+            {totalCount} total
           </Badge>
         </div>
         
@@ -757,13 +763,13 @@ export default function TestCasesPage() {
             onAddTags={() => setIsBulkTagsOpen(true)}
             onDelete={() => {
               const ids = Array.from(selectedIds);
-              deleteTestCases.mutate(ids);
+              deleteTestCasesMutation.mutate({ case_ids: ids, project_id: projectId });
               setSelectedIds(new Set());
             }}
             onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
             onDuplicate={() => {
               const ids = Array.from(selectedIds);
-              ids.forEach(id => duplicateTestCase.mutate({ id }));
+              ids.forEach(id => duplicateTestCaseMutation.mutate({ id, project_id: projectId }));
               toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
             }}
             onExport={() => setIsExportOpen(true)}
