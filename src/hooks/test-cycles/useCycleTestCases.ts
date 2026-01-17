@@ -1,8 +1,9 @@
 /**
- * Hook for fetching test cases within a cycle
+ * Hook for fetching test cases within a cycle - WIRED TO SUPABASE
  */
 
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface CycleTestCase {
   id: string;
@@ -10,7 +11,7 @@ export interface CycleTestCase {
   caseKey: string;
   title: string;
   description: string | null;
-  status: 'not_started' | 'in_progress' | 'passed' | 'failed' | 'blocked';
+  status: 'not_started' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
   priority: 'critical' | 'high' | 'medium' | 'low';
   assigneeId: string | null;
   assigneeName: string | null;
@@ -18,7 +19,7 @@ export interface CycleTestCase {
   dueDate: string | null;
   executedAt: string | null;
   executedBy: string | null;
-  executionTime: number | null; // minutes
+  executionTime: number | null;
   module: string | null;
   blockedReason: string | null;
   linkedDefectId: string | null;
@@ -32,154 +33,146 @@ interface TestCaseFilters {
   search?: string | null;
 }
 
+// Map DB status to UI status
+function mapExecutionStatus(dbStatus: string | null): CycleTestCase['status'] {
+  const statusMap: Record<string, CycleTestCase['status']> = {
+    'not_run': 'not_started',
+    'in_progress': 'in_progress',
+    'passed': 'passed',
+    'failed': 'failed',
+    'blocked': 'blocked',
+    'skipped': 'skipped',
+  };
+  return statusMap[dbStatus || 'not_run'] || 'not_started';
+}
+
+// Map DB priority to UI priority
+function mapPriority(dbPriority: string | null): CycleTestCase['priority'] {
+  const priorityMap: Record<string, CycleTestCase['priority']> = {
+    'critical': 'critical',
+    'high': 'high',
+    'medium': 'medium',
+    'low': 'low',
+  };
+  return priorityMap[dbPriority?.toLowerCase() || 'medium'] || 'medium';
+}
+
 export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
   const query = useQuery({
     queryKey: ['cycle-test-cases', cycleId, filters],
     queryFn: async (): Promise<CycleTestCase[]> => {
-      // Mock data - will be replaced with real Supabase query
-      const mockTestCases: CycleTestCase[] = [
-        {
-          id: 'ctc-001',
-          testCaseId: 'tc-001',
-          caseKey: 'TC-001',
-          title: 'User login with valid credentials',
-          description: 'Verify user can log in with correct username and password',
-          status: 'passed',
-          priority: 'critical',
-          assigneeId: 'user-001',
-          assigneeName: 'Ahmed S.',
-          assigneeAvatar: null,
-          dueDate: '2024-01-15',
-          executedAt: '2024-01-14T10:30:00Z',
-          executedBy: 'user-001',
-          executionTime: 5,
-          module: 'Authentication',
-          blockedReason: null,
-          linkedDefectId: null,
-          linkedDefectKey: null,
-        },
-        {
-          id: 'ctc-002',
-          testCaseId: 'tc-002',
-          caseKey: 'TC-002',
-          title: 'Password reset email delivery',
-          description: 'Verify password reset email is sent correctly',
-          status: 'failed',
-          priority: 'high',
-          assigneeId: 'user-002',
-          assigneeName: 'Sara M.',
-          assigneeAvatar: null,
-          dueDate: '2024-01-15',
-          executedAt: '2024-01-14T11:00:00Z',
-          executedBy: 'user-002',
-          executionTime: 8,
-          module: 'Authentication',
-          blockedReason: null,
-          linkedDefectId: 'def-001',
-          linkedDefectKey: 'DEF-001',
-        },
-        {
-          id: 'ctc-003',
-          testCaseId: 'tc-003',
-          caseKey: 'TC-003',
-          title: 'Two-factor authentication setup',
-          description: 'Verify 2FA can be configured properly',
-          status: 'blocked',
-          priority: 'high',
-          assigneeId: 'user-001',
-          assigneeName: 'Ahmed S.',
-          assigneeAvatar: null,
-          dueDate: '2024-01-16',
-          executedAt: null,
-          executedBy: null,
-          executionTime: null,
-          module: 'Authentication',
-          blockedReason: 'SMS service unavailable in staging',
-          linkedDefectId: null,
-          linkedDefectKey: null,
-        },
-        {
-          id: 'ctc-004',
-          testCaseId: 'tc-004',
-          caseKey: 'TC-004',
-          title: 'User profile update',
-          description: 'Verify user can update profile information',
-          status: 'in_progress',
-          priority: 'medium',
-          assigneeId: 'user-003',
-          assigneeName: 'Omar K.',
-          assigneeAvatar: null,
-          dueDate: '2024-01-16',
-          executedAt: null,
-          executedBy: null,
-          executionTime: null,
-          module: 'User Management',
-          blockedReason: null,
-          linkedDefectId: null,
-          linkedDefectKey: null,
-        },
-        {
-          id: 'ctc-005',
-          testCaseId: 'tc-005',
-          caseKey: 'TC-005',
-          title: 'Dashboard data refresh',
-          description: 'Verify dashboard refreshes data correctly',
-          status: 'not_started',
-          priority: 'medium',
-          assigneeId: 'user-002',
-          assigneeName: 'Sara M.',
-          assigneeAvatar: null,
-          dueDate: '2024-01-17',
-          executedAt: null,
-          executedBy: null,
-          executionTime: null,
-          module: 'Dashboard',
-          blockedReason: null,
-          linkedDefectId: null,
-          linkedDefectKey: null,
-        },
-        {
-          id: 'ctc-006',
-          testCaseId: 'tc-006',
-          caseKey: 'TC-006',
-          title: 'Report export to PDF',
-          description: 'Verify reports can be exported to PDF format',
-          status: 'not_started',
-          priority: 'low',
-          assigneeId: null,
-          assigneeName: null,
-          assigneeAvatar: null,
-          dueDate: '2024-01-18',
-          executedAt: null,
-          executedBy: null,
-          executionTime: null,
-          module: 'Reports',
-          blockedReason: null,
-          linkedDefectId: null,
-          linkedDefectKey: null,
-        },
-      ];
+      // Build query for cycle scope with test case details
+      let scopeQuery = supabase
+        .from('tm_cycle_scope')
+        .select(`
+          id,
+          test_case_id,
+          current_status,
+          assigned_to,
+          sort_order,
+          test_case:tm_test_cases(
+            id,
+            case_key,
+            title,
+            description,
+            priority:tm_case_priorities(name),
+            folder:tm_folders(name)
+          ),
+          assignee:profiles(id, full_name, avatar_url)
+        `)
+        .eq('cycle_id', cycleId)
+        .order('sort_order', { ascending: true });
 
-      // Apply filters
-      let filtered = mockTestCases;
+      // Apply status filter - cast to valid enum value
       if (filters?.status) {
-        filtered = filtered.filter(tc => tc.status === filters.status);
+        const statusMap: Record<string, string> = {
+          'not_started': 'not_run',
+          'in_progress': 'in_progress',
+          'passed': 'passed',
+          'failed': 'failed',
+          'blocked': 'blocked',
+          'skipped': 'skipped',
+        };
+        const dbStatus = statusMap[filters.status] || filters.status;
+        scopeQuery = scopeQuery.eq('current_status', dbStatus as 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped');
       }
+
+      // Apply assignee filter
       if (filters?.assigneeId) {
-        filtered = filtered.filter(tc => tc.assigneeId === filters.assigneeId);
+        if (filters.assigneeId === 'unassigned') {
+          scopeQuery = scopeQuery.is('assigned_to', null);
+        } else {
+          scopeQuery = scopeQuery.eq('assigned_to', filters.assigneeId);
+        }
       }
+
+      const { data: scopeData, error: scopeError } = await scopeQuery;
+
+      if (scopeError) {
+        console.error('Error fetching cycle test cases:', scopeError);
+        throw scopeError;
+      }
+
+      // Get latest run results for each scope item
+      const scopeIds = (scopeData || []).map((s: any) => s.id);
+      let runResults: Record<string, any> = {};
+      
+      if (scopeIds.length > 0) {
+        const { data: runs } = await supabase
+          .from('tm_test_runs')
+          .select('id, cycle_scope_id, status, completed_at, executed_by, duration_seconds')
+          .in('cycle_scope_id', scopeIds)
+          .order('completed_at', { ascending: false });
+
+        // Keep only latest run per scope
+        (runs || []).forEach((run: any) => {
+          if (!runResults[run.cycle_scope_id]) {
+            runResults[run.cycle_scope_id] = run;
+          }
+        });
+      }
+
+      // Map to UI format
+      let testCases: CycleTestCase[] = (scopeData || []).map((scope: any) => {
+        const testCase = scope.test_case;
+        const run = runResults[scope.id];
+        
+        return {
+          id: scope.id,
+          testCaseId: scope.test_case_id,
+          caseKey: testCase?.case_key || 'TC-???',
+          title: testCase?.title || 'Unknown Test Case',
+          description: testCase?.description || null,
+          status: mapExecutionStatus(scope.current_status),
+          priority: mapPriority(testCase?.priority?.name),
+          assigneeId: scope.assigned_to,
+          assigneeName: scope.assignee?.full_name || null,
+          assigneeAvatar: scope.assignee?.avatar_url || null,
+          dueDate: null, // No due_date column
+          executedAt: run?.completed_at || null,
+          executedBy: run?.executed_by || null,
+          executionTime: run?.duration_seconds ? Math.ceil(run.duration_seconds / 60) : null,
+          module: testCase?.folder?.name || null,
+          blockedReason: null,
+          linkedDefectId: null,
+          linkedDefectKey: null,
+        };
+      });
+
+      // Apply client-side filters
       if (filters?.priority) {
-        filtered = filtered.filter(tc => tc.priority === filters.priority);
+        testCases = testCases.filter(tc => tc.priority === filters.priority);
       }
+
       if (filters?.search) {
         const search = filters.search.toLowerCase();
-        filtered = filtered.filter(tc => 
+        testCases = testCases.filter(tc => 
           tc.title.toLowerCase().includes(search) ||
           tc.caseKey.toLowerCase().includes(search)
         );
       }
 
-      return filtered;
+      return testCases;
     },
     enabled: !!cycleId,
     staleTime: 30000,
