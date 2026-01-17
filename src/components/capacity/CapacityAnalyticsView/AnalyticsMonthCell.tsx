@@ -13,37 +13,60 @@ interface AnalyticsMonthCellProps {
   contractEndDate?: string | null;
 }
 
+// Vibrant color palette for assignments
+const ASSIGNMENT_COLORS = [
+  { hex: '#6366f1', hexLight: '#eef2ff' }, // indigo
+  { hex: '#06b6d4', hexLight: '#ecfeff' }, // cyan
+  { hex: '#0d9488', hexLight: '#f0fdfa' }, // teal
+  { hex: '#2563eb', hexLight: '#eff6ff' }, // blue
+  { hex: '#8b5cf6', hexLight: '#f5f3ff' }, // violet
+  { hex: '#d97706', hexLight: '#fffbeb' }, // amber
+  { hex: '#dc2626', hexLight: '#fef2f2' }, // red
+  { hex: '#16a34a', hexLight: '#f0fdf4' }, // green
+  { hex: '#db2777', hexLight: '#fdf2f8' }, // pink
+  { hex: '#ea580c', hexLight: '#fff7ed' }, // orange
+];
+
 // Map assignment names to workstream tracks for color lookup
 function getWorkstreamColor(assignmentName: string) {
   const lower = assignmentName.toLowerCase();
   
   // Match assignment to workstream based on keywords
-  if (lower.includes('senaie') || lower.includes('senaei') || lower.includes('sen')) {
+  if (lower.includes('senaie') || lower.includes('senaei') || lower.includes('bau')) {
     return WORKSTREAM_COLORS['Senaie Track'];
   }
-  if (lower.includes('tahom') || lower.includes('tah')) {
+  if (lower.includes('tahom')) {
     return WORKSTREAM_COLORS['Tahommona Track'];
   }
-  if (lower.includes('catalyst') || lower.includes('cat')) {
+  if (lower.includes('catalyst')) {
     return WORKSTREAM_COLORS['Catalyst Track'];
   }
-  if (lower.includes('delivery') || lower.includes('del')) {
+  if (lower.includes('delivery')) {
     return WORKSTREAM_COLORS['Delivery Track'];
   }
   if (lower.includes('mim') || lower.includes('website')) {
     return WORKSTREAM_COLORS['MIM Website'];
   }
-  if (lower.includes('data') || lower.includes('ai') || lower.includes('dat')) {
+  if (lower.includes('data') || lower.includes('platform')) {
     return WORKSTREAM_COLORS['Data & AI Track'];
   }
-  if (lower.includes('security') || lower.includes('sec')) {
-    return WORKSTREAM_COLORS['Catalyst Track']; // Use teal for security
+  if (lower.includes('digital') || lower.includes('transformation')) {
+    return { ...WORKSTREAM_COLORS['Delivery Track'], hex: '#2563eb' }; // blue
   }
-  if (lower.includes('stand') || lower.includes('alone') || lower.includes('ins') || lower.includes('int')) {
-    return WORKSTREAM_COLORS['Stand-Alone Projects Track'];
+  if (lower.includes('icp') || lower.includes('inspection')) {
+    return { ...WORKSTREAM_COLORS['Catalyst Track'], hex: '#0d9488' }; // teal
+  }
+  if (lower.includes('is13') || lower.includes('sectorial')) {
+    return { ...WORKSTREAM_COLORS['Senaie Track'], hex: '#6366f1' }; // indigo
+  }
+  if (lower.includes('international')) {
+    return { ...WORKSTREAM_COLORS['Data & AI Track'], hex: '#8b5cf6' }; // violet
   }
   
-  return DEFAULT_WORKSTREAM_COLOR;
+  // Hash-based color for unknown assignments - always get a vibrant color
+  const hash = assignmentName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const colorIndex = hash % ASSIGNMENT_COLORS.length;
+  return { ...DEFAULT_WORKSTREAM_COLOR, ...ASSIGNMENT_COLORS[colorIndex] };
 }
 
 export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCellProps) {
