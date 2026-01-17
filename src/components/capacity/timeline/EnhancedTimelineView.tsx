@@ -452,6 +452,7 @@ export function EnhancedTimelineView({
                                 allocation_percent: alloc.allocation_percent,
                                 assignment_name: alloc.assignment_name,
                                 profile_id: alloc.profile_id,
+                                status: alloc.status,
                               }}
                               timelineStartDate={timelineStartDate}
                               timelineEndDate={timelineEndDate}
