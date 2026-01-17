@@ -109,7 +109,7 @@ export function AddAssignmentModal({
       const options = [];
       for (let m = 1; m <= 12; m++) {
         const monthStart = startOfMonth(new Date(currentYear, m - 1, 1));
-        const label = `${format(monthStart, 'MMM')} · ${format(monthStart, 'MMMM yyyy')}`;
+        const label = format(monthStart, 'MMMM yyyy'); // Just "January 2026", no redundant "Jan ·"
         options.push({ value: `${m}-${currentYear}`, label });
       }
       return options;
