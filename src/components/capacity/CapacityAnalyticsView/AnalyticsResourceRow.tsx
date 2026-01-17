@@ -1,5 +1,5 @@
 /**
- * Analytics Resource Row - Resource info + monthly cells
+ * Analytics Resource Row - V7 Design with Location column
  */
 
 import { cn } from '@/lib/utils';
@@ -14,74 +14,73 @@ interface AnalyticsResourceRowProps {
 export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResourceRowProps) {
   const { resource, months } = row;
 
-  // Get initials
-  const initials = resource.name
-    .split(' ')
-    .map(w => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-
-  // Location styling
-  const locationName = resource.location?.name || '';
-  const isOnsite = locationName.toLowerCase().includes('onsite');
-  const isOffshore = locationName.toLowerCase().includes('offshore');
-  const avatarBgClass = isOnsite ? 'bg-brand-teal' : isOffshore ? 'bg-brand-primary' : 'bg-muted';
-  const locLabel = isOnsite ? 'Onsite' : isOffshore ? 'Offshore' : locationName;
-  const locLabelClass = isOnsite ? 'text-brand-teal' : isOffshore ? 'text-brand-primary' : 'text-muted-foreground';
+  // Location badge styling
+  const locationName = resource.location?.name?.toLowerCase() || '';
+  const isOnsite = locationName.includes('onsite');
+  const isOffshore = locationName.includes('offshore');
+  const isHybrid = locationName.includes('hybrid');
+  
+  const getLocationBadge = () => {
+    if (isOnsite) return { label: 'ONSITE', bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' };
+    if (isOffshore) return { label: 'OFFSHORE', bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' };
+    if (isHybrid) return { label: 'HYBRID', bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-200' };
+    return { label: locationName.toUpperCase() || '-', bg: 'bg-muted', text: 'text-muted-foreground', border: 'border-border' };
+  };
+  
+  const badge = getLocationBadge();
+  const deptName = resource.department?.name || 'BMC';
 
   return (
-    <tr className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+    <tr className="border-b border-border/30 hover:bg-muted/20 transition-colors">
       {/* Resource Info Cell */}
-      <td className="sticky left-0 z-10 bg-card p-3 min-w-[260px] border-r border-border">
+      <td className="sticky left-0 z-10 bg-card py-3 px-4 min-w-[180px] border-r border-border">
         <div 
-          className="flex items-center gap-3 cursor-pointer"
+          className="cursor-pointer"
           onClick={() => onResourceClick?.(resource.id)}
         >
-          {/* Avatar */}
-          <div className="relative flex-shrink-0">
-            <div className={cn(
-              'w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white',
-              avatarBgClass
-            )}>
-              {initials}
-            </div>
-            {/* Country flag */}
-            {resource.country?.code && (
-              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-card border border-border overflow-hidden flex items-center justify-center text-[10px]">
-                {resource.country.code}
-              </div>
-            )}
+          <div className="font-semibold text-sm text-foreground">
+            {resource.name}
           </div>
-
-          {/* Name & Role */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm text-foreground truncate">
-                {resource.name}
-              </span>
-            </div>
-            <div className="text-xs text-muted-foreground truncate">
-              {resource.role_name || 'No role'}
-            </div>
-            {locLabel && (
-              <span className={cn('text-[10px] font-medium tracking-wide uppercase', locLabelClass)}>
-                {locLabel}
-              </span>
-            )}
+          <div className="text-xs text-muted-foreground">
+            {resource.role_name || 'No role'}
+          </div>
+          <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+            {deptName}
           </div>
         </div>
       </td>
 
+      {/* Location Badge Cell */}
+      <td className="py-3 px-3 min-w-[100px] border-r border-border">
+        <span className={cn(
+          'inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wide border',
+          badge.bg, badge.text, badge.border
+        )}>
+          {badge.label}
+        </span>
+      </td>
+
       {/* Month Cells */}
-      {months.map((cell, idx) => (
+      {months.map((cell) => (
         <AnalyticsMonthCell 
           key={`${cell.year}-${cell.month}`}
           cell={cell}
           contractEndDate={resource.contract_end_date}
-          resourceName={resource.name}
         />
       ))}
+    </tr>
+  );
+}
+
+// Department group header row
+export function DepartmentGroupHeader({ name }: { name: string }) {
+  return (
+    <tr>
+      <td colSpan={100} className="sticky left-0 bg-card pt-4 pb-2 px-4">
+        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+          {name}
+        </span>
+      </td>
     </tr>
   );
 }

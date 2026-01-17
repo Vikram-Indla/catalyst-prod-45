@@ -1,17 +1,17 @@
 /**
  * Capacity Analytics View V7
- * Monthly/Quarterly grid showing resource allocations
+ * Monthly grid with department tabs, location column, grouped sections
  */
 
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, SortAsc, SortDesc, Clock } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAnalyticsData } from './useAnalyticsData';
-import { AnalyticsSummaryBar } from './AnalyticsSummaryBar';
-import { AnalyticsResourceRow } from './AnalyticsResourceRow';
-import { MONTH_LABELS, type ViewScope } from './types';
+import { AnalyticsDepartmentTabs } from './AnalyticsDepartmentTabs';
+import { AnalyticsResourceRow, DepartmentGroupHeader } from './AnalyticsResourceRow';
+import { MONTH_LABELS, type ViewScope, type CapacityRow } from './types';
 
 interface CapacityAnalyticsViewProps {
   departmentFilter?: string;
@@ -25,58 +25,54 @@ export function CapacityAnalyticsView({
   onResourceClick,
 }: CapacityAnalyticsViewProps) {
   const [viewScope, setViewScope] = useState<ViewScope>('h1');
-  const [sortField, setSortField] = useState<'name' | 'allocation'>('name');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const year = 2026;
 
-  const { rows, summary, months, isLoading, isError, error } = useAnalyticsData({
+  const { rows, months, isLoading, isError, error } = useAnalyticsData({
     departmentFilter,
     viewScope,
     year,
   });
 
-  // Sort rows
-  const sortedRows = useMemo(() => {
-    const sorted = [...rows];
-    sorted.sort((a, b) => {
-      if (sortField === 'name') {
-        return sortDir === 'asc' 
-          ? a.resource.name.localeCompare(b.resource.name)
-          : b.resource.name.localeCompare(a.resource.name);
-      }
-      // Sort by first month allocation
-      const aAlloc = a.months[0]?.totalPercent || 0;
-      const bAlloc = b.months[0]?.totalPercent || 0;
-      return sortDir === 'asc' ? aAlloc - bAlloc : bAlloc - aAlloc;
+  // Build department tabs with counts
+  const departmentTabs = useMemo(() => {
+    const deptCounts = new Map<string, number>();
+    let total = 0;
+    
+    rows.forEach(row => {
+      const dept = row.resource.department?.name || 'Other';
+      deptCounts.set(dept, (deptCounts.get(dept) || 0) + 1);
+      total++;
     });
-    return sorted;
-  }, [rows, sortField, sortDir]);
 
-  // Toggle sort
-  const toggleSort = (field: 'name' | 'allocation') => {
-    if (sortField === field) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDir('asc');
-    }
-  };
+    const tabs = [{ id: 'all', name: 'All', count: total }];
+    deptCounts.forEach((count, name) => {
+      tabs.push({ id: name.toLowerCase(), name, count });
+    });
 
-  // Quarter headers
-  const quarters = useMemo(() => {
-    const qs: { label: string; months: number[] }[] = [];
-    if (viewScope === 'q1' || viewScope === 'h1' || viewScope === 'full') {
-      qs.push({ label: `Q1 ${year}`, months: [1, 2, 3] });
-    }
-    if (viewScope === 'h1' || viewScope === 'full') {
-      qs.push({ label: `Q2 ${year}`, months: [4, 5, 6] });
-    }
-    if (viewScope === 'full') {
-      qs.push({ label: `Q3 ${year}`, months: [7, 8, 9] });
-      qs.push({ label: `Q4 ${year}`, months: [10, 11, 12] });
-    }
-    return qs;
-  }, [viewScope, year]);
+    return tabs;
+  }, [rows]);
+
+  // Filter rows by active tab
+  const filteredRows = useMemo(() => {
+    if (departmentFilter === 'all') return rows;
+    return rows.filter(r => 
+      r.resource.department?.name?.toLowerCase() === departmentFilter.toLowerCase()
+    );
+  }, [rows, departmentFilter]);
+
+  // Group rows by department
+  const groupedRows = useMemo(() => {
+    const groups = new Map<string, CapacityRow[]>();
+    
+    filteredRows.forEach(row => {
+      const dept = row.resource.department?.name || 'Other';
+      if (!groups.has(dept)) groups.set(dept, []);
+      groups.get(dept)!.push(row);
+    });
+
+    // Sort groups by department name
+    return Array.from(groups.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filteredRows]);
 
   if (isError) {
     return (
@@ -90,49 +86,34 @@ export function CapacityAnalyticsView({
 
   return (
     <div className="flex flex-col h-full bg-card rounded-lg border border-border overflow-hidden">
-      {/* Summary Bar */}
-      <AnalyticsSummaryBar
-        summary={summary}
-        departmentFilter={departmentFilter}
-        onDepartmentChange={onDepartmentChange || (() => {})}
-      />
+      {/* Header: Department Tabs + View Scope Toggle */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        {/* Department Tabs */}
+        <AnalyticsDepartmentTabs
+          tabs={departmentTabs}
+          activeTab={departmentFilter}
+          onTabChange={onDepartmentChange || (() => {})}
+        />
 
-      {/* View Scope Toggle */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-border/50">
-        <span className="text-xs text-muted-foreground mr-2">View:</span>
-        {(['q1', 'h1', 'full'] as ViewScope[]).map((scope) => (
-          <Button
-            key={scope}
-            variant={viewScope === scope ? 'default' : 'ghost'}
-            size="sm"
-            className="h-7 px-3 text-xs"
-            onClick={() => setViewScope(scope)}
-          >
-            {scope === 'q1' ? 'Q1' : scope === 'h1' ? 'H1' : 'Full Year'}
-          </Button>
-        ))}
-        
-        <div className="flex-1" />
-        
-        {/* Sort Controls */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 px-2 text-xs gap-1"
-          onClick={() => toggleSort('name')}
-        >
-          {sortField === 'name' && (sortDir === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />)}
-          Name
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 px-2 text-xs gap-1"
-          onClick={() => toggleSort('allocation')}
-        >
-          {sortField === 'allocation' && (sortDir === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />)}
-          Allocation
-        </Button>
+        {/* View Scope Toggle */}
+        <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+          {(['q1', 'h1', 'full'] as ViewScope[]).map((scope) => (
+            <Button
+              key={scope}
+              variant={viewScope === scope ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                'h-8 px-4 text-sm font-medium',
+                viewScope === scope 
+                  ? 'bg-[#2563eb] text-white shadow-sm' 
+                  : 'text-foreground hover:bg-background'
+              )}
+              onClick={() => setViewScope(scope)}
+            >
+              {scope === 'q1' ? 'Q1' : scope === 'h1' ? 'H1' : 'Full'}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Table */}
@@ -145,64 +126,46 @@ export function CapacityAnalyticsView({
           </div>
         ) : (
           <table className="w-full border-collapse">
-            <thead className="sticky top-0 z-20 bg-muted/80 backdrop-blur-sm">
-              {/* Quarter Headers */}
+            <thead className="sticky top-0 z-20 bg-card">
+              {/* Column Headers */}
               <tr className="border-b border-border">
-                <th className="sticky left-0 z-30 bg-muted/80 p-0 min-w-[260px]">
-                  {/* Sort icons placeholder */}
-                  <div className="flex items-center gap-2 px-3 py-2">
-                    <SortAsc className="w-4 h-4 text-muted-foreground" />
-                    <SortDesc className="w-4 h-4 text-muted-foreground" />
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                  </div>
+                <th className="sticky left-0 z-30 bg-card text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[180px]">
+                  Resource
                 </th>
-                {quarters.map((q, idx) => (
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[100px]">
+                  Location
+                </th>
+                {months.map((m) => (
                   <th 
-                    key={q.label}
-                    colSpan={q.months.filter(m => months.some(mc => mc.month === m)).length}
-                    className={cn(
-                      'text-center py-2 px-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400',
-                      idx > 0 && 'border-l-2 border-border'
-                    )}
+                    key={`${m.year}-${m.month}`}
+                    className="text-center py-3 px-2 text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[120px]"
                   >
-                    {q.label}
+                    {MONTH_LABELS[m.month - 1]}
                   </th>
                 ))}
               </tr>
-              {/* Month Headers */}
-              <tr className="border-b border-border">
-                <th className="sticky left-0 z-30 bg-muted/80 min-w-[260px]" />
-                {months.map((m, idx) => {
-                  // Check if this is the first month of a quarter
-                  const isQuarterStart = m.month === 4 || m.month === 7 || m.month === 10;
-                  return (
-                    <th 
-                      key={`${m.year}-${m.month}`}
-                      className={cn(
-                        'text-center py-2 px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[80px]',
-                        isQuarterStart && 'border-l-2 border-border'
-                      )}
-                    >
-                      {MONTH_LABELS[m.month - 1]}
-                    </th>
-                  );
-                })}
-              </tr>
             </thead>
             <tbody>
-              {sortedRows.length === 0 ? (
+              {groupedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={months.length + 1} className="text-center py-16 text-muted-foreground">
+                  <td colSpan={months.length + 2} className="text-center py-16 text-muted-foreground">
                     No resources found
                   </td>
                 </tr>
               ) : (
-                sortedRows.map((row) => (
-                  <AnalyticsResourceRow 
-                    key={row.resource.id} 
-                    row={row}
-                    onResourceClick={onResourceClick}
-                  />
+                groupedRows.map(([deptName, deptRows]) => (
+                  <>
+                    {/* Department Group Header */}
+                    <DepartmentGroupHeader key={`header-${deptName}`} name={deptName} />
+                    {/* Department Resources */}
+                    {deptRows.map((row) => (
+                      <AnalyticsResourceRow 
+                        key={row.resource.id} 
+                        row={row}
+                        onResourceClick={onResourceClick}
+                      />
+                    ))}
+                  </>
                 ))
               )}
             </tbody>
