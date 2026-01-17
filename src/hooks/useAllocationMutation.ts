@@ -9,6 +9,7 @@ interface UpdateAllocationParams {
   allocation_percent?: number;
   profile_id?: string;
   assignment_id?: string;
+  status?: string;
 }
 
 export function useAllocationMutation() {
@@ -18,12 +19,21 @@ export function useAllocationMutation() {
     mutationFn: async (params: UpdateAllocationParams) => {
       const { id, ...updates } = params;
       
+      // Build the update object, only including defined values
+      const updateData: Record<string, unknown> = {
+        updated_at: new Date().toISOString(),
+      };
+      
+      if (updates.start_date !== undefined) updateData.start_date = updates.start_date;
+      if (updates.end_date !== undefined) updateData.end_date = updates.end_date;
+      if (updates.allocation_percent !== undefined) updateData.allocation_percent = updates.allocation_percent;
+      if (updates.profile_id !== undefined) updateData.profile_id = updates.profile_id;
+      if (updates.assignment_id !== undefined) updateData.assignment_id = updates.assignment_id;
+      if (updates.status !== undefined) updateData.status = updates.status;
+      
       const { data, error } = await supabase
         .from('resource_allocations')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
