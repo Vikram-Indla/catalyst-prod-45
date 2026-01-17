@@ -58,18 +58,45 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
     return generateVisibleWeeks(startDate, forecastBoundary, today);
   }, [today, weekOffset, forecastBoundary]);
 
-  // Fetch assignments for this resource
+  // Fetch assignments for this resource by first getting allocations, then fetching assignment details
   const { data: assignments = [], isLoading: isLoadingAssignments } = useQuery({
     queryKey: ['resource-assignments-drawer', resource.id],
     queryFn: async (): Promise<Assignment[]> => {
-      // @ts-expect-error - Supabase type instantiation depth issue
+      // First get all allocations for this resource to find which assignments are used
+      const { data: allocations, error: allocError } = await supabase
+        .from('resource_allocations')
+        .select('assignment_id')
+        .eq('resource_id', resource.id);
+      
+      if (allocError) throw allocError;
+      
+      // Get unique assignment IDs
+      const assignmentIds = [...new Set((allocations || []).map(a => a.assignment_id).filter(Boolean))];
+      
+      if (assignmentIds.length === 0) {
+        // Fall back to fetching all active assignments
+        const { data: allAssignments, error: allError } = await supabase
+          .from('resource_assignments')
+          .select('id, name, color')
+          .eq('is_active', true)
+          .order('name');
+        
+        if (allError) throw allError;
+        
+        const rawData = allAssignments as Array<{ id: string; name: string; color: string | null }> | null;
+        return assignColorsToAssignments((rawData || []).map(d => ({
+          id: d.id,
+          name: d.name,
+          color: d.color || '#2563eb'
+        })));
+      }
+      
+      // Fetch assignment details for the assignments this resource has
       const { data, error } = await supabase
         .from('resource_assignments')
         .select('id, name, color')
-        .eq('resource_id', resource.id)
+        .in('id', assignmentIds)
         .order('name');
-      
-      if (error) throw error;
       
       if (error) throw error;
       
