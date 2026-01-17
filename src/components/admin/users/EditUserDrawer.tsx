@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -20,13 +20,27 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Save, X, User, Building, MapPin, Briefcase } from 'lucide-react';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Loader2, Save, X, User, Building, MapPin, Briefcase, Check, ChevronsUpDown } from 'lucide-react';
 import { UserProfile } from '@/hooks/useUsers';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getCountryInfo } from '@/lib/countryLookup';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface EditUserDrawerProps {
   isOpen: boolean;
@@ -47,11 +61,14 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     contract_end_date: '',
   });
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
+  const [selectedJobRole, setSelectedJobRole] = useState<string>('');
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>('');
+  const [roleSearchOpen, setRoleSearchOpen] = useState(false);
   
   // Track initial values for dirty checking
   const [initialFormData, setInitialFormData] = useState(formData);
   const [initialRoleIds, setInitialRoleIds] = useState<string[]>([]);
+  const [initialJobRole, setInitialJobRole] = useState<string>('');
   const [initialAssignmentId, setInitialAssignmentId] = useState<string>('');
   const [fieldErrors, setFieldErrors] = useState<{ full_name?: string; email?: string; department?: string }>({});
   
@@ -59,9 +76,10 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
   const isDirty =
     JSON.stringify(formData) !== JSON.stringify(initialFormData) ||
     JSON.stringify([...selectedRoleIds].sort()) !== JSON.stringify([...initialRoleIds].sort()) ||
+    selectedJobRole !== initialJobRole ||
     (selectedAssignmentId || '') !== (initialAssignmentId || '');
 
-  // Fetch available roles
+  // Fetch available roles from product_roles (for system roles)
   const { data: productRoles } = useQuery({
     queryKey: ['product-roles'],
     queryFn: async () => {
@@ -71,6 +89,22 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         .order('name');
       if (error) throw error;
       return data || [];
+    },
+  });
+
+  // Fetch distinct job roles from resource_inventory (actual roles in use)
+  const { data: inventoryRoles = [] } = useQuery({
+    queryKey: ['inventory-job-roles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_inventory')
+        .select('role_name')
+        .not('role_name', 'is', null)
+        .order('role_name');
+      if (error) throw error;
+      // Get unique role names
+      const uniqueRoles = [...new Set(data?.map(r => r.role_name).filter(Boolean) as string[])];
+      return uniqueRoles.sort();
     },
   });
 
@@ -166,6 +200,9 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'product_roles' }, () => {
         queryClient.invalidateQueries({ queryKey: ['product-roles'] });
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['inventory-job-roles'] });
+      })
       .subscribe();
 
     return () => {
@@ -219,11 +256,14 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       };
       
       const newRoleIds = user.roles.map(r => r.role_id);
+      const newJobRole = user.job_role || '';
       
       setFormData(newFormData);
       setInitialFormData(newFormData);
       setSelectedRoleIds(newRoleIds);
       setInitialRoleIds(newRoleIds);
+      setSelectedJobRole(newJobRole);
+      setInitialJobRole(newJobRole);
     }
   }, [user]);
 
@@ -268,10 +308,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       const selectedCountry = countries.find(c => c.name === formData.country);
       const selectedDepartment = departments.find(d => d.name === formData.department);
       
-      // Get the first selected role name to use as job_role
-      const firstSelectedRoleId = selectedRoleIds[0];
-      const firstSelectedRole = productRoles?.find(r => r.id === firstSelectedRoleId);
-      const jobRoleName = firstSelectedRole?.name || null;
+      // Use the selected job role directly (from searchable listbox)
+      const jobRoleName = selectedJobRole || null;
 
       // Determine whether this row is a real profile user or an imported (resource_inventory-only) user.
       // Imported users appear in the list with user.id = resource_inventory.id.
@@ -474,10 +512,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         const selectedAssignment = assignments.find((a) => a.id === selectedAssignmentId);
         const updatedAssignmentName = selectedAssignment?.name || null;
 
-        // Resolve job role label from selected role
-        const firstSelectedRoleId = selectedRoleIds[0];
-        const firstSelectedRole = productRoles?.find((r) => r.id === firstSelectedRoleId);
-        const updatedJobRole = firstSelectedRole?.name || null;
+        // Use the selected job role directly
+        const updatedJobRole = selectedJobRole || null;
 
         return (prev as UserProfile[]).map((u) =>
           u.id === updatedUserId
@@ -652,27 +688,93 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
             <Separator />
 
-            {/* Job Role Section - syncs to user list */}
+            {/* Job Role Section - syncs to user list via searchable combobox */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Briefcase className="h-4 w-4" />
                 Job Role
               </h3>
-              <div className="flex flex-wrap gap-2">
-                {productRoles?.map((role) => (
-                  <Badge
-                    key={role.id}
-                    variant={selectedRoleIds.includes(role.id) ? "default" : "outline"}
-                    className="cursor-pointer transition-colors"
-                    onClick={() => toggleRole(role.id)}
+              <Popover open={roleSearchOpen} onOpenChange={setRoleSearchOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={roleSearchOpen}
+                    className="w-full justify-between"
                   >
-                    {selectedRoleIds.includes(role.id) && '✓ '}
-                    {role.name}
-                  </Badge>
-                ))}
-              </div>
-              {selectedRoleIds.length === 0 && (
-                <p className="text-xs text-muted-foreground">Click on a role to assign it</p>
+                    {selectedJobRole || "Select job role..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search job roles..." />
+                    <CommandList>
+                      <CommandEmpty>No role found.</CommandEmpty>
+                      <CommandGroup heading="Roles in Use">
+                        {inventoryRoles.map((role) => (
+                          <CommandItem
+                            key={role}
+                            value={role}
+                            onSelect={(currentValue) => {
+                              setSelectedJobRole(currentValue === selectedJobRole ? '' : currentValue);
+                              setRoleSearchOpen(false);
+                            }}
+                            className="flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Check
+                                className={cn(
+                                  "h-4 w-4",
+                                  selectedJobRole === role ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              <span>{role}</span>
+                            </div>
+                            <Badge variant="secondary" className="text-xs">In Use</Badge>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                      {productRoles && productRoles.length > 0 && (
+                        <CommandGroup heading="System Roles">
+                          {productRoles
+                            .filter(pr => !inventoryRoles.includes(pr.name))
+                            .map((role) => (
+                              <CommandItem
+                                key={role.id}
+                                value={role.name}
+                                onSelect={(currentValue) => {
+                                  setSelectedJobRole(currentValue === selectedJobRole ? '' : currentValue);
+                                  setRoleSearchOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedJobRole === role.name ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {role.name}
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      )}
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {selectedJobRole && (
+                <div className="flex items-center gap-2">
+                  <Badge variant="default">{selectedJobRole}</Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2"
+                    onClick={() => setSelectedJobRole('')}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
               )}
             </div>
 
