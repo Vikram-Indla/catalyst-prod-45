@@ -109,6 +109,7 @@ import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import { TestExecutionFocusPage } from "./features/test-execution";
 const AskAIPage = lazy(() => import("./features/ask-ai/AskAIPage"));
+const RTMPage = lazy(() => import("./features/rtm/RTMPage"));
 import MyTestScopePage from "./pages/releases/MyTestScopePage";
 import CalendarPage from "./pages/releases/CalendarPage";
 import ComparePage from "./pages/releases/ComparePage";
@@ -808,7 +809,7 @@ const App = () => (
               <Route path="/releases/ask-ai" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AskAIPage /></Suspense>} />
               <Route path="/releases/coverage" element={<CoverageReportsPage />} />
               <Route path="/releases/quality-gates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><QualityGatesPage /></Suspense>} />
-              <Route path="/releases/rtm" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/rtm" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RTMPage /></Suspense>} />
               <Route path="/releases/defects" element={<ReleasesDefectsPage />} />
               <Route path="/releases/defects/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesDefectDetailPage /></Suspense>} />
               <Route path="/releases/:releaseId" element={<ReleaseDashboardV5Page />} />
