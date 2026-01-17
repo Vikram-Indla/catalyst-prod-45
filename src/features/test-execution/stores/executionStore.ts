@@ -62,6 +62,14 @@ interface ExecutionStore {
   
   // Actions
   initSession: (testCaseId: string, testCaseTitle: string, steps: StepDisplay[]) => void;
+  initSessionFromDb: (
+    runId: string,
+    testCaseId: string,
+    testCaseKey: string,
+    testCaseTitle: string,
+    steps: StepDisplay[],
+    dbStepResults: Array<{ stepResultId: string; stepId: string; status: StepStatus; actualResult?: string }>
+  ) => void;
   markStep: (status: 'passed' | 'failed' | 'blocked') => void;
   skipStep: () => void;
   goToStep: (index: number) => void;
@@ -84,6 +92,10 @@ interface ExecutionStore {
   
   // Reset
   reset: () => void;
+  
+  // DB sync helpers
+  getStepResultId: (stepIndex: number) => string | undefined;
+  dbStepResultIds: string[];
 }
 
 export const useExecutionStore = create<ExecutionStore>((set, get) => ({
@@ -96,6 +108,7 @@ export const useExecutionStore = create<ExecutionStore>((set, get) => ({
   isTimerRunning: false,
   showDefectPrompt: false,
   defectPromptStepIndex: null,
+  dbStepResultIds: [],
   
   initSession: (testCaseId, testCaseTitle, steps) => {
     const stepResults: StepResult[] = steps.map((_, i) => ({
@@ -124,7 +137,52 @@ export const useExecutionStore = create<ExecutionStore>((set, get) => ({
       isTimerRunning: true,
       showDefectPrompt: false,
       defectPromptStepIndex: null,
+      dbStepResultIds: [],
     });
+  },
+
+  initSessionFromDb: (runId, testCaseId, testCaseKey, testCaseTitle, steps, dbStepResults) => {
+    const stepResults: StepResult[] = steps.map((step, i) => {
+      const dbResult = dbStepResults[i];
+      return {
+        stepOrder: i,
+        status: dbResult?.status || 'pending' as StepStatus,
+        evidence: [],
+        note: dbResult?.actualResult,
+      };
+    });
+
+    // Find first pending step to resume from
+    const firstPendingIndex = steps.findIndex(s => s.status === 'pending');
+    const resumeIndex = firstPendingIndex >= 0 ? firstPendingIndex : 0;
+
+    set({
+      session: {
+        runId,
+        testCaseId,
+        testCaseTitle,
+        currentStepIndex: resumeIndex,
+        startedAt: new Date(),
+        elapsedSeconds: 0,
+        stepResults,
+        evidence: [],
+        notes: '',
+        defects: [],
+      },
+      steps,
+      currentStepIndex: resumeIndex,
+      isComplete: steps.every(s => s.status !== 'pending'),
+      elapsedSeconds: 0,
+      isTimerRunning: true,
+      showDefectPrompt: false,
+      defectPromptStepIndex: null,
+      dbStepResultIds: dbStepResults.map(r => r.stepResultId),
+    });
+  },
+
+  getStepResultId: (stepIndex) => {
+    const { dbStepResultIds } = get();
+    return dbStepResultIds[stepIndex];
   },
   
   markStep: (status) => {

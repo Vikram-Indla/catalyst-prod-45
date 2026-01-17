@@ -1,6 +1,7 @@
 /**
  * TestExecutionPage - Step Focus Mode for executing test cases
  * A focused, Typeform-style one-step-at-a-time experience
+ * Now wired to Supabase for real data persistence
  */
 
 import { useEffect, useState, useCallback } from 'react';
@@ -10,6 +11,7 @@ import { motion } from 'framer-motion';
 import { useExecutionStore } from './stores/executionStore';
 import { useTimer } from './hooks/useTimer';
 import { useStepNavigation } from './hooks/useStepNavigation';
+import { useExecutionSession, useUpdateStepResult, useCompleteExecution, useSaveExecutionProgress } from './hooks/useExecutionSession';
 import { ExecutionHeader } from './components/ExecutionHeader';
 import { StepView } from './components/StepView';
 import { CompleteView } from './components/CompleteView';
@@ -18,15 +20,17 @@ import { DefectPrompt } from './components/DefectPrompt';
 import { NoteModal } from './components/Modals/NoteModal';
 import { ExitModal } from './components/Modals/ExitModal';
 import { LogDefectModal } from '@/components/releases/test-execution/LogDefectModal';
-import {
-  mockExecutionTestCase,
-  mockExecutionSteps,
-  mockCycleTestCases,
-} from '@/data/testExecutionData';
+import { Loader2 } from 'lucide-react';
 
 export default function TestExecutionFocusPage() {
-  const { cycleId, testCaseId } = useParams();
+  const { cycleId, runId } = useParams();
   const navigate = useNavigate();
+  
+  // Fetch session from Supabase
+  const { data: sessionData, isLoading, error } = useExecutionSession(runId);
+  const updateStepMutation = useUpdateStepResult();
+  const completeExecutionMutation = useCompleteExecution();
+  const saveProgressMutation = useSaveExecutionProgress();
   
   // Store
   const {
@@ -35,7 +39,6 @@ export default function TestExecutionFocusPage() {
     currentStepIndex,
     isComplete,
     showDefectPrompt,
-    initSession,
     markStep,
     skipStep,
     addNote,
@@ -43,6 +46,8 @@ export default function TestExecutionFocusPage() {
     removeEvidence,
     dismissDefectPrompt,
     reset,
+    getStepResultId,
+    elapsedSeconds,
   } = useExecutionStore();
   
   // Hooks
@@ -54,25 +59,25 @@ export default function TestExecutionFocusPage() {
   const [exitModalOpen, setExitModalOpen] = useState(false);
   const [defectModalOpen, setDefectModalOpen] = useState(false);
   
-  // Initialize session
+  // Cleanup on unmount
   useEffect(() => {
-    const stepsDisplay = mockExecutionSteps.map((s, i) => ({
-      id: s.id,
-      number: i + 1,
-      title: `Step ${i + 1}`,
-      action: s.action,
-      expected: s.expectedResult,
-      status: 'pending' as const,
-    }));
-    
-    initSession(
-      mockExecutionTestCase.id,
-      mockExecutionTestCase.title,
-      stepsDisplay
-    );
-    
     return () => reset();
-  }, [testCaseId, initSession, reset]);
+  }, [reset]);
+
+  // Sync step changes to Supabase
+  const handleMarkStep = useCallback((status: 'passed' | 'failed' | 'blocked') => {
+    markStep(status);
+    
+    // Persist to Supabase
+    const stepResultId = getStepResultId(currentStepIndex);
+    if (stepResultId && runId) {
+      updateStepMutation.mutate({
+        stepResultId,
+        runId,
+        status,
+      });
+    }
+  }, [markStep, getStepResultId, currentStepIndex, runId, updateStepMutation]);
   
   // Current step data
   const currentStep = steps[currentStepIndex];
