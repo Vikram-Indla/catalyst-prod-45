@@ -1,0 +1,755 @@
+/**
+ * Command Center - Executive Dashboard
+ * Based on 9.8 Specification
+ * 
+ * Features:
+ * - KPI Overview with trend indicators
+ * - Release Health cards with progress rings
+ * - Test Progress stacked bar chart
+ * - Defect Trends line chart
+ * - Quality Gates status
+ * - Activity Feed
+ * - Team Performance
+ * - Upcoming Milestones
+ * - Auto-refresh (2 min default)
+ */
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { 
+  RefreshCw, Download, ChevronDown, Settings,
+  TestTube2, CheckCircle2, Bug, AlertTriangle,
+  TrendingUp, TrendingDown, Minus,
+  Calendar, Clock, User, MessageSquare,
+  Shield, Target, Users, Flag
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+import { CATALYST_V5 } from '@/lib/catalyst-colors';
+import { toast } from 'sonner';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, Legend, Area, AreaChart
+} from 'recharts';
+
+// ============================================
+// MOCK DATA
+// ============================================
+const mockKPIs = [
+  {
+    id: 'total_tests',
+    label: 'Total Tests',
+    value: 1284,
+    formattedValue: '1,284',
+    trend: { direction: 'up' as const, percentage: 12, isPositive: true },
+    color: 'primary' as const,
+    icon: TestTube2,
+  },
+  {
+    id: 'pass_rate',
+    label: 'Pass Rate',
+    value: 87.4,
+    formattedValue: '87.4%',
+    trend: { direction: 'up' as const, percentage: 3.2, isPositive: true },
+    color: 'teal' as const,
+    icon: CheckCircle2,
+  },
+  {
+    id: 'open_defects',
+    label: 'Open Defects',
+    value: 47,
+    formattedValue: '47',
+    trend: { direction: 'down' as const, percentage: 8, isPositive: true },
+    color: 'warning' as const,
+    icon: Bug,
+  },
+  {
+    id: 'blocked_tests',
+    label: 'Blocked Tests',
+    value: 23,
+    formattedValue: '23',
+    trend: { direction: 'up' as const, percentage: 5, isPositive: false },
+    color: 'danger' as const,
+    icon: AlertTriangle,
+  },
+];
+
+const mockReleases = [
+  {
+    id: '1',
+    name: 'Release 2026.Q1',
+    version: 'v2.4.0',
+    product: 'Catalyst Platform',
+    sprint: 'Sprint 24.1',
+    dueDate: '2026-02-15',
+    healthScore: 92,
+    healthStatus: 'healthy' as const,
+    passed: 156,
+    failed: 8,
+    blocked: 4,
+    notRun: 32,
+    total: 200,
+    passRate: 92,
+  },
+  {
+    id: '2',
+    name: 'Hotfix 2.3.5',
+    version: 'v2.3.5',
+    product: 'Catalyst Platform',
+    sprint: 'Sprint 24.1',
+    dueDate: '2026-01-20',
+    healthScore: 68,
+    healthStatus: 'at-risk' as const,
+    passed: 42,
+    failed: 12,
+    blocked: 6,
+    notRun: 15,
+    total: 75,
+    passRate: 68,
+  },
+  {
+    id: '3',
+    name: 'API Gateway 1.2',
+    version: 'v1.2.0',
+    product: 'Infrastructure',
+    sprint: 'Sprint 24.2',
+    dueDate: '2026-02-28',
+    healthScore: 45,
+    healthStatus: 'critical' as const,
+    passed: 28,
+    failed: 22,
+    blocked: 8,
+    notRun: 42,
+    total: 100,
+    passRate: 45,
+  },
+];
+
+const mockSprintProgress = [
+  { sprint: 'S23.8', passed: 85, failed: 8, blocked: 3, notRun: 4 },
+  { sprint: 'S23.9', passed: 78, failed: 12, blocked: 5, notRun: 5 },
+  { sprint: 'S23.10', passed: 82, failed: 10, blocked: 4, notRun: 4 },
+  { sprint: 'S23.11', passed: 88, failed: 6, blocked: 2, notRun: 4 },
+  { sprint: 'S24.1', passed: 72, failed: 14, blocked: 6, notRun: 8 },
+  { sprint: 'S24.2', passed: 65, failed: 10, blocked: 5, notRun: 20 },
+];
+
+const mockDefectTrends = [
+  { date: 'Jan 1', opened: 8, closed: 5 },
+  { date: 'Jan 5', opened: 12, closed: 10 },
+  { date: 'Jan 9', opened: 6, closed: 8 },
+  { date: 'Jan 13', opened: 15, closed: 12 },
+  { date: 'Jan 17', opened: 9, closed: 14 },
+];
+
+const mockQualityGates = [
+  { id: '1', name: 'Pass Rate', status: 'passed' as const, currentValue: '87.4%', threshold: '≥ 85%' },
+  { id: '2', name: 'Critical Defects', status: 'passed' as const, currentValue: '0', threshold: '= 0' },
+  { id: '3', name: 'Code Coverage', status: 'warning' as const, currentValue: '78%', threshold: '≥ 80%' },
+  { id: '4', name: 'Blocked Tests', status: 'failed' as const, currentValue: '23', threshold: '≤ 10' },
+  { id: '5', name: 'Test Execution', status: 'passed' as const, currentValue: '92%', threshold: '≥ 90%' },
+];
+
+const mockActivities = [
+  { id: '1', type: 'passed' as const, user: 'Ahmed K.', action: 'executed', subject: 'TC-1026', title: 'Login Authentication Flow', time: '2 min ago' },
+  { id: '2', type: 'failed' as const, user: 'Sara M.', action: 'executed', subject: 'TC-892', title: 'Payment Gateway Integration', time: '5 min ago' },
+  { id: '3', type: 'defect' as const, user: 'Omar H.', action: 'created', subject: 'DEF-234', title: 'Session timeout not working', time: '12 min ago' },
+  { id: '4', type: 'comment' as const, user: 'Fatima A.', action: 'commented on', subject: 'TC-1045', title: 'API Response validation', time: '18 min ago' },
+  { id: '5', type: 'passed' as const, user: 'Khalid R.', action: 'executed', subject: 'TC-1102', title: 'User Profile Update', time: '25 min ago' },
+];
+
+const mockTeamPerformance = [
+  { id: '1', name: 'Ahmed Khan', initials: 'AK', role: 'Senior QA', testsToday: 24, passRate: 92, color: 'blue' as const },
+  { id: '2', name: 'Sara Mohammed', initials: 'SM', role: 'QA Lead', testsToday: 18, passRate: 88, color: 'teal' as const },
+  { id: '3', name: 'Omar Hassan', initials: 'OH', role: 'QA Engineer', testsToday: 31, passRate: 85, color: 'purple' as const },
+  { id: '4', name: 'Fatima Ali', initials: 'FA', role: 'QA Engineer', testsToday: 22, passRate: 91, color: 'orange' as const },
+];
+
+const mockMilestones = [
+  { id: '1', title: 'Release 2026.Q1 Freeze', dueDate: '2026-01-25', daysRemaining: 8, urgency: 'normal' as const, related: 'Release 2026.Q1' },
+  { id: '2', title: 'Hotfix 2.3.5 Deployment', dueDate: '2026-01-20', daysRemaining: 3, urgency: 'warning' as const, related: 'Hotfix 2.3.5' },
+  { id: '3', title: 'API Gateway UAT Complete', dueDate: '2026-01-18', daysRemaining: 1, urgency: 'danger' as const, related: 'API Gateway 1.2' },
+];
+
+// ============================================
+// HELPER COMPONENTS
+// ============================================
+
+// KPI Card
+function KPICard({ kpi, index }: { kpi: typeof mockKPIs[0]; index: number }) {
+  const colorMap = {
+    primary: { border: CATALYST_V5.primary, bg: CATALYST_V5.primaryLighter, icon: CATALYST_V5.primary },
+    teal: { border: CATALYST_V5.teal, bg: CATALYST_V5.tealLighter, icon: CATALYST_V5.teal },
+    warning: { border: CATALYST_V5.warning, bg: CATALYST_V5.warningLighter, icon: CATALYST_V5.warning },
+    danger: { border: CATALYST_V5.danger, bg: CATALYST_V5.dangerLighter, icon: CATALYST_V5.danger },
+  };
+  
+  const colors = colorMap[kpi.color];
+  const Icon = kpi.icon;
+  const TrendIcon = kpi.trend.direction === 'up' ? TrendingUp : kpi.trend.direction === 'down' ? TrendingDown : Minus;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+      className="relative bg-card border rounded-xl p-5 overflow-hidden"
+    >
+      {/* Top color accent */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-1"
+        style={{ backgroundColor: colors.border }}
+      />
+      
+      <div className="flex items-start justify-between">
+        <div 
+          className="w-11 h-11 rounded-[10px] flex items-center justify-center"
+          style={{ backgroundColor: colors.bg }}
+        >
+          <Icon className="w-5 h-5" style={{ color: colors.icon }} />
+        </div>
+        
+        <div 
+          className={cn(
+            "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md",
+            kpi.trend.isPositive 
+              ? "bg-[#f0fdfa] text-[#0d9488]" 
+              : "bg-[#fef2f2] text-[#ef4444]"
+          )}
+        >
+          <TrendIcon className="w-3 h-3" />
+          {kpi.trend.percentage}%
+        </div>
+      </div>
+      
+      <div className="mt-4">
+        <div className="text-[32px] font-bold text-foreground leading-none mb-1">
+          {kpi.formattedValue}
+        </div>
+        <div className="text-[13px] text-muted-foreground">{kpi.label}</div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Progress Ring for Release Health
+function ProgressRing({ percentage, status, size = 48 }: { percentage: number; status: 'healthy' | 'at-risk' | 'critical'; size?: number }) {
+  const colorMap = {
+    healthy: CATALYST_V5.teal,
+    'at-risk': CATALYST_V5.warning,
+    critical: CATALYST_V5.danger,
+  };
+  const color = colorMap[status];
+  const strokeWidth = 5;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percentage / 100) * circumference;
+  
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        {/* Background circle */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="#e2e8f0"
+          strokeWidth={strokeWidth}
+        />
+        {/* Progress circle */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <div 
+        className="absolute inset-0 flex items-center justify-center text-xs font-bold"
+        style={{ color }}
+      >
+        {percentage}%
+      </div>
+    </div>
+  );
+}
+
+// Release Health Item
+function ReleaseHealthItem({ release, onClick }: { release: typeof mockReleases[0]; onClick: () => void }) {
+  return (
+    <div 
+      className="flex items-center gap-4 p-4 bg-muted/50 rounded-[10px] cursor-pointer hover:bg-muted/80 transition-colors"
+      onClick={onClick}
+    >
+      <ProgressRing percentage={release.passRate} status={release.healthStatus} />
+      
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-sm font-semibold text-foreground truncate">{release.name}</span>
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">{release.version}</Badge>
+        </div>
+        <div className="text-xs text-muted-foreground">{release.product} • {release.sprint}</div>
+      </div>
+      
+      <div className="flex items-center gap-2">
+        <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[#f0fdfa] text-[#0d9488]">
+          {release.passed} Passed
+        </span>
+        <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[#fef2f2] text-[#ef4444]">
+          {release.failed} Failed
+        </span>
+        {release.blocked > 0 && (
+          <span className="px-2.5 py-1 text-[11px] font-semibold rounded-md bg-[#fef3c7] text-[#d97706]">
+            {release.blocked} Blocked
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Quality Gate Item
+function QualityGateItem({ gate }: { gate: typeof mockQualityGates[0] }) {
+  const statusConfig = {
+    passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
+    warning: { bg: 'bg-[#fef3c7]', text: 'text-[#d97706]', icon: AlertTriangle },
+    failed: { bg: 'bg-[#fef2f2]', text: 'text-[#ef4444]', icon: AlertTriangle },
+  };
+  const config = statusConfig[gate.status];
+  const Icon = config.icon;
+  
+  return (
+    <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+      <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', config.bg)}>
+        <Icon className={cn('w-4 h-4', config.text)} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-foreground">{gate.name}</div>
+        <div className="text-xs text-muted-foreground">{gate.threshold}</div>
+      </div>
+      <div className={cn('text-sm font-semibold', config.text)}>{gate.currentValue}</div>
+    </div>
+  );
+}
+
+// Activity Item
+function ActivityItem({ activity }: { activity: typeof mockActivities[0] }) {
+  const typeConfig = {
+    passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
+    failed: { bg: 'bg-[#fef2f2]', text: 'text-[#ef4444]', icon: AlertTriangle },
+    defect: { bg: 'bg-[#fef3c7]', text: 'text-[#d97706]', icon: Bug },
+    comment: { bg: 'bg-[#eff6ff]', text: 'text-[#2563eb]', icon: MessageSquare },
+  };
+  const config = typeConfig[activity.type];
+  const Icon = config.icon;
+  
+  return (
+    <div className="flex gap-3 py-3.5 border-b border-border last:border-0">
+      <div className={cn('w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0', config.bg)}>
+        <Icon className={cn('w-4 h-4', config.text)} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-[13px] text-foreground leading-relaxed">
+          <span className="font-semibold">{activity.user}</span>
+          {' '}{activity.action}{' '}
+          <span className="text-primary font-medium cursor-pointer hover:underline">{activity.subject}</span>
+        </div>
+        <div className="text-xs text-muted-foreground truncate">{activity.title}</div>
+        <div className="text-[11px] text-muted-foreground/70 mt-1">{activity.time}</div>
+      </div>
+    </div>
+  );
+}
+
+// Team Member Item
+function TeamMemberItem({ member }: { member: typeof mockTeamPerformance[0] }) {
+  const colorMap = {
+    blue: CATALYST_V5.primary,
+    teal: CATALYST_V5.teal,
+    purple: '#8b5cf6',
+    orange: CATALYST_V5.warning,
+  };
+  
+  return (
+    <div className="flex items-center gap-3 py-2">
+      <div 
+        className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-semibold"
+        style={{ backgroundColor: colorMap[member.color] }}
+      >
+        {member.initials}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-foreground">{member.name}</div>
+        <div className="text-xs text-muted-foreground">{member.role}</div>
+      </div>
+      <div className="text-right">
+        <div className="text-sm font-semibold text-foreground">{member.testsToday} tests</div>
+        <div className="text-xs text-muted-foreground">{member.passRate}% pass</div>
+      </div>
+    </div>
+  );
+}
+
+// Milestone Item
+function MilestoneItem({ milestone }: { milestone: typeof mockMilestones[0] }) {
+  const urgencyConfig = {
+    normal: { border: CATALYST_V5.primary, text: 'text-foreground' },
+    warning: { border: CATALYST_V5.warning, text: 'text-[#d97706]' },
+    danger: { border: CATALYST_V5.danger, text: 'text-[#ef4444]' },
+  };
+  const config = urgencyConfig[milestone.urgency];
+  const date = new Date(milestone.dueDate);
+  
+  return (
+    <div 
+      className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
+      style={{ borderLeft: `3px solid ${config.border}` }}
+    >
+      <div className="text-center px-3 py-2 bg-card rounded-md min-w-[48px]">
+        <div className="text-lg font-bold text-foreground">{date.getDate()}</div>
+        <div className="text-[10px] font-semibold text-muted-foreground uppercase">
+          {date.toLocaleString('default', { month: 'short' })}
+        </div>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-foreground">{milestone.title}</div>
+        <div className="text-xs text-muted-foreground">{milestone.related}</div>
+      </div>
+      <div className={cn('text-xs font-semibold', config.text)}>
+        {milestone.daysRemaining === 1 ? 'Tomorrow' : 
+         milestone.daysRemaining < 0 ? 'Overdue' : 
+         `${milestone.daysRemaining} days`}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
+export default function CommandCenterPage() {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // Simulate initial load
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Auto-refresh every 2 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastUpdated(new Date());
+    }, 120000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setLastUpdated(new Date());
+      setIsRefreshing(false);
+      toast.success('Dashboard refreshed');
+    }, 800);
+  }, []);
+  
+  const handleExport = (format: 'pdf' | 'xlsx') => {
+    toast.success(`Exporting as ${format.toUpperCase()}...`);
+  };
+  
+  const getTimeAgo = () => {
+    const diffMs = Date.now() - lastUpdated.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return 'Just now';
+    if (diffMins === 1) return '1 min ago';
+    return `${diffMins} min ago`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background p-6 space-y-6">
+        <div className="grid grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+        </div>
+        <div className="grid grid-cols-3 gap-6">
+          <Skeleton className="h-80 rounded-xl col-span-2" />
+          <Skeleton className="h-80 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Page Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b bg-card">
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Command Center</h1>
+          <p className="text-sm text-muted-foreground">Executive overview of testing operations</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground">Last updated: {getTimeAgo()}</span>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+                <ChevronDown className="h-3 w-3 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleExport('pdf')}>Export as PDF</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('xlsx')}>Export as Excel</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={cn('h-4 w-4', isRefreshing && 'animate-spin')} />
+          </Button>
+        </div>
+      </div>
+      
+      {/* Dashboard Content */}
+      <div className="p-6 space-y-6">
+        {/* KPI Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {mockKPIs.map((kpi, i) => (
+            <KPICard key={kpi.id} kpi={kpi} index={i} />
+          ))}
+        </div>
+        
+        {/* Main Grid: 2fr : 1fr */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column (2fr) */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Release Health */}
+            <Card>
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold">Release Health</CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs text-primary"
+                    onClick={() => navigate('/releases')}
+                  >
+                    View All
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {mockReleases.map(release => (
+                  <ReleaseHealthItem 
+                    key={release.id} 
+                    release={release} 
+                    onClick={() => navigate(`/releases/${release.id}/dashboard`)}
+                  />
+                ))}
+              </CardContent>
+            </Card>
+            
+            {/* Test Progress */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-sm font-semibold">Test Progress by Sprint</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={mockSprintProgress} barCategoryGap="20%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                      <XAxis 
+                        dataKey="sprint" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fontSize: 11, fill: '#94a3b8' }}
+                      />
+                      <YAxis 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fontSize: 11, fill: '#94a3b8' }}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <Tooltip 
+                        contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                        formatter={(value: number, name: string) => [`${value}%`, name.charAt(0).toUpperCase() + name.slice(1)]}
+                      />
+                      <Bar dataKey="passed" stackId="a" fill={CATALYST_V5.teal} radius={[0, 0, 0, 0]} />
+                      <Bar dataKey="failed" stackId="a" fill={CATALYST_V5.danger} radius={[0, 0, 0, 0]} />
+                      <Bar dataKey="blocked" stackId="a" fill={CATALYST_V5.warning} radius={[0, 0, 0, 0]} />
+                      <Bar dataKey="notRun" stackId="a" fill="#e2e8f0" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex items-center justify-center gap-6 mt-4 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: CATALYST_V5.teal }} />
+                    Passed
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: CATALYST_V5.danger }} />
+                    Failed
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: CATALYST_V5.warning }} />
+                    Blocked
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#e2e8f0]" />
+                    Not Run
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Defect Trends */}
+            <Card>
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold">Defect Trends (30 days)</CardTitle>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: CATALYST_V5.danger }} />
+                      Opened
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: CATALYST_V5.teal }} />
+                      Closed
+                    </span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[180px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={mockDefectTrends}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fontSize: 11, fill: '#94a3b8' }}
+                      />
+                      <YAxis 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fontSize: 11, fill: '#94a3b8' }}
+                      />
+                      <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                      <Area 
+                        type="monotone" 
+                        dataKey="opened" 
+                        stroke={CATALYST_V5.danger} 
+                        fill="rgba(239, 68, 68, 0.1)" 
+                        strokeWidth={2}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="closed" 
+                        stroke={CATALYST_V5.teal} 
+                        fill="rgba(13, 148, 136, 0.1)" 
+                        strokeWidth={2}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Right Column (1fr) */}
+          <div className="space-y-6">
+            {/* Quality Gates */}
+            <Card>
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold">Quality Gates</CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs text-primary"
+                    onClick={() => navigate('/releases/quality-gates')}
+                  >
+                    View All
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {mockQualityGates.map(gate => (
+                  <QualityGateItem key={gate.id} gate={gate} />
+                ))}
+              </CardContent>
+            </Card>
+            
+            {/* Activity Feed */}
+            <Card>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold">Recent Activity</CardTitle>
+                  <Button variant="ghost" size="sm" className="text-xs text-primary">
+                    View All
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="px-4">
+                {mockActivities.map(activity => (
+                  <ActivityItem key={activity.id} activity={activity} />
+                ))}
+              </CardContent>
+            </Card>
+            
+            {/* Team Performance */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-sm font-semibold">Team Performance (Today)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1">
+                {mockTeamPerformance.map(member => (
+                  <TeamMemberItem key={member.id} member={member} />
+                ))}
+              </CardContent>
+            </Card>
+            
+            {/* Upcoming Milestones */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-sm font-semibold">Upcoming Milestones</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {mockMilestones.map(milestone => (
+                  <MilestoneItem key={milestone.id} milestone={milestone} />
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

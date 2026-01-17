@@ -100,7 +100,7 @@ import Sprints from "./pages/Sprints";
 import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
-import ReleasesCommandCenter from "./pages/releases/CommandCenter";
+import ReleasesCommandCenter from "./pages/releases/CommandCenterPage";
 import ReleasesPlaceholderPage from "./pages/releases/PlaceholderPage";
 import AllReleasesPage from "./pages/releases/AllReleasesPage";
 import ReleasesTestCasesPage from "./pages/releases/TestCasesPage";
