@@ -4,7 +4,7 @@
  */
 
 import { ReactNode, useEffect, useCallback } from 'react';
-import { X, Download, Clock, FileText, LayoutGrid, Table2, CalendarDays, Briefcase, Users, BarChart3 } from 'lucide-react';
+import { X, Download, Clock, FileText, Table2, CalendarDays, Briefcase, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/brand/Logo';
 import { cn } from '@/lib/utils';
@@ -57,8 +57,18 @@ export function CapacityPresentationShell({
     }
   }, [primaryView, resourceView]);
 
-  // Tab configuration matching SleekCapacityHeader
+  // Tab configuration matching SleekCapacityHeader - exact same order
   const tabs = [
+    { 
+      id: 'utilization', 
+      label: 'Utilization', 
+      icon: BarChart3,
+      isActive: primaryView === 'resources' && resourceView === 'heatmap',
+      onClick: () => {
+        setPrimaryView('resources');
+        setResourceView('heatmap');
+      }
+    },
     { 
       id: 'resources', 
       label: 'Resources', 
@@ -75,26 +85,6 @@ export function CapacityPresentationShell({
       icon: Briefcase,
       isActive: primaryView === 'projects',
       onClick: () => setPrimaryView('projects')
-    },
-    { 
-      id: 'allocations', 
-      label: 'Allocations', 
-      icon: LayoutGrid,
-      isActive: primaryView === 'resources' && resourceView === 'cards',
-      onClick: () => {
-        setPrimaryView('resources');
-        setResourceView('cards');
-      }
-    },
-    { 
-      id: 'utilization', 
-      label: 'Utilization', 
-      icon: BarChart3,
-      isActive: primaryView === 'resources' && resourceView === 'heatmap',
-      onClick: () => {
-        setPrimaryView('resources');
-        setResourceView('heatmap');
-      }
     },
     { 
       id: 'gantt', 
