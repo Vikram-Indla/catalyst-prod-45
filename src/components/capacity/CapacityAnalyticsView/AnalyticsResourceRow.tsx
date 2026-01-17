@@ -51,6 +51,9 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
           </div>
           <div className="text-xs text-[#737373] dark:text-gray-400">
             {resource.role_name || 'No role'}
+            {resource.vendor?.name && (
+              <span className="text-muted-foreground"> - {resource.vendor.name}</span>
+            )}
           </div>
           <div className="text-xs text-[#2563eb] dark:text-blue-400 font-medium">
             {deptName}

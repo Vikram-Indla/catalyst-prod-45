@@ -238,17 +238,16 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
         return { month, year: y, segments, isEnded: false, totalPercent };
       });
 
-      // Calculate committed utilization (average of committed allocations across months)
-      const committedMonths = monthCells.filter(m => !m.isEnded);
-      const committedPercent = committedMonths.length > 0
-        ? Math.round(
-            committedMonths.reduce((sum, m) => {
-              const committedSum = m.segments
-                .filter(s => s.status === 'committed')
-                .reduce((s, seg) => s + seg.percent, 0);
-              return sum + committedSum;
-            }, 0) / committedMonths.length
-          )
+      // Calculate current month's committed utilization
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1; // 1-indexed
+      const currentYear = now.getFullYear();
+      
+      const currentMonthCell = monthCells.find(m => m.month === currentMonth && m.year === currentYear);
+      const committedPercent = currentMonthCell && !currentMonthCell.isEnded
+        ? currentMonthCell.segments
+            .filter(s => s.status === 'committed')
+            .reduce((sum, seg) => sum + seg.percent, 0)
         : 0;
 
       return { resource, months: monthCells, committedPercent };
