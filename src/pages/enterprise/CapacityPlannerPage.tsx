@@ -3049,7 +3049,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 const leftPx = bar.leftOffset || 0;
                 const widthPx = bar.barWidth || (bar.span * columnWidth);
                 
-                // Committed = project color, Forecast = grey + dotted border
+                // Committed = project color, Forecast = transparent with dotted border
                 const isForecast = bar.alloc.status === 'forecast';
 
                 return (
@@ -3060,9 +3060,9 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                       top: 8 + idx * 32,
                       left: leftPx,
                       width: widthPx,
-                      backgroundColor: isForecast ? 'hsl(var(--muted))' : projectColor.bg,
-                      color: isForecast ? 'hsl(var(--foreground))' : projectColor.text,
-                      border: isForecast ? '3px dotted hsl(var(--foreground) / 0.35)' : 'none',
+                      backgroundColor: isForecast ? 'transparent' : projectColor.bg,
+                      color: isForecast ? '#6b7280' : projectColor.text,
+                      border: isForecast ? '2px dotted #9ca3af' : 'none',
                       boxSizing: 'border-box',
                       boxShadow: !isForecast ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
                     }}
