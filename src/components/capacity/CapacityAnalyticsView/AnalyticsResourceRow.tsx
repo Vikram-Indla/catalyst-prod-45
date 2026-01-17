@@ -31,11 +31,9 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   const badge = getLocationBadge();
   const deptName = resource.department?.name || 'BMC';
 
-  // Avatar styling - green for onsite, blue for others (matching Resources tab)
+  // Avatar styling (match Resources tab)
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-  const avatarBgClass = isOnsite ? 'bg-emerald-500' : 'bg-emerald-500';
-  const locLabel = isOnsite ? 'Onsite' : isOffshore ? 'Off-Shore' : resource.location?.name || '';
-  const locLabelClass = isOnsite ? 'text-emerald-600' : 'text-emerald-600';
+  const avatarBgClass = 'bg-emerald-500';
   
   // Country flag - resource.country is an object with id, name, code
   const countryCode = resource.country?.code;
@@ -92,23 +90,20 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
             </TooltipContent>
           </Tooltip>
           
-          {/* Name, Role, Location - matching reference layout */}
+          {/* Name, Role, Department - match original structure */}
           <div className="flex flex-col min-w-0">
-            {/* Name + online dot */}
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-sm text-foreground truncate">
-                {resource.name}
-              </span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+            <div className="font-semibold text-sm text-foreground truncate">
+              {resource.name}
             </div>
-            {/* Role */}
             <div className="text-xs text-muted-foreground">
               {resource.role_name || 'No role'}
             </div>
-            {/* Location label (colored) */}
-            <span className={cn("text-xs font-medium", locLabelClass)}>
-              {locLabel}
-            </span>
+            <div className="text-xs font-medium text-primary truncate">
+              {deptName}
+              {resource.vendor?.name && (
+                <span className="text-muted-foreground font-normal"> - {resource.vendor.name}</span>
+              )}
+            </div>
           </div>
         </div>
       </td>
