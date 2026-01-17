@@ -74,13 +74,14 @@ export function useCapacityData() {
         }
       });
       
-      // STEP 6: Fetch resource_allocations for current allocation
+      // STEP 6: Fetch resource_allocations for current allocation (committed only for utilization)
       const now = new Date().toISOString().split('T')[0];
       const { data: allocationsData } = await supabase
         .from('resource_allocations')
-        .select('resource_id, allocation_percent, start_date, end_date')
+        .select('resource_id, allocation_percent, start_date, end_date, status')
         .lte('start_date', now)
-        .gte('end_date', now);
+        .gte('end_date', now)
+        .eq('status', 'committed');
       
       // Calculate current allocation per resource_inventory ID
       const currentAllocationByResourceId = new Map<string, number>();
