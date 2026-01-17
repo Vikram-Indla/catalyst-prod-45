@@ -1,11 +1,12 @@
 /**
  * Analytics Data Hook - Fetches and transforms capacity data for V7 grid
+ * Aligned with use-capacity-heatmap-data.ts and useCapacityData.ts for consistency
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useMemo } from 'react';
-import type { AnalyticsResource, AnalyticsAllocation, CapacityRow, MonthCell, ViewScope, VIEW_MONTHS, MONTH_LABELS } from './types';
+import { useMemo, useEffect } from 'react';
+import type { AnalyticsResource, AnalyticsAllocation, CapacityRow, MonthCell, ViewScope } from './types';
 
 interface UseAnalyticsDataOptions {
   departmentFilter?: string;
@@ -14,25 +15,100 @@ interface UseAnalyticsDataOptions {
 }
 
 export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', year = 2026 }: UseAnalyticsDataOptions = {}) {
-  // Fetch resources from resource_inventory
+  const queryClient = useQueryClient();
+
+  // Fetch resources from resource_inventory with all related data
   const resourcesQuery = useQuery({
     queryKey: ['analytics-resources'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // STEP 1: Fetch all resources from resource_inventory (single source of truth)
+      const { data: resourceInventory, error: riError } = await supabase
         .from('resource_inventory')
-        .select(`
-          id, name, role_name, contract_end_date,
-          country:resource_countries(id, name, code),
-          vendor:resource_vendors(id, name),
-          location:resource_locations(id, name),
-          department:capacity_departments(id, name, color, sort_order)
-        `)
+        .select('*')
         .eq('is_active', true)
         .order('name');
       
-      if (error) throw error;
-      return data as unknown as AnalyticsResource[];
+      if (riError) throw riError;
+
+      // STEP 2: Fetch reference data in parallel
+      const [
+        { data: departments },
+        { data: resourceVendors },
+        { data: resourceCountries },
+        { data: resourceLocations },
+        { data: profiles },
+        { data: userProductRoles },
+        { data: productRoles },
+      ] = await Promise.all([
+        supabase.from('capacity_departments').select('id, name, color, sort_order').eq('is_active', true),
+        supabase.from('resource_vendors').select('id, name').eq('is_active', true),
+        supabase.from('resource_countries').select('id, name, code').eq('is_active', true),
+        supabase.from('resource_locations').select('id, name').eq('is_active', true),
+        supabase.from('profiles').select('id, full_name, email, department_id, contract_end_date, country, country_code, country_flag_svg_url, location, vendor, avatar_url'),
+        supabase.from('user_product_roles').select('user_id, role_id'),
+        supabase.from('product_roles').select('id, name'),
+      ]);
+
+      // Build lookup maps
+      const deptMap = new Map(departments?.map(d => [d.id, d]) || []);
+      const vendorMap = new Map(resourceVendors?.map(v => [v.id, v.name]) || []);
+      const countryMap = new Map(resourceCountries?.map(c => [c.id, { id: c.id, name: c.name, code: c.code }]) || []);
+      const locationMap = new Map(resourceLocations?.map(l => [l.id, { id: l.id, name: l.name }]) || []);
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const profileByName = new Map(profiles?.map(p => [p.full_name?.toLowerCase(), p]) || []);
+
+      // Build role lookup
+      const roleIdToName = new Map<string, string>(
+        (productRoles || []).map((r: any) => [r.id, r.name])
+      );
+
+      const userRoleMap = new Map<string, string>();
+      (userProductRoles || []).forEach((upr: any) => {
+        const roleName = roleIdToName.get(upr.role_id);
+        if (roleName && !userRoleMap.has(upr.user_id)) {
+          userRoleMap.set(upr.user_id, roleName);
+        }
+      });
+
+      // STEP 3: Map resource_inventory to AnalyticsResource format
+      return (resourceInventory || []).map((ri: any) => {
+        // Find linked profile by profile_id or by name fallback
+        const profile = ri.profile_id 
+          ? profileMap.get(ri.profile_id) 
+          : profileByName.get(ri.name?.toLowerCase());
+
+        // Get department from resource_inventory (source of truth) with fallback
+        const departmentId = ri.department_id || profile?.department_id;
+        const department = departmentId ? deptMap.get(departmentId) : null;
+
+        // Get role from product_roles table with fallback to resource_inventory
+        const profileId = ri.profile_id || profile?.id;
+        const roleFromRolesTable = profileId ? userRoleMap.get(profileId) : undefined;
+        const roleName = ri.role_name || roleFromRolesTable || 'No role';
+
+        // Get country and location from resource_inventory reference tables
+        const countryData = ri.country_id ? countryMap.get(ri.country_id) : null;
+        const locationData = ri.location_id ? locationMap.get(ri.location_id) : null;
+        const vendorName = ri.vendor_id ? vendorMap.get(ri.vendor_id) : ri.vendor_name;
+
+        return {
+          id: ri.id,
+          name: ri.name || 'Unknown',
+          role_name: roleName,
+          vendor: vendorName ? { id: ri.vendor_id || '', name: vendorName } : null,
+          location: locationData,
+          department: department ? {
+            id: department.id,
+            name: department.name,
+            color: department.color,
+            sort_order: department.sort_order,
+          } : null,
+          contract_end_date: ri.contract_end_date,
+          country: countryData,
+        } as AnalyticsResource;
+      });
     },
+    staleTime: 30000,
   });
 
   // Determine date range based on view scope
@@ -54,28 +130,45 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
     };
   }, [months]);
 
-  // Fetch allocations for the date range
+  // Fetch allocations for the date range with assignment details
   const allocationsQuery = useQuery({
     queryKey: ['analytics-allocations', dateRange.start, dateRange.end],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch allocations with their assignments
+      const { data: allocationsData, error } = await supabase
         .from('resource_allocations')
         .select(`
-          id, resource_id, allocation_percent, start_date, end_date,
-          assignment:resource_assignments(id, name, color)
+          id, 
+          resource_id, 
+          assignment_id,
+          allocation_percent, 
+          start_date, 
+          end_date,
+          resource_assignments(id, name, color)
         `)
         .gte('end_date', dateRange.start)
         .lte('start_date', dateRange.end)
         .order('start_date');
 
       if (error) throw error;
-      return (data || []).map(a => ({
-        ...a,
+
+      return (allocationsData || []).map((a: any) => ({
+        id: a.id,
+        resource_id: a.resource_id,
+        assignment_id: a.assignment_id || a.resource_assignments?.id || '',
+        allocation_percent: a.allocation_percent,
+        start_date: a.start_date,
+        end_date: a.end_date,
         status: 'committed' as const,
-        assignment_id: (a.assignment as any)?.id || '',
-      })) as unknown as AnalyticsAllocation[];
+        assignment: a.resource_assignments ? {
+          id: a.resource_assignments.id,
+          name: a.resource_assignments.name,
+          color: a.resource_assignments.color || 'primary',
+        } : null,
+      })) as AnalyticsAllocation[];
     },
     enabled: !!dateRange.start,
+    staleTime: 30000,
   });
 
   // Build capacity rows
@@ -91,10 +184,13 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
       );
     }
 
-    // Exclude management roles
+    // Exclude management roles (same logic as other capacity views)
     filteredResources = filteredResources.filter(r => {
       const roleLower = r.role_name?.toLowerCase() || '';
-      return !roleLower.includes('management') && !roleLower.includes('super admin') && roleLower !== 'admin';
+      return !roleLower.includes('management') && 
+             !roleLower.includes('super admin') && 
+             !roleLower.includes('superadmin') &&
+             roleLower !== 'admin';
     });
 
     // Group allocations by resource_id
@@ -129,7 +225,7 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
           })
           .map((a) => ({
             assignment: {
-              id: a.assignment?.id || '',
+              id: a.assignment?.id || a.assignment_id || '',
               name: a.assignment?.name || 'Unassigned',
               color: a.assignment?.color || 'primary',
             },
@@ -148,17 +244,13 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
 
   // Compute summary stats
   const summary = useMemo(() => {
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
-
     let available = 0;
     let atCapacity = 0;
     let overAllocated = 0;
 
     capacityRows.forEach(row => {
-      // Find current month cell (or first month if viewing future)
-      const currentCell = row.months.find(m => m.month === 1 && m.year === year) || row.months[0];
+      // Find first month cell (representing current state)
+      const currentCell = row.months[0];
       if (!currentCell || currentCell.isEnded) return;
 
       if (currentCell.totalPercent === 0) {
@@ -171,7 +263,35 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
     });
 
     return { available, atCapacity, overAllocated, total: capacityRows.length };
-  }, [capacityRows, year]);
+  }, [capacityRows]);
+
+  // Real-time subscriptions - aligned with useCapacityData and use-capacity-heatmap-data
+  useEffect(() => {
+    const invalidateAll = () => {
+      queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
+      queryClient.invalidateQueries({ queryKey: ['analytics-allocations'] });
+    };
+
+    const channel = supabase
+      .channel('analytics-realtime-sync')
+      // Core resource tables
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, invalidateAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, invalidateAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_allocations' }, invalidateAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_product_roles' }, invalidateAll)
+      // Reference tables
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_departments' }, invalidateAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_vendors' }, invalidateAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_countries' }, invalidateAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_locations' }, invalidateAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_assignments' }, invalidateAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'product_roles' }, invalidateAll)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   return {
     rows: capacityRows,
