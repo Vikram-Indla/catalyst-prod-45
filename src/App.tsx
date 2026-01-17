@@ -112,6 +112,7 @@ import MyTestScopePage from "./pages/releases/MyTestScopePage";
 import CalendarPage from "./pages/releases/CalendarPage";
 import ComparePage from "./pages/releases/ComparePage";
 import ReleaseDashboardV5Page from "./pages/releases/ReleaseDashboardV5Page";
+import ReleaseDashboardOverviewPage from "./pages/releases/ReleaseDashboardOverviewPage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
 import ReleasesCycleCommandCenter from "./pages/releases/CycleCommandCenter";
 import ReleasesCycleTemplatesPage from "./pages/releases/CycleTemplatesPage";
@@ -782,7 +783,7 @@ const App = () => (
               <Route path="/work-items/subtasks" element={<Subtasks />} />
               <Route path="/releases" element={<Navigate to="/releases/command-center" replace />} />
               <Route path="/releases/command-center" element={<ReleasesCommandCenter />} />
-              <Route path="/releases/dashboard" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/dashboard" element={<ReleaseDashboardOverviewPage />} />
               <Route path="/releases/my-scope" element={<MyTestScopePage />} />
               <Route path="/releases/all" element={<AllReleasesPage />} />
               <Route path="/releases/calendar" element={<CalendarPage />} />
