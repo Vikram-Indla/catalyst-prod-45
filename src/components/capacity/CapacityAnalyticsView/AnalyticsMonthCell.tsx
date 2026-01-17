@@ -109,6 +109,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
     return segments.map((seg, idx) => {
       const wsColor = getWorkstreamColor(seg.assignment.name);
       const width = `${(seg.percent / totalWidth) * 100}%`;
+      const isForecast = seg.status === 'forecast';
       
       // Check if this segment is the "extra" over 100%
       const isExtraOver = idx > 0 && segments.slice(0, idx).reduce((s, x) => s + x.percent, 0) >= 100;
@@ -124,6 +125,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
           style={{ 
             width,
             backgroundColor: isExtraOver ? undefined : wsColor.hex,
+            opacity: isForecast ? 0.4 : 1,
             backgroundImage: isExtraOver 
               ? 'repeating-linear-gradient(135deg, transparent, transparent 3px, rgba(244,63,94,0.3) 3px, rgba(244,63,94,0.3) 6px)' 
               : undefined,
