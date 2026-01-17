@@ -15,6 +15,8 @@ import { ScopeTabs } from './ScopeTabs';
 import { ScopeFilterBar } from './ScopeFilterBar';
 import { TestsTable } from './TestsTable';
 import { DefectsPanel } from './DefectsPanel';
+import { IncidentsPanel } from './IncidentsPanel';
+import { TraceabilityPanel } from './TraceabilityPanel';
 import { WorkloadPanel } from './WorkloadPanel';
 import type { TestScopeTab, TestScopeFilters } from '../types';
 
@@ -37,17 +39,14 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   });
 
   const handleExport = useCallback(() => {
-    // TODO: Implement export functionality
     console.log('Export clicked');
   }, []);
 
   const handleExecuteAll = useCallback(() => {
-    // TODO: Implement execute all functionality
     console.log('Execute all clicked');
   }, []);
 
   const handleStartTest = useCallback((scopeId: string) => {
-    // Navigate to test execution
     const test = data?.tests.find(t => t.scopeId === scopeId);
     if (test) {
       navigate(`/releases/execute/${test.cycleId}/${test.id}`);
@@ -55,7 +54,6 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   }, [navigate, data?.tests]);
 
   const handleSkipRecommendation = useCallback(() => {
-    // TODO: Skip to next recommendation
     console.log('Skip recommendation');
   }, []);
 
@@ -103,7 +101,6 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Header */}
       <ScopeHeader
         userName={userName}
         summary={data.summary}
@@ -111,7 +108,6 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
         onExecuteAll={handleExecuteAll}
       />
 
-      {/* Summary Section: Progress Gauge + AI Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 px-6 py-4 border-b border-border">
         <ProgressGauge summary={data.summary} />
         <div className="lg:col-span-2">
@@ -123,10 +119,8 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
         </div>
       </div>
 
-      {/* Attention Cards */}
       <AttentionCards summary={data.summary} onCardClick={handleAttentionCardClick} />
 
-      {/* Tabs */}
       <ScopeTabs
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -137,7 +131,6 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
         }}
       />
 
-      {/* Tab Content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {activeTab === 'tests' && (
           <>
@@ -162,17 +155,13 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
 
         {activeTab === 'incidents' && (
           <div className="flex-1 overflow-auto px-6 py-4">
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No active incidents in your test scope</p>
-            </div>
+            <IncidentsPanel incidents={data.incidents} />
           </div>
         )}
 
         {activeTab === 'traceability' && (
           <div className="flex-1 overflow-auto px-6 py-4">
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Traceability matrix coming soon</p>
-            </div>
+            <TraceabilityPanel tests={data.tests} />
           </div>
         )}
 
