@@ -336,7 +336,7 @@ const queryClient = new QueryClient();
 // Route guard: Only show CatyChatWidget on capacity planner module
 function CatyWidgetRouteGuard() {
   const location = useLocation();
-  const isCapacityPlannerRoute = location.pathname.startsWith('/enterprise/strategy-room/capacity');
+  const isCapacityPlannerRoute = location.pathname.startsWith('/enterprise/capacity');
   
   if (!isCapacityPlannerRoute) return null;
   return <CatyChatWidget />;
@@ -436,7 +436,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
-              <Route path="/enterprise/strategy-room/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
+              <Route path="/enterprise/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
               <Route path="/enterprise/okr-heatmap" element={<EnterpriseComingSoon />} />
