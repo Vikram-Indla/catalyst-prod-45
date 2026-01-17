@@ -45,7 +45,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
   const queryClient = useQueryClient();
   
   // View state
-  const [view, setView] = useState<TimelineView>('weeks');
+  const [view, setView] = useState<TimelineView>('months');
   const [periodOffset, setPeriodOffset] = useState(0);
   const [editingAllocationId, setEditingAllocationId] = useState<string | null>(null);
   
