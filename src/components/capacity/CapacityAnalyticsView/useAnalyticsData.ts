@@ -21,7 +21,8 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
       const { data, error } = await supabase
         .from('resource_inventory')
         .select(`
-          id, name, role_name, contract_end_date, country_code,
+          id, name, role_name, contract_end_date,
+          country:resource_countries(id, name, code),
           vendor:resource_vendors(id, name),
           location:resource_locations(id, name),
           department:capacity_departments(id, name, color, sort_order)
