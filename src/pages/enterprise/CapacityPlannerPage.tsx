@@ -3062,7 +3062,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                       width: widthPx,
                       backgroundColor: isForecast ? 'transparent' : projectColor.bg,
                       color: isForecast ? projectColor.bg : projectColor.text,
-                      border: isForecast ? `2px dotted ${projectColor.bg}` : 'none',
+                      border: isForecast ? `3px dotted ${projectColor.bg}` : 'none',
                       boxSizing: 'border-box',
                       boxShadow: !isForecast ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
                     }}
