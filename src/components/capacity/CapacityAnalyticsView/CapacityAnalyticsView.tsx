@@ -33,8 +33,8 @@ export function CapacityAnalyticsView({
     year,
   });
 
-  // Define the desired department order
-  const DEPARTMENT_ORDER = ['Product', 'Delivery', 'Operations', 'Technical Support', 'Governance'];
+  // Define the desired department order - Delivery before Product
+  const DEPARTMENT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
 
   // Build department tabs with counts in specified order
   const departmentTabs = useMemo(() => {
