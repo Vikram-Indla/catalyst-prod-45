@@ -31,9 +31,18 @@ export function useAllReleases({ filter, sort, page, pageSize, projectId }: UseA
         query = query.eq('project_id', projectId);
       }
       
-      // Apply status filter - cast to any to bypass strict enum typing
+      // Apply status filter - map frontend statuses to database values
       if (filter.status.length > 0 && filter.status.length < 5) {
-        query = query.in('status', filter.status as any);
+        // Map frontend status values to actual database enum values
+        const statusMap: Record<string, string> = {
+          'planning': 'planned',
+          'active': 'active', 
+          'uat': 'uat',
+          'released': 'released',
+          'cancelled': 'cancelled',
+        };
+        const dbStatuses = filter.status.map(s => statusMap[s] || s);
+        query = query.in('status', dbStatuses as any);
       }
       
       // Apply health filter
