@@ -144,6 +144,7 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
           allocation_percent, 
           start_date, 
           end_date,
+          status,
           resource_assignments(id, name, color)
         `)
         .gte('end_date', dateRange.start)
@@ -159,7 +160,7 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
         allocation_percent: a.allocation_percent,
         start_date: a.start_date,
         end_date: a.end_date,
-        status: 'committed' as const,
+        status: a.status || 'committed',
         assignment: a.resource_assignments ? {
           id: a.resource_assignments.id,
           name: a.resource_assignments.name,
