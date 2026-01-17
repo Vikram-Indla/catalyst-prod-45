@@ -18,6 +18,9 @@ export {
   useDuplicateFolder,
 } from './useFolders';
 
+// Repository Data (bridges Supabase folders to TreeNode UI structure)
+export { useRepositoryData, useInvalidateRepositoryData } from './useRepositoryData';
+
 // Test Cases
 export {
   useTestCases,

@@ -1,10 +1,11 @@
 /**
  * Test Repository Zustand Store
+ * Manages UI state for the Test Repository page
+ * Data fetching is handled separately by useRepositoryData hook
  */
 
 import { create } from 'zustand';
 import type { TreeNode, TestSuite, RepositoryTestCase } from '@/types/test-repository';
-import { mockTreeData, mockSuites, mockTestCases, mockFolders } from '@/data/mockTestRepositoryData';
 
 // Modal target info
 interface ModalTarget {
@@ -16,8 +17,9 @@ interface ModalTarget {
 }
 
 interface RepositoryStore {
-  // Tree State
+  // Tree State (populated from Supabase via setTree)
   tree: TreeNode[];
+  setTree: (tree: TreeNode[]) => void;
   expandedFolders: Set<string>;
   selectedId: string | null;
   selectedType: 'folder' | 'suite' | null;
@@ -26,6 +28,8 @@ interface RepositoryStore {
   currentSuite: TestSuite | null;
   tests: RepositoryTestCase[];
   selectedTestIds: Set<string>;
+  setCurrentSuite: (suite: TestSuite | null) => void;
+  setTests: (tests: RepositoryTestCase[]) => void;
 
   // UI State
   isDrawerOpen: boolean;
@@ -92,9 +96,9 @@ function getAllFolderIds(nodes: TreeNode[]): string[] {
 }
 
 export const useRepositoryStore = create<RepositoryStore>((set, get) => ({
-  // Initial State
-  tree: mockTreeData,
-  expandedFolders: new Set(['folder-auth']), // Auth folder expanded by default
+  // Initial State - empty, will be populated from Supabase
+  tree: [],
+  expandedFolders: new Set(),
   selectedId: null,
   selectedType: null,
   currentSuite: null,
@@ -114,6 +118,11 @@ export const useRepositoryStore = create<RepositoryStore>((set, get) => ({
   deleteModalOpen: false,
   modalTarget: null,
 
+  // Data setters (called from useRepositoryData hook)
+  setTree: (tree) => set({ tree }),
+  setCurrentSuite: (suite) => set({ currentSuite: suite }),
+  setTests: (tests) => set({ tests }),
+
   // Actions
   toggleFolder: (folderId) => {
     set(state => {
@@ -129,12 +138,8 @@ export const useRepositoryStore = create<RepositoryStore>((set, get) => ({
 
   selectItem: (id, type) => {
     set({ selectedId: id, selectedType: type, selectedTestIds: new Set() });
-
-    if (type === 'suite') {
-      const suite = mockSuites.find(s => s.id === id) || null;
-      const tests = mockTestCases.filter(t => t.suiteId === id);
-      set({ currentSuite: suite, tests });
-    } else {
+    // Note: Suite/test data loading is now handled externally via hooks
+    if (type === 'folder') {
       set({ currentSuite: null, tests: [] });
     }
   },

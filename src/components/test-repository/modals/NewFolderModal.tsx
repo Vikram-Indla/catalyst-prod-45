@@ -1,6 +1,6 @@
 /**
  * New Folder Modal
- * Create a new folder in the repository
+ * Create a new folder in the repository - wired to Supabase
  */
 
 import { useState } from 'react';
@@ -15,7 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FolderPlus } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useCreateFolder, useProjects } from '@/hooks/test-management';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface NewFolderModalProps {
   open: boolean;
@@ -31,27 +32,32 @@ export function NewFolderModal({
   parentFolderName 
 }: NewFolderModalProps) {
   const [name, setName] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
+  
+  // Get current project
+  const { data: projects } = useProjects();
+  const projectId = projects?.[0]?.id;
+  
+  // Use real Supabase mutation
+  const createFolder = useCreateFolder();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name.trim()) return;
+    if (!name.trim() || !projectId) return;
 
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    toast({
-      title: 'Folder created',
-      description: `"${name}" has been created successfully.`,
-    });
-    
-    setName('');
-    setIsSubmitting(false);
-    onOpenChange(false);
+    createFolder.mutate(
+      {
+        project_id: projectId,
+        name: name.trim(),
+        parent_id: parentFolderId || null,
+      },
+      {
+        onSuccess: () => {
+          setName('');
+          onOpenChange(false);
+        },
+      }
+    );
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -94,15 +100,15 @@ export function NewFolderModal({
               type="button" 
               variant="outline" 
               onClick={() => handleOpenChange(false)}
-              disabled={isSubmitting}
+              disabled={createFolder.isPending}
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
-              disabled={!name.trim() || isSubmitting}
+              disabled={!name.trim() || createFolder.isPending || !projectId}
             >
-              {isSubmitting ? 'Creating...' : 'Create Folder'}
+              {createFolder.isPending ? 'Creating...' : 'Create Folder'}
             </Button>
           </DialogFooter>
         </form>
