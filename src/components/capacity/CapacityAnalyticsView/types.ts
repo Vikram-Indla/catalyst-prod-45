@@ -45,6 +45,7 @@ export interface MonthCell {
 export interface CapacityRow {
   resource: AnalyticsResource;
   months: MonthCell[];
+  committedPercent: number; // Average committed % across current period
 }
 
 export type ViewScope = 'q1' | 'h1' | 'full';

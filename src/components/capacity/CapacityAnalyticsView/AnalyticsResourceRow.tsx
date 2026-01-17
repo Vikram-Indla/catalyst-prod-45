@@ -12,7 +12,7 @@ interface AnalyticsResourceRowProps {
 }
 
 export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResourceRowProps) {
-  const { resource, months } = row;
+  const { resource, months, committedPercent } = row;
 
   // Location badge styling
   const locationName = resource.location?.name?.toLowerCase() || '';
@@ -29,6 +29,14 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   
   const badge = getLocationBadge();
   const deptName = resource.department?.name || 'BMC';
+
+  // Utilization color based on percentage
+  const getUtilizationColor = (percent: number) => {
+    if (percent >= 100) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
+    if (percent >= 75) return 'text-blue-600 bg-blue-50 border-blue-200';
+    if (percent >= 50) return 'text-amber-600 bg-amber-50 border-amber-200';
+    return 'text-rose-600 bg-rose-50 border-rose-200';
+  };
 
   return (
     <tr className="border-b border-border/30 hover:bg-muted/20 transition-colors">
@@ -60,7 +68,15 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
         </span>
       </td>
 
-      {/* Month Cells */}
+      {/* Utilization Cell */}
+      <td className="py-3 px-3 min-w-[80px] border-r border-border text-center">
+        <span className={cn(
+          'inline-block px-2 py-1 text-xs font-bold rounded border',
+          getUtilizationColor(committedPercent)
+        )}>
+          {committedPercent}%
+        </span>
+      </td>
       {months.map((cell) => (
         <AnalyticsMonthCell 
           key={`${cell.year}-${cell.month}`}
