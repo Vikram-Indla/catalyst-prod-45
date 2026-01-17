@@ -174,8 +174,8 @@ export function SleekCapacityHeader({
   // View tabs configuration
   const viewTabs = [
     { 
-      id: 'analytics', 
-      label: 'Analytics', 
+      id: 'allocation', 
+      label: 'Allocation', 
       icon: BarChart3,
       isActive: primaryView === 'resources' && resourceView === 'heatmap',
       onClick: () => {
