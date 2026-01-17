@@ -188,21 +188,6 @@ export function CapacityPresentationShell({
             <span>{format(new Date(), 'MMM d, yyyy h:mm a')}</span>
           </div>
           
-          <div className="w-px h-6 bg-border" />
-          
-          {/* Export Button */}
-          {onExport && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={onExport}
-              className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
-            >
-              <Download className="h-3.5 w-3.5 mr-1.5" />
-              Export
-            </Button>
-          )}
-          
           {/* Exit Button */}
           <Button 
             size="sm" 
