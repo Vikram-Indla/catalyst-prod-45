@@ -113,6 +113,16 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
         </div>
       </td>
 
+      {/* Location Badge Cell */}
+      <td className="py-3 px-3 min-w-[100px] border-r border-border">
+        <span className={cn(
+          'inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wide border',
+          badge.bg, badge.text, badge.border
+        )}>
+          {badge.label}
+        </span>
+      </td>
+
       {/* Utilization Cell */}
       <td className="py-3 px-3 min-w-[80px] border-r border-border text-center">
         <span className={cn(
@@ -135,12 +145,12 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   );
 }
 
-// Department group header row
+// Department group header row - Blue text to match reference
 export function DepartmentGroupHeader({ name }: { name: string }) {
   return (
     <tr>
       <td colSpan={100} className="sticky left-0 bg-card pt-4 pb-2 px-4">
-        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+        <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
           {name}
         </span>
       </td>
