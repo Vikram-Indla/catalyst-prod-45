@@ -343,8 +343,8 @@ export function SleekCapacityHeader({
         <div className="w-56" />
       </div>
 
-      {/* ROW 3: Stats + Filters (resources/allocations/gantt) OR Period Navigator (projects) - hidden for contracts view */}
-      {primaryView !== 'contracts' && primaryView !== 'projects' && (
+      {/* ROW 3: Stats + Filters (resources/allocations/gantt) OR Period Navigator (projects) - hidden for contracts and analytics view */}
+      {primaryView !== 'contracts' && primaryView !== 'projects' && resourceView !== 'heatmap' && (
       <div className="flex items-center justify-between px-5 py-2.5 bg-muted/50 dark:bg-[var(--surface-2)] border-b border-border/30 dark:border-[var(--border-subtle)]">
         {/* Left: Clickable Stat Chips */}
         <div className="flex items-center gap-2">
