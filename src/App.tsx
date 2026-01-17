@@ -436,6 +436,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
+              <Route path="/enterprise/strategy-room/capacity" element={<Navigate to="/enterprise/capacity" replace />} />
               <Route path="/enterprise/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
