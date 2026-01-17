@@ -38,13 +38,13 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
           className="cursor-pointer"
           onClick={() => onResourceClick?.(resource.id)}
         >
-          <div className="font-semibold text-sm text-foreground">
+          <div className="font-semibold text-sm text-[#0a0a0a] dark:text-white truncate">
             {resource.name}
           </div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-xs text-[#737373] dark:text-gray-400">
             {resource.role_name || 'No role'}
           </div>
-          <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+          <div className="text-xs text-[#2563eb] dark:text-blue-400 font-medium">
             {deptName}
           </div>
         </div>
