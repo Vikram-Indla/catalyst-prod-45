@@ -111,6 +111,7 @@ import { TestExecutionFocusPage } from "./features/test-execution";
 import MyTestScopePage from "./pages/releases/MyTestScopePage";
 import CalendarPage from "./pages/releases/CalendarPage";
 import ComparePage from "./pages/releases/ComparePage";
+import CoverageReportsPage from "./pages/releases/CoverageReportsPage";
 import ReleaseDashboardV5Page from "./pages/releases/ReleaseDashboardV5Page";
 import ReleaseDashboardOverviewPage from "./pages/releases/ReleaseDashboardOverviewPage";
 import ReleasesTestCyclesPage from "./pages/releases/TestCyclesPage";
@@ -803,7 +804,7 @@ const App = () => (
               <Route path="/releases/execution/:cycleId/:testCaseId" element={<ReleasesTestExecutionPage />} />
               <Route path="/releases/execute/:cycleId/:testCaseId" element={<ProtectedRoute><TestExecutionFocusPage /></ProtectedRoute>} />
               <Route path="/releases/ask-ai" element={<ReleasesPlaceholderPage />} />
-              <Route path="/releases/coverage" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/coverage" element={<CoverageReportsPage />} />
               <Route path="/releases/quality-gates" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/rtm" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/defects" element={<ReleasesDefectsPage />} />
