@@ -7,12 +7,11 @@ import type { TestCase as ApiTestCase, CaseStatus, ExecutionStatus, Priority } f
 import type { TestCase as UITestCase } from '@/data/testCasesData';
 
 // Avatar colors for assignees
-const avatarColors: Array<'blue' | 'green' | 'purple' | 'orange' | 'teal' | 'red'> = [
-  'blue', 'green', 'purple', 'orange', 'teal', 'red'
-];
+// Catalyst V5 Avatar Colors (Blue, Teal, Gray only)
+const avatarColors: Array<'blue' | 'teal' | 'gray'> = ['blue', 'teal', 'gray'];
 
 // Get consistent color based on user id
-function getAvatarColor(userId?: string): 'blue' | 'green' | 'purple' | 'orange' | 'teal' | 'red' {
+function getAvatarColor(userId?: string): 'blue' | 'teal' | 'gray' {
   if (!userId) return 'blue';
   const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return avatarColors[hash % avatarColors.length];

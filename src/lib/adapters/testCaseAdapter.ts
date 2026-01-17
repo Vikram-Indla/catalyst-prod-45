@@ -7,12 +7,10 @@ import type { TMTestCase } from '@/types/test-management';
 import type { TestCase } from '@/data/testCasesData';
 import { formatDistanceToNow } from 'date-fns';
 
-// Helper to get avatar color based on user ID hash
-function getAvatarColor(userId?: string): 'blue' | 'green' | 'purple' | 'orange' | 'teal' | 'red' {
+// Helper to get avatar color based on user ID hash - Catalyst V5 (Blue, Teal, Gray only)
+function getAvatarColor(userId?: string): 'blue' | 'teal' | 'gray' {
   if (!userId) return 'blue';
-  const colors: Array<'blue' | 'green' | 'purple' | 'orange' | 'teal' | 'red'> = [
-    'blue', 'green', 'purple', 'orange', 'teal', 'red'
-  ];
+  const colors: Array<'blue' | 'teal' | 'gray'> = ['blue', 'teal', 'gray'];
   // Simple hash to pick a color
   const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];

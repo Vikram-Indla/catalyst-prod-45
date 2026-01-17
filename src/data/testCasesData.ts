@@ -22,7 +22,7 @@ export interface TestCase {
   assignee: {
     name: string;
     avatar: string;
-    color: 'blue' | 'green' | 'purple' | 'orange' | 'teal' | 'red';
+    color: 'blue' | 'teal' | 'gray';
   };
   updated: string;
   // Extended fields (optional for backward compatibility)
