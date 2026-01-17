@@ -14,6 +14,7 @@ import { DEPARTMENT_GRADIENTS } from '@/types/resource-allocation.types';
 import { Button } from '@/components/ui/button';
 import { TimelineGrid } from './TimelineGrid';
 import { AddAssignmentModal } from './AddAssignmentModal';
+import { EditAllocationRowModal } from './EditAllocationRowModal';
 import { ViewToggle } from './ViewToggle';
 import { StatusLegend } from './StatusLegend';
 
@@ -36,6 +37,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
     summary,
     today,
     view,
+    editingAllocationId,
     isLoading,
     isSaving,
     setView,
@@ -46,6 +48,11 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
     deleteAllocation,
     setEditingAllocationId,
   } = useResourceAllocationTimeline({ resource, onClose });
+
+  // Find the allocation being edited
+  const editingAllocation = editingAllocationId 
+    ? timelineBars.find(bar => bar.allocationId === editingAllocationId)
+    : null;
 
   // Handle escape key
   useEffect(() => {
@@ -270,6 +277,18 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
             setShowAddAssignment(false);
           }}
           onClose={() => setShowAddAssignment(false)}
+        />
+      )}
+
+      {/* Edit Allocation Row Modal */}
+      {editingAllocation && (
+        <EditAllocationRowModal
+          allocation={editingAllocation}
+          onSave={async (data) => {
+            await updateAllocation(data);
+            setEditingAllocationId(null);
+          }}
+          onClose={() => setEditingAllocationId(null)}
         />
       )}
     </>
