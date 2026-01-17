@@ -3048,6 +3048,11 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 // Use pixel-precise positioning from calculateGanttBar
                 const leftPx = bar.leftOffset || 0;
                 const widthPx = bar.barWidth || (bar.span * columnWidth);
+                
+                // Committed = Blue, Forecast = Grey
+                const isForeCast = bar.alloc.status === 'forecast';
+                const barBgColor = isForeCast ? '#9ca3af' : projectColor.bg; // Grey for forecast
+                const barTextColor = isForeCast ? '#ffffff' : projectColor.text;
 
                 return (
                   <div
@@ -3057,20 +3062,12 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                       top: 8 + idx * 32,
                       left: leftPx,
                       width: widthPx,
-                      backgroundColor: bar.alloc.status === 'forecast' 
-                        ? `${projectColor.bg}20` 
-                        : projectColor.bg,
-                      color: bar.alloc.status === 'forecast' 
-                        ? projectColor.bg 
-                        : projectColor.text,
-                      border: bar.alloc.status === 'forecast' 
-                        ? `2px dotted ${projectColor.bg}` 
-                        : 'none',
-                      boxShadow: bar.alloc.status === 'committed' 
-                        ? '0 1px 3px rgba(0,0,0,0.15)' 
-                        : 'none',
+                      backgroundColor: barBgColor,
+                      color: barTextColor,
+                      border: isForeCast ? '2px dashed #6b7280' : 'none',
+                      boxShadow: !isForeCast ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
                     }}
-                    title={tooltipText}
+                    title={`${isForeCast ? '[Forecast] ' : ''}${tooltipText}`}
                     onClick={() => onEditResource?.(resource.id)}
                   >
                     <span className="truncate">
@@ -3080,16 +3077,33 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 );
               })}
               
-              {/* Only show Available if this period has no allocation coverage at all */}
-              {barsInColumn.length === 0 && periodTotals[colIdx] === 0 && (
-                <button
-                  onClick={() => onEditResource?.(resource.id)}
-                  className="absolute inset-0 flex flex-col items-center justify-center hover:bg-teal-50/50 rounded transition-colors cursor-pointer group"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600" />
-                  <span className="text-[10px] font-medium text-teal-600 group-hover:text-teal-700">Available</span>
-                </button>
-              )}
+              {/* Show Available capacity when total < 100% */}
+              {(() => {
+                const available = 100 - periodTotals[colIdx];
+                if (available <= 0) return null;
+                
+                // Calculate vertical position after existing bars
+                const barCount = barsStartingHere.length > 0 ? barsStartingHere.length : (barsInColumn.length > 0 ? 0 : 0);
+                const topPosition = 8 + barCount * 32;
+                
+                return (
+                  <div
+                    className="absolute h-6 rounded flex items-center justify-center px-2 text-[10px] font-medium cursor-pointer hover:opacity-80 transition-opacity"
+                    style={{
+                      top: topPosition,
+                      left: 4,
+                      right: 4,
+                      backgroundColor: '#e5e7eb', // Light grey
+                      color: '#6b7280',
+                      border: '1px dashed #9ca3af',
+                    }}
+                    title={`Available: ${available}%`}
+                    onClick={() => onEditResource?.(resource.id)}
+                  >
+                    <span className="truncate">Available {available}%</span>
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
