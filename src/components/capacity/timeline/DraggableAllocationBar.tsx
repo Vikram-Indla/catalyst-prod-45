@@ -19,6 +19,7 @@ interface DraggableAllocationBarProps {
     allocation_percent: number;
     assignment_name?: string;
     profile_id?: string;
+    status?: 'committed' | 'forecast';
   };
   timelineStartDate: Date;
   timelineEndDate: Date;
@@ -61,6 +62,7 @@ export function DraggableAllocationBar({
   const { mutateAsync: updateAllocation } = useAllocationMutation();
   
   const projectName = allocation.assignment_name || 'Allocation';
+  const isForecast = allocation.status === 'forecast';
   
   // Calculate pixels per day
   const totalDays = (timelineEndDate.getTime() - timelineStartDate.getTime()) / (1000 * 60 * 60 * 24);
@@ -290,25 +292,25 @@ export function DraggableAllocationBar({
     topPx = padding + (rowIndex * (barHeight + gap));
   }
   
-  // Get bar class based on project name
+  // Get bar class based on project name - with forecast variant
   const getBarClass = () => {
     const name = projectName.toLowerCase();
     if (name.includes('bau') || name.includes('ops') || name.includes('platform')) {
-      return styles.barPrimary;
+      return isForecast ? styles.barPrimaryForecast : styles.barPrimary;
     }
     if (name.includes('innovation') || name.includes('alpha') || name.includes('tahommena')) {
-      return styles.barTeal;
+      return isForecast ? styles.barTealForecast : styles.barTeal;
     }
     if (name.includes('website') || name.includes('design') || name.includes('review')) {
-      return styles.barWarning;
+      return isForecast ? styles.barWarningForecast : styles.barWarning;
     }
     if (name.includes('inspection') || name.includes('international') || name.includes('mim')) {
-      return styles.barTeal;
+      return isForecast ? styles.barTealForecast : styles.barTeal;
     }
     if (name.includes('sectorial') || name.includes('strategy')) {
-      return styles.barSlate;
+      return isForecast ? styles.barSlateForecast : styles.barSlate;
     }
-    return styles.barPrimary;
+    return isForecast ? styles.barPrimaryForecast : styles.barPrimary;
   };
 
   return (
