@@ -1518,9 +1518,11 @@ export default function CapacityPlannerPage() {
         {/* Resource Allocation Modal - Weekly Grid View */}
         {allocationModalOpen && allocationModalResource && (() => {
           // Map ResourceMetric to AllocationResource
+          // CRITICAL: Use resourceInventoryId (not profile_id) for database queries to resource_allocations
           const initials = allocationModalResource.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          const resourceInventoryId = (allocationModalResource as any).resourceInventoryId || allocationModalResource.id;
           const allocationResource: AllocationResource = {
-            id: allocationModalResource.id,
+            id: resourceInventoryId, // Use resource_inventory.id for querying allocations
             name: allocationModalResource.name,
             initials,
             role: allocationModalResource.role || 'Resource',
@@ -1531,7 +1533,7 @@ export default function CapacityPlannerPage() {
             contractStart: allocationModalResource.contract_start_date || new Date().toISOString().split('T')[0],
             contractEnd: allocationModalResource.contract_end_date || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             forecastBoundary: getDefaultForecastBoundary(),
-            profileId: allocationModalResource.id,
+            profileId: allocationModalResource.id, // Keep profile_id for profile-related operations
           };
           return (
             <AllocationModal 
