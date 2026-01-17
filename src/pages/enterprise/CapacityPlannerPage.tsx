@@ -54,6 +54,7 @@ import { SleekCapacityHeader, PrimaryView, ResourceViewMode, ProjectViewMode } f
 import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
 import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
 import { CapacityHeatmap } from '@/components/capacity-heatmap';
+import { CapacityAnalyticsView } from '@/components/capacity/CapacityAnalyticsView';
 
 import { ProjectCapacityView } from '@/components/capacity/ProjectCapacityView';
 import { getPeriodRange, navigatePeriod } from '@/components/capacity/ProjectCapacityView/utils';
@@ -909,15 +910,19 @@ export default function CapacityPlannerPage() {
                 </motion.div>
               )}
               {/* Heatmap View */}
-              {filteredResources.length > 0 && resourceView === 'heatmap' && (
+              {resourceView === 'heatmap' && (
                 <motion.div
-                  key={`heatmap-${searchQuery}-${departmentFilter}-${activeFilter}`}
+                  key={`analytics-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <CapacityHeatmap departmentFilter={departmentFilter} />
+                  <CapacityAnalyticsView 
+                    departmentFilter={departmentFilter}
+                    onDepartmentChange={setDepartmentFilter}
+                    onResourceClick={(id) => setResource360Id(id)}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1631,8 +1636,10 @@ export default function CapacityPlannerPage() {
               )}
               
               {primaryView === 'resources' && resourceView === 'heatmap' && (
-                <CapacityHeatmap 
-                  departmentFilter={departmentFilter === 'all' ? undefined : departmentFilter}
+                <CapacityAnalyticsView 
+                  departmentFilter={departmentFilter}
+                  onDepartmentChange={setDepartmentFilter}
+                  onResourceClick={(id) => setResource360Id(id)}
                 />
               )}
               
