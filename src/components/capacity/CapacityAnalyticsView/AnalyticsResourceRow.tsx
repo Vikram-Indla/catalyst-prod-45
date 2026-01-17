@@ -55,7 +55,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   return (
     <tr className="border-b border-border/30 hover:bg-muted/20 transition-colors">
       {/* Resource Info Cell with Avatar */}
-      <td className="sticky left-0 z-10 bg-card py-3 px-4 min-w-[220px] border-r border-border">
+      <td className="sticky left-0 z-10 bg-card py-3 px-4 min-w-[280px] border-r border-border">
         <div 
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => onResourceClick?.(resource.id)}
@@ -92,35 +92,25 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
             </TooltipContent>
           </Tooltip>
           
-          {/* Name and details */}
+          {/* Name, Role, Location - matching reference layout */}
           <div className="flex flex-col min-w-0">
+            {/* Name + online dot */}
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-sm text-[#0a0a0a] dark:text-white truncate">
+              <span className="font-semibold text-sm text-foreground truncate">
                 {resource.name}
               </span>
-              {/* Online indicator */}
               <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
             </div>
+            {/* Role */}
             <div className="text-xs text-muted-foreground">
               {resource.role_name || 'No role'}
             </div>
-            <div className="flex items-center gap-1">
-              <span className={cn("text-[11px] font-medium", locLabelClass)}>
-                {locLabel}
-              </span>
-            </div>
+            {/* Location label (colored) */}
+            <span className={cn("text-xs font-medium", locLabelClass)}>
+              {locLabel}
+            </span>
           </div>
         </div>
-      </td>
-
-      {/* Location Badge Cell */}
-      <td className="py-3 px-3 min-w-[100px] border-r border-border">
-        <span className={cn(
-          'inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wide border',
-          badge.bg, badge.text, badge.border
-        )}>
-          {badge.label}
-        </span>
       </td>
 
       {/* Utilization Cell */}
@@ -132,6 +122,8 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
           {committedPercent}%
         </span>
       </td>
+      
+      {/* Monthly cells */}
       {months.map((cell) => (
         <AnalyticsMonthCell 
           key={`${cell.year}-${cell.month}`}
