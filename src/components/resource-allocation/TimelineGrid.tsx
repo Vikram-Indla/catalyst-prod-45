@@ -250,6 +250,74 @@ export function TimelineGrid({
           );
         })}
 
+        {/* Available Capacity Row - Shows remaining % when < 100% allocated */}
+        {assignmentsInUse.length > 0 && (
+          <div 
+            className="flex border-b border-border bg-emerald-50/30"
+            role="row"
+          >
+            {/* Available Label */}
+            <div 
+              className="flex-shrink-0 px-3 py-3 flex items-center gap-2" 
+              style={{ width: assignmentColumnWidth }}
+              role="rowheader"
+            >
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div 
+                  className="w-1 h-10 rounded-full flex-shrink-0 bg-emerald-400"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] font-bold text-emerald-700 truncate">
+                    Available
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200">
+                      CAPACITY
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Available bars for each period */}
+            <div className="flex relative" style={{ minHeight: 64 }}>
+              {periods.map((period, idx) => {
+                const capacity = periodCapacities[idx];
+                const available = capacity ? Math.max(0, 100 - capacity.total) : 100;
+                
+                return (
+                  <div 
+                    key={period.id}
+                    className={cn(
+                      "flex-shrink-0 border-l border-border relative flex items-center justify-center",
+                      period.isCurrent && "bg-destructive/5"
+                    )}
+                    style={{ width: columnWidth }}
+                    role="gridcell"
+                  >
+                    {available > 0 && (
+                      <div
+                        className="h-7 rounded-md flex items-center justify-center text-[11px] font-bold mx-1"
+                        style={{
+                          width: 'calc(100% - 8px)',
+                          backgroundColor: '#d1fae5',
+                          color: '#059669',
+                          border: '1px solid #a7f3d0',
+                        }}
+                      >
+                        {available}%
+                      </div>
+                    )}
+                    {available === 0 && (
+                      <span className="text-[10px] text-muted-foreground">—</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Add Assignment Row */}
         <div className="flex border-b border-border" role="row">
           <div 
