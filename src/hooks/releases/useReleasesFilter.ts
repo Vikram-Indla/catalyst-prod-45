@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react';
 import { ReleasesFilter, ReleaseStatus, ReleaseHealth } from '@/types/releases';
 
 const defaultFilter: ReleasesFilter = {
-  status: ['planning', 'active', 'uat'],
+  status: [],
   health: [],
   search: '',
 };
