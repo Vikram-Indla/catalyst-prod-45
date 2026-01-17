@@ -92,20 +92,28 @@ export * from './useKeyboardShortcuts';
 // Requirements
 export * from './useRequirements';
 
-// Test Plans (new)
+// Test Plans (tm_test_plans)
 export {
   testPlanKeys,
   useTestPlans,
   useTestPlan,
+  useTestPlanByKey,
+  useTestPlanStats,
+  useTestPlanBurndown,
   usePlanTestCases,
-  usePlanTeamMembers,
+  usePlanDefects,
   useCreateTestPlan,
   useUpdateTestPlan,
   useDeleteTestPlan,
+  useArchiveTestPlan,
+  useTransitionPlanStatus,
   useAddTestCasesToPlan,
   useRemoveTestCaseFromPlan,
   useReorderPlanTestCases,
-  useAddTeamMember,
-  useUpdateTeamMemberRole,
-  useRemoveTeamMember,
+  useCloneTestPlan,
+} from './useTestPlans';
+
+export type {
+  TestPlanStats,
+  BurndownDataPoint,
 } from './useTestPlans';
