@@ -61,7 +61,7 @@ export function AddAssignmentModal({
   const [periodType, setPeriodType] = useState<'weekly' | 'monthly'>(defaultView === 'weeks' ? 'weekly' : 'monthly');
   const [startPeriod, setStartPeriod] = useState<string>('');
   const [endPeriod, setEndPeriod] = useState<string>('');
-  const [percentage, setPercentage] = useState(50);
+  const [percentage, setPercentage] = useState<number | string>(50);
   const [status, setStatus] = useState<AllocationStatus>('committed');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -135,7 +135,7 @@ export function AddAssignmentModal({
         period_type: periodType,
         start_year: startYear,
         end_year: endYear,
-        allocation_percentage: percentage,
+        allocation_percentage: percentage === '' ? 0 : Number(percentage),
         status,
       };
 
@@ -336,7 +336,10 @@ export function AddAssignmentModal({
                     min={0}
                     max={200}
                     value={percentage}
-                    onChange={(e) => setPercentage(Number(e.target.value))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPercentage(val === '' ? '' : Number(val));
+                    }}
                     className="h-11 text-[15px] font-semibold rounded-xl border-border bg-muted/30 pr-8"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] text-muted-foreground font-medium">
