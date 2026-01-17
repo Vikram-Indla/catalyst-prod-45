@@ -24,6 +24,7 @@ interface AddTestCasesToPlanDialogProps {
   onOpenChange: (open: boolean) => void;
   planId: string;
   planKey?: string;
+  projectId: string;
 }
 
 export function AddTestCasesToPlanDialog({
@@ -31,12 +32,14 @@ export function AddTestCasesToPlanDialog({
   onOpenChange,
   planId,
   planKey,
+  projectId,
 }: AddTestCasesToPlanDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // Fetch all test cases
-  const { data: allTestCases = [], isLoading: casesLoading } = useTestCases();
+  // Fetch all test cases for the project
+  const { data: testCasesData, isLoading: casesLoading } = useTestCases(projectId);
+  const allTestCases = testCasesData?.cases ?? [];
 
   // Fetch already linked test cases
   const { data: linkedCases = [] } = usePlanTestCases(planId);
@@ -211,14 +214,14 @@ export function AddTestCasesToPlanDialog({
                     <span
                       className={cn(
                         'px-2 py-0.5 text-xs font-medium rounded-full capitalize',
-                        tc.status === 'approved'
+                        tc.status === 'APPROVED'
                           ? 'bg-success/10 text-success'
-                          : tc.status === 'draft'
+                          : tc.status === 'DRAFT'
                           ? 'bg-muted text-muted-foreground'
                           : 'bg-warning/10 text-warning'
                       )}
                     >
-                      {tc.status}
+                      {tc.status?.toLowerCase()}
                     </span>
                   </div>
                 );

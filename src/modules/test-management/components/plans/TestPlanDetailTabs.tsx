@@ -27,9 +27,9 @@ export function TestPlanDetailTabs({ plan, onAddTestCases, onStartExecution }: T
   const { data: defects = [], isLoading: defectsLoading } = usePlanDefects(plan.id);
   const removeCaseMutation = useRemoveTestCaseFromPlan();
 
-  const handleRemoveCase = async (linkId: string) => {
+  const handleRemoveCase = async (testCaseId: string) => {
     if (!confirm('Remove this test case from the plan?')) return;
-    await removeCaseMutation.mutateAsync({ plan_id: plan.id, link_id: linkId });
+    await removeCaseMutation.mutateAsync({ planId: plan.id, testCaseId });
   };
 
   return (
@@ -184,7 +184,7 @@ export function TestPlanDetailTabs({ plan, onAddTestCases, onStartExecution }: T
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={() => handleRemoveCase(link.id)}
+                    onClick={() => handleRemoveCase(link.test_case_id)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
