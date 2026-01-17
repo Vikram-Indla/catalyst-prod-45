@@ -1,9 +1,10 @@
 /**
  * Repository Sidebar
  * Contains tree navigation for folders and suites
+ * Now wired to Supabase via useRepositoryData
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,8 +13,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, Search, ChevronDown, ChevronUp, FolderPlus, FileText } from 'lucide-react';
+import { Plus, Search, ChevronDown, ChevronUp, FolderPlus, FileText, Loader2 } from 'lucide-react';
 import { useRepositoryStore } from '@/stores/repositoryStore';
+import { useRepositoryData } from '@/hooks/test-management/useRepositoryData';
+import { useProjects } from '@/hooks/test-management/useProjects';
 import { FolderTree } from './FolderTree';
 import { cn } from '@/lib/utils';
 
@@ -24,9 +27,28 @@ export function RepositorySidebar() {
     expandAll, 
     collapseAll,
     tree,
+    setTree,
+    openNewFolderModal,
+    openNewSuiteModal,
   } = useRepositoryStore();
 
-  const totalTests = tree.reduce((sum, node) => sum + node.testCount, 0);
+  // Get current project
+  const { data: projects } = useProjects();
+  const currentProjectId = projects?.[0]?.id;
+
+  // Fetch real folder data from Supabase
+  const { tree: realTree, isLoading, totalTestCount } = useRepositoryData(currentProjectId);
+
+  // Sync real data to store when it changes
+  useEffect(() => {
+    if (realTree && realTree.length > 0) {
+      setTree(realTree);
+    }
+  }, [realTree, setTree]);
+
+  // Use store tree (which gets populated from real data)
+  const displayTree = tree.length > 0 ? tree : realTree;
+  const totalTests = totalTestCount || displayTree.reduce((sum, node) => sum + node.testCount, 0);
 
   return (
     <aside 
@@ -44,11 +66,17 @@ export function RepositorySidebar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem className="text-xs">
+              <DropdownMenuItem 
+                className="text-xs"
+                onClick={() => openNewFolderModal()}
+              >
                 <FolderPlus className="w-3.5 h-3.5 mr-2" />
                 New Folder
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-xs">
+              <DropdownMenuItem 
+                className="text-xs"
+                onClick={() => openNewSuiteModal()}
+              >
                 <FileText className="w-3.5 h-3.5 mr-2" />
                 New Test Suite
               </DropdownMenuItem>
@@ -92,7 +120,13 @@ export function RepositorySidebar() {
 
       {/* Tree */}
       <div className="flex-1 overflow-y-auto py-2">
-        <FolderTree />
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <FolderTree />
+        )}
       </div>
 
       {/* Footer */}

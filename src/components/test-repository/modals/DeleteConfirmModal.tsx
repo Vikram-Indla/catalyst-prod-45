@@ -1,9 +1,8 @@
 /**
  * Delete Confirm Modal
- * Confirmation dialog for deleting items
+ * Confirmation dialog for deleting items - wired to Supabase
  */
 
-import { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -14,7 +13,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Folder, FileText, ClipboardList } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useDeleteFolder, useProjects } from '@/hooks/test-management';
 
 interface DeleteConfirmModalProps {
   open: boolean;
@@ -33,23 +32,32 @@ export function DeleteConfirmModal({
   itemType,
   childCount = 0
 }: DeleteConfirmModalProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const { toast } = useToast();
+  // Get current project
+  const { data: projects } = useProjects();
+  const projectId = projects?.[0]?.id;
+  
+  // Use real Supabase mutation for folders
+  const deleteFolder = useDeleteFolder();
 
   const handleDelete = async () => {
-    setIsDeleting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    toast({
-      title: `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} deleted`,
-      description: `"${itemName}" has been permanently deleted.`,
-    });
-    
-    setIsDeleting(false);
-    onOpenChange(false);
+    if (!projectId) return;
+
+    if (itemType === 'folder') {
+      deleteFolder.mutate(
+        { id: itemId, project_id: projectId },
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+          },
+        }
+      );
+    } else {
+      // TODO: Wire suite/test deletion when those hooks are ready
+      onOpenChange(false);
+    }
   };
+
+  const isDeleting = deleteFolder.isPending;
 
   const getIcon = () => {
     switch (itemType) {
@@ -64,7 +72,7 @@ export function DeleteConfirmModal({
 
   const getWarningMessage = () => {
     if (itemType === 'folder' && childCount > 0) {
-      return `This folder contains ${childCount} item${childCount > 1 ? 's' : ''}. All contents will be permanently deleted.`;
+      return `This folder contains ${childCount} item${childCount > 1 ? 's' : ''}. Contents will be moved to the parent folder.`;
     }
     if (itemType === 'suite' && childCount > 0) {
       return `This suite contains ${childCount} test case${childCount > 1 ? 's' : ''}. All test cases will be permanently deleted.`;
@@ -95,7 +103,7 @@ export function DeleteConfirmModal({
                 <div className="flex items-center gap-2 p-2 bg-destructive/10 rounded-md text-destructive">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span className="text-xs font-medium">
-                    Warning: This will delete all nested content
+                    Warning: This will affect all nested content
                   </span>
                 </div>
               )}
@@ -114,7 +122,7 @@ export function DeleteConfirmModal({
           <Button 
             variant="destructive"
             onClick={handleDelete}
-            disabled={isDeleting}
+            disabled={isDeleting || !projectId}
           >
             {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
