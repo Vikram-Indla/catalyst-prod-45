@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Plus, Download, Search, LayoutGrid, List, Calendar, 
-  Layers 
+  Layers, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,20 +22,35 @@ import { CycleTableView } from '@/components/releases/test-cycles/CycleTableView
 import { CycleCalendarView } from '@/components/releases/test-cycles/CycleCalendarView';
 import { CreateCycleModal, CreateCycleData } from '@/components/releases/test-cycles/CreateCycleModal';
 import { 
-  testCycles as initialCycles, 
   releaseOptions, 
   statusOptions, 
   environmentOptions,
   TestCycle 
 } from '@/data/testCyclesData';
+import { useTestCycles, useCreateCycle, useDeleteCycle, useCloneCycle, useProjects } from '@/hooks/test-management';
+import { tmToUICycles } from '@/lib/adapters/testCycleAdapter';
 
 type ViewMode = 'card' | 'list' | 'calendar';
 
 export default function TestCyclesPage() {
   const navigate = useNavigate();
   
-  // Data
-  const [cycles, setCycles] = useState<TestCycle[]>(initialCycles);
+  // Get current project
+  const { data: projects } = useProjects();
+  const projectId = projects?.[0]?.id;
+  
+  // Fetch real cycles from Supabase
+  const { data: tmCycles, isLoading } = useTestCycles(projectId);
+  
+  // Convert to UI format
+  const cycles: TestCycle[] = useMemo(() => {
+    return tmCycles ? tmToUICycles(tmCycles) : [];
+  }, [tmCycles]);
+  
+  // Mutations
+  const createCycleMutation = useCreateCycle();
+  const deleteCycleMutation = useDeleteCycle();
+  const cloneCycleMutation = useCloneCycle();
   
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -99,30 +114,26 @@ export default function TestCyclesPage() {
   
   // Handlers
   const handleCreateCycle = (data: CreateCycleData) => {
-    const releaseName = releaseOptions.find(r => r.value === data.releaseId)?.label.split(' - ')[1] || '';
-    const newCycle: TestCycle = {
-      id: `CY-${Date.now().toString().slice(-8)}`,
-      name: data.name,
-      releaseId: data.releaseId,
-      releaseName,
-      environment: data.environment,
-      status: 'planned',
-      progress: 0,
-      passedTests: 0,
-      failedTests: 0,
-      skippedTests: 0,
-      pendingTests: 0,
-      totalTests: 0,
-      duration: '-',
-      assignee: data.assignee,
-      createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      updatedAt: 'Just now',
-      startDate: data.startDate,
-      endDate: data.endDate
-    };
-    setCycles([newCycle, ...cycles]);
-    setIsCreateModalOpen(false);
-    toast.success('Test cycle created');
+    if (!projectId) {
+      toast.error('No project selected');
+      return;
+    }
+    
+    createCycleMutation.mutate(
+      {
+        project_id: projectId,
+        name: data.name,
+        description: '',
+        environment: data.environment,
+        planned_start_date: data.startDate,
+        planned_end_date: data.endDate,
+      },
+      {
+        onSuccess: () => {
+          setIsCreateModalOpen(false);
+        },
+      }
+    );
   };
   
   const handleEditCycle = (cycle: TestCycle) => {
@@ -130,38 +141,46 @@ export default function TestCyclesPage() {
   };
   
   const handleDeleteCycle = (cycleId: string) => {
-    setCycles(cycles.filter(c => c.id !== cycleId));
-    toast.success('Test cycle deleted');
+    if (!projectId) return;
+    
+    // Find the original ID from the cycle
+    const cycle = cycles.find(c => c.id === cycleId);
+    const originalId = cycle?._originalId || cycleId;
+    
+    deleteCycleMutation.mutate({ 
+      id: originalId, 
+      project_id: projectId 
+    });
   };
   
   const handleDuplicateCycle = (cycle: TestCycle) => {
-    // Count existing cycles for this release to generate proper ID
-    const releaseCycles = cycles.filter(c => c.releaseId === cycle.releaseId);
-    const nextNumber = releaseCycles.length + 1;
-    const releaseSuffix = cycle.releaseId.replace('REL-', '');
+    if (!projectId) return;
     
-    const newCycle: TestCycle = {
-      ...cycle,
-      id: `CY-${releaseSuffix}-${String(nextNumber).padStart(2, '0')}`,
-      name: `${cycle.name} (Copy)`,
-      status: 'planned',
-      progress: 0,
-      passedTests: 0,
-      failedTests: 0,
-      pendingTests: cycle.totalTests,
-      updatedAt: 'Just now'
-    };
-    setCycles([newCycle, ...cycles]);
-    toast.success(`Cycle ${newCycle.id} created`);
+    const originalId = cycle._originalId || cycle.id;
+    
+    cloneCycleMutation.mutate({
+      id: originalId,
+      project_id: projectId,
+    });
   };
 
   const handleCycleClick = (cycle: TestCycle) => {
-    navigate(`/releases/test-cycles/${cycle.id}`);
+    const originalId = cycle._originalId || cycle.id;
+    navigate(`/releases/test-cycles/${originalId}`);
   };
 
   const handleExport = () => {
     toast.success('Exporting test cycles...');
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
