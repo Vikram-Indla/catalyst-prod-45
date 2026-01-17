@@ -39,16 +39,20 @@ function HealthProgressBar({ score, level }: { score: number; level: Release['he
 }
 
 function StatusBadge({ status }: { status: Release['status'] }) {
-  const config: Record<Release['status'], { label: string; className: string; icon: string }> = {
+  const config: Record<string, { label: string; className: string; icon: string }> = {
     planning: { label: 'Planning', className: 'bg-slate-100 text-slate-600', icon: '○' },
+    planned: { label: 'Planned', className: 'bg-slate-100 text-slate-600', icon: '○' },
     in_progress: { label: 'In Progress', className: 'bg-blue-100 text-blue-700', icon: '●' },
+    active: { label: 'Active', className: 'bg-blue-100 text-blue-700', icon: '●' },
     testing: { label: 'Testing', className: 'bg-purple-100 text-purple-700', icon: '●' },
+    uat: { label: 'UAT', className: 'bg-purple-100 text-purple-700', icon: '●' },
     staging: { label: 'Staging', className: 'bg-amber-100 text-amber-700', icon: '●' },
     released: { label: 'Released', className: 'bg-green-100 text-green-700', icon: '✓' },
     cancelled: { label: 'Cancelled', className: 'bg-red-100 text-red-700', icon: '✕' },
   };
   
-  const { label, className, icon } = config[status];
+  const statusConfig = config[status] || { label: status, className: 'bg-slate-100 text-slate-600', icon: '○' };
+  const { label, className, icon } = statusConfig;
   
   return (
     <span className={cn("inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium", className)}>
