@@ -117,10 +117,10 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             {seg.percent > 100 ? `+${seg.percent - 100}%` : `${seg.percent}%`}
           </span>
           <span className={cn(
-            'text-[9px] font-medium opacity-80',
+            'text-[9px] font-medium opacity-80 truncate max-w-full px-1',
             isExtraOver ? 'text-rose-600' : colors.text
           )}>
-            {abbrev}
+            {seg.assignment.name}
           </span>
         </div>
       );
