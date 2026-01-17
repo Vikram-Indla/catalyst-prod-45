@@ -49,33 +49,51 @@ function getWorkstreamColor(assignmentName: string) {
 export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCellProps) {
   const { totalPercent, isEnded, segments } = cell;
 
-  // Contract ended - show dashed END box
+  // Check if contract ends this month
+  const monthStart = new Date(cell.year, cell.month - 1, 1);
+  const monthEnd = new Date(cell.year, cell.month, 0);
+  const contractDate = contractEndDate ? new Date(contractEndDate) : null;
+  const contractEndsThisMonth = contractDate && contractDate >= monthStart && contractDate <= monthEnd;
+
+  // Contract ended (past end date) - show dotted fill
   if (isEnded) {
     return (
       <td className="p-1 min-w-[120px]">
-        <div className="h-12 flex items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20">
-          <span className="text-xs font-medium text-muted-foreground/60">END</span>
+        <div 
+          className="h-12 flex items-center justify-center rounded-lg"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(156,163,175,0.3) 4px, rgba(156,163,175,0.3) 8px)',
+            backgroundColor: 'rgba(156,163,175,0.1)',
+          }}
+        >
+          <span className="text-xs font-medium text-muted-foreground/60 bg-background/80 px-2 py-0.5 rounded">END</span>
         </div>
       </td>
     );
   }
 
-  // Check if contract ends this month
-  const monthStart = new Date(cell.year, cell.month - 1, 1);
-  const monthEnd = new Date(cell.year, cell.month, 0);
-  const contractEndsThisMonth = contractEndDate && 
-    new Date(contractEndDate) >= monthStart && 
-    new Date(contractEndDate) <= monthEnd;
+  // Contract ends this month - show dotted fill with END label
+  if (contractEndsThisMonth && (segments.length === 0 || totalPercent === 0)) {
+    return (
+      <td className="p-1 min-w-[120px]">
+        <div 
+          className="h-12 flex items-center justify-center rounded-lg border border-dashed border-muted-foreground/40"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(156,163,175,0.2) 4px, rgba(156,163,175,0.2) 8px)',
+            backgroundColor: 'rgba(156,163,175,0.05)',
+          }}
+        >
+          <span className="text-xs font-medium text-muted-foreground/70 bg-background/80 px-2 py-0.5 rounded">END</span>
+        </div>
+      </td>
+    );
+  }
 
   // Empty/no allocation
   if (segments.length === 0 || totalPercent === 0) {
     return (
       <td className="p-1 min-w-[120px]">
-        <div className="h-12 flex items-center justify-center rounded-lg bg-muted/30">
-          {contractEndsThisMonth && (
-            <span className="text-xs font-medium text-muted-foreground/60">END</span>
-          )}
-        </div>
+        <div className="h-12 flex items-center justify-center rounded-lg bg-muted/30" />
       </td>
     );
   }
