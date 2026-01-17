@@ -208,18 +208,7 @@ export function SleekCapacityHeader({
         onPrimaryViewChange?.('projects');
       }
     },
-    { 
-      id: 'allocations', 
-      label: 'Allocations', 
-      icon: LayoutGrid,
-      isActive: primaryView === 'resources' && resourceView === 'cards',
-      onClick: () => {
-        onPrimaryViewChange?.('resources');
-        onResourceViewChange?.('cards');
-        onViewModeChange?.('cards');
-      }
-    },
-    { 
+    {
       id: 'gantt', 
       label: 'Gantt', 
       icon: CalendarDays,
