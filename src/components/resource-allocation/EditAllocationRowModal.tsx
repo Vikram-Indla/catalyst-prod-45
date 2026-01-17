@@ -9,6 +9,8 @@ import { X, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format, parseISO } from 'date-fns';
 import type { AllocationStatus, TimelineBar } from '@/types/resource-allocation.types';
 
@@ -31,6 +33,20 @@ export function EditAllocationRowModal({
 }: EditAllocationRowModalProps) {
   const [percentage, setPercentage] = useState(allocation.percentage);
   const [status, setStatus] = useState<AllocationStatus>(allocation.status);
+  const [startDate, setStartDate] = useState<Date>(() => {
+    try {
+      return parseISO(allocation.startDate);
+    } catch {
+      return new Date();
+    }
+  });
+  const [endDate, setEndDate] = useState<Date>(() => {
+    try {
+      return parseISO(allocation.endDate);
+    } catch {
+      return new Date();
+    }
+  });
   const [isSaving, setIsSaving] = useState(false);
 
   // Handle escape key
@@ -53,22 +69,14 @@ export function EditAllocationRowModal({
         id: allocation.allocationId,
         percentage,
         status,
+        startDate: format(startDate, 'yyyy-MM-dd'),
+        endDate: format(endDate, 'yyyy-MM-dd'),
       });
       onClose();
     } catch (error) {
       console.error('Failed to save allocation:', error);
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const formatDateRange = () => {
-    try {
-      const start = parseISO(allocation.startDate);
-      const end = parseISO(allocation.endDate);
-      return `${format(start, 'MMM d, yyyy')} — ${format(end, 'MMM d, yyyy')}`;
-    } catch {
-      return 'Date range unavailable';
     }
   };
 
@@ -108,10 +116,6 @@ export function EditAllocationRowModal({
                   <p className="text-[12px] font-semibold text-foreground mt-0.5">
                     {allocation.assignmentName}
                   </p>
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-1">
-                    <Calendar className="w-3 h-3" />
-                    <span>{formatDateRange()}</span>
-                  </div>
                 </div>
               </div>
               <button
@@ -126,6 +130,68 @@ export function EditAllocationRowModal({
 
           {/* Content */}
           <div className="px-5 py-6 space-y-6">
+            {/* Section: Allocation Time */}
+            <div>
+              <label className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.08em] block mb-3">
+                Allocation Time
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {/* Start Date */}
+                <div>
+                  <label className="text-[10px] text-muted-foreground mb-1.5 block">Start Date</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-10",
+                          !startDate && "text-muted-foreground"
+                        )}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, 'MMM d, yyyy') : 'Select date'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 z-[1200]" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => date && setStartDate(date)}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                {/* End Date */}
+                <div>
+                  <label className="text-[10px] text-muted-foreground mb-1.5 block">End Date</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-10",
+                          !endDate && "text-muted-foreground"
+                        )}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, 'MMM d, yyyy') : 'Select date'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 z-[1200]" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={endDate}
+                        onSelect={(date) => date && setEndDate(date)}
+                        disabled={(date) => date < startDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </div>
+
             {/* Section: Allocation Percentage */}
             <div>
               <label className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.08em] block mb-4">
