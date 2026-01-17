@@ -326,6 +326,8 @@ import {
   AnalyticsDashboardPage,
   TMRequirementsPage,
   TestCaseDetailPageWrapper,
+  TestPlansListPage,
+  TestPlanDetailPage,
 } from "./modules/test-management";
 import { TestManagementContent } from "./modules/test-management/layouts/TestManagementContent";
 
@@ -835,6 +837,8 @@ const App = () => (
                 <Route path="cases" element={<TestCasesPage />} />
                 <Route path="cases/:caseId" element={<TestCaseDetailPageWrapper />} />
                 <Route path="sets" element={<TestSetsPage />} />
+                <Route path="plans" element={<TestPlansListPage />} />
+                <Route path="plans/:planId" element={<TestPlanDetailPage />} />
                 <Route path="cycles" element={<TestCyclesPage />} />
                 <Route path="cycles/:cycleId" element={<CycleDetailPage />} />
                 <Route path="execution" element={<ExecutionDashboardPage />} />

@@ -62,6 +62,10 @@ const navItems: NavItem[] = [
   { path: '/tests/cases', label: 'Test Cases', icon: FileText, badge: 156, type: 'link' },
   { path: '/tests/sets', label: 'Test Sets', icon: Layers, type: 'link' },
   
+  // Planning Section
+  { label: 'Planning', type: 'separator' },
+  { path: '/tests/plans', label: 'Test Plans', icon: Target, type: 'link' },
+  
   // Execution Section
   { label: 'Execution', type: 'separator' },
   { path: '/tests/cycles', label: 'Test Cycles', icon: RefreshCw, badge: 8, type: 'link' },
