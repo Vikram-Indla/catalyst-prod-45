@@ -88,3 +88,24 @@ export * from './useReports';
 
 // Keyboard Shortcuts
 export * from './useKeyboardShortcuts';
+
+// Requirements
+export * from './useRequirements';
+
+// Test Plans (new)
+export {
+  testPlanKeys,
+  useTestPlans,
+  useTestPlan,
+  usePlanTestCases,
+  usePlanTeamMembers,
+  useCreateTestPlan,
+  useUpdateTestPlan,
+  useDeleteTestPlan,
+  useAddTestCasesToPlan,
+  useRemoveTestCaseFromPlan,
+  useReorderPlanTestCases,
+  useAddTeamMember,
+  useUpdateTeamMemberRole,
+  useRemoveTeamMember,
+} from './useTestPlans';
