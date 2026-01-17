@@ -52,7 +52,7 @@ export function AddAssignmentModal({
   resourceName,
   existingAssignmentIds,
   availableAssignments,
-  defaultView = 'weeks',
+  defaultView = 'months',
   onAdd,
   onClose,
 }: AddAssignmentModalProps) {
