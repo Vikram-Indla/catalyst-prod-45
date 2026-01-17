@@ -135,7 +135,7 @@ export function CapacityPresentationShell({
       <div className="flex-shrink-0 flex items-center justify-between px-6 py-3 bg-card border-b border-border">
         {/* Left: Logo + Context */}
         <div className="flex items-center gap-4">
-          <Logo variant="dark" size="md" />
+          <Logo variant="dark" size="md" useGold={true} />
           
           <div className="w-px h-6 bg-border" />
           

@@ -233,6 +233,20 @@ export default function CapacityPlannerPage() {
       }
     }
   }, []); // Only run on mount
+
+  // Subscribe to store changes when in presentation mode
+  // This ensures tab clicks in the shell update the local state used for rendering
+  useEffect(() => {
+    if (!presentationMode) return;
+    
+    const unsubscribe = useCapacityViewStore.subscribe((state) => {
+      setPrimaryViewLocal(state.primaryView);
+      setResourceViewLocal(state.resourceView);
+      setProjectViewLocal(state.projectView);
+    });
+    
+    return () => unsubscribe();
+  }, [presentationMode]);
   
   // Modal state
   const [resourceModalOpen, setResourceModalOpen] = useState(false);
