@@ -41,14 +41,11 @@ interface PlannerCreateModalProps {
   currentUserId?: string;
 }
 
-// Avatar color utility
+// Avatar color utility - Catalyst V5 (Blue, Teal, Gray only)
 const AVATAR_COLORS = [
-  '#2563eb', // blue
-  '#0d9488', // teal
-  '#7c3aed', // purple
-  '#d97706', // amber
-  '#dc2626', // red
-  '#059669', // emerald
+  '#2563eb', // Blue (brand-primary)
+  '#0d9488', // Teal (brand-teal)
+  '#6b7280', // Gray (secondary-grey)
 ];
 
 function getAvatarColor(name: string): string {

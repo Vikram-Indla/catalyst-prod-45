@@ -22,9 +22,11 @@ import { catalystToast } from '@/lib/catalystToast';
 import type { PlannerTeam, PlannerUser, AVATAR_COLORS } from '../types';
 
 // Consistent avatar colors that don't change
+// Catalyst V5 Avatar Colors (Blue, Teal, Gray only - no red/amber)
 const STABLE_AVATAR_COLORS = [
-  '#2563eb', '#0d9488', '#7c3aed', '#059669', '#d97706',
-  '#dc2626', '#4f46e5', '#0891b2', '#be185d', '#65a30d',
+  '#2563eb', // Blue (brand-primary)
+  '#0d9488', // Teal (brand-teal)
+  '#6b7280', // Gray (secondary-grey)
 ];
 
 // Generate consistent avatar color based on user ID

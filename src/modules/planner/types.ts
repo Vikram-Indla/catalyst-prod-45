@@ -271,7 +271,9 @@ export const getProgressColor = (progress: number): string => {
   return '#9ca3af'; // gray-400
 };
 
-// Avatar colors for resources
+// Avatar colors for resources - Catalyst V5 (Blue, Teal, Gray only)
 export const AVATAR_COLORS = [
-  '#2563eb', '#10b981', '#8b5cf6', '#d97706', '#ef4444', '#0d9488', '#ec4899', '#06b6d4',
+  '#2563eb', // Blue (brand-primary)
+  '#0d9488', // Teal (brand-teal)
+  '#6b7280', // Gray (secondary-grey)
 ];

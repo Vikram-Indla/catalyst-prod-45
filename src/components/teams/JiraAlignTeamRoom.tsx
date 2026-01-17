@@ -99,8 +99,8 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
     navigate(`/teams/${teamId}/room`);
   };
 
-  // Generate avatar colors dynamically
-  const avatarColors = ['bg-warning', 'bg-info', 'bg-workitem-story', 'bg-destructive', 'bg-success'];
+  // Generate avatar colors dynamically - Catalyst V5 (Blue, Teal, Gray only)
+  const avatarColors = ['bg-[#2563eb]', 'bg-[#0d9488]', 'bg-[#6b7280]'];
   const getAvatarColor = (index: number) => avatarColors[index % avatarColors.length];
   
   // Get initials from full name or email
