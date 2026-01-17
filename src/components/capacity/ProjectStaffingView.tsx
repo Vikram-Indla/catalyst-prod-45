@@ -121,15 +121,15 @@ export function ProjectStaffingView({
         </div>
         <div className="w-px h-6 bg-border" />
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-teal-500" />
+          <span className="w-3 h-3 rounded-full bg-[#0d9488]" />
           <span className="text-sm">Fully Staffed: {statusCounts.staffed}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-amber-500" />
+          <span className="w-3 h-3 rounded-full bg-[#6b7280]" />
           <span className="text-sm">Partial: {statusCounts.partial}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-destructive" />
+          <span className="w-3 h-3 rounded-full bg-[#2563eb]" />
           <span className="text-sm">Understaffed: {statusCounts.understaffed}</span>
         </div>
       </div>
@@ -183,9 +183,9 @@ function ProjectStaffingCard({
   onAssign
 }: ProjectStaffingCardProps) {
   const statusConfig = {
-    staffed: { color: '#0d9488', bg: 'bg-teal-50', border: 'border-teal-400', label: 'FULLY STAFFED' },
-    partial: { color: '#d97706', bg: 'bg-amber-50', border: 'border-amber-400', label: 'PARTIAL' },
-    understaffed: { color: '#ef4444', bg: 'bg-red-50', border: 'border-red-400', label: 'UNDERSTAFFED' }
+    staffed: { color: '#0d9488', bg: 'bg-[#f0fdfa]', border: 'border-[#0d9488]', label: 'FULLY STAFFED' },
+    partial: { color: '#6b7280', bg: 'bg-[#f8fafc]', border: 'border-[#6b7280]', label: 'PARTIAL' },
+    understaffed: { color: '#2563eb', bg: 'bg-[#eff6ff]', border: 'border-[#2563eb]', label: 'UNDERSTAFFED' }
   };
   const config = statusConfig[status];
   const projectColor = project.color || getAssignmentColor(project.name);

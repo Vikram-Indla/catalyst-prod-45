@@ -68,7 +68,7 @@ export function ProjectCard({ utilization, onViewDetails }: ProjectCardProps) {
           </div>
           {forecastFTE > 0 && (
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-[#d97706]" />
+              <div className="w-2 h-2 rounded-full bg-[#6b7280]" />
               <span className="text-muted-foreground">{formatFTE(forecastFTE)} forecast</span>
             </div>
           )}
@@ -91,7 +91,7 @@ export function ProjectCard({ utilization, onViewDetails }: ProjectCardProps) {
           {/* Forecast bar */}
           {forecastWidth > 0 && (
             <div
-              className="absolute top-0 bottom-0 bg-[#d97706] transition-all"
+              className="absolute top-0 bottom-0 bg-[#6b7280] transition-all"
               style={{ 
                 left: `${committedWidth}%`,
                 width: `${forecastWidth}%` 

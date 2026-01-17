@@ -87,11 +87,11 @@ export function CompactResourceCard({
     });
   };
 
-  // Contract ring styles - Catalyst V5 compliant
+  // Contract ring styles - Catalyst V5 compliant (Blue, Teal, Gray only)
   const ringStyles = {
-    healthy: 'ring-teal-500 dark:ring-teal-400',
-    warning: 'ring-amber-500 dark:ring-amber-400',
-    critical: 'ring-red-500 dark:ring-red-400',
+    healthy: 'ring-[#0d9488] dark:ring-[#0d9488]',
+    warning: 'ring-[#6b7280] dark:ring-[#6b7280]',
+    critical: 'ring-[#2563eb] dark:ring-[#2563eb]',
     expired: 'ring-muted-foreground/40',
     permanent: 'ring-muted-foreground/30'
   };
@@ -128,26 +128,27 @@ export function CompactResourceCard({
 
   const dominantSignal = getDominantSignal();
 
+  // Signal styles - Catalyst V5 compliant (Blue, Teal, Gray only)
   const signalStyles = {
     danger: {
-      bg: 'bg-red-100 dark:bg-red-900/40',
-      text: 'text-red-700 dark:text-red-300',
-      border: 'border-red-300 dark:border-red-700',
+      bg: 'bg-[#eff6ff] dark:bg-blue-900/40',
+      text: 'text-[#2563eb] dark:text-blue-300',
+      border: 'border-[#2563eb] dark:border-blue-700',
     },
     warning: {
-      bg: 'bg-amber-100 dark:bg-amber-900/40',
-      text: 'text-amber-700 dark:text-amber-300',
-      border: 'border-amber-300 dark:border-amber-700',
+      bg: 'bg-[#f8fafc] dark:bg-slate-900/40',
+      text: 'text-[#6b7280] dark:text-slate-300',
+      border: 'border-[#6b7280] dark:border-slate-700',
     },
     success: {
-      bg: 'bg-teal-100 dark:bg-teal-900/40',
-      text: 'text-teal-700 dark:text-teal-300',
-      border: 'border-teal-300 dark:border-teal-700',
+      bg: 'bg-[#f0fdfa] dark:bg-teal-900/40',
+      text: 'text-[#0d9488] dark:text-teal-300',
+      border: 'border-[#0d9488] dark:border-teal-700',
     },
     info: {
-      bg: 'bg-blue-100 dark:bg-blue-900/40',
-      text: 'text-blue-700 dark:text-blue-300',
-      border: 'border-blue-300 dark:border-blue-700',
+      bg: 'bg-[#eff6ff] dark:bg-blue-900/40',
+      text: 'text-[#2563eb] dark:text-blue-300',
+      border: 'border-[#2563eb] dark:border-blue-700',
     },
     default: {
       bg: 'bg-muted dark:bg-[var(--surface-3)]',
@@ -173,14 +174,14 @@ export function CompactResourceCard({
           "hover:bg-muted/30 dark:hover:bg-[var(--surface-3)]",
           "hover:border-border dark:hover:border-[var(--border-strong)]",
           "hover:shadow-md",
-          // Risk state overrides
+          // Risk state overrides - Catalyst V5 (using blue instead of red)
           isOverAllocated && [
-            "bg-red-50/50 dark:bg-red-950/30",
-            "border-red-300 dark:border-red-800",
-            "hover:shadow-red-100/50 dark:hover:shadow-red-900/20"
+            "bg-[#eff6ff]/50 dark:bg-blue-950/30",
+            "border-[#2563eb] dark:border-blue-800",
+            "hover:shadow-blue-100/50 dark:hover:shadow-blue-900/20"
           ],
           contractStatus.status === 'critical' && !isOverAllocated && [
-            "border-l-4 border-l-red-500 dark:border-l-red-600"
+            "border-l-4 border-l-[#2563eb] dark:border-l-blue-600"
           ]
         )}
         style={{ 
