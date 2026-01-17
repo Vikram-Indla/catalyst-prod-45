@@ -6,6 +6,7 @@ interface LogoProps {
   className?: string;
   imageSrc?: string;
   showWordmark?: boolean;
+  useGold?: boolean; // Use gold color for "lyst" instead of teal
 }
 
 /**
@@ -13,16 +14,15 @@ interface LogoProps {
  * 
  * Logo specification:
  * - "Cata" = Pure black #0a0a0a (light mode) or white #ffffff (dark mode)
- * - "lyst" = Brand teal #0d9488 (V5 compliant)
- * 
- * Teal appears ONLY in the logo. Nowhere else in the UI.
+ * - "lyst" = Brand gold #C69C6D (when useGold=true) or Brand teal #0d9488 (default)
  */
 export function Logo({ 
   variant = "dark", 
   size = "md", 
   className, 
   imageSrc,
-  showWordmark = true 
+  showWordmark = true,
+  useGold = false
 }: LogoProps) {
   const sizes = {
     sm: "h-6",
@@ -48,7 +48,6 @@ export function Logo({
   }
 
   // Wordmark logo with proper brand colors
-  // Logo is the ONLY place brand gold appears - uses CSS variables
   if (showWordmark) {
     return (
       <div className={cn("flex items-center", className)}>
@@ -59,13 +58,13 @@ export function Logo({
           {/* "Cata" in primary text color */}
           <span className={cn(
             variant === "light" 
-              ? "text-[var(--text-inverse)]" 
-              : "text-[var(--fg-1)]"
+              ? "text-white" 
+              : "text-[#0a0a0a] dark:text-white"
           )}>
             Cata
           </span>
-          {/* "lyst" in brand teal - ONLY place accent appears in UI */}
-          <span className="text-[var(--brand-teal)]">
+          {/* "lyst" in brand gold or teal */}
+          <span className={useGold ? "text-[#C69C6D]" : "text-[#0d9488]"}>
             lyst
           </span>
         </span>
