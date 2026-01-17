@@ -75,6 +75,7 @@ export interface ResourceAllocation {
   allocation_percent: number;
   start_date: string;           // ISO date string (YYYY-MM-DD)
   end_date: string;             // ISO date string (YYYY-MM-DD)
+  status: 'committed' | 'forecast'; // Allocation status
   created_at: string;
   updated_at: string;
   created_by: string | null;
