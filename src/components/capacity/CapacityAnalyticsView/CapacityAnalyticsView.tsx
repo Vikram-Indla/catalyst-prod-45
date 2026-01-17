@@ -24,7 +24,7 @@ export function CapacityAnalyticsView({
   onDepartmentChange,
   onResourceClick,
 }: CapacityAnalyticsViewProps) {
-  const [viewScope, setViewScope] = useState<ViewScope>('h1');
+  const [viewScope, setViewScope] = useState<ViewScope>('q1');
   const year = 2026;
 
   const { rows, months, isLoading, isError, error } = useAnalyticsData({
@@ -33,7 +33,10 @@ export function CapacityAnalyticsView({
     year,
   });
 
-  // Build department tabs with counts
+  // Define the desired department order
+  const DEPARTMENT_ORDER = ['Product', 'Delivery', 'Operations', 'Technical Support', 'Governance'];
+
+  // Build department tabs with counts in specified order
   const departmentTabs = useMemo(() => {
     const deptCounts = new Map<string, number>();
     let total = 0;
@@ -45,8 +48,20 @@ export function CapacityAnalyticsView({
     });
 
     const tabs = [{ id: 'all', name: 'All', count: total }];
+    
+    // Add departments in the specified order
+    DEPARTMENT_ORDER.forEach(deptName => {
+      const count = deptCounts.get(deptName);
+      if (count !== undefined) {
+        tabs.push({ id: deptName.toLowerCase(), name: deptName, count });
+      }
+    });
+
+    // Add any remaining departments not in the specified order
     deptCounts.forEach((count, name) => {
-      tabs.push({ id: name.toLowerCase(), name, count });
+      if (!DEPARTMENT_ORDER.includes(name)) {
+        tabs.push({ id: name.toLowerCase(), name, count });
+      }
     });
 
     return tabs;
@@ -129,16 +144,16 @@ export function CapacityAnalyticsView({
             <thead className="sticky top-0 z-20 bg-card">
               {/* Column Headers */}
               <tr className="border-b border-border">
-                <th className="sticky left-0 z-30 bg-card text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[180px]">
+                <th className="sticky left-0 z-30 bg-card text-left py-3 px-4 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[180px]">
                   Resource
                 </th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[100px]">
+                <th className="text-left py-3 px-3 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[100px]">
                   Location
                 </th>
                 {months.map((m) => (
                   <th 
                     key={`${m.year}-${m.month}`}
-                    className="text-center py-3 px-2 text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[120px]"
+                    className="text-center py-3 px-2 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[120px]"
                   >
                     {MONTH_LABELS[m.month - 1]}
                   </th>
