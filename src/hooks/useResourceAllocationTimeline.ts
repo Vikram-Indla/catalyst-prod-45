@@ -53,6 +53,32 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
   const today = useMemo(() => new Date('2026-01-15'), []);
   
   // ============================================
+  // Realtime Subscription
+  // ============================================
+  useEffect(() => {
+    const channel = supabase
+      .channel(`resource-allocations-${resource.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'resource_allocations',
+          filter: `resource_id=eq.${resource.id}`,
+        },
+        () => {
+          // Refetch allocations when any change occurs
+          queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline', resource.id] });
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [resource.id, queryClient]);
+  
+  // ============================================
   // Data Fetching
   // ============================================
   

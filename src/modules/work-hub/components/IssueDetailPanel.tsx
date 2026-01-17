@@ -86,7 +86,8 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-red-500', 'bg-sky-500'];
+    // Catalyst V5 avatar colors (Blue, Teal, Gray only)
+    const colors = ['bg-[#2563eb]', 'bg-[#0d9488]', 'bg-[#6b7280]'];
     return colors[name.charCodeAt(0) % colors.length];
   };
 

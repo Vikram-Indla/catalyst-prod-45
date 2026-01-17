@@ -176,38 +176,39 @@ export function getProjectUtilizationForPeriod(
  * Get color for staffing status
  */
 export function getStaffingStatusConfig(status: 'full' | 'partial' | 'under' | 'over') {
+  // Catalyst V5 compliant colors (Blue, Teal, Gray only)
   const configs = {
     full: {
       label: 'Fully Staffed',
-      color: 'hsl(var(--teal-500))',
-      bgClass: 'bg-teal-50 dark:bg-teal-950/30',
-      textClass: 'text-teal-700 dark:text-teal-400',
-      borderClass: 'border-teal-400 dark:border-teal-600',
-      dotClass: 'bg-teal-500'
+      color: '#0d9488',
+      bgClass: 'bg-[#f0fdfa] dark:bg-teal-950/30',
+      textClass: 'text-[#0d9488] dark:text-teal-400',
+      borderClass: 'border-[#0d9488] dark:border-teal-600',
+      dotClass: 'bg-[#0d9488]'
     },
     partial: {
       label: 'Partial',
-      color: 'hsl(var(--amber-500))',
-      bgClass: 'bg-amber-50 dark:bg-amber-950/30',
-      textClass: 'text-amber-700 dark:text-amber-400',
-      borderClass: 'border-amber-400 dark:border-amber-600',
-      dotClass: 'bg-amber-500'
+      color: '#6b7280',
+      bgClass: 'bg-[#f8fafc] dark:bg-slate-950/30',
+      textClass: 'text-[#6b7280] dark:text-slate-400',
+      borderClass: 'border-[#6b7280] dark:border-slate-600',
+      dotClass: 'bg-[#6b7280]'
     },
     under: {
       label: 'Understaffed',
-      color: 'hsl(var(--destructive))',
-      bgClass: 'bg-red-50 dark:bg-red-950/30',
-      textClass: 'text-red-700 dark:text-red-400',
-      borderClass: 'border-red-400 dark:border-red-600',
-      dotClass: 'bg-red-500'
+      color: '#2563eb',
+      bgClass: 'bg-[#eff6ff] dark:bg-blue-950/30',
+      textClass: 'text-[#2563eb] dark:text-blue-400',
+      borderClass: 'border-[#2563eb] dark:border-blue-600',
+      dotClass: 'bg-[#2563eb]'
     },
     over: {
       label: 'Over-Allocated',
-      color: 'hsl(var(--purple-500))',
-      bgClass: 'bg-purple-50 dark:bg-purple-950/30',
-      textClass: 'text-purple-700 dark:text-purple-400',
-      borderClass: 'border-purple-400 dark:border-purple-600',
-      dotClass: 'bg-purple-500'
+      color: '#0d9488',
+      bgClass: 'bg-[#f0fdfa] dark:bg-teal-950/30',
+      textClass: 'text-[#0d9488] dark:text-teal-400',
+      borderClass: 'border-[#0d9488] dark:border-teal-600',
+      dotClass: 'bg-[#0d9488]'
     }
   };
   
