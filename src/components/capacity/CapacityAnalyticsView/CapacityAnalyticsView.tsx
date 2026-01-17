@@ -150,6 +150,9 @@ export function CapacityAnalyticsView({
                 <th className="text-left py-3 px-3 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[100px]">
                   Location
                 </th>
+                <th className="text-center py-3 px-3 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[80px]">
+                  Utilization
+                </th>
                 {months.map((m) => (
                   <th 
                     key={`${m.year}-${m.month}`}
@@ -163,7 +166,7 @@ export function CapacityAnalyticsView({
             <tbody>
               {groupedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={months.length + 2} className="text-center py-16 text-muted-foreground">
+                  <td colSpan={months.length + 3} className="text-center py-16 text-muted-foreground">
                     No resources found
                   </td>
                 </tr>
