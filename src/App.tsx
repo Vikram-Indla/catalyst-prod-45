@@ -108,6 +108,7 @@ import ReleasesTestCasesLibraryPage from "./pages/releases/TestCasesLibraryPage"
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import { TestExecutionFocusPage } from "./features/test-execution";
+const AskAIPage = lazy(() => import("./features/ask-ai/AskAIPage"));
 import MyTestScopePage from "./pages/releases/MyTestScopePage";
 import CalendarPage from "./pages/releases/CalendarPage";
 import ComparePage from "./pages/releases/ComparePage";
@@ -804,7 +805,7 @@ const App = () => (
               <Route path="/releases/execution" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ExecutionPage /></Suspense>} />
               <Route path="/releases/execution/:cycleId/:testCaseId" element={<ReleasesTestExecutionPage />} />
               <Route path="/releases/execute/:cycleId/:testCaseId" element={<ProtectedRoute><TestExecutionFocusPage /></ProtectedRoute>} />
-              <Route path="/releases/ask-ai" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/ask-ai" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AskAIPage /></Suspense>} />
               <Route path="/releases/coverage" element={<CoverageReportsPage />} />
               <Route path="/releases/quality-gates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><QualityGatesPage /></Suspense>} />
               <Route path="/releases/rtm" element={<ReleasesPlaceholderPage />} />
