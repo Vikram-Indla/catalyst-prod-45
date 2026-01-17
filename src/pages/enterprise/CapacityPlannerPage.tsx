@@ -3061,8 +3061,8 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                       left: leftPx,
                       width: widthPx,
                       backgroundColor: isForecast ? 'transparent' : projectColor.bg,
-                      color: isForecast ? '#6b7280' : projectColor.text,
-                      border: isForecast ? '2px dotted #9ca3af' : 'none',
+                      color: isForecast ? projectColor.bg : projectColor.text,
+                      border: isForecast ? `2px dashed ${projectColor.bg}` : 'none',
                       boxSizing: 'border-box',
                       boxShadow: !isForecast ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
                     }}
