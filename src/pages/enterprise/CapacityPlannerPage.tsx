@@ -3064,7 +3064,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                       width: widthPx,
                       backgroundColor: barBgColor,
                       color: barTextColor,
-                      border: isForeCast ? '2px dashed #6b7280' : 'none',
+                      border: isForeCast ? '2px dotted #6b7280' : 'none',
                       boxShadow: !isForeCast ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
                     }}
                     title={`${isForeCast ? '[Forecast] ' : ''}${tooltipText}`}
