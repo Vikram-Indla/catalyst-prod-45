@@ -3077,28 +3077,32 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
               })}
               
               {/* Show Available capacity when total < 100% */}
+              {/* Show Available capacity when total < 100% */}
               {(() => {
                 const available = 100 - periodTotals[colIdx];
                 if (available <= 0) return null;
                 
-                // Calculate vertical position after existing bars
-                const barCount = barsStartingHere.length > 0 ? barsStartingHere.length : (barsInColumn.length > 0 ? 0 : 0);
-                const topPosition = 8 + barCount * 32;
+                // Position after the last bar in this column
+                const barsEndingInOrSpanningColumn = ganttBars.filter(bar => 
+                  colIdx >= bar.startColIndex && colIdx <= bar.endColIndex
+                );
+                const topPosition = 8 + barsEndingInOrSpanningColumn.length * 32;
                 
                 return (
                   <div
-                    className="absolute h-6 rounded flex items-center justify-center px-2 text-[10px] font-medium cursor-pointer hover:opacity-80 transition-opacity"
+                    className="absolute h-6 rounded-sm flex items-center justify-center px-2 text-[10px] font-medium cursor-pointer hover:bg-emerald-100 transition-colors"
                     style={{
                       top: topPosition,
                       left: 4,
                       right: 4,
-                      backgroundColor: '#e5e7eb', // Light grey
-                      color: '#6b7280',
-                      border: '1px dashed #9ca3af',
+                      backgroundColor: '#d1fae5', // Light green/teal
+                      color: '#059669',
+                      border: '1px solid #a7f3d0',
                     }}
                     title={`Available: ${available}%`}
                     onClick={() => onEditResource?.(resource.id)}
                   >
+                    <CheckCircle2 className="w-3 h-3 mr-1" />
                     <span className="truncate">Available {available}%</span>
                   </div>
                 );
