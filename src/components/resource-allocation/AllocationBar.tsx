@@ -25,11 +25,13 @@ interface AllocationBarProps {
   columnWidth: number;
   onClick: () => void;
   onDelete?: () => void;
+  stackIndex?: number; // For stacking multiple bars vertically
 }
 
-export function AllocationBar({ bar, columnWidth, onClick, onDelete }: AllocationBarProps) {
+export function AllocationBar({ bar, columnWidth, onClick, onDelete, stackIndex = 0 }: AllocationBarProps) {
   const left = bar.startIndex * columnWidth;
   const width = bar.spanCount * columnWidth - 8; // 8px padding
+  const topOffset = 8 + stackIndex * 36; // Stack bars vertically with 36px spacing
   
   const isCommitted = bar.status === 'committed';
   
@@ -41,7 +43,7 @@ export function AllocationBar({ bar, columnWidth, onClick, onDelete }: Allocatio
             <TooltipTrigger asChild>
               <button
                 className={cn(
-                  "absolute top-2 h-8 rounded-md flex items-center justify-center",
+                  "absolute h-7 rounded-md flex items-center justify-center",
                   "text-[11px] font-bold text-white",
                   "transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer",
                   "focus:outline-none focus:ring-2 focus:ring-offset-2",
@@ -51,6 +53,7 @@ export function AllocationBar({ bar, columnWidth, onClick, onDelete }: Allocatio
                     : "opacity-80"
                 )}
                 style={{
+                  top: topOffset,
                   left: left + 4,
                   width: Math.max(40, width),
                   backgroundColor: isCommitted ? bar.assignmentColor : 'transparent',

@@ -220,7 +220,7 @@ export function TimelineGrid({
               </div>
               
               {/* Timeline cells with bars */}
-              <div className="flex relative" style={{ minHeight: 64 }}>
+              <div className="flex relative" style={{ minHeight: Math.max(64, 40 + bars.length * 36) }}>
                 {/* Background cells */}
                 {periods.map((period) => (
                   <div 
@@ -234,14 +234,15 @@ export function TimelineGrid({
                   />
                 ))}
                 
-                {/* Render bars as absolute positioned elements */}
-                {bars.map((bar) => (
+                {/* Render bars as absolute positioned elements - stacked vertically */}
+                {bars.map((bar, barIndex) => (
                   <AllocationBar
                     key={bar.allocationId}
                     bar={bar}
                     columnWidth={columnWidth}
                     onClick={() => onEditBar(bar.allocationId)}
                     onDelete={() => handleDeleteClick(bar.allocationId, bar.assignmentName)}
+                    stackIndex={barIndex}
                   />
                 ))}
               </div>
