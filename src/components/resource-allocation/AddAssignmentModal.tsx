@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { X, ChevronDown, ArrowRight } from 'lucide-react';
+import { X, ChevronDown, ArrowRight, Check, ChevronsUpDown, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import type { 
   Assignment, 
   CreateAllocationInput, 
@@ -44,6 +57,7 @@ export function AddAssignmentModal({
   onClose,
 }: AddAssignmentModalProps) {
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>('');
+  const [assignmentSearchOpen, setAssignmentSearchOpen] = useState(false);
   const [periodType, setPeriodType] = useState<'weekly' | 'monthly'>(defaultView === 'weeks' ? 'weekly' : 'monthly');
   const [startPeriod, setStartPeriod] = useState<string>('');
   const [endPeriod, setEndPeriod] = useState<string>('');
@@ -179,39 +193,71 @@ export function AddAssignmentModal({
 
           {/* Content */}
           <div className="px-6 py-5 space-y-6">
-            {/* Assignment Selection */}
+            {/* Assignment Selection - Searchable Combobox */}
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-primary uppercase tracking-wider">
                 ASSIGNMENT
               </label>
-              <Select value={selectedAssignmentId} onValueChange={setSelectedAssignmentId}>
-                <SelectTrigger className="h-12 text-[14px] rounded-xl border-border bg-muted/30">
-                  <SelectValue placeholder="Select an assignment..." />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  {filteredAssignments.length === 0 ? (
-                    <div className="p-4 text-center text-[12px] text-muted-foreground">
-                      No available assignments
-                    </div>
-                  ) : (
-                    filteredAssignments.map((assignment) => (
-                      <SelectItem 
-                        key={assignment.id} 
-                        value={assignment.id}
-                        className="text-[13px] py-2.5"
-                      >
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-2.5 h-2.5 rounded-full"
-                            style={{ backgroundColor: assignment.color }}
-                          />
-                          {assignment.name}
-                        </div>
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+              <Popover open={assignmentSearchOpen} onOpenChange={setAssignmentSearchOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={assignmentSearchOpen}
+                    className="w-full h-12 justify-between text-[14px] rounded-xl border-border bg-muted/30 hover:bg-muted/50"
+                  >
+                    {selectedAssignmentId ? (
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: filteredAssignments.find(a => a.id === selectedAssignmentId)?.color || '#2563eb' }}
+                        />
+                        <span className="truncate">
+                          {filteredAssignments.find(a => a.id === selectedAssignmentId)?.name || 'Select an assignment...'}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">Select an assignment...</span>
+                    )}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[368px] p-0 rounded-xl z-[1200]" align="start">
+                  <Command className="rounded-xl">
+                    <CommandInput placeholder="Search assignments..." className="h-10" />
+                    <CommandList className="max-h-[280px]">
+                      <CommandEmpty>No assignments found.</CommandEmpty>
+                      <CommandGroup>
+                        {filteredAssignments.map((assignment) => (
+                          <CommandItem
+                            key={assignment.id}
+                            value={assignment.name}
+                            onSelect={() => {
+                              setSelectedAssignmentId(assignment.id);
+                              setAssignmentSearchOpen(false);
+                            }}
+                            className="py-2.5 cursor-pointer"
+                          >
+                            <div className="flex items-center gap-2 flex-1">
+                              <div 
+                                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: assignment.color }}
+                              />
+                              <span className="truncate">{assignment.name}</span>
+                            </div>
+                            <Check
+                              className={cn(
+                                "ml-auto h-4 w-4",
+                                selectedAssignmentId === assignment.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Period Section */}
