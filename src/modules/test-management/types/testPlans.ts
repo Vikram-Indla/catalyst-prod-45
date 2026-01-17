@@ -1,9 +1,8 @@
 // ══════════════════════════════════════════════════════════════════════════════
-// TEST PLANS - TYPE DEFINITIONS
+// TEST PLANS - TYPE DEFINITIONS (tm_test_plans)
 // ══════════════════════════════════════════════════════════════════════════════
 
-export type TestPlanStatus = 'draft' | 'active' | 'completed' | 'archived';
-export type PlanTeamRole = 'lead' | 'tester' | 'reviewer';
+export type TestPlanStatus = 'draft' | 'active' | 'executing' | 'completed' | 'archived';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Core Types
@@ -11,6 +10,7 @@ export type PlanTeamRole = 'lead' | 'tester' | 'reviewer';
 
 export interface TestPlan {
   id: string;
+  key: string;
   name: string;
   description: string | null;
   status: TestPlanStatus;
@@ -18,18 +18,31 @@ export interface TestPlan {
   start_date: string | null;
   end_date: string | null;
   objectives: string | null;
-  scope_in: string | null;
-  scope_out: string | null;
+  in_scope: string | null;
+  out_of_scope: string | null;
   test_strategy: string | null;
   environment_requirements: string | null;
+  owner_id: string | null;
   created_by: string | null;
   created_at: string | null;
   updated_at: string | null;
+  // Computed stats
+  total_tests: number;
+  passed_count: number;
+  failed_count: number;
+  blocked_count: number;
+  skipped_count: number;
+  todo_count: number;
   // Joined relations
   release?: {
     id: string;
     name: string;
     version: string;
+  } | null;
+  owner?: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
   } | null;
   creator?: {
     id: string;
@@ -64,21 +77,6 @@ export interface PlanTestCase {
     id: string;
     full_name: string | null;
     avatar_url: string | null;
-  } | null;
-}
-
-export interface PlanTeamMember {
-  id: string;
-  plan_id: string;
-  user_id: string;
-  role: PlanTeamRole;
-  added_at: string | null;
-  // Joined relations
-  user?: {
-    id: string;
-    full_name: string | null;
-    avatar_url: string | null;
-    email: string | null;
   } | null;
 }
 
@@ -120,12 +118,6 @@ export interface AddTestCasesToPlanInput {
   assigned_to?: string;
 }
 
-export interface AddTeamMemberInput {
-  plan_id: string;
-  user_id: string;
-  role: PlanTeamRole;
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Filters
 // ─────────────────────────────────────────────────────────────────────────────
@@ -135,4 +127,6 @@ export interface TestPlanFilters {
   release_id?: string;
   search?: string;
   created_by?: string;
+  owner_id?: string;
+  project_id?: string;
 }
