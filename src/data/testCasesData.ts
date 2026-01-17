@@ -59,7 +59,7 @@ export const testCasesData: TestCase[] = [
     status: "approved",
     steps: 6,
     lastRun: "passed",
-    assignee: { name: "Ahmed A.", avatar: "AA", color: "green" },
+    assignee: { name: "Ahmed A.", avatar: "AA", color: "teal" },
     updated: "3 hours ago"
   },
   {
@@ -71,7 +71,7 @@ export const testCasesData: TestCase[] = [
     status: "ready",
     steps: 5,
     lastRun: "failed",
-    assignee: { name: "Sara K.", avatar: "SK", color: "purple" },
+    assignee: { name: "Sara K.", avatar: "SK", color: "gray" },
     updated: "5 hours ago"
   },
   {
@@ -83,7 +83,7 @@ export const testCasesData: TestCase[] = [
     status: "approved",
     steps: 4,
     lastRun: "passed",
-    assignee: { name: "Mohammed R.", avatar: "MR", color: "orange" },
+    assignee: { name: "Mohammed R.", avatar: "MR", color: "blue" },
     updated: "1 day ago"
   },
   {
@@ -107,7 +107,7 @@ export const testCasesData: TestCase[] = [
     status: "ready",
     steps: 10,
     lastRun: "not_run",
-    assignee: { name: "Ahmed A.", avatar: "AA", color: "green" },
+    assignee: { name: "Ahmed A.", avatar: "AA", color: "teal" },
     updated: "2 days ago"
   },
   {
@@ -119,7 +119,7 @@ export const testCasesData: TestCase[] = [
     status: "draft",
     steps: 8,
     lastRun: "not_run",
-    assignee: { name: "Sara K.", avatar: "SK", color: "purple" },
+    assignee: { name: "Sara K.", avatar: "SK", color: "gray" },
     updated: "2 days ago"
   },
   {
@@ -131,7 +131,7 @@ export const testCasesData: TestCase[] = [
     status: "approved",
     steps: 6,
     lastRun: "passed",
-    assignee: { name: "Mohammed R.", avatar: "MR", color: "orange" },
+    assignee: { name: "Mohammed R.", avatar: "MR", color: "blue" },
     updated: "3 days ago"
   },
   {
@@ -155,7 +155,7 @@ export const testCasesData: TestCase[] = [
     status: "approved",
     steps: 7,
     lastRun: "passed",
-    assignee: { name: "Ahmed A.", avatar: "AA", color: "green" },
+    assignee: { name: "Ahmed A.", avatar: "AA", color: "teal" },
     updated: "4 days ago"
   },
   {
@@ -167,7 +167,7 @@ export const testCasesData: TestCase[] = [
     status: "approved",
     steps: 4,
     lastRun: "passed",
-    assignee: { name: "Sara K.", avatar: "SK", color: "purple" },
+    assignee: { name: "Sara K.", avatar: "SK", color: "gray" },
     updated: "5 days ago"
   },
   {
@@ -179,7 +179,7 @@ export const testCasesData: TestCase[] = [
     status: "approved",
     steps: 6,
     lastRun: "passed",
-    assignee: { name: "Mohammed R.", avatar: "MR", color: "orange" },
+    assignee: { name: "Mohammed R.", avatar: "MR", color: "blue" },
     updated: "5 days ago"
   },
   {
@@ -203,7 +203,7 @@ export const testCasesData: TestCase[] = [
     status: "draft",
     steps: 5,
     lastRun: "not_run",
-    assignee: { name: "Ahmed A.", avatar: "AA", color: "green" },
+    assignee: { name: "Ahmed A.", avatar: "AA", color: "teal" },
     updated: "1 week ago"
   },
   {
@@ -215,7 +215,7 @@ export const testCasesData: TestCase[] = [
     status: "approved",
     steps: 9,
     lastRun: "passed",
-    assignee: { name: "Sara K.", avatar: "SK", color: "purple" },
+    assignee: { name: "Sara K.", avatar: "SK", color: "gray" },
     updated: "1 week ago"
   },
 ];
