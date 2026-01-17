@@ -3049,10 +3049,8 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 const leftPx = bar.leftOffset || 0;
                 const widthPx = bar.barWidth || (bar.span * columnWidth);
                 
-                // Committed = Blue, Forecast = Grey
-                const isForeCast = bar.alloc.status === 'forecast';
-                const barBgColor = isForeCast ? '#9ca3af' : projectColor.bg; // Grey for forecast
-                const barTextColor = isForeCast ? '#ffffff' : projectColor.text;
+                // Committed = project color, Forecast = grey + dotted border
+                const isForecast = bar.alloc.status === 'forecast';
 
                 return (
                   <div
@@ -3062,12 +3060,13 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                       top: 8 + idx * 32,
                       left: leftPx,
                       width: widthPx,
-                      backgroundColor: barBgColor,
-                      color: barTextColor,
-                      border: isForeCast ? '2px dotted #6b7280' : 'none',
-                      boxShadow: !isForeCast ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
+                      backgroundColor: isForecast ? 'hsl(var(--muted))' : projectColor.bg,
+                      color: isForecast ? 'hsl(var(--foreground))' : projectColor.text,
+                      border: isForecast ? '3px dotted hsl(var(--foreground) / 0.35)' : 'none',
+                      boxSizing: 'border-box',
+                      boxShadow: !isForecast ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
                     }}
-                    title={`${isForeCast ? '[Forecast] ' : ''}${tooltipText}`}
+                    title={`${isForecast ? '[Forecast] ' : ''}${tooltipText}`}
                     onClick={() => onEditResource?.(resource.id)}
                   >
                     <span className="truncate">
