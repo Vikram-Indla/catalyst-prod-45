@@ -3052,13 +3052,23 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 return (
                   <div
                     key={bar.alloc.id || idx}
-                    className="absolute h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity shadow-sm z-10"
+                    className="absolute h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity z-10"
                     style={{
                       top: 8 + idx * 32,
                       left: leftPx,
                       width: widthPx,
-                      backgroundColor: projectColor.bg,
-                      color: projectColor.text,
+                      backgroundColor: bar.alloc.status === 'forecast' 
+                        ? `${projectColor.bg}20` 
+                        : projectColor.bg,
+                      color: bar.alloc.status === 'forecast' 
+                        ? projectColor.bg 
+                        : projectColor.text,
+                      border: bar.alloc.status === 'forecast' 
+                        ? `2px dotted ${projectColor.bg}` 
+                        : 'none',
+                      boxShadow: bar.alloc.status === 'committed' 
+                        ? '0 1px 3px rgba(0,0,0,0.15)' 
+                        : 'none',
                     }}
                     title={tooltipText}
                     onClick={() => onEditResource?.(resource.id)}
