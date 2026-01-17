@@ -112,11 +112,13 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
     );
   }
 
-  // Empty/no allocation
+  // Empty/no allocation - show as Available
   if (segments.length === 0 || totalPercent === 0) {
     return (
       <td className="p-1 min-w-[120px]">
-        <div className="h-12 flex items-center justify-center rounded-lg bg-muted/30" />
+        <div className="h-12 flex items-center justify-center rounded-lg bg-muted/30">
+          <span className="text-xs font-medium text-muted-foreground/70">Available</span>
+        </div>
       </td>
     );
   }
