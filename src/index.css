@@ -45,6 +45,20 @@ html:has(body[data-scroll-locked]) {
   --removed-body-scroll-bar-size: 0px !important;
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+   RADIX SELECT — Prevent top-left flash before Popper placement
+   Hide content until Radix sets data-side attribute (indicates positioning done)
+   ════════════════════════════════════════════════════════════════════════════ */
+[data-radix-select-content][data-state="open"]:not([data-side]) {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+[data-radix-select-content][data-state="open"][data-side] {
+  visibility: visible;
+  pointer-events: auto;
+}
+
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════
