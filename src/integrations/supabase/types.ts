@@ -15384,6 +15384,143 @@ export type Database = {
           },
         ]
       }
+      plan_team_members: {
+        Row: {
+          added_at: string | null
+          id: string
+          plan_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          id?: string
+          plan_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          id?: string
+          plan_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_team_members_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "test_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      plan_test_cases: {
+        Row: {
+          added_at: string | null
+          assigned_to: string | null
+          execution_order: number | null
+          id: string
+          plan_id: string
+          test_case_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          assigned_to?: string | null
+          execution_order?: number | null
+          id?: string
+          plan_id: string
+          test_case_id: string
+        }
+        Update: {
+          added_at?: string | null
+          assigned_to?: string | null
+          execution_order?: number | null
+          id?: string
+          plan_id?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "test_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       planner_checklist_items: {
         Row: {
           completed_at: string | null
@@ -22924,6 +23061,96 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      test_plans: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          environment_requirements: string | null
+          id: string
+          name: string
+          objectives: string | null
+          release_id: string | null
+          scope_in: string | null
+          scope_out: string | null
+          start_date: string | null
+          status: string
+          test_strategy: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          environment_requirements?: string | null
+          id?: string
+          name: string
+          objectives?: string | null
+          release_id?: string | null
+          scope_in?: string | null
+          scope_out?: string | null
+          start_date?: string | null
+          status?: string
+          test_strategy?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          environment_requirements?: string | null
+          id?: string
+          name?: string
+          objectives?: string | null
+          release_id?: string | null
+          scope_in?: string | null
+          scope_out?: string | null
+          start_date?: string | null
+          status?: string
+          test_strategy?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "test_plans_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_run_statuses: {
         Row: {
