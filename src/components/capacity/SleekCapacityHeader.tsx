@@ -8,7 +8,7 @@ import {
   Search, Download, Plus, Filter, ChevronDown, Clock, 
   LayoutGrid, Table2, CalendarDays, Grid3X3, 
   Presentation, Briefcase, Users, Layers, FileText, Calendar,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, BarChart3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -173,6 +173,17 @@ export function SleekCapacityHeader({
 
   // View tabs configuration
   const viewTabs = [
+    { 
+      id: 'analytics', 
+      label: 'Analytics', 
+      icon: BarChart3,
+      isActive: primaryView === 'resources' && resourceView === 'heatmap',
+      onClick: () => {
+        onPrimaryViewChange?.('resources');
+        onResourceViewChange?.('heatmap');
+        onViewModeChange?.('table');
+      }
+    },
     { 
       id: 'resources', 
       label: 'Resources', 
