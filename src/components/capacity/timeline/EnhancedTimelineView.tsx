@@ -103,26 +103,27 @@ interface AllocationBarProps {
 function AllocationBar({ allocation, leftPx, widthPx, rowIndex, totalBars, onClick }: AllocationBarProps) {
   const projectName = allocation.assignment_name || 'Allocation';
   const barStyle = getTimelineBarStyle(projectName);
+  const isForecast = allocation.status === 'forecast';
   
-  // Determine bar class based on project
+  // Determine bar class based on project - with forecast variant
   const getBarClass = () => {
     const name = projectName.toLowerCase();
     if (name.includes('bau') || name.includes('ops') || name.includes('platform')) {
-      return styles.barPrimary;
+      return isForecast ? styles.barPrimaryForecast : styles.barPrimary;
     }
     if (name.includes('innovation') || name.includes('alpha') || name.includes('tahommena')) {
-      return styles.barTeal;
+      return isForecast ? styles.barTealForecast : styles.barTeal;
     }
     if (name.includes('website') || name.includes('design') || name.includes('review')) {
-      return styles.barWarning;
+      return isForecast ? styles.barWarningForecast : styles.barWarning;
     }
     if (name.includes('inspection') || name.includes('international') || name.includes('mim')) {
-      return styles.barTeal;
+      return isForecast ? styles.barTealForecast : styles.barTeal;
     }
     if (name.includes('sectorial') || name.includes('strategy')) {
-      return styles.barSlate;
+      return isForecast ? styles.barSlateForecast : styles.barSlate;
     }
-    return styles.barPrimary;
+    return isForecast ? styles.barPrimaryForecast : styles.barPrimary;
   };
 
   const formatDate = (dateStr: string) => {
