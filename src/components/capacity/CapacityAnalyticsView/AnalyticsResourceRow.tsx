@@ -1,8 +1,9 @@
 /**
- * Analytics Resource Row - V7 Design with Location column
+ * Analytics Resource Row - V8 Design with Avatar matching Resources tab
  */
 
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { AnalyticsMonthCell } from './AnalyticsMonthCell';
 import type { CapacityRow } from './types';
 
@@ -16,7 +17,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
 
   // Location badge styling
   const locationName = resource.location?.name?.toLowerCase() || '';
-  const isOnsite = locationName.includes('onsite');
+  const isOnsite = locationName.includes('onsite') || locationName.includes('riyadh');
   const isOffshore = locationName.includes('offshore');
   const isHybrid = locationName.includes('hybrid');
   
@@ -30,6 +31,19 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   const badge = getLocationBadge();
   const deptName = resource.department?.name || 'BMC';
 
+  // Avatar styling - green for onsite, blue for others (matching Resources tab)
+  const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+  const avatarBgClass = isOnsite ? 'bg-emerald-500' : 'bg-emerald-500';
+  const locLabel = isOnsite ? 'Onsite' : isOffshore ? 'Off-Shore' : resource.location?.name || '';
+  const locLabelClass = isOnsite ? 'text-emerald-600' : 'text-emerald-600';
+  
+  // Country flag - resource.country is an object with id, name, code
+  const countryCode = resource.country?.code;
+  const countryName = resource.country?.name;
+  const flagUrl = countryCode 
+    ? `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`
+    : null;
+
   // Utilization color - colored borders based on percentage
   const getUtilizationColor = (percent: number) => {
     if (percent >= 100) return 'text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-green-500 border-2 font-bold';
@@ -40,23 +54,61 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
 
   return (
     <tr className="border-b border-border/30 hover:bg-muted/20 transition-colors">
-      {/* Resource Info Cell */}
-      <td className="sticky left-0 z-10 bg-card py-3 px-4 min-w-[180px] border-r border-border">
+      {/* Resource Info Cell with Avatar */}
+      <td className="sticky left-0 z-10 bg-card py-3 px-4 min-w-[220px] border-r border-border">
         <div 
-          className="cursor-pointer"
+          className="flex items-center gap-3 cursor-pointer"
           onClick={() => onResourceClick?.(resource.id)}
         >
-          <div className="font-semibold text-sm text-[#0a0a0a] dark:text-white truncate">
-            {resource.name}
-          </div>
-          <div className="text-xs text-[#737373] dark:text-gray-400">
-            {resource.role_name || 'No role'}
-          </div>
-          <div className="text-xs text-[#2563eb] dark:text-blue-400 font-medium">
-            {deptName}
-            {resource.vendor?.name && (
-              <span className="text-muted-foreground font-normal"> - {resource.vendor.name}</span>
-            )}
+          {/* Avatar with flag overlay */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative flex-shrink-0">
+                <div 
+                  className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ring-2 ring-emerald-400",
+                    avatarBgClass
+                  )}
+                >
+                  {initials}
+                </div>
+                {/* Flag overlay */}
+                {flagUrl && (
+                  <span 
+                    className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
+                    style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
+                  >
+                    <img 
+                      src={flagUrl} 
+                      alt={countryName || ''} 
+                      className="w-3.5 h-3.5 object-cover rounded-sm"
+                    />
+                  </span>
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="bg-slate-900 text-white text-xs font-medium px-2.5 py-1.5">
+              {countryName || 'Unknown Country'}
+            </TooltipContent>
+          </Tooltip>
+          
+          {/* Name and details */}
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-sm text-[#0a0a0a] dark:text-white truncate">
+                {resource.name}
+              </span>
+              {/* Online indicator */}
+              <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {resource.role_name || 'No role'}
+            </div>
+            <div className="flex items-center gap-1">
+              <span className={cn("text-[11px] font-medium", locLabelClass)}>
+                {locLabel}
+              </span>
+            </div>
           </div>
         </div>
       </td>
