@@ -1,9 +1,11 @@
 /**
  * Analytics Month Cell - V7 Design with assignment segments
+ * Uses Catalyst V5 workstream colors
  */
 
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { WORKSTREAM_COLORS, DEFAULT_WORKSTREAM_COLOR } from '@/lib/workstream-colors';
 import type { MonthCell, MonthSegment } from './types';
 
 interface AnalyticsMonthCellProps {
@@ -11,42 +13,37 @@ interface AnalyticsMonthCellProps {
   contractEndDate?: string | null;
 }
 
-// Assignment abbreviations map
-const ASSIGNMENT_ABBREV: Record<string, string> = {
-  'senaei': 'SEN',
-  'senaei bau': 'SEN',
-  'pmo': 'PMO',
-  'security': 'SEC',
-  'audit': 'AUD',
-  'default': 'SEN',
-};
-
-// Assignment colors - vibrant saturated colors for high visibility
-const ASSIGNMENT_COLORS: Record<string, { bg: string; text: string; bgOver?: string }> = {
-  'SEN': { bg: 'bg-blue-600', text: 'text-white' },
-  'PMO': { bg: 'bg-rose-600', text: 'text-white' },
-  'SEC': { bg: 'bg-emerald-600', text: 'text-white' },
-  'AUD': { bg: 'bg-amber-500', text: 'text-white' },
-  'TAH': { bg: 'bg-cyan-600', text: 'text-white' },
-  'DAT': { bg: 'bg-violet-600', text: 'text-white' },
-  'INS': { bg: 'bg-orange-600', text: 'text-white' },
-  'INT': { bg: 'bg-pink-600', text: 'text-white' },
-  'CAT': { bg: 'bg-teal-600', text: 'text-white' },
-  'DEL': { bg: 'bg-indigo-600', text: 'text-white' },
-  'MIM': { bg: 'bg-yellow-500', text: 'text-gray-900' },
-  'default': { bg: 'bg-blue-600', text: 'text-white' },
-};
-
-function getAbbrev(name: string): string {
-  const lower = name.toLowerCase();
-  for (const [key, abbrev] of Object.entries(ASSIGNMENT_ABBREV)) {
-    if (lower.includes(key)) return abbrev;
+// Map assignment names to workstream tracks for color lookup
+function getWorkstreamColor(assignmentName: string) {
+  const lower = assignmentName.toLowerCase();
+  
+  // Match assignment to workstream based on keywords
+  if (lower.includes('senaie') || lower.includes('senaei') || lower.includes('sen')) {
+    return WORKSTREAM_COLORS['Senaie Track'];
   }
-  return name.slice(0, 3).toUpperCase();
-}
-
-function getColor(abbrev: string) {
-  return ASSIGNMENT_COLORS[abbrev] || ASSIGNMENT_COLORS['default'];
+  if (lower.includes('tahom') || lower.includes('tah')) {
+    return WORKSTREAM_COLORS['Tahommona Track'];
+  }
+  if (lower.includes('catalyst') || lower.includes('cat')) {
+    return WORKSTREAM_COLORS['Catalyst Track'];
+  }
+  if (lower.includes('delivery') || lower.includes('del')) {
+    return WORKSTREAM_COLORS['Delivery Track'];
+  }
+  if (lower.includes('mim') || lower.includes('website')) {
+    return WORKSTREAM_COLORS['MIM Website'];
+  }
+  if (lower.includes('data') || lower.includes('ai') || lower.includes('dat')) {
+    return WORKSTREAM_COLORS['Data & AI Track'];
+  }
+  if (lower.includes('security') || lower.includes('sec')) {
+    return WORKSTREAM_COLORS['Catalyst Track']; // Use teal for security
+  }
+  if (lower.includes('stand') || lower.includes('alone') || lower.includes('ins') || lower.includes('int')) {
+    return WORKSTREAM_COLORS['Stand-Alone Projects Track'];
+  }
+  
+  return DEFAULT_WORKSTREAM_COLOR;
 }
 
 export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCellProps) {
@@ -92,8 +89,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
     const totalWidth = segments.reduce((sum, s) => sum + s.percent, 0);
     
     return segments.map((seg, idx) => {
-      const abbrev = getAbbrev(seg.assignment.name);
-      const colors = getColor(abbrev);
+      const wsColor = getWorkstreamColor(seg.assignment.name);
       const width = `${(seg.percent / totalWidth) * 100}%`;
       
       // Check if this segment is the "extra" over 100%
@@ -104,14 +100,12 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
           key={idx}
           className={cn(
             'h-full flex flex-col items-center justify-center',
-            isExtraOver 
-              ? 'bg-rose-100 dark:bg-rose-900/40' 
-              : colors.bg,
             idx === 0 && 'rounded-l-lg',
             idx === segments.length - 1 && 'rounded-r-lg',
           )}
           style={{ 
             width,
+            backgroundColor: isExtraOver ? undefined : wsColor.hex,
             backgroundImage: isExtraOver 
               ? 'repeating-linear-gradient(135deg, transparent, transparent 3px, rgba(244,63,94,0.3) 3px, rgba(244,63,94,0.3) 6px)' 
               : undefined,
@@ -119,13 +113,13 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
         >
           <span className={cn(
             'text-xs font-bold',
-            isExtraOver ? 'text-rose-600' : colors.text
+            isExtraOver ? 'text-rose-600' : 'text-white'
           )}>
             {seg.percent > 100 ? `+${seg.percent - 100}%` : `${seg.percent}%`}
           </span>
           <span className={cn(
-            'text-[9px] font-medium opacity-80 truncate max-w-full px-1',
-            isExtraOver ? 'text-rose-600' : colors.text
+            'text-[9px] font-medium truncate max-w-full px-1',
+            isExtraOver ? 'text-rose-600' : 'text-white/90'
           )}>
             {seg.assignment.name}
           </span>
