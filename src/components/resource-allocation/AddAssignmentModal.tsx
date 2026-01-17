@@ -90,9 +90,8 @@ export function AddAssignmentModal({
     }
   }, [periodType, currentWeek, currentMonth, currentYear]);
 
-  // Filter assignments (exclude already assigned)
-  const filteredAssignments = availableAssignments
-    .filter(a => !existingAssignmentIds.includes(a.id));
+  // Show all available assignments (allow multiple allocations per assignment for different time periods)
+  const filteredAssignments = availableAssignments;
 
   // Generate period options with formatted labels
   const periodOptions = useMemo(() => {
