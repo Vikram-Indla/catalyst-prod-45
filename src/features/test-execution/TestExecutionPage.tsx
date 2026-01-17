@@ -90,9 +90,8 @@ export default function TestExecutionFocusPage() {
   const skipped = steps.filter(s => s.status === 'skipped').length;
   const completed = passed + failed + blocked + skipped;
   
-  // Find next test in queue
-  const currentTestIndex = mockCycleTestCases.findIndex(tc => tc.id === testCaseId);
-  const hasNextTest = currentTestIndex < mockCycleTestCases.length - 1;
+  // Next test in queue - will be implemented with useNextTestInQueue hook
+  const hasNextTest = false; // TODO: Wire to useNextTestInQueue when cycle context is available
   
   // Handlers
   const handleBack = useCallback(() => {
@@ -114,11 +113,9 @@ export default function TestExecutionFocusPage() {
   }, [dismissDefectPrompt]);
   
   const handleNextTest = useCallback(() => {
-    if (hasNextTest) {
-      const nextTest = mockCycleTestCases[currentTestIndex + 1];
-      navigate(`/releases/execution/${cycleId}/${nextTest.id}`);
-    }
-  }, [hasNextTest, currentTestIndex, cycleId, navigate]);
+    // TODO: Implement with useNextTestInQueue hook
+    toast.info('Next test navigation coming soon');
+  }, []);
   
   const handleAddNote = useCallback(() => {
     setNoteModalOpen(true);
