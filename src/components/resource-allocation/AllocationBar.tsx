@@ -44,37 +44,28 @@ export function AllocationBar({ bar, columnWidth, onClick, onDelete, stackIndex 
               <button
                 className={cn(
                   "absolute h-7 rounded-md flex items-center justify-center",
-                  "text-[11px] font-bold text-white",
+                  "text-[11px] font-bold",
                   "transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer",
                   "focus:outline-none focus:ring-2 focus:ring-offset-2",
-                  // Committed = solid, Forecast = striped
+                  // Committed = solid with white text, Forecast = light fill with dotted border
                   isCommitted 
-                    ? "shadow-[0_2px_6px_rgba(0,0,0,0.15)]"
-                    : "opacity-80"
+                    ? "shadow-[0_2px_6px_rgba(0,0,0,0.15)] text-white"
+                    : "text-foreground"
                 )}
                 style={{
                   top: topOffset,
                   left: left + 4,
                   width: Math.max(40, width),
-                  backgroundColor: isCommitted ? bar.assignmentColor : 'transparent',
-                  background: isCommitted 
+                  backgroundColor: isCommitted 
                     ? bar.assignmentColor 
-                    : `repeating-linear-gradient(
-                        45deg,
-                        ${bar.assignmentColor}40,
-                        ${bar.assignmentColor}40 4px,
-                        ${bar.assignmentColor}70 4px,
-                        ${bar.assignmentColor}70 8px
-                      )`,
-                  border: isCommitted ? 'none' : `2px dashed ${bar.assignmentColor}`,
-                  color: isCommitted ? 'white' : bar.assignmentColor,
+                    : `${bar.assignmentColor}15`,
+                  border: isCommitted 
+                    ? 'none' 
+                    : `2px dotted ${bar.assignmentColor}`,
                 }}
                 aria-label={`${bar.assignmentName}: ${bar.percentage}% ${bar.status}`}
               >
-                <span className={cn(
-                  "px-2 truncate",
-                  !isCommitted && "font-extrabold"
-                )}>
+                <span className="px-2 truncate font-bold">
                   {bar.percentage}%
                 </span>
               </button>
