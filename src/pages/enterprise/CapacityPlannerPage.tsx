@@ -921,7 +921,7 @@ export default function CapacityPlannerPage() {
                   <CapacityAnalyticsView 
                     departmentFilter={departmentFilter}
                     onDepartmentChange={setDepartmentFilter}
-                    onResourceClick={(id) => setResource360Id(id)}
+                    onResourceClick={(id) => handleOpenAllocationModal(id)}
                   />
                 </motion.div>
               )}
