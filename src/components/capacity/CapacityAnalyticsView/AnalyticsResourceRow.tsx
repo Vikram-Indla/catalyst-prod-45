@@ -30,12 +30,12 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   const badge = getLocationBadge();
   const deptName = resource.department?.name || 'BMC';
 
-  // Utilization color based on percentage
+  // Utilization color based on percentage - vibrant colors, no background
   const getUtilizationColor = (percent: number) => {
-    if (percent >= 100) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
-    if (percent >= 75) return 'text-blue-600 bg-blue-50 border-blue-200';
-    if (percent >= 50) return 'text-amber-600 bg-amber-50 border-amber-200';
-    return 'text-rose-600 bg-rose-50 border-rose-200';
+    if (percent >= 100) return 'text-emerald-600 bg-transparent border-emerald-500';
+    if (percent >= 75) return 'text-violet-600 bg-transparent border-violet-500';
+    if (percent >= 50) return 'text-amber-600 bg-transparent border-amber-500';
+    return 'text-rose-600 bg-transparent border-rose-500';
   };
 
   return (
