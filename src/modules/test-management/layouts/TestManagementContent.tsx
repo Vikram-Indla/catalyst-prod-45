@@ -19,6 +19,8 @@ const getTMBreadcrumb = (pathname: string): BreadcrumbTitle | null => {
   if (pathname.startsWith('/tests/command-center')) return { parent, current: 'Command Center' };
   if (pathname.startsWith('/tests/cases')) return { parent, current: 'Test Cases' };
   if (pathname.startsWith('/tests/my-work')) return { parent, current: 'My Work' };
+  if (pathname.startsWith('/tests/plans/')) return { parent, current: 'Plan Details' };
+  if (pathname.startsWith('/tests/plans')) return { parent, current: 'Test Plans' };
   if (pathname.startsWith('/tests/cycles/')) return { parent, current: 'Cycle Details' };
   if (pathname.startsWith('/tests/cycles')) return { parent, current: 'Test Cycles' };
   if (pathname.startsWith('/tests/defects')) return { parent, current: 'Defects' };
