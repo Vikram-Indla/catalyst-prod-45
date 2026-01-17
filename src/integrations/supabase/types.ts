@@ -24302,6 +24302,7 @@ export type Database = {
           actual_result: string | null
           affects_version: string | null
           assignee_id: string | null
+          auto_created: boolean | null
           browser: string | null
           browser_version: string | null
           component: string | null
@@ -24334,6 +24335,9 @@ export type Database = {
           reporter_id: string | null
           resolved_at: string | null
           severity: Database["public"]["Enums"]["tm_defect_severity"] | null
+          source_test_case_id: string | null
+          source_test_plan_id: string | null
+          source_test_run_id: string | null
           sprint: string | null
           status: Database["public"]["Enums"]["tm_defect_status"] | null
           steps_to_reproduce: string | null
@@ -24344,6 +24348,7 @@ export type Database = {
           actual_result?: string | null
           affects_version?: string | null
           assignee_id?: string | null
+          auto_created?: boolean | null
           browser?: string | null
           browser_version?: string | null
           component?: string | null
@@ -24376,6 +24381,9 @@ export type Database = {
           reporter_id?: string | null
           resolved_at?: string | null
           severity?: Database["public"]["Enums"]["tm_defect_severity"] | null
+          source_test_case_id?: string | null
+          source_test_plan_id?: string | null
+          source_test_run_id?: string | null
           sprint?: string | null
           status?: Database["public"]["Enums"]["tm_defect_status"] | null
           steps_to_reproduce?: string | null
@@ -24386,6 +24394,7 @@ export type Database = {
           actual_result?: string | null
           affects_version?: string | null
           assignee_id?: string | null
+          auto_created?: boolean | null
           browser?: string | null
           browser_version?: string | null
           component?: string | null
@@ -24418,6 +24427,9 @@ export type Database = {
           reporter_id?: string | null
           resolved_at?: string | null
           severity?: Database["public"]["Enums"]["tm_defect_severity"] | null
+          source_test_case_id?: string | null
+          source_test_plan_id?: string | null
+          source_test_run_id?: string | null
           sprint?: string | null
           status?: Database["public"]["Enums"]["tm_defect_status"] | null
           steps_to_reproduce?: string | null
@@ -24494,6 +24506,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_resource_profile"
             referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_source_test_case_id_fkey"
+            columns: ["source_test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defects_source_test_case_id_fkey"
+            columns: ["source_test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defects_source_test_plan_id_fkey"
+            columns: ["source_test_plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defects_source_test_run_id_fkey"
+            columns: ["source_test_run_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_runs"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -25565,6 +25605,7 @@ export type Database = {
           project_id: string
           skipped_count: number | null
           status: Database["public"]["Enums"]["tm_cycle_status"] | null
+          test_plan_id: string | null
           total_cases: number | null
           updated_at: string | null
         }
@@ -25587,6 +25628,7 @@ export type Database = {
           project_id: string
           skipped_count?: number | null
           status?: Database["public"]["Enums"]["tm_cycle_status"] | null
+          test_plan_id?: string | null
           total_cases?: number | null
           updated_at?: string | null
         }
@@ -25609,6 +25651,7 @@ export type Database = {
           project_id?: string
           skipped_count?: number | null
           status?: Database["public"]["Enums"]["tm_cycle_status"] | null
+          test_plan_id?: string | null
           total_cases?: number | null
           updated_at?: string | null
         }
@@ -25662,10 +25705,257 @@ export type Database = {
             referencedRelation: "v_tm_traceability_summary"
             referencedColumns: ["project_id"]
           },
+          {
+            foreignKeyName: "tm_test_cycles_test_plan_id_fkey"
+            columns: ["test_plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_test_plan_cases: {
+        Row: {
+          added_at: string | null
+          added_by: string | null
+          id: string
+          sort_order: number | null
+          test_case_id: string
+          test_plan_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          added_by?: string | null
+          id?: string
+          sort_order?: number | null
+          test_case_id: string
+          test_plan_id: string
+        }
+        Update: {
+          added_at?: string | null
+          added_by?: string | null
+          id?: string
+          sort_order?: number | null
+          test_case_id?: string
+          test_plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_test_plan_id_fkey"
+            columns: ["test_plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_test_plans: {
+        Row: {
+          blocked_count: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          environment_requirements: string | null
+          failed_count: number | null
+          id: string
+          in_scope: string | null
+          name: string
+          not_run_count: number | null
+          objectives: string | null
+          out_of_scope: string | null
+          owner_id: string | null
+          passed_count: number | null
+          plan_key: string
+          project_id: string
+          release_id: string | null
+          skipped_count: number | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["tm_test_plan_status"] | null
+          team_members: string[] | null
+          test_strategy: string | null
+          total_tests: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          blocked_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          environment_requirements?: string | null
+          failed_count?: number | null
+          id?: string
+          in_scope?: string | null
+          name: string
+          not_run_count?: number | null
+          objectives?: string | null
+          out_of_scope?: string | null
+          owner_id?: string | null
+          passed_count?: number | null
+          plan_key: string
+          project_id: string
+          release_id?: string | null
+          skipped_count?: number | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["tm_test_plan_status"] | null
+          team_members?: string[] | null
+          test_strategy?: string | null
+          total_tests?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          blocked_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          environment_requirements?: string | null
+          failed_count?: number | null
+          id?: string
+          in_scope?: string | null
+          name?: string
+          not_run_count?: number | null
+          objectives?: string | null
+          out_of_scope?: string | null
+          owner_id?: string | null
+          passed_count?: number | null
+          plan_key?: string
+          project_id?: string
+          release_id?: string | null
+          skipped_count?: number | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["tm_test_plan_status"] | null
+          team_members?: string[] | null
+          test_strategy?: string | null
+          total_tests?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
         ]
       }
       tm_test_runs: {
         Row: {
+          auto_created_defect_id: string | null
           completed_at: string | null
           created_at: string | null
           cycle_scope_id: string
@@ -25680,6 +25970,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          auto_created_defect_id?: string | null
           completed_at?: string | null
           created_at?: string | null
           cycle_scope_id: string
@@ -25694,6 +25985,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          auto_created_defect_id?: string | null
           completed_at?: string | null
           created_at?: string | null
           cycle_scope_id?: string
@@ -25708,6 +26000,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_test_runs_auto_created_defect_id_fkey"
+            columns: ["auto_created_defect_id"]
+            isOneToOne: false
+            referencedRelation: "tm_defects"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tm_test_runs_cycle_scope_id_fkey"
             columns: ["cycle_scope_id"]
@@ -29029,6 +29328,37 @@ export type Database = {
         }
         Returns: string
       }
+      tm_get_defect_trend: {
+        Args: { p_days?: number; p_project_id: string }
+        Returns: {
+          closed: number
+          cumulative_open: number
+          date: string
+          opened: number
+        }[]
+      }
+      tm_get_plan_burndown: {
+        Args: { p_days?: number; p_test_plan_id: string }
+        Returns: {
+          blocked: number
+          date: string
+          failed: number
+          passed: number
+          remaining: number
+        }[]
+      }
+      tm_get_plan_stats: {
+        Args: { p_test_plan_id: string }
+        Returns: {
+          blocked: number
+          failed: number
+          not_run: number
+          pass_rate: number
+          passed: number
+          skipped: number
+          total_tests: number
+        }[]
+      }
       tm_next_entity_key: {
         Args: { p_prefix: string; p_project_id: string }
         Returns: string
@@ -29471,6 +29801,12 @@ export type Database = {
         | "status_change"
         | "comment"
         | "due_date"
+      tm_test_plan_status:
+        | "draft"
+        | "active"
+        | "executing"
+        | "completed"
+        | "archived"
       track_by_type: "POINTS" | "HOURS"
       urgency_level: "high" | "medium" | "low"
       user_approval_status:
@@ -30063,6 +30399,13 @@ export const Constants = {
         "status_change",
         "comment",
         "due_date",
+      ],
+      tm_test_plan_status: [
+        "draft",
+        "active",
+        "executing",
+        "completed",
+        "archived",
       ],
       track_by_type: ["POINTS", "HOURS"],
       urgency_level: ["high", "medium", "low"],
