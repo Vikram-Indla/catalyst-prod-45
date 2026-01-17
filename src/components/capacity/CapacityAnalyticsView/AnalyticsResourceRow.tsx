@@ -47,9 +47,9 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
               {initials}
             </div>
             {/* Country flag */}
-            {resource.country_code && (
+            {resource.country?.code && (
               <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-card border border-border overflow-hidden flex items-center justify-center text-[10px]">
-                {resource.country_code}
+                {resource.country.code}
               </div>
             )}
           </div>

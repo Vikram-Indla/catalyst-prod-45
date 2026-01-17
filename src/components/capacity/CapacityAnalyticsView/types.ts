@@ -10,8 +10,7 @@ export interface AnalyticsResource {
   location: { id: string; name: string } | null;
   department: { id: string; name: string; color?: string; sort_order?: number } | null;
   contract_end_date: string | null;
-  country_code?: string | null;
-  country_flag_svg_url?: string | null;
+  country: { id: string; name: string; code: string } | null;
 }
 
 export interface AnalyticsAllocation {
