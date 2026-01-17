@@ -21,13 +21,20 @@ const ASSIGNMENT_ABBREV: Record<string, string> = {
   'default': 'SEN',
 };
 
-// Assignment colors - matching reference
+// Assignment colors - vibrant saturated colors for high visibility
 const ASSIGNMENT_COLORS: Record<string, { bg: string; text: string; bgOver?: string }> = {
-  'SEN': { bg: 'bg-blue-400', text: 'text-white' },
-  'PMO': { bg: 'bg-rose-400', text: 'text-white' },
-  'SEC': { bg: 'bg-teal-400', text: 'text-white' },
-  'AUD': { bg: 'bg-amber-400', text: 'text-white' },
-  'default': { bg: 'bg-blue-400', text: 'text-white' },
+  'SEN': { bg: 'bg-blue-600', text: 'text-white' },
+  'PMO': { bg: 'bg-rose-600', text: 'text-white' },
+  'SEC': { bg: 'bg-emerald-600', text: 'text-white' },
+  'AUD': { bg: 'bg-amber-500', text: 'text-white' },
+  'TAH': { bg: 'bg-cyan-600', text: 'text-white' },
+  'DAT': { bg: 'bg-violet-600', text: 'text-white' },
+  'INS': { bg: 'bg-orange-600', text: 'text-white' },
+  'INT': { bg: 'bg-pink-600', text: 'text-white' },
+  'CAT': { bg: 'bg-teal-600', text: 'text-white' },
+  'DEL': { bg: 'bg-indigo-600', text: 'text-white' },
+  'MIM': { bg: 'bg-yellow-500', text: 'text-gray-900' },
+  'default': { bg: 'bg-blue-600', text: 'text-white' },
 };
 
 function getAbbrev(name: string): string {
