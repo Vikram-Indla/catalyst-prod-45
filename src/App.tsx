@@ -289,6 +289,9 @@ import {
   IncidentReports,
 } from "./pages/release";
 
+// Releases - Test Execution
+const ExecutionPage = lazy(() => import("./pages/releases/ExecutionPage"));
+
 // Incident Room (New)
 import IncidentRoomList from "./pages/release/IncidentRoomList";
 import IncidentRoomDetail from "./pages/release/IncidentRoomDetail";
@@ -796,7 +799,7 @@ const App = () => (
               <Route path="/releases/test-cycles/:cycleId" element={<ReleasesCycleCommandCenter />} />
               <Route path="/releases/templates" element={<ReleasesCycleTemplatesPage />} />
               <Route path="/releases/workload" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkloadDashboard /></Suspense>} />
-              <Route path="/releases/execution" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/execution" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ExecutionPage /></Suspense>} />
               <Route path="/releases/execution/:cycleId/:testCaseId" element={<ReleasesTestExecutionPage />} />
               <Route path="/releases/execute/:cycleId/:testCaseId" element={<ProtectedRoute><TestExecutionFocusPage /></ProtectedRoute>} />
               <Route path="/releases/ask-ai" element={<ReleasesPlaceholderPage />} />
