@@ -1,5 +1,5 @@
 /**
- * Hook for fetching cycle details with calculated stats
+ * Hook for fetching cycle details with calculated stats - WIRED TO SUPABASE
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -25,7 +25,7 @@ export interface TestCycle {
   releaseName: string | null;
   releaseVersion: string | null;
   cycleType: string;
-  status: 'draft' | 'active' | 'paused' | 'completed';
+  status: 'draft' | 'active' | 'paused' | 'completed' | 'planned' | 'in_progress';
   startDate: string | null;
   endDate: string | null;
   environment: string | null;
@@ -36,45 +36,103 @@ export interface TestCycle {
   isOverdue: boolean;
 }
 
+// Map DB status to UI status
+function mapStatus(dbStatus: string | null): TestCycle['status'] {
+  const statusMap: Record<string, TestCycle['status']> = {
+    'planned': 'planned',
+    'in_progress': 'active',
+    'completed': 'completed',
+    'archived': 'draft',
+  };
+  return statusMap[dbStatus || 'planned'] || 'planned';
+}
+
 export function useCycleDetails(cycleId: string) {
   const query = useQuery({
     queryKey: ['cycle-details', cycleId],
     queryFn: async (): Promise<{ cycle: TestCycle; stats: CycleStats }> => {
-      // For now, return mock data. Will be replaced with real Supabase query
-      // once the tables are created
-      
-      const mockCycle: TestCycle = {
-        id: cycleId,
-        name: 'Q1 2024 Regression Cycle',
-        cycleKey: 'CY-001',
-        description: 'Full regression test cycle for Q1 release',
-        releaseId: 'rel-001',
-        releaseName: 'Release 2.4.0',
-        releaseVersion: '2.4.0',
+      // Fetch cycle from Supabase
+      const { data: cycleData, error: cycleError } = await supabase
+        .from('tm_test_cycles')
+        .select(`
+          *,
+          tm_environments(id, name)
+        `)
+        .eq('id', cycleId)
+        .maybeSingle();
+
+      if (cycleError) {
+        console.error('Error fetching cycle:', cycleError);
+        throw cycleError;
+      }
+
+      if (!cycleData) {
+        throw new Error('Cycle not found');
+      }
+
+      // Get assignee count from scope
+      const { count: assigneeCount } = await supabase
+        .from('tm_cycle_scope')
+        .select('assigned_to', { count: 'exact', head: true })
+        .eq('cycle_id', cycleId)
+        .not('assigned_to', 'is', null);
+
+      // Calculate days remaining
+      let daysRemaining: number | null = null;
+      let isOverdue = false;
+      if (cycleData.planned_end) {
+        const endDate = new Date(cycleData.planned_end);
+        const today = new Date();
+        const diffTime = endDate.getTime() - today.getTime();
+        daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        isOverdue = daysRemaining < 0 && cycleData.status !== 'completed';
+      }
+
+      const cycle: TestCycle = {
+        id: cycleData.id,
+        name: cycleData.name,
+        cycleKey: cycleData.cycle_key,
+        description: cycleData.description,
+        releaseId: null, // No release_id column in tm_test_cycles
+        releaseName: null,
+        releaseVersion: null,
         cycleType: 'regression',
-        status: 'active',
-        startDate: '2024-01-10',
-        endDate: '2024-01-24',
-        environment: 'staging',
-        createdAt: '2024-01-08T10:00:00Z',
-        createdBy: 'user-001',
-        assigneeCount: 5,
-        daysRemaining: 6,
-        isOverdue: false,
+        status: mapStatus(cycleData.status),
+        startDate: cycleData.planned_start,
+        endDate: cycleData.planned_end,
+        environment: cycleData.tm_environments?.name || null,
+        createdAt: cycleData.created_at,
+        createdBy: cycleData.created_by,
+        assigneeCount: assigneeCount || 0,
+        daysRemaining,
+        isOverdue,
       };
 
-      const mockStats: CycleStats = {
-        total: 180,
-        passed: 80,
-        failed: 15,
-        blocked: 5,
-        inProgress: 20,
-        notStarted: 60,
-        executionRate: 67,
-        passRate: 80,
+      // Calculate stats from cycle data
+      const total = cycleData.total_cases || 0;
+      const passed = cycleData.passed_count || 0;
+      const failed = cycleData.failed_count || 0;
+      const blocked = cycleData.blocked_count || 0;
+      const skipped = cycleData.skipped_count || 0;
+      const notStarted = cycleData.not_run_count || 0;
+      const inProgress = total - passed - failed - blocked - skipped - notStarted;
+
+      const executed = passed + failed + blocked;
+      const executionRate = total > 0 ? Math.round((executed / total) * 100) : 0;
+      const passRate = executed > 0 ? Math.round((passed / executed) * 100) : 0;
+
+      const stats: CycleStats = {
+        total,
+        passed,
+        failed,
+        blocked,
+        inProgress: inProgress > 0 ? inProgress : 0,
+        notStarted,
+        executionRate,
+        passRate,
       };
 
-      return { cycle: mockCycle, stats: mockStats };
+      return { cycle, stats };
     },
     enabled: !!cycleId,
     staleTime: 30000,
