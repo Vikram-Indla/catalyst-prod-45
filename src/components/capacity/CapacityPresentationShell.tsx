@@ -4,7 +4,7 @@
  */
 
 import { ReactNode, useEffect, useCallback } from 'react';
-import { X, Download, Clock, FileText, LayoutGrid, Table2, CalendarDays, Briefcase, Users } from 'lucide-react';
+import { X, Download, Clock, FileText, LayoutGrid, Table2, CalendarDays, Briefcase, Users, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/brand/Logo';
 import { cn } from '@/lib/utils';
@@ -84,6 +84,16 @@ export function CapacityPresentationShell({
       onClick: () => {
         setPrimaryView('resources');
         setResourceView('cards');
+      }
+    },
+    { 
+      id: 'utilization', 
+      label: 'Utilization', 
+      icon: BarChart3,
+      isActive: primaryView === 'resources' && resourceView === 'heatmap',
+      onClick: () => {
+        setPrimaryView('resources');
+        setResourceView('heatmap');
       }
     },
     { 
