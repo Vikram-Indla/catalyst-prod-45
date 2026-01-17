@@ -2170,10 +2170,14 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         
         // Location detection - check for onsite/offshore
         const locationName = row.location || profile?.location || '';
-        const isOnsite = locationName.toLowerCase().includes('onsite') || locationName.toLowerCase().includes('riyadh');
-        const avatarBg = isOnsite ? '#0d9488' : '#c2410c'; // Teal for onsite, Orange for offshore
-        const locLabel = isOnsite ? 'Onsite' : locationName.toLowerCase().includes('offshore') ? 'Off-Shore' : locationName;
-        const locLabelColor = isOnsite ? '#115e59' : '#c2410c';
+        const locationLower = locationName.toLowerCase();
+        const isOnsite = locationLower.includes('onsite') || locationLower.includes('riyadh');
+        const isOffshore = locationLower.includes('offshore');
+
+        // Use design tokens (no hardcoded colors)
+        const avatarBgClass = isOnsite ? 'bg-brand-teal' : 'bg-brand-primary';
+        const locLabel = isOnsite ? 'Onsite' : isOffshore ? 'Off-Shore' : locationName;
+        const locLabelClass = isOnsite ? 'text-brand-teal' : 'text-brand-primary';
         
         // Country flag
         const countryCode = row.country_code || profile?.country_code;
@@ -2192,8 +2196,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
               <TooltipTrigger asChild>
                 <div className="relative flex-shrink-0 cursor-pointer">
                   <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white"
-                    style={{ backgroundColor: avatarBg }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ${avatarBgClass}`}
                   >
                     {initials}
                   </div>
@@ -2226,10 +2229,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
               </div>
               {/* Location label */}
               {locLabel && (
-                <span 
-                  className="text-[11px] font-bold tracking-wide"
-                  style={{ color: locLabelColor }}
-                >
+                <span className={`text-[11px] font-bold tracking-wide ${locLabelClass}`}>
                   {locLabel}
                 </span>
               )}
