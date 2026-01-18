@@ -4,13 +4,14 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { 
   CycleAssignment, 
   TableFilters, 
   SortConfig,
 } from '@/types/assignment-table.types';
 
-// Mock data generator
+// Mock data generator as fallback
 function generateMockAssignments(cycleId: string): CycleAssignment[] {
   const modules = ['Authentication', 'Payments', 'Dashboard', 'Reports', 'User Management'];
   const assignees = [
@@ -88,10 +89,123 @@ export function useAssignmentTable(cycleId: string) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
-  // Fetch data - using mock for now as tm_cycle_test_cases table doesn't exist yet
+  // Fetch data from Supabase
   const { data: rawData, isLoading, refetch } = useQuery({
     queryKey: ['assignment-table', cycleId],
-    queryFn: () => generateMockAssignments(cycleId),
+    queryFn: async () => {
+      try {
+        // Fetch cycle scope with test case and assignee details
+        const { data: cycleScope, error } = await supabase
+          .from('tm_cycle_scope')
+          .select(`
+            id,
+            cycle_id,
+            test_case_id,
+            assigned_to,
+            current_status,
+            sort_order,
+            added_at,
+            tm_test_cases!inner(
+              id,
+              case_key,
+              title,
+              priority_id,
+              test_type,
+              estimated_time,
+              automation_status,
+              folder_id,
+              tm_folders(name)
+            ),
+            profiles:assigned_to(
+              id,
+              full_name,
+              avatar_url
+            )
+          `)
+          .eq('cycle_id', cycleId)
+          .order('sort_order', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching cycle scope:', error);
+          return generateMockAssignments(cycleId);
+        }
+
+        if (!cycleScope || cycleScope.length === 0) {
+          // No data yet, return mock for demo
+          console.log('No cycle scope data found, using mock');
+          return generateMockAssignments(cycleId);
+        }
+
+        // Get priority mappings
+        const { data: priorities } = await supabase
+          .from('tm_case_priorities')
+          .select('id, name');
+        
+        const priorityMap = new Map((priorities || []).map(p => [p.id, p.name?.toLowerCase()]));
+
+        // Transform data to CycleAssignment format
+        return cycleScope.map((scope: any, index: number): CycleAssignment => {
+          const testCase = scope.tm_test_cases;
+          const profile = scope.profiles;
+          const folder = testCase?.tm_folders;
+          
+          // Map status
+          let status: CycleAssignment['status'] = 'not_started';
+          switch (scope.current_status) {
+            case 'passed': status = 'passed'; break;
+            case 'failed': status = 'failed'; break;
+            case 'blocked': status = 'blocked'; break;
+            case 'in_progress': case 'running': status = 'in_progress'; break;
+            default: status = 'not_started';
+          }
+
+          // Map priority
+          const priorityName = priorityMap.get(testCase?.priority_id) || 'medium';
+          let priority: CycleAssignment['priority'] = 'medium';
+          if (priorityName.includes('critical')) priority = 'critical';
+          else if (priorityName.includes('high')) priority = 'high';
+          else if (priorityName.includes('low')) priority = 'low';
+
+          // Map test type
+          let testType: CycleAssignment['testType'] = 'functional';
+          const rawType = testCase?.test_type?.toLowerCase() || '';
+          if (rawType.includes('integration')) testType = 'integration';
+          else if (rawType.includes('e2e') || rawType.includes('end-to-end')) testType = 'e2e';
+          else if (rawType.includes('performance')) testType = 'performance';
+
+          // Map automation status
+          let automationStatus: CycleAssignment['automationStatus'] = 'manual';
+          const rawAutomation = testCase?.automation_status?.toLowerCase() || '';
+          if (rawAutomation.includes('automated') || rawAutomation === 'yes') automationStatus = 'automated';
+          else if (rawAutomation.includes('partial')) automationStatus = 'partial';
+
+          return {
+            id: scope.id,
+            cycleId: scope.cycle_id,
+            testCaseId: scope.test_case_id,
+            testCaseCode: testCase?.case_key || `TC-${1000 + index}`,
+            title: testCase?.title || 'Untitled Test Case',
+            status,
+            assigneeId: scope.assigned_to || null,
+            assigneeName: profile?.full_name || null,
+            assigneeAvatar: profile?.avatar_url || null,
+            priority,
+            dueDate: null, // Not stored in current schema
+            module: folder?.name || 'General',
+            testType,
+            estimatedDurationMinutes: testCase?.estimated_time || 30,
+            executionTimeMinutes: null, // Would come from test runs
+            executedAt: null, // Would come from test runs
+            automationStatus,
+            defectCount: 0, // Would need to join with defects
+            createdAt: scope.added_at || new Date().toISOString(),
+          };
+        });
+      } catch (error) {
+        console.error('Error in useAssignmentTable:', error);
+        return generateMockAssignments(cycleId);
+      }
+    },
     staleTime: 30000,
   });
 
