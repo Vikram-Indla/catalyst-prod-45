@@ -1,18 +1,25 @@
 /**
  * Cycle Command Center - Test Cycle Operations Hub
- * Provides 5 integrated views: Command Center, Kanban, Table, Calendar, Reports
  */
 
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Gauge, Columns, Table, Calendar, BarChart3,
-  Download, RefreshCw, Pause, CheckCircle, ArrowLeft, Plus
+  Download, RefreshCw, Pause, CheckCircle, ArrowLeft, Plus,
+  FileText, FileSpreadsheet, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { exportTestCycles } from '@/utils/exportTestCycles';
 
 // Command Center Components
 import { CycleHeader } from '@/components/releases/cycle-command-center/CycleHeader';
@@ -45,6 +52,7 @@ export default function CycleCommandCenter() {
   const [activeTab, setActiveTab] = useState<CycleViewTab>('command');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [isAddTestsOpen, setIsAddTestsOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Real Supabase hooks
   const { cycle, stats, isLoading, error, refetch } = useCycleDetails(cycleId || '');
@@ -65,8 +73,28 @@ export default function CycleCommandCenter() {
     completeCycle.mutate();
   };
 
-  const handleExport = () => {
-    toast.success('Exporting cycle data...');
+  const handleExport = async (format: 'csv' | 'xlsx') => {
+    if (!cycle) return;
+    setIsExporting(true);
+    try {
+      await exportTestCycles([{
+        id: cycle.id,
+        name: cycle.name,
+        status: cycle.status,
+        progress: stats?.progress || 0,
+        passed: stats?.passed || 0,
+        failed: stats?.failed || 0,
+        blocked: stats?.blocked || 0,
+        startDate: cycle.startDate,
+        endDate: cycle.endDate,
+        environment: cycle.environment,
+      }], format);
+      toast.success(`Exported cycle data as ${format.toUpperCase()}`);
+    } catch {
+      toast.error('Export failed');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handleStatusFilter = (status: string | null) => {
@@ -122,10 +150,24 @@ export default function CycleCommandCenter() {
           <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => refetch()}>
             <RefreshCw className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" disabled={isExporting}>
+                {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuItem onClick={() => handleExport('csv')}>
+                <FileText className="h-4 w-4 mr-2" />
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('xlsx')}>
+                <FileSpreadsheet className="h-4 w-4 mr-2" />
+                Export as Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button size="sm" onClick={() => setIsAddTestsOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add Tests

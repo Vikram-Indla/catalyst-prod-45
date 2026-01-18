@@ -3,3 +3,4 @@ export * from './CycleStatsBar';
 export * from './CycleCalendarView';
 export * from './CycleTableView';
 export * from './CreateCycleModal';
+export * from './EditTestCycleDialog';
