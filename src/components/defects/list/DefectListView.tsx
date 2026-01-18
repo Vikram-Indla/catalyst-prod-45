@@ -10,7 +10,7 @@ import { useDefectFilters } from '@/hooks/useDefectFilters';
 import { useDefectSelection } from '@/hooks/useDefectSelection';
 import { useDefectKeyboard } from '@/hooks/useDefectKeyboard';
 import { useDefectViews } from '@/hooks/useDefectViews';
-import { defectsApi } from '@/modules/test-management/api/defects';
+import { supabase } from '@/integrations/supabase/client';
 import type { DefectSummary, DefectStatus } from '@/types/defect.types';
 
 interface DefectListViewProps {
@@ -37,15 +37,26 @@ export function DefectListView({ projectId }: DefectListViewProps) {
   const { data, isLoading } = useQuery({
     queryKey: ['defects', projectId, filters],
     queryFn: async () => {
-      const response = await defectsApi.list({
-        project_id: projectId,
-        status: filters.statuses.length > 0 ? filters.statuses[0] as any : undefined,
-        severity: filters.severities.length > 0 ? filters.severities[0] as any : undefined,
-        search: filters.search || undefined,
-        page: filters.page,
-        limit: filters.pageSize,
-      });
-      return response;
+      let query = supabase
+        .from('defects')
+        .select('*', { count: 'exact' })
+        .eq('project_id', projectId);
+
+      if (filters.search) {
+        query = query.or(`title.ilike.%${filters.search}%,defect_id.ilike.%${filters.search}%`);
+      }
+      if (filters.statuses.length > 0) {
+        query = query.in('status', filters.statuses);
+      }
+      if (filters.severities.length > 0) {
+        query = query.in('severity', filters.severities);
+      }
+
+      query = query.range((filters.page - 1) * filters.pageSize, filters.page * filters.pageSize - 1);
+
+      const { data, count, error } = await query;
+      if (error) throw error;
+      return { data: data || [], pagination: { total: count || 0 } };
     },
   });
 
@@ -87,7 +98,11 @@ export function DefectListView({ projectId }: DefectListViewProps) {
   // Status change mutation
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: DefectStatus }) => {
-      return defectsApi.update({ id, status: status as any });
+      const { error } = await supabase
+        .from('defects')
+        .update({ status })
+        .eq('id', id);
+      if (error) throw error;
     },
     onSuccess: () => {
       toast.success('Status updated');

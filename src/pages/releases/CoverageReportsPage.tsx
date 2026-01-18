@@ -80,8 +80,49 @@ import {
 } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { CoverageRing } from '@/modules/test-management/components/requirements/CoverageStatsBar';
 import { AddTestsToCoverageDialog } from '@/components/releases/coverage';
+
+// Simple CoverageRing component
+function CoverageRing({ percentage, size = 'md' }: { percentage: number; size?: 'sm' | 'md' | 'lg' }) {
+  const sizeMap = { sm: 40, md: 60, lg: 80 };
+  const strokeMap = { sm: 4, md: 6, lg: 8 };
+  const dim = sizeMap[size];
+  const stroke = strokeMap[size];
+  const radius = (dim - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percentage / 100) * circumference;
+  
+  return (
+    <div className="relative" style={{ width: dim, height: dim }}>
+      <svg width={dim} height={dim} className="-rotate-90">
+        <circle
+          cx={dim / 2}
+          cy={dim / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={stroke}
+          className="stroke-muted"
+        />
+        <circle
+          cx={dim / 2}
+          cy={dim / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={stroke}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className={cn(
+            percentage >= 80 ? 'stroke-teal-500' : percentage >= 50 ? 'stroke-amber-500' : 'stroke-red-500'
+          )}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold">
+        {percentage}%
+      </span>
+    </div>
+  );
+}
 
 // ============================================
 // MOCK DATA - Replace with real API calls

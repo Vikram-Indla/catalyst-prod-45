@@ -11,7 +11,6 @@ import { RTMDetailPanel } from './components/RTMDetailPanel';
 import { RTMFilterBar } from './components/RTMFilterBar';
 import { GapAnalysisPanel } from './components/GapAnalysisPanel';
 import { BulkLinkTestsDialog } from './components/BulkLinkTestsDialog';
-import { exportTraceabilityMatrix } from '@/modules/test-management/utils/exportTraceabilityMatrix';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useNavigation } from '@/contexts/NavigationContext';
@@ -68,10 +67,17 @@ const RTMPage = () => {
 
   const handleExport = () => {
     try {
-      const requirements = filteredTableData.map(r => ({ id: r.id, requirement_key: r.key, title: r.title, priority: r.priority, status: r.coverageStatus }));
-      const testCases = filteredTableData.flatMap(r => r.linkedTests.map(t => ({ id: t.testCaseId, case_key: t.testCaseKey, title: t.testCaseTitle })));
-      const links = filteredTableData.flatMap(r => r.linkedTests.map(t => ({ requirement_id: r.id, test_case_id: t.testCaseId })));
-      exportTraceabilityMatrix(requirements, testCases, links, 'Release 9.8');
+      // Simple CSV export
+      const headers = ['Requirement ID', 'Title', 'Priority', 'Status'];
+      const rows = filteredTableData.map(r => [r.key, r.title, r.priority, r.coverageStatus].join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'traceability-matrix.csv';
+      a.click();
+      URL.revokeObjectURL(url);
       toast.success('RTM exported successfully');
     } catch { toast.error('Export failed'); }
   };

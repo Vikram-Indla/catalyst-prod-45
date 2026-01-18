@@ -307,29 +307,6 @@ const IncidentAnalyticsPage = lazy(() => import("./modules/incidents/analytics/p
 const IncidentInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
 const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/IncidentKanbanPage"));
 
-// Test Management Module
-import { 
-  TestManagementLayout,
-  TestCasesPage,
-  TestCaseEditorPage,
-  TestCyclesPage,
-  CycleDetailPage,
-  TMDefectsPage,
-  ReportsPage as TMReportsPage,
-  TMSettingsPage,
-  MyWorkPage,
-  CommandCenterPage,
-  ExecutionRunnerPage,
-  ExecutionDashboardPage,
-  TestSetsPage,
-  TraceabilityPage,
-  AnalyticsDashboardPage,
-  TMRequirementsPage,
-  TestCaseDetailPageWrapper,
-  TestPlansListPage,
-  TestPlanDetailPage,
-} from "./modules/test-management";
-import { TestManagementContent } from "./modules/test-management/layouts/TestManagementContent";
 
 const queryClient = new QueryClient();
 
@@ -830,32 +807,6 @@ const App = () => (
               <Route path="/knowledge-hub/spaces/:spaceId" element={<KnowledgeHubSpacePage />} />
               <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
               
-              {/* Test Management Module Routes */}
-              <Route path="/tests" element={<TestManagementContent />}>
-                <Route index element={<Navigate to="/tests/command-center" replace />} />
-                <Route path="command-center" element={<CommandCenterPage />} />
-                <Route path="my-work" element={<MyWorkPage />} />
-                <Route path="cases" element={<TestCasesPage />} />
-                <Route path="cases/:caseId" element={<TestCaseDetailPageWrapper />} />
-                <Route path="sets" element={<TestSetsPage />} />
-                <Route path="plans" element={<TestPlansListPage />} />
-                <Route path="plans/:planId" element={<TestPlanDetailPage />} />
-                <Route path="cycles" element={<TestCyclesPage />} />
-                <Route path="cycles/:cycleId" element={<CycleDetailPage />} />
-                <Route path="execution" element={<ExecutionDashboardPage />} />
-                <Route path="defects" element={<TMDefectsPage />} />
-                <Route path="requirements" element={<TMRequirementsPage />} />
-                <Route path="traceability" element={<TraceabilityPage />} />
-                <Route path="reports" element={<AnalyticsDashboardPage />} />
-                <Route path="settings" element={<TMSettingsPage />} />
-              </Route>
-              
-              {/* Test Case Editor - Full Screen (outside shell) */}
-              <Route path="/tests/cases/:caseId/edit" element={<ProtectedRoute><TestCaseEditorPage /></ProtectedRoute>} />
-              
-              {/* Execution Runner - Full Screen (outside shell) */}
-              <Route path="/tests/execution/:cycleId" element={<ProtectedRoute><ExecutionRunnerPage /></ProtectedRoute>} />
-              <Route path="/tests/execution/:cycleId/:scopeId" element={<ProtectedRoute><ExecutionRunnerPage /></ProtectedRoute>} />
               
               {/* Operations (Incidents) Routes */}
               <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
