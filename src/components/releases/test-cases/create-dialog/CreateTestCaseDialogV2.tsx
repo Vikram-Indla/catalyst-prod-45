@@ -190,10 +190,12 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn(
-        "p-0 gap-0 overflow-hidden",
-        isFullscreen ? "max-w-full w-full h-full rounded-none" : "max-w-[800px] max-h-[90vh]"
-      )}>
+      <DialogContent 
+        className={cn(
+          "p-0 gap-0 overflow-hidden [&>button]:hidden",
+          isFullscreen ? "max-w-full w-full h-full rounded-none" : "max-w-[800px] max-h-[90vh]"
+        )}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
           <div className="flex items-center gap-3">
