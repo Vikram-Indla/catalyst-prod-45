@@ -18,7 +18,7 @@ import {
 import { format, differenceInDays } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { cn } from '@/lib/utils';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
 
@@ -242,40 +242,38 @@ function AssigneeSelect({
             autoFocus
           />
         </div>
-        <ScrollArea className="max-h-64">
-          <div className="p-1">
+        <div className="max-h-64 overflow-y-auto p-1">
+          <button
+            onClick={() => { onChange(null); setOpen(false); }}
+            className="w-full flex items-center gap-2.5 px-2 py-2 rounded hover:bg-muted/50"
+          >
+            <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center">
+              <User className="w-3.5 h-3.5 text-muted-foreground" />
+            </div>
+            <span className="text-sm text-muted-foreground">Unassigned</span>
+          </button>
+          {filteredProfiles.map((profile) => (
             <button
-              onClick={() => { onChange(null); setOpen(false); }}
-              className="w-full flex items-center gap-2.5 px-2 py-2 rounded hover:bg-muted/50"
+              key={profile.id}
+              onClick={() => { onChange(profile.id); setOpen(false); }}
+              className={cn(
+                "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
+                value === profile.id ? "bg-muted" : "hover:bg-muted/50"
+              )}
             >
-              <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center">
-                <User className="w-3.5 h-3.5 text-muted-foreground" />
-              </div>
-              <span className="text-sm text-muted-foreground">Unassigned</span>
-            </button>
-            {filteredProfiles.map((profile) => (
-              <button
-                key={profile.id}
-                onClick={() => { onChange(profile.id); setOpen(false); }}
-                className={cn(
-                  "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
-                  value === profile.id ? "bg-muted" : "hover:bg-muted/50"
-                )}
+              <div 
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+                style={{ backgroundColor: workstreamColor }}
               >
-                <div 
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
-                  style={{ backgroundColor: workstreamColor }}
-                >
-                  {getInitials(profile.full_name)}
-                </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="text-sm font-medium truncate">{profile.full_name || 'Unnamed'}</div>
-                </div>
-                {value === profile.id && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
-              </button>
-            ))}
-          </div>
-        </ScrollArea>
+                {getInitials(profile.full_name)}
+              </div>
+              <div className="flex-1 min-w-0 text-left">
+                <div className="text-sm font-medium truncate">{profile.full_name || 'Unnamed'}</div>
+              </div>
+              {value === profile.id && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
+            </button>
+          ))}
+        </div>
       </PopoverContent>
     </Popover>
   );
