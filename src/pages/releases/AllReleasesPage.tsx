@@ -5,8 +5,8 @@
 
 import { useState, useMemo } from 'react';
 import { Plus, Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
 import {
   ReleasesTable,
@@ -15,6 +15,9 @@ import {
   ReleasesEmptyState,
   ReleasesPagination,
   ExportReleasesDropdown,
+  BulkStatusChangeDialog,
+  BulkReassignDialog,
+  ArchiveConfirmationDialog,
 } from '@/components/releases/all-releases';
 import { useReleasesFilter } from '@/hooks/releases/useReleasesFilter';
 import { useReleasesSelection } from '@/hooks/releases/useReleasesSelection';
@@ -84,7 +87,6 @@ function transformRelease(r: any): EnhancedRelease {
 }
 
 export default function AllReleasesPage() {
-  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [sort, setSort] = useState<ReleasesSort>({ column: 'name', direction: 'asc' });
   const [page, setPage] = useState(0);
@@ -93,6 +95,7 @@ export default function AllReleasesPage() {
   const [quarterFilter, setQuarterFilter] = useState('all');
   const [searchFilter, setSearchFilter] = useState('');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [bulkAction, setBulkAction] = useState<'status' | 'reassign' | 'archive' | null>(null);
   const pageSize = 12;
   
   const { filter, clearFilters } = useReleasesFilter();
@@ -169,6 +172,57 @@ export default function AllReleasesPage() {
   const handleCreateSuccess = () => {
     refetch();
     setIsCreateDialogOpen(false);
+  };
+  
+  const handleBulkStatusChange = async (newStatus: string) => {
+    const ids = selectedReleases.map(r => r.id);
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { error } = await supabase
+        .from('releases')
+        .update({ status: newStatus as any, updated_at: new Date().toISOString() })
+        .in('id', ids);
+      if (error) throw error;
+      toast.success(`Updated ${ids.length} releases to ${newStatus}`);
+      clear();
+      refetch();
+    } catch (error) {
+      toast.error('Failed to update releases');
+    }
+  };
+  
+  const handleBulkReassign = async (ownerId: string, ownerName: string) => {
+    const ids = selectedReleases.map(r => r.id);
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { error } = await supabase
+        .from('releases')
+        .update({ owner_id: ownerId, updated_at: new Date().toISOString() })
+        .in('id', ids);
+      if (error) throw error;
+      toast.success(`Reassigned ${ids.length} releases to ${ownerName}`);
+      clear();
+      refetch();
+    } catch (error) {
+      toast.error('Failed to reassign releases');
+    }
+  };
+  
+  const handleBulkArchive = async () => {
+    const ids = selectedReleases.map(r => r.id);
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { error } = await supabase
+        .from('releases')
+        .update({ status: 'shipped' as any, updated_at: new Date().toISOString() })
+        .in('id', ids);
+      if (error) throw error;
+      toast.success(`Archived ${ids.length} releases`);
+      clear();
+      refetch();
+    } catch (error) {
+      toast.error('Failed to archive releases');
+    }
   };
   
   return (
@@ -267,15 +321,37 @@ export default function AllReleasesPage() {
       <ReleasesBulkActionBar
         selectedCount={selected.size}
         onClear={clear}
-        onChangeStatus={() => {}}
-        onReassign={() => {}}
-        onArchive={() => {}}
+        onChangeStatus={() => setBulkAction('status')}
+        onReassign={() => setBulkAction('reassign')}
+        onArchive={() => setBulkAction('archive')}
       />
       
       {/* Create Release Dialog */}
       <ReleaseDialog
         open={isCreateDialogOpen}
         onClose={handleCreateSuccess}
+      />
+      
+      {/* Bulk Action Dialogs */}
+      <BulkStatusChangeDialog
+        open={bulkAction === 'status'}
+        onOpenChange={(open) => !open && setBulkAction(null)}
+        selectedCount={selected.size}
+        onConfirm={handleBulkStatusChange}
+      />
+      
+      <BulkReassignDialog
+        open={bulkAction === 'reassign'}
+        onOpenChange={(open) => !open && setBulkAction(null)}
+        selectedCount={selected.size}
+        onConfirm={handleBulkReassign}
+      />
+      
+      <ArchiveConfirmationDialog
+        open={bulkAction === 'archive'}
+        onOpenChange={(open) => !open && setBulkAction(null)}
+        releases={selectedReleases}
+        onConfirm={handleBulkArchive}
       />
     </div>
   );
