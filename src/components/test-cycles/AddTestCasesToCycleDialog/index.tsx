@@ -62,8 +62,12 @@ export function AddTestCasesToCycleDialog({
   const { data: types = [] } = useQuery({
     queryKey: ['tm-types', projectId],
     queryFn: async () => {
-      const { data } = await supabase.from('tm_case_types').select('*').eq('project_id', projectId).order('sort_order');
-      return data || [];
+      const { data } = await supabase.from('tm_case_types').select('*').eq('project_id', projectId).order('name');
+      // Map to include sort_order since DB doesn't have it
+      return (data || []).map((row, index) => ({
+        ...row,
+        sort_order: index,
+      }));
     },
     enabled: !!projectId,
   });
