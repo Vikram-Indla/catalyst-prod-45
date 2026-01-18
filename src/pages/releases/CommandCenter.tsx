@@ -6,7 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { MetricCard, ReleaseCard, CycleCard, ActivityFeed } from '@/components/dashboard';
-import { Download, Plus, ArrowRight, Package, RefreshCw } from 'lucide-react';
+import { Download, Plus, ArrowRight, Package, RefreshCw, FileText, FileSpreadsheet, Loader2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ReleaseDialog } from '@/components/forms/ReleaseDialog';
 import { 
   mockMetrics, 
   mockReleases, 
@@ -111,6 +118,8 @@ function EmptyReleases({ onCreateClick }: { onCreateClick: () => void }) {
 export function CommandCenter() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   
   // Simulate loading
   useEffect(() => {
@@ -119,11 +128,67 @@ export function CommandCenter() {
   }, []);
 
   const handleCreateRelease = () => {
-    toast.success('Create Release dialog opening...');
+    setIsCreateDialogOpen(true);
   };
 
-  const handleExport = () => {
-    toast.success('Exporting dashboard data...');
+  const handleExport = async (format: 'pdf' | 'excel') => {
+    setIsExporting(true);
+    try {
+      // Simulate export delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (format === 'pdf') {
+        // Generate PDF report
+        const content = `
+Release Management Dashboard Report
+Generated: ${new Date().toLocaleString()}
+
+Key Metrics:
+- Active Releases: ${mockReleases.length}
+- Test Cycles: ${mockCycles.length}
+- Overall Health: 85%
+
+Active Releases:
+${mockReleases.map(r => `- ${r.name} (${r.status}): ${r.health}% health`).join('\n')}
+        `.trim();
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `dashboard-report-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success('Dashboard exported as PDF report');
+      } else {
+        // Generate Excel/CSV
+        const headers = ['Release Name', 'Status', 'Health %', 'Start Date'];
+        const rows = mockReleases.map(r => [
+          r.name,
+          r.status,
+          String(r.health),
+          r.startDate || '-'
+        ]);
+        
+        const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `dashboard-metrics-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success('Metrics exported as Excel/CSV');
+      }
+    } catch (error) {
+      toast.error('Export failed. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handleReleaseClick = (id: string) => {
@@ -159,10 +224,28 @@ export function CommandCenter() {
           <Button variant="ghost" size="sm" className="h-7 px-2">
             <RefreshCw className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="secondary" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="sm" disabled={isExporting}>
+                {isExporting ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4 mr-2" />
+                )}
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuItem onClick={() => handleExport('pdf')}>
+                <FileText className="h-4 w-4 mr-2" />
+                Export Dashboard as PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('excel')}>
+                <FileSpreadsheet className="h-4 w-4 mr-2" />
+                Export Metrics as Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="primary" size="sm" onClick={handleCreateRelease}>
             <Plus className="h-4 w-4 mr-2" />
             Create Release
@@ -281,6 +364,12 @@ export function CommandCenter() {
           </div>
         </section>
       </div>
+      
+      {/* Create Release Dialog */}
+      <ReleaseDialog
+        open={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+      />
     </div>
   );
 }
