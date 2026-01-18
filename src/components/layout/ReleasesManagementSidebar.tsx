@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   Network,
   Bug,
+  FlaskConical,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
@@ -68,6 +69,12 @@ const releasesManagementSections: SidebarSection[] = [
       { id: 'coverage', title: 'Coverage Reports', path: '/releases/coverage', icon: PieChart, exact: false },
       { id: 'quality-gates', title: 'Quality Gates', path: '/releases/quality-gates', icon: ShieldCheck, exact: false },
       { id: 'rtm', title: 'RTM', path: '/releases/rtm', icon: Network, exact: false },
+    ],
+  },
+  {
+    title: 'Modules',
+    items: [
+      { id: 'test-management', title: 'Test Management', path: '/tests/command-center', icon: FlaskConical, exact: false },
     ],
   },
 ];
