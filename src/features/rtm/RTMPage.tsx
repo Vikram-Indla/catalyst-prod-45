@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Download, AlertTriangle, Link, Search, LayoutGrid, List, GitBranch, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Download, AlertTriangle, Link, Search, LayoutGrid, List, GitBranch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRTMStore } from './hooks/useRTMStore';
@@ -8,6 +8,9 @@ import { RTMMetricsRow } from './components/RTMMetricsRow';
 import { RTMTree } from './components/RTMTree';
 import { RTMTable } from './components/RTMTable';
 import { RTMDetailPanel } from './components/RTMDetailPanel';
+import { RTMFilterBar } from './components/RTMFilterBar';
+import { GapAnalysisPanel } from './components/GapAnalysisPanel';
+import { BulkLinkTestsDialog } from './components/BulkLinkTestsDialog';
 import { exportTraceabilityMatrix } from '@/modules/test-management/utils/exportTraceabilityMatrix';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -18,10 +21,15 @@ const RTMPage = () => {
   const {
     metrics, tree, tableData, selectedRequirement, isDetailPanelOpen, viewMode, sorting, filters, selectedTreeNodeId, isLoading,
     setData, setLoading, toggleTreeNode, selectTreeNode, expandAll, collapseAll, setSorting, setSearchQuery, setViewMode, selectTableRow, closeDetailPanel,
+    setFilter, clearFilters,
   } = useRTMStore();
 
+  // Panel states
+  const [isGapAnalysisOpen, setIsGapAnalysisOpen] = useState(false);
+  const [isLinkTestsOpen, setIsLinkTestsOpen] = useState(false);
+
   // Fetch real data from Supabase
-  const { data: rtmData, isLoading: dataLoading } = useRTMData(selectedProjectId);
+  const { data: rtmData, isLoading: dataLoading, refetch: refetchRTM } = useRTMData(selectedProjectId);
 
   // Sync data to store when it changes
   useEffect(() => {
@@ -31,14 +39,46 @@ const RTMPage = () => {
     }
   }, [rtmData, dataLoading, setData, setLoading]);
 
+  // Filter table data based on filters
+  const filteredTableData = useMemo(() => {
+    return tableData.filter(req => {
+      // Search filter
+      if (filters.searchQuery) {
+        const query = filters.searchQuery.toLowerCase();
+        if (!req.key.toLowerCase().includes(query) && !req.title.toLowerCase().includes(query)) {
+          return false;
+        }
+      }
+      
+      // Type filter
+      if (filters.type && req.type !== filters.type) {
+        return false;
+      }
+      
+      // Coverage filter
+      if (filters.coverageStatus) {
+        if (filters.coverageStatus === 'covered' && req.coveragePercentage < 80) return false;
+        if (filters.coverageStatus === 'partial' && (req.coveragePercentage === 0 || req.coveragePercentage >= 80)) return false;
+        if (filters.coverageStatus === 'gap' && req.coveragePercentage > 0) return false;
+      }
+      
+      return true;
+    });
+  }, [tableData, filters]);
+
   const handleExport = () => {
     try {
-      const requirements = tableData.map(r => ({ id: r.id, requirement_key: r.key, title: r.title, priority: r.priority, status: r.coverageStatus }));
-      const testCases = tableData.flatMap(r => r.linkedTests.map(t => ({ id: t.testCaseId, case_key: t.testCaseKey, title: t.testCaseTitle })));
-      const links = tableData.flatMap(r => r.linkedTests.map(t => ({ requirement_id: r.id, test_case_id: t.testCaseId })));
+      const requirements = filteredTableData.map(r => ({ id: r.id, requirement_key: r.key, title: r.title, priority: r.priority, status: r.coverageStatus }));
+      const testCases = filteredTableData.flatMap(r => r.linkedTests.map(t => ({ id: t.testCaseId, case_key: t.testCaseKey, title: t.testCaseTitle })));
+      const links = filteredTableData.flatMap(r => r.linkedTests.map(t => ({ requirement_id: r.id, test_case_id: t.testCaseId })));
       exportTraceabilityMatrix(requirements, testCases, links, 'Release 9.8');
       toast.success('RTM exported successfully');
     } catch { toast.error('Export failed'); }
+  };
+
+  const handleLinkTestsSuccess = () => {
+    refetchRTM();
+    toast.success('Test links updated successfully');
   };
 
   if (isLoading || !metrics) {
@@ -55,9 +95,15 @@ const RTMPage = () => {
             <p className="text-sm text-muted-foreground mt-0.5">Track test coverage across requirements</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handleExport}><Download className="w-4 h-4 mr-1.5" />Export</Button>
-            <Button variant="outline" size="sm"><AlertTriangle className="w-4 h-4 mr-1.5" />Gap Analysis</Button>
-            <Button size="sm"><Link className="w-4 h-4 mr-1.5" />Link Tests</Button>
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="w-4 h-4 mr-1.5" />Export
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setIsGapAnalysisOpen(true)}>
+              <AlertTriangle className="w-4 h-4 mr-1.5" />Gap Analysis
+            </Button>
+            <Button size="sm" onClick={() => setIsLinkTestsOpen(true)}>
+              <Link className="w-4 h-4 mr-1.5" />Link Tests
+            </Button>
           </div>
         </div>
 
@@ -70,9 +116,11 @@ const RTMPage = () => {
             <Input placeholder="Search requirements... ⌘K" className="pl-9 h-9" value={filters.searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
           
-          <Button variant="outline" size="sm" className="gap-2">Release <ChevronDown className="w-3 h-3" /></Button>
-          <Button variant="outline" size="sm" className="gap-2">Type <ChevronDown className="w-3 h-3" /></Button>
-          <Button variant="outline" size="sm" className="gap-2">Coverage <ChevronDown className="w-3 h-3" /></Button>
+          <RTMFilterBar 
+            filters={filters}
+            onFilterChange={setFilter}
+            onClearFilters={clearFilters}
+          />
           
           <div className="ml-auto flex bg-muted rounded-lg p-0.5">
             {[{ mode: 'matrix' as const, icon: LayoutGrid }, { mode: 'list' as const, icon: List }, { mode: 'tree' as const, icon: GitBranch }].map(v => (
@@ -87,9 +135,24 @@ const RTMPage = () => {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {viewMode === 'matrix' && <RTMTree tree={tree} onToggle={toggleTreeNode} onSelect={selectTreeNode} onExpandAll={expandAll} onCollapseAll={collapseAll} />}
-        <RTMTable data={tableData} sorting={sorting} onSort={setSorting} onRowClick={selectTableRow} selectedId={selectedTreeNodeId} />
+        <RTMTable data={filteredTableData} sorting={sorting} onSort={setSorting} onRowClick={selectTableRow} selectedId={selectedTreeNodeId} />
         <RTMDetailPanel requirement={selectedRequirement} isOpen={isDetailPanelOpen} onClose={closeDetailPanel} />
       </div>
+
+      {/* Gap Analysis Panel */}
+      <GapAnalysisPanel 
+        open={isGapAnalysisOpen}
+        onClose={() => setIsGapAnalysisOpen(false)}
+        requirements={tableData}
+      />
+
+      {/* Bulk Link Tests Dialog */}
+      <BulkLinkTestsDialog
+        open={isLinkTestsOpen}
+        onOpenChange={setIsLinkTestsOpen}
+        requirements={tableData}
+        onSuccess={handleLinkTestsSuccess}
+      />
     </div>
   );
 };
