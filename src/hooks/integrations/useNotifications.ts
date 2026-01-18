@@ -107,14 +107,7 @@ export function useNotifications() {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      // In production, fetch from Supabase:
-      // const { data, error } = await supabase
-      //   .from('notifications')
-      //   .select('*')
-      //   .eq('user_id', user.id)
-      //   .order('created_at', { ascending: false })
-      //   .limit(50);
-      
+      // Fall back to mock - in_app_notifications table doesn't exist yet
       return generateMockNotifications(user.id);
     },
     enabled: !!user?.id,
@@ -154,13 +147,8 @@ export function useNotifications() {
 
   const markAsRead = useMutation({
     mutationFn: async (notificationId: string) => {
-      // In production:
-      // await supabase
-      //   .from('notifications')
-      //   .update({ is_read: true })
-      //   .eq('id', notificationId);
-      
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      // Notifications table doesn't exist yet, just update local state
+      console.log('Marking notification as read:', notificationId);
       return notificationId;
     },
     onMutate: async (notificationId) => {

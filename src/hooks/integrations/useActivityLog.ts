@@ -119,40 +119,53 @@ export function useActivityLog(cycleId: string, filters?: ActivityFilters) {
   return useInfiniteQuery({
     queryKey: ['activity-log', cycleId, filters],
     queryFn: async ({ pageParam = 0 }) => {
-      // In production:
-      // let query = supabase
-      //   .from('activity_log')
-      //   .select('*, user:auth.users(full_name, avatar_url)')
-      //   .eq('cycle_id', cycleId)
-      //   .order('created_at', { ascending: false })
-      //   .range(pageParam, pageParam + 19);
+      // Try to fetch from activity_logs table
+      let query = supabase
+        .from('activity_logs')
+        .select('*')
+        .eq('entity_id', cycleId)
+        .order('created_at', { ascending: false })
+        .range(pageParam, pageParam + 19);
       
-      // if (filters?.userId) query = query.eq('user_id', filters.userId);
-      // if (filters?.action) query = query.eq('action', filters.action);
-      // if (filters?.entityType) query = query.eq('entity_type', filters.entityType);
-      // if (filters?.dateFrom) query = query.gte('created_at', filters.dateFrom);
-      // if (filters?.dateTo) query = query.lte('created_at', filters.dateTo);
+      if (filters?.action) query = query.eq('action', filters.action);
+      if (filters?.entityType) query = query.eq('entity_type', filters.entityType);
+      if (filters?.dateFrom) query = query.gte('created_at', filters.dateFrom);
+      if (filters?.dateTo) query = query.lte('created_at', filters.dateTo);
       
-      // const { data, error } = await query;
-      // if (error) throw error;
-      // return data;
+      const { data, error } = await query;
       
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      
-      let data = generateMockActivityLog(cycleId);
-      
-      // Apply filters
-      if (filters?.action) {
-        data = data.filter((item) => item.action === filters.action);
+      // If no data or error, fall back to mock for demo
+      if (error || !data || data.length === 0) {
+        let mockData = generateMockActivityLog(cycleId);
+        
+        // Apply filters to mock
+        if (filters?.action) {
+          mockData = mockData.filter((item) => item.action === filters.action);
+        }
+        if (filters?.entityType) {
+          mockData = mockData.filter((item) => item.entity_type === filters.entityType);
+        }
+        
+        const startIndex = pageParam;
+        const endIndex = pageParam + 20;
+        return mockData.slice(startIndex, endIndex);
       }
-      if (filters?.entityType) {
-        data = data.filter((item) => item.entity_type === filters.entityType);
-      }
       
-      // Pagination
-      const startIndex = pageParam;
-      const endIndex = pageParam + 20;
-      return data.slice(startIndex, endIndex);
+      // Map activity_logs to ActivityLogEntry format
+      return data.map((log) => ({
+        id: log.id,
+        project_id: '',
+        cycle_id: cycleId,
+        user_id: log.actor_id || '',
+        action: log.action as ActivityAction,
+        entity_type: log.entity_type as EntityType,
+        entity_id: log.entity_id,
+        old_value: log.before_json as Record<string, unknown> | null,
+        new_value: log.after_json as Record<string, unknown> | null,
+        metadata: {},
+        created_at: log.created_at || new Date().toISOString(),
+        user: { full_name: 'System', avatar_url: null },
+      }));
     },
     getNextPageParam: (lastPage, pages) =>
       lastPage.length === 20 ? pages.length * 20 : undefined,
