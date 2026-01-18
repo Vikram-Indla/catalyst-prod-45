@@ -8,6 +8,92 @@ export type DefectStatus = 'OPEN' | 'IN_PROGRESS' | 'FIXED' | 'VERIFIED' | 'CLOS
 
 export type DefectSeverity = 'CRITICAL' | 'MAJOR' | 'MINOR' | 'TRIVIAL';
 
+// Test Plan status types
+export type TestPlanStatus = 'draft' | 'active' | 'completed' | 'archived';
+
+// ============================================================
+// TEST PLAN TYPES
+// ============================================================
+export interface TMTestPlan {
+  id: string;
+  project_id: string;
+  plan_key: string;
+  name: string;
+  description?: string;
+  status: TestPlanStatus;
+  start_date?: string;
+  end_date?: string;
+  release_id?: string;
+  objectives?: string;
+  in_scope?: string;
+  out_of_scope?: string;
+  test_strategy?: string;
+  environment_requirements?: string;
+  owner_id?: string;
+  team_members?: string[];
+  total_tests: number;
+  passed_count: number;
+  failed_count: number;
+  blocked_count: number;
+  skipped_count: number;
+  not_run_count: number;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+  // Joined relations
+  owner?: { id: string; full_name?: string; avatar_url?: string };
+  release?: { id: string; name: string; version?: string };
+  created_by_user?: { id: string; full_name?: string; avatar_url?: string };
+}
+
+export interface TMTestPlanCase {
+  id: string;
+  test_plan_id: string;
+  test_case_id: string;
+  sort_order?: number;
+  added_by?: string;
+  added_at: string;
+  // Joined relations
+  test_case?: TMTestCase;
+  added_by_user?: { id: string; full_name?: string; avatar_url?: string };
+}
+
+export interface TestPlanFilters {
+  status?: TestPlanStatus | TestPlanStatus[];
+  owner_id?: string;
+  release_id?: string;
+  search?: string;
+  date_from?: string;
+  date_to?: string;
+}
+
+export interface CreateTestPlanInput {
+  name: string;
+  description?: string;
+  status?: TestPlanStatus;
+  start_date?: string;
+  end_date?: string;
+  release_id?: string;
+  objectives?: string;
+  in_scope?: string;
+  out_of_scope?: string;
+  test_strategy?: string;
+  environment_requirements?: string;
+  owner_id?: string;
+  team_members?: string[];
+}
+
+export interface UpdateTestPlanInput extends Partial<CreateTestPlanInput> {
+  id: string;
+}
+
+export interface TestPlanHealth {
+  passRate: number;
+  executionProgress: number;
+  daysRemaining: number | null;
+  isOverdue: boolean;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+}
 export interface TMProject {
   id: string;
   name: string;
