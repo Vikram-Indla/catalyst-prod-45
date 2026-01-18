@@ -118,8 +118,20 @@ export const RTMTable = ({ data, sorting, onSort, onRowClick, selectedId }: Prop
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground"><Eye className="w-4 h-4" /></button>
-                    <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground"><Link className="w-4 h-4" /></button>
+                    <button 
+                      className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground"
+                      onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }}
+                      title="View details"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button 
+                      className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground"
+                      onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }}
+                      title="Link tests"
+                    >
+                      <Link className="w-4 h-4" />
+                    </button>
                   </div>
                 </td>
               </tr>
