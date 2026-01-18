@@ -92,9 +92,10 @@ export default function TestPlansPage() {
   const projectId = projects?.[0]?.id;
 
   // Fetch test plans
-  const { data: testPlans, isLoading, refetch } = useTestPlans(projectId);
+  const { data: testPlansData, isLoading, refetch } = useTestPlans(projectId);
+  const testPlans = testPlansData?.plans;
   const deletePlanMutation = useDeleteTestPlan();
-  const clonePlanMutation = useCloneTestPlan();
+  const clonePlanMutation = useCloneTestPlan(projectId);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');

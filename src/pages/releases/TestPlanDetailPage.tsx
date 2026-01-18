@@ -84,12 +84,12 @@ export default function TestPlanDetailPage() {
   // Fetch data
   const { data: plan, isLoading: planLoading } = useTestPlan(planId);
   const { data: planCases, isLoading: casesLoading } = useTestPlanCases(planId);
-  const health = useTestPlanHealth(plan || undefined);
+  const { data: health } = useTestPlanHealth(plan || undefined);
 
   // Mutations
   const updatePlanMutation = useUpdateTestPlan();
   const deletePlanMutation = useDeleteTestPlan();
-  const clonePlanMutation = useCloneTestPlan();
+  const clonePlanMutation = useCloneTestPlan(plan?.project_id);
   const removeCasesMutation = useRemoveCasesFromPlan();
 
   // Selection
@@ -601,16 +601,16 @@ export default function TestPlanDetailPage() {
                             <p className="font-medium">
                               {pc.test_case?.title || 'Unknown Test Case'}
                             </p>
-                            {pc.test_case?.case_key && (
+                            {pc.test_case?.key && (
                               <p className="text-xs text-muted-foreground font-mono">
-                                {pc.test_case.case_key}
+                                {pc.test_case.key}
                               </p>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                            {pc.test_case?.priority || '—'}
+                            {pc.test_case?.priority?.name || '—'}
                           </Badge>
                         </TableCell>
                         <TableCell>
