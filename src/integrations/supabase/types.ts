@@ -14152,6 +14152,59 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_delivery_log: {
+        Row: {
+          attempted_at: string | null
+          channel: string
+          created_at: string | null
+          delivered_at: string | null
+          email_message_id: string | null
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          notification_id: string
+          retry_count: number | null
+          slack_message_ts: string | null
+          status: string
+        }
+        Insert: {
+          attempted_at?: string | null
+          channel: string
+          created_at?: string | null
+          delivered_at?: string | null
+          email_message_id?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          notification_id: string
+          retry_count?: number | null
+          slack_message_ts?: string | null
+          status?: string
+        }
+        Update: {
+          attempted_at?: string | null
+          channel?: string
+          created_at?: string | null
+          delivered_at?: string | null
+          email_message_id?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          notification_id?: string
+          retry_count?: number | null
+          slack_message_ts?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_delivery_log_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "user_notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           created_at: string | null
@@ -27010,6 +27063,63 @@ export type Database = {
         }
         Relationships: []
       }
+      user_integrations: {
+        Row: {
+          access_token: string | null
+          bot_user_id: string | null
+          connected_at: string | null
+          created_at: string | null
+          disconnected_at: string | null
+          id: string
+          integration_type: string
+          is_active: boolean | null
+          metadata: Json | null
+          refresh_token: string | null
+          slack_team_id: string | null
+          slack_team_name: string | null
+          slack_user_id: string | null
+          token_expires_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          bot_user_id?: string | null
+          connected_at?: string | null
+          created_at?: string | null
+          disconnected_at?: string | null
+          id?: string
+          integration_type: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          refresh_token?: string | null
+          slack_team_id?: string | null
+          slack_team_name?: string | null
+          slack_user_id?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          bot_user_id?: string | null
+          connected_at?: string | null
+          created_at?: string | null
+          disconnected_at?: string | null
+          id?: string
+          integration_type?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          refresh_token?: string | null
+          slack_team_id?: string | null
+          slack_team_name?: string | null
+          slack_user_id?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_notification_preferences: {
         Row: {
           created_at: string
@@ -27111,39 +27221,86 @@ export type Database = {
       }
       user_notifications: {
         Row: {
+          actor_id: string | null
+          channel: string | null
           created_at: string | null
+          entity_id: string | null
+          entity_type: string | null
           id: string
+          idempotency_key: string | null
           is_read: boolean | null
           link: string | null
           message: string
           read_at: string | null
+          severity: string | null
           title: string
           type: string
           user_id: string | null
         }
         Insert: {
+          actor_id?: string | null
+          channel?: string | null
           created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
           id?: string
+          idempotency_key?: string | null
           is_read?: boolean | null
           link?: string | null
           message: string
           read_at?: string | null
+          severity?: string | null
           title: string
           type: string
           user_id?: string | null
         }
         Update: {
+          actor_id?: string | null
+          channel?: string | null
           created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
           id?: string
+          idempotency_key?: string | null
           is_read?: boolean | null
           link?: string | null
           message?: string
           read_at?: string | null
+          severity?: string | null
           title?: string
           type?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       user_permission_overrides: {
         Row: {
@@ -29054,6 +29211,21 @@ export type Database = {
           p_user_id: string
         }
         Returns: undefined
+      }
+      create_notification_with_dedup: {
+        Args: {
+          p_actor_id?: string
+          p_entity_id?: string
+          p_entity_type?: string
+          p_idempotency_key?: string
+          p_link: string
+          p_message: string
+          p_severity?: string
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: string
       }
       create_project_audit_log: {
         Args: {
