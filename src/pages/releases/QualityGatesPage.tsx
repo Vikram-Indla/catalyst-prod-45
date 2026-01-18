@@ -602,6 +602,25 @@ export default function QualityGatesPage() {
   const [selectedGateForHistory, setSelectedGateForHistory] = useState<QualityGate | null>(null);
   const [editingGate, setEditingGate] = useState<QualityGate | null>(null);
   const [deletingGate, setDeletingGate] = useState<QualityGate | null>(null);
+  const [isCreatingGate, setIsCreatingGate] = useState(false);
+  const [evaluatingGateId, setEvaluatingGateId] = useState<string | null>(null);
+
+  const handleEvaluateGate = (gate: QualityGate) => {
+    setEvaluatingGateId(gate.id);
+    toast.info(`Evaluating ${gate.name}...`);
+    setTimeout(() => {
+      setEvaluatingGateId(null);
+      toast.success(`${gate.name} evaluation complete`);
+    }, 1500);
+  };
+
+  const handleExportGateReport = () => {
+    toast.success('Gate report exported successfully');
+  };
+
+  const handleConfigureNotifications = () => {
+    toast.info('Notification settings coming soon');
+  };
 
   const filteredGates = useMemo(() => {
     return mockGates.filter(gate => {
@@ -669,7 +688,7 @@ export default function QualityGatesPage() {
                 <RefreshCw className={cn("w-4 h-4 mr-2", isEvaluating && "animate-spin")} />
                 Evaluate All
               </Button>
-              <Button>
+              <Button onClick={() => setIsCreatingGate(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 New Gate
               </Button>
@@ -741,15 +760,15 @@ export default function QualityGatesPage() {
                   <CardTitle className="text-sm font-medium text-muted-foreground">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start" size="sm">
+                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleExportGateReport}>
                     <Download className="w-4 h-4 mr-2" />
                     Export Gate Report
                   </Button>
-                  <Button variant="outline" className="w-full justify-start" size="sm">
+                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleConfigureNotifications}>
                     <Bell className="w-4 h-4 mr-2" />
                     Configure Notifications
                   </Button>
-                  <Button variant="outline" className="w-full justify-start" size="sm">
+                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={() => setSelectedGateForHistory(mockGates[0])}>
                     <History className="w-4 h-4 mr-2" />
                     View Evaluation History
                   </Button>
@@ -816,7 +835,7 @@ export default function QualityGatesPage() {
                     gate={gate}
                     expanded={expandedGates.has(gate.id)}
                     onToggle={() => toggleGate(gate.id)}
-                    onEvaluate={() => {}}
+                    onEvaluate={() => handleEvaluateGate(gate)}
                     onRequestOverride={() => setOverrideDialog({ open: true, gateName: gate.name })}
                     onViewHistory={() => setSelectedGateForHistory(gate)}
                     onEditGate={() => setEditingGate(gate)}
@@ -871,7 +890,7 @@ export default function QualityGatesPage() {
                   gate={gate}
                   expanded={expandedGates.has(gate.id)}
                   onToggle={() => toggleGate(gate.id)}
-                  onEvaluate={() => {}}
+                  onEvaluate={() => handleEvaluateGate(gate)}
                   onRequestOverride={() => setOverrideDialog({ open: true, gateName: gate.name })}
                   onViewHistory={() => setSelectedGateForHistory(gate)}
                   onEditGate={() => setEditingGate(gate)}
@@ -1064,6 +1083,17 @@ export default function QualityGatesPage() {
           await new Promise(resolve => setTimeout(resolve, 500));
           toast.success('Quality gate deleted');
           setDeletingGate(null);
+        }}
+      />
+
+      {/* Create New Gate Dialog - reuses EditQualityGateDialog */}
+      <EditQualityGateDialog
+        open={isCreatingGate}
+        gate={null}
+        onOpenChange={(open) => !open && setIsCreatingGate(false)}
+        onSuccess={() => {
+          toast.success('New quality gate created');
+          setIsCreatingGate(false);
         }}
       />
     </div>
