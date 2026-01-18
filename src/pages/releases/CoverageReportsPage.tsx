@@ -7,7 +7,8 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -77,8 +78,10 @@ import {
   FileSpreadsheet,
   FileDown,
 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CoverageRing } from '@/modules/test-management/components/requirements/CoverageStatsBar';
+import { AddTestsToCoverageDialog } from '@/components/releases/coverage';
 
 // ============================================
 // MOCK DATA - Replace with real API calls
@@ -230,7 +233,17 @@ function StatCard({ icon, label, value, subValue, trend, trendUp }: {
 // TAB CONTENT COMPONENTS
 // ============================================
 
-function ByRequirementTab({ requirements, searchQuery, filters }: { requirements: typeof mockRequirements; searchQuery: string; filters: any }) {
+function ByRequirementTab({ 
+  requirements, 
+  searchQuery, 
+  filters,
+  onViewRequirement 
+}: { 
+  requirements: typeof mockRequirements; 
+  searchQuery: string; 
+  filters: any;
+  onViewRequirement: (reqId: string) => void;
+}) {
   const filtered = useMemo(() => {
     return requirements.filter(r => {
       const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -272,7 +285,12 @@ function ByRequirementTab({ requirements, searchQuery, filters }: { requirements
                   <CoverageBadge status={req.coverage} percent={req.coveragePercent} />
                 </TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-7 w-7"
+                    onClick={() => onViewRequirement(req.id)}
+                  >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -386,7 +404,7 @@ function ByModuleTab({ modules }: { modules: typeof mockModules }) {
   );
 }
 
-function GapAnalysisTab({ gaps }: { gaps: typeof mockGaps }) {
+function GapAnalysisTab({ gaps, onAddTests }: { gaps: typeof mockGaps; onAddTests: (gap: typeof mockGaps[0]) => void }) {
   const criticalCount = gaps.filter(g => g.severity === 'critical').length;
   const highCount = gaps.filter(g => g.severity === 'high').length;
   const totalEffort = gaps.reduce((sum, g) => sum + g.effort, 0);
@@ -466,7 +484,10 @@ function GapAnalysisTab({ gaps }: { gaps: typeof mockGaps }) {
                   </TableCell>
                   <TableCell className="text-center text-muted-foreground">{gap.effort}h</TableCell>
                   <TableCell>
-                    <Button variant="outline" size="sm">Add Tests</Button>
+                    <Button variant="outline" size="sm" onClick={() => onAddTests(gap)}>
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add Tests
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -603,6 +624,7 @@ function TrendsTab({ trendData, sprintData }: { trendData: typeof mockTrendData;
 
 export default function CoverageReportsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'requirements');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRelease, setSelectedRelease] = useState(mockReleases[0].id);
@@ -611,6 +633,9 @@ export default function CoverageReportsPage() {
     priority: 'all',
     module: 'all',
   });
+  
+  // Dialog state for adding tests
+  const [addTestsForReq, setAddTestsForReq] = useState<{ id: string; title: string; } | null>(null);
 
   // Calculate summary metrics
   const totalRequirements = mockRequirements.length;
@@ -622,6 +647,21 @@ export default function CoverageReportsPage() {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setSearchParams({ tab });
+  };
+  
+  const handleViewRequirement = (reqId: string) => {
+    // Navigate to requirement detail - using a toast for now as specific route may vary
+    toast.info(`Navigating to requirement ${reqId}`);
+    navigate(`/releases/${selectedRelease}/requirements?id=${reqId}`);
+  };
+  
+  const handleAddTestsFromGap = (gap: typeof mockGaps[0]) => {
+    setAddTestsForReq({ id: gap.reqId, title: gap.reqTitle });
+  };
+  
+  const handleCoverageRefresh = () => {
+    // In real implementation, refetch coverage data
+    toast.success('Coverage data refreshed');
   };
 
   return (
@@ -785,7 +825,12 @@ export default function CoverageReportsPage() {
           </TabsList>
 
           <TabsContent value="requirements" className="mt-6">
-            <ByRequirementTab requirements={mockRequirements} searchQuery={searchQuery} filters={filters} />
+            <ByRequirementTab 
+              requirements={mockRequirements} 
+              searchQuery={searchQuery} 
+              filters={filters}
+              onViewRequirement={handleViewRequirement}
+            />
           </TabsContent>
 
           <TabsContent value="modules" className="mt-6">
@@ -793,7 +838,7 @@ export default function CoverageReportsPage() {
           </TabsContent>
 
           <TabsContent value="gaps" className="mt-6">
-            <GapAnalysisTab gaps={mockGaps} />
+            <GapAnalysisTab gaps={mockGaps} onAddTests={handleAddTestsFromGap} />
           </TabsContent>
 
           <TabsContent value="trends" className="mt-6">
@@ -801,6 +846,14 @@ export default function CoverageReportsPage() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Add Tests Dialog */}
+      <AddTestsToCoverageDialog
+        open={!!addTestsForReq}
+        requirement={addTestsForReq}
+        onOpenChange={(open) => !open && setAddTestsForReq(null)}
+        onSuccess={handleCoverageRefresh}
+      />
     </div>
   );
 }
