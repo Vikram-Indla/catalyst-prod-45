@@ -36,10 +36,44 @@ import {
   Loader2,
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { useUpdateTestCaseApi } from '@/hooks/use-test-cases-api';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { TestCase, TestCaseStep as TestStep } from '@/data/testCasesData';
+
+// Hook for updating test cases
+function useUpdateTestCaseApi() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      id: string;
+      title?: string;
+      description?: string;
+      preconditions?: string;
+      status?: string;
+      tags?: string[];
+      steps?: { step_number: number; action: string; expected_result: string; test_data?: string }[];
+    }) => {
+      const { id, ...updates } = data;
+      const { data: result, error } = await supabase
+        .from('test_cases')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return result;
+    },
+    onSuccess: (updatedCase) => {
+      queryClient.invalidateQueries({ queryKey: ['test-cases'] });
+      toast.success('Test case updated');
+    },
+    onError: (error) => {
+      toast.error('Failed to update test case');
+    },
+  });
+}
 
 interface EditTestCaseDialogProps {
   testCase: TestCase | null;
