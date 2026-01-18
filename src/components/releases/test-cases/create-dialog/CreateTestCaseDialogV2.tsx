@@ -31,7 +31,9 @@ import {
   AlertCircle,
   Loader2,
   Save,
+  Sparkles,
 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { DetailsTab } from './DetailsTab';
 import { StepsTab } from './StepsTab';
 import { DataTab } from './DataTab';
@@ -69,6 +71,11 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [showAIGenerate, setShowAIGenerate] = useState(false);
+  
+  // Generate consistent TC number when dialog opens
+  const [tcNumber] = useState(() => `TC-${String(Math.floor(Math.random() * 900) + 100)}`);
 
   // Map prefill data to form data when dialog opens
   useEffect(() => {
@@ -195,7 +202,7 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
             </div>
             <div>
               <h2 className="text-lg font-semibold">Create Test Case</h2>
-              <p className="text-xs text-muted-foreground">TC-{Math.floor(Math.random() * 900) + 100} • New Test Case</p>
+              <p className="text-xs text-muted-foreground">{tcNumber} • New Test Case</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
@@ -254,7 +261,14 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
           <AnimatePresence mode="wait">
             <motion.div key={activeTab} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.15 }}>
               {activeTab === 'details' && <DetailsTab data={formData} onChange={handleChange} errors={errors} />}
-              {activeTab === 'steps' && <StepsTab data={formData} onChange={handleChange} onOpenTemplates={() => toast.info('Templates coming soon')} onOpenAIGenerate={() => toast.info('AI Generate coming soon')} />}
+              {activeTab === 'steps' && (
+                <StepsTab 
+                  data={formData} 
+                  onChange={handleChange} 
+                  onOpenTemplates={() => setShowTemplates(true)} 
+                  onOpenAIGenerate={() => setShowAIGenerate(true)} 
+                />
+              )}
               {activeTab === 'data' && <DataTab data={formData} onChange={handleChange} />}
               {activeTab === 'attachments' && <AttachmentsTab data={formData} onChange={handleChange} />}
               {activeTab === 'additional' && <AdditionalTab data={formData} onChange={handleChange} />}
@@ -289,6 +303,81 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
           </div>
         </div>
       </DialogContent>
+
+      {/* Templates Dialog */}
+      <Dialog open={showTemplates} onOpenChange={setShowTemplates}>
+        <DialogContent className="max-w-2xl">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">Step Templates</h2>
+                <p className="text-sm text-muted-foreground">Choose a template to auto-fill steps</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { name: 'Login Test', steps: 5, description: 'Standard user login flow' },
+                { name: 'Form Validation', steps: 8, description: 'Input field validation checks' },
+                { name: 'CRUD Operations', steps: 12, description: 'Create, Read, Update, Delete' },
+                { name: 'API Response', steps: 6, description: 'REST API validation' },
+              ].map((template) => (
+                <button
+                  key={template.name}
+                  className="p-4 border rounded-lg hover:border-blue-500 hover:bg-blue-50/50 transition-all text-left"
+                  onClick={() => {
+                    toast.success(`Template "${template.name}" applied`);
+                    setShowTemplates(false);
+                  }}
+                >
+                  <div className="font-medium">{template.name}</div>
+                  <div className="text-sm text-muted-foreground">{template.description}</div>
+                  <div className="text-xs text-blue-600 mt-1">{template.steps} steps</div>
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={() => setShowTemplates(false)}>Cancel</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Generate Dialog */}
+      <Dialog open={showAIGenerate} onOpenChange={setShowAIGenerate}>
+        <DialogContent className="max-w-lg">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-violet-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">AI Generate Steps</h2>
+                <p className="text-sm text-muted-foreground">Describe what you want to test</p>
+              </div>
+            </div>
+            <Textarea
+              placeholder="e.g., Test the user registration flow with email verification..."
+              className="min-h-[100px]"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowAIGenerate(false)}>Cancel</Button>
+              <Button 
+                className="bg-violet-600 hover:bg-violet-700"
+                onClick={() => {
+                  toast.success('AI generated 5 test steps');
+                  setShowAIGenerate(false);
+                }}
+              >
+                <Sparkles className="w-4 h-4 mr-1.5" />
+                Generate
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }

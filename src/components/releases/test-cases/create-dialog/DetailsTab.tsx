@@ -133,7 +133,20 @@ export function DetailsTab({ data, onChange, errors }: DetailsTabProps) {
               onValueChange={(value) => onChange({ priority: value as PriorityLevel })}
             >
               <SelectTrigger className={cn(data.priority && "border-teal-500")}>
-                <SelectValue placeholder="Select priority" />
+                <SelectValue>
+                  {data.priority && (
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full flex-shrink-0" 
+                        style={{ backgroundColor: PRIORITY_CONFIG[data.priority].color }}
+                      />
+                      <div className="flex flex-col items-start leading-tight">
+                        <span className="font-medium text-sm">{data.priority} - {PRIORITY_CONFIG[data.priority].label.split(' - ')[1]}</span>
+                        <span className="text-xs text-muted-foreground">{PRIORITY_CONFIG[data.priority].description}</span>
+                      </div>
+                    </div>
+                  )}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
