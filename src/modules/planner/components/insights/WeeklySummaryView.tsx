@@ -3,16 +3,17 @@
 // Slate gradient header, KPI strip, 2-column card grid
 // ============================================================
 
-import { useState } from 'react';
 import { format } from 'date-fns';
 import { 
   FileText, Download, Rocket, AlertTriangle, Bug, 
   GitBranch, FileCheck, Users, BarChart3, TrendingUp, TrendingDown
 } from 'lucide-react';
 import { sampleWeeklyData } from '../../data/insightsMockData';
+import { useWeeklyInsightsData } from '../../hooks/useInsightsData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Status badge component
 function StatusBadge({ status }: { status: string }) {
@@ -43,8 +44,22 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export function WeeklySummaryView() {
+  // Fetch real data from Supabase
+  const { data: liveData, isLoading } = useWeeklyInsightsData();
+  
+  // Use mock data structure for display, overlay live counts
   const data = sampleWeeklyData;
-  const dateRange = `${format(data.period.start, 'MMM d')} - ${format(data.period.end, 'MMM d, yyyy')}`;
+  
+  // Use live period or fallback
+  const dateRange = liveData 
+    ? `${format(liveData.period.start, 'MMM d')} - ${format(liveData.period.end, 'MMM d, yyyy')}`
+    : `${format(data.period.start, 'MMM d')} - ${format(data.period.end, 'MMM d, yyyy')}`;
+  
+  // Merge live counts into display
+  const storiesDelivered = liveData?.storiesCount ?? data.storiesDelivered;
+  const releasesCount = liveData?.releasesCount ?? data.releases.length;
+  const incidentsTotal = liveData?.incidentsCount ?? data.incidents.total;
+  const defectsTotal = liveData?.defectsCount ?? data.defects.total;
   
   // Header KPIs
   const headerKPIs = [

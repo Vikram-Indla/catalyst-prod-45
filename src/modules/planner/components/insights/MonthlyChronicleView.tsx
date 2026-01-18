@@ -9,9 +9,11 @@ import {
   AlertTriangle, TestTube, Download, ArrowRight, TrendingDown
 } from 'lucide-react';
 import { sampleMonthlyData } from '../../data/insightsMockData';
+import { useMonthlyInsightsData } from '../../hooks/useInsightsData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Funnel component
 function Funnel({ stages }: { stages: { label: string; value: number; highlight?: boolean }[] }) {
@@ -100,7 +102,17 @@ function StrategicItem({
 }
 
 export function MonthlyChronicleView() {
+  // Fetch real data from Supabase
+  const { data: liveData, isLoading } = useMonthlyInsightsData();
+  
+  // Use mock data structure, overlay live counts
   const data = sampleMonthlyData;
+  
+  // Merge live counts - use live data arrays length
+  const releasesCount = liveData?.releases?.length ?? data.releases.items.length;
+  const incidentsTotal = liveData?.incidents?.length ?? data.incidents.items.length;
+  const testCyclesCount = liveData?.testCycles?.length ?? data.testCycles.items.length;
+  const businessRequestsTotal = liveData?.businessRequests?.length ?? data.businessRequests.items.length;
 
   return (
     <ScrollArea className="h-full">
