@@ -4,6 +4,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import type { AddTestsParams } from '@/types/add-tests.types';
 
 export function useAddTestsToCycle() {
@@ -14,37 +15,65 @@ export function useAddTestsToCycle() {
       cycleId,
       testCaseIds,
       assigneeId,
-      priority,
-      dueDate,
-      useSmartAssignment,
     }: AddTestsParams) => {
-      // TODO: Replace with actual Supabase mutation
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Get the next sort order
+      const { data: existingScope } = await supabase
+        .from('tm_cycle_scope')
+        .select('sort_order')
+        .eq('cycle_id', cycleId)
+        .order('sort_order', { ascending: false })
+        .limit(1);
 
-      if (useSmartAssignment) {
-        console.log('Using smart assignment for', testCaseIds.length, 'tests');
-        // In real implementation, call smart_assign_tests_to_cycle RPC
+      let nextSortOrder = (existingScope?.[0]?.sort_order || 0) + 1;
+
+      // Prepare rows to insert
+      const rows = testCaseIds.map((testCaseId, index) => ({
+        cycle_id: cycleId,
+        test_case_id: testCaseId,
+        assigned_to: assigneeId || null,
+        current_status: 'not_run' as const,
+        sort_order: nextSortOrder + index,
+        added_at: new Date().toISOString(),
+      }));
+
+      // Insert all test cases into the cycle scope
+      const { data, error } = await supabase
+        .from('tm_cycle_scope')
+        .insert(rows)
+        .select();
+
+      if (error) {
+        console.error('Error adding tests to cycle:', error);
+        throw error;
       }
 
-      console.log('Adding tests to cycle:', {
-        cycleId,
-        testCaseIds,
-        assigneeId,
-        priority,
-        dueDate,
-        useSmartAssignment,
-      });
+      // Update the cycle's counts
+      const { data: cycle } = await supabase
+        .from('tm_test_cycles')
+        .select('total_cases, not_run_count')
+        .eq('id', cycleId)
+        .single();
+      
+      if (cycle) {
+        await supabase
+          .from('tm_test_cycles')
+          .update({
+            total_cases: (cycle.total_cases || 0) + testCaseIds.length,
+            not_run_count: (cycle.not_run_count || 0) + testCaseIds.length,
+          })
+          .eq('id', cycleId);
+      }
 
-      // Mock successful response
       return {
-        added: testCaseIds.length,
+        added: data?.length || testCaseIds.length,
         cycleId,
       };
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['cycle', variables.cycleId] });
       queryClient.invalidateQueries({ queryKey: ['cycle-test-cases', variables.cycleId] });
+      queryClient.invalidateQueries({ queryKey: ['test-repository'] });
+      queryClient.invalidateQueries({ queryKey: ['tm_test_cycles'] });
       toast.success(`Added ${data.added} tests to cycle`);
     },
     onError: (error: Error) => {
