@@ -14,6 +14,7 @@ import {
   Columns,
   X
 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +25,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { exportDefects, exportDefectsByStatus } from "@/utils/exportDefects";
 
 import { DefectTableView } from "@/components/releases/defects/DefectTableView";
 import { DefectKanbanView } from "@/components/releases/defects/DefectKanbanView";
@@ -114,6 +124,7 @@ export default function ReleasesDefectsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
   const [selectedDefect, setSelectedDefect] = useState<Defect | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   
   // Auto-open modal when ?create=true is in URL
   useEffect(() => {
@@ -309,10 +320,67 @@ ${formData.url ? `**URL:** ${formData.url}` : ''}
           </div>
           
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" disabled={isExporting}>
+                  {isExporting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Export Options</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={async () => {
+                  setIsExporting(true);
+                  try {
+                    await exportDefects(defects, 'xlsx');
+                    toast.success(`Exported ${defects.length} defects`);
+                  } finally {
+                    setIsExporting(false);
+                  }
+                }}>
+                  Export All (Excel)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={async () => {
+                  setIsExporting(true);
+                  try {
+                    await exportDefects(filteredDefects, 'xlsx');
+                    toast.success(`Exported ${filteredDefects.length} filtered defects`);
+                  } finally {
+                    setIsExporting(false);
+                  }
+                }}>
+                  Export Filtered (Excel)
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={async () => {
+                  setIsExporting(true);
+                  try {
+                    await exportDefects(defects, 'csv');
+                    toast.success(`Exported ${defects.length} defects`);
+                  } finally {
+                    setIsExporting(false);
+                  }
+                }}>
+                  Export All (CSV)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={async () => {
+                  setIsExporting(true);
+                  try {
+                    await exportDefectsByStatus(defects, 'xlsx');
+                    toast.success('Exported defects by status');
+                  } finally {
+                    setIsExporting(false);
+                  }
+                }}>
+                  Export by Status (Excel)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button 
               size="sm" 
               onClick={() => setIsReportModalOpen(true)}
