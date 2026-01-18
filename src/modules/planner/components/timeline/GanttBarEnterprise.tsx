@@ -5,8 +5,9 @@
 
 import { cn } from '@/lib/utils';
 import { getTaskColor } from '@/lib/workstream-colors';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { format } from 'date-fns';
+import { createPortal } from 'react-dom';
 import type { PlannerTask } from '../../types';
 
 interface GanttBarEnterpriseProps {
@@ -30,6 +31,8 @@ export function GanttBarEnterprise({
   onHover
 }: GanttBarEnterpriseProps) {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const barRef = useRef<HTMLDivElement>(null);
   
   const isCompleted = task.status === 'done';
   const colors = getTaskColor(task.status, task.teamName);
@@ -45,6 +48,17 @@ export function GanttBarEnterprise({
     onHover?.(false);
   };
 
+  // Update tooltip position when hovering
+  useEffect(() => {
+    if (showTooltip && barRef.current) {
+      const rect = barRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        x: rect.left,
+        y: rect.top - 8, // 8px gap above the bar
+      });
+    }
+  }, [showTooltip]);
+
   // Ensure minimum width for readability
   const effectiveWidth = Math.max(MIN_BAR_WIDTH, width);
   
@@ -53,6 +67,7 @@ export function GanttBarEnterprise({
 
   return (
     <div
+      ref={barRef}
       className="absolute top-2 h-12 z-10"
       style={{ left: Math.max(4, left), width: effectiveWidth }}
       onMouseEnter={handleMouseEnter}
@@ -120,9 +135,17 @@ export function GanttBarEnterprise({
         </div>
       </div>
       
-      {/* Tooltip */}
-      {showTooltip && (
-        <div className="absolute bottom-full left-0 mb-2 z-50 pointer-events-none">
+      {/* Tooltip - Rendered via Portal to avoid z-index issues */}
+      {showTooltip && createPortal(
+        <div 
+          className="fixed pointer-events-none"
+          style={{ 
+            left: tooltipPosition.x,
+            top: tooltipPosition.y,
+            transform: 'translateY(-100%)',
+            zIndex: 9999,
+          }}
+        >
           <div className="bg-gray-900 text-white p-3 rounded-lg text-xs min-w-[220px] shadow-xl">
             {/* Header */}
             <div className="flex items-center gap-2 mb-2">
@@ -171,7 +194,8 @@ export function GanttBarEnterprise({
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
