@@ -124,5 +124,19 @@ export {
 // AI Generation
 export { useAIGeneration, type GeneratedTestCase, type GenerationResult, type GenerationOptions } from './useAIGeneration';
 
+// Test Plans
+export {
+  useTestPlans,
+  useTestPlan,
+  useTestPlanCases,
+  useTestPlanHealth,
+  useCreateTestPlan,
+  useUpdateTestPlan,
+  useDeleteTestPlan,
+  useAddCasesToPlan,
+  useRemoveCasesFromPlan,
+  useCloneTestPlan,
+} from './useTestPlans';
+
 // Types
 export * from '@/types/test-management';
