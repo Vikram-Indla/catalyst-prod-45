@@ -50,6 +50,7 @@ import { formatTimestamp } from '@/lib/formatTimestamp';
 import { useColumnPreferences } from '../../hooks/useColumnPreferences';
 import { TEST_CASE_COLUMNS, ColumnConfig } from '../../config/columnConfig';
 import { TraceabilityCell, LinkedItem } from './TraceabilityCell';
+import { useTraceabilityNavigation } from './useTraceabilityNavigation';
 
 export type SortField = 'case_key' | 'title' | 'status' | 'priority' | 'updated_at' | 'created_at';
 export type SortDirection = 'asc' | 'desc';
@@ -136,6 +137,7 @@ export function CasesDataTable({
   onPageSizeChange,
 }: CasesDataTableProps) {
   const { isColumnVisible } = useColumnPreferences();
+  const { navigateToItem } = useTraceabilityNavigation();
   const allSelected = cases.length > 0 && cases.every((c) => selectedIds.has(c.id));
   const someSelected = cases.some((c) => selectedIds.has(c.id));
 
@@ -310,10 +312,7 @@ export function CasesDataTable({
           <TableCell key={col.key}>
             <TraceabilityCell 
               linkedItems={(testCase as any).linked_items || []} 
-              onItemClick={(item) => {
-                // TODO: Navigate to linked item
-                console.log('Navigate to:', item);
-              }}
+              onItemClick={navigateToItem}
             />
           </TableCell>
         );
