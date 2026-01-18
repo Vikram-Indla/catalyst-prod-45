@@ -106,6 +106,8 @@ import AllReleasesPage from "./pages/releases/AllReleasesPage";
 import ReleasesTestCasesPage from "./pages/releases/TestCasesPage";
 import ReleasesTestCasesLibraryPage from "./pages/releases/TestCasesLibraryPage";
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
+const ReleasesTestPlansPage = lazy(() => import("./pages/releases/TestPlansPage"));
+const ReleasesTestPlanDetailPage = lazy(() => import("./pages/releases/TestPlanDetailPage"));
 import ReleasesTestExecutionPage from "./pages/releases/TestExecutionPage";
 import { TestExecutionFocusPage } from "./features/test-execution";
 const AskAIPage = lazy(() => import("./features/ask-ai/AskAIPage"));
@@ -775,6 +777,8 @@ const App = () => (
               <Route path="/releases/all" element={<AllReleasesPage />} />
               <Route path="/releases/calendar" element={<CalendarPage />} />
               <Route path="/releases/compare" element={<ComparePage />} />
+              <Route path="/releases/test-plans" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesTestPlansPage /></Suspense>} />
+              <Route path="/releases/test-plans/:planId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesTestPlanDetailPage /></Suspense>} />
               <Route path="/releases/test-cases" element={<ReleasesTestCasesPage />} />
               <Route path="/releases/test-cases/:id" element={<ReleasesTestCaseDetailPage />} />
               <Route path="/releases/tests" element={<ReleasesTestCasesLibraryPage />} />
