@@ -81,8 +81,26 @@ const RTMPage = () => {
     toast.success('Test links updated successfully');
   };
 
-  if (isLoading || !metrics) {
+  // Only show loading during actual data fetch, not when no project selected
+  if (dataLoading && selectedProjectId) {
     return <div className="flex items-center justify-center h-full"><div className="animate-pulse text-muted-foreground">Loading...</div></div>;
+  }
+
+  // Show empty state when no data or no project
+  if (!metrics || !selectedProjectId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-4 p-8">
+        <GitBranch className="w-12 h-12 text-muted-foreground/50" />
+        <div className="text-center">
+          <h2 className="text-lg font-semibold text-foreground">No Traceability Data</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {!selectedProjectId 
+              ? 'Select a project to view the requirements traceability matrix.' 
+              : 'No requirements found. Create requirements to build your traceability matrix.'}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
