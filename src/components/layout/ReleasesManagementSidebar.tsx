@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   Network,
   Bug,
+  ClipboardList,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
@@ -53,8 +54,9 @@ const releasesManagementSections: SidebarSection[] = [
     ],
   },
   {
-    title: 'Testing',
+    title: 'Test Planning',
     items: [
+      { id: 'test-plans', title: 'Test Plans', path: '/releases/test-plans', icon: ClipboardList, exact: false },
       { id: 'test-cases', title: 'Test Cases', path: '/releases/test-cases', icon: FileCheck, exact: false },
       { id: 'test-cycles', title: 'Test Cycles', path: '/releases/test-cycles', icon: Globe, exact: false },
       { id: 'test-execution', title: 'Test Execution', path: '/releases/execution', icon: Play, exact: false },
