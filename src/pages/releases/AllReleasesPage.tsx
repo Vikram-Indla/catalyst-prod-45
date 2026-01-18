@@ -3,8 +3,9 @@
  * Enhanced with Summary Cards, AI Insights, and Card Grid View
  */
 
-import { useState, useEffect, useMemo } from 'react';
-import { Plus, ChevronRight, Loader2, Download } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Plus, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
 import {
@@ -13,6 +14,7 @@ import {
   ReleasesBulkActionBar,
   ReleasesEmptyState,
   ReleasesPagination,
+  ExportReleasesDropdown,
 } from '@/components/releases/all-releases';
 import { useReleasesFilter } from '@/hooks/releases/useReleasesFilter';
 import { useReleasesSelection } from '@/hooks/releases/useReleasesSelection';
@@ -29,6 +31,7 @@ import {
   Release as EnhancedRelease,
   getHealthLevel,
 } from '@/features/all-releases';
+import { ReleaseDialog } from '@/components/forms/ReleaseDialog';
 
 // Transform legacy release to enhanced release
 function transformRelease(r: any): EnhancedRelease {
@@ -81,6 +84,7 @@ function transformRelease(r: any): EnhancedRelease {
 }
 
 export default function AllReleasesPage() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [sort, setSort] = useState<ReleasesSort>({ column: 'name', direction: 'asc' });
   const [page, setPage] = useState(0);
@@ -88,11 +92,12 @@ export default function AllReleasesPage() {
   const [healthFilter, setHealthFilter] = useState<string[]>([]);
   const [quarterFilter, setQuarterFilter] = useState('all');
   const [searchFilter, setSearchFilter] = useState('');
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const pageSize = 12;
   
-  const { filter, toggleStatus, toggleHealth, setSearch, clearFilters, activeFilterCount } = useReleasesFilter();
+  const { filter, clearFilters } = useReleasesFilter();
   
-  const { data, isLoading } = useAllReleases({
+  const { data, isLoading, refetch } = useAllReleases({
     filter,
     sort,
     page,
@@ -104,6 +109,16 @@ export default function AllReleasesPage() {
   
   // Transform releases
   const enhancedReleases = useMemo(() => releases.map(transformRelease), [releases]);
+  
+  // Get selected releases for export
+  const { selected, toggle, toggleAll, clear, selectAllState } = useReleasesSelection(
+    releases.map(r => r.id)
+  );
+  
+  const selectedReleases = useMemo(() => 
+    releases.filter(r => selected.has(r.id)),
+    [releases, selected]
+  );
   
   // Calculate summary
   const summary: ReleaseSummary = useMemo(() => ({
@@ -151,9 +166,10 @@ export default function AllReleasesPage() {
     return result.slice(0, 5);
   }, [enhancedReleases]);
   
-  const { selected, toggle, toggleAll, clear, selectAllState } = useReleasesSelection(
-    releases.map(r => r.id)
-  );
+  const handleCreateSuccess = () => {
+    refetch();
+    setIsCreateDialogOpen(false);
+  };
   
   return (
     <div className="min-h-screen bg-slate-50">
@@ -166,11 +182,15 @@ export default function AllReleasesPage() {
               <p className="text-sm text-slate-500">Manage and monitor all releases across your portfolio</p>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline">
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
-              <Button className="bg-primary hover:bg-primary/90">
+              <ExportReleasesDropdown
+                releases={releases}
+                selectedReleases={selectedReleases}
+                hasSelection={selected.size > 0}
+              />
+              <Button 
+                className="bg-primary hover:bg-primary/90"
+                onClick={() => setIsCreateDialogOpen(true)}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 New Release
               </Button>
@@ -250,6 +270,12 @@ export default function AllReleasesPage() {
         onChangeStatus={() => {}}
         onReassign={() => {}}
         onArchive={() => {}}
+      />
+      
+      {/* Create Release Dialog */}
+      <ReleaseDialog
+        open={isCreateDialogOpen}
+        onClose={handleCreateSuccess}
       />
     </div>
   );
