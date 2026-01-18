@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Plus, Download, Search, LayoutGrid, List, Calendar, 
-  Layers, Loader2
+  Layers, Loader2, FileText, FileSpreadsheet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { CycleCard } from '@/components/releases/test-cycles/CycleCard';
@@ -21,6 +27,7 @@ import { CycleStatsBar } from '@/components/releases/test-cycles/CycleStatsBar';
 import { CycleTableView } from '@/components/releases/test-cycles/CycleTableView';
 import { CycleCalendarView } from '@/components/releases/test-cycles/CycleCalendarView';
 import { CreateCycleModal, CreateCycleData } from '@/components/releases/test-cycles/CreateCycleModal';
+import { EditTestCycleDialog } from '@/components/releases/test-cycles/EditTestCycleDialog';
 import { 
   releaseOptions, 
   statusOptions, 
@@ -29,6 +36,7 @@ import {
 } from '@/data/testCyclesData';
 import { useTestCycles, useCreateCycle, useDeleteCycle, useCloneCycle, useProjects } from '@/hooks/test-management';
 import { tmToUICycles } from '@/lib/adapters/testCycleAdapter';
+import { exportTestCycles } from '@/utils/exportTestCycles';
 
 type ViewMode = 'card' | 'list' | 'calendar';
 
@@ -63,6 +71,8 @@ export default function TestCyclesPage() {
   
   // Modal
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingCycle, setEditingCycle] = useState<TestCycle | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   
   // Filtered cycles
   const filteredCycles = useMemo(() => {
@@ -137,31 +147,20 @@ export default function TestCyclesPage() {
   };
   
   const handleEditCycle = (cycle: TestCycle) => {
-    toast.info(`Editing cycle ${cycle.id}`);
+    setEditingCycle(cycle);
   };
   
   const handleDeleteCycle = (cycleId: string) => {
     if (!projectId) return;
-    
-    // Find the original ID from the cycle
     const cycle = cycles.find(c => c.id === cycleId);
     const originalId = cycle?._originalId || cycleId;
-    
-    deleteCycleMutation.mutate({ 
-      id: originalId, 
-      project_id: projectId 
-    });
+    deleteCycleMutation.mutate({ id: originalId, project_id: projectId });
   };
   
   const handleDuplicateCycle = (cycle: TestCycle) => {
     if (!projectId) return;
-    
     const originalId = cycle._originalId || cycle.id;
-    
-    cloneCycleMutation.mutate({
-      id: originalId,
-      project_id: projectId,
-    });
+    cloneCycleMutation.mutate({ id: originalId, project_id: projectId });
   };
 
   const handleCycleClick = (cycle: TestCycle) => {
@@ -169,8 +168,28 @@ export default function TestCyclesPage() {
     navigate(`/releases/test-cycles/${originalId}`);
   };
 
-  const handleExport = () => {
-    toast.success('Exporting test cycles...');
+  const handleExport = async (format: 'csv' | 'xlsx') => {
+    setIsExporting(true);
+    try {
+      const exportData = filteredCycles.map(c => ({
+        id: c.id,
+        name: c.name,
+        status: c.status,
+        progress: c.progress,
+        passed: (c as any).passed ?? 0,
+        failed: (c as any).failed ?? 0,
+        blocked: (c as any).blocked ?? 0,
+        startDate: c.startDate,
+        endDate: c.endDate,
+        environment: c.environment,
+      }));
+      await exportTestCycles(exportData, format);
+      toast.success(`Exported ${exportData.length} test cycles`);
+    } catch (error) {
+      toast.error('Export failed');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Loading state
@@ -195,10 +214,24 @@ export default function TestCyclesPage() {
         </div>
             
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" onClick={handleExport}>
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" disabled={isExporting}>
+                    {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+                    Export
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white">
+                  <DropdownMenuItem onClick={() => handleExport('csv')}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Export as CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('xlsx')}>
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Export as Excel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button variant="default" size="sm" onClick={() => setIsCreateModalOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Create Cycle
@@ -447,6 +480,14 @@ export default function TestCyclesPage() {
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
         onCreateCycle={handleCreateCycle}
+      />
+      
+      {/* Edit Cycle Dialog */}
+      <EditTestCycleDialog
+        open={!!editingCycle}
+        cycle={editingCycle}
+        onOpenChange={(open) => !open && setEditingCycle(null)}
+        onSuccess={() => setEditingCycle(null)}
       />
     </div>
   );
