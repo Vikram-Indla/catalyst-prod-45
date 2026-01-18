@@ -1,15 +1,16 @@
 // ============================================================
 // TASK DETAIL DRAWER - LINEAR-INSPIRED REDESIGN
-// Clean single-column layout with prominent status, progress bar
+// Clean single-column layout with real-time sync & saving indicator
 // ============================================================
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckSquare, Paperclip, GitBranch, MessageSquare } from 'lucide-react';
+import { CheckSquare, Paperclip, GitBranch } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { DrawerHeader } from './DrawerHeader';
 import { TaskDescription } from './TaskDescription';
@@ -21,6 +22,7 @@ import { AttachmentsSection } from './AttachmentsSection';
 import { DependenciesSection } from './DependenciesSection';
 import { ActivitySection } from './ActivitySection';
 import { DrawerFooter } from './DrawerFooter';
+import { SavingIndicator, SaveStatus } from './SavingIndicator';
 
 import {
   useTaskDependencies,
@@ -29,6 +31,8 @@ import {
   useTaskComments,
   useTaskActivity,
 } from '../../hooks/useTaskDetails';
+import { usePlannerTaskRealtime } from '../../hooks/usePlannerTaskRealtime';
+import { useUpdatePlannerTaskField } from '../../hooks/useUpdatePlannerTaskField';
 
 interface TaskDetailDrawerProps {
   taskId?: string | null;
@@ -67,65 +71,123 @@ function useTaskDetail(taskId: string | null) {
   });
 }
 
-function useUpdateTaskField() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ taskId, field, value }: { taskId: string; field: string; value: any }) => {
-      const { error } = await supabase
-        .from('planner_tasks')
-        .update({ [field]: value, updated_at: new Date().toISOString() })
-        .eq('id', taskId);
-      
-      if (error) throw error;
-    },
-    onSuccess: (_, { taskId }) => {
-      queryClient.invalidateQueries({ queryKey: ['task-detail', taskId] });
-      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
-    },
-  });
-}
-
 export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onClose, onOpenChange, onTaskUpdated }: TaskDetailDrawerProps) {
   const effectiveTaskId = propTaskId ?? propTask?.id ?? null;
+  const queryClient = useQueryClient();
+  const lastUpdatedAtRef = useRef<string | null>(null);
+  
+  // Save status for indicator
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const saveStatusTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   const handleClose = useCallback(() => {
+    // Flush any pending debounced updates before closing
+    if (effectiveTaskId) {
+      flushPending(effectiveTaskId);
+    }
     onClose?.();
     onOpenChange?.(false);
-  }, [onClose, onOpenChange]);
+  }, [effectiveTaskId, onClose, onOpenChange]);
 
   const { data: serverTask, isLoading } = useTaskDetail(effectiveTaskId);
   const [draftTask, setDraftTask] = useState<any | null>(null);
 
+  // Track the server's updated_at to detect external changes
   useEffect(() => {
     if (!serverTask) return;
-    setDraftTask((prev) => {
+    
+    // Detect if update came from another source
+    if (lastUpdatedAtRef.current && lastUpdatedAtRef.current !== serverTask.updated_at) {
+      // Only show toast if drawer is open and it wasn't our update
+      if (open && saveStatus === 'idle') {
+        toast.info('Task updated by another user', { duration: 2000 });
+      }
+    }
+    lastUpdatedAtRef.current = serverTask.updated_at;
+    
+    setDraftTask((prev: any) => {
       if (!prev || prev.id !== serverTask.id) return serverTask;
       return { ...prev, ...serverTask };
     });
-  }, [serverTask?.id, serverTask?.updated_at]);
+  }, [serverTask?.id, serverTask?.updated_at, open, saveStatus]);
 
   const task = draftTask ?? serverTask;
 
-  const updateField = useUpdateTaskField();
+  // Real-time subscription for this specific task
+  usePlannerTaskRealtime({
+    taskId: effectiveTaskId,
+    onUpdate: (updatedTask) => {
+      // Cache will be updated by the hook, draft will sync via the useEffect above
+    },
+    onDelete: () => {
+      handleClose();
+    },
+  });
+
+  // Enhanced update hook with debouncing
+  const { updateNow, updateDebounced, flushPending, isPending } = useUpdatePlannerTaskField();
+
+  // Show saving indicator
+  const showSaving = useCallback(() => {
+    if (saveStatusTimerRef.current) {
+      clearTimeout(saveStatusTimerRef.current);
+    }
+    setSaveStatus('saving');
+  }, []);
+
+  const showSaved = useCallback(() => {
+    setSaveStatus('saved');
+    saveStatusTimerRef.current = setTimeout(() => {
+      setSaveStatus('idle');
+    }, 1500);
+  }, []);
+
+  // Handle immediate field updates (dropdowns, checkboxes)
+  const handleFieldUpdate = useCallback(async (field: string, value: any) => {
+    if (!effectiveTaskId) return;
+
+    // Optimistically update local draft
+    setDraftTask((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, [field]: value };
+    });
+
+    showSaving();
+    updateNow(effectiveTaskId, field, value);
+    
+    // Show saved after a brief delay
+    setTimeout(() => {
+      showSaved();
+    }, 300);
+    
+    onTaskUpdated?.();
+  }, [effectiveTaskId, updateNow, showSaving, showSaved, onTaskUpdated]);
+
+  // Handle debounced text field updates (title, description)
+  const handleTextFieldUpdate = useCallback((field: string, value: any) => {
+    if (!effectiveTaskId) return;
+
+    // Optimistically update local draft immediately
+    setDraftTask((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, [field]: value };
+    });
+
+    showSaving();
+    updateDebounced(effectiveTaskId, field, value, 500);
+    
+    // Show saved after debounce completes
+    setTimeout(() => {
+      showSaved();
+    }, 600);
+  }, [effectiveTaskId, updateDebounced, showSaving, showSaved]);
+
+  // Fetch related data
   const { data: dependencies } = useTaskDependencies(effectiveTaskId);
   const { data: checklist } = useTaskChecklist(effectiveTaskId);
   const { data: attachments } = useTaskAttachments(effectiveTaskId);
   const { data: comments } = useTaskComments(effectiveTaskId);
   const { data: activity } = useTaskActivity(effectiveTaskId);
-
-  const handleFieldUpdate = useCallback(async (field: string, value: any) => {
-    if (!effectiveTaskId) return;
-
-    setDraftTask((prev) => {
-      if (!prev) return prev;
-      return { ...prev, [field]: value };
-    });
-
-    await updateField.mutateAsync({ taskId: effectiveTaskId, field, value });
-    onTaskUpdated?.();
-  }, [effectiveTaskId, updateField, onTaskUpdated]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -140,6 +202,15 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     }
   }, [open, handleClose]);
 
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (saveStatusTimerRef.current) {
+        clearTimeout(saveStatusTimerRef.current);
+      }
+    };
+  }, []);
+
   if (!effectiveTaskId) return null;
 
   return (
@@ -151,12 +222,17 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
         {isLoading ? (
           <DrawerSkeleton />
         ) : task ? (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-full relative">
+            {/* Saving Indicator - Positioned absolutely in top right */}
+            <div className="absolute top-4 right-14 z-10">
+              <SavingIndicator status={saveStatus} />
+            </div>
+
             {/* Header */}
             <DrawerHeader
               task={task}
               onClose={handleClose}
-              onTitleChange={(title) => handleFieldUpdate('title', title)}
+              onTitleChange={(title) => handleTextFieldUpdate('title', title)}
               onStatusChange={(statusId) => handleFieldUpdate('status_id', statusId)}
             />
             
@@ -166,7 +242,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                 {/* Description */}
                 <TaskDescription
                   value={task.description || ''}
-                  onChange={(desc) => handleFieldUpdate('description', desc)}
+                  onChange={(desc) => handleTextFieldUpdate('description', desc)}
                 />
                 
                 {/* Details - Single Column */}
