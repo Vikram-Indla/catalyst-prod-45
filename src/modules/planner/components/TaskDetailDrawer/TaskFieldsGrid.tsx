@@ -231,8 +231,8 @@ function AssigneeSelect({
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-0 z-[500] bg-popover" align="end">
-        <div className="p-2 border-b border-border">
+      <PopoverContent className="w-64 p-0 z-[500] bg-popover max-h-[350px] flex flex-col" align="end">
+        <div className="p-2 border-b border-border flex-shrink-0">
           <input
             type="text"
             placeholder="Search..."
@@ -242,7 +242,7 @@ function AssigneeSelect({
             autoFocus
           />
         </div>
-        <div className="max-h-64 overflow-y-auto p-1">
+        <div className="flex-1 overflow-y-auto p-1 min-h-0">
           <button
             onClick={() => { onChange(null); setOpen(false); }}
             className="w-full flex items-center gap-2.5 px-2 py-2 rounded hover:bg-muted/50"
