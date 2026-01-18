@@ -3,18 +3,34 @@
  * Shows AI avatar, status, and actions
  */
 
-import React from 'react';
-import { Bot, RotateCcw, Download, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Bot, RotateCcw, Download, FileText, FileDown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ChatHeaderProps {
   conversationTitle?: string;
   onClear: () => void;
-  onExport: () => void;
+  onExport: (format: 'pdf' | 'md') => void;
+  isExporting?: boolean;
+  hasMessages?: boolean;
 }
 
-export function ChatHeader({ conversationTitle, onClear, onExport }: ChatHeaderProps) {
+export function ChatHeader({ 
+  conversationTitle, 
+  onClear, 
+  onExport,
+  isExporting = false,
+  hasMessages = true,
+}: ChatHeaderProps) {
   return (
     <div className="px-6 py-4 bg-white border-b border-slate-200 flex items-center gap-4">
       {/* AI Avatar */}
@@ -50,20 +66,40 @@ export function ChatHeader({ conversationTitle, onClear, onExport }: ChatHeaderP
           <TooltipContent>Clear conversation</TooltipContent>
         </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onExport}
-              className="h-10 px-4 text-[13px] font-medium text-slate-600 border-slate-200"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Export conversation</TooltipContent>
-        </Tooltip>
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={isExporting || !hasMessages}
+                  className="h-10 px-4 text-[13px] font-medium text-slate-600 border-slate-200"
+                >
+                  {isExporting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>Export conversation</TooltipContent>
+          </Tooltip>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>Export Format</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => onExport('pdf')}>
+              <FileDown className="w-4 h-4 mr-2" />
+              Export as PDF
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport('md')}>
+              <FileText className="w-4 h-4 mr-2" />
+              Export as Markdown
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

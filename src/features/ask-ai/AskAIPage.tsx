@@ -4,7 +4,7 @@
  * Catalyst Platform | v9.8 Build
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PanelRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAskAI } from './hooks/useAskAI';
@@ -15,6 +15,8 @@ import { QuickActions } from './components/QuickActions';
 import { MessageList } from './components/MessageList';
 import { MessageInput } from './components/MessageInput';
 import { AIContextPanel } from './components/AIContextPanel';
+import { exportChatAsMarkdown, exportChatAsPdf } from '@/utils/exports';
+import { toast } from 'sonner';
 
 export function AskAIPage() {
   const {
@@ -42,6 +44,8 @@ export function AskAIPage() {
     setContextPanelOpen,
   } = useContextPanel();
 
+  const [isExporting, setIsExporting] = useState(false);
+
   const handleSend = () => {
     if (inputText.trim()) {
       sendMessage(inputText);
@@ -50,6 +54,49 @@ export function AskAIPage() {
 
   const handleQuickAction = (prompt: string) => {
     sendMessage(prompt);
+  };
+
+  const handleExport = async (format: 'pdf' | 'md') => {
+    if (messages.length === 0) {
+      toast.error('No messages to export');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      // Convert messages to the expected format (extract text from MessageContent)
+      const chatMessages = messages.map(m => ({
+        id: m.id,
+        role: m.role as 'user' | 'assistant' | 'system',
+        content: m.content.text || '',
+        timestamp: m.createdAt,
+      }));
+
+      const title = activeConversation?.title || 'AI Conversation';
+      const filename = `catalyst-ai-chat`;
+
+      if (format === 'md') {
+        exportChatAsMarkdown(chatMessages, {
+          filename,
+          title,
+          includeTimestamp: true,
+        });
+        toast.success('Chat exported as Markdown');
+      } else {
+        await exportChatAsPdf(chatMessages, {
+          filename,
+          title,
+          brandName: 'Catalyst Platform',
+          includeTimestamp: true,
+        });
+        toast.success('Chat exported as PDF');
+      }
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to export chat');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -68,7 +115,9 @@ export function AskAIPage() {
         <ChatHeader
           conversationTitle={activeConversation?.title}
           onClear={createConversation}
-          onExport={() => {}}
+          onExport={handleExport}
+          isExporting={isExporting}
+          hasMessages={messages.length > 0}
         />
         
         <QuickActions onAction={handleQuickAction} />
