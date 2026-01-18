@@ -3,7 +3,7 @@
 // Clean rows with workstream-colored avatars
 // ============================================================
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -188,6 +188,86 @@ function AssigneeSelect({
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const id = requestAnimationFrame(() => inputRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [open]);
+
+  const getFocusableItems = () => {
+    const el = listRef.current;
+    if (!el) return [] as HTMLButtonElement[];
+    return Array.from(el.querySelectorAll<HTMLButtonElement>('button[data-assignee-option="true"]'));
+  };
+
+  const moveFocus = (delta: number) => {
+    const items = getFocusableItems();
+    if (items.length === 0) return;
+
+    const active = document.activeElement as HTMLButtonElement | null;
+    const idx = items.findIndex((b) => b === active);
+    const next =
+      idx === -1
+        ? delta > 0
+          ? 0
+          : items.length - 1
+        : Math.min(items.length - 1, Math.max(0, idx + delta));
+
+    items[next]?.focus();
+    items[next]?.scrollIntoView({ block: 'nearest' });
+  };
+
+  const scrollByPage = (direction: 1 | -1) => {
+    const el = listRef.current;
+    if (!el) return;
+    el.scrollBy({ top: direction * el.clientHeight * 0.9 });
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      moveFocus(1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      moveFocus(-1);
+    } else if (e.key === 'PageDown') {
+      e.preventDefault();
+      scrollByPage(1);
+    } else if (e.key === 'PageUp') {
+      e.preventDefault();
+      scrollByPage(-1);
+    }
+  };
+
+  const handleListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      moveFocus(1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      moveFocus(-1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      const items = getFocusableItems();
+      items[0]?.focus();
+      items[0]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      const items = getFocusableItems();
+      const last = items[items.length - 1];
+      last?.focus();
+      last?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'PageDown') {
+      e.preventDefault();
+      scrollByPage(1);
+    } else if (e.key === 'PageUp') {
+      e.preventDefault();
+      scrollByPage(-1);
+    }
+  };
 
   const displayAssignee = useMemo(() => {
     if (!value) return null;
@@ -208,9 +288,15 @@ function AssigneeSelect({
   };
 
   return (
-    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(''); }}>
+    <Popover
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setSearch('');
+      }}
+    >
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-2">
+        <button className="flex items-center gap-2" type="button">
           {displayAssignee ? (
             <>
               <div 
@@ -231,19 +317,32 @@ function AssigneeSelect({
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-0 z-[500] bg-popover max-h-[350px] flex flex-col" align="end">
+      <PopoverContent
+        className="w-64 p-0 z-[500] bg-popover h-[min(350px,70vh)] flex flex-col overflow-hidden"
+        align="end"
+      >
         <div className="p-2 border-b border-border flex-shrink-0">
           <input
+            ref={inputRef}
             type="text"
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
             className="w-full px-2.5 py-1.5 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-primary"
             autoFocus
           />
         </div>
-        <div className="flex-1 overflow-y-auto p-1 min-h-0">
+        <div
+          ref={listRef}
+          role="listbox"
+          tabIndex={0}
+          onKeyDown={handleListKeyDown}
+          className="flex-1 min-h-0 overflow-y-auto p-1 overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] focus:outline-none"
+        >
           <button
+            type="button"
+            data-assignee-option="true"
             onClick={() => { onChange(null); setOpen(false); }}
             className="w-full flex items-center gap-2.5 px-2 py-2 rounded hover:bg-muted/50"
           >
@@ -254,6 +353,8 @@ function AssigneeSelect({
           </button>
           {filteredProfiles.map((profile) => (
             <button
+              type="button"
+              data-assignee-option="true"
               key={profile.id}
               onClick={() => { onChange(profile.id); setOpen(false); }}
               className={cn(
