@@ -19,6 +19,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { GateHistoryPanel, EditQualityGateDialog, DeleteGateConfirmationDialog } from '@/components/releases/quality-gates';
 
 // Types
 type GateStatus = 'passing' | 'failing' | 'warning' | 'not_evaluated' | 'error';
@@ -300,13 +302,19 @@ function GateCard({
   expanded, 
   onToggle, 
   onEvaluate,
-  onRequestOverride 
+  onRequestOverride,
+  onViewHistory,
+  onEditGate,
+  onDeleteGate
 }: { 
   gate: QualityGate; 
   expanded: boolean; 
   onToggle: () => void;
   onEvaluate: () => void;
   onRequestOverride: () => void;
+  onViewHistory: () => void;
+  onEditGate: () => void;
+  onDeleteGate: () => void;
 }) {
   const config = statusConfig[gate.status];
   const StatusIcon = config.icon;
@@ -403,17 +411,17 @@ function GateCard({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={onViewHistory}>
                     <Eye className="w-4 h-4 mr-2" /> View History
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={onEditGate}>
                     <Edit className="w-4 h-4 mr-2" /> Edit Gate
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={onRequestOverride}>
                     <Shield className="w-4 h-4 mr-2" /> Request Override
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-destructive">
+                  <DropdownMenuItem className="text-destructive" onClick={onDeleteGate}>
                     <Trash2 className="w-4 h-4 mr-2" /> Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -591,6 +599,9 @@ export default function QualityGatesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [overrideDialog, setOverrideDialog] = useState<{ open: boolean; gateName: string }>({ open: false, gateName: '' });
+  const [selectedGateForHistory, setSelectedGateForHistory] = useState<QualityGate | null>(null);
+  const [editingGate, setEditingGate] = useState<QualityGate | null>(null);
+  const [deletingGate, setDeletingGate] = useState<QualityGate | null>(null);
 
   const filteredGates = useMemo(() => {
     return mockGates.filter(gate => {
@@ -807,6 +818,9 @@ export default function QualityGatesPage() {
                     onToggle={() => toggleGate(gate.id)}
                     onEvaluate={() => {}}
                     onRequestOverride={() => setOverrideDialog({ open: true, gateName: gate.name })}
+                    onViewHistory={() => setSelectedGateForHistory(gate)}
+                    onEditGate={() => setEditingGate(gate)}
+                    onDeleteGate={() => setDeletingGate(gate)}
                   />
                 ))}
               </CardContent>
@@ -859,6 +873,9 @@ export default function QualityGatesPage() {
                   onToggle={() => toggleGate(gate.id)}
                   onEvaluate={() => {}}
                   onRequestOverride={() => setOverrideDialog({ open: true, gateName: gate.name })}
+                  onViewHistory={() => setSelectedGateForHistory(gate)}
+                  onEditGate={() => setEditingGate(gate)}
+                  onDeleteGate={() => setDeletingGate(gate)}
                 />
               ))}
               {filteredGates.length === 0 && (
@@ -1021,6 +1038,33 @@ export default function QualityGatesPage() {
         open={overrideDialog.open}
         onOpenChange={(open) => setOverrideDialog({ ...overrideDialog, open })}
         gateName={overrideDialog.gateName}
+      />
+
+      {/* Gate History Panel */}
+      <GateHistoryPanel
+        open={!!selectedGateForHistory}
+        gate={selectedGateForHistory}
+        onClose={() => setSelectedGateForHistory(null)}
+      />
+
+      {/* Edit Quality Gate Dialog */}
+      <EditQualityGateDialog
+        open={!!editingGate}
+        gate={editingGate}
+        onOpenChange={(open) => !open && setEditingGate(null)}
+        onSuccess={() => toast.success('Gate updated')}
+      />
+
+      {/* Delete Gate Confirmation Dialog */}
+      <DeleteGateConfirmationDialog
+        open={!!deletingGate}
+        gate={deletingGate}
+        onOpenChange={(open) => !open && setDeletingGate(null)}
+        onConfirm={async () => {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          toast.success('Quality gate deleted');
+          setDeletingGate(null);
+        }}
       />
     </div>
   );
