@@ -14,9 +14,10 @@ interface Props {
   requirement: RequirementDetailViewModel | null;
   isOpen: boolean;
   onClose: () => void;
+  onLinkTest?: () => void;
 }
 
-export const RTMDetailPanel = ({ requirement, isOpen, onClose }: Props) => {
+export const RTMDetailPanel = ({ requirement, isOpen, onClose, onLinkTest }: Props) => {
   if (!requirement) return null;
 
   const coverageColor = requirement.coverageStatus === 'covered' ? 'text-emerald-500' : requirement.coverageStatus === 'partial' ? 'text-amber-500' : 'text-red-500';
@@ -88,7 +89,7 @@ export const RTMDetailPanel = ({ requirement, isOpen, onClose }: Props) => {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Linked Tests ({requirement.linkedTests.length})</h4>
-            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
+            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={onLinkTest}>
               <Plus className="w-3 h-3" /> Link Test
             </Button>
           </div>

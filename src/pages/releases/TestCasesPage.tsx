@@ -585,7 +585,7 @@ export default function TestCasesPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <TestCaseEmptyState onClearFilters={handleClearAllFilters} />
+              <TestCaseEmptyState onClearFilters={handleClearAllFilters} onCreateClick={() => setIsCreateOpen(true)} />
             </motion.div>
           ) : viewMode === 'list' ? (
             <motion.div

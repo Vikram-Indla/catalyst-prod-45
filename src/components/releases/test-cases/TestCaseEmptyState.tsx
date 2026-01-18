@@ -55,13 +55,17 @@ export function TestCaseEmptyState({
         Try adjusting your search terms or filters to find what you're looking for.
       </p>
       <div className="flex items-center gap-3">
-        <Button variant="outline" onClick={onClearFilters}>
-          Clear Filters
-        </Button>
-        <Button onClick={onCreateClick}>
-          <Plus className="w-4 h-4 mr-2" />
-          New Test Case
-        </Button>
+        {onClearFilters && (
+          <Button variant="outline" onClick={onClearFilters}>
+            Clear Filters
+          </Button>
+        )}
+        {onCreateClick && (
+          <Button onClick={onCreateClick}>
+            <Plus className="w-4 h-4 mr-2" />
+            New Test Case
+          </Button>
+        )}
       </div>
     </div>
   );

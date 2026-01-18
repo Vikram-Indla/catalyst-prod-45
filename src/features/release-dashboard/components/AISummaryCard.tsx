@@ -42,6 +42,10 @@ export function AISummaryCard({ insights }: AISummaryCardProps) {
         variant="ghost"
         size="sm"
         className="mt-3 text-white hover:bg-white/20 w-full justify-center"
+        onClick={() => {
+          const toast = (window as any).toast || console.log;
+          if (typeof toast === 'function') toast('AI recommendations panel coming soon');
+        }}
       >
         Get Recommendations <ArrowRight className="w-4 h-4 ml-1" />
       </Button>
