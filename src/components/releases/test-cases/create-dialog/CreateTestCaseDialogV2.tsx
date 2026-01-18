@@ -39,10 +39,14 @@ import { AttachmentsTab } from './AttachmentsTab';
 import { AdditionalTab } from './AdditionalTab';
 import { TestCaseFormData, defaultFormData, TabInfo } from './types';
 
-interface CreateTestCaseDialogV2Props {
+// Import prefill type for template support
+import type { PrefilledTestCase } from '../utils';
+
+export interface CreateTestCaseDialogV2Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (data: TestCaseFormData & { id: string }) => void;
+  prefillData?: PrefilledTestCase | null;
 }
 
 const TABS: TabInfo[] = [
@@ -57,7 +61,7 @@ const TAB_ICONS: Record<string, React.ElementType> = {
   FileText, ListOrdered, Database, Paperclip, Settings,
 };
 
-export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess }: CreateTestCaseDialogV2Props) {
+export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillData }: CreateTestCaseDialogV2Props) {
   const [formData, setFormData] = useState<TestCaseFormData>(defaultFormData);
   const [activeTab, setActiveTab] = useState('details');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -65,6 +69,39 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess }: Create
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Map prefill data to form data when dialog opens
+  useEffect(() => {
+    if (open && prefillData) {
+      const priorityMap: Record<string, 'P1' | 'P2' | 'P3' | 'P4'> = {
+        critical: 'P1',
+        high: 'P2',
+        medium: 'P3',
+        low: 'P4',
+      };
+      
+      const stepsFromPrefill = (prefillData.steps || []).map((step, idx) => ({
+        id: `step-${idx + 1}`,
+        order: idx + 1,
+        action: step,
+        testData: '',
+        expectedResult: '',
+        attachments: [],
+        isComplete: false,
+      }));
+
+      setFormData({
+        ...defaultFormData,
+        title: prefillData.title || '',
+        description: prefillData.description || '',
+        type: prefillData.type || 'functional',
+        priority: priorityMap[prefillData.priority] || 'P3',
+        folderId: prefillData.folder || '',
+        preconditions: prefillData.preconditions || '',
+        steps: stepsFromPrefill,
+      });
+    }
+  }, [open, prefillData]);
 
   // Reset on close
   useEffect(() => {

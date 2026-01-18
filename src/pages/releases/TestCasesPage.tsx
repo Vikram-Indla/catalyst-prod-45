@@ -59,7 +59,7 @@ import { TestCasesTable } from '@/components/releases/test-cases/TestCasesTable'
 import { TestCasesGrid } from '@/components/releases/test-cases/TestCasesGrid';
 import { TestCasesKanban } from '@/components/releases/test-cases/TestCasesKanban';
 import { TestCaseEmptyState } from '@/components/releases/test-cases/TestCaseEmptyState';
-import { CreateTestCaseDialog } from '@/components/releases/test-cases/CreateTestCaseDialog';
+import { CreateTestCaseDialogEnterprise } from '@/components/releases/test-cases/create-dialog';
 import { EditTestCaseDialog } from '@/components/releases/test-cases/EditTestCaseDialog';
 import { BulkActionsBar } from '@/components/releases/test-cases/BulkActionsBar';
 import { ExportTestCasesDialog } from '@/components/releases/test-cases/ExportTestCasesDialog';
@@ -777,8 +777,8 @@ export default function TestCasesPage() {
         )}
       </AnimatePresence>
 
-      {/* Create Test Case Dialog */}
-      <CreateTestCaseDialog
+      {/* Create Test Case Dialog - Enterprise 5-Tab Version */}
+      <CreateTestCaseDialogEnterprise
         open={isCreateOpen}
         onOpenChange={(open) => {
           setIsCreateOpen(open);
