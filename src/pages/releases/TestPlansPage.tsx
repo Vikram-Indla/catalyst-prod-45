@@ -73,7 +73,7 @@ import { TMTestPlan, TestPlanStatus } from '@/types/test-management';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { CreateTestPlanDialog } from '@/components/test-plans/CreateTestPlanDialog';
+import { CreateEditTestPlanDialog } from '@/components/test-plans/dialogs';
 
 type ViewMode = 'list' | 'grid';
 
@@ -109,8 +109,29 @@ export default function TestPlansPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Modal
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Open dialog for creating
+  const handleOpenCreate = useCallback(() => {
+    setEditingPlanId(null);
+    setIsDialogOpen(true);
+  }, []);
+
+  // Open dialog for editing
+  const handleOpenEdit = useCallback((planId: string) => {
+    setEditingPlanId(planId);
+    setIsDialogOpen(true);
+  }, []);
+
+  // Close dialog
+  const handleCloseDialog = useCallback((open: boolean) => {
+    if (!open) {
+      setIsDialogOpen(false);
+      setEditingPlanId(null);
+    }
+  }, []);
 
   // Filtered plans
   const filteredPlans = useMemo(() => {
@@ -280,7 +301,7 @@ export default function TestPlansPage() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button onClick={() => setIsCreateOpen(true)} className="gap-2">
+          <Button onClick={handleOpenCreate} className="gap-2">
             <Plus className="w-4 h-4" />
             Create Test Plan
           </Button>
@@ -441,7 +462,7 @@ export default function TestPlansPage() {
               : "Get started by creating your first test plan to organize and track your testing efforts."
             }
           </p>
-          <Button onClick={() => setIsCreateOpen(true)}>
+          <Button onClick={handleOpenCreate}>
             <Plus className="w-4 h-4 mr-2" />
             Create Test Plan
           </Button>
@@ -637,11 +658,13 @@ export default function TestPlansPage() {
         </div>
       )}
 
-      {/* Create Dialog */}
-      <CreateTestPlanDialog
-        open={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
+      {/* Create/Edit Dialog */}
+      <CreateEditTestPlanDialog
+        open={isDialogOpen}
+        onOpenChange={handleCloseDialog}
         projectId={projectId}
+        editPlanId={editingPlanId || undefined}
+        onSuccess={() => refetch()}
       />
     </div>
   );
