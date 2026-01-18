@@ -192,16 +192,17 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <CardTitle>User List</CardTitle>
-          <CardDescription>View and manage all users in the system</CardDescription>
+          <CardTitle className="text-lg sm:text-xl">User List</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">View and manage all users in the system</CardDescription>
         </div>
         {isSuperAdmin && (
           <Button 
             variant="outline" 
+            size="sm"
             onClick={() => setIsBulkUpdateOpen(true)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full sm:w-auto"
           >
             <Upload className="h-4 w-4" />
             Bulk Update
@@ -210,8 +211,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       </CardHeader>
       <CardContent>
         {/* Filters - Row 1 */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
-          <div className="relative flex-1 w-full sm:max-w-xs">
+        <div className="flex flex-col gap-3 mb-3">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name or email..."
@@ -220,272 +221,405 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-full sm:w-[150px]">
-              <SelectValue placeholder="All Roles" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              {allRoles.map(role => (
-                <SelectItem key={role} value={role}>{role}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={approvalFilter} onValueChange={setApprovalFilter}>
-            <SelectTrigger className="w-full sm:w-[150px]">
-              <SelectValue placeholder="Approval" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Approval</SelectItem>
-              <SelectItem value="PENDING_APPROVAL">Pending</SelectItem>
-              <SelectItem value="APPROVED">Approved</SelectItem>
-              <SelectItem value="REJECTED">Rejected</SelectItem>
-              <SelectItem value="DISABLED">Disabled</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="All Roles" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                {allRoles.map(role => (
+                  <SelectItem key={role} value={role}>{role}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={approvalFilter} onValueChange={setApprovalFilter}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Approval" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="PENDING_APPROVAL">Pending</SelectItem>
+                <SelectItem value="APPROVED">Approved</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
+                <SelectItem value="DISABLED">Disabled</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Department" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Depts</SelectItem>
+                {uniqueDepartments.map(dept => (
+                  <SelectItem key={dept} value={dept!}>{dept}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={assignmentFilter} onValueChange={setAssignmentFilter}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Assignment" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Assign</SelectItem>
+                {uniqueAssignments.map(asn => (
+                  <SelectItem key={asn} value={asn!}>{asn}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={vendorFilter} onValueChange={setVendorFilter}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Vendor" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Vendors</SelectItem>
+                {uniqueVendors.map(vendor => (
+                  <SelectItem key={vendor} value={vendor!}>{vendor}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={countryFilter} onValueChange={setCountryFilter}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Country" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Countries</SelectItem>
+                {uniqueCountries.map(country => (
+                  <SelectItem key={country} value={country!}>{country}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={locationFilter} onValueChange={setLocationFilter}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Location" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Locations</SelectItem>
+                {uniqueLocations.map(loc => (
+                  <SelectItem key={loc} value={loc!}>{loc}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        {/* Filters - Row 2 (Department/Assignment/Vendor/Country/Location) */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4 flex-wrap">
-          <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-            <SelectTrigger className="w-full sm:w-[140px]">
-              <SelectValue placeholder="Department" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Depts</SelectItem>
-              {uniqueDepartments.map(dept => (
-                <SelectItem key={dept} value={dept!}>{dept}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={assignmentFilter} onValueChange={setAssignmentFilter}>
-            <SelectTrigger className="w-full sm:w-[160px]">
-              <SelectValue placeholder="Assignment" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Assignments</SelectItem>
-              {uniqueAssignments.map(asn => (
-                <SelectItem key={asn} value={asn!}>{asn}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={vendorFilter} onValueChange={setVendorFilter}>
-            <SelectTrigger className="w-full sm:w-[140px]">
-              <SelectValue placeholder="Vendor" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Vendors</SelectItem>
-              {uniqueVendors.map(vendor => (
-                <SelectItem key={vendor} value={vendor!}>{vendor}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={countryFilter} onValueChange={setCountryFilter}>
-            <SelectTrigger className="w-full sm:w-[140px]">
-              <SelectValue placeholder="Country" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Countries</SelectItem>
-              {uniqueCountries.map(country => (
-                <SelectItem key={country} value={country!}>{country}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={locationFilter} onValueChange={setLocationFilter}>
-            <SelectTrigger className="w-full sm:w-[140px]">
-              <SelectValue placeholder="Location" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Locations</SelectItem>
-              {uniqueLocations.map(loc => (
-                <SelectItem key={loc} value={loc!}>{loc}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Mobile Card View */}
+        <div className="block lg:hidden space-y-3">
+          {filteredUsers.map((user) => (
+            <div key={user.id} className="border rounded-lg p-4 bg-card hover:bg-muted/20 transition-colors">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <button
+                    onClick={() => setEditUser(user)}
+                    className="h-10 w-10 rounded-full bg-brand-primary/20 flex items-center justify-center text-sm font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer flex-shrink-0"
+                    title="Edit user"
+                  >
+                    {getInitials(user.full_name)}
+                  </button>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
+                    <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                    {user.job_role && (
+                      <div className="text-xs text-muted-foreground mt-0.5">{user.job_role}</div>
+                    )}
+                  </div>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {user.approval_status === 'PENDING_APPROVAL' && (
+                      <>
+                        <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Approve
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleReject(user)} className="text-red-600">
+                          <XCircle className="h-4 w-4 mr-2" />
+                          Reject
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+                    <DropdownMenuItem onClick={() => setEditUser(user)}>
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Edit User
+                    </DropdownMenuItem>
+                    {user.approval_status === 'APPROVED' && isSuperAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setResetPasswordUser(user)}>
+                          <KeyRound className="h-4 w-4 mr-2" />
+                          Reset Password
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    <DropdownMenuSeparator />
+                    {user.approval_status === 'APPROVED' && (
+                      <DropdownMenuItem onClick={() => handleDisable(user.id)}>
+                        <PowerOff className="h-4 w-4 mr-2" />
+                        Disable User
+                      </DropdownMenuItem>
+                    )}
+                    {user.approval_status === 'DISABLED' && (
+                      <DropdownMenuItem onClick={() => handleApprove(user.id)}>
+                        <Power className="h-4 w-4 mr-2" />
+                        Enable User
+                      </DropdownMenuItem>
+                    )}
+                    {user.approval_status === 'REJECTED' && (
+                      <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Approve User
+                      </DropdownMenuItem>
+                    )}
+                    {(user.approval_status === 'REJECTED' || user.approval_status === 'DISABLED') && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteUser(user)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Remove User
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                {user.department_name && (
+                  <div>
+                    <span className="text-muted-foreground">Dept:</span>{' '}
+                    <Badge variant="outline" className="text-xs ml-1">{user.department_name}</Badge>
+                  </div>
+                )}
+                {user.vendor && (
+                  <div className="truncate">
+                    <span className="text-muted-foreground">Vendor:</span> {user.vendor}
+                  </div>
+                )}
+                {user.country && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground">Country:</span>
+                    {(() => {
+                      const flagUrl = user.country_flag_svg_url || 
+                        (user.country ? getCountryInfo(user.country)?.svg : null);
+                      return flagUrl ? (
+                        <img src={flagUrl} alt={user.country} className="h-3 w-4 object-cover rounded-sm ml-1" />
+                      ) : null;
+                    })()}
+                    <span>{user.country}</span>
+                  </div>
+                )}
+                {user.location && (
+                  <div>
+                    <span className="text-muted-foreground">Location:</span>{' '}
+                    <Badge variant="outline" className="text-xs ml-1">{user.location}</Badge>
+                  </div>
+                )}
+              </div>
+              
+              {(user.contract_start_date || user.contract_end_date) && (
+                <div className="mt-2 flex gap-4 text-xs text-muted-foreground">
+                  {user.contract_start_date && (
+                    <span>Start: {formatContractEndDate(user.contract_start_date)}</span>
+                  )}
+                  {user.contract_end_date && (
+                    <span>End: {formatContractEndDate(user.contract_end_date)}</span>
+                  )}
+                </div>
+              )}
+              
+              <div className="mt-2">
+                {getApprovalBadge(user.approval_status)}
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Table */}
-        <ResponsiveTableWrapper minWidth={1400}>
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-muted/30">
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Name</th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Job Role</th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Department</th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Assignment</th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract Start</th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract End</th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Vendor</th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Country</th>
-                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Location</th>
-                <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b last:border-b-0 hover:bg-muted/20 transition-colors">
-                  <td className="py-3 px-3">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => setEditUser(user)}
-                        className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer flex-shrink-0"
-                        title="Edit user"
-                      >
-                        {getInitials(user.full_name)}
-                      </button>
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
-                        <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+        {/* Desktop Table View */}
+        <div className="hidden lg:block">
+          <ResponsiveTableWrapper minWidth={1200}>
+            <table className="w-full">
+              <thead>
+                <tr className="border-b bg-muted/30">
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Name</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Job Role</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Department</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Assignment</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract Start</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract End</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Vendor</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Country</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Location</th>
+                  <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user) => (
+                  <tr key={user.id} className="border-b last:border-b-0 hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => setEditUser(user)}
+                          className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer flex-shrink-0"
+                          title="Edit user"
+                        >
+                          {getInitials(user.full_name)}
+                        </button>
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
+                          <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-sm">
-                      {user.job_role || <span className="text-muted-foreground">-</span>}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-sm">
-                      {user.department_name ? (
-                        <Badge variant="outline" className="text-xs">
-                          {user.department_name}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-sm">
-                      {user.assignment_name || <span className="text-muted-foreground">-</span>}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-sm">
-                      {formatContractEndDate(user.contract_start_date)}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-sm">
-                      {formatContractEndDate(user.contract_end_date)}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-sm">
-                      {user.vendor || <span className="text-muted-foreground">-</span>}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="flex items-center gap-1">
-                      {(() => {
-                        // Try user's flag URL first, then fallback to country lookup
-                        const flagUrl = user.country_flag_svg_url || 
-                          (user.country ? getCountryInfo(user.country)?.svg : null);
-                        return flagUrl ? (
-                          <img 
-                            src={flagUrl} 
-                            alt={user.country || ''} 
-                            className="h-3 w-5 object-cover rounded-sm"
-                          />
-                        ) : null;
-                      })()}
-                      <span className="text-sm">
-                        {user.country || <span className="text-muted-foreground">-</span>}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-sm">
-                      {user.location ? (
-                        <Badge variant="outline" className="text-xs">
-                          {user.location}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="flex items-center justify-end gap-2">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          {/* Approve/Reject for pending users */}
-                          {user.approval_status === 'PENDING_APPROVAL' && (
-                            <>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="text-sm">
+                        {user.job_role || <span className="text-muted-foreground">-</span>}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="text-sm">
+                        {user.department_name ? (
+                          <Badge variant="outline" className="text-xs">
+                            {user.department_name}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="text-sm">
+                        {user.assignment_name || <span className="text-muted-foreground">-</span>}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="text-sm">
+                        {formatContractEndDate(user.contract_start_date)}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="text-sm">
+                        {formatContractEndDate(user.contract_end_date)}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="text-sm">
+                        {user.vendor || <span className="text-muted-foreground">-</span>}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-1">
+                        {(() => {
+                          const flagUrl = user.country_flag_svg_url || 
+                            (user.country ? getCountryInfo(user.country)?.svg : null);
+                          return flagUrl ? (
+                            <img 
+                              src={flagUrl} 
+                              alt={user.country || ''} 
+                              className="h-3 w-5 object-cover rounded-sm"
+                            />
+                          ) : null;
+                        })()}
+                        <span className="text-sm">
+                          {user.country || <span className="text-muted-foreground">-</span>}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="text-sm">
+                        {user.location ? (
+                          <Badge variant="outline" className="text-xs">
+                            {user.location}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {user.approval_status === 'PENDING_APPROVAL' && (
+                              <>
+                                <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Approve
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleReject(user)} className="text-red-600">
+                                  <XCircle className="h-4 w-4 mr-2" />
+                                  Reject
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                              </>
+                            )}
+                            <DropdownMenuItem onClick={() => setEditUser(user)}>
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Edit User
+                            </DropdownMenuItem>
+                            {user.approval_status === 'APPROVED' && isSuperAdmin && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => setResetPasswordUser(user)}>
+                                  <KeyRound className="h-4 w-4 mr-2" />
+                                  Reset Password
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            <DropdownMenuSeparator />
+                            {user.approval_status === 'APPROVED' && (
+                              <DropdownMenuItem onClick={() => handleDisable(user.id)}>
+                                <PowerOff className="h-4 w-4 mr-2" />
+                                Disable User
+                              </DropdownMenuItem>
+                            )}
+                            {user.approval_status === 'DISABLED' && (
+                              <DropdownMenuItem onClick={() => handleApprove(user.id)}>
+                                <Power className="h-4 w-4 mr-2" />
+                                Enable User
+                              </DropdownMenuItem>
+                            )}
+                            {user.approval_status === 'REJECTED' && (
                               <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
                                 <CheckCircle className="h-4 w-4 mr-2" />
-                                Approve
+                                Approve User
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleReject(user)} className="text-red-600">
-                                <XCircle className="h-4 w-4 mr-2" />
-                                Reject
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                            </>
-                          )}
-                          {/* Edit User - single unified edit option */}
-                          <DropdownMenuItem onClick={() => setEditUser(user)}>
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit User
-                          </DropdownMenuItem>
-                          {/* Reset Password - only for Approved users, only for admins */}
-                          {user.approval_status === 'APPROVED' && isSuperAdmin && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => setResetPasswordUser(user)}>
-                                <KeyRound className="h-4 w-4 mr-2" />
-                                Reset Password
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          <DropdownMenuSeparator />
-                          {/* Disable for approved users */}
-                          {user.approval_status === 'APPROVED' && (
-                            <DropdownMenuItem onClick={() => handleDisable(user.id)}>
-                              <PowerOff className="h-4 w-4 mr-2" />
-                              Disable User
-                            </DropdownMenuItem>
-                          )}
-                          {/* Re-enable for disabled users */}
-                          {user.approval_status === 'DISABLED' && (
-                            <DropdownMenuItem onClick={() => handleApprove(user.id)}>
-                              <Power className="h-4 w-4 mr-2" />
-                              Enable User
-                            </DropdownMenuItem>
-                          )}
-                          {/* Re-approve for rejected users */}
-                          {user.approval_status === 'REJECTED' && (
-                            <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              Approve User
-                            </DropdownMenuItem>
-                          )}
-                          {(user.approval_status === 'REJECTED' || user.approval_status === 'DISABLED') && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                onClick={() => handleDeleteUser(user)}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Remove User
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </ResponsiveTableWrapper>
+                            )}
+                            {(user.approval_status === 'REJECTED' || user.approval_status === 'DISABLED') && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={() => handleDeleteUser(user)}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Remove User
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ResponsiveTableWrapper>
+        </div>
 
         {filteredUsers.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">
