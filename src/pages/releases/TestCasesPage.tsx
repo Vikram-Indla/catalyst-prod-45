@@ -406,15 +406,6 @@ export default function TestCasesPage() {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8" onClick={() => setIsTemplatesOpen(true)}>
-                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
-                From Template
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Create from template</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
               <Button size="sm" className="h-8" onClick={() => setIsCreateOpen(true)}>
                 <Plus className="w-3.5 h-3.5 mr-1.5" />
                 New Test Case
