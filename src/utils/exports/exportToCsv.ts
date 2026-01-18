@@ -1,7 +1,8 @@
 /**
  * CSV Export Utility
- * Export data to CSV format
+ * Export data to CSV format using papaparse
  */
+import Papa from 'papaparse';
 import type { ExportColumn, CsvExportOptions } from './types';
 
 export const exportToCsv = <T extends Record<string, any>>(
@@ -23,19 +24,13 @@ export const exportToCsv = <T extends Record<string, any>>(
     return row;
   });
 
-  // Generate CSV manually (avoiding papaparse dependency if not present)
-  const headers = columns.map(col => escapeCSVValue(col.header));
-  const rows = formattedData.map(row => 
-    columns.map(col => escapeCSVValue(String(row[col.header] ?? '')))
-  );
-
-  const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.join(','))
-  ].join('\n');
+  // Generate CSV using papaparse
+  const csv = Papa.unparse(formattedData, {
+    columns: columns.map(col => col.header),
+  });
 
   // Create and download file
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   
   const timestamp = options.includeTimestamp !== false 
@@ -54,13 +49,3 @@ export const exportToCsv = <T extends Record<string, any>>(
 
   return filename;
 };
-
-/**
- * Escape CSV values that contain special characters
- */
-function escapeCSVValue(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
