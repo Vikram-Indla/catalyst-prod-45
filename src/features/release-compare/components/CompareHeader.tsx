@@ -1,18 +1,25 @@
 /**
  * Compare Header Component
- * Title, description, and action buttons
+ * Title, description, and action buttons with export dropdown
  */
 
 import React from 'react';
-import { Download, Bookmark } from 'lucide-react';
+import { Download, Bookmark, FileText, FileSpreadsheet, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface CompareHeaderProps {
-  onExport?: () => void;
+  onExport?: (format: 'pdf' | 'excel') => void;
   onSaveView?: () => void;
+  isExporting?: boolean;
 }
 
-export function CompareHeader({ onExport, onSaveView }: CompareHeaderProps) {
+export function CompareHeader({ onExport, onSaveView, isExporting = false }: CompareHeaderProps) {
   return (
     <div className="flex items-center justify-between mb-6">
       <div>
@@ -23,15 +30,34 @@ export function CompareHeader({ onExport, onSaveView }: CompareHeaderProps) {
       </div>
       
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onExport}
-          className="text-slate-600"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Export
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-slate-600"
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4 mr-2" />
+              )}
+              Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuItem onClick={() => onExport?.('pdf')}>
+              <FileText className="h-4 w-4 mr-2" />
+              Export as PDF
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport?.('excel')}>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Export as Excel
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
         <Button
           variant="outline"
           size="sm"
