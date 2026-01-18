@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Download, AlertTriangle, Link, Search, LayoutGrid, List, GitBranch, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRTMStore } from './hooks/useRTMStore';
+import { useRTMData } from './hooks/useRTMData';
 import { RTMMetricsRow } from './components/RTMMetricsRow';
 import { RTMTree } from './components/RTMTree';
 import { RTMTable } from './components/RTMTable';
@@ -10,14 +11,25 @@ import { RTMDetailPanel } from './components/RTMDetailPanel';
 import { exportTraceabilityMatrix } from '@/modules/test-management/utils/exportTraceabilityMatrix';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useNavigation } from '@/contexts/NavigationContext';
 
 const RTMPage = () => {
+  const { selectedProjectId } = useNavigation();
   const {
     metrics, tree, tableData, selectedRequirement, isDetailPanelOpen, viewMode, sorting, filters, selectedTreeNodeId, isLoading,
-    loadData, toggleTreeNode, selectTreeNode, expandAll, collapseAll, setSorting, setSearchQuery, setViewMode, selectTableRow, closeDetailPanel,
+    setData, setLoading, toggleTreeNode, selectTreeNode, expandAll, collapseAll, setSorting, setSearchQuery, setViewMode, selectTableRow, closeDetailPanel,
   } = useRTMStore();
 
-  useEffect(() => { loadData(); }, [loadData]);
+  // Fetch real data from Supabase
+  const { data: rtmData, isLoading: dataLoading } = useRTMData(selectedProjectId);
+
+  // Sync data to store when it changes
+  useEffect(() => {
+    setLoading(dataLoading);
+    if (rtmData) {
+      setData(rtmData.metrics, rtmData.tree, rtmData.tableData);
+    }
+  }, [rtmData, dataLoading, setData, setLoading]);
 
   const handleExport = () => {
     try {

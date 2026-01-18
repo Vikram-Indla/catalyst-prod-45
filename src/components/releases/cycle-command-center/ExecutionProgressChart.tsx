@@ -2,44 +2,23 @@
  * Execution Progress Chart - Stacked bar chart showing daily execution
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend, 
   ResponsiveContainer, CartesianGrid 
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
+import { useExecutionProgress } from '@/hooks/test-cycles/useExecutionProgress';
 
 interface ExecutionProgressChartProps {
   cycleId: string;
 }
 
-// Mock data - will be replaced with real data from hook
-const generateMockData = () => {
-  const days = [];
-  const startDate = new Date('2024-01-10');
-  
-  for (let i = 0; i < 14; i++) {
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + i);
-    
-    const passed = Math.floor(Math.random() * 15) + 5;
-    const failed = Math.floor(Math.random() * 5);
-    const blocked = Math.floor(Math.random() * 3);
-    
-    days.push({
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      passed,
-      failed,
-      blocked,
-    });
-  }
-  
-  return days;
-};
-
 export function ExecutionProgressChart({ cycleId }: ExecutionProgressChartProps) {
-  const data = generateMockData();
+  const [days, setDays] = useState(14);
+  const { data = [], isLoading } = useExecutionProgress(cycleId, days);
 
   return (
     <Card className="lg:col-span-2">
@@ -50,18 +29,26 @@ export function ExecutionProgressChart({ cycleId }: ExecutionProgressChartProps)
           </CardTitle>
           <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
             <button 
-              className="px-3 py-1 text-xs font-medium rounded-md"
-              style={{ backgroundColor: CATALYST_V5.primaryLighter, color: CATALYST_V5.primary }}
+              className={`px-3 py-1 text-xs font-medium rounded-md ${days === 14 ? '' : 'text-muted-foreground hover:bg-background'}`}
+              style={days === 14 ? { backgroundColor: CATALYST_V5.primaryLighter, color: CATALYST_V5.primary } : undefined}
+              onClick={() => setDays(14)}
             >
               14D
             </button>
-            <button className="px-3 py-1 text-xs font-medium text-muted-foreground hover:bg-background rounded-md">
+            <button 
+              className={`px-3 py-1 text-xs font-medium rounded-md ${days === 30 ? '' : 'text-muted-foreground hover:bg-background'}`}
+              style={days === 30 ? { backgroundColor: CATALYST_V5.primaryLighter, color: CATALYST_V5.primary } : undefined}
+              onClick={() => setDays(30)}
+            >
               30D
             </button>
           </div>
         </div>
       </CardHeader>
       <CardContent>
+        {isLoading ? (
+          <Skeleton className="h-[280px] w-full" />
+        ) : (
         <div className="h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} barGap={0}>
@@ -126,6 +113,7 @@ export function ExecutionProgressChart({ cycleId }: ExecutionProgressChartProps)
             </BarChart>
           </ResponsiveContainer>
         </div>
+        )}
       </CardContent>
     </Card>
   );
