@@ -3,13 +3,23 @@
  */
 
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import type { TestCycleSummary } from '../types';
 
 interface TestCyclesTableProps {
   cycles: TestCycleSummary[];
+  releaseId?: string;
 }
 
-export function TestCyclesTable({ cycles }: TestCyclesTableProps) {
+export function TestCyclesTable({ cycles, releaseId }: TestCyclesTableProps) {
+  const navigate = useNavigate();
+
+  const handleRowClick = (cycleId: string) => {
+    if (releaseId) {
+      navigate(`/releases/${releaseId}/cycles/${cycleId}`);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -28,7 +38,11 @@ export function TestCyclesTable({ cycles }: TestCyclesTableProps) {
         </thead>
         <tbody>
           {cycles.map((cycle) => (
-            <tr key={cycle.id} className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer">
+            <tr
+              key={cycle.id}
+              className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer"
+              onClick={() => handleRowClick(cycle.id)}
+            >
               <td className="py-2 font-medium text-slate-800">{cycle.name}</td>
               <td className="py-2 text-slate-600">{cycle.environment}</td>
               <td className="py-2">
