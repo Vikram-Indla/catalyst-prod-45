@@ -81,7 +81,7 @@ export default function CycleCommandCenter() {
         id: cycle.id,
         name: cycle.name,
         status: cycle.status,
-        progress: stats?.progress || 0,
+        progress: stats?.inProgress || 0,
         passed: stats?.passed || 0,
         failed: stats?.failed || 0,
         blocked: stats?.blocked || 0,

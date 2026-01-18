@@ -11,6 +11,7 @@ export { HealthGauge } from './components/HealthGauge';
 export { TestBreakdownGrid } from './components/TestBreakdownGrid';
 export { DefectBreakdown } from './components/DefectBreakdown';
 export { QualityGateBar } from './components/QualityGateBar';
+export { SaveComparisonViewDialog } from './components/SaveComparisonViewDialog';
 
 export * from './types';
 export * from './utils/compareUtils';
