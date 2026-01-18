@@ -88,7 +88,7 @@ export function useAssignmentTable(cycleId: string) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
-  // Fetch data
+  // Fetch data - using mock for now as tm_cycle_test_cases table doesn't exist yet
   const { data: rawData, isLoading, refetch } = useQuery({
     queryKey: ['assignment-table', cycleId],
     queryFn: () => generateMockAssignments(cycleId),
