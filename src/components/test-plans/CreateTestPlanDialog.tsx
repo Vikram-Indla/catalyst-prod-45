@@ -64,7 +64,7 @@ interface CreateTestPlanDialogProps {
 }
 
 export function CreateTestPlanDialog({ open, onOpenChange, projectId }: CreateTestPlanDialogProps) {
-  const createPlanMutation = useCreateTestPlan();
+  const createPlanMutation = useCreateTestPlan(projectId);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -92,7 +92,7 @@ export function CreateTestPlanDialog({ open, onOpenChange, projectId }: CreateTe
         objectives: values.objectives,
       };
 
-      await createPlanMutation.mutateAsync({ projectId, input });
+      await createPlanMutation.mutateAsync(input);
       toast.success('Test plan created successfully');
       form.reset();
       onOpenChange(false);
