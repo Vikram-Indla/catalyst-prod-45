@@ -12,7 +12,6 @@ import type {
   ViewMode,
   TestLink,
 } from '../types';
-import { generateMockData } from './useMockData';
 
 interface RTMState {
   // Data
@@ -35,7 +34,8 @@ interface RTMState {
   isLoading: boolean;
   
   // Actions
-  loadData: () => void;
+  setData: (metrics: RTMMetrics, tree: RequirementTreeNode[], tableData: RequirementTableRow[]) => void;
+  setLoading: (loading: boolean) => void;
   toggleTreeNode: (id: string) => void;
   selectTreeNode: (id: string) => void;
   expandAll: () => void;
@@ -73,20 +73,19 @@ export const useRTMStore = create<RTMState>((set, get) => ({
   },
   isLoading: false,
 
-  // Actions
-  loadData: () => {
-    set({ isLoading: true });
-    const mockData = generateMockData();
-    
-    setTimeout(() => {
-      set({
-        metrics: mockData.metrics,
-        tree: mockData.tree,
-        tableData: mockData.tableData,
-        isLoading: false,
-        expandedTreeNodes: new Set(['epic-1']),
-      });
-    }, 300);
+  // Actions - Data management (called from useRTMData hook)
+  setData: (metrics, tree, tableData) => {
+    set({
+      metrics,
+      tree,
+      tableData,
+      isLoading: false,
+      expandedTreeNodes: new Set(tree.slice(0, 3).map(n => n.id)),
+    });
+  },
+
+  setLoading: (loading) => {
+    set({ isLoading: loading });
   },
 
   toggleTreeNode: (id: string) => {

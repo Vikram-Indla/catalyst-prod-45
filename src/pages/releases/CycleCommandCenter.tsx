@@ -27,6 +27,7 @@ import { AddTestsSlideOver } from '@/components/releases/add-tests';
 // Hooks
 import { useCycleDetails } from '@/hooks/test-cycles/useCycleDetails';
 import { useCycleTestCases } from '@/hooks/test-cycles/useCycleTestCases';
+import { useCycleMutations } from '@/hooks/test-cycles/useCycleMutations';
 
 export type CycleViewTab = 'command' | 'kanban' | 'table' | 'calendar' | 'reports';
 
@@ -45,18 +46,23 @@ export default function CycleCommandCenter() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [isAddTestsOpen, setIsAddTestsOpen] = useState(false);
 
-  // Mock data for now - will be replaced with real hooks
+  // Real Supabase hooks
   const { cycle, stats, isLoading, error, refetch } = useCycleDetails(cycleId || '');
   const { testCases, isLoading: testCasesLoading } = useCycleTestCases(cycleId || '', { status: statusFilter });
+  const { pauseCycle, resumeCycle, completeCycle, isPausing, isCompleting } = useCycleMutations(cycleId || '', {
+    onSuccess: refetch,
+  });
 
   const handlePauseCycle = () => {
-    toast.info('Pausing cycle...');
-    // TODO: Implement pause mutation
+    pauseCycle.mutate();
+  };
+
+  const handleResumeCycle = () => {
+    resumeCycle.mutate();
   };
 
   const handleCompleteCycle = () => {
-    toast.success('Cycle marked as complete');
-    // TODO: Implement complete mutation
+    completeCycle.mutate();
   };
 
   const handleExport = () => {
@@ -124,17 +130,23 @@ export default function CycleCommandCenter() {
             <Plus className="h-4 w-4 mr-2" />
             Add Tests
           </Button>
-          {cycle?.status === 'active' && (
+          {(cycle?.status === 'active' || cycle?.status === 'in_progress') && (
             <>
-              <Button variant="outline" size="sm" onClick={handlePauseCycle}>
+              <Button variant="outline" size="sm" onClick={handlePauseCycle} disabled={isPausing}>
                 <Pause className="h-4 w-4 mr-2" />
-                Pause
+                {isPausing ? 'Pausing...' : 'Pause'}
               </Button>
-              <Button size="sm" onClick={handleCompleteCycle}>
+              <Button size="sm" onClick={handleCompleteCycle} disabled={isCompleting}>
                 <CheckCircle className="h-4 w-4 mr-2" />
-                Complete
+                {isCompleting ? 'Completing...' : 'Complete'}
               </Button>
             </>
+          )}
+          {cycle?.status === 'paused' && (
+            <Button size="sm" onClick={handleResumeCycle}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Resume
+            </Button>
           )}
         </div>
       </div>
