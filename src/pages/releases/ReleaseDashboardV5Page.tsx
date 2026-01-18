@@ -28,6 +28,7 @@ export default function ReleaseDashboardV5Page() {
           release={data.release}
           healthScore={data.healthScore}
           qualityGates={data.qualityGates}
+          metrics={data.metrics}
         />
 
         {/* Metrics Grid */}

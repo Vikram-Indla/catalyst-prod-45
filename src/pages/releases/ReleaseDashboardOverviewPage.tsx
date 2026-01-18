@@ -250,6 +250,7 @@ export default function ReleaseDashboardOverviewPage() {
           release={dashboardData.release}
           healthScore={dashboardData.healthScore}
           qualityGates={dashboardData.qualityGates}
+          metrics={dashboardData.metrics}
         />
 
         {/* Metrics Grid */}
