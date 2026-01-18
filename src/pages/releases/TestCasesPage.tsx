@@ -80,6 +80,7 @@ import {
   useCloneTestCase,
   useCreateTestCase,
 } from '@/hooks/test-management';
+import { useProjects } from '@/hooks/test-management/useProjects';
 import { tmToUITestCases } from '@/lib/adapters/testCaseAdapter';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
@@ -94,7 +95,18 @@ type ViewMode = 'list' | 'grid' | 'kanban';
 
 export default function TestCasesPage() {
   const [searchParams] = useSearchParams();
-  const projectId = searchParams.get('programId') || '';
+  
+  // Fetch available projects and resolve project ID
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const urlProjectId = searchParams.get('programId') || searchParams.get('projectId');
+  
+  // Use URL param or fall back to first available project (or Demo Project)
+  const projectId = useMemo(() => {
+    if (urlProjectId) return urlProjectId;
+    if (projects.length > 0) return projects[0].id;
+    // Fallback to Demo Project UUID if no projects loaded yet
+    return '00000000-0000-0000-0000-000000000001';
+  }, [urlProjectId, projects]);
   
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
@@ -166,6 +178,12 @@ export default function TestCasesPage() {
 
   // Handler for AI-generated test cases
   const handleAIGeneratedTestCases = useCallback((generatedTestCases: GeneratedTestCase[]) => {
+    // Validate projectId before creating
+    if (!projectId) {
+      toast.error('No project selected. Please select a project first.');
+      return;
+    }
+
     // Create each test case sequentially
     const createPromises = generatedTestCases.map(tc => 
       createTestCaseMutation.mutateAsync({
@@ -195,7 +213,11 @@ export default function TestCasesPage() {
 
   // Handler for imported test cases
   const handleImportedTestCases = useCallback((parsedTestCases: ParsedTestCase[]) => {
-    const createPromises = parsedTestCases.map(tc => 
+    if (!projectId) {
+      toast.error('No project selected. Please select a project first.');
+      return;
+    }
+    const createPromises = parsedTestCases.map(tc =>
       createTestCaseMutation.mutateAsync({
         project_id: projectId,
         title: tc.title,
