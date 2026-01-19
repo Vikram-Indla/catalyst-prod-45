@@ -39,22 +39,24 @@ export function useReleaseHealth(limit: number = 5) {
       // Fetch test run statistics for each release
       const releaseHealthData: ReleaseHealthData[] = await Promise.all(
         (releases || []).map(async (release: any) => {
-          // Get test cycles for this release
-          const { data: cycles } = await supabase
+          // Get test cycles for this release - cast to any to avoid deep type instantiation
+          const cyclesResult = await (supabase
             .from('tm_test_cycles')
-            .select('id')
-            .eq('release_id', release.id) as { data: { id: string }[] | null };
+            .select('id') as any)
+            .eq('release_id', release.id);
+          const cycles = cyclesResult.data as { id: string }[] | null;
 
           const cycleIds = cycles?.map(c => c.id) || [];
 
           let passed = 0, failed = 0, blocked = 0, notRun = 0;
 
           if (cycleIds.length > 0) {
-            // Get test run statistics
-            const { data: runs } = await supabase
+            // Get test run statistics - cast to any to avoid deep type instantiation
+            const runsResult = await (supabase
               .from('tm_test_runs')
-              .select('status')
+              .select('status') as any)
               .in('cycle_id', cycleIds);
+            const runs = runsResult.data as { status: string }[] | null;
 
             if (runs) {
               passed = runs.filter(r => r.status === 'passed').length;
