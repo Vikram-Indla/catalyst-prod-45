@@ -79,7 +79,11 @@ export function AssigneeSelect({ value, assigneeName, teamMembers, onChange }: A
         </div>
         
         {/* Options */}
-        <div className="max-h-48 overflow-y-auto py-1">
+        <div 
+          className="max-h-48 overflow-y-auto py-1 overscroll-contain"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+          onWheelCapture={(e) => e.stopPropagation()}
+        >
           {/* Unassign option */}
           <button
             onClick={() => handleSelect(null)}
