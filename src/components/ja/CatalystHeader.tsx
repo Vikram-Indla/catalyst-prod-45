@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Search, ChevronDown, LogOut, Settings } from "lucide-react";
+import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -617,6 +617,20 @@ export function CatalystHeader() {
                   <p className="text-sm font-medium truncate">{user?.email}</p>
                   <p className="text-xs text-muted-foreground">User Account</p>
                 </div>
+                <DropdownMenuItem 
+                  onClick={() => navigate('/profile')} 
+                  className="cursor-pointer"
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  <span>My Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => navigate('/settings/notifications')} 
+                  className="cursor-pointer"
+                >
+                  <Bell className="mr-2 h-4 w-4" />
+                  <span>Notification Settings</span>
+                </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem 
                     onClick={() => navigate('/admin/activity')} 
