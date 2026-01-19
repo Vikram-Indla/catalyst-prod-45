@@ -1,36 +1,35 @@
-import { UserPlus, RefreshCw, CheckCircle, Clock, AtSign, Bug } from 'lucide-react';
+import { UserPlus, RefreshCw, CheckCircle, Clock, AtSign, Bug, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { useNotifications } from '@/hooks/integrations/useNotifications';
-import type { Notification, NotificationType } from '@/types/integrations.types';
+import { useNotifications, Notification, NotificationType } from '@/hooks/useNotifications';
 
 interface NotificationItemProps {
   notification: Notification;
   onClick?: () => void;
 }
 
-const iconMap: Record<NotificationType, React.ComponentType<{ className?: string }>> = {
+const iconMap: Partial<Record<NotificationType, React.ComponentType<{ className?: string }>>> = {
   assignment: UserPlus,
   status_change: RefreshCw,
-  cycle_complete: CheckCircle,
-  deadline: Clock,
+  cycle_completed: CheckCircle,
+  cycle_started: Clock,
   mention: AtSign,
-  defect_linked: Bug,
+  comment: MessageSquare,
 };
 
-const colorMap: Record<NotificationType, { icon: string; bg: string }> = {
+const colorMap: Partial<Record<NotificationType, { icon: string; bg: string }>> = {
   assignment: { icon: 'text-primary', bg: 'bg-primary/10' },
   status_change: { icon: 'text-teal-600', bg: 'bg-teal-50' },
-  cycle_complete: { icon: 'text-teal-600', bg: 'bg-teal-50' },
-  deadline: { icon: 'text-amber-600', bg: 'bg-amber-50' },
+  cycle_completed: { icon: 'text-teal-600', bg: 'bg-teal-50' },
+  cycle_started: { icon: 'text-amber-600', bg: 'bg-amber-50' },
   mention: { icon: 'text-primary', bg: 'bg-primary/10' },
-  defect_linked: { icon: 'text-red-600', bg: 'bg-red-50' },
+  comment: { icon: 'text-blue-600', bg: 'bg-blue-50' },
 };
 
 export function NotificationItem({ notification, onClick }: NotificationItemProps) {
   const { markAsRead } = useNotifications();
-  const Icon = iconMap[notification.type];
-  const colors = colorMap[notification.type];
+  const Icon = iconMap[notification.type] || MessageSquare;
+  const colors = colorMap[notification.type] || { icon: 'text-muted-foreground', bg: 'bg-muted' };
 
   const handleClick = () => {
     if (!notification.is_read) {

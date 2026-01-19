@@ -7,8 +7,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
-import { useNotifications } from '@/hooks/integrations/useNotifications';
+import { useNotifications, Notification } from '@/hooks/useNotifications';
 import { NotificationItem } from './NotificationItem';
 import { NotificationBadge } from './NotificationBadge';
 
