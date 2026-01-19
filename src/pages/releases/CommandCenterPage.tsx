@@ -36,11 +36,37 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Legend, Area, AreaChart
 } from 'recharts';
+import { useQueryClient } from '@tanstack/react-query';
+
+// Import real data hooks
+import {
+  useCommandCenterKPIs,
+  useReleaseHealth,
+  useDefectTrends,
+  useQualityGates,
+  useTestProgress,
+  useTeamPerformance,
+  useActivities,
+  useMilestones,
+} from '@/modules/command-center/hooks';
+
+import type { 
+  KPIMetric, 
+  ReleaseHealthData, 
+  QualityGate, 
+  TeamMemberPerformance, 
+  ActivityItem as ActivityItemType, 
+  Milestone,
+  KPIColor,
+  AvatarColor,
+  ActivityType,
+  MilestoneUrgency,
+} from '@/modules/command-center/types';
 
 // ============================================
 // MOCK DATA
@@ -186,7 +212,7 @@ const mockMilestones = [
 // ============================================
 
 // KPI Card
-function KPICard({ kpi, index }: { kpi: typeof mockKPIs[0]; index: number }) {
+function KPICard({ kpi, index }: { kpi: Omit<KPIMetric, 'icon'> & { icon: React.ComponentType<any> }; index: number }) {
   const colorMap = {
     primary: { border: CATALYST_V5.primary, bg: CATALYST_V5.primaryLighter, icon: CATALYST_V5.primary },
     teal: { border: CATALYST_V5.teal, bg: CATALYST_V5.tealLighter, icon: CATALYST_V5.teal },
@@ -291,7 +317,7 @@ function ProgressRing({ percentage, status, size = 48 }: { percentage: number; s
 }
 
 // Release Health Item
-function ReleaseHealthItem({ release, onClick }: { release: typeof mockReleases[0]; onClick: () => void }) {
+function ReleaseHealthItem({ release, onClick }: { release: ReleaseHealthData; onClick: () => void }) {
   return (
     <div 
       className="flex items-center gap-4 p-4 bg-muted/50 rounded-[10px] cursor-pointer hover:bg-muted/80 transition-colors"
@@ -325,7 +351,7 @@ function ReleaseHealthItem({ release, onClick }: { release: typeof mockReleases[
 }
 
 // Quality Gate Item
-function QualityGateItem({ gate }: { gate: typeof mockQualityGates[0] }) {
+function QualityGateItem({ gate }: { gate: QualityGate }) {
   const statusConfig = {
     passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
     warning: { bg: 'bg-[#fef3c7]', text: 'text-[#d97706]', icon: AlertTriangle },
@@ -349,7 +375,7 @@ function QualityGateItem({ gate }: { gate: typeof mockQualityGates[0] }) {
 }
 
 // Activity Item
-function ActivityItem({ activity }: { activity: typeof mockActivities[0] }) {
+function ActivityItem({ activity }: { activity: ActivityItemType }) {
   const typeConfig = {
     passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
     failed: { bg: 'bg-[#fef2f2]', text: 'text-[#ef4444]', icon: AlertTriangle },
@@ -378,7 +404,7 @@ function ActivityItem({ activity }: { activity: typeof mockActivities[0] }) {
 }
 
 // Team Member Item
-function TeamMemberItem({ member }: { member: typeof mockTeamPerformance[0] }) {
+function TeamMemberItem({ member }: { member: TeamMemberPerformance }) {
   const colorMap = {
     blue: CATALYST_V5.primary,
     teal: CATALYST_V5.teal,
@@ -407,7 +433,7 @@ function TeamMemberItem({ member }: { member: typeof mockTeamPerformance[0] }) {
 }
 
 // Milestone Item
-function MilestoneItem({ milestone }: { milestone: typeof mockMilestones[0] }) {
+function MilestoneItem({ milestone }: { milestone: Milestone }) {
   const urgencyConfig = {
     normal: { border: CATALYST_V5.primary, text: 'text-foreground' },
     warning: { border: CATALYST_V5.warning, text: 'text-[#d97706]' },
@@ -445,15 +471,21 @@ function MilestoneItem({ milestone }: { milestone: typeof mockMilestones[0] }) {
 // ============================================
 export default function CommandCenterPage() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
   
-  // Simulate initial load
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(timer);
-  }, []);
+  // Real data hooks
+  const { data: kpis, isLoading: kpisLoading, refetch: refetchKpis } = useCommandCenterKPIs();
+  const { data: releases, isLoading: releasesLoading, refetch: refetchReleases } = useReleaseHealth(5);
+  const { data: defectTrends, isLoading: defectsLoading, refetch: refetchDefects } = useDefectTrends('30d');
+  const { data: qualityGates, isLoading: gatesLoading, refetch: refetchGates } = useQualityGates();
+  const { data: testProgress, isLoading: progressLoading, refetch: refetchProgress } = useTestProgress(6);
+  const { data: teamPerformance, isLoading: teamLoading, refetch: refetchTeam } = useTeamPerformance(5);
+  const { data: activities, isLoading: activitiesLoading, refetch: refetchActivities } = useActivities(10);
+  const { data: milestones, isLoading: milestonesLoading, refetch: refetchMilestones } = useMilestones(4);
+
+  const isLoading = kpisLoading || releasesLoading;
   
   // Auto-refresh every 2 minutes
   useEffect(() => {
@@ -463,17 +495,30 @@ export default function CommandCenterPage() {
     return () => clearInterval(interval);
   }, []);
   
-  const handleRefresh = useCallback(() => {
+  const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    setTimeout(() => {
+    try {
+      await Promise.all([
+        refetchKpis(),
+        refetchReleases(),
+        refetchDefects(),
+        refetchGates(),
+        refetchProgress(),
+        refetchTeam(),
+        refetchActivities(),
+        refetchMilestones(),
+      ]);
       setLastUpdated(new Date());
+      catalystToast.success('Dashboard refreshed');
+    } catch (e) {
+      catalystToast.error('Refresh failed');
+    } finally {
       setIsRefreshing(false);
-      toast.success('Dashboard refreshed');
-    }, 800);
-  }, []);
+    }
+  }, [refetchKpis, refetchReleases, refetchDefects, refetchGates, refetchProgress, refetchTeam, refetchActivities, refetchMilestones]);
   
   const handleExport = (format: 'pdf' | 'xlsx') => {
-    toast.success(`Exporting as ${format.toUpperCase()}...`);
+    catalystToast.success(`Exporting as ${format.toUpperCase()}...`);
   };
   
   const getTimeAgo = () => {
@@ -483,6 +528,15 @@ export default function CommandCenterPage() {
     if (diffMins === 1) return '1 min ago';
     return `${diffMins} min ago`;
   };
+
+  // Derive KPI data with icons for display
+  const displayKpis = (kpis || []).map(kpi => ({
+    ...kpi,
+    icon: kpi.id === 'total_tests' ? TestTube2 
+        : kpi.id === 'pass_rate' ? CheckCircle2 
+        : kpi.id === 'open_defects' ? Bug 
+        : AlertTriangle,
+  }));
 
   if (isLoading) {
     return (
@@ -539,7 +593,7 @@ export default function CommandCenterPage() {
       <div className="p-6 space-y-6">
         {/* KPI Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {mockKPIs.map((kpi, i) => (
+          {displayKpis.map((kpi, i) => (
             <KPICard key={kpi.id} kpi={kpi} index={i} />
           ))}
         </div>
@@ -564,7 +618,7 @@ export default function CommandCenterPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                {mockReleases.map(release => (
+                {(releases || []).map(release => (
                   <ReleaseHealthItem 
                     key={release.id} 
                     release={release} 
@@ -582,7 +636,7 @@ export default function CommandCenterPage() {
               <CardContent>
                 <div className="h-[200px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={mockSprintProgress} barCategoryGap="20%">
+                    <BarChart data={testProgress || []} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                       <XAxis 
                         dataKey="sprint" 
@@ -648,7 +702,7 @@ export default function CommandCenterPage() {
               <CardContent>
                 <div className="h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={mockDefectTrends}>
+                    <AreaChart data={defectTrends || []}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                       <XAxis 
                         dataKey="date" 
@@ -701,7 +755,7 @@ export default function CommandCenterPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                {mockQualityGates.map(gate => (
+                {(qualityGates || []).map(gate => (
                   <QualityGateItem key={gate.id} gate={gate} />
                 ))}
               </CardContent>
@@ -718,7 +772,7 @@ export default function CommandCenterPage() {
                 </div>
               </CardHeader>
               <CardContent className="px-4">
-                {mockActivities.map(activity => (
+                {(activities || []).map(activity => (
                   <ActivityItem key={activity.id} activity={activity} />
                 ))}
               </CardContent>
@@ -730,7 +784,7 @@ export default function CommandCenterPage() {
                 <CardTitle className="text-sm font-semibold">Team Performance (Today)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-1">
-                {mockTeamPerformance.map(member => (
+                {(teamPerformance || []).map(member => (
                   <TeamMemberItem key={member.id} member={member} />
                 ))}
               </CardContent>
@@ -742,7 +796,7 @@ export default function CommandCenterPage() {
                 <CardTitle className="text-sm font-semibold">Upcoming Milestones</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {mockMilestones.map(milestone => (
+                {(milestones || []).map(milestone => (
                   <MilestoneItem key={milestone.id} milestone={milestone} />
                 ))}
               </CardContent>
