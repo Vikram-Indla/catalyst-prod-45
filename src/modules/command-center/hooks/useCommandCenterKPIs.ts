@@ -58,12 +58,13 @@ export function useCommandCenterKPIs(projectId?: string) {
       
       let blockedCount = 0;
       if (cycleIds.length > 0) {
-        const { count } = await supabase
+        // Cast to any to avoid deep type instantiation with .in() chain
+        const blockedResult = await (supabase
           .from('tm_test_runs')
-          .select('*', { count: 'exact', head: true })
+          .select('*', { count: 'exact', head: true }) as any)
           .in('cycle_id', cycleIds)
           .eq('status', 'blocked');
-        blockedCount = count || 0;
+        blockedCount = blockedResult.count || 0;
       }
 
       // Calculate trends (compare last 7 days to previous 7 days)
