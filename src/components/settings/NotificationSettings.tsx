@@ -22,7 +22,10 @@ import {
   RefreshCw,
   AlertTriangle,
   Check,
+  Loader2,
+  Unplug,
 } from 'lucide-react';
+import { useSlackConnection } from '@/hooks/useSlackConnection';
 
 // ============================================================
 // TYPES
@@ -50,6 +53,15 @@ interface NotificationPreferences {
 export function NotificationSettings() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const {
+    isConnected: isSlackConnected,
+    teamName: slackTeamName,
+    isLoadingStatus: isLoadingSlack,
+    isConnecting: isConnectingSlack,
+    startConnection: connectSlack,
+    disconnect: disconnectSlack,
+    isDisconnecting: isDisconnectingSlack,
+  } = useSlackConnection();
 
   // Fetch preferences
   const {
@@ -242,8 +254,8 @@ export function NotificationSettings() {
 
           <Separator />
 
-          {/* Slack - Future */}
-          <div className="flex items-center justify-between opacity-60">
+          {/* Slack */}
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-purple-100 dark:bg-purple-900/30">
                 <svg className="w-4 h-4 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
@@ -253,13 +265,43 @@ export function NotificationSettings() {
               <div>
                 <Label className="font-medium">Slack notifications</Label>
                 <p className="text-sm text-muted-foreground">
-                  Coming soon — Connect your Slack workspace
+                  {isSlackConnected 
+                    ? `Connected to ${slackTeamName || 'Slack'}`
+                    : 'Receive DMs in your Slack workspace'}
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm" disabled>
-              Connect
-            </Button>
+            {isLoadingSlack ? (
+              <Skeleton className="h-9 w-24" />
+            ) : isSlackConnected ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => disconnectSlack()}
+                disabled={isDisconnectingSlack}
+              >
+                {isDisconnectingSlack ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    <Unplug className="w-4 h-4 mr-1.5" />
+                    Disconnect
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={connectSlack}
+                disabled={isConnectingSlack}
+              >
+                {isConnectingSlack ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-1.5" />
+                ) : null}
+                {isConnectingSlack ? 'Connecting...' : 'Connect'}
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>

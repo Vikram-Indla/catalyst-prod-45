@@ -15,6 +15,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CatalystLoginPage } from "./components/auth/login";
 import { CatyChatWidget } from "./components/caty";
 // Jira test pages removed - AtlasKit migration complete
+import SlackOAuthCallback from "./pages/SlackOAuthCallback";
 import BrowsePage from "./pages/BrowsePage";
 import DependencyMapsPage from "./pages/reports/DependencyMapsPage";
 import SearchPage from "./pages/SearchPage";
@@ -362,6 +363,7 @@ const App = () => (
  <Route path="/" element={<Navigate to="/for-you" replace />} />
 <Route path="/" element={<Navigate to="/for-you" replace />} />
               <Route path="/auth" element={<CatalystLoginPage />} />
+              <Route path="/auth/slack/callback" element={<SlackOAuthCallback />} />
               {/* Jira test routes removed */}
               <Route path="/submit-request" element={<SubmitDemandRequest />} />
               
