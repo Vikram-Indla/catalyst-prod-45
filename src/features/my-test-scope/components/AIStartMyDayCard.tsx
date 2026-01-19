@@ -29,7 +29,7 @@ export function AIStartMyDayCard({
   isSkipping,
   className,
 }: AIStartMyDayCardProps) {
-  if (!recommendation) {
+  if (!recommendation || !recommendation.priorityTest) {
     return (
       <Card className={cn("bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800", className)}>
         <CardContent className="p-6 text-center">
@@ -45,12 +45,14 @@ export function AIStartMyDayCard({
     );
   }
 
-  const dueInfo = formatDueDate(recommendation.due_date, 'not_run');
+  const priorityTest = recommendation.priorityTest;
+  const isOverdue = priorityTest.urgency === 'overdue';
+  const dueInfo = formatDueDate(priorityTest.dueDate, priorityTest.status);
   
   return (
     <Card className={cn(
       "relative overflow-hidden",
-      recommendation.is_overdue 
+      isOverdue 
         ? "bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 border-red-200 dark:border-red-800"
         : "bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/20 dark:to-yellow-950/20 border-amber-200 dark:border-amber-800",
       className
@@ -64,8 +66,8 @@ export function AIStartMyDayCard({
               AI Recommendation
             </span>
           </div>
-          <Badge className={cn("text-xs font-bold", getScoreClass(recommendation.score))}>
-            {recommendation.score}
+          <Badge className={cn("text-xs font-bold", getScoreClass(priorityTest.priorityScore))}>
+            {priorityTest.priorityScore}
           </Badge>
         </div>
 
@@ -73,15 +75,15 @@ export function AIStartMyDayCard({
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-mono text-muted-foreground">
-              {recommendation.key}
+              {priorityTest.key}
             </span>
             <span className="text-xs text-muted-foreground">•</span>
             <span className="text-xs text-muted-foreground">
-              {recommendation.cycle_name}
+              {priorityTest.cycleName}
             </span>
           </div>
           <h3 className="font-semibold text-foreground line-clamp-2">
-            {recommendation.title}
+            {priorityTest.title}
           </h3>
         </div>
 
@@ -91,17 +93,10 @@ export function AIStartMyDayCard({
             {recommendation.reasons.map((reason, idx) => (
               <div
                 key={idx}
-                className={cn(
-                  "flex items-center gap-1.5 text-xs px-2 py-1 rounded-full",
-                  reason.type === 'overdue' && "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
-                  reason.type === 'defects' && "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400",
-                  reason.type === 'incidents' && "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400"
-                )}
+                className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
               >
-                {reason.type === 'overdue' && <AlertTriangle className="h-3 w-3" />}
-                {reason.type === 'defects' && <Bug className="h-3 w-3" />}
-                {reason.type === 'incidents' && <AlertCircle className="h-3 w-3" />}
-                <span>{reason.message}</span>
+                <AlertTriangle className="h-3 w-3" />
+                <span>{reason}</span>
               </div>
             ))}
           </div>
@@ -111,12 +106,24 @@ export function AIStartMyDayCard({
         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
           <div className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
-            <span>{recommendation.estimated_minutes || 5}m</span>
+            <span>{priorityTest.estimatedMinutes || 5}m</span>
           </div>
           <div className={cn("flex items-center gap-1", dueInfo.className)}>
             {dueInfo.isUrgent && <AlertTriangle className="h-3.5 w-3.5" />}
             <span>{dueInfo.text}</span>
           </div>
+          {priorityTest.linkedDefects.length > 0 && (
+            <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
+              <Bug className="h-3.5 w-3.5" />
+              <span>{priorityTest.linkedDefects.length}</span>
+            </div>
+          )}
+          {priorityTest.linkedIncidents.length > 0 && (
+            <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+              <AlertCircle className="h-3.5 w-3.5" />
+              <span>{priorityTest.linkedIncidents.length}</span>
+            </div>
+          )}
         </div>
 
         {/* Actions */}
