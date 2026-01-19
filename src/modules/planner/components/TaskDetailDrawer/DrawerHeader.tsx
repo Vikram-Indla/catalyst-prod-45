@@ -82,7 +82,12 @@ function StatusSelector({
           <ChevronDown className="w-4 h-4 opacity-60" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-48 p-1.5 z-[500] bg-popover" align="start">
+      <PopoverContent
+        className="w-48 p-1.5 z-[500] bg-popover max-h-[min(320px,var(--radix-popover-content-available-height))] scrollable-overlay"
+        align="start"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+        onWheelCapture={(e) => e.stopPropagation()}
+      >
         {statuses.map((status: any) => {
           const statusSlug = status.slug || 'backlog';
           const cfg = STATUS_CONFIG[statusSlug] || STATUS_CONFIG.backlog;
