@@ -50,6 +50,7 @@ const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
 
 import { EpicBalancingPage } from "./modules/epic-balancing";
+const UserNotificationSettingsPage = lazy(() => import("./pages/UserNotificationSettingsPage"));
 import { PlannerPage, KanbanPage } from "./modules/planner";
 
 import Defects from "./pages/Defects";
@@ -940,6 +941,7 @@ const App = () => (
               <Route path="/jira-integration" element={<AdminGuard><JiraIntegration /></AdminGuard>} />
               <Route path="/value-stream" element={<ValueStreamView />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/settings/notifications" element={<Suspense fallback={<div className="p-8">Loading...</div>}><UserNotificationSettingsPage /></Suspense>} />
               <Route path="/items/:type" element={<PlaceholderPage />} />
               {/* Dev and QA routes removed */}
             </Route>
