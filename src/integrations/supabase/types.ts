@@ -19598,6 +19598,141 @@ export type Database = {
           },
         ]
       }
+      slack_app_config: {
+        Row: {
+          app_id: string | null
+          bot_access_token_encrypted: string | null
+          bot_scopes: string[] | null
+          bot_user_id: string | null
+          client_id: string
+          client_secret_encrypted: string
+          configured_at: string | null
+          configured_by: string | null
+          created_at: string | null
+          default_channel_id: string | null
+          default_channel_name: string | null
+          id: string
+          include_deep_links: boolean | null
+          is_active: boolean | null
+          is_configured: boolean | null
+          last_test_error: string | null
+          last_test_status: string | null
+          last_tested_at: string | null
+          redirect_uri: string
+          rich_formatting: boolean | null
+          routing_rules: Json | null
+          send_dm_by_default: boolean | null
+          send_to_channel: boolean | null
+          signing_secret_encrypted: string | null
+          updated_at: string | null
+          workspace_icon_url: string | null
+          workspace_id: string | null
+          workspace_name: string | null
+        }
+        Insert: {
+          app_id?: string | null
+          bot_access_token_encrypted?: string | null
+          bot_scopes?: string[] | null
+          bot_user_id?: string | null
+          client_id: string
+          client_secret_encrypted: string
+          configured_at?: string | null
+          configured_by?: string | null
+          created_at?: string | null
+          default_channel_id?: string | null
+          default_channel_name?: string | null
+          id?: string
+          include_deep_links?: boolean | null
+          is_active?: boolean | null
+          is_configured?: boolean | null
+          last_test_error?: string | null
+          last_test_status?: string | null
+          last_tested_at?: string | null
+          redirect_uri: string
+          rich_formatting?: boolean | null
+          routing_rules?: Json | null
+          send_dm_by_default?: boolean | null
+          send_to_channel?: boolean | null
+          signing_secret_encrypted?: string | null
+          updated_at?: string | null
+          workspace_icon_url?: string | null
+          workspace_id?: string | null
+          workspace_name?: string | null
+        }
+        Update: {
+          app_id?: string | null
+          bot_access_token_encrypted?: string | null
+          bot_scopes?: string[] | null
+          bot_user_id?: string | null
+          client_id?: string
+          client_secret_encrypted?: string
+          configured_at?: string | null
+          configured_by?: string | null
+          created_at?: string | null
+          default_channel_id?: string | null
+          default_channel_name?: string | null
+          id?: string
+          include_deep_links?: boolean | null
+          is_active?: boolean | null
+          is_configured?: boolean | null
+          last_test_error?: string | null
+          last_test_status?: string | null
+          last_tested_at?: string | null
+          redirect_uri?: string
+          rich_formatting?: boolean | null
+          routing_rules?: Json | null
+          send_dm_by_default?: boolean | null
+          send_to_channel?: boolean | null
+          signing_secret_encrypted?: string | null
+          updated_at?: string | null
+          workspace_icon_url?: string | null
+          workspace_id?: string | null
+          workspace_name?: string | null
+        }
+        Relationships: []
+      }
+      slack_integration_audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          actor_ip: string | null
+          created_at: string | null
+          details: Json | null
+          error_message: string | null
+          id: string
+          status: string | null
+          target_user_email: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          actor_ip?: string | null
+          created_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          status?: string | null
+          target_user_email?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          actor_ip?: string | null
+          created_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          status?: string | null
+          target_user_email?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       snapshot_configurations: {
         Row: {
           created_at: string
@@ -28614,6 +28749,24 @@ export type Database = {
         }
         Relationships: []
       }
+      slack_connected_users: {
+        Row: {
+          avatar_url: string | null
+          connected_at: string | null
+          disconnected_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string | null
+          is_active: boolean | null
+          last_notification_at: string | null
+          notifications_sent: number | null
+          slack_team_id: string | null
+          slack_team_name: string | null
+          slack_user_id: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       tm_folders_with_counts: {
         Row: {
           case_count: number | null
@@ -29369,6 +29522,40 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["ra_user_role"]
       }
+      get_slack_config_safe: {
+        Args: never
+        Returns: {
+          app_id: string
+          bot_scopes: string[]
+          client_id: string
+          configured_at: string
+          default_channel_id: string
+          default_channel_name: string
+          id: string
+          is_active: boolean
+          is_configured: boolean
+          last_test_status: string
+          last_tested_at: string
+          redirect_uri: string
+          routing_rules: Json
+          send_dm_by_default: boolean
+          send_to_channel: boolean
+          workspace_icon_url: string
+          workspace_id: string
+          workspace_name: string
+        }[]
+      }
+      get_slack_integration_stats: {
+        Args: never
+        Returns: {
+          active_connected_users: number
+          failed_notifications_24h: number
+          notifications_last_24h: number
+          notifications_last_7d: number
+          total_connected_users: number
+          total_notifications_sent: number
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -29391,6 +29578,17 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_user_admin: { Args: { user_id: string }; Returns: boolean }
       is_user_approved: { Args: { user_id: string }; Returns: boolean }
+      log_slack_audit: {
+        Args: {
+          p_action: string
+          p_actor_id: string
+          p_details?: Json
+          p_error?: string
+          p_status?: string
+          p_target_user_id?: string
+        }
+        Returns: string
+      }
       log_test_case_activity: {
         Args: {
           p_action: string
