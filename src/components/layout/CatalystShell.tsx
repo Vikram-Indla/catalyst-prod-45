@@ -6,7 +6,7 @@ import { EnterpriseSidebar } from './EnterpriseSidebar';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { ReleaseRoomSidebar } from './OperationsSidebar';
 import { TestManagementSidebar } from './TestManagementSidebar';
-import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
+import { ReleasesManagementSidebarV5 } from './ReleasesManagementSidebarV5';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -100,12 +100,12 @@ function CatalystShellContent() {
       return null;
     }
 
-    // Release & Test Management sidebar (new module)
+    // Release & Test Management sidebar (V5 dark theme)
     if (isReleasesRoute) {
       return (
-        <ReleasesManagementSidebar
-          expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        <ReleasesManagementSidebarV5
+          collapsed={!sidebarExpanded}
+          onCollapsedChange={(collapsed) => setSidebarExpanded(!collapsed)}
         />
       );
     }
