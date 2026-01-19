@@ -13,7 +13,8 @@ import {
   Boxes,
   Code2,
   Map,
-  Wand2
+  Wand2,
+  Bell
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -61,6 +62,7 @@ const adminPockets = [
       { label: 'Details Panels', path: '/admin/details-panels' },
       { label: 'General Settings', path: '/admin/general-settings' },
       { label: 'Announcements', path: '/admin/announcements' },
+      { label: 'Notification Settings', path: '/admin/settings/notifications' },
     ],
   },
   {
