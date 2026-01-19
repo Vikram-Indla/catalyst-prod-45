@@ -2,6 +2,7 @@ import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@/lib/utils";
+import { handleWheelCapture, scrollableOverlayStyle } from "@/lib/scrollable-overlay";
 
 // Wrapper to disable modal behavior (prevents scroll lock and layout shift)
 const Popover = ({ modal = false, ...props }: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Root>) => (
@@ -16,7 +17,7 @@ const PopoverAnchor = PopoverPrimitive.Anchor;
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
+>(({ className, align = "center", sideOffset = 4, style, onWheelCapture, ...props }, ref) => (
   <PopoverPrimitive.Portal>
     <PopoverPrimitive.Content
       ref={ref}
@@ -30,6 +31,11 @@ const PopoverContent = React.forwardRef<
         "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className,
       )}
+      style={{ ...scrollableOverlayStyle, ...style }}
+      onWheelCapture={(e) => {
+        handleWheelCapture(e);
+        onWheelCapture?.(e);
+      }}
       {...props}
     />
   </PopoverPrimitive.Portal>
