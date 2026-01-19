@@ -76,7 +76,11 @@ export function InlineAssigneeSelect({ value, assignee, onChange }: InlineAssign
           onChange={(e) => setSearch(e.target.value)}
           className="mb-2 h-8 text-sm"
         />
-        <div className="max-h-48 overflow-y-auto space-y-0.5">
+        <div 
+          className="max-h-48 overflow-y-auto overscroll-contain space-y-0.5"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+          onWheelCapture={(e) => e.stopPropagation()}
+        >
           {/* Unassign option */}
           <button
             onClick={() => handleSelect(null)}
