@@ -22756,6 +22756,58 @@ export type Database = {
         }
         Relationships: []
       }
+      test_defect_links: {
+        Row: {
+          created_at: string
+          defect_id: string
+          id: string
+          link_type: string
+          linked_at: string
+          linked_by: string | null
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          defect_id: string
+          id?: string
+          link_type?: string
+          linked_at?: string
+          linked_by?: string | null
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string
+          defect_id?: string
+          id?: string
+          link_type?: string
+          linked_at?: string
+          linked_by?: string | null
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_defect_links_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_defect_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_defect_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_evidence: {
         Row: {
           ai_analysis: Json | null
@@ -23169,6 +23221,58 @@ export type Database = {
           },
         ]
       }
+      test_incident_links: {
+        Row: {
+          created_at: string
+          id: string
+          incident_id: string
+          link_type: string
+          linked_at: string
+          linked_by: string | null
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          incident_id: string
+          link_type?: string
+          linked_at?: string
+          linked_by?: string | null
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          incident_id?: string
+          link_type?: string
+          linked_at?: string
+          linked_by?: string | null
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_incident_links_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_incident_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_incident_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_notification_email_queue: {
         Row: {
           batch_type: string | null
@@ -23336,6 +23440,61 @@ export type Database = {
             columns: ["release_id"]
             isOneToOne: false
             referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_requirement_links: {
+        Row: {
+          coverage_status: string
+          created_at: string
+          id: string
+          linked_at: string
+          linked_by: string | null
+          requirement_id: string
+          test_case_id: string
+          updated_at: string
+        }
+        Insert: {
+          coverage_status?: string
+          created_at?: string
+          id?: string
+          linked_at?: string
+          linked_by?: string | null
+          requirement_id: string
+          test_case_id: string
+          updated_at?: string
+        }
+        Update: {
+          coverage_status?: string
+          created_at?: string
+          id?: string
+          linked_at?: string
+          linked_by?: string | null
+          requirement_id?: string
+          test_case_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_requirement_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
             referencedColumns: ["id"]
           },
         ]
@@ -27604,6 +27763,94 @@ export type Database = {
         }
         Relationships: []
       }
+      user_test_scope: {
+        Row: {
+          assigned_at: string
+          completed_at: string | null
+          created_at: string
+          cycle_id: string
+          due_date: string | null
+          id: string
+          last_executed_at: string | null
+          priority_score: number
+          status: string
+          test_case_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          completed_at?: string | null
+          created_at?: string
+          cycle_id: string
+          due_date?: string | null
+          id?: string
+          last_executed_at?: string | null
+          priority_score?: number
+          status?: string
+          test_case_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          completed_at?: string | null
+          created_at?: string
+          cycle_id?: string
+          due_date?: string | null
+          id?: string
+          last_executed_at?: string | null
+          priority_score?: number
+          status?: string
+          test_case_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_test_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_test_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_test_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "user_test_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "user_test_scope_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_test_scope_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_theme_preferences: {
         Row: {
           accent_color: string | null
@@ -27649,6 +27896,60 @@ export type Database = {
           theme_mode?: string | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_workload_summary: {
+        Row: {
+          actual_hours_spent: number | null
+          created_at: string
+          date: string
+          days_until_deadline: number | null
+          estimated_hours_remaining: number | null
+          id: string
+          next_deadline: string | null
+          tests_assigned: number
+          tests_blocked: number
+          tests_completed: number
+          tests_failed: number
+          tests_passed: number
+          tests_remaining: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_hours_spent?: number | null
+          created_at?: string
+          date: string
+          days_until_deadline?: number | null
+          estimated_hours_remaining?: number | null
+          id?: string
+          next_deadline?: string | null
+          tests_assigned?: number
+          tests_blocked?: number
+          tests_completed?: number
+          tests_failed?: number
+          tests_passed?: number
+          tests_remaining?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actual_hours_spent?: number | null
+          created_at?: string
+          date?: string
+          days_until_deadline?: number | null
+          estimated_hours_remaining?: number | null
+          id?: string
+          next_deadline?: string | null
+          tests_assigned?: number
+          tests_blocked?: number
+          tests_completed?: number
+          tests_failed?: number
+          tests_passed?: number
+          tests_remaining?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
