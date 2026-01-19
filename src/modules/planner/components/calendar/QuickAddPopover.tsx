@@ -48,9 +48,13 @@ export function QuickAddPopover({
         statusId = statuses?.[0]?.id;
       }
 
+      // Generate a unique key for the task
+      const taskKey = `TASK-${Date.now().toString(36).toUpperCase()}`;
+      
       const { data, error } = await supabase
         .from('planner_tasks')
         .insert([{
+          key: taskKey,
           title: taskTitle,
           due_date: format(date, 'yyyy-MM-dd'),
           status_id: statusId,
