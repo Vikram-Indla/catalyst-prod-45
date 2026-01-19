@@ -146,7 +146,11 @@ export function InlineUserPicker({
             />
           </div>
         </div>
-        <div className="max-h-60 overflow-y-auto py-1">
+        <div 
+          className="max-h-60 overflow-y-auto py-1 overscroll-contain"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+          onWheelCapture={(e) => e.stopPropagation()}
+        >
           {/* Unassign option */}
           {value && (
             <button

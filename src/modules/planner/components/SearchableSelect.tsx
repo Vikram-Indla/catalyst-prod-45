@@ -182,7 +182,11 @@ export function SearchableSelect<T extends SelectOption>({
           )}
 
           {/* Options List */}
-          <div className="max-h-[280px] overflow-y-auto p-2">
+          <div 
+            className="max-h-[280px] overflow-y-auto p-2 overscroll-contain"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+            onWheelCapture={(e) => e.stopPropagation()}
+          >
             {Object.entries(groupedOptions).map(([group, groupOptions]) => (
               <div key={group || 'default'}>
                 {group && (
