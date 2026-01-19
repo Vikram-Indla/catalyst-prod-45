@@ -238,7 +238,8 @@ export function LookupMultiSelect({
           >
             <div 
               className="p-1 overflow-y-auto overscroll-contain"
-              style={{ maxHeight: '232px' }}
+              style={{ maxHeight: '232px', WebkitOverflowScrolling: 'touch' }}
+              onWheelCapture={(e) => e.stopPropagation()}
             >
               {options.map((option) => (
                 <div

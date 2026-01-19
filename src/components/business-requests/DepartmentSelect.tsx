@@ -64,9 +64,11 @@ export function DepartmentSelect({
         >
           <SelectPrimitive.Viewport
             className={cn(
-              'p-1',
-              'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
+              'p-1 overflow-y-auto overscroll-contain max-h-72',
+              'w-full min-w-[var(--radix-select-trigger-width)]'
             )}
+            style={{ WebkitOverflowScrolling: 'touch' }}
+            onWheelCapture={(e) => e.stopPropagation()}
           >
             {departments && departments.length > 0 ? (
               departments.map((dept) => (
