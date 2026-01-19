@@ -33,7 +33,7 @@ interface NotificationPreferences {
   user_id: string;
   email_notifications_enabled: boolean;
   in_app_notifications_enabled: boolean;
-  slack_enabled: boolean;
+  slack_enabled?: boolean; // Optional - may not exist in DB
   notify_work_item_assigned: boolean;
   notify_work_item_state_change: boolean;
   notify_comments: boolean;
@@ -88,12 +88,14 @@ export function NotificationSettings() {
             .single();
 
           if (createError) throw createError;
-          return newPrefs as NotificationPreferences;
+          return { ...newPrefs, slack_enabled: false } as NotificationPreferences;
         }
         throw error;
       }
 
-      return data as NotificationPreferences;
+      // Safely add slack_enabled if not present in DB
+      const prefs = data as Record<string, unknown>;
+      return { ...prefs, slack_enabled: (prefs.slack_enabled as boolean) ?? false } as NotificationPreferences;
     },
     enabled: !!user?.id,
   });

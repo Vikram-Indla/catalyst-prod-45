@@ -40,7 +40,7 @@ export function NotificationCenter() {
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
   const filteredNotifications = notifications?.filter(n => 
-    filter === 'all' || !n.read
+    filter === 'all' || !n.is_read
   ) || [];
 
   if (isLoading) {
@@ -101,7 +101,7 @@ export function NotificationCenter() {
                     <div
                       key={notification.id}
                       className={`p-4 rounded-lg border transition-colors ${
-                        notification.read 
+                        notification.is_read 
                           ? 'bg-background' 
                           : 'bg-brand-primary/5 border-brand-primary/20'
                       }`}
@@ -119,7 +119,7 @@ export function NotificationCenter() {
                                 {notification.message}
                               </p>
                             </div>
-                            {!notification.read && (
+                            {!notification.is_read && (
                               <div className="h-2 w-2 rounded-full bg-brand-primary flex-shrink-0 mt-1.5" />
                             )}
                           </div>
@@ -130,7 +130,7 @@ export function NotificationCenter() {
                             </span>
                             
                             <div className="flex items-center gap-1 ml-auto">
-                              {!notification.read && (
+                              {!notification.is_read && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
