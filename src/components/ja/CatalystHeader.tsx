@@ -625,7 +625,7 @@ export function CatalystHeader() {
                   <span>My Profile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={() => navigate('/settings/notifications')} 
+                  onClick={() => navigate('/admin/settings/notifications')} 
                   className="cursor-pointer"
                 >
                   <Bell className="mr-2 h-4 w-4" />
