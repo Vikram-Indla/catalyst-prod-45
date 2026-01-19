@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ============================================================
 // TYPES
@@ -158,17 +158,18 @@ export function useNotifications(
             }
           );
 
-          toast.info((payload.new as Notification).title, {
-            description: (payload.new as Notification).message,
-            action: (payload.new as Notification).link
+          catalystToast.info(
+            (payload.new as Notification).title,
+            (payload.new as Notification).message,
+            (payload.new as Notification).link
               ? {
                   label: 'View',
                   onClick: () => {
                     window.location.href = (payload.new as Notification).link!;
                   },
                 }
-              : undefined,
-          });
+              : undefined
+          );
         }
       )
       .on(
@@ -238,7 +239,7 @@ export function useNotifications(
     },
     onError: (error) => {
       console.error('Error marking notification as read:', error);
-      toast.error('Failed to mark notification as read');
+      catalystToast.error('Failed to mark notification as read');
       queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
     },
   });
@@ -271,11 +272,11 @@ export function useNotifications(
       );
     },
     onSuccess: () => {
-      toast.success('All notifications marked as read');
+      catalystToast.success('All notifications marked as read');
     },
     onError: (error) => {
       console.error('Error marking all notifications as read:', error);
-      toast.error('Failed to mark all as read');
+      catalystToast.error('Failed to mark all as read');
       queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
     },
   });
@@ -305,7 +306,7 @@ export function useNotifications(
     },
     onError: (error) => {
       console.error('Error deleting notification:', error);
-      toast.error('Failed to delete notification');
+      catalystToast.error('Failed to delete notification');
       queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
     },
   });
