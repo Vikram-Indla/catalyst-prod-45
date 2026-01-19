@@ -54,6 +54,7 @@ const transformPlannerTask = (row: any): PlannerTask => ({
   assigneeInitials: row.assignee?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2),
   teamId: row.workstream_id,
   teamName: row.workstream?.name,
+  teamColor: row.workstream?.color || '#6366f1',
   startDate: row.start_date,
   dueDate: row.due_date,
   blocked: row.blocked || false,
@@ -73,7 +74,7 @@ export function usePlannerTasks(teamId?: string | null) {
         .select(`
           *,
           status:planner_statuses(*),
-          workstream:planner_workstreams(id, name),
+          workstream:planner_workstreams(id, name, color, slug),
           assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name, email, avatar_url)
         `)
         .is('deleted_at', null)
