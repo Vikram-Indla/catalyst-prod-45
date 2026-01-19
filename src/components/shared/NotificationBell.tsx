@@ -15,7 +15,7 @@ export function NotificationBell() {
   const [filter, setFilter] = useState<string>('all');
 
   const filteredNotifications = notifications.filter(n => {
-    if (filter === 'unread') return !n.read;
+    if (filter === 'unread') return !n.is_read;
     if (filter === 'all') return true;
     return n.type === filter;
   });
@@ -83,14 +83,14 @@ export function NotificationBell() {
                       <div
                         key={notification.id}
                         className={`p-4 hover:bg-accent/50 transition-colors ${
-                          !notification.read ? 'bg-accent/20' : ''
+                          !notification.is_read ? 'bg-accent/20' : ''
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 space-y-1">
                             <div className="flex items-center gap-2">
                               <h4 className="font-medium text-sm">{notification.title}</h4>
-                              {!notification.read && (
+                              {!notification.is_read && (
                                 <div className="h-2 w-2 rounded-full bg-primary" />
                               )}
                             </div>
@@ -106,7 +106,7 @@ export function NotificationBell() {
                             </p>
                           </div>
                           <div className="flex gap-1">
-                            {!notification.read && (
+                            {!notification.is_read && (
                               <Button
                                 variant="ghost"
                                 size="icon"
