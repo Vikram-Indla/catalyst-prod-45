@@ -152,7 +152,12 @@ function PrioritySelect({ value, onChange }: { value: string; onChange: (v: stri
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-40 p-1.5 z-[500] bg-popover" align="end">
+      <PopoverContent
+        className="w-40 p-1.5 z-[500] bg-popover max-h-[min(320px,var(--radix-popover-content-available-height))] scrollable-overlay"
+        align="end"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+        onWheelCapture={(e) => e.stopPropagation()}
+      >
         {Object.entries(PRIORITY_CONFIG).map(([key, cfg]) => (
           <button
             key={key}
