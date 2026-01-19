@@ -56,7 +56,11 @@ export function InlinePrioritySelect({ value, onChange }: InlinePrioritySelectPr
         align="start"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="space-y-0.5">
+        <div 
+          className="max-h-64 overflow-y-auto overscroll-contain space-y-0.5"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+          onWheelCapture={(e) => e.stopPropagation()}
+        >
           {PRIORITIES.map((priority) => {
             const config = PRIORITY_CONFIG[priority];
             return (

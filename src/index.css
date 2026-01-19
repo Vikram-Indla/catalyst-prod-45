@@ -4940,3 +4940,38 @@ input[type="checkbox"]:checked {
   0% { opacity: 0.8; }
   100% { opacity: 0; }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   SCROLLABLE OVERLAY UTILITY
+   Enables trackpad/two-finger scrolling in dropdown lists, popovers, menus
+   ════════════════════════════════════════════════════════════════════════════ */
+.scrollable-overlay {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  /* Allow touch/trackpad gestures */
+  touch-action: pan-y;
+}
+
+/* Ensure Radix Select viewport is scrollable */
+[data-radix-select-viewport] {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure Radix ScrollArea works with trackpad */
+[data-radix-scroll-area-viewport] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Command (cmdk) list scrollability */
+[cmdk-list] {
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
