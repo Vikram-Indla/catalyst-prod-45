@@ -187,6 +187,8 @@ import ResourceInventory from "./pages/admin/ResourceInventory";
 import MockDataGenerator from "./pages/admin/MockDataGenerator";
 const AiIntegrationPage = lazy(() => import("./pages/admin/AiIntegrationPage"));
 import ProcessSteps from "./pages/admin/ProcessSteps";
+const SlackIntegrationPage = lazy(() => import("./pages/admin/SlackIntegrationPage"));
+const TaskListPage = lazy(() => import("./modules/planner/pages/TaskListPage"));
 import CreateMenuConfig from "./pages/admin/CreateMenuConfig";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
@@ -931,6 +933,10 @@ const App = () => (
                 <Route path="requirement-assist/*" element={<Navigate to="/admin/requirement-assist/ai-configuration" replace />} />
                 {/* Ideas Admin Settings */}
                 <Route path="ideas" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasAdminSettingsPage /></Suspense>} />
+                {/* Slack Integration */}
+                <Route path="slack" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SlackIntegrationPage /></Suspense>} />
+                {/* Enhanced Task List */}
+                <Route path="task-list" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TaskListPage /></Suspense>} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
