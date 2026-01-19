@@ -27135,6 +27135,7 @@ export type Database = {
           notify_subscriptions: boolean
           notify_work_item_assigned: boolean
           notify_work_item_state_change: boolean
+          slack_enabled: boolean
           subscription_notifications_enabled: boolean
           updated_at: string
           user_id: string
@@ -27154,6 +27155,7 @@ export type Database = {
           notify_subscriptions?: boolean
           notify_work_item_assigned?: boolean
           notify_work_item_state_change?: boolean
+          slack_enabled?: boolean
           subscription_notifications_enabled?: boolean
           updated_at?: string
           user_id: string
@@ -27173,6 +27175,7 @@ export type Database = {
           notify_subscriptions?: boolean
           notify_work_item_assigned?: boolean
           notify_work_item_state_change?: boolean
+          slack_enabled?: boolean
           subscription_notifications_enabled?: boolean
           updated_at?: string
           user_id?: string
