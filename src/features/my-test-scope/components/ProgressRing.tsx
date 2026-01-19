@@ -24,9 +24,9 @@ export function ProgressRing({
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
 
-  const { total, passed, failed, blocked, not_run, in_progress } = summary;
+  const { totalTests, passedTests, failedTests, blockedTests, notRunTests } = summary;
   
-  if (total === 0) {
+  if (totalTests === 0) {
     return (
       <div className={cn("flex flex-col items-center justify-center", className)}>
         <svg width={size} height={size} className="transform -rotate-90">
@@ -47,15 +47,14 @@ export function ProgressRing({
     );
   }
 
-  const completionRate = Math.round(((passed + (summary as any).skipped || 0) / total) * 100);
+  const completionRate = Math.round((passedTests / totalTests) * 100);
   
   // Calculate segment lengths
   const segments = [
-    { count: passed, color: 'hsl(var(--success))', label: 'Passed' },
-    { count: failed, color: 'hsl(var(--destructive))', label: 'Failed' },
-    { count: blocked, color: 'hsl(var(--warning))', label: 'Blocked' },
-    { count: in_progress, color: 'hsl(210 80% 55%)', label: 'Running' },
-    { count: not_run, color: 'hsl(var(--muted))', label: 'Not Run' },
+    { count: passedTests, color: 'hsl(var(--success))', label: 'Passed' },
+    { count: failedTests, color: 'hsl(var(--destructive))', label: 'Failed' },
+    { count: blockedTests, color: 'hsl(var(--warning))', label: 'Blocked' },
+    { count: notRunTests, color: 'hsl(var(--muted))', label: 'Not Run' },
   ];
 
   let offset = 0;
@@ -66,7 +65,7 @@ export function ProgressRing({
         {segments.map((segment, index) => {
           if (segment.count === 0) return null;
           
-          const length = (segment.count / total) * circumference;
+          const length = (segment.count / totalTests) * circumference;
           const currentOffset = offset;
           offset += length;
           

@@ -12,17 +12,18 @@ import {
   CheckCircle, 
   XCircle, 
   AlertTriangle, 
-  SkipForward,
   Clock,
   Bug,
   AlertCircle,
   Loader2
 } from 'lucide-react';
-import type { TestScopeItem, TestStatus } from '../types';
+import type { TestAssignment } from '../types';
 import { getStatusConfig, getScoreClass, formatDueDate } from '../utils/helpers';
 
+type TestStatus = 'not_run' | 'passed' | 'failed' | 'blocked';
+
 interface TestListTableProps {
-  tests: TestScopeItem[];
+  tests: TestAssignment[];
   onExecute: (id: string) => void;
   onComplete: (id: string, status: TestStatus) => void;
   onSkip: (id: string) => void;
@@ -68,16 +69,17 @@ export function TestListTable({
         <tbody>
           {tests.map((test) => {
             const statusConfig = getStatusConfig(test.status);
-            const dueInfo = formatDueDate(test.due_date, test.status);
+            const dueInfo = formatDueDate(test.dueDate, test.status);
             const isActive = activeTestId === test.id;
             const isActionPending = isActive && (isExecuting || isCompleting);
+            const isOverdue = test.urgency === 'overdue';
 
             return (
               <tr 
                 key={test.id} 
                 className={cn(
                   "border-b border-border/50 hover:bg-muted/50 transition-colors",
-                  test.is_overdue && "bg-red-50/50 dark:bg-red-950/10"
+                  isOverdue && "bg-red-50/50 dark:bg-red-950/10"
                 )}
               >
                 {/* Test Info */}
@@ -89,7 +91,7 @@ export function TestListTable({
                       </span>
                       <span className="text-xs text-muted-foreground">•</span>
                       <span className="text-xs text-muted-foreground">
-                        {test.cycle_name}
+                        {test.cycleName}
                       </span>
                     </div>
                     <span className="font-medium text-foreground line-clamp-1">
@@ -100,8 +102,8 @@ export function TestListTable({
 
                 {/* Score */}
                 <td className="py-3 px-3 text-center">
-                  <Badge className={cn("text-xs font-bold min-w-[2.5rem]", getScoreClass(test.score))}>
-                    {test.score}
+                  <Badge className={cn("text-xs font-bold min-w-[2.5rem]", getScoreClass(test.priorityScore))}>
+                    {test.priorityScore}
                   </Badge>
                 </td>
 
@@ -126,19 +128,19 @@ export function TestListTable({
                 {/* Links */}
                 <td className="py-3 px-3 text-center">
                   <div className="flex items-center justify-center gap-2">
-                    {test.has_defects && (
-                      <div className="flex items-center gap-0.5 text-orange-600 dark:text-orange-400" title={`${test.defect_count} linked defects`}>
+                    {test.linkedDefects.length > 0 && (
+                      <div className="flex items-center gap-0.5 text-orange-600 dark:text-orange-400" title={`${test.linkedDefects.length} linked defects`}>
                         <Bug className="h-3.5 w-3.5" />
-                        <span className="text-xs">{test.defect_count}</span>
+                        <span className="text-xs">{test.linkedDefects.length}</span>
                       </div>
                     )}
-                    {test.has_incidents && (
-                      <div className="flex items-center gap-0.5 text-purple-600 dark:text-purple-400" title={`${test.incident_count} linked incidents`}>
+                    {test.linkedIncidents.length > 0 && (
+                      <div className="flex items-center gap-0.5 text-purple-600 dark:text-purple-400" title={`${test.linkedIncidents.length} linked incidents`}>
                         <AlertCircle className="h-3.5 w-3.5" />
-                        <span className="text-xs">{test.incident_count}</span>
+                        <span className="text-xs">{test.linkedIncidents.length}</span>
                       </div>
                     )}
-                    {!test.has_defects && !test.has_incidents && (
+                    {test.linkedDefects.length === 0 && test.linkedIncidents.length === 0 && (
                       <span className="text-muted-foreground">—</span>
                     )}
                   </div>
@@ -163,40 +165,9 @@ export function TestListTable({
                       )}
                     </Button>
                   )}
-                  {test.status === 'in_progress' && (
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onComplete(test.id, 'passed')}
-                        disabled={isActionPending}
-                        className="h-7 px-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
-                      >
-                        <CheckCircle className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onComplete(test.id, 'failed')}
-                        disabled={isActionPending}
-                        className="h-7 px-2 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <XCircle className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onComplete(test.id, 'blocked')}
-                        disabled={isActionPending}
-                        className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                      >
-                        <AlertTriangle className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  )}
-                  {['passed', 'failed', 'blocked', 'skipped'].includes(test.status) && (
+                  {test.status === 'passed' || test.status === 'failed' || test.status === 'blocked' ? (
                     <span className="text-xs text-muted-foreground">Completed</span>
-                  )}
+                  ) : null}
                 </td>
               </tr>
             );

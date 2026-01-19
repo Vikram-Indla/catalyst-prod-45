@@ -6,14 +6,16 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Clock, Bug, AlertCircle } from 'lucide-react';
-import type { TestScopeSummary, TestScopeFilters } from '../types';
+import type { TestScopeSummary } from '../types';
+
+type AlertType = 'overdue' | 'due_today' | 'defects' | 'incidents' | null;
 
 interface AlertChipsRowProps {
   summary: TestScopeSummary;
   defectCount: number;
   incidentCount: number;
-  activeAlert: TestScopeFilters['alert'];
-  onAlertChange: (alert: TestScopeFilters['alert']) => void;
+  activeAlert: AlertType;
+  onAlertChange: (alert: AlertType) => void;
   className?: string;
 }
 
@@ -29,7 +31,7 @@ export function AlertChipsRow({
     {
       id: 'overdue' as const,
       label: 'Overdue',
-      count: summary.overdue,
+      count: summary.overdueCount,
       icon: AlertTriangle,
       activeClass: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700',
       pulseClass: 'bg-red-500',
@@ -37,7 +39,7 @@ export function AlertChipsRow({
     {
       id: 'due_today' as const,
       label: 'Due Today',
-      count: summary.due_today,
+      count: summary.dueTodayCount,
       icon: Clock,
       activeClass: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700',
       pulseClass: 'bg-amber-500',
