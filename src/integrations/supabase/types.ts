@@ -29843,6 +29843,10 @@ export type Database = {
       }
       check_theme_is_active: { Args: { p_theme_id: string }; Returns: boolean }
       clean_stale_presence: { Args: never; Returns: undefined }
+      complete_test_run_v2: {
+        Args: { p_notes?: string; p_overall_result: string; p_run_id: string }
+        Returns: Json
+      }
       compute_home_analytics_daily: {
         Args: { target_date?: string }
         Returns: undefined
@@ -30027,6 +30031,10 @@ export type Database = {
           total_executions: number
         }[]
       }
+      get_next_test_in_cycle: {
+        Args: { p_current_run_id?: string; p_cycle_id: string }
+        Returns: Json
+      }
       get_ra_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["ra_user_role"]
@@ -30065,6 +30073,10 @@ export type Database = {
           total_connected_users: number
           total_notifications_sent: number
         }[]
+      }
+      get_test_case_for_execution_v2: {
+        Args: { p_run_id: string; p_test_case_id: string }
+        Returns: Json
       }
       get_user_role: {
         Args: { _user_id: string }
@@ -30135,6 +30147,10 @@ export type Database = {
       reorder_test_steps: {
         Args: { p_step_ids: string[]; p_test_case_id: string }
         Returns: undefined
+      }
+      save_step_notes_v2: {
+        Args: { p_actual_result: string; p_run_id: string; p_step_id: string }
+        Returns: Json
       }
       search_evidence_by_ocr: {
         Args: { execution_step_id?: string; search_query: string }
@@ -30282,6 +30298,17 @@ export type Database = {
           p_name?: string
           p_run_id: string
           p_status?: string
+        }
+        Returns: Json
+      }
+      update_step_result_v2: {
+        Args: {
+          p_actual_result?: string
+          p_duration_seconds?: number
+          p_notes?: string
+          p_result: string
+          p_run_id: string
+          p_step_id: string
         }
         Returns: Json
       }
