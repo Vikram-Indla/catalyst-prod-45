@@ -30125,6 +30125,10 @@ export type Database = {
           total_executions: number
         }[]
       }
+      get_linked_defects_for_step: {
+        Args: { p_step_result_id: string }
+        Returns: Json
+      }
       get_next_test_in_cycle: {
         Args: { p_current_run_id?: string; p_cycle_id: string }
         Returns: Json
@@ -30195,6 +30199,15 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_user_admin: { Args: { user_id: string }; Returns: boolean }
       is_user_approved: { Args: { user_id: string }; Returns: boolean }
+      link_defect_to_step_v2: {
+        Args: {
+          p_defect_id: string
+          p_link_type?: string
+          p_run_id?: string
+          p_step_result_id: string
+        }
+        Returns: Json
+      }
       log_slack_audit: {
         Args: {
           p_action: string
@@ -30214,6 +30227,18 @@ export type Database = {
           p_test_case_id: string
         }
         Returns: string
+      }
+      quick_create_defect_v2: {
+        Args: {
+          p_assigned_to?: string
+          p_description?: string
+          p_project_id: string
+          p_run_id?: string
+          p_severity?: string
+          p_step_result_id: string
+          p_title?: string
+        }
+        Returns: Json
       }
       refresh_home_user_summary: {
         Args: { p_user_id: string }
@@ -30291,6 +30316,15 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      search_tm_defects: {
+        Args: {
+          p_limit?: number
+          p_project_id: string
+          p_query?: string
+          p_status?: string[]
+        }
+        Returns: Json
       }
       shift_steps_down: {
         Args: { p_after_order: number; p_test_case_id: string }
@@ -30392,6 +30426,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: undefined
+      }
+      unlink_defect_from_step_v2: {
+        Args: { p_defect_id: string; p_step_result_id: string }
+        Returns: Json
       }
       update_actual_result: {
         Args: {
