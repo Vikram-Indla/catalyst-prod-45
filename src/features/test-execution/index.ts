@@ -29,4 +29,5 @@ export { useRunProgress } from './hooks/useRunProgress';
 export { RunProgressCard } from './components/RunProgressCard';
 export { CreateRunDialog } from './components/CreateRunDialog';
 export { TesterAssignment } from './components/TesterAssignment';
+export { RunConfigPanel } from './components/RunConfigPanel';
 export { RunSessionManager } from './components/RunSessionManager';
