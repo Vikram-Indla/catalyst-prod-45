@@ -6,7 +6,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useTestExecution } from '../../hooks/useTestExecution';
-import { useStepNavigation } from '../../hooks/useStepNavigation';
+import { useStepNavigationV2 } from '../../hooks/useStepNavigationV2';
 import { useStepResultMutation } from '../../hooks/useStepResultMutation';
 import { useExecutionKeyboard } from '../../hooks/useExecutionKeyboard';
 import { useExecutionTimer } from '../../hooks/useExecutionTimer';
@@ -42,12 +42,12 @@ export function StepRunner({
 
   // Data hooks
   const { testCase, steps, run, progress, isLoading, error } = useTestExecution(runId, testCaseId);
-  const navigation = useStepNavigation();
+  const navigation = useStepNavigationV2(steps.length);
   const { recordResult, completeExecution, isRecording, isCompleting } = useStepResultMutation(runId, testCaseId);
   const timer = useExecutionTimer();
 
   const currentStep = steps[navigation.currentStepIndex];
-  const isLastStep = navigation.currentStepIndex === navigation.totalSteps - 1;
+  const isLastStep = navigation.isLastStep;
 
   // Start timer when component mounts or step changes
   useEffect(() => {
