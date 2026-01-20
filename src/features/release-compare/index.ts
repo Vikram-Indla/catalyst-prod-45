@@ -15,3 +15,4 @@ export { SaveComparisonViewDialog } from './components/SaveComparisonViewDialog'
 
 export * from './types';
 export * from './utils/compareUtils';
+export * from './hooks';

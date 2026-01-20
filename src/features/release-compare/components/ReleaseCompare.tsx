@@ -5,6 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 import { CompareHeader } from './CompareHeader';
 import { ReleaseSelector } from './ReleaseSelector';
 import { CompareInsightsBar } from './CompareInsightsBar';
@@ -17,12 +18,26 @@ import { exportComparison } from '@/utils/exportComparison';
 interface ReleaseCompareProps {
   availableReleases: ReleaseOption[];
   releases: ComparedRelease[];
+  // Controlled selection from parent
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
+  isLoadingMetrics?: boolean;
 }
 
-export function ReleaseCompare({ availableReleases, releases }: ReleaseCompareProps) {
-  // Initialize with first 3 releases or all if less than 3
+export function ReleaseCompare({ 
+  availableReleases, 
+  releases,
+  selectedIds: controlledSelectedIds,
+  onSelectionChange,
+  isLoadingMetrics = false,
+}: ReleaseCompareProps) {
+  // Support both controlled and uncontrolled modes
   const initialIds = availableReleases.slice(0, Math.min(3, availableReleases.length)).map(r => r.id);
-  const [selectedIds, setSelectedIds] = useState<string[]>(initialIds);
+  const [internalSelectedIds, setInternalSelectedIds] = useState<string[]>(initialIds);
+  
+  const selectedIds = controlledSelectedIds ?? internalSelectedIds;
+  const setSelectedIds = onSelectionChange ?? setInternalSelectedIds;
+  
   const [isExporting, setIsExporting] = useState(false);
   const [isSaveViewOpen, setIsSaveViewOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -98,7 +113,7 @@ export function ReleaseCompare({ availableReleases, releases }: ReleaseComparePr
   
   if (availableReleases.length < 2) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-slate-500">
+      <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
         <p>At least 2 releases are required for comparison.</p>
       </div>
     );
@@ -118,7 +133,16 @@ export function ReleaseCompare({ availableReleases, releases }: ReleaseComparePr
         onSelectionChange={setSelectedIds}
       />
       
-      {selectedReleases.length >= 2 && (
+      {isLoadingMetrics && selectedIds.length >= 2 && (
+        <div className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center gap-3 text-muted-foreground">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span className="text-sm">Loading comparison metrics...</span>
+          </div>
+        </div>
+      )}
+      
+      {!isLoadingMetrics && selectedReleases.length >= 2 && (
         <>
           <CompareInsightsBar insights={insights} />
           <ComparisonTable releases={selectedReleases} winners={winners} />
