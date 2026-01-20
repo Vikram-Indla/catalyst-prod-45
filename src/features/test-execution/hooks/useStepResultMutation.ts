@@ -3,12 +3,18 @@
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/catalyst-toast/useToast';
+import { useCatalystToast } from '@/hooks/useCatalystToast';
 import type { StepResultInput, StepResult, CompleteExecutionInput } from '../types/step-execution';
+
+interface RpcResponse {
+  result?: string;
+  error?: string;
+  success?: boolean;
+}
 
 export function useStepResultMutation(runId: string, testCaseId: string) {
   const queryClient = useQueryClient();
-  const toast = useToast();
+  const toast = useCatalystToast();
 
   const recordResult = useMutation({
     mutationFn: async (input: StepResultInput) => {
@@ -23,8 +29,9 @@ export function useStepResultMutation(runId: string, testCaseId: string) {
         });
 
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      return data;
+      const response = data as unknown as RpcResponse;
+      if (response?.error) throw new Error(response.error);
+      return response;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['execution-session', runId] });
@@ -36,7 +43,7 @@ export function useStepResultMutation(runId: string, testCaseId: string) {
         blocked: 'Blocked ⊘',
         skipped: 'Skipped →',
       };
-      toast.success(resultLabels[data.result as StepResult] || 'Result recorded');
+      toast.success('Step Result', resultLabels[data?.result as StepResult] || 'Result recorded');
     },
     onError: (error: Error) => {
       toast.error('Failed to record result', error.message);
@@ -53,13 +60,14 @@ export function useStepResultMutation(runId: string, testCaseId: string) {
         });
 
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      return data;
+      const response = data as unknown as RpcResponse;
+      if (response?.error) throw new Error(response.error);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['execution-session', runId] });
       queryClient.invalidateQueries({ queryKey: ['tm-run', runId] });
-      toast.success('Test execution completed');
+      toast.success('Complete', 'Test execution completed');
     },
     onError: (error: Error) => {
       toast.error('Failed to complete execution', error.message);
