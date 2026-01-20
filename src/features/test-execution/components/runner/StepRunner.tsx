@@ -1,6 +1,7 @@
 /**
  * Module 3A-2: Step Runner Container
  * Main orchestrating component for step-by-step test execution
+ * Enhanced with Module 3A-3: Result Recording & Evidence
  */
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +18,7 @@ import { StepProgressBar } from './StepProgressBar';
 import { StepNotes } from './StepNotes';
 import { CompletionDialog } from './CompletionDialog';
 import { ExitDialog } from './ExitDialog';
+import { ResultRecorder } from '../evidence';
 import type { StepResult, ExecutionResult } from '../../types/step-execution';
 
 interface StepRunnerProps {
@@ -39,6 +41,7 @@ export function StepRunner({
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
   const [autoAdvance, setAutoAdvance] = useState(true);
+  const [actualResult, setActualResult] = useState('');
 
   // Data hooks
   const { testCase, steps, run, progress, isLoading, error } = useTestExecution(runId, testCaseId);
@@ -160,6 +163,17 @@ export function StepRunner({
               step={currentStep}
               stepNumber={navigation.currentStepIndex + 1}
               totalSteps={navigation.totalSteps}
+            />
+
+            {/* Result Recording & Evidence - Module 3A-3 */}
+            <ResultRecorder
+              executionId={executionId}
+              stepResultId={currentStep.id}
+              stepId={currentStep.id}
+              expectedResult={currentStep.expected_result}
+              actualResult={actualResult}
+              onActualResultChange={setActualResult}
+              disabled={isRecording}
             />
 
             {/* Notes Section */}
