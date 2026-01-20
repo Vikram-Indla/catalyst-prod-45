@@ -7,7 +7,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
-import type { UploadProgress, EvidenceType } from '../types/evidence';
+import type { UploadProgress } from '../types/evidence';
+import type { EvidenceType } from '../types/step-execution';
 import { ALL_SUPPORTED_TYPES, MAX_FILE_SIZE } from '../types/evidence';
 
 interface UploadOptions {

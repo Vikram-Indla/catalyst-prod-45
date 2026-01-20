@@ -56,3 +56,27 @@ export {
   CompletionDialog,
   ExitDialog,
 } from './components/runner';
+
+// ============================================================
+// Module 3A-3: Result Recording & Evidence
+// ============================================================
+
+// Types (EvidenceType exported from step-execution, use specific exports to avoid conflict)
+export type { EvidenceFile, UploadProgress } from './types/evidence';
+
+// Hooks
+export { useStepEvidence } from './hooks/useStepEvidence';
+export { useFileUpload } from './hooks/useFileUpload';
+export { useClipboardPaste } from './hooks/useClipboardPaste';
+export { useDragDrop } from './hooks/useDragDrop';
+
+// Components
+export {
+  ResultRecorder,
+  ActualResultInput,
+  EvidenceUploader,
+  EvidenceGallery,
+  EvidencePreview,
+  ComparisonView,
+  UploadProgressDisplay,
+} from './components/evidence';

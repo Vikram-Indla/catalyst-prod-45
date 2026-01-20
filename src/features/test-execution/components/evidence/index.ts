@@ -8,5 +8,5 @@ export { EvidenceUploader } from './EvidenceUploader';
 export { EvidenceGallery } from './EvidenceGallery';
 export { EvidencePreview } from './EvidencePreview';
 export { ComparisonView } from './ComparisonView';
-export { UploadProgress } from './UploadProgress';
+export { UploadProgressDisplay } from './UploadProgress';
 export { QUICK_TEMPLATES } from './templates';

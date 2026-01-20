@@ -2,8 +2,8 @@
 // Module 3A-3: Result Recording & Evidence Types
 // ============================================================
 
-// Evidence Type Enum
-export type EvidenceType = 'screenshot' | 'video' | 'file' | 'log';
+// Import EvidenceType from step-execution (don't re-export to avoid conflicts)
+import type { EvidenceType } from './step-execution';
 
 // Evidence File
 export interface EvidenceFile {

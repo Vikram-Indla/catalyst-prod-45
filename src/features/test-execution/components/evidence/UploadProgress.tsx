@@ -1,18 +1,18 @@
 // ============================================================
-// UploadProgress - Progress indicator for file uploads
+// UploadProgressDisplay - Progress indicator for file uploads
 // ============================================================
 
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import type { UploadProgress as UploadProgressType } from '../../types/evidence';
+import type { UploadProgress } from '../../types/evidence';
 
-interface UploadProgressProps {
-  uploads: UploadProgressType[];
+interface UploadProgressDisplayProps {
+  uploads: UploadProgress[];
   onClear?: () => void;
 }
 
-export function UploadProgress({ uploads, onClear }: UploadProgressProps) {
+export function UploadProgressDisplay({ uploads, onClear }: UploadProgressDisplayProps) {
   if (uploads.length === 0) return null;
 
   const allComplete = uploads.every(u => u.status === 'complete' || u.status === 'error');
