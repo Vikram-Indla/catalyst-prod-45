@@ -200,8 +200,8 @@ export function EditTestCaseDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0 flex flex-col">
-        <DialogHeader className="px-6 py-4 border-b">
+      <DialogContent className="max-w-3xl max-h-[90vh] p-0 flex flex-col overflow-hidden">
+        <DialogHeader className="px-6 py-4 border-b flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <span className="text-sm font-mono text-muted-foreground">{testCase.id}</span>
@@ -210,15 +210,15 @@ export function EditTestCaseDialog({
           </div>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="px-6 pt-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+          <div className="px-6 pt-4 flex-shrink-0">
             <TabsList className="grid grid-cols-2 w-64">
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="steps">Steps ({steps.length})</TabsTrigger>
             </TabsList>
           </div>
 
-          <ScrollArea className="flex-1 px-6 py-4">
+          <ScrollArea className="flex-1 min-h-0 px-6 py-4">
             <TabsContent value="details" className="mt-0 space-y-6">
               {/* Title */}
               <div className="space-y-2">
@@ -416,7 +416,7 @@ export function EditTestCaseDialog({
           </ScrollArea>
         </Tabs>
 
-        <DialogFooter className="px-6 py-4 border-t">
+        <DialogFooter className="px-6 py-4 border-t flex-shrink-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
