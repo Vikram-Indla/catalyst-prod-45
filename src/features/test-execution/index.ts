@@ -1,6 +1,7 @@
 /**
  * Test Execution Feature Module
  * Module 3A-1: Execution Session Manager + Step Focus Mode
+ * Module 3A-2: Step-by-Step Runner UI
  */
 
 // ============================================================
@@ -18,6 +19,7 @@ export { useExecutionSession, useUpdateStepResult, useCompleteExecution, useSave
 
 // Types
 export * from './types/test-execution';
+export * from './types/step-execution';
 
 // Hooks
 export { useExecutionRun } from './hooks/useExecutionRun';
@@ -31,3 +33,25 @@ export { CreateRunDialog } from './components/CreateRunDialog';
 export { TesterAssignment } from './components/TesterAssignment';
 export { RunConfigPanel } from './components/RunConfigPanel';
 export { RunSessionManager } from './components/RunSessionManager';
+
+// ============================================================
+// Module 3A-2: Step-by-Step Runner UI
+// ============================================================
+
+// Hooks
+export { useTestExecution } from './hooks/useTestExecution';
+export { useExecutionTimer } from './hooks/useExecutionTimer';
+export { useStepResultMutation } from './hooks/useStepResultMutation';
+export { useExecutionKeyboard } from './hooks/useExecutionKeyboard';
+
+// Components
+export {
+  StepRunner,
+  StepDisplay,
+  StepResultButtons,
+  StepProgressBar,
+  StepNotes,
+  ExecutionHeader,
+  CompletionDialog,
+  ExitDialog,
+} from './components/runner';
