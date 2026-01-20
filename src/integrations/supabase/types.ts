@@ -23883,6 +23883,99 @@ export type Database = {
         }
         Relationships: []
       }
+      test_step_evidence: {
+        Row: {
+          created_at: string | null
+          deleted_at: string | null
+          file_size: number
+          filename: string
+          height: number | null
+          id: string
+          metadata: Json | null
+          mime_type: string | null
+          original_filename: string | null
+          step_result_id: string
+          storage_bucket: string | null
+          storage_path: string
+          thumbnail_path: string | null
+          type: string
+          uploaded_by: string | null
+          width: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          deleted_at?: string | null
+          file_size: number
+          filename: string
+          height?: number | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string | null
+          original_filename?: string | null
+          step_result_id: string
+          storage_bucket?: string | null
+          storage_path: string
+          thumbnail_path?: string | null
+          type: string
+          uploaded_by?: string | null
+          width?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          deleted_at?: string | null
+          file_size?: number
+          filename?: string
+          height?: number | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string | null
+          original_filename?: string | null
+          step_result_id?: string
+          storage_bucket?: string | null
+          storage_path?: string
+          thumbnail_path?: string | null
+          type?: string
+          uploaded_by?: string | null
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_step_evidence_step_result_id_fkey"
+            columns: ["step_result_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_step_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       test_steps: {
         Row: {
           action: string
@@ -29907,6 +30000,7 @@ export type Database = {
         Returns: string
       }
       current_user_is_approved: { Args: never; Returns: boolean }
+      delete_evidence: { Args: { p_evidence_id: string }; Returns: Json }
       delete_execution_run: { Args: { p_run_id: string }; Returns: Json }
       derive_dependency_container: {
         Args: {
@@ -30074,6 +30168,7 @@ export type Database = {
           total_notifications_sent: number
         }[]
       }
+      get_step_evidence: { Args: { p_step_result_id: string }; Returns: Json }
       get_test_case_for_execution_v2: {
         Args: { p_run_id: string; p_test_case_id: string }
         Returns: Json
@@ -30150,6 +30245,15 @@ export type Database = {
       }
       save_step_notes_v2: {
         Args: { p_actual_result: string; p_run_id: string; p_step_id: string }
+        Returns: Json
+      }
+      save_step_result_with_evidence: {
+        Args: {
+          p_actual_result?: string
+          p_execution_id: string
+          p_notes?: string
+          p_step_id: string
+        }
         Returns: Json
       }
       search_evidence_by_ocr: {
@@ -30289,6 +30393,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      update_actual_result: {
+        Args: {
+          p_actual_result: string
+          p_execution_id: string
+          p_step_order: number
+        }
+        Returns: Json
+      }
       update_execution_run: {
         Args: {
           p_assigned_testers?: string[]
@@ -30309,6 +30421,22 @@ export type Database = {
           p_result: string
           p_run_id: string
           p_step_id: string
+        }
+        Returns: Json
+      }
+      upload_evidence: {
+        Args: {
+          p_file_size: number
+          p_filename: string
+          p_height?: number
+          p_metadata?: Json
+          p_mime_type?: string
+          p_original_filename: string
+          p_step_result_id: string
+          p_storage_path: string
+          p_thumbnail_path?: string
+          p_type: string
+          p_width?: number
         }
         Returns: Json
       }
