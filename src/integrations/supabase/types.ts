@@ -5606,6 +5606,65 @@ export type Database = {
           },
         ]
       }
+      execution_run_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          changes: Json | null
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          changes?: Json | null
+          created_at?: string | null
+          entity_id: string
+          entity_type?: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       external_entities: {
         Row: {
           contact_info: Json | null
@@ -22924,33 +22983,157 @@ export type Database = {
           },
         ]
       }
+      test_execution_results: {
+        Row: {
+          actual_result: string | null
+          assigned_tester: string | null
+          completed_at: string | null
+          created_at: string | null
+          execution_order: number
+          id: string
+          notes: string | null
+          result_status: string | null
+          run_id: string
+          started_at: string | null
+          test_case_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_result?: string | null
+          assigned_tester?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          execution_order?: number
+          id?: string
+          notes?: string | null
+          result_status?: string | null
+          run_id: string
+          started_at?: string | null
+          test_case_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_result?: string | null
+          assigned_tester?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          execution_order?: number
+          id?: string
+          notes?: string | null
+          result_status?: string | null
+          run_id?: string
+          started_at?: string | null
+          test_case_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_execution_runs: {
         Row: {
+          assigned_testers: string[] | null
+          completed_at: string | null
+          configuration: Json | null
           copied_from_run_id: string | null
           created_at: string | null
           created_by: string | null
           cycle_id: string | null
+          deleted_at: string | null
+          description: string | null
+          environment: string | null
           id: string
+          name: string | null
+          project_id: string | null
           run_name: string | null
           run_number: number
+          scheduled_start: string | null
+          started_at: string | null
+          status: string | null
+          updated_at: string | null
         }
         Insert: {
+          assigned_testers?: string[] | null
+          completed_at?: string | null
+          configuration?: Json | null
           copied_from_run_id?: string | null
           created_at?: string | null
           created_by?: string | null
           cycle_id?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          environment?: string | null
           id?: string
+          name?: string | null
+          project_id?: string | null
           run_name?: string | null
           run_number: number
+          scheduled_start?: string | null
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string | null
         }
         Update: {
+          assigned_testers?: string[] | null
+          completed_at?: string | null
+          configuration?: Json | null
           copied_from_run_id?: string | null
           created_at?: string | null
           created_by?: string | null
           cycle_id?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          environment?: string | null
           id?: string
+          name?: string | null
+          project_id?: string | null
           run_name?: string | null
           run_number?: number
+          scheduled_start?: string | null
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -22958,6 +23141,13 @@ export type Database = {
             columns: ["copied_from_run_id"]
             isOneToOne: false
             referencedRelation: "test_execution_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_execution_runs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -29592,6 +29782,10 @@ export type Database = {
       }
     }
     Functions: {
+      add_test_cases_to_run: {
+        Args: { p_run_id: string; p_test_case_ids: string[] }
+        Returns: Json
+      }
       bulk_assign_roles: {
         Args: {
           _notes?: string
@@ -29658,6 +29852,18 @@ export type Database = {
         Args: { p_project_id: string }
         Returns: undefined
       }
+      create_execution_run: {
+        Args: {
+          p_assigned_testers?: string[]
+          p_configuration?: Json
+          p_description?: string
+          p_environment?: string
+          p_name: string
+          p_project_id: string
+          p_scheduled_start?: string
+        }
+        Returns: Json
+      }
       create_notification: {
         Args: {
           p_entity_id?: string
@@ -29697,6 +29903,7 @@ export type Database = {
         Returns: string
       }
       current_user_is_approved: { Args: never; Returns: boolean }
+      delete_execution_run: { Args: { p_run_id: string }; Returns: Json }
       derive_dependency_container: {
         Args: {
           p_work_item_id: string
@@ -29783,6 +29990,7 @@ export type Database = {
           blocks_count: number
         }[]
       }
+      get_execution_run: { Args: { p_run_id: string }; Returns: Json }
       get_execution_summary: {
         Args: {
           p_cycle_ids?: string[]
@@ -29823,6 +30031,7 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["ra_user_role"]
       }
+      get_run_progress: { Args: { p_run_id: string }; Returns: Json }
       get_slack_config_safe: {
         Args: never
         Returns: {
@@ -30063,6 +30272,18 @@ export type Database = {
           p_user_id: string
         }
         Returns: undefined
+      }
+      update_execution_run: {
+        Args: {
+          p_assigned_testers?: string[]
+          p_configuration?: Json
+          p_description?: string
+          p_environment?: string
+          p_name?: string
+          p_run_id: string
+          p_status?: string
+        }
+        Returns: Json
       }
       user_in_program: {
         Args: { _program_id: string; _user_id: string }
