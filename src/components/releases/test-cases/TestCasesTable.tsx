@@ -253,13 +253,13 @@ export function TestCasesTable({
                   {tc.id}
                 </Link>
               </td>
-              <td className="px-4 py-3 max-w-xs">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="text-sm text-foreground font-medium truncate block">
-                      {tc.title}
-                    </span>
-                  </TooltipTrigger>
+    <td className="px-4 py-3 max-w-xs">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="text-sm text-foreground truncate block">
+            {tc.title}
+          </span>
+        </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-sm">
                     {tc.title}
                   </TooltipContent>
