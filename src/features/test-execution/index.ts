@@ -43,6 +43,7 @@ export { useTestExecution } from './hooks/useTestExecution';
 export { useExecutionTimer } from './hooks/useExecutionTimer';
 export { useStepResultMutation } from './hooks/useStepResultMutation';
 export { useExecutionKeyboard } from './hooks/useExecutionKeyboard';
+export { useStepNavigationV2 } from './hooks/useStepNavigationV2';
 
 // Components
 export {
