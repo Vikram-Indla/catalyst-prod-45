@@ -3146,6 +3146,75 @@ export type Database = {
           },
         ]
       }
+      data_access_audit: {
+        Row: {
+          action: string
+          created_at: string
+          data_set_id: string | null
+          details: Json | null
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          data_set_id?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          data_set_id?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_access_audit_data_set_id_fkey"
+            columns: ["data_set_id"]
+            isOneToOne: false
+            referencedRelation: "test_data_sets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       defect_attachments: {
         Row: {
           capture_type: string
@@ -14549,6 +14618,77 @@ export type Database = {
           },
         ]
       }
+      masking_rules: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          field_pattern: string
+          id: string
+          is_active: boolean | null
+          masking_config: Json | null
+          masking_type: string
+          name: string
+          priority: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          field_pattern: string
+          id?: string
+          is_active?: boolean | null
+          masking_config?: Json | null
+          masking_type?: string
+          name: string
+          priority?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          field_pattern?: string
+          id?: string
+          is_active?: boolean | null
+          masking_config?: Json | null
+          masking_type?: string
+          name?: string
+          priority?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       milestone_categories: {
         Row: {
           created_at: string | null
@@ -22525,6 +22665,42 @@ export type Database = {
         }
         Relationships: []
       }
+      test_case_data_sets: {
+        Row: {
+          created_at: string
+          data_set_id: string | null
+          id: string
+          test_case_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_set_id?: string | null
+          id?: string
+          test_case_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_set_id?: string | null
+          id?: string
+          test_case_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_data_sets_data_set_id_fkey"
+            columns: ["data_set_id"]
+            isOneToOne: false
+            referencedRelation: "test_data_sets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_data_sets_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_defects: {
         Row: {
           defect_id: string
@@ -23599,6 +23775,84 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      test_data_sets: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          data_content: Json | null
+          data_type: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_sensitive: boolean | null
+          name: string
+          project_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          data_content?: Json | null
+          data_type?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_sensitive?: boolean | null
+          name: string
+          project_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          data_content?: Json | null
+          data_type?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_sensitive?: boolean | null
+          name?: string
+          project_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "test_data_sets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_datasets: {
         Row: {

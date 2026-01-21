@@ -158,3 +158,23 @@ export {
   BulkActionsToolbar,
   type BulkOperationType,
 } from './components/bulk';
+
+// ============================================================
+// Module 5C: Test Data Management
+// ============================================================
+
+// Types
+export * from './types/test-data-management';
+
+// Hooks
+export { useDataSets } from './hooks/useDataSets';
+export { useMasking } from './hooks/useMasking';
+export { useAccessAudit } from './hooks/useAccessAudit';
+
+// Components
+export {
+  DataSetManager,
+  DataSetForm,
+  MaskingRuleManager,
+  AccessAuditLog,
+} from './components/data-management';
