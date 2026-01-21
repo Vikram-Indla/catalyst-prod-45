@@ -7,8 +7,8 @@ import { SpacesSidebar, AddMemberModal } from '@/components/spaces';
 import { useSpace } from '@/hooks/spaces';
 
 export default function SpaceViewPage() {
-  const { id } = useParams<{ id: string }>();
-  const { data: space, isLoading, isError } = useSpace(id);
+  const { spaceId } = useParams<{ spaceId: string }>();
+  const { data: space, isLoading, isError } = useSpace(spaceId);
 
   if (isLoading) {
     return (

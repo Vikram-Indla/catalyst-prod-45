@@ -38,10 +38,10 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function SpacesSidebar() {
-  const { id } = useParams<{ id: string }>();
+  const { spaceId } = useParams<{ spaceId: string }>();
   const location = useLocation();
   const { sidebarCollapsed, toggleSidebar } = useSpaceStore();
-  const { data: space, isLoading } = useSpace(id);
+  const { data: space, isLoading } = useSpace(spaceId);
 
   if (isLoading || !space) {
     return (
@@ -60,7 +60,7 @@ export function SpacesSidebar() {
     );
   }
 
-  const basePath = `/spaces/${id}`;
+  const basePath = `/spaces/${spaceId}`;
 
   return (
     <aside
