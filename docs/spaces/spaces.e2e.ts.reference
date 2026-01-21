@@ -1,0 +1,670 @@
+/**
+ * CATALYST SPACES MODULE - E2E TEST SUITE
+ * Playwright Tests for Critical Paths
+ * 
+ * Run: npx playwright test spaces.e2e.ts
+ */
+
+import { test, expect, Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+// ============================================================================
+// TEST CONFIGURATION
+// ============================================================================
+
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+
+const TEST_USERS = {
+  admin: { email: 'admin@catalyst.gov.sa', password: 'AdminPass123!' },
+  owner: { email: 'owner@catalyst.gov.sa', password: 'OwnerPass123!' },
+  member: { email: 'member@catalyst.gov.sa', password: 'MemberPass123!' },
+  viewer: { email: 'viewer@catalyst.gov.sa', password: 'ViewerPass123!' },
+};
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+async function loginAs(page: Page, role: keyof typeof TEST_USERS) {
+  const user = TEST_USERS[role];
+  await page.goto(`${BASE_URL}/login`);
+  await page.fill('[data-testid="email-input"]', user.email);
+  await page.fill('[data-testid="password-input"]', user.password);
+  await page.click('[data-testid="login-button"]');
+  await page.waitForURL('**/spaces**');
+}
+
+async function createTestSpace(page: Page, name: string, key: string) {
+  await page.click('[data-testid="create-space-button"]');
+  await page.waitForSelector('[role="dialog"]');
+  await page.fill('[data-testid="space-name-input"]', name);
+  await page.fill('[data-testid="space-key-input"]', key);
+  await page.selectOption('[data-testid="space-type-select"]', 'scrum');
+  await page.click('[data-testid="create-space-submit"]');
+  await page.waitForURL(/\/spaces\/[\w-]+/);
+}
+
+async function deleteTestSpace(page: Page, spaceName: string) {
+  await page.click('[data-testid="space-menu-button"]');
+  await page.click('[data-testid="delete-space-option"]');
+  await page.fill('[data-testid="confirm-delete-input"]', spaceName);
+  await page.click('[data-testid="confirm-delete-button"]');
+}
+
+// ============================================================================
+// AUTHENTICATION TESTS
+// ============================================================================
+
+test.describe('Authentication', () => {
+  test('AUTH-001: Access /spaces without token redirects to login', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    await expect(page).toHaveURL(/\/login/);
+  });
+
+  test('AUTH-002: Valid login grants access to spaces', async ({ page }) => {
+    await loginAs(page, 'owner');
+    await expect(page).toHaveURL(/\/spaces/);
+    await expect(page.locator('[data-testid="spaces-directory"]')).toBeVisible();
+  });
+
+  test('AUTH-003: Logout removes access', async ({ page }) => {
+    await loginAs(page, 'owner');
+    await page.click('[data-testid="user-menu"]');
+    await page.click('[data-testid="logout-button"]');
+    await expect(page).toHaveURL(/\/login/);
+    
+    // Try to access protected route
+    await page.goto(`${BASE_URL}/spaces`);
+    await expect(page).toHaveURL(/\/login/);
+  });
+});
+
+// ============================================================================
+// SPACE CRUD TESTS
+// ============================================================================
+
+test.describe('Space CRUD Operations', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAs(page, 'owner');
+  });
+
+  test('CRUD-001: Create space with valid data', async ({ page }) => {
+    const spaceName = `Test Space ${Date.now()}`;
+    const spaceKey = `TS${Date.now().toString().slice(-3)}`;
+
+    await createTestSpace(page, spaceName, spaceKey);
+    
+    await expect(page.locator('h1')).toContainText(spaceName);
+    await expect(page.locator('[data-testid="space-key-badge"]')).toContainText(spaceKey.toUpperCase());
+    
+    // Cleanup
+    await deleteTestSpace(page, spaceName);
+  });
+
+  test('CRUD-002: Create space form validation', async ({ page }) => {
+    await page.click('[data-testid="create-space-button"]');
+    await page.waitForSelector('[role="dialog"]');
+    
+    // Submit empty form
+    await page.click('[data-testid="create-space-submit"]');
+    
+    await expect(page.locator('[data-testid="name-error"]')).toContainText('required');
+    await expect(page.locator('[data-testid="key-error"]')).toContainText('required');
+  });
+
+  test('CRUD-003: Create space with duplicate key shows error', async ({ page }) => {
+    const spaceName = `Dupe Test ${Date.now()}`;
+    
+    await page.click('[data-testid="create-space-button"]');
+    await page.waitForSelector('[role="dialog"]');
+    await page.fill('[data-testid="space-name-input"]', spaceName);
+    await page.fill('[data-testid="space-key-input"]', 'TSA'); // Existing key
+    await page.selectOption('[data-testid="space-type-select"]', 'scrum');
+    await page.click('[data-testid="create-space-submit"]');
+    
+    await expect(page.locator('[data-testid="key-error"]')).toContainText('already exists');
+  });
+
+  test('CRUD-004: View space list', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    
+    await expect(page.locator('[data-testid="spaces-directory"]')).toBeVisible();
+    await expect(page.locator('[data-testid="space-card"]').first()).toBeVisible();
+  });
+
+  test('CRUD-005: View space details', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    await page.click('[data-testid="space-card"]:first-child');
+    
+    await expect(page.locator('[data-testid="space-summary"]')).toBeVisible();
+    await expect(page.locator('[data-testid="space-stats"]')).toBeVisible();
+  });
+
+  test('CRUD-006: Update space name', async ({ page }) => {
+    const spaceName = `Update Test ${Date.now()}`;
+    const spaceKey = `UT${Date.now().toString().slice(-3)}`;
+    const newName = `Updated ${Date.now()}`;
+
+    await createTestSpace(page, spaceName, spaceKey);
+    
+    await page.click('[data-testid="settings-tab"]');
+    await page.fill('[data-testid="space-name-input"]', newName);
+    await page.click('[data-testid="save-settings-button"]');
+    
+    await expect(page.locator('[data-testid="toast"]')).toContainText('saved');
+    await expect(page.locator('h1')).toContainText(newName);
+    
+    // Cleanup
+    await deleteTestSpace(page, newName);
+  });
+
+  test('CRUD-007: Archive space', async ({ page }) => {
+    const spaceName = `Archive Test ${Date.now()}`;
+    const spaceKey = `AR${Date.now().toString().slice(-3)}`;
+
+    await createTestSpace(page, spaceName, spaceKey);
+    
+    await page.click('[data-testid="space-menu-button"]');
+    await page.click('[data-testid="archive-space-option"]');
+    await page.click('[data-testid="confirm-archive-button"]');
+    
+    await expect(page.locator('[data-testid="toast"]')).toContainText('archived');
+    
+    // Verify space shows archived status
+    await page.goto(`${BASE_URL}/spaces`);
+    await page.click('[data-testid="show-archived-toggle"]');
+    const archivedSpace = page.locator(`[data-testid="space-card"]:has-text("${spaceName}")`);
+    await expect(archivedSpace.locator('[data-testid="archived-badge"]')).toBeVisible();
+  });
+});
+
+// ============================================================================
+// SPACE MEMBERS TESTS
+// ============================================================================
+
+test.describe('Space Members', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAs(page, 'owner');
+    await page.goto(`${BASE_URL}/spaces/test-space-1/settings/access`);
+  });
+
+  test('MEMBERS-001: View members list', async ({ page }) => {
+    await expect(page.locator('[data-testid="members-table"]')).toBeVisible();
+    await expect(page.locator('[data-testid="member-row"]').first()).toBeVisible();
+  });
+
+  test('MEMBERS-002: Add member to space', async ({ page }) => {
+    await page.click('[data-testid="add-member-button"]');
+    await page.waitForSelector('[role="dialog"]');
+    
+    await page.fill('[data-testid="user-search-input"]', 'new.member@catalyst.gov.sa');
+    await page.click('[data-testid="user-option"]:first-child');
+    await page.selectOption('[data-testid="role-select"]', 'member');
+    await page.click('[data-testid="add-member-submit"]');
+    
+    await expect(page.locator('[data-testid="toast"]')).toContainText('added');
+    await expect(page.locator('[data-testid="members-table"]')).toContainText('new.member');
+  });
+
+  test('MEMBERS-003: Change member role', async ({ page }) => {
+    const memberRow = page.locator('[data-testid="member-row"]:has-text("member@catalyst")');
+    await memberRow.locator('[data-testid="role-select"]').selectOption('lead');
+    
+    await expect(page.locator('[data-testid="toast"]')).toContainText('updated');
+  });
+
+  test('MEMBERS-004: Remove member from space', async ({ page }) => {
+    const memberRow = page.locator('[data-testid="member-row"]:has-text("viewer@catalyst")');
+    await memberRow.locator('[data-testid="remove-member-button"]').click();
+    await page.click('[data-testid="confirm-remove-button"]');
+    
+    await expect(page.locator('[data-testid="toast"]')).toContainText('removed');
+    await expect(page.locator('[data-testid="members-table"]')).not.toContainText('viewer@catalyst');
+  });
+});
+
+// ============================================================================
+// AUTHORIZATION TESTS
+// ============================================================================
+
+test.describe('Authorization (RBAC)', () => {
+  test('RBAC-001: Viewer cannot access settings', async ({ page }) => {
+    await loginAs(page, 'viewer');
+    await page.goto(`${BASE_URL}/spaces/test-space-1/settings`);
+    
+    // Should redirect or show access denied
+    await expect(page.locator('[data-testid="access-denied"]')).toBeVisible();
+  });
+
+  test('RBAC-002: Member cannot delete space', async ({ page }) => {
+    await loginAs(page, 'member');
+    await page.goto(`${BASE_URL}/spaces/test-space-1`);
+    
+    // Delete option should not be visible
+    await page.click('[data-testid="space-menu-button"]');
+    await expect(page.locator('[data-testid="delete-space-option"]')).not.toBeVisible();
+  });
+
+  test('RBAC-003: Non-admin cannot access admin panel', async ({ page }) => {
+    await loginAs(page, 'owner');
+    await page.goto(`${BASE_URL}/admin/spaces`);
+    
+    await expect(page).toHaveURL(/\/spaces/);
+    // OR
+    // await expect(page.locator('[data-testid="access-denied"]')).toBeVisible();
+  });
+
+  test('RBAC-004: Admin can access all spaces', async ({ page }) => {
+    await loginAs(page, 'admin');
+    await page.goto(`${BASE_URL}/admin/spaces`);
+    
+    await expect(page.locator('[data-testid="admin-spaces-table"]')).toBeVisible();
+    // Should see more spaces than regular user
+    const spaceCount = await page.locator('[data-testid="space-row"]').count();
+    expect(spaceCount).toBeGreaterThan(0);
+  });
+});
+
+// ============================================================================
+// KANBAN BOARD TESTS
+// ============================================================================
+
+test.describe('Kanban Board', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAs(page, 'owner');
+    await page.goto(`${BASE_URL}/spaces/test-space-1/board`);
+  });
+
+  test('BOARD-001: Board renders all columns', async ({ page }) => {
+    await expect(page.locator('[data-testid="column-todo"]')).toBeVisible();
+    await expect(page.locator('[data-testid="column-in-progress"]')).toBeVisible();
+    await expect(page.locator('[data-testid="column-done"]')).toBeVisible();
+  });
+
+  test('BOARD-002: Drag item between columns', async ({ page }) => {
+    const todoColumn = page.locator('[data-testid="column-todo"]');
+    const inProgressColumn = page.locator('[data-testid="column-in-progress"]');
+    const item = todoColumn.locator('[data-testid="board-item"]:first-child');
+    
+    const itemId = await item.getAttribute('data-item-id');
+    
+    await item.dragTo(inProgressColumn);
+    
+    // Verify item moved
+    await expect(inProgressColumn.locator(`[data-item-id="${itemId}"]`)).toBeVisible();
+    await expect(todoColumn.locator(`[data-item-id="${itemId}"]`)).not.toBeVisible();
+  });
+
+  test('BOARD-003: Add item to column', async ({ page }) => {
+    const todoColumn = page.locator('[data-testid="column-todo"]');
+    await todoColumn.locator('[data-testid="add-item-button"]').click();
+    
+    await page.fill('[data-testid="quick-add-input"]', 'New Test Task');
+    await page.keyboard.press('Enter');
+    
+    await expect(todoColumn.locator('[data-testid="board-item"]')).toContainText('New Test Task');
+  });
+});
+
+// ============================================================================
+// NAVIGATION TESTS
+// ============================================================================
+
+test.describe('Navigation', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAs(page, 'owner');
+  });
+
+  test('NAV-001: Navigate between space views', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces/test-space-1`);
+    
+    // Navigate to Board
+    await page.click('[data-testid="nav-board"]');
+    await expect(page).toHaveURL(/\/board/);
+    await expect(page.locator('[data-testid="space-board"]')).toBeVisible();
+    
+    // Navigate to Backlog
+    await page.click('[data-testid="nav-backlog"]');
+    await expect(page).toHaveURL(/\/backlog/);
+    await expect(page.locator('[data-testid="space-backlog"]')).toBeVisible();
+    
+    // Navigate to Timeline
+    await page.click('[data-testid="nav-timeline"]');
+    await expect(page).toHaveURL(/\/timeline/);
+    await expect(page.locator('[data-testid="space-timeline"]')).toBeVisible();
+    
+    // Navigate to Settings
+    await page.click('[data-testid="nav-settings"]');
+    await expect(page).toHaveURL(/\/settings/);
+    await expect(page.locator('[data-testid="space-settings"]')).toBeVisible();
+  });
+
+  test('NAV-002: Breadcrumb navigation works', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces/test-space-1/settings`);
+    
+    await page.click('[data-testid="breadcrumb-spaces"]');
+    await expect(page).toHaveURL(/\/spaces$/);
+  });
+
+  test('NAV-003: Deep link works', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces/test-space-1/board`);
+    
+    await expect(page.locator('[data-testid="space-board"]')).toBeVisible();
+  });
+
+  test('NAV-004: 404 for invalid space', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces/invalid-space-id`);
+    
+    await expect(page.locator('[data-testid="not-found-page"]')).toBeVisible();
+  });
+});
+
+// ============================================================================
+// FORM VALIDATION TESTS
+// ============================================================================
+
+test.describe('Form Validation', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAs(page, 'owner');
+  });
+
+  test('VAL-001: Space name validation', async ({ page }) => {
+    await page.click('[data-testid="create-space-button"]');
+    await page.waitForSelector('[role="dialog"]');
+    
+    // Too short
+    await page.fill('[data-testid="space-name-input"]', 'ab');
+    await page.click('[data-testid="space-key-input"]'); // Blur
+    await expect(page.locator('[data-testid="name-error"]')).toContainText('3 characters');
+    
+    // Valid
+    await page.fill('[data-testid="space-name-input"]', 'Valid Name');
+    await page.click('[data-testid="space-key-input"]'); // Blur
+    await expect(page.locator('[data-testid="name-error"]')).not.toBeVisible();
+  });
+
+  test('VAL-002: Space key validation', async ({ page }) => {
+    await page.click('[data-testid="create-space-button"]');
+    await page.waitForSelector('[role="dialog"]');
+    
+    // Invalid characters
+    await page.fill('[data-testid="space-key-input"]', 'AB-C');
+    await page.click('[data-testid="space-name-input"]'); // Blur
+    await expect(page.locator('[data-testid="key-error"]')).toContainText('alphanumeric');
+    
+    // Too long
+    await page.fill('[data-testid="space-key-input"]', 'VERYLONGKEY');
+    await page.click('[data-testid="space-name-input"]'); // Blur
+    await expect(page.locator('[data-testid="key-error"]')).toContainText('10 characters');
+  });
+
+  test('VAL-003: Version date validation', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces/test-space-1/settings/versions`);
+    await page.click('[data-testid="add-version-button"]');
+    
+    await page.fill('[data-testid="version-name-input"]', 'v1.0.0');
+    await page.fill('[data-testid="start-date-input"]', '2025-06-01');
+    await page.fill('[data-testid="end-date-input"]', '2025-05-01'); // Before start
+    
+    await page.click('[data-testid="create-version-submit"]');
+    await expect(page.locator('[data-testid="date-error"]')).toContainText('after start');
+  });
+});
+
+// ============================================================================
+// ACCESSIBILITY TESTS
+// ============================================================================
+
+test.describe('Accessibility', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAs(page, 'owner');
+  });
+
+  test('A11Y-001: Spaces directory page', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    
+    expect(results.violations).toEqual([]);
+  });
+
+  test('A11Y-002: Space detail page', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces/test-space-1`);
+    
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    
+    expect(results.violations).toEqual([]);
+  });
+
+  test('A11Y-003: Create space modal', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    await page.click('[data-testid="create-space-button"]');
+    await page.waitForSelector('[role="dialog"]');
+    
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    
+    expect(results.violations).toEqual([]);
+  });
+
+  test('A11Y-004: Keyboard navigation', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    
+    // Tab through interactive elements
+    await page.keyboard.press('Tab');
+    await expect(page.locator(':focus')).toBeVisible();
+    
+    // Navigate to first space card
+    const spaceCard = page.locator('[data-testid="space-card"]:first-child');
+    await spaceCard.focus();
+    await page.keyboard.press('Enter');
+    
+    await expect(page).toHaveURL(/\/spaces\/[\w-]+/);
+  });
+
+  test('A11Y-005: Modal focus trap', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    await page.click('[data-testid="create-space-button"]');
+    await page.waitForSelector('[role="dialog"]');
+    
+    // Tab through all elements - should stay in modal
+    for (let i = 0; i < 20; i++) {
+      await page.keyboard.press('Tab');
+      const focusedElement = page.locator(':focus');
+      const modal = page.locator('[role="dialog"]');
+      
+      // Verify focus is within modal
+      await expect(focusedElement).toBeVisible();
+      const isInModal = await focusedElement.evaluate((el, modalEl) => {
+        return modalEl.contains(el);
+      }, await modal.elementHandle());
+      expect(isInModal).toBe(true);
+    }
+  });
+});
+
+// ============================================================================
+// PERFORMANCE TESTS
+// ============================================================================
+
+test.describe('Performance', () => {
+  test('PERF-001: Spaces page load time', async ({ page }) => {
+    await loginAs(page, 'owner');
+    
+    const startTime = Date.now();
+    await page.goto(`${BASE_URL}/spaces`);
+    await page.waitForSelector('[data-testid="space-card"]:first-child');
+    const loadTime = Date.now() - startTime;
+    
+    expect(loadTime).toBeLessThan(3000); // 3 seconds max
+  });
+
+  test('PERF-002: Space detail page load time', async ({ page }) => {
+    await loginAs(page, 'owner');
+    
+    const startTime = Date.now();
+    await page.goto(`${BASE_URL}/spaces/test-space-1`);
+    await page.waitForSelector('[data-testid="space-summary"]');
+    const loadTime = Date.now() - startTime;
+    
+    expect(loadTime).toBeLessThan(2000); // 2 seconds max
+  });
+
+  test('PERF-003: No memory leaks on navigation', async ({ page }) => {
+    await loginAs(page, 'owner');
+    
+    const getHeapSize = async () => {
+      const metrics = await page.evaluate(() => {
+        return (performance as any).memory?.usedJSHeapSize || 0;
+      });
+      return metrics;
+    };
+    
+    const initialHeap = await getHeapSize();
+    
+    // Navigate back and forth multiple times
+    for (let i = 0; i < 10; i++) {
+      await page.goto(`${BASE_URL}/spaces`);
+      await page.goto(`${BASE_URL}/spaces/test-space-1`);
+      await page.goto(`${BASE_URL}/spaces/test-space-1/board`);
+    }
+    
+    // Force garbage collection if available
+    await page.evaluate(() => {
+      if ((window as any).gc) (window as any).gc();
+    });
+    
+    const finalHeap = await getHeapSize();
+    
+    // Heap should not grow more than 50% (allowing for normal variation)
+    if (initialHeap > 0) {
+      expect(finalHeap).toBeLessThan(initialHeap * 1.5);
+    }
+  });
+});
+
+// ============================================================================
+// ERROR HANDLING TESTS
+// ============================================================================
+
+test.describe('Error Handling', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAs(page, 'owner');
+  });
+
+  test('ERR-001: Network error shows toast', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    
+    // Simulate network failure
+    await page.route('**/api/spaces**', route => route.abort());
+    
+    await page.reload();
+    
+    await expect(page.locator('[data-testid="error-toast"]')).toBeVisible();
+  });
+
+  test('ERR-002: 404 error shows not found page', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces/non-existent-id`);
+    
+    await expect(page.locator('[data-testid="not-found-page"]')).toBeVisible();
+    await expect(page.locator('[data-testid="back-to-spaces-link"]')).toBeVisible();
+  });
+
+  test('ERR-003: Form submission error shows error message', async ({ page }) => {
+    await page.goto(`${BASE_URL}/spaces`);
+    await page.click('[data-testid="create-space-button"]');
+    
+    // Mock API error
+    await page.route('**/api/spaces', route => 
+      route.fulfill({ status: 500, body: JSON.stringify({ error: 'Server error' }) })
+    );
+    
+    await page.fill('[data-testid="space-name-input"]', 'Test');
+    await page.fill('[data-testid="space-key-input"]', 'TST');
+    await page.selectOption('[data-testid="space-type-select"]', 'scrum');
+    await page.click('[data-testid="create-space-submit"]');
+    
+    await expect(page.locator('[data-testid="error-toast"]')).toContainText('error');
+  });
+});
+
+// ============================================================================
+// SECURITY TESTS
+// ============================================================================
+
+test.describe('Security', () => {
+  test('SEC-001: XSS in space name is escaped', async ({ page }) => {
+    await loginAs(page, 'owner');
+    
+    const xssPayload = '<script>alert("xss")</script>';
+    
+    await page.click('[data-testid="create-space-button"]');
+    await page.fill('[data-testid="space-name-input"]', xssPayload);
+    await page.fill('[data-testid="space-key-input"]', 'XSS');
+    await page.selectOption('[data-testid="space-type-select"]', 'scrum');
+    await page.click('[data-testid="create-space-submit"]');
+    
+    // Should show escaped text, not execute script
+    await expect(page.locator('h1')).toContainText('script');
+    
+    // No alert should have been triggered (would throw)
+    const dialogPromise = page.waitForEvent('dialog', { timeout: 1000 }).catch(() => null);
+    expect(await dialogPromise).toBeNull();
+  });
+
+  test('SEC-002: IDOR - Cannot access others private space', async ({ page }) => {
+    await loginAs(page, 'member');
+    
+    // Try to access a private space owned by another user
+    await page.goto(`${BASE_URL}/spaces/private-space-other-user`);
+    
+    // Should see access denied or 404
+    const accessDenied = page.locator('[data-testid="access-denied"]');
+    const notFound = page.locator('[data-testid="not-found-page"]');
+    
+    const isAccessDenied = await accessDenied.isVisible().catch(() => false);
+    const isNotFound = await notFound.isVisible().catch(() => false);
+    
+    expect(isAccessDenied || isNotFound).toBe(true);
+  });
+});
+
+// ============================================================================
+// SMOKE TESTS (Quick CI/CD)
+// ============================================================================
+
+test.describe('Smoke Tests', () => {
+  test('SMOKE-001: Homepage loads', async ({ page }) => {
+    await page.goto(BASE_URL);
+    await expect(page).toHaveTitle(/Catalyst/);
+  });
+
+  test('SMOKE-002: Login works', async ({ page }) => {
+    await loginAs(page, 'owner');
+    await expect(page).toHaveURL(/\/spaces/);
+  });
+
+  test('SMOKE-003: Spaces list loads', async ({ page }) => {
+    await loginAs(page, 'owner');
+    await page.goto(`${BASE_URL}/spaces`);
+    await expect(page.locator('[data-testid="spaces-directory"]')).toBeVisible();
+  });
+
+  test('SMOKE-004: Create space modal opens', async ({ page }) => {
+    await loginAs(page, 'owner');
+    await page.goto(`${BASE_URL}/spaces`);
+    await page.click('[data-testid="create-space-button"]');
+    await expect(page.locator('[role="dialog"]')).toBeVisible();
+  });
+
+  test('SMOKE-005: Board view renders', async ({ page }) => {
+    await loginAs(page, 'owner');
+    await page.goto(`${BASE_URL}/spaces/test-space-1/board`);
+    await expect(page.locator('[data-testid="space-board"]')).toBeVisible();
+  });
+});
