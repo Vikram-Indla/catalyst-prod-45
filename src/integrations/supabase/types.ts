@@ -27156,6 +27156,115 @@ export type Database = {
           },
         ]
       }
+      tm_release_signoffs: {
+        Row: {
+          comments: string | null
+          decided_at: string | null
+          decision: string | null
+          id: string
+          is_required: boolean | null
+          release_id: string
+          reminder_sent_at: string | null
+          requested_at: string | null
+          requested_by: string | null
+          sort_order: number | null
+          stakeholder_id: string
+          stakeholder_role: string
+        }
+        Insert: {
+          comments?: string | null
+          decided_at?: string | null
+          decision?: string | null
+          id?: string
+          is_required?: boolean | null
+          release_id: string
+          reminder_sent_at?: string | null
+          requested_at?: string | null
+          requested_by?: string | null
+          sort_order?: number | null
+          stakeholder_id: string
+          stakeholder_role: string
+        }
+        Update: {
+          comments?: string | null
+          decided_at?: string | null
+          decision?: string | null
+          id?: string
+          is_required?: boolean | null
+          release_id?: string
+          reminder_sent_at?: string | null
+          requested_at?: string | null
+          requested_by?: string | null
+          sort_order?: number | null
+          stakeholder_id?: string
+          stakeholder_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_release_signoffs_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       tm_requirement_links: {
         Row: {
           coverage_status: string | null
@@ -27709,6 +27818,68 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_test_sets"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_signoff_templates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          roles: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          roles?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          roles?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -32872,6 +33043,14 @@ export type Database = {
         }
         Returns: string
       }
+      tm_apply_signoff_template: {
+        Args: {
+          p_release_id: string
+          p_requested_by?: string
+          p_template_id: string
+        }
+        Returns: number
+      }
       tm_approve_release_readiness: {
         Args: { p_snapshot_id: string; p_user_id: string }
         Returns: boolean
@@ -33231,6 +33410,10 @@ export type Database = {
           test_pass_pct: number
         }[]
       }
+      tm_get_release_signoff_status: {
+        Args: { p_release_id: string }
+        Returns: Json
+      }
       tm_get_release_test_summary: {
         Args: { p_release_id: string }
         Returns: Json
@@ -33353,6 +33536,16 @@ export type Database = {
         Args: { p_case_id: string; p_step_orders: Json }
         Returns: boolean
       }
+      tm_request_signoff: {
+        Args: {
+          p_is_required?: boolean
+          p_release_id: string
+          p_requested_by?: string
+          p_stakeholder_id: string
+          p_stakeholder_role: string
+        }
+        Returns: string
+      }
       tm_restore_version: {
         Args: { p_case_id: string; p_version_number: number }
         Returns: boolean
@@ -33365,6 +33558,15 @@ export type Database = {
           p_steps: Json
         }
         Returns: Json
+      }
+      tm_submit_signoff_decision: {
+        Args: {
+          p_comments?: string
+          p_decision: string
+          p_signoff_id: string
+          p_stakeholder_id: string
+        }
+        Returns: boolean
       }
       tm_update_assignment_status: {
         Args: { p_assignment_id: string; p_notes?: string; p_status: string }
