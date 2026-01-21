@@ -10,6 +10,9 @@ export { DraggableStepRow } from './components/DraggableStepRow';
 export { EnhancedStepEditor } from './components/EnhancedStepEditor';
 export { GherkinEditor } from './components/GherkinEditor';
 export { StepDefinitionManager } from './components/StepDefinitionManager';
+export { AttachmentManager } from './components/AttachmentManager';
+export { RichTextEditor, RichTextDisplay } from './components/RichTextEditor';
 
 // Hooks
 export * from '@/hooks/test-cases/useGherkinSteps';
+export * from '@/hooks/test-cases/useTestAttachments';

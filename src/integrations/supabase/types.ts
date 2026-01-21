@@ -27328,6 +27328,101 @@ export type Database = {
         }
         Relationships: []
       }
+      tm_test_attachments: {
+        Row: {
+          attachment_type: string | null
+          created_at: string | null
+          description: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          mime_type: string
+          storage_bucket: string | null
+          test_case_id: string
+          test_step_id: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          attachment_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id?: string
+          mime_type: string
+          storage_bucket?: string | null
+          test_case_id: string
+          test_step_id?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          attachment_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          mime_type?: string
+          storage_bucket?: string | null
+          test_case_id?: string
+          test_step_id?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_attachments_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_test_step_id_fkey"
+            columns: ["test_step_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       tm_test_case_links: {
         Row: {
           id: string
@@ -27501,6 +27596,7 @@ export type Database = {
           created_by: string | null
           custom_fields: Json | null
           description: string | null
+          description_html: string | null
           estimated_time: number | null
           expected_result: string | null
           folder_id: string | null
@@ -27509,7 +27605,9 @@ export type Database = {
           id: string
           is_ai_generated: boolean | null
           is_template: boolean | null
+          postconditions_html: string | null
           preconditions: string | null
+          preconditions_html: string | null
           priority_id: string | null
           project_id: string
           release_version_id: string | null
@@ -27533,6 +27631,7 @@ export type Database = {
           created_by?: string | null
           custom_fields?: Json | null
           description?: string | null
+          description_html?: string | null
           estimated_time?: number | null
           expected_result?: string | null
           folder_id?: string | null
@@ -27541,7 +27640,9 @@ export type Database = {
           id?: string
           is_ai_generated?: boolean | null
           is_template?: boolean | null
+          postconditions_html?: string | null
           preconditions?: string | null
+          preconditions_html?: string | null
           priority_id?: string | null
           project_id: string
           release_version_id?: string | null
@@ -27565,6 +27666,7 @@ export type Database = {
           created_by?: string | null
           custom_fields?: Json | null
           description?: string | null
+          description_html?: string | null
           estimated_time?: number | null
           expected_result?: string | null
           folder_id?: string | null
@@ -27573,7 +27675,9 @@ export type Database = {
           id?: string
           is_ai_generated?: boolean | null
           is_template?: boolean | null
+          postconditions_html?: string | null
           preconditions?: string | null
+          preconditions_html?: string | null
           priority_id?: string | null
           project_id?: string
           release_version_id?: string | null
@@ -28250,9 +28354,11 @@ export type Database = {
       tm_test_steps: {
         Row: {
           action: string
+          action_html: string | null
           created_at: string | null
           estimated_time_seconds: number | null
           expected_result: string | null
+          expected_result_html: string | null
           id: string
           is_optional: boolean | null
           is_shared: boolean | null
@@ -28265,9 +28371,11 @@ export type Database = {
         }
         Insert: {
           action: string
+          action_html?: string | null
           created_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
+          expected_result_html?: string | null
           id?: string
           is_optional?: boolean | null
           is_shared?: boolean | null
@@ -28280,9 +28388,11 @@ export type Database = {
         }
         Update: {
           action?: string
+          action_html?: string | null
           created_at?: string | null
           estimated_time_seconds?: number | null
           expected_result?: string | null
+          expected_result_html?: string | null
           id?: string
           is_optional?: boolean | null
           is_shared?: boolean | null
@@ -32016,6 +32126,19 @@ export type Database = {
         Returns: Json
       }
       text2ltree: { Args: { "": string }; Returns: unknown }
+      tm_add_attachment: {
+        Args: {
+          p_attachment_type?: string
+          p_case_id: string
+          p_description?: string
+          p_file_name: string
+          p_file_path: string
+          p_file_size: number
+          p_mime_type: string
+          p_step_id: string
+        }
+        Returns: string
+      }
       tm_approve_release_readiness: {
         Args: { p_snapshot_id: string; p_user_id: string }
         Returns: boolean
@@ -32111,6 +32234,7 @@ export type Database = {
         }
         Returns: string
       }
+      tm_delete_attachment: { Args: { p_attachment_id: string }; Returns: Json }
       tm_delete_cycle_milestone: {
         Args: { p_milestone_id: string }
         Returns: Json
@@ -32119,6 +32243,23 @@ export type Database = {
       tm_evaluate_release_gates: {
         Args: { p_release_id: string; p_user_id?: string }
         Returns: Json
+      }
+      tm_get_case_attachments: {
+        Args: { p_case_id: string }
+        Returns: {
+          attachment_type: string
+          created_at: string
+          description: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          mime_type: string
+          test_case_id: string
+          test_step_id: string
+          uploaded_by: string
+          uploader_name: string
+        }[]
       }
       tm_get_case_steps: {
         Args: { p_case_id: string }
