@@ -32197,6 +32197,10 @@ export type Database = {
         Args: { objective_uuid: string }
         Returns: number
       }
+      calculate_release_health: {
+        Args: { p_release_id: string }
+        Returns: Json
+      }
       can_transition: {
         Args: {
           p_entity_id: string
@@ -32556,6 +32560,14 @@ export type Database = {
       }
       get_recent_results: {
         Args: { p_limit?: number; p_run_id: string }
+        Returns: Json
+      }
+      get_release_execution_trend: {
+        Args: { p_days?: number; p_release_id: string }
+        Returns: Json
+      }
+      get_release_quality_metrics: {
+        Args: { p_release_id: string }
         Returns: Json
       }
       get_resource_summary: { Args: { p_project_id: string }; Returns: Json }
