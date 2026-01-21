@@ -320,3 +320,35 @@ export const PERMISSION_LABELS: Record<PermissionKey, string> = {
   manage_components: 'Manage Components',
   administer_space: 'Administer Space',
 };
+
+// ────────────────────────────────────────────────────────────────────────────
+// WORK ITEM & BOARD TYPES (for Board view)
+// ────────────────────────────────────────────────────────────────────────────
+
+export type WorkItemType = 'story' | 'task' | 'bug' | 'subtask';
+export type WorkItemPriority = 'highest' | 'high' | 'medium' | 'low' | 'lowest';
+
+export interface WorkItem {
+  id: string;
+  key: string;
+  title: string;
+  type: WorkItemType;
+  priority: WorkItemPriority;
+  assignee?: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  labels?: string[];
+  dueDate?: string;
+  storyPoints?: number;
+}
+
+export interface BoardColumn {
+  id: string;
+  title: string;
+  status: string;
+  color: string;
+  wipLimit?: number;
+  items: WorkItem[];
+}
