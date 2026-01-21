@@ -77,6 +77,12 @@ interface SpaceUIState {
   editMemberId: string | null;
   openEditMemberModal: (id: string) => void;
   closeEditMemberModal: () => void;
+
+  // Work Item Modal
+  isCreateWorkItemModalOpen: boolean;
+  createWorkItemType: 'epic' | 'feature' | 'story' | 'task' | 'bug' | null;
+  openCreateWorkItemModal: (type?: 'epic' | 'feature' | 'story' | 'task' | 'bug') => void;
+  closeCreateWorkItemModal: () => void;
 }
 
 const defaultFilters: SpaceFilters = {};
@@ -161,6 +167,12 @@ export const useSpaceStore = create<SpaceUIState>()(
       editMemberId: null,
       openEditMemberModal: (id) => set({ editMemberId: id }),
       closeEditMemberModal: () => set({ editMemberId: null }),
+
+      // Work Item Modal
+      isCreateWorkItemModalOpen: false,
+      createWorkItemType: null,
+      openCreateWorkItemModal: (type) => set({ isCreateWorkItemModalOpen: true, createWorkItemType: type || 'story' }),
+      closeCreateWorkItemModal: () => set({ isCreateWorkItemModalOpen: false, createWorkItemType: null }),
     }),
     {
       name: 'catalyst-space-ui',
