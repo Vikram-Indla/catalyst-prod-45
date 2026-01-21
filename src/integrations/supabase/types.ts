@@ -33633,6 +33633,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_user_space_ids: { Args: { _user_id: string }; Returns: string[] }
       get_worker_activity: { Args: { p_run_id: string }; Returns: Json }
       get_worker_pools: { Args: { p_project_id: string }; Returns: Json }
       get_worker_status: { Args: { p_run_id: string }; Returns: Json }
@@ -33661,6 +33662,10 @@ export type Database = {
         Returns: Json
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_space_member: {
+        Args: { _space_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_user_admin: { Args: { user_id: string }; Returns: boolean }
       is_user_approved: { Args: { user_id: string }; Returns: boolean }
       link_defect_to_step_v2: {
