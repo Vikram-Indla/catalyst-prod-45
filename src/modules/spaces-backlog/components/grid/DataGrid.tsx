@@ -127,7 +127,7 @@ export function DataGrid({
                     )}
                   </td>
                   <td className="px-3 py-1.5"><span className="text-xs text-slate-400">{item.sprint}</span></td>
-                  <td className="px-3 py-1.5"><span className="text-xs text-slate-400">{item.created}</span></td>
+                  <td className="px-3 py-1.5"><span className="text-xs text-slate-400">{item.createdAt}</span></td>
                   <td className="px-2 py-1.5">
                     <div className={cn("flex items-center gap-1 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
                       <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 dark:hover:bg-slate-700" aria-label="View details">
