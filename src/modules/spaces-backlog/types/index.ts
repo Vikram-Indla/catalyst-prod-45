@@ -1,9 +1,13 @@
 /**
  * Catalyst Spaces Backlog — Type Definitions
- * Jira-class work item management
+ * Jira-class work item management with STRICT HIERARCHY CONTRACT
  */
 
-export type WorkItemType = 'epic' | 'feature' | 'story' | 'subtask';
+// HIERARCHY CONTRACT: Work item types allowed per scope
+// ENTERPRISE: objective, strategic_initiative ONLY
+// PROGRAM: epic ONLY  
+// PROJECT: feature, story, subtask ONLY
+export type WorkItemType = 'objective' | 'strategic_initiative' | 'epic' | 'feature' | 'story' | 'subtask';
 
 export type WorkItemStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done' | 'blocked';
 
@@ -33,6 +37,7 @@ export interface WorkItem {
   parentKey?: string;
   storyPoints?: number;
   labels?: string[];
+  scopeLevel: ScopeLevel; // Enforce which scope this item belongs to
 }
 
 export interface RecentItem {
@@ -41,41 +46,65 @@ export interface RecentItem {
   type: WorkItemType;
 }
 
-// Type configuration for icons/colors
+// HIERARCHY CONTRACT: Which types are allowed per scope
+export const SCOPE_ALLOWED_TYPES: Record<ScopeLevel, WorkItemType[]> = {
+  enterprise: ['objective', 'strategic_initiative'],
+  program: ['epic'],
+  project: ['feature', 'story', 'subtask'],
+};
+
+// Type configuration with CATALYST V5 visual spec
 export const TYPE_CONFIG: Record<WorkItemType, { 
-  icon: string; 
+  icon: 'Target' | 'Flag' | 'Zap' | 'Package' | 'BookOpen' | 'CheckSquare';
   label: string; 
   bgColor: string; 
   textColor: string;
-  scope: ScopeLevel;
+  scopeLevel: ScopeLevel;
 }> = {
-  epic: { 
-    icon: 'Mountain', 
-    label: 'Epic', 
-    bgColor: 'bg-blue-100 dark:bg-blue-900/30', 
-    textColor: 'text-blue-600 dark:text-blue-400',
-    scope: 'program'
+  // ENTERPRISE scope items
+  objective: { 
+    icon: 'Target', 
+    label: 'Objective', 
+    bgColor: 'bg-[#ede9fe]', 
+    textColor: 'text-[#7c3aed]',
+    scopeLevel: 'enterprise'
   },
+  strategic_initiative: { 
+    icon: 'Flag', 
+    label: 'Strategic Initiative', 
+    bgColor: 'bg-[#fef3c7]', 
+    textColor: 'text-[#d97706]',
+    scopeLevel: 'enterprise'
+  },
+  // PROGRAM scope items - EPICS ONLY
+  epic: { 
+    icon: 'Zap', 
+    label: 'Epic', 
+    bgColor: 'bg-[#ede9fe]', 
+    textColor: 'text-[#7c3aed]',
+    scopeLevel: 'program'
+  },
+  // PROJECT scope items
   feature: { 
-    icon: 'Puzzle', 
+    icon: 'Package', 
     label: 'Feature', 
-    bgColor: 'bg-teal-100 dark:bg-teal-900/30', 
-    textColor: 'text-teal-600 dark:text-teal-400',
-    scope: 'project'
+    bgColor: 'bg-[#ccfbf1]', 
+    textColor: 'text-[#0d9488]',
+    scopeLevel: 'project'
   },
   story: { 
-    icon: 'Bookmark', 
+    icon: 'BookOpen', 
     label: 'Story', 
-    bgColor: 'bg-amber-100 dark:bg-amber-900/30', 
-    textColor: 'text-amber-600 dark:text-amber-400',
-    scope: 'project'
+    bgColor: 'bg-[#dcfce7]', 
+    textColor: 'text-[#16a34a]',
+    scopeLevel: 'project'
   },
   subtask: { 
     icon: 'CheckSquare', 
     label: 'Subtask', 
-    bgColor: 'bg-slate-200 dark:bg-slate-700', 
-    textColor: 'text-slate-600 dark:text-slate-400',
-    scope: 'project'
+    bgColor: 'bg-[#dbeafe]', 
+    textColor: 'text-[#2563eb]',
+    scopeLevel: 'project'
   },
 };
 
@@ -165,7 +194,16 @@ export const PRIORITY_CONFIG: Record<WorkItemPriority, {
   },
 };
 
+// Scope labels for UI
+export const SCOPE_LABELS: Record<ScopeLevel, string> = {
+  enterprise: 'Enterprise',
+  program: 'Program',
+  project: 'Project',
+};
+
 export const SCOPE_HIERARCHY_ITEMS = [
+  { type: 'objective' as WorkItemType, scope: 'enterprise' as ScopeLevel },
+  { type: 'strategic_initiative' as WorkItemType, scope: 'enterprise' as ScopeLevel },
   { type: 'epic' as WorkItemType, scope: 'program' as ScopeLevel },
   { type: 'feature' as WorkItemType, scope: 'project' as ScopeLevel },
   { type: 'story' as WorkItemType, scope: 'project' as ScopeLevel },

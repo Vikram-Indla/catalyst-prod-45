@@ -48,7 +48,7 @@ export function StatusDropdown({ value, onChange }: StatusDropdownProps) {
 
       {open && (
         <div className="absolute top-full left-0 mt-1 w-32 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md shadow-lg z-30">
-          {(['todo', 'progress', 'review', 'done', 'blocked'] as WorkItemStatus[]).map(status => {
+          {(['backlog', 'todo', 'in_progress', 'review', 'done', 'blocked'] as WorkItemStatus[]).map(status => {
             const statusConfig = STATUS_CONFIG[status];
             return (
               <button

@@ -181,7 +181,7 @@ export function SpacesMegaMenu({
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{config.label}s</p>
-                  <p className="text-xs text-slate-400 capitalize">{config.scope} scope</p>
+                  <p className="text-xs text-slate-400 capitalize">{config.scopeLevel} scope</p>
                 </div>
               </button>
             );

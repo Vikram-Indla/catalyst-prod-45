@@ -1,12 +1,13 @@
 /**
  * Data Grid — Enterprise-density table with 45+ rows
+ * Enforces CATALYST HIERARCHY CONTRACT via icons per scope
  */
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Mountain, Puzzle, Bookmark, CheckSquare, ExternalLink, MoreHorizontal, ChevronUp, ChevronDown } from 'lucide-react';
+import { Target, Flag, Zap, Package, BookOpen, CheckSquare, ExternalLink, MoreHorizontal, ChevronUp, ChevronDown } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { WorkItem, TYPE_CONFIG, PRIORITY_CONFIG } from '../../types';
+import { WorkItem, TYPE_CONFIG, PRIORITY_CONFIG, WorkItemType } from '../../types';
 import { StatusDropdown } from './StatusDropdown';
 
 interface DataGridProps {
@@ -20,7 +21,15 @@ interface DataGridProps {
   onSort: (column: string) => void;
 }
 
-const TYPE_ICONS = { epic: Mountain, feature: Puzzle, story: Bookmark, subtask: CheckSquare };
+// Catalyst V5 type icons per hierarchy
+const TYPE_ICONS: Record<WorkItemType, React.ElementType> = { 
+  objective: Target,
+  strategic_initiative: Flag,
+  epic: Zap, 
+  feature: Package, 
+  story: BookOpen, 
+  subtask: CheckSquare 
+};
 
 export function DataGrid({
   items, selectedIds, onSelectionChange, onRowClick, onStatusChange, sortColumn, sortDirection, onSort,

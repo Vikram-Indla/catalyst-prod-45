@@ -1,5 +1,6 @@
 /**
  * Toolbar — Search, Filters, Column chooser, Saved views
+ * Enforces CATALYST HIERARCHY CONTRACT by only showing allowed types per scope
  */
 
 import { useState } from 'react';
@@ -22,6 +23,7 @@ interface ToolbarProps {
   activeView: string;
   onViewChange: (view: string) => void;
   onColumnsClick: () => void;
+  allowedTypes?: WorkItemType[]; // Types allowed for current scope
 }
 
 const SAVED_VIEWS = [
@@ -29,6 +31,9 @@ const SAVED_VIEWS = [
   { id: 'my', label: 'My Items' },
   { id: 'blocked', label: 'Blocked' },
 ];
+
+// Status values that exist in STATUS_CONFIG
+const VALID_STATUSES: WorkItemStatus[] = ['backlog', 'todo', 'in_progress', 'review', 'done', 'blocked'];
 
 export function Toolbar({
   searchQuery,
@@ -40,6 +45,7 @@ export function Toolbar({
   activeView,
   onViewChange,
   onColumnsClick,
+  allowedTypes = ['epic', 'feature', 'story', 'subtask'], // Default fallback
 }: ToolbarProps) {
   const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
@@ -58,7 +64,7 @@ export function Toolbar({
         />
       </div>
 
-      {/* Type Filter */}
+      {/* Type Filter - ONLY shows allowed types for current scope */}
       <div className="relative">
         <button
           onClick={() => {
@@ -67,11 +73,11 @@ export function Toolbar({
           }}
           className="flex items-center gap-2 px-3 py-[7px] text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500"
         >
-          <span>{typeFilter === 'all' ? 'All Types' : TYPE_CONFIG[typeFilter].label}</span>
+          <span>{typeFilter === 'all' ? 'All Types' : TYPE_CONFIG[typeFilter]?.label || typeFilter}</span>
           <ChevronDown className="w-3 h-3" />
         </button>
         {typeDropdownOpen && (
-          <div className="absolute top-full left-0 mt-1 w-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md shadow-lg z-20">
+          <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md shadow-lg z-20">
             <button
               onClick={() => { onTypeFilterChange('all'); setTypeDropdownOpen(false); }}
               className={cn(
@@ -82,7 +88,8 @@ export function Toolbar({
               All Types
               {typeFilter === 'all' && <Check className="w-3 h-3" />}
             </button>
-            {(['epic', 'feature', 'story', 'subtask'] as WorkItemType[]).map(type => (
+            {/* HIERARCHY CONTRACT: Only show types allowed for current scope */}
+            {allowedTypes.map(type => (
               <button
                 key={type}
                 onClick={() => { onTypeFilterChange(type); setTypeDropdownOpen(false); }}
@@ -91,7 +98,12 @@ export function Toolbar({
                   typeFilter === type && "text-blue-600 dark:text-blue-400"
                 )}
               >
-                {TYPE_CONFIG[type].label}
+                <div className="flex items-center gap-2">
+                  <div className={cn("w-4 h-4 rounded flex items-center justify-center text-[10px]", TYPE_CONFIG[type].bgColor)}>
+                    <span className={TYPE_CONFIG[type].textColor}>●</span>
+                  </div>
+                  {TYPE_CONFIG[type].label}
+                </div>
                 {typeFilter === type && <Check className="w-3 h-3" />}
               </button>
             ))}
@@ -108,7 +120,7 @@ export function Toolbar({
           }}
           className="flex items-center gap-2 px-3 py-[7px] text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500"
         >
-          <span>{statusFilter === 'all' ? 'All Status' : STATUS_CONFIG[statusFilter].label}</span>
+          <span>{statusFilter === 'all' ? 'All Status' : STATUS_CONFIG[statusFilter]?.label || statusFilter}</span>
           <ChevronDown className="w-3 h-3" />
         </button>
         {statusDropdownOpen && (
@@ -123,7 +135,7 @@ export function Toolbar({
               All Status
               {statusFilter === 'all' && <Check className="w-3 h-3" />}
             </button>
-            {(['todo', 'progress', 'review', 'done', 'blocked'] as WorkItemStatus[]).map(status => (
+            {VALID_STATUSES.map(status => (
               <button
                 key={status}
                 onClick={() => { onStatusFilterChange(status); setStatusDropdownOpen(false); }}
@@ -132,7 +144,10 @@ export function Toolbar({
                   statusFilter === status && "text-blue-600 dark:text-blue-400"
                 )}
               >
-                {STATUS_CONFIG[status].label}
+                <div className="flex items-center gap-2">
+                  <div className={cn("w-2 h-2 rounded-full", STATUS_CONFIG[status].dotColor)} />
+                  {STATUS_CONFIG[status].label}
+                </div>
                 {statusFilter === status && <Check className="w-3 h-3" />}
               </button>
             ))}

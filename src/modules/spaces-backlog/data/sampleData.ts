@@ -1,11 +1,12 @@
 /**
- * Sample Data — 45+ Work Items
- * Realistic distribution per spec
+ * Sample Data — Hierarchically-correct work items per CATALYST CONTRACT
+ * ENTERPRISE: Objectives, Strategic Initiatives
+ * PROGRAM: Epics ONLY
+ * PROJECT: Features, Stories, Subtasks
  */
 
-import { WorkItem, WorkItemType, WorkItemStatus, WorkItemPriority, Assignee, RecentItem } from '../types';
+import { WorkItem, WorkItemType, WorkItemStatus, WorkItemPriority, Assignee, RecentItem, ScopeLevel } from '../types';
 
-// Assignees pool
 const assignees: Assignee[] = [
   { id: '1', name: 'Vikram Kumar', initials: 'VK', color: 'bg-blue-500' },
   { id: '2', name: 'Sarah Chen', initials: 'SC', color: 'bg-teal-500' },
@@ -17,14 +18,54 @@ const assignees: Assignee[] = [
   { id: '8', name: 'Layla Mahmoud', initials: 'LM', color: 'bg-cyan-500' },
 ];
 
-const sprints = ['Sprint 24', 'Sprint 25', 'Sprint 26', 'Backlog'];
+const sprints = ['PI 24.1', 'PI 24.2', 'Q1 2026', 'Q2 2026', 'Unassigned'];
+const dates = ['Jan 15, 2026', 'Jan 16, 2026', 'Jan 17, 2026', 'Jan 18, 2026', 'Jan 19, 2026'];
 
-const epicTitles = [
-  'Platform Modernization Initiative',
-  'Customer Portal Enhancement',
-  'Data Analytics Dashboard',
+const statuses: WorkItemStatus[] = ['backlog', 'todo', 'in_progress', 'review', 'done', 'blocked'];
+const priorities: WorkItemPriority[] = ['critical', 'high', 'medium', 'low'];
+
+const getStatus = (i: number): WorkItemStatus => statuses[i % statuses.length];
+const getPriority = (i: number): WorkItemPriority => priorities[i % priorities.length];
+const getAssignee = (i: number): Assignee | null => i % 5 === 0 ? null : assignees[i % assignees.length];
+const getSprint = (i: number): string => sprints[i % sprints.length];
+const getDate = (i: number): string => dates[i % dates.length];
+
+// =====================
+// ENTERPRISE LEVEL DATA
+// =====================
+const objectiveTitles = [
+  'Increase customer retention by 25%',
+  'Reduce operational costs by 15%',
+  'Expand to 3 new markets',
+  'Achieve carbon neutrality',
+  'Improve NPS score to 70+',
 ];
 
+const initiativeTitles = [
+  'Digital Transformation Program',
+  'Customer Experience Enhancement',
+  'Platform Modernization',
+  'Data-Driven Decision Making',
+  'Sustainability Roadmap',
+];
+
+// =====================
+// PROGRAM LEVEL DATA - EPICS ONLY
+// =====================
+const epicTitles = [
+  'Core Banking Platform Upgrade',
+  'Mobile App 2.0 Release',
+  'API Gateway Modernization',
+  'Customer Portal Redesign',
+  'Data Analytics Platform',
+  'Security Compliance Framework',
+  'Integration Hub Development',
+  'Performance Optimization Initiative',
+];
+
+// =====================
+// PROJECT LEVEL DATA
+// =====================
 const featureTitles = [
   'User Authentication Module',
   'Real-time Notifications',
@@ -33,6 +74,9 @@ const featureTitles = [
   'Multi-language Support',
   'Role-based Access Control',
   'API Rate Limiting',
+  'Dashboard Widgets',
+  'Report Builder',
+  'Audit Trail Logging',
 ];
 
 const storyTitles = [
@@ -51,145 +95,138 @@ const storyTitles = [
   'Build activity timeline',
   'Add bulk operations',
   'Implement dark mode toggle',
-  'Create onboarding wizard',
-  'Add keyboard shortcuts',
-  'Build command palette',
-  'Implement lazy loading',
-  'Add infinite scroll',
-  'Create toast notifications',
-  'Build confirmation dialogs',
-  'Add form autosave',
-  'Implement undo/redo',
-  'Create settings panel',
 ];
 
 const subtaskTitles = [
-  'Write unit tests for login',
-  'Add E2E tests for auth flow',
+  'Write unit tests',
+  'Add E2E tests',
   'Update API documentation',
   'Fix accessibility issues',
   'Optimize bundle size',
   'Add loading states',
   'Fix mobile responsiveness',
   'Update error messages',
-  'Add analytics tracking',
-  'Write migration scripts',
 ];
 
-// Distribution: 30% todo, 25% in_progress, 20% review, 20% done, 5% blocked
-const getRandomStatus = (index: number): WorkItemStatus => {
-  const distribution: WorkItemStatus[] = [
-    'todo', 'todo', 'todo', 'todo', 'todo', 'todo',     // 30%
-    'in_progress', 'in_progress', 'in_progress', 'in_progress', 'in_progress', // 25%
-    'review', 'review', 'review', 'review',              // 20%
-    'done', 'done', 'done', 'done',                      // 20%
-    'blocked',                                            // 5%
-  ];
-  return distribution[index % distribution.length];
-};
-
-const priorities: WorkItemPriority[] = ['critical', 'high', 'medium', 'low'];
-const getRandomPriority = (index: number): WorkItemPriority => {
-  return priorities[index % priorities.length];
-};
-
-const getRandomAssignee = (index: number): Assignee | null => {
-  if (index % 7 === 0) return null; // Some unassigned
-  return assignees[index % assignees.length];
-};
-
-const getRandomSprint = (index: number): string => {
-  return sprints[index % sprints.length];
-};
-
-const dates = [
-  'Jan 15, 2026', 'Jan 16, 2026', 'Jan 17, 2026', 'Jan 18, 2026',
-  'Jan 19, 2026', 'Jan 20, 2026', 'Jan 21, 2026', 'Jan 22, 2026',
-];
-
-// Generate 45+ items as per spec
 export const generateWorkItems = (): WorkItem[] => {
   const items: WorkItem[] = [];
   let keyCounter = 100;
 
-  // 3 Epics
+  // ENTERPRISE: Objectives (OBJ-XXX)
+  objectiveTitles.forEach((title, i) => {
+    items.push({
+      id: `obj-${i}`,
+      key: `OBJ-${keyCounter++}`,
+      type: 'objective',
+      title,
+      status: getStatus(i),
+      priority: getPriority(i),
+      assignee: getAssignee(i),
+      sprint: getSprint(i),
+      createdAt: getDate(i),
+      updatedAt: getDate(i),
+      scopeLevel: 'enterprise',
+    });
+  });
+
+  // ENTERPRISE: Strategic Initiatives (SI-XXX)
+  initiativeTitles.forEach((title, i) => {
+    items.push({
+      id: `si-${i}`,
+      key: `SI-${keyCounter++}`,
+      type: 'strategic_initiative',
+      title,
+      status: getStatus(i + 2),
+      priority: getPriority(i + 1),
+      assignee: getAssignee(i + 2),
+      sprint: getSprint(i + 1),
+      createdAt: getDate(i + 1),
+      updatedAt: getDate(i + 1),
+      scopeLevel: 'enterprise',
+    });
+  });
+
+  // PROGRAM: Epics ONLY (EPIC-XXX)
   epicTitles.forEach((title, i) => {
     items.push({
       id: `epic-${i}`,
       key: `EPIC-${keyCounter++}`,
       type: 'epic',
       title,
-      status: getRandomStatus(i),
-      priority: getRandomPriority(i),
-      assignee: getRandomAssignee(i),
-      sprint: getRandomSprint(i),
-      createdAt: dates[i % dates.length],
-      updatedAt: dates[i % dates.length],
+      status: getStatus(i + 3),
+      priority: getPriority(i + 2),
+      assignee: getAssignee(i + 3),
+      sprint: getSprint(i + 2),
+      createdAt: getDate(i + 2),
+      updatedAt: getDate(i + 2),
+      scopeLevel: 'program',
+      parentKey: `OBJ-${100 + (i % objectiveTitles.length)}`,
     });
   });
 
-  // 7 Features
+  // PROJECT: Features (FEAT-XXX)
   featureTitles.forEach((title, i) => {
     items.push({
       id: `feat-${i}`,
       key: `FEAT-${keyCounter++}`,
       type: 'feature',
       title,
-      status: getRandomStatus(i + 3),
-      priority: getRandomPriority(i + 1),
-      assignee: getRandomAssignee(i + 3),
-      sprint: getRandomSprint(i + 1),
-      createdAt: dates[(i + 1) % dates.length],
-      updatedAt: dates[(i + 1) % dates.length],
-      parentKey: `EPIC-${100 + (i % 3)}`,
+      status: getStatus(i + 4),
+      priority: getPriority(i + 3),
+      assignee: getAssignee(i + 4),
+      sprint: getSprint(i + 3),
+      createdAt: getDate(i + 3),
+      updatedAt: getDate(i + 3),
+      scopeLevel: 'project',
+      parentKey: `EPIC-${110 + (i % epicTitles.length)}`,
     });
   });
 
-  // 25 Stories
+  // PROJECT: Stories (STORY-XXX)
   storyTitles.forEach((title, i) => {
     items.push({
       id: `story-${i}`,
       key: `STORY-${keyCounter++}`,
       type: 'story',
       title,
-      status: getRandomStatus(i + 10),
-      priority: getRandomPriority(i + 2),
-      assignee: getRandomAssignee(i + 10),
-      sprint: getRandomSprint(i + 2),
-      createdAt: dates[(i + 2) % dates.length],
-      updatedAt: dates[(i + 2) % dates.length],
-      parentKey: `FEAT-${103 + (i % 7)}`,
+      status: getStatus(i + 5),
+      priority: getPriority(i),
+      assignee: getAssignee(i + 5),
+      sprint: getSprint(i),
+      createdAt: getDate(i),
+      updatedAt: getDate(i),
+      scopeLevel: 'project',
+      storyPoints: [1, 2, 3, 5, 8][i % 5],
+      parentKey: `FEAT-${118 + (i % featureTitles.length)}`,
     });
   });
 
-  // 10 Subtasks
+  // PROJECT: Subtasks (TASK-XXX)
   subtaskTitles.forEach((title, i) => {
     items.push({
-      id: `sub-${i}`,
-      key: `SUB-${keyCounter++}`,
+      id: `task-${i}`,
+      key: `TASK-${keyCounter++}`,
       type: 'subtask',
       title,
-      status: getRandomStatus(i + 35),
-      priority: getRandomPriority(i + 3),
-      assignee: getRandomAssignee(i + 35),
-      sprint: getRandomSprint(i + 3),
-      createdAt: dates[(i + 3) % dates.length],
-      updatedAt: dates[(i + 3) % dates.length],
-      parentKey: `STORY-${110 + (i % 25)}`,
+      status: getStatus(i),
+      priority: getPriority(i + 1),
+      assignee: getAssignee(i),
+      sprint: getSprint(i + 1),
+      createdAt: getDate(i + 1),
+      updatedAt: getDate(i + 1),
+      scopeLevel: 'project',
+      parentKey: `STORY-${128 + (i % storyTitles.length)}`,
     });
   });
 
   return items;
 };
 
-// Recent items for mega menu
 export const recentItems: RecentItem[] = [
-  { key: 'EPIC-100', title: 'Platform Modernization Initiative', type: 'epic' },
-  { key: 'FEAT-105', title: 'Multi-language Support', type: 'feature' },
-  { key: 'STORY-115', title: 'Create user profile page', type: 'story' },
-  { key: 'STORY-118', title: 'Build command palette', type: 'story' },
-  { key: 'SUB-136', title: 'Fix accessibility issues', type: 'subtask' },
+  { key: 'OBJ-100', title: 'Increase customer retention by 25%', type: 'objective' },
+  { key: 'EPIC-110', title: 'Core Banking Platform Upgrade', type: 'epic' },
+  { key: 'FEAT-120', title: 'User Authentication Module', type: 'feature' },
+  { key: 'STORY-130', title: 'Implement login form validation', type: 'story' },
 ];
 
-// Pre-generated data
 export const workItems = generateWorkItems();

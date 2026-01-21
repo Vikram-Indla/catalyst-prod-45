@@ -26,6 +26,8 @@ interface DraftState {
 const STORAGE_KEY_PREFIX = 'spaces_backlog_draft_';
 
 const TYPE_ICONS: Record<WorkItemType, React.ElementType> = {
+  objective: Mountain,
+  strategic_initiative: Mountain,
   epic: Mountain,
   feature: Puzzle,
   story: Bookmark,
