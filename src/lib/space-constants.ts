@@ -2,7 +2,7 @@
 // CATALYST SPACES DESIGN CONSTANTS
 // ════════════════════════════════════════════════════════════════════════════
 
-// Avatar color options (Catalyst V5 palette)
+// Avatar/Space color options (Catalyst V5 palette)
 export const AVATAR_COLORS = [
   '#2563eb', // Primary Blue
   '#0d9488', // Teal
@@ -13,6 +13,9 @@ export const AVATAR_COLORS = [
   '#10b981', // Success Green
   '#6366f1', // Indigo
 ] as const;
+
+// Alias for space colors
+export const SPACE_COLORS = AVATAR_COLORS;
 
 // Space type configurations
 export const SPACE_TYPE_CONFIG = {
