@@ -3,6 +3,7 @@
  * Module 5B-1: Release Quality Metrics
  * Module 5B-2: Go/No-Go Dashboard
  * Module 5B-3: Stakeholder Sign-off Workflow
+ * Module 5B-4: Release Readiness Report
  */
 
 // Components
@@ -27,11 +28,15 @@ export { GoNoGoDashboard } from './components/GoNoGoDashboard';
 // Module 5B-3: Stakeholder Sign-off
 export { SignoffPanel } from './components/SignoffPanel';
 
+// Module 5B-4: Release Readiness Report
+export { ReportPanel } from './components/ReportPanel';
+
 // Types
 export * from './types';
 export * from './types/quality-metrics';
 export * from './types/go-no-go';
 export * from './types/signoff';
+export * from './types/report';
 
 // Hooks - Module 5B-1
 export { 
@@ -56,6 +61,12 @@ export {
   useApplySignoffTemplate,
   useRemoveSignoff,
 } from './hooks/useSignoff';
+
+// Hooks - Module 5B-4
+export {
+  useGenerateReport,
+  useExportReport,
+} from './hooks/useReport';
 
 // Utils
 export * from './utils/mockData';
