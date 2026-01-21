@@ -26956,6 +26956,97 @@ export type Database = {
           },
         ]
       }
+      tm_requirement_links: {
+        Row: {
+          coverage_status: string | null
+          created_at: string | null
+          created_by: string | null
+          external_key: string | null
+          external_title: string | null
+          external_url: string | null
+          id: string
+          link_type: string | null
+          notes: string | null
+          requirement_id: string | null
+          requirement_type: string
+          test_case_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          coverage_status?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          external_key?: string | null
+          external_title?: string | null
+          external_url?: string | null
+          id?: string
+          link_type?: string | null
+          notes?: string | null
+          requirement_id?: string | null
+          requirement_type: string
+          test_case_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          coverage_status?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          external_key?: string | null
+          external_title?: string | null
+          external_url?: string | null
+          id?: string
+          link_type?: string | null
+          notes?: string | null
+          requirement_id?: string | null
+          requirement_type?: string
+          test_case_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_roles: {
         Row: {
           created_at: string | null
@@ -32261,6 +32352,24 @@ export type Database = {
           uploader_name: string
         }[]
       }
+      tm_get_case_requirements: {
+        Args: { p_case_id: string }
+        Returns: {
+          coverage_status: string
+          created_at: string
+          external_key: string
+          external_title: string
+          external_url: string
+          id: string
+          link_type: string
+          notes: string
+          requirement_id: string
+          requirement_status: string
+          requirement_title: string
+          requirement_type: string
+          test_case_id: string
+        }[]
+      }
       tm_get_case_steps: {
         Args: { p_case_id: string }
         Returns: {
@@ -32448,6 +32557,21 @@ export type Database = {
         Args: { p_release_id: string }
         Returns: Json
       }
+      tm_get_requirement_test_cases: {
+        Args: { p_requirement_id: string; p_requirement_type: string }
+        Returns: {
+          coverage_status: string
+          last_execution_date: string
+          last_execution_status: string
+          link_id: string
+          link_type: string
+          test_case_id: string
+          test_case_key: string
+          test_case_priority: string
+          test_case_status: string
+          test_case_title: string
+        }[]
+      }
       tm_get_step_suggestions: {
         Args: {
           p_keyword: string
@@ -32479,6 +32603,21 @@ export type Database = {
           user_name: string
         }[]
       }
+      tm_get_traceability_matrix: {
+        Args: { p_project_id: string }
+        Returns: {
+          blocked_count: number
+          coverage_pct: number
+          failed_count: number
+          not_run_count: number
+          passed_count: number
+          requirement_id: string
+          requirement_status: string
+          requirement_title: string
+          requirement_type: string
+          total_test_cases: number
+        }[]
+      }
       tm_insert_step_at: {
         Args: {
           p_action?: string
@@ -32487,6 +32626,19 @@ export type Database = {
           p_position: number
           p_step_type?: string
           p_test_data?: string
+        }
+        Returns: string
+      }
+      tm_link_requirement: {
+        Args: {
+          p_case_id: string
+          p_external_key?: string
+          p_external_title?: string
+          p_external_url?: string
+          p_link_type?: string
+          p_notes?: string
+          p_requirement_id?: string
+          p_requirement_type: string
         }
         Returns: string
       }
@@ -32514,6 +32666,10 @@ export type Database = {
           p_steps: Json
         }
         Returns: Json
+      }
+      tm_update_coverage_status: {
+        Args: { p_link_id: string; p_status: string }
+        Returns: boolean
       }
       tm_update_cycle_milestone: {
         Args: {
