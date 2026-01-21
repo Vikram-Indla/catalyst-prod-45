@@ -104,14 +104,32 @@ export function useCreateSpaceWorkItem() {
   return useMutation({
     mutationFn: async (input: CreateSpaceWorkItemInput) => {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // Build insert object - only include fields that exist in the table schema
+      const insertData: Record<string, unknown> = {
+        space_id: input.space_id,
+        type: input.type,
+        summary: input.summary,
+        key: 'TEMP', // Will be overwritten by trigger
+      };
+      
+      if (input.description) insertData.description = input.description;
+      if (input.parent_id) insertData.parent_id = input.parent_id;
+      if (input.assignee_id) insertData.assignee_id = input.assignee_id;
+      if (input.priority) insertData.priority = input.priority;
+      if (input.story_points) insertData.story_points = input.story_points;
+      if (input.labels) insertData.labels = input.labels;
+      if (input.component_id) insertData.component_id = input.component_id;
+      if (input.version_id) insertData.version_id = input.version_id;
+      if (user?.id) {
+        insertData.reporter_id = user.id;
+        insertData.created_by = user.id;
+        insertData.updated_by = user.id;
+      }
+
       const { data, error } = await supabase
         .from('space_work_items')
-        .insert({
-          ...input,
-          reporter_id: user?.id,
-          created_by: user?.id,
-          updated_by: user?.id,
-        })
+        .insert(insertData as any)
         .select()
         .single();
 
