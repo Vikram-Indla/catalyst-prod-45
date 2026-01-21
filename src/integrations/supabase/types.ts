@@ -887,6 +887,111 @@ export type Database = {
         }
         Relationships: []
       }
+      automation_connectors: {
+        Row: {
+          config: Json
+          connection_status: string | null
+          connector_type: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          last_connected_at: string | null
+          name: string
+          updated_at: string
+          webhook_secret: string | null
+          webhook_url: string | null
+        }
+        Insert: {
+          config?: Json
+          connection_status?: string | null
+          connector_type: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          last_connected_at?: string | null
+          name: string
+          updated_at?: string
+          webhook_secret?: string | null
+          webhook_url?: string | null
+        }
+        Update: {
+          config?: Json
+          connection_status?: string | null
+          connector_type?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          last_connected_at?: string | null
+          name?: string
+          updated_at?: string
+          webhook_secret?: string | null
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      automation_results: {
+        Row: {
+          connector_id: string
+          duration_ms: number | null
+          error_message: string | null
+          external_test_id: string
+          external_test_name: string
+          id: string
+          imported_at: string
+          metadata: Json | null
+          run_timestamp: string | null
+          stack_trace: string | null
+          status: string
+          test_case_id: string | null
+        }
+        Insert: {
+          connector_id: string
+          duration_ms?: number | null
+          error_message?: string | null
+          external_test_id: string
+          external_test_name: string
+          id?: string
+          imported_at?: string
+          metadata?: Json | null
+          run_timestamp?: string | null
+          stack_trace?: string | null
+          status: string
+          test_case_id?: string | null
+        }
+        Update: {
+          connector_id?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          external_test_id?: string
+          external_test_name?: string
+          id?: string
+          imported_at?: string
+          metadata?: Json | null
+          run_timestamp?: string | null
+          stack_trace?: string | null
+          status?: string
+          test_case_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_results_connector_id_fkey"
+            columns: ["connector_id"]
+            isOneToOne: false
+            referencedRelation: "automation_connectors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "automation_results_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       batch_delete_jobs: {
         Row: {
           completed_at: string | null
@@ -32064,6 +32169,15 @@ export type Database = {
         Returns: undefined
       }
       create_adhoc_cycle: { Args: never; Returns: string }
+      create_automation_connector: {
+        Args: {
+          p_config?: Json
+          p_connector_type: string
+          p_name: string
+          p_webhook_url?: string
+        }
+        Returns: Json
+      }
       create_batch_delete_job: {
         Args: {
           p_delete_type?: Database["public"]["Enums"]["delete_type"]
@@ -32157,6 +32271,7 @@ export type Database = {
         Args: { p_run_id: string; p_worker_count?: number }
         Returns: Json
       }
+      delete_connector: { Args: { p_connector_id: string }; Returns: Json }
       delete_evidence: { Args: { p_evidence_id: string }; Returns: Json }
       delete_execution_run: { Args: { p_run_id: string }; Returns: Json }
       derive_dependency_container: {
@@ -32238,6 +32353,7 @@ export type Database = {
       get_batch_update_preview: { Args: { p_job_id: string }; Returns: Json }
       get_batch_update_status: { Args: { p_job_id: string }; Returns: Json }
       get_case_metrics: { Args: { p_execution_id: string }; Returns: Json }
+      get_connectors: { Args: { p_include_inactive?: boolean }; Returns: Json }
       get_coverage_stats: {
         Args: { p_cycle_id?: string; p_project_id: string }
         Returns: {
@@ -32600,6 +32716,7 @@ export type Database = {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
       }
+      test_connector: { Args: { p_connector_id: string }; Returns: Json }
       text2ltree: { Args: { "": string }; Returns: unknown }
       tm_add_attachment: {
         Args: {
@@ -33162,6 +33279,16 @@ export type Database = {
           p_actual_result: string
           p_execution_id: string
           p_step_order: number
+        }
+        Returns: Json
+      }
+      update_connector: {
+        Args: {
+          p_config?: Json
+          p_connector_id: string
+          p_is_active?: boolean
+          p_name?: string
+          p_webhook_url?: string
         }
         Returns: Json
       }
