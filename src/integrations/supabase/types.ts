@@ -32448,6 +32448,10 @@ export type Database = {
           depth: number
         }[]
       }
+      get_automation_sync_status: {
+        Args: { p_project_id?: string }
+        Returns: Json
+      }
       get_batch_delete_status: { Args: { p_job_id: string }; Returns: Json }
       get_batch_update_preview: { Args: { p_job_id: string }; Returns: Json }
       get_batch_update_status: { Args: { p_job_id: string }; Returns: Json }
@@ -32595,6 +32599,10 @@ export type Database = {
       get_status_breakdown: { Args: { p_run_id: string }; Returns: Json }
       get_step_evidence: { Args: { p_step_result_id: string }; Returns: Json }
       get_step_metrics: { Args: { p_execution_id: string }; Returns: Json }
+      get_test_automation_history: {
+        Args: { p_limit?: number; p_test_case_id: string }
+        Returns: Json
+      }
       get_test_case_for_execution_v2: {
         Args: { p_run_id: string; p_test_case_id: string }
         Returns: Json
