@@ -117,3 +117,17 @@ export const ACCESS_CONFIG = {
     icon: 'Building',
   },
 } as const;
+
+// Version statuses for dropdowns
+export const VERSION_STATUSES = [
+  { value: 'unreleased', label: 'Unreleased' },
+  { value: 'released', label: 'Released' },
+  { value: 'archived', label: 'Archived' },
+] as const;
+
+// Member roles for dropdowns
+export const MEMBER_ROLES = [
+  { value: 'administrator', label: 'Administrator' },
+  { value: 'member', label: 'Member' },
+  { value: 'viewer', label: 'Viewer' },
+] as const;
