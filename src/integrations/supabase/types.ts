@@ -30167,6 +30167,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      bulk_change_priority: {
+        Args: { p_item_ids: string[]; p_new_priority: string; p_run_id: string }
+        Returns: Json
+      }
       bulk_remove_roles: {
         Args: {
           _notes?: string
@@ -30439,6 +30443,18 @@ export type Database = {
         Returns: Json
       }
       get_parallel_run_progress: { Args: { p_run_id: string }; Returns: Json }
+      get_queue_items: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_priority_filter?: string
+          p_run_id: string
+          p_search_query?: string
+          p_sort_by?: string
+          p_sort_order?: string
+        }
+        Returns: Json
+      }
       get_ra_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["ra_user_role"]
@@ -30537,6 +30553,14 @@ export type Database = {
         }
         Returns: string
       }
+      move_items_to_bottom: {
+        Args: { p_item_ids: string[]; p_run_id: string }
+        Returns: Json
+      }
+      move_items_to_top: {
+        Args: { p_item_ids: string[]; p_run_id: string }
+        Returns: Json
+      }
       pause_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
@@ -30557,6 +30581,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      remove_from_queue: {
+        Args: { p_item_ids: string[]; p_run_id: string }
+        Returns: Json
+      }
       reorder_planner_tasks_down: {
         Args: {
           p_new_position: number
@@ -30572,6 +30600,10 @@ export type Database = {
           p_status_id: string
         }
         Returns: undefined
+      }
+      reorder_queue_item: {
+        Args: { p_new_position: number; p_queue_item_id: string }
+        Returns: Json
       }
       reorder_remaining_steps: {
         Args: { p_deleted_order: number; p_test_case_id: string }
@@ -30665,6 +30697,7 @@ export type Database = {
         Args: { p_task_ids: string[] }
         Returns: number
       }
+      sort_queue_by_priority: { Args: { p_run_id: string }; Returns: Json }
       start_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
