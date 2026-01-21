@@ -45,6 +45,7 @@ import FeaturesBacklog from "./pages/FeaturesBacklog";
 import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
 const FeatureDetailPage = lazy(() => import("./pages/project/FeatureDetailPage"));
 const FeatureBacklogPage = lazy(() => import("./modules/feature-backlog/pages/FeatureBacklogPage"));
+const SpacesBacklogPage = lazy(() => import("./modules/spaces-backlog/pages/SpacesBacklogPage"));
 const ProjectWorkspace = lazy(() => import("./pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
@@ -406,6 +407,9 @@ const App = () => (
               
               {/* Starred items page */}
               <Route path="/starred" element={<StarredPage />} />
+              
+              {/* Spaces Backlog */}
+              <Route path="/spaces/backlog" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpacesBacklogPage /></Suspense>} />
               
               
               <Route path="/search" element={<SearchPage />} />

@@ -76,11 +76,11 @@ const subtaskTitles = [
   'Write migration scripts',
 ];
 
-// Distribution: 30% todo, 25% progress, 20% review, 20% done, 5% blocked
+// Distribution: 30% todo, 25% in_progress, 20% review, 20% done, 5% blocked
 const getRandomStatus = (index: number): WorkItemStatus => {
   const distribution: WorkItemStatus[] = [
     'todo', 'todo', 'todo', 'todo', 'todo', 'todo',     // 30%
-    'progress', 'progress', 'progress', 'progress', 'progress', // 25%
+    'in_progress', 'in_progress', 'in_progress', 'in_progress', 'in_progress', // 25%
     'review', 'review', 'review', 'review',              // 20%
     'done', 'done', 'done', 'done',                      // 20%
     'blocked',                                            // 5%
@@ -123,7 +123,8 @@ export const generateWorkItems = (): WorkItem[] => {
       priority: getRandomPriority(i),
       assignee: getRandomAssignee(i),
       sprint: getRandomSprint(i),
-      created: dates[i % dates.length],
+      createdAt: dates[i % dates.length],
+      updatedAt: dates[i % dates.length],
     });
   });
 
@@ -138,7 +139,8 @@ export const generateWorkItems = (): WorkItem[] => {
       priority: getRandomPriority(i + 1),
       assignee: getRandomAssignee(i + 3),
       sprint: getRandomSprint(i + 1),
-      created: dates[(i + 1) % dates.length],
+      createdAt: dates[(i + 1) % dates.length],
+      updatedAt: dates[(i + 1) % dates.length],
       parentKey: `EPIC-${100 + (i % 3)}`,
     });
   });
@@ -154,7 +156,8 @@ export const generateWorkItems = (): WorkItem[] => {
       priority: getRandomPriority(i + 2),
       assignee: getRandomAssignee(i + 10),
       sprint: getRandomSprint(i + 2),
-      created: dates[(i + 2) % dates.length],
+      createdAt: dates[(i + 2) % dates.length],
+      updatedAt: dates[(i + 2) % dates.length],
       parentKey: `FEAT-${103 + (i % 7)}`,
     });
   });
@@ -170,7 +173,8 @@ export const generateWorkItems = (): WorkItem[] => {
       priority: getRandomPriority(i + 3),
       assignee: getRandomAssignee(i + 35),
       sprint: getRandomSprint(i + 3),
-      created: dates[(i + 3) % dates.length],
+      createdAt: dates[(i + 3) % dates.length],
+      updatedAt: dates[(i + 3) % dates.length],
       parentKey: `STORY-${110 + (i % 25)}`,
     });
   });
