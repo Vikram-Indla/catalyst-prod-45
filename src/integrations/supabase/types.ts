@@ -21179,6 +21179,163 @@ export type Database = {
           },
         ]
       }
+      space_work_items: {
+        Row: {
+          assignee_id: string | null
+          component_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          key: string
+          labels: string[] | null
+          parent_id: string | null
+          priority: string | null
+          rank_order: number | null
+          reporter_id: string | null
+          sequence_number: number
+          space_id: string
+          status: Database["public"]["Enums"]["space_work_item_status"]
+          story_points: number | null
+          summary: string
+          type: Database["public"]["Enums"]["space_work_item_type"]
+          updated_at: string
+          updated_by: string | null
+          version_id: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          component_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          key: string
+          labels?: string[] | null
+          parent_id?: string | null
+          priority?: string | null
+          rank_order?: number | null
+          reporter_id?: string | null
+          sequence_number: number
+          space_id: string
+          status?: Database["public"]["Enums"]["space_work_item_status"]
+          story_points?: number | null
+          summary: string
+          type: Database["public"]["Enums"]["space_work_item_type"]
+          updated_at?: string
+          updated_by?: string | null
+          version_id?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          component_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          key?: string
+          labels?: string[] | null
+          parent_id?: string | null
+          priority?: string | null
+          rank_order?: number | null
+          reporter_id?: string | null
+          sequence_number?: number
+          space_id?: string
+          status?: Database["public"]["Enums"]["space_work_item_status"]
+          story_points?: number | null
+          summary?: string
+          type?: Database["public"]["Enums"]["space_work_item_type"]
+          updated_at?: string
+          updated_by?: string | null
+          version_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_work_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_work_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "space_work_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_work_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "space_work_items_component_id_fkey"
+            columns: ["component_id"]
+            isOneToOne: false
+            referencedRelation: "space_components"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "space_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_work_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_work_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "space_work_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_work_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "space_work_items_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "space_work_items_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "space_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spaces: {
         Row: {
           access: Database["public"]["Enums"]["space_access"]
@@ -34721,6 +34878,21 @@ export type Database = {
       space_access: "private" | "team" | "organization"
       space_status: "active" | "archived" | "trashed"
       space_type: "kanban" | "business" | "service"
+      space_work_item_status:
+        | "backlog"
+        | "ready"
+        | "in_progress"
+        | "in_review"
+        | "blocked"
+        | "done"
+        | "closed"
+      space_work_item_type:
+        | "epic"
+        | "feature"
+        | "story"
+        | "task"
+        | "bug"
+        | "subtask"
       story_status: "todo" | "in_progress" | "done"
       subtask_status: "todo" | "in_progress" | "done"
       support_level: "L1" | "L2" | "L3"
@@ -35337,6 +35509,23 @@ export const Constants = {
       space_access: ["private", "team", "organization"],
       space_status: ["active", "archived", "trashed"],
       space_type: ["kanban", "business", "service"],
+      space_work_item_status: [
+        "backlog",
+        "ready",
+        "in_progress",
+        "in_review",
+        "blocked",
+        "done",
+        "closed",
+      ],
+      space_work_item_type: [
+        "epic",
+        "feature",
+        "story",
+        "task",
+        "bug",
+        "subtask",
+      ],
       story_status: ["todo", "in_progress", "done"],
       subtask_status: ["todo", "in_progress", "done"],
       support_level: ["L1", "L2", "L3"],
