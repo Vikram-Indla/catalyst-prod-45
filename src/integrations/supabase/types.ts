@@ -30459,8 +30459,13 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["ra_user_role"]
       }
+      get_recent_results: {
+        Args: { p_limit?: number; p_run_id: string }
+        Returns: Json
+      }
       get_run_metrics: { Args: { p_run_id: string }; Returns: Json }
       get_run_progress: { Args: { p_run_id: string }; Returns: Json }
+      get_run_progress_summary: { Args: { p_run_id: string }; Returns: Json }
       get_slack_config_safe: {
         Args: never
         Returns: {
@@ -30495,16 +30500,26 @@ export type Database = {
           total_notifications_sent: number
         }[]
       }
+      get_status_breakdown: { Args: { p_run_id: string }; Returns: Json }
       get_step_evidence: { Args: { p_step_result_id: string }; Returns: Json }
       get_step_metrics: { Args: { p_execution_id: string }; Returns: Json }
       get_test_case_for_execution_v2: {
         Args: { p_run_id: string; p_test_case_id: string }
         Returns: Json
       }
+      get_trend_data: {
+        Args: {
+          p_interval_minutes?: number
+          p_points?: number
+          p_run_id: string
+        }
+        Returns: Json
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_worker_activity: { Args: { p_run_id: string }; Returns: Json }
       get_worker_status: { Args: { p_run_id: string }; Returns: Json }
       has_ra_role: {
         Args: { required_role: Database["public"]["Enums"]["ra_user_role"] }
