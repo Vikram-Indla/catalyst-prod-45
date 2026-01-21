@@ -69,6 +69,9 @@ export function CreateSpaceModal() {
           closeCreateModal();
           navigate(`/spaces/${space.id}`);
         },
+        onError: (error) => {
+          console.error('Failed to create space:', error);
+        },
       }
     );
   };
