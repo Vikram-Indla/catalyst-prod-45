@@ -49,28 +49,28 @@ export function TestCaseSelector({
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
-  // Fetch test cases
+  // Fetch test cases - using correct column names from tm_test_cases schema
   const { data: testCases = [], isLoading } = useQuery({
     queryKey: ['test-cases-for-run', projectId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tm_test_cases')
-        .select('id, case_key, title, priority, type, folder_id')
+    queryFn: async (): Promise<TestCase[]> => {
+      const result = await (supabase
+        .from('tm_test_cases') as any)
+        .select('id, key, title, priority, type, folder_id')
         .eq('project_id', projectId)
         .eq('is_active', true)
-        .order('case_key');
+        .order('key');
 
-      if (error) throw error;
+      if (result.error) throw result.error;
 
-      return (data || []).map((tc) => ({
+      return (result.data || []).map((tc: any) => ({
         id: tc.id,
-        case_key: tc.case_key,
+        case_key: tc.key,
         title: tc.title,
         priority: tc.priority,
         type: tc.type,
         folder_id: tc.folder_id,
         folder_name: null,
-      })) as TestCase[];
+      }));
     },
     enabled: !!projectId,
   });
