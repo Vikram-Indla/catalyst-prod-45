@@ -20841,6 +20841,421 @@ export type Database = {
           },
         ]
       }
+      space_activity: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          space_id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          space_id: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          space_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_activity_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      space_categories: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      space_components: {
+        Row: {
+          created_at: string
+          default_assignee_id: string | null
+          description: string | null
+          id: string
+          lead_id: string | null
+          name: string
+          space_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_assignee_id?: string | null
+          description?: string | null
+          id?: string
+          lead_id?: string | null
+          name: string
+          space_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_assignee_id?: string | null
+          description?: string | null
+          id?: string
+          lead_id?: string | null
+          name?: string
+          space_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_components_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      space_features: {
+        Row: {
+          automation_enabled: boolean
+          backlog_enabled: boolean
+          board_enabled: boolean
+          code_enabled: boolean
+          created_at: string
+          id: string
+          releases_enabled: boolean
+          reports_enabled: boolean
+          space_id: string
+          timeline_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          automation_enabled?: boolean
+          backlog_enabled?: boolean
+          board_enabled?: boolean
+          code_enabled?: boolean
+          created_at?: string
+          id?: string
+          releases_enabled?: boolean
+          reports_enabled?: boolean
+          space_id: string
+          timeline_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          automation_enabled?: boolean
+          backlog_enabled?: boolean
+          board_enabled?: boolean
+          code_enabled?: boolean
+          created_at?: string
+          id?: string
+          releases_enabled?: boolean
+          reports_enabled?: boolean
+          space_id?: string
+          timeline_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_features_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: true
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      space_members: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["member_role"]
+          space_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["member_role"]
+          space_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["member_role"]
+          space_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_members_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      space_permissions: {
+        Row: {
+          administrator: boolean
+          created_at: string
+          id: string
+          member: boolean
+          permission_key: string
+          space_id: string
+          updated_at: string
+          viewer: boolean
+        }
+        Insert: {
+          administrator?: boolean
+          created_at?: string
+          id?: string
+          member?: boolean
+          permission_key: string
+          space_id: string
+          updated_at?: string
+          viewer?: boolean
+        }
+        Update: {
+          administrator?: boolean
+          created_at?: string
+          id?: string
+          member?: boolean
+          permission_key?: string
+          space_id?: string
+          updated_at?: string
+          viewer?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_permissions_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      space_starred: {
+        Row: {
+          created_at: string
+          id: string
+          space_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          space_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          space_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_starred_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      space_versions: {
+        Row: {
+          actual_release_date: string | null
+          archived_at: string | null
+          completed_issues: number | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          progress_percentage: number | null
+          release_date: string | null
+          released_at: string | null
+          sort_order: number | null
+          space_id: string
+          start_date: string | null
+          status: Database["public"]["Enums"]["version_status"]
+          total_issues: number | null
+          updated_at: string
+        }
+        Insert: {
+          actual_release_date?: string | null
+          archived_at?: string | null
+          completed_issues?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          progress_percentage?: number | null
+          release_date?: string | null
+          released_at?: string | null
+          sort_order?: number | null
+          space_id: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["version_status"]
+          total_issues?: number | null
+          updated_at?: string
+        }
+        Update: {
+          actual_release_date?: string | null
+          archived_at?: string | null
+          completed_issues?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          progress_percentage?: number | null
+          release_date?: string | null
+          released_at?: string | null
+          sort_order?: number | null
+          space_id?: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["version_status"]
+          total_issues?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "space_versions_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spaces: {
+        Row: {
+          access: Database["public"]["Enums"]["space_access"]
+          archived_at: string | null
+          avatar_url: string | null
+          category_id: string | null
+          color: string
+          created_at: string
+          created_by: string | null
+          default_assignee: string | null
+          deleted_at: string | null
+          description: string | null
+          external_url: string | null
+          id: string
+          key: string
+          lead_id: string | null
+          name: string
+          status: Database["public"]["Enums"]["space_status"]
+          trashed_at: string | null
+          type: Database["public"]["Enums"]["space_type"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          access?: Database["public"]["Enums"]["space_access"]
+          archived_at?: string | null
+          avatar_url?: string | null
+          category_id?: string | null
+          color?: string
+          created_at?: string
+          created_by?: string | null
+          default_assignee?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          external_url?: string | null
+          id?: string
+          key: string
+          lead_id?: string | null
+          name: string
+          status?: Database["public"]["Enums"]["space_status"]
+          trashed_at?: string | null
+          type?: Database["public"]["Enums"]["space_type"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          access?: Database["public"]["Enums"]["space_access"]
+          archived_at?: string | null
+          avatar_url?: string | null
+          category_id?: string | null
+          color?: string
+          created_at?: string
+          created_by?: string | null
+          default_assignee?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          external_url?: string | null
+          id?: string
+          key?: string
+          lead_id?: string | null
+          name?: string
+          status?: Database["public"]["Enums"]["space_status"]
+          trashed_at?: string | null
+          type?: Database["public"]["Enums"]["space_type"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spaces_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "space_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       starred_items: {
         Row: {
           created_at: string
@@ -32726,6 +33141,10 @@ export type Database = {
         Args: { p_project_id: string }
         Returns: undefined
       }
+      create_default_space_permissions: {
+        Args: { p_space_id: string }
+        Returns: undefined
+      }
       create_execution_run: {
         Args: {
           p_assigned_testers?: string[]
@@ -34207,6 +34626,7 @@ export type Database = {
         | "jira"
         | "teams"
         | "webhook"
+      member_role: "administrator" | "member" | "viewer"
       metric_type: "count" | "currency" | "percentage" | "decimal_score" | "nps"
       objective_category: "critical_path" | "stretch_goal"
       objective_health: "good" | "fair" | "poor" | "at_risk"
@@ -34298,6 +34718,9 @@ export type Database = {
         | "intermediate"
         | "advanced"
         | "expert"
+      space_access: "private" | "team" | "organization"
+      space_status: "active" | "archived" | "trashed"
+      space_type: "kanban" | "business" | "service"
       story_status: "todo" | "in_progress" | "done"
       subtask_status: "todo" | "in_progress" | "done"
       support_level: "L1" | "L2" | "L3"
@@ -34370,6 +34793,7 @@ export type Database = {
         | "APPROVED"
         | "REJECTED"
         | "DISABLED"
+      version_status: "unreleased" | "released" | "archived"
       vote_status: "pending" | "approved" | "rejected" | "vetoed"
       widget_type:
         | "kpi_card"
@@ -34809,6 +35233,7 @@ export const Constants = {
         "teams",
         "webhook",
       ],
+      member_role: ["administrator", "member", "viewer"],
       metric_type: ["count", "currency", "percentage", "decimal_score", "nps"],
       objective_category: ["critical_path", "stretch_goal"],
       objective_health: ["good", "fair", "poor", "at_risk"],
@@ -34909,6 +35334,9 @@ export const Constants = {
         "advanced",
         "expert",
       ],
+      space_access: ["private", "team", "organization"],
+      space_status: ["active", "archived", "trashed"],
+      space_type: ["kanban", "business", "service"],
       story_status: ["todo", "in_progress", "done"],
       subtask_status: ["todo", "in_progress", "done"],
       support_level: ["L1", "L2", "L3"],
@@ -34990,6 +35418,7 @@ export const Constants = {
         "REJECTED",
         "DISABLED",
       ],
+      version_status: ["unreleased", "released", "archived"],
       vote_status: ["pending", "approved", "rejected", "vetoed"],
       widget_type: [
         "kpi_card",
