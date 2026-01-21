@@ -27071,6 +27071,182 @@ export type Database = {
         }
         Relationships: []
       }
+      tm_run_case_assignments: {
+        Row: {
+          assigned_tester_id: string | null
+          completed_at: string | null
+          created_at: string | null
+          duration_seconds: number | null
+          id: string
+          notes: string | null
+          priority: number | null
+          run_id: string
+          started_at: string | null
+          status: string | null
+          test_case_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_tester_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          notes?: string | null
+          priority?: number | null
+          run_id: string
+          started_at?: string | null
+          status?: string | null
+          test_case_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_tester_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          notes?: string | null
+          priority?: number | null
+          run_id?: string
+          started_at?: string | null
+          status?: string | null
+          test_case_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_run_templates: {
+        Row: {
+          configuration: Json | null
+          created_at: string | null
+          created_by: string | null
+          default_testers: string[] | null
+          description: string | null
+          environment: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          project_id: string
+          test_case_filter: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          configuration?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          default_testers?: string[] | null
+          description?: string | null
+          environment?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          project_id: string
+          test_case_filter?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          configuration?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          default_testers?: string[] | null
+          description?: string | null
+          environment?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          project_id?: string
+          test_case_filter?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_saved_filters: {
         Row: {
           created_at: string | null
@@ -27191,6 +27367,104 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      tm_scheduled_runs: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          last_run_id: string | null
+          name: string
+          next_run_at: string | null
+          project_id: string
+          schedule_config: Json | null
+          schedule_type: string
+          template_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          last_run_id?: string | null
+          name: string
+          next_run_at?: string | null
+          project_id: string
+          schedule_config?: Json | null
+          schedule_type: string
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          last_run_id?: string | null
+          name?: string
+          next_run_at?: string | null
+          project_id?: string
+          schedule_config?: Json | null
+          schedule_type?: string
+          template_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_last_run_id_fkey"
+            columns: ["last_run_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "tm_run_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tm_set_cases: {
         Row: {
@@ -32344,6 +32618,14 @@ export type Database = {
         Args: { p_snapshot_id: string; p_user_id: string }
         Returns: boolean
       }
+      tm_assign_cases_to_run: {
+        Args: {
+          p_assigned_tester_id?: string
+          p_case_ids: string[]
+          p_run_id: string
+        }
+        Returns: Json
+      }
       tm_assign_scope_item: {
         Args: { p_assigned_to: string; p_scope_id: string }
         Returns: Json
@@ -32362,6 +32644,14 @@ export type Database = {
           p_assigned_to?: string
           p_cycle_id: string
           p_test_case_ids: string[]
+        }
+        Returns: Json
+      }
+      tm_bulk_assign_tester: {
+        Args: {
+          p_assignment_ids: string[]
+          p_run_id: string
+          p_tester_id: string
         }
         Returns: Json
       }
@@ -32442,6 +32732,14 @@ export type Database = {
           p_user_id?: string
         }
         Returns: string
+      }
+      tm_create_run_from_template: {
+        Args: {
+          p_name?: string
+          p_scheduled_start?: string
+          p_template_id: string
+        }
+        Returns: Json
       }
       tm_create_version_snapshot: {
         Args: { p_case_id: string; p_change_summary?: string }
@@ -32694,6 +32992,7 @@ export type Database = {
           test_case_title: string
         }[]
       }
+      tm_get_run_assignments: { Args: { p_run_id: string }; Returns: Json }
       tm_get_step_suggestions: {
         Args: {
           p_keyword: string
@@ -32784,6 +33083,10 @@ export type Database = {
         Args: { p_cycle_id: string; p_test_case_id: string }
         Returns: Json
       }
+      tm_remove_cases_from_run: {
+        Args: { p_case_ids: string[]; p_run_id: string }
+        Returns: Json
+      }
       tm_remove_tester_from_cycle: {
         Args: { p_cycle_id: string; p_user_id: string }
         Returns: Json
@@ -32803,6 +33106,10 @@ export type Database = {
           p_scenario: string
           p_steps: Json
         }
+        Returns: Json
+      }
+      tm_update_assignment_status: {
+        Args: { p_assignment_id: string; p_notes?: string; p_status: string }
         Returns: Json
       }
       tm_update_coverage_status: {
