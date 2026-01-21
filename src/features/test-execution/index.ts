@@ -123,3 +123,24 @@ export {
   UpdateProgress,
   UpdateResults,
 } from './components/update';
+
+// ============================================================
+// Module 3C-4: Batch Delete
+// ============================================================
+
+// Types
+export * from './types/batch-delete';
+
+// Hooks
+export { useBatchDelete } from './hooks/useBatchDelete';
+
+// Components
+export {
+  BatchDelete,
+  DeleteStepIndicator,
+  DeleteTypeSelector,
+  DependencyWarning,
+  ConfirmationInput,
+  DeleteProgress,
+  DeleteResults,
+} from './components/delete';

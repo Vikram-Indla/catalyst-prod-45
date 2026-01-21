@@ -887,6 +887,90 @@ export type Database = {
         }
         Relationships: []
       }
+      batch_delete_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          delete_type: Database["public"]["Enums"]["delete_type"]
+          deleted_records: number | null
+          error_message: string | null
+          failed_records: number | null
+          id: string
+          project_id: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["batch_delete_status"] | null
+          test_case_ids: Json
+          total_records: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          delete_type?: Database["public"]["Enums"]["delete_type"]
+          deleted_records?: number | null
+          error_message?: string | null
+          failed_records?: number | null
+          id?: string
+          project_id: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["batch_delete_status"] | null
+          test_case_ids?: Json
+          total_records?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          delete_type?: Database["public"]["Enums"]["delete_type"]
+          deleted_records?: number | null
+          error_message?: string | null
+          failed_records?: number | null
+          id?: string
+          project_id?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["batch_delete_status"] | null
+          test_case_ids?: Json
+          total_records?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "batch_delete_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "batch_delete_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "batch_delete_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "batch_delete_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "batch_delete_jobs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       batch_update_changes: {
         Row: {
           applied: boolean | null
@@ -3598,6 +3682,109 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "test_runs"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      deleted_items_log: {
+        Row: {
+          delete_type: Database["public"]["Enums"]["delete_type"]
+          deleted_at: string | null
+          deleted_by: string | null
+          expires_at: string | null
+          id: string
+          job_id: string | null
+          restored_at: string | null
+          restored_by: string | null
+          test_case_data: Json
+          test_case_id: string
+        }
+        Insert: {
+          delete_type: Database["public"]["Enums"]["delete_type"]
+          deleted_at?: string | null
+          deleted_by?: string | null
+          expires_at?: string | null
+          id?: string
+          job_id?: string | null
+          restored_at?: string | null
+          restored_by?: string | null
+          test_case_data: Json
+          test_case_id: string
+        }
+        Update: {
+          delete_type?: Database["public"]["Enums"]["delete_type"]
+          deleted_at?: string | null
+          deleted_by?: string | null
+          expires_at?: string | null
+          id?: string
+          job_id?: string | null
+          restored_at?: string | null
+          restored_by?: string | null
+          test_case_data?: Json
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "batch_delete_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -30500,6 +30687,14 @@ export type Database = {
         Returns: undefined
       }
       create_adhoc_cycle: { Args: never; Returns: string }
+      create_batch_delete_job: {
+        Args: {
+          p_delete_type?: Database["public"]["Enums"]["delete_type"]
+          p_project_id: string
+          p_test_case_ids: Json
+        }
+        Returns: Json
+      }
       create_batch_update_job: {
         Args: {
           p_field_updates: Json
@@ -30606,6 +30801,8 @@ export type Database = {
       }
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
       execute_batch_update: { Args: { p_job_id: string }; Returns: Json }
+      execute_permanent_delete: { Args: { p_job_id: string }; Returns: Json }
+      execute_soft_delete: { Args: { p_job_id: string }; Returns: Json }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
       fail_export_job: {
         Args: { p_error_message: string; p_job_id: string }
@@ -30660,6 +30857,7 @@ export type Database = {
           depth: number
         }[]
       }
+      get_batch_delete_status: { Args: { p_job_id: string }; Returns: Json }
       get_batch_update_preview: { Args: { p_job_id: string }; Returns: Json }
       get_batch_update_status: { Args: { p_job_id: string }; Returns: Json }
       get_case_metrics: { Args: { p_execution_id: string }; Returns: Json }
@@ -30675,6 +30873,11 @@ export type Database = {
       }
       get_cycle_progress: { Args: { p_cycle_id: string }; Returns: Json }
       get_dashboard_stats: { Args: { p_project_id: string }; Returns: Json }
+      get_delete_dependencies: {
+        Args: { p_test_case_ids: Json }
+        Returns: Json
+      }
+      get_deleted_items: { Args: { p_project_id: string }; Returns: Json }
       get_dependency_counts: {
         Args: { p_item_id: string; p_item_type: string }
         Returns: {
@@ -30934,6 +31137,7 @@ export type Database = {
         Args: { p_run_id: string; p_timeout_seconds?: number }
         Returns: Json
       }
+      restore_deleted_items: { Args: { p_test_case_ids: Json }; Returns: Json }
       resume_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
@@ -31187,6 +31391,12 @@ export type Database = {
         | "connect"
         | "disconnect"
       auth_method: "token" | "oauth"
+      batch_delete_status:
+        | "pending"
+        | "validating"
+        | "executing"
+        | "completed"
+        | "failed"
       batch_update_status:
         | "pending"
         | "validating"
@@ -31235,6 +31445,7 @@ export type Database = {
       committee_status: "pending" | "approved" | "rejected"
       compliance_state: "compliant" | "exception_recorded"
       confidence_level: "high" | "med" | "low"
+      delete_type: "soft" | "permanent"
       delivery_stage: "stage" | "qa" | "beta" | "prod"
       dependency_level_v2: "execution" | "delivery" | "cross_level"
       dependency_status:
@@ -31756,6 +31967,13 @@ export const Constants = {
         "disconnect",
       ],
       auth_method: ["token", "oauth"],
+      batch_delete_status: [
+        "pending",
+        "validating",
+        "executing",
+        "completed",
+        "failed",
+      ],
       batch_update_status: [
         "pending",
         "validating",
@@ -31810,6 +32028,7 @@ export const Constants = {
       committee_status: ["pending", "approved", "rejected"],
       compliance_state: ["compliant", "exception_recorded"],
       confidence_level: ["high", "med", "low"],
+      delete_type: ["soft", "permanent"],
       delivery_stage: ["stage", "qa", "beta", "prod"],
       dependency_level_v2: ["execution", "delivery", "cross_level"],
       dependency_status: [
