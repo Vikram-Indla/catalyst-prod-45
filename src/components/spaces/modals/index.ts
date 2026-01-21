@@ -7,3 +7,4 @@ export { EditComponentModal } from './EditComponentModal';
 export { EditVersionModal } from './EditVersionModal';
 export { CreateComponentModal } from './CreateComponentModal';
 export { CreateVersionModal } from './CreateVersionModal';
+export { CreateWorkItemModal } from './CreateWorkItemModal';
