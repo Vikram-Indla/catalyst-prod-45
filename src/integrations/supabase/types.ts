@@ -23156,35 +23156,59 @@ export type Database = {
         Row: {
           actual_result: string | null
           comments: string | null
+          completed_at: string | null
           executed_at: string | null
+          executed_by: string | null
           execution_id: string
           expected_result: string | null
           id: string
+          is_timer_running: boolean | null
+          started_at: string | null
           status: string
           step_description: string
+          step_id: string | null
           step_order: number
+          timer_paused_at: string | null
+          timer_started_at: string | null
+          timer_total_paused: number | null
         }
         Insert: {
           actual_result?: string | null
           comments?: string | null
+          completed_at?: string | null
           executed_at?: string | null
+          executed_by?: string | null
           execution_id: string
           expected_result?: string | null
           id?: string
+          is_timer_running?: boolean | null
+          started_at?: string | null
           status?: string
           step_description: string
+          step_id?: string | null
           step_order: number
+          timer_paused_at?: string | null
+          timer_started_at?: string | null
+          timer_total_paused?: number | null
         }
         Update: {
           actual_result?: string | null
           comments?: string | null
+          completed_at?: string | null
           executed_at?: string | null
+          executed_by?: string | null
           execution_id?: string
           expected_result?: string | null
           id?: string
+          is_timer_running?: boolean | null
+          started_at?: string | null
           status?: string
           step_description?: string
+          step_id?: string | null
           step_order?: number
+          timer_paused_at?: string | null
+          timer_started_at?: string | null
+          timer_total_paused?: number | null
         }
         Relationships: [
           {
@@ -23192,6 +23216,13 @@ export type Database = {
             columns: ["execution_id"]
             isOneToOne: false
             referencedRelation: "test_cycle_executions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_execution_step_results_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "test_steps"
             referencedColumns: ["id"]
           },
         ]
@@ -24025,6 +24056,67 @@ export type Database = {
             columns: ["library_step_id"]
             isOneToOne: false
             referencedRelation: "shared_test_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_time_estimates: {
+        Row: {
+          confidence: number | null
+          created_at: string | null
+          estimated_seconds: number
+          id: string
+          project_id: string
+          sample_size: number | null
+          source: string | null
+          step_id: string | null
+          test_case_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string | null
+          estimated_seconds: number
+          id?: string
+          project_id: string
+          sample_size?: number | null
+          source?: string | null
+          step_id?: string | null
+          test_case_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string | null
+          estimated_seconds?: number
+          id?: string
+          project_id?: string
+          sample_size?: number | null
+          source?: string | null
+          step_id?: string | null
+          test_case_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_time_estimates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_time_estimates_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "test_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_time_estimates_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
             referencedColumns: ["id"]
           },
         ]
@@ -29936,6 +30028,10 @@ export type Database = {
       }
       check_theme_is_active: { Args: { p_theme_id: string }; Returns: boolean }
       clean_stale_presence: { Args: never; Returns: undefined }
+      complete_step_timer: {
+        Args: { p_execution_id: string; p_step_id: string }
+        Returns: Json
+      }
       complete_test_run_v2: {
         Args: { p_notes?: string; p_overall_result: string; p_run_id: string }
         Returns: Json
@@ -30069,6 +30165,7 @@ export type Database = {
           depth: number
         }[]
       }
+      get_case_metrics: { Args: { p_execution_id: string }; Returns: Json }
       get_coverage_stats: {
         Args: { p_cycle_id?: string; p_project_id: string }
         Returns: {
@@ -30137,6 +30234,7 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["ra_user_role"]
       }
+      get_run_metrics: { Args: { p_run_id: string }; Returns: Json }
       get_run_progress: { Args: { p_run_id: string }; Returns: Json }
       get_slack_config_safe: {
         Args: never
@@ -30173,6 +30271,7 @@ export type Database = {
         }[]
       }
       get_step_evidence: { Args: { p_step_result_id: string }; Returns: Json }
+      get_step_metrics: { Args: { p_execution_id: string }; Returns: Json }
       get_test_case_for_execution_v2: {
         Args: { p_run_id: string; p_test_case_id: string }
         Returns: Json
@@ -30228,6 +30327,10 @@ export type Database = {
         }
         Returns: string
       }
+      pause_step_timer: {
+        Args: { p_execution_id: string; p_step_id: string }
+        Returns: Json
+      }
       quick_create_defect_v2: {
         Args: {
           p_assigned_to?: string
@@ -30267,6 +30370,10 @@ export type Database = {
       reorder_test_steps: {
         Args: { p_step_ids: string[]; p_test_case_id: string }
         Returns: undefined
+      }
+      resume_step_timer: {
+        Args: { p_execution_id: string; p_step_id: string }
+        Returns: Json
       }
       save_step_notes_v2: {
         Args: { p_actual_result: string; p_run_id: string; p_step_id: string }
@@ -30343,6 +30450,10 @@ export type Database = {
       soft_delete_planner_tasks: {
         Args: { p_task_ids: string[] }
         Returns: number
+      }
+      start_step_timer: {
+        Args: { p_execution_id: string; p_step_id: string }
+        Returns: Json
       }
       text2ltree: { Args: { "": string }; Returns: unknown }
       tm_calculate_run_status: {
