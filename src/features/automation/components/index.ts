@@ -3,6 +3,7 @@
  * Module 5A-1: Connectors
  * Module 5A-2: Result Import & Mapping
  * Module 5A-3: Automation Status Tracking
+ * Module 5A-4: CI/CD Pipeline Integration
  */
 
 // Module 5A-1: Connectors
@@ -17,3 +18,6 @@ export { ImportHistory } from './ImportHistory';
 
 // Module 5A-3: Automation Status Tracking
 export { AutomationStatusDashboard } from './AutomationStatusDashboard';
+
+// Module 5A-4: CI/CD Pipeline Integration
+export { WebhookSetupGuide } from './WebhookSetupGuide';
