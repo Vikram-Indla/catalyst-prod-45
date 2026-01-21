@@ -3,6 +3,7 @@
  * Module 5A-1: Connectors
  * Module 5A-2: Result Import & Mapping
  * Module 5A-3: Automation Status Tracking
+ * Module 5A-4: CI/CD Pipeline Integration
  */
 
 // Module 5A-1: Connectors
@@ -24,3 +25,10 @@ export {
   useAutomationSyncStatus,
   useTestAutomationHistory
 } from './useAutomationTracking';
+
+// Module 5A-4: CI/CD Pipeline Integration
+export {
+  useWebhookEndpoints,
+  useWebhookTest,
+  usePipelineStats
+} from './usePipelineIntegration';
