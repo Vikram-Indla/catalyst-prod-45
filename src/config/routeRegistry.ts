@@ -74,6 +74,9 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/industry/ideas/admin': { section: 'IDEAS', pageTitle: 'Settings' },
   '/industry/ideas/:id': { section: 'IDEAS', pageTitle: 'Idea Details' },
   
+  // Spaces routes
+  '/spaces/backlog': { section: 'SPACES', pageTitle: 'Spaces Backlog' },
+  
   // Program routes
   '/program/:programId/room': { section: 'PROGRAM', pageTitle: 'Program Room' },
   '/program/:programId/epic-backlog': { section: 'PROGRAM', pageTitle: 'Epic Backlog' },
