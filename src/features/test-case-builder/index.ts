@@ -14,8 +14,11 @@ export { AttachmentManager } from './components/AttachmentManager';
 export { RichTextEditor, RichTextDisplay } from './components/RichTextEditor';
 export { RequirementLinker } from './components/RequirementLinker';
 export { TraceabilityMatrix } from './components/TraceabilityMatrix';
+export { VersionHistoryPanel } from './components/VersionHistoryPanel';
+export { CloneTestCaseDialog } from './components/CloneTestCaseDialog';
 
 // Hooks
 export * from '@/hooks/test-cases/useGherkinSteps';
 export * from '@/hooks/test-cases/useTestAttachments';
 export * from '@/hooks/test-cases/useRequirementLinks';
+export * from '@/hooks/test-cases/useVersionHistory';

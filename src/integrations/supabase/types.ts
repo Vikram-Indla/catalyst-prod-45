@@ -27673,6 +27673,79 @@ export type Database = {
           },
         ]
       }
+      tm_test_case_versions: {
+        Row: {
+          change_summary: string | null
+          changed_by: string | null
+          created_at: string | null
+          id: string
+          snapshot: Json
+          test_case_id: string
+          version_number: number
+        }
+        Insert: {
+          change_summary?: string | null
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          snapshot: Json
+          test_case_id: string
+          version_number: number
+        }
+        Update: {
+          change_summary?: string | null
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          snapshot?: Json
+          test_case_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_test_cases: {
         Row: {
           ai_generated_at: string | null
@@ -27683,6 +27756,7 @@ export type Database = {
           automation_status: string | null
           case_key: string
           case_type_id: string | null
+          cloned_from_id: string | null
           created_at: string | null
           created_by: string | null
           custom_fields: Json | null
@@ -27695,7 +27769,9 @@ export type Database = {
           gherkin_scenario: string | null
           id: string
           is_ai_generated: boolean | null
+          is_latest_version: boolean | null
           is_template: boolean | null
+          parent_case_id: string | null
           postconditions_html: string | null
           preconditions: string | null
           preconditions_html: string | null
@@ -27718,6 +27794,7 @@ export type Database = {
           automation_status?: string | null
           case_key: string
           case_type_id?: string | null
+          cloned_from_id?: string | null
           created_at?: string | null
           created_by?: string | null
           custom_fields?: Json | null
@@ -27730,7 +27807,9 @@ export type Database = {
           gherkin_scenario?: string | null
           id?: string
           is_ai_generated?: boolean | null
+          is_latest_version?: boolean | null
           is_template?: boolean | null
+          parent_case_id?: string | null
           postconditions_html?: string | null
           preconditions?: string | null
           preconditions_html?: string | null
@@ -27753,6 +27832,7 @@ export type Database = {
           automation_status?: string | null
           case_key?: string
           case_type_id?: string | null
+          cloned_from_id?: string | null
           created_at?: string | null
           created_by?: string | null
           custom_fields?: Json | null
@@ -27765,7 +27845,9 @@ export type Database = {
           gherkin_scenario?: string | null
           id?: string
           is_ai_generated?: boolean | null
+          is_latest_version?: boolean | null
           is_template?: boolean | null
+          parent_case_id?: string | null
           postconditions_html?: string | null
           preconditions?: string | null
           preconditions_html?: string | null
@@ -27816,6 +27898,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_cases_cloned_from_id_fkey"
+            columns: ["cloned_from_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_cloned_from_id_fkey"
+            columns: ["cloned_from_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tm_test_cases_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -27855,6 +27951,20 @@ export type Database = {
             columns: ["folder_id"]
             isOneToOne: false
             referencedRelation: "tm_folders_with_counts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_parent_case_id_fkey"
+            columns: ["parent_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_parent_case_id_fkey"
+            columns: ["parent_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
             referencedColumns: ["id"]
           },
           {
@@ -32271,6 +32381,14 @@ export type Database = {
         Args: { p_insert_after?: number; p_step_id: string }
         Returns: string
       }
+      tm_clone_test_case: {
+        Args: {
+          p_case_id: string
+          p_new_title?: string
+          p_target_folder_id?: string
+        }
+        Returns: string
+      }
       tm_compare_cycles: {
         Args: { p_cycle_ids: string[] }
         Returns: {
@@ -32324,6 +32442,10 @@ export type Database = {
           p_user_id?: string
         }
         Returns: string
+      }
+      tm_create_version_snapshot: {
+        Args: { p_case_id: string; p_change_summary?: string }
+        Returns: number
       }
       tm_delete_attachment: { Args: { p_attachment_id: string }; Returns: Json }
       tm_delete_cycle_milestone: {
@@ -32618,6 +32740,18 @@ export type Database = {
           total_test_cases: number
         }[]
       }
+      tm_get_version_history: {
+        Args: { p_case_id: string }
+        Returns: {
+          change_summary: string
+          changed_by: string
+          changed_by_name: string
+          created_at: string
+          id: string
+          snapshot: Json
+          version_number: number
+        }[]
+      }
       tm_insert_step_at: {
         Args: {
           p_action?: string
@@ -32656,6 +32790,10 @@ export type Database = {
       }
       tm_reorder_steps: {
         Args: { p_case_id: string; p_step_orders: Json }
+        Returns: boolean
+      }
+      tm_restore_version: {
+        Args: { p_case_id: string; p_version_number: number }
         Returns: boolean
       }
       tm_save_gherkin_scenario: {
