@@ -75,7 +75,13 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/industry/ideas/:id': { section: 'IDEAS', pageTitle: 'Idea Details' },
   
   // Spaces routes
+  '/spaces': { section: 'SPACES', pageTitle: 'Spaces Directory' },
   '/spaces/backlog': { section: 'SPACES', pageTitle: 'Spaces Backlog' },
+  '/spaces/:spaceId/summary': { section: 'SPACES', pageTitle: 'Summary' },
+  '/spaces/:spaceId/board': { section: 'SPACES', pageTitle: 'Board' },
+  '/spaces/:spaceId/backlog': { section: 'SPACES', pageTitle: 'Backlog' },
+  '/spaces/:spaceId/timeline': { section: 'SPACES', pageTitle: 'Timeline' },
+  '/spaces/:spaceId/settings': { section: 'SPACES', pageTitle: 'Settings' },
   
   // Program routes
   '/program/:programId/room': { section: 'PROGRAM', pageTitle: 'Program Room' },
