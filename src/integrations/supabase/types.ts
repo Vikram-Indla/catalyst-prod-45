@@ -5534,6 +5534,86 @@ export type Database = {
         }
         Relationships: []
       }
+      execution_queue: {
+        Row: {
+          claimed_at: string | null
+          claimed_by: string | null
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          execution_result_id: string | null
+          id: string
+          position: number | null
+          priority: number | null
+          retry_count: number | null
+          run_id: string
+          started_at: string | null
+          status: string | null
+          test_case_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          execution_result_id?: string | null
+          id?: string
+          position?: number | null
+          priority?: number | null
+          retry_count?: number | null
+          run_id: string
+          started_at?: string | null
+          status?: string | null
+          test_case_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          execution_result_id?: string | null
+          id?: string
+          position?: number | null
+          priority?: number | null
+          retry_count?: number | null
+          run_id?: string
+          started_at?: string | null
+          status?: string | null
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execution_queue_claimed_by_fkey"
+            columns: ["claimed_by"]
+            isOneToOne: false
+            referencedRelation: "parallel_workers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_queue_execution_result_id_fkey"
+            columns: ["execution_result_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_queue_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_queue_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       execution_results: {
         Row: {
           cycle_id: string | null
@@ -15305,6 +15385,114 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "module_packages"
             referencedColumns: ["code"]
+          },
+        ]
+      }
+      parallel_run_configs: {
+        Row: {
+          created_at: string | null
+          id: string
+          max_retries: number | null
+          max_workers: number
+          priority_mode: string | null
+          retry_failed: boolean | null
+          run_id: string
+          timeout_seconds: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          max_retries?: number | null
+          max_workers?: number
+          priority_mode?: string | null
+          retry_failed?: boolean | null
+          run_id: string
+          timeout_seconds?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          max_retries?: number | null
+          max_workers?: number
+          priority_mode?: string | null
+          retry_failed?: boolean | null
+          run_id?: string
+          timeout_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parallel_run_configs_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: true
+            referencedRelation: "test_execution_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parallel_workers: {
+        Row: {
+          claimed_at: string | null
+          completed_count: number | null
+          created_at: string | null
+          current_execution_id: string | null
+          current_test_id: string | null
+          failed_count: number | null
+          id: string
+          last_heartbeat: string | null
+          run_id: string
+          status: Database["public"]["Enums"]["worker_status"] | null
+          total_execution_time: number | null
+          worker_number: number
+        }
+        Insert: {
+          claimed_at?: string | null
+          completed_count?: number | null
+          created_at?: string | null
+          current_execution_id?: string | null
+          current_test_id?: string | null
+          failed_count?: number | null
+          id?: string
+          last_heartbeat?: string | null
+          run_id: string
+          status?: Database["public"]["Enums"]["worker_status"] | null
+          total_execution_time?: number | null
+          worker_number: number
+        }
+        Update: {
+          claimed_at?: string | null
+          completed_count?: number | null
+          created_at?: string | null
+          current_execution_id?: string | null
+          current_test_id?: string | null
+          failed_count?: number | null
+          id?: string
+          last_heartbeat?: string | null
+          run_id?: string
+          status?: Database["public"]["Enums"]["worker_status"] | null
+          total_execution_time?: number | null
+          worker_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parallel_workers_current_execution_id_fkey"
+            columns: ["current_execution_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parallel_workers_current_test_id_fkey"
+            columns: ["current_test_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parallel_workers_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_runs"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -30027,7 +30215,19 @@ export type Database = {
         Returns: boolean
       }
       check_theme_is_active: { Args: { p_theme_id: string }; Returns: boolean }
+      claim_next_test: {
+        Args: { p_run_id: string; p_worker_id: string }
+        Returns: Json
+      }
       clean_stale_presence: { Args: never; Returns: undefined }
+      complete_parallel_test: {
+        Args: {
+          p_execution_time?: number
+          p_result_status: string
+          p_worker_id: string
+        }
+        Returns: Json
+      }
       complete_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
@@ -30082,6 +30282,14 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      create_parallel_run: {
+        Args: {
+          p_max_workers?: number
+          p_priority_mode?: string
+          p_run_id: string
+        }
+        Returns: Json
       }
       create_project_audit_log: {
         Args: {
@@ -30230,6 +30438,7 @@ export type Database = {
         Args: { p_current_run_id?: string; p_cycle_id: string }
         Returns: Json
       }
+      get_parallel_run_progress: { Args: { p_run_id: string }; Returns: Json }
       get_ra_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["ra_user_role"]
@@ -30280,6 +30489,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_worker_status: { Args: { p_run_id: string }; Returns: Json }
       has_ra_role: {
         Args: { required_role: Database["public"]["Enums"]["ra_user_role"] }
         Returns: boolean
@@ -30370,6 +30580,10 @@ export type Database = {
       reorder_test_steps: {
         Args: { p_step_ids: string[]; p_test_case_id: string }
         Returns: undefined
+      }
+      requeue_abandoned_tests: {
+        Args: { p_run_id: string; p_timeout_seconds?: number }
+        Returns: Json
       }
       resume_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
@@ -30601,6 +30815,7 @@ export type Database = {
         Args: { _team_id: string; _user_id: string }
         Returns: boolean
       }
+      worker_heartbeat: { Args: { p_worker_id: string }; Returns: Json }
     }
     Enums: {
       alignment_type: "direct" | "inherited"
@@ -31034,6 +31249,7 @@ export type Database = {
         | "closed"
       work_item_type: "story" | "task" | "defect" | "subtask"
       work_item_type_enum: "epic" | "feature" | "story" | "task" | "defect"
+      worker_status: "idle" | "running" | "paused" | "error" | "terminated"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -31637,6 +31853,7 @@ export const Constants = {
       ],
       work_item_type: ["story", "task", "defect", "subtask"],
       work_item_type_enum: ["epic", "feature", "story", "task", "defect"],
+      worker_status: ["idle", "running", "paused", "error", "terminated"],
     },
   },
 } as const
