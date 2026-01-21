@@ -68,6 +68,10 @@ export interface SpaceMember {
   created_at: string;
   updated_at: string;
   added_by: string | null;
+  // Flattened user fields for easier access
+  user_name?: string | null;
+  user_email?: string | null;
+  user_avatar_url?: string | null;
   user?: {
     id: string;
     email: string;
@@ -133,6 +137,7 @@ export interface SpacePermission {
   administrator: boolean;
   member: boolean;
   viewer: boolean;
+  allowed_roles?: MemberRole[];
   created_at: string;
   updated_at: string;
 }
@@ -220,7 +225,8 @@ export interface UpdateVersionInput {
 }
 
 export interface AddMemberInput {
-  user_id: string;
+  user_id?: string;
+  user_email?: string;
   role?: MemberRole;
 }
 
@@ -242,6 +248,7 @@ export interface UpdatePermissionInput {
   administrator?: boolean;
   member?: boolean;
   viewer?: boolean;
+  allowed_roles?: MemberRole[];
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -277,7 +284,7 @@ export interface SpaceListParams {
 // ────────────────────────────────────────────────────────────────────────────
 
 export type SpaceViewMode = 'grid' | 'list';
-export type SettingsTab = 'details' | 'access' | 'features' | 'components' | 'versions' | 'permissions';
+export type SettingsTab = 'details' | 'access' | 'features' | 'components' | 'versions' | 'permissions' | 'danger';
 
 export interface SpaceUIState {
   viewMode: SpaceViewMode;
