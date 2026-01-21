@@ -26352,6 +26352,67 @@ export type Database = {
           },
         ]
       }
+      tm_gherkin_steps: {
+        Row: {
+          created_at: string | null
+          data_table: Json | null
+          doc_string: string | null
+          id: string
+          keyword: string
+          step_definition_id: string | null
+          step_number: number
+          step_text: string
+          test_case_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_table?: Json | null
+          doc_string?: string | null
+          id?: string
+          keyword: string
+          step_definition_id?: string | null
+          step_number: number
+          step_text: string
+          test_case_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data_table?: Json | null
+          doc_string?: string | null
+          id?: string
+          keyword?: string
+          step_definition_id?: string | null
+          step_number?: number
+          step_text?: string
+          test_case_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_gherkin_steps_step_definition_id_fkey"
+            columns: ["step_definition_id"]
+            isOneToOne: false
+            referencedRelation: "tm_step_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_gherkin_steps_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_gherkin_steps_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_key_sequences: {
         Row: {
           current_value: number | null
@@ -27086,6 +27147,81 @@ export type Database = {
           },
         ]
       }
+      tm_step_definitions: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          example_data: Json | null
+          id: string
+          keyword: string
+          pattern: string
+          project_id: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          example_data?: Json | null
+          id?: string
+          keyword: string
+          pattern: string
+          project_id: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          example_data?: Json | null
+          id?: string
+          keyword?: string
+          pattern?: string
+          project_id?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_step_results: {
         Row: {
           actual_result: string | null
@@ -27368,6 +27504,8 @@ export type Database = {
           estimated_time: number | null
           expected_result: string | null
           folder_id: string | null
+          gherkin_feature: string | null
+          gherkin_scenario: string | null
           id: string
           is_ai_generated: boolean | null
           is_template: boolean | null
@@ -27376,6 +27514,7 @@ export type Database = {
           project_id: string
           release_version_id: string | null
           status: Database["public"]["Enums"]["tm_case_status"] | null
+          test_format: string | null
           test_type: string | null
           title: string
           updated_at: string | null
@@ -27397,6 +27536,8 @@ export type Database = {
           estimated_time?: number | null
           expected_result?: string | null
           folder_id?: string | null
+          gherkin_feature?: string | null
+          gherkin_scenario?: string | null
           id?: string
           is_ai_generated?: boolean | null
           is_template?: boolean | null
@@ -27405,6 +27546,7 @@ export type Database = {
           project_id: string
           release_version_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
+          test_format?: string | null
           test_type?: string | null
           title: string
           updated_at?: string | null
@@ -27426,6 +27568,8 @@ export type Database = {
           estimated_time?: number | null
           expected_result?: string | null
           folder_id?: string | null
+          gherkin_feature?: string | null
+          gherkin_scenario?: string | null
           id?: string
           is_ai_generated?: boolean | null
           is_template?: boolean | null
@@ -27434,6 +27578,7 @@ export type Database = {
           project_id?: string
           release_version_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
+          test_format?: string | null
           test_type?: string | null
           title?: string
           updated_at?: string | null
@@ -31936,6 +32081,7 @@ export type Database = {
           total_defects: number
         }[]
       }
+      tm_convert_to_bdd: { Args: { p_case_id: string }; Returns: Json }
       tm_create_audit_log: {
         Args: {
           p_action: string
@@ -32095,6 +32241,7 @@ export type Database = {
           opened: number
         }[]
       }
+      tm_get_gherkin_scenario: { Args: { p_case_id: string }; Returns: Json }
       tm_get_plan_analytics: {
         Args: { p_plan_id: string }
         Returns: {
@@ -32160,6 +32307,20 @@ export type Database = {
         Args: { p_release_id: string }
         Returns: Json
       }
+      tm_get_step_suggestions: {
+        Args: {
+          p_keyword: string
+          p_partial_text?: string
+          p_project_id: string
+        }
+        Returns: {
+          description: string
+          id: string
+          keyword: string
+          pattern: string
+          usage_count: number
+        }[]
+      }
       tm_get_tester_performance: {
         Args: { p_cycle_id: string }
         Returns: {
@@ -32203,6 +32364,15 @@ export type Database = {
       tm_reorder_steps: {
         Args: { p_case_id: string; p_step_orders: Json }
         Returns: boolean
+      }
+      tm_save_gherkin_scenario: {
+        Args: {
+          p_case_id: string
+          p_feature: string
+          p_scenario: string
+          p_steps: Json
+        }
+        Returns: Json
       }
       tm_update_cycle_milestone: {
         Args: {

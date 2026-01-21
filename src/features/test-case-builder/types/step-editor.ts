@@ -24,6 +24,7 @@ export interface StepDragItem {
 }
 
 export type StepEditorMode = 'classic' | 'bdd';
+export type TestFormat = 'classic' | 'bdd';
 
 export interface StepValidation {
   isValid: boolean;
