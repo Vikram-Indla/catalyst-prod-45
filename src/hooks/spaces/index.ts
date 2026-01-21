@@ -11,6 +11,7 @@ export * from './useSpaceVersions';
 export * from './useSpaceFeatures';
 export * from './useSpacePermissions';
 export * from './useSpaceCategories';
+export * from './useSpaceWorkItems';
 
 // Mutation hooks
 export * from './useSpaceMutations';
