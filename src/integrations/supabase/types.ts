@@ -932,6 +932,62 @@ export type Database = {
         }
         Relationships: []
       }
+      automation_import_jobs: {
+        Row: {
+          completed_at: string | null
+          connector_id: string
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          id: string
+          imported_count: number | null
+          mapped_count: number | null
+          source_file_name: string | null
+          source_format: string | null
+          started_at: string | null
+          status: string
+          total_count: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          connector_id: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          imported_count?: number | null
+          mapped_count?: number | null
+          source_file_name?: string | null
+          source_format?: string | null
+          started_at?: string | null
+          status?: string
+          total_count?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          connector_id?: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          imported_count?: number | null
+          mapped_count?: number | null
+          source_file_name?: string | null
+          source_format?: string | null
+          started_at?: string | null
+          status?: string
+          total_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_import_jobs_connector_id_fkey"
+            columns: ["connector_id"]
+            isOneToOne: false
+            referencedRelation: "automation_connectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       automation_results: {
         Row: {
           connector_id: string
@@ -985,6 +1041,45 @@ export type Database = {
           },
           {
             foreignKeyName: "automation_results_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      automation_test_mappings: {
+        Row: {
+          connector_id: string
+          created_at: string
+          external_test_id: string
+          id: string
+          test_case_id: string
+        }
+        Insert: {
+          connector_id: string
+          created_at?: string
+          external_test_id: string
+          id?: string
+          test_case_id: string
+        }
+        Update: {
+          connector_id?: string
+          created_at?: string
+          external_test_id?: string
+          id?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_test_mappings_connector_id_fkey"
+            columns: ["connector_id"]
+            isOneToOne: false
+            referencedRelation: "automation_connectors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "automation_test_mappings_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
@@ -32086,6 +32181,10 @@ export type Database = {
         Args: { p_item_ids: string[]; p_new_priority: string; p_run_id: string }
         Returns: Json
       }
+      bulk_map_tests: {
+        Args: { p_connector_id: string; p_mappings: Json }
+        Returns: Json
+      }
       bulk_remove_roles: {
         Args: {
           _notes?: string
@@ -32422,6 +32521,10 @@ export type Database = {
         Returns: Json
       }
       get_export_status: { Args: { p_job_id: string }; Returns: Json }
+      get_import_history: {
+        Args: { p_connector_id: string; p_limit?: number }
+        Returns: Json
+      }
       get_linked_defects_for_step: {
         Args: { p_step_result_id: string }
         Returns: Json
@@ -32504,6 +32607,7 @@ export type Database = {
         }
         Returns: Json
       }
+      get_unmapped_tests: { Args: { p_connector_id: string }; Returns: Json }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -32525,6 +32629,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      import_automation_results: {
+        Args: {
+          p_connector_id: string
+          p_results: Json
+          p_source_file_name?: string
+          p_source_format?: string
+        }
+        Returns: Json
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_user_admin: { Args: { user_id: string }; Returns: boolean }
@@ -32557,6 +32670,14 @@ export type Database = {
           p_test_case_id: string
         }
         Returns: string
+      }
+      map_test_to_case: {
+        Args: {
+          p_connector_id: string
+          p_external_test_id: string
+          p_test_case_id: string
+        }
+        Returns: Json
       }
       move_items_to_bottom: {
         Args: { p_item_ids: string[]; p_run_id: string }
