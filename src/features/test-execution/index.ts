@@ -144,3 +144,17 @@ export {
   DeleteProgress,
   DeleteResults,
 } from './components/delete';
+
+// ============================================================
+// Module 5A-2: Bulk Operations UI
+// ============================================================
+
+// Hooks
+export { useTestCaseSelection } from './hooks/useTestCaseSelection';
+
+// Components
+export {
+  BulkOperationsPanel,
+  BulkActionsToolbar,
+  type BulkOperationType,
+} from './components/bulk';
