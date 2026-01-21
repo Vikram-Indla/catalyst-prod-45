@@ -5,7 +5,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useCatalystToast } from '@/components/ui/catalyst-toast';
+import { toast } from '@/hooks/use-toast';
 import type {
   TestCaseTemplate,
   TemplateCategory,
@@ -120,7 +120,6 @@ export function useTemplate(templateId: string | null) {
 
 export function useCreateTemplate() {
   const queryClient = useQueryClient();
-  const { success, error: showError } = useCatalystToast();
 
   return useMutation({
     mutationFn: async (input: CreateTemplateInput): Promise<TestCaseTemplate> => {
@@ -145,17 +144,16 @@ export function useCreateTemplate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-case-templates'] });
-      success('Template created');
+      toast({ title: 'Template created' });
     },
     onError: (err: Error) => {
-      showError('Failed to create template', err.message);
+      toast({ title: 'Failed to create template', description: err.message, variant: 'destructive' });
     },
   });
 }
 
 export function useUpdateTemplate() {
   const queryClient = useQueryClient();
-  const { success, error: showError } = useCatalystToast();
 
   return useMutation({
     mutationFn: async ({ id, ...input }: UpdateTemplateInput & { id: string }): Promise<TestCaseTemplate> => {
@@ -175,17 +173,16 @@ export function useUpdateTemplate() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['test-case-templates'] });
       queryClient.invalidateQueries({ queryKey: ['test-case-template', data.id] });
-      success('Template updated');
+      toast({ title: 'Template updated' });
     },
     onError: (err: Error) => {
-      showError('Failed to update template', err.message);
+      toast({ title: 'Failed to update template', description: err.message, variant: 'destructive' });
     },
   });
 }
 
 export function useDeleteTemplate() {
   const queryClient = useQueryClient();
-  const { success, error: showError } = useCatalystToast();
 
   return useMutation({
     mutationFn: async (templateId: string): Promise<void> => {
@@ -198,10 +195,10 @@ export function useDeleteTemplate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-case-templates'] });
-      success('Template deleted');
+      toast({ title: 'Template deleted' });
     },
     onError: (err: Error) => {
-      showError('Failed to delete template', err.message);
+      toast({ title: 'Failed to delete template', description: err.message, variant: 'destructive' });
     },
   });
 }
@@ -211,8 +208,6 @@ export function useDeleteTemplate() {
 // ============================================================
 
 export function useApplyTemplate() {
-  const { success, error: showError } = useCatalystToast();
-
   return useMutation({
     mutationFn: async ({
       templateId,
@@ -272,10 +267,10 @@ export function useApplyTemplate() {
       }
     },
     onSuccess: () => {
-      success('Template applied');
+      toast({ title: 'Template applied' });
     },
     onError: (err: Error) => {
-      showError('Failed to apply template', err.message);
+      toast({ title: 'Failed to apply template', description: err.message, variant: 'destructive' });
     },
   });
 }
@@ -286,7 +281,6 @@ export function useApplyTemplate() {
 
 export function useCreateTemplateFromTestCase() {
   const queryClient = useQueryClient();
-  const { success, error: showError } = useCatalystToast();
 
   return useMutation({
     mutationFn: async ({
@@ -314,7 +308,7 @@ export function useCreateTemplateFromTestCase() {
         .from('test_steps')
         .select('*')
         .eq('test_case_id', testCaseId)
-        .order('order_index', { ascending: true });
+        .order('step_order', { ascending: true });
 
       const { data: user } = await supabase.auth.getUser();
 
@@ -353,10 +347,10 @@ export function useCreateTemplateFromTestCase() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-case-templates'] });
-      success('Template created from test case');
+      toast({ title: 'Template created from test case' });
     },
     onError: (err: Error) => {
-      showError('Failed to create template', err.message);
+      toast({ title: 'Failed to create template', description: err.message, variant: 'destructive' });
     },
   });
 }
