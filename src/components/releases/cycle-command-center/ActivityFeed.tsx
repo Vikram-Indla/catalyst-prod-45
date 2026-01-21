@@ -1,134 +1,88 @@
 /**
  * Activity Feed - Real-time activity updates
+ * Wired to Supabase via useCycleActivityFeed
  */
 
 import React from 'react';
-import { 
-  CheckCircle, XCircle, AlertTriangle, UserPlus, 
-  Bug, MessageSquare, Clock
-} from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, UserPlus, Bug, MessageSquare, Clock, Upload, RefreshCw, Play, Flag, UserMinus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
-import { formatDistanceToNow } from 'date-fns';
+import { useCycleActivityFeed, CycleActivity } from '@/hooks/test-cycles/useCycleActivityFeed';
 
 interface ActivityFeedProps {
   cycleId: string;
 }
 
-interface Activity {
-  id: string;
-  userId: string;
-  userName: string;
-  userInitials: string;
-  actionType: 'passed' | 'failed' | 'blocked' | 'assigned' | 'defect_created' | 'comment';
-  testCaseKey?: string;
-  testCaseTitle?: string;
-  defectKey?: string;
-  timestamp: string;
-  isLive?: boolean;
-}
-
-const ACTION_STYLES = {
-  passed: { 
-    icon: CheckCircle, 
-    bg: CATALYST_V5.tealLight, 
-    color: CATALYST_V5.teal,
-    label: 'passed'
-  },
-  failed: { 
-    icon: XCircle, 
-    bg: CATALYST_V5.dangerLight, 
-    color: CATALYST_V5.danger,
-    label: 'failed'
-  },
-  blocked: { 
-    icon: AlertTriangle, 
-    bg: CATALYST_V5.warningLight, 
-    color: CATALYST_V5.warning,
-    label: 'marked as blocked'
-  },
-  assigned: { 
-    icon: UserPlus, 
-    bg: CATALYST_V5.primaryLight, 
-    color: CATALYST_V5.primary,
-    label: 'was assigned to'
-  },
-  defect_created: { 
-    icon: Bug, 
-    bg: CATALYST_V5.dangerLight, 
-    color: CATALYST_V5.danger,
-    label: 'created defect for'
-  },
-  comment: { 
-    icon: MessageSquare, 
-    bg: CATALYST_V5.slate[100], 
-    color: CATALYST_V5.slate[500],
-    label: 'commented on'
-  },
+const ACTION_STYLES: Record<string, { icon: any; bg: string; color: string; label: string }> = {
+  status_changed: { icon: RefreshCw, bg: CATALYST_V5.primaryLight, color: CATALYST_V5.primary, label: 'changed status' },
+  assigned: { icon: UserPlus, bg: CATALYST_V5.primaryLight, color: CATALYST_V5.primary, label: 'was assigned to' },
+  unassigned: { icon: UserMinus, bg: CATALYST_V5.slate[100], color: CATALYST_V5.slate[500], label: 'was unassigned from' },
+  defect_created: { icon: Bug, bg: CATALYST_V5.dangerLight, color: CATALYST_V5.danger, label: 'created defect for' },
+  defect_linked: { icon: Bug, bg: CATALYST_V5.dangerLight, color: CATALYST_V5.danger, label: 'linked defect to' },
+  comment_added: { icon: MessageSquare, bg: CATALYST_V5.slate[100], color: CATALYST_V5.slate[500], label: 'commented on' },
+  evidence_uploaded: { icon: Upload, bg: CATALYST_V5.tealLight, color: CATALYST_V5.teal, label: 'uploaded evidence for' },
+  retested: { icon: RefreshCw, bg: CATALYST_V5.primaryLight, color: CATALYST_V5.primary, label: 'retested' },
+  bulk_update: { icon: Flag, bg: CATALYST_V5.warningLight, color: CATALYST_V5.warning, label: 'bulk updated' },
+  execution_started: { icon: Play, bg: CATALYST_V5.primaryLight, color: CATALYST_V5.primary, label: 'started execution of' },
+  execution_completed: { icon: CheckCircle, bg: CATALYST_V5.tealLight, color: CATALYST_V5.teal, label: 'completed execution of' },
 };
 
-// Mock activities - will be replaced with real-time data
-const mockActivities: Activity[] = [
-  {
-    id: '1',
-    userId: 'u1',
-    userName: 'Ahmed S.',
-    userInitials: 'AS',
-    actionType: 'passed',
-    testCaseKey: 'TC-042',
-    testCaseTitle: 'User login validation',
-    timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-    isLive: true,
-  },
-  {
-    id: '2',
-    userId: 'u2',
-    userName: 'Sara M.',
-    userInitials: 'SM',
-    actionType: 'failed',
-    testCaseKey: 'TC-089',
-    testCaseTitle: 'Email notification',
-    defectKey: 'DEF-001',
-    timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '3',
-    userId: 'u3',
-    userName: 'Omar K.',
-    userInitials: 'OK',
-    actionType: 'blocked',
-    testCaseKey: 'TC-112',
-    testCaseTitle: 'SMS verification',
-    timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '4',
-    userId: 'u2',
-    userName: 'Sara M.',
-    userInitials: 'SM',
-    actionType: 'defect_created',
-    testCaseKey: 'TC-089',
-    defectKey: 'DEF-001',
-    timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '5',
-    userId: 'u1',
-    userName: 'Ahmed S.',
-    userInitials: 'AS',
-    actionType: 'assigned',
-    testCaseKey: 'TC-156',
-    testCaseTitle: 'Dashboard refresh',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
-function formatTimeAgo(timestamp: string): string {
-  return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+function getStatusStyle(status: string | null) {
+  switch (status) {
+    case 'passed': return { icon: CheckCircle, color: CATALYST_V5.teal };
+    case 'failed': return { icon: XCircle, color: CATALYST_V5.danger };
+    case 'blocked': return { icon: AlertTriangle, color: CATALYST_V5.warning };
+    default: return null;
+  }
 }
 
 export function ActivityFeed({ cycleId }: ActivityFeedProps) {
+  const { activities, isLoading } = useCycleActivityFeed(cycleId);
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Recent Activity
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="flex gap-3">
+              <Skeleton className="w-8 h-8 rounded-full" />
+              <div className="flex-1 space-y-1">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/4" />
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (activities.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Recent Activity
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground text-center py-8">
+            No activity recorded yet.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -143,19 +97,17 @@ export function ActivityFeed({ cycleId }: ActivityFeedProps) {
       <CardContent className="p-0">
         <ScrollArea className="h-[280px]">
           <div className="divide-y">
-            {mockActivities.map((activity) => {
-              const style = ACTION_STYLES[activity.actionType];
+            {activities.map((activity) => {
+              const style = ACTION_STYLES[activity.actionType] || ACTION_STYLES.status_changed;
               const Icon = style.icon;
+              const toStatusStyle = activity.toStatus ? getStatusStyle(activity.toStatus) : null;
               
               return (
                 <div 
                   key={activity.id}
-                  className={`px-4 py-3 transition-colors ${
-                    activity.isLive ? 'bg-teal-50/50' : 'hover:bg-muted/50'
-                  }`}
+                  className={`px-4 py-3 transition-colors ${activity.isLive ? 'bg-teal-50/50' : 'hover:bg-muted/50'}`}
                 >
                   <div className="flex items-start gap-3">
-                    {/* Icon */}
                     <div 
                       className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: style.bg }}
@@ -163,41 +115,39 @@ export function ActivityFeed({ cycleId }: ActivityFeedProps) {
                       <Icon className="w-4 h-4" style={{ color: style.color }} />
                     </div>
                     
-                    {/* Content */}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-foreground">
-                        <span className="font-medium">{activity.userName}</span>
+                        <span className="font-medium">{activity.actorName}</span>
                         {' '}
                         <span className="text-muted-foreground">{style.label}</span>
                         {' '}
-                        <span 
-                          className="font-medium cursor-pointer hover:underline"
-                          style={{ color: CATALYST_V5.primary }}
-                        >
-                          {activity.testCaseKey}
-                        </span>
+                        {activity.testCaseKey && (
+                          <span className="font-medium cursor-pointer hover:underline" style={{ color: CATALYST_V5.primary }}>
+                            {activity.testCaseKey}
+                          </span>
+                        )}
+                        {activity.toStatus && toStatusStyle && (
+                          <>
+                            {' → '}
+                            <span className="font-medium" style={{ color: toStatusStyle.color }}>
+                              {activity.toStatus}
+                            </span>
+                          </>
+                        )}
                         {activity.defectKey && (
                           <>
                             {' → '}
-                            <span 
-                              className="font-medium cursor-pointer hover:underline"
-                              style={{ color: CATALYST_V5.danger }}
-                            >
+                            <span className="font-medium cursor-pointer hover:underline" style={{ color: CATALYST_V5.danger }}>
                               {activity.defectKey}
                             </span>
                           </>
                         )}
                       </p>
-                      <p className={`text-xs mt-0.5 flex items-center gap-1 ${
-                        activity.isLive ? 'text-teal-600' : 'text-muted-foreground'
-                      }`}>
+                      <p className={`text-xs mt-0.5 flex items-center gap-1 ${activity.isLive ? 'text-teal-600' : 'text-muted-foreground'}`}>
                         {activity.isLive && (
-                          <span 
-                            className="w-1.5 h-1.5 rounded-full animate-pulse"
-                            style={{ backgroundColor: CATALYST_V5.teal }}
-                          />
+                          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: CATALYST_V5.teal }} />
                         )}
-                        {formatTimeAgo(activity.timestamp)}
+                        {activity.timeAgo}
                       </p>
                     </div>
                   </div>

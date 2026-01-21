@@ -1,88 +1,69 @@
 /**
  * Team Workload Bars - Horizontal stacked bars per team member
+ * Wired to real Supabase data via useCycleTeamWorkload
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, AlertTriangle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
+import { useCycleTeamWorkload } from '@/hooks/test-cycles/useCycleTeamWorkload';
 
 interface TeamWorkloadBarsProps {
   cycleId: string;
 }
-
-interface TeamMember {
-  id: string;
-  name: string;
-  initials: string;
-  avatarColor: string;
-  totalTests: number;
-  passed: number;
-  failed: number;
-  blocked: number;
-  inProgress: number;
-  workloadStatus: 'normal' | 'high' | 'overloaded';
-}
-
-// Mock data - will be replaced with real data
-const mockTeamMembers: TeamMember[] = [
-  {
-    id: '1',
-    name: 'Ahmed S.',
-    initials: 'AS',
-    avatarColor: CATALYST_V5.primary,
-    totalTests: 45,
-    passed: 28,
-    failed: 5,
-    blocked: 2,
-    inProgress: 10,
-    workloadStatus: 'normal',
-  },
-  {
-    id: '2',
-    name: 'Sara M.',
-    initials: 'SM',
-    avatarColor: CATALYST_V5.teal,
-    totalTests: 52,
-    passed: 25,
-    failed: 8,
-    blocked: 4,
-    inProgress: 15,
-    workloadStatus: 'high',
-  },
-  {
-    id: '3',
-    name: 'Omar K.',
-    initials: 'OK',
-    avatarColor: CATALYST_V5.warning,
-    totalTests: 38,
-    passed: 18,
-    failed: 2,
-    blocked: 3,
-    inProgress: 15,
-    workloadStatus: 'normal',
-  },
-  {
-    id: '4',
-    name: 'Fatima R.',
-    initials: 'FR',
-    avatarColor: '#8b5cf6',
-    totalTests: 65,
-    passed: 30,
-    failed: 10,
-    blocked: 5,
-    inProgress: 20,
-    workloadStatus: 'overloaded',
-  },
-];
 
 const WORKLOAD_BADGES = {
   high: { bg: CATALYST_V5.warningLight, text: CATALYST_V5.warning, label: 'High' },
   overloaded: { bg: CATALYST_V5.dangerLight, text: CATALYST_V5.danger, label: 'Overloaded' },
 };
 
+const AVATAR_COLORS = [CATALYST_V5.primary, CATALYST_V5.teal, CATALYST_V5.warning, '#8b5cf6', '#ec4899'];
+
 export function TeamWorkloadBars({ cycleId }: TeamWorkloadBarsProps) {
+  const { teamMembers, isLoading } = useCycleTeamWorkload(cycleId);
+
+  if (isLoading) {
+    return (
+      <Card className="lg:col-span-2">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            Team Workload
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-5 w-40" />
+              <Skeleton className="h-2 w-full" />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (teamMembers.length === 0) {
+    return (
+      <Card className="lg:col-span-2">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            Team Workload
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground text-center py-8">
+            No testers assigned to this cycle yet.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="lg:col-span-2">
       <CardHeader className="pb-2">
@@ -106,7 +87,7 @@ export function TeamWorkloadBars({ cycleId }: TeamWorkloadBarsProps) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {mockTeamMembers.map((member) => {
+        {teamMembers.map((member, index) => {
           const total = member.totalTests || 1;
           const passedPct = (member.passed / total) * 100;
           const failedPct = (member.failed / total) * 100;
@@ -115,28 +96,33 @@ export function TeamWorkloadBars({ cycleId }: TeamWorkloadBarsProps) {
           const workloadBadge = member.workloadStatus !== 'normal' 
             ? WORKLOAD_BADGES[member.workloadStatus] 
             : null;
+          const avatarColor = AVATAR_COLORS[index % AVATAR_COLORS.length];
 
           return (
-            <div key={member.id} className="space-y-2">
+            <div key={member.userId} className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {/* Avatar */}
-                  <div 
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium text-white"
-                    style={{ backgroundColor: member.avatarColor }}
-                  >
-                    {member.initials}
-                  </div>
+                  {member.avatarUrl ? (
+                    <img 
+                      src={member.avatarUrl} 
+                      alt={member.userName}
+                      className="w-7 h-7 rounded-full"
+                    />
+                  ) : (
+                    <div 
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium text-white"
+                      style={{ backgroundColor: avatarColor }}
+                    >
+                      {member.userInitials}
+                    </div>
+                  )}
                   <span className="text-sm font-medium text-foreground">
-                    {member.name}
+                    {member.userName}
                   </span>
                   {workloadBadge && (
                     <span 
                       className="text-xs font-medium px-2 py-0.5 rounded-full flex items-center gap-1"
-                      style={{ 
-                        backgroundColor: workloadBadge.bg, 
-                        color: workloadBadge.text 
-                      }}
+                      style={{ backgroundColor: workloadBadge.bg, color: workloadBadge.text }}
                     >
                       <AlertTriangle className="w-3 h-3" />
                       {workloadBadge.label}
@@ -148,42 +134,16 @@ export function TeamWorkloadBars({ cycleId }: TeamWorkloadBarsProps) {
                 </span>
               </div>
               
-              {/* Stacked Progress Bar */}
               <div className="h-2 flex rounded-full overflow-hidden bg-muted">
-                <div 
-                  className="transition-all"
-                  style={{ 
-                    width: `${passedPct}%`, 
-                    backgroundColor: CATALYST_V5.teal 
-                  }}
-                />
-                <div 
-                  className="transition-all"
-                  style={{ 
-                    width: `${failedPct}%`, 
-                    backgroundColor: CATALYST_V5.danger 
-                  }}
-                />
-                <div 
-                  className="transition-all"
-                  style={{ 
-                    width: `${blockedPct}%`, 
-                    backgroundColor: CATALYST_V5.warning 
-                  }}
-                />
-                <div 
-                  className="transition-all"
-                  style={{ 
-                    width: `${inProgressPct}%`, 
-                    backgroundColor: CATALYST_V5.primary 
-                  }}
-                />
+                <div className="transition-all" style={{ width: `${passedPct}%`, backgroundColor: CATALYST_V5.teal }} />
+                <div className="transition-all" style={{ width: `${failedPct}%`, backgroundColor: CATALYST_V5.danger }} />
+                <div className="transition-all" style={{ width: `${blockedPct}%`, backgroundColor: CATALYST_V5.warning }} />
+                <div className="transition-all" style={{ width: `${inProgressPct}%`, backgroundColor: CATALYST_V5.primary }} />
               </div>
             </div>
           );
         })}
 
-        {/* Legend */}
         <div className="flex items-center justify-center gap-4 pt-2 border-t">
           <div className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: CATALYST_V5.teal }} />

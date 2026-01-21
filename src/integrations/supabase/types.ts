@@ -25552,6 +25552,117 @@ export type Database = {
           },
         ]
       }
+      tm_cycle_execution_audit: {
+        Row: {
+          action_type: string
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string | null
+          cycle_id: string
+          defect_key: string | null
+          from_status: string | null
+          id: string
+          metadata: Json | null
+          scope_id: string | null
+          test_case_id: string | null
+          test_case_key: string | null
+          test_case_title: string | null
+          test_run_id: string | null
+          to_status: string | null
+        }
+        Insert: {
+          action_type: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string | null
+          cycle_id: string
+          defect_key?: string | null
+          from_status?: string | null
+          id?: string
+          metadata?: Json | null
+          scope_id?: string | null
+          test_case_id?: string | null
+          test_case_key?: string | null
+          test_case_title?: string | null
+          test_run_id?: string | null
+          to_status?: string | null
+        }
+        Update: {
+          action_type?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string | null
+          cycle_id?: string
+          defect_key?: string | null
+          from_status?: string | null
+          id?: string
+          metadata?: Json | null
+          scope_id?: string | null
+          test_case_id?: string | null
+          test_case_key?: string | null
+          test_case_title?: string | null
+          test_run_id?: string | null
+          to_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_cycle_execution_audit_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_scope_id_fkey"
+            columns: ["scope_id"]
+            isOneToOne: false
+            referencedRelation: "tm_cycle_scope"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_scope_id_fkey"
+            columns: ["scope_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["item_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_test_run_id_fkey"
+            columns: ["test_run_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_cycle_milestones: {
         Row: {
           completed_at: string | null
@@ -31492,7 +31603,76 @@ export type Database = {
         Args: { p_milestone_id: string }
         Returns: Json
       }
+      tm_get_cycle_activity_feed: {
+        Args: { p_cycle_id: string; p_limit?: number }
+        Returns: {
+          action_type: string
+          actor_id: string
+          actor_initials: string
+          actor_name: string
+          created_at: string
+          defect_key: string
+          from_status: string
+          id: string
+          metadata: Json
+          test_case_key: string
+          test_case_title: string
+          time_ago: string
+          to_status: string
+        }[]
+      }
       tm_get_cycle_details: { Args: { p_cycle_id: string }; Returns: Json }
+      tm_get_cycle_execution_summary: {
+        Args: { p_cycle_id: string }
+        Returns: {
+          active_testers: number
+          avg_duration_seconds: number
+          blocked: number
+          defects_found: number
+          execution_rate: number
+          failed: number
+          in_progress: number
+          not_started: number
+          pass_rate: number
+          passed: number
+          skipped: number
+          tests_with_evidence: number
+          total_cases: number
+          total_duration_hours: number
+          velocity_avg_7d: number
+          velocity_today: number
+        }[]
+      }
+      tm_get_cycle_execution_velocity: {
+        Args: { p_cycle_id: string; p_days?: number }
+        Returns: {
+          blocked_count: number
+          cumulative_executed: number
+          date_key: string
+          date_label: string
+          executed_count: number
+          failed_count: number
+          passed_count: number
+          velocity_per_day: number
+        }[]
+      }
+      tm_get_cycle_team_workload: {
+        Args: { p_cycle_id: string }
+        Returns: {
+          avatar_url: string
+          avg_completion_rate: number
+          blocked: number
+          failed: number
+          in_progress: number
+          not_started: number
+          passed: number
+          total_tests: number
+          user_id: string
+          user_initials: string
+          user_name: string
+          workload_status: string
+        }[]
+      }
       tm_get_defect_trend: {
         Args: { p_days?: number; p_project_id: string }
         Returns: {
