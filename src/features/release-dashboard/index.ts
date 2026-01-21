@@ -2,6 +2,7 @@
  * Release Dashboard Feature - Public API
  * Module 5B-1: Release Quality Metrics
  * Module 5B-2: Go/No-Go Dashboard
+ * Module 5B-3: Stakeholder Sign-off Workflow
  */
 
 // Components
@@ -23,10 +24,14 @@ export { QualityMetricsPanel } from './components/QualityMetricsPanel';
 // Module 5B-2: Go/No-Go Dashboard
 export { GoNoGoDashboard } from './components/GoNoGoDashboard';
 
+// Module 5B-3: Stakeholder Sign-off
+export { SignoffPanel } from './components/SignoffPanel';
+
 // Types
 export * from './types';
 export * from './types/quality-metrics';
 export * from './types/go-no-go';
+export * from './types/signoff';
 
 // Hooks - Module 5B-1
 export { 
@@ -41,6 +46,16 @@ export {
   useRecordDecision,
   useDecisionHistory,
 } from './hooks/useGoNoGo';
+
+// Hooks - Module 5B-3
+export {
+  useReleaseSignoffs,
+  useRequestSignoff,
+  useSubmitSignoff,
+  useSignoffTemplates,
+  useApplySignoffTemplate,
+  useRemoveSignoff,
+} from './hooks/useSignoff';
 
 // Utils
 export * from './utils/mockData';
