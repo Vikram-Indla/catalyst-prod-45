@@ -1,6 +1,7 @@
 /**
  * Release Dashboard Feature - Public API
  * Module 5B-1: Release Quality Metrics
+ * Module 5B-2: Go/No-Go Dashboard
  */
 
 // Components
@@ -19,16 +20,27 @@ export { ExportDropdown } from './components/ExportDropdown';
 // Module 5B-1: Quality Metrics
 export { QualityMetricsPanel } from './components/QualityMetricsPanel';
 
+// Module 5B-2: Go/No-Go Dashboard
+export { GoNoGoDashboard } from './components/GoNoGoDashboard';
+
 // Types
 export * from './types';
 export * from './types/quality-metrics';
+export * from './types/go-no-go';
 
-// Hooks
+// Hooks - Module 5B-1
 export { 
   useReleaseQualityMetrics, 
   useReleaseHealth, 
   useExecutionTrend 
 } from './hooks/useQualityMetrics';
+
+// Hooks - Module 5B-2
+export {
+  useGoNoGoAssessment,
+  useRecordDecision,
+  useDecisionHistory,
+} from './hooks/useGoNoGo';
 
 // Utils
 export * from './utils/mockData';
