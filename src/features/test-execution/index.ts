@@ -80,3 +80,25 @@ export {
   ComparisonView,
   UploadProgressDisplay,
 } from './components/evidence';
+
+// ============================================================
+// Module 3C-2: Batch Export
+// ============================================================
+
+// Types
+export * from './types/batch-export';
+
+// Hooks
+export { useBatchExport } from './hooks/useBatchExport';
+export { useExportHistory } from './hooks/useExportHistory';
+
+// Components
+export {
+  BatchExport,
+  StepIndicator,
+  FormatSelector,
+  FieldSelector,
+  FilterChips,
+  ExportProgress,
+  ExportResults,
+} from './components/export';

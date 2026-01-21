@@ -5745,6 +5745,108 @@ export type Database = {
           },
         ]
       }
+      export_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          error_message: string | null
+          expires_at: string | null
+          exported_records: number | null
+          fields: Json | null
+          file_name: string | null
+          file_size: number | null
+          file_url: string | null
+          filters: Json | null
+          format: Database["public"]["Enums"]["export_format"]
+          id: string
+          options: Json | null
+          project_id: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["export_status"] | null
+          test_case_ids: Json | null
+          total_records: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          expires_at?: string | null
+          exported_records?: number | null
+          fields?: Json | null
+          file_name?: string | null
+          file_size?: number | null
+          file_url?: string | null
+          filters?: Json | null
+          format: Database["public"]["Enums"]["export_format"]
+          id?: string
+          options?: Json | null
+          project_id: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["export_status"] | null
+          test_case_ids?: Json | null
+          total_records?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          expires_at?: string | null
+          exported_records?: number | null
+          fields?: Json | null
+          file_name?: string | null
+          file_size?: number | null
+          file_url?: string | null
+          filters?: Json | null
+          format?: Database["public"]["Enums"]["export_format"]
+          id?: string
+          options?: Json | null
+          project_id?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["export_status"] | null
+          test_case_ids?: Json | null
+          total_records?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "export_jobs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       external_entities: {
         Row: {
           contact_info: Json | null
@@ -30233,6 +30335,15 @@ export type Database = {
         Returns: Json
       }
       clean_stale_presence: { Args: never; Returns: undefined }
+      complete_export_job: {
+        Args: {
+          p_file_name: string
+          p_file_size: number
+          p_file_url?: string
+          p_job_id: string
+        }
+        Returns: Json
+      }
       complete_parallel_test: {
         Args: {
           p_execution_time?: number
@@ -30267,6 +30378,16 @@ export type Database = {
           p_name: string
           p_project_id: string
           p_scheduled_start?: string
+        }
+        Returns: Json
+      }
+      create_export_job: {
+        Args: {
+          p_fields: Json
+          p_filters: Json
+          p_format: Database["public"]["Enums"]["export_format"]
+          p_project_id: string
+          p_test_case_ids: Json
         }
         Returns: Json
       }
@@ -30342,6 +30463,10 @@ export type Database = {
       }
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
+      fail_export_job: {
+        Args: { p_error_message: string; p_job_id: string }
+        Returns: Json
+      }
       find_feature_by_short_id: {
         Args: { p_short: string }
         Returns: {
@@ -30449,6 +30574,12 @@ export type Database = {
           total_executions: number
         }[]
       }
+      get_export_data: { Args: { p_job_id: string }; Returns: Json }
+      get_export_history: {
+        Args: { p_limit?: number; p_project_id: string }
+        Returns: Json
+      }
+      get_export_status: { Args: { p_job_id: string }; Returns: Json }
       get_linked_defects_for_step: {
         Args: { p_step_result_id: string }
         Returns: Json
@@ -30987,6 +31118,8 @@ export type Database = {
         | "emergency_change"
         | "business_critical"
         | "other"
+      export_format: "csv" | "xlsx" | "json" | "pdf"
+      export_status: "pending" | "processing" | "completed" | "failed"
       feature_status:
         | "funnel"
         | "analyzing"
@@ -31556,6 +31689,8 @@ export const Constants = {
         "business_critical",
         "other",
       ],
+      export_format: ["csv", "xlsx", "json", "pdf"],
+      export_status: ["pending", "processing", "completed", "failed"],
       feature_status: [
         "funnel",
         "analyzing",
