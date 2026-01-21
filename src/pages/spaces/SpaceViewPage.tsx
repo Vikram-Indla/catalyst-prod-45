@@ -3,7 +3,7 @@
 // ════════════════════════════════════════════════════════════════════════════
 
 import { Outlet, useParams } from 'react-router-dom';
-import { SpacesSidebar, AddMemberModal } from '@/components/spaces';
+import { SpacesSidebar, AddMemberModal, CreateWorkItemModal } from '@/components/spaces';
 import { useSpace } from '@/hooks/spaces';
 
 export default function SpaceViewPage() {
@@ -40,6 +40,7 @@ export default function SpaceViewPage() {
         <Outlet />
       </main>
       <AddMemberModal />
+      <CreateWorkItemModal />
     </div>
   );
 }
