@@ -31578,6 +31578,30 @@ export type Database = {
         Args: { p_folder_id: string; p_new_parent_id: string }
         Returns: boolean
       }
+      tm_compare_cycles: {
+        Args: { p_cycle_ids: string[] }
+        Returns: {
+          active_testers: number
+          avg_execution_time: number
+          blocked: number
+          cycle_id: string
+          cycle_key: string
+          cycle_name: string
+          defect_density: number
+          end_date: string
+          execution_rate: number
+          failed: number
+          health_level: string
+          health_score: number
+          not_run: number
+          pass_rate: number
+          passed: number
+          start_date: string
+          status: string
+          total_cases: number
+          total_defects: number
+        }[]
+      }
       tm_create_audit_log: {
         Args: {
           p_action: string
@@ -31621,6 +31645,19 @@ export type Database = {
           to_status: string
         }[]
       }
+      tm_get_cycle_defect_trends: {
+        Args: { p_cycle_id: string; p_days?: number }
+        Returns: {
+          blocker_count: number
+          critical_count: number
+          cumulative_total: number
+          date_key: string
+          date_label: string
+          major_count: number
+          minor_count: number
+          total_defects: number
+        }[]
+      }
       tm_get_cycle_details: { Args: { p_cycle_id: string }; Returns: Json }
       tm_get_cycle_execution_summary: {
         Args: { p_cycle_id: string }
@@ -31656,6 +31693,19 @@ export type Database = {
           velocity_per_day: number
         }[]
       }
+      tm_get_cycle_quality_trends: {
+        Args: { p_cycle_id: string; p_days?: number }
+        Returns: {
+          cumulative_blocked: number
+          cumulative_failed: number
+          cumulative_passed: number
+          date_key: string
+          date_label: string
+          defect_rate: number
+          execution_rate: number
+          pass_rate: number
+        }[]
+      }
       tm_get_cycle_team_workload: {
         Args: { p_cycle_id: string }
         Returns: {
@@ -31682,6 +31732,25 @@ export type Database = {
           opened: number
         }[]
       }
+      tm_get_plan_analytics: {
+        Args: { p_plan_id: string }
+        Returns: {
+          active_cycles: number
+          avg_cycle_duration_days: number
+          completed_cycles: number
+          overall_execution_rate: number
+          overall_pass_rate: number
+          plan_health_score: number
+          plan_id: string
+          plan_name: string
+          total_blocked: number
+          total_cycles: number
+          total_defects_found: number
+          total_failed: number
+          total_passed: number
+          total_test_cases: number
+        }[]
+      }
       tm_get_plan_burndown: {
         Args: { p_days?: number; p_test_plan_id: string }
         Returns: {
@@ -31702,6 +31771,23 @@ export type Database = {
           passed: number
           skipped: number
           total_tests: number
+        }[]
+      }
+      tm_get_tester_performance: {
+        Args: { p_cycle_id: string }
+        Returns: {
+          avg_execution_time: number
+          completion_rate: number
+          defects_found: number
+          pass_rate: number
+          productivity_score: number
+          tests_assigned: number
+          tests_completed: number
+          tests_failed: number
+          tests_passed: number
+          user_id: string
+          user_initials: string
+          user_name: string
         }[]
       }
       tm_next_entity_key: {
