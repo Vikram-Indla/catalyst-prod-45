@@ -62,13 +62,12 @@ export function useReleaseAnalyticsSummary(releaseId: string | null) {
         });
       }
 
-      // Fetch defect metrics
-      const { data: defects } = await supabase
-        .from('tm_defects')
+      // Fetch defect metrics - cast to any to avoid deep type instantiation
+      const { data: defects } = await (supabase.from('tm_defects') as any)
         .select('id, severity, status, created_at, resolved_at')
         .eq('release_id', releaseId);
 
-      const defectList = defects as any[] || [];
+      const defectList = (defects || []) as any[];
       const openDefects = defectList.filter(d => d.status !== 'closed' && d.status !== 'resolved');
       const closedDefects = defectList.filter(d => d.status === 'closed' || d.status === 'resolved');
 
@@ -83,13 +82,13 @@ export function useReleaseAnalyticsSummary(releaseId: string | null) {
         }
       });
 
-      // Fetch quality gate status
-      const { data: gateResults } = await supabase
+      // Fetch quality gate status - cast to any to avoid deep type instantiation
+      const { data: gateResults } = await (supabase
         .from('tm_release_gate_results')
         .select('*, gate:tm_release_quality_gates(*)')
-        .eq('release_id', releaseId);
+        .eq('release_id', releaseId) as any);
 
-      const results = gateResults as any[] || [];
+      const results = (gateResults || []) as any[];
       const passedGates = results.filter(g => g.passed);
       const blockingGates = results.filter(g => g.gate?.is_blocking);
       const blockingPassed = blockingGates.filter(g => g.passed);
@@ -196,8 +195,7 @@ export function useDefectAging(releaseId: string | null) {
     queryFn: async (): Promise<DefectAgingData[]> => {
       if (!releaseId) return [];
 
-      const { data: defects, error } = await supabase
-        .from('tm_defects')
+      const { data: defects, error } = await (supabase.from('tm_defects') as any)
         .select('id, severity, created_at, status')
         .eq('release_id', releaseId)
         .neq('status', 'closed')
@@ -206,7 +204,7 @@ export function useDefectAging(releaseId: string | null) {
       if (error) throw error;
 
       const now = new Date();
-      const defectList = defects as any[] || [];
+      const defectList = (defects || []) as any[];
       const ageGroups = [
         { label: '0-3 days', min: 0, max: 3 },
         { label: '4-7 days', min: 4, max: 7 },
@@ -348,12 +346,11 @@ export function useReleaseComparison(releaseIds: string[]) {
         }
 
         // Get defects
-        const { data: defects } = await supabase
-          .from('tm_defects')
+        const { data: defects } = await (supabase.from('tm_defects') as any)
           .select('id, severity, status')
           .eq('release_id', releaseId);
 
-        const defectList = defects as any[] || [];
+        const defectList = (defects || []) as any[];
         const openDefects = defectList.filter(d => d.status !== 'closed' && d.status !== 'resolved');
         const blockers = openDefects.filter(d => d.severity === 'blocker');
 
