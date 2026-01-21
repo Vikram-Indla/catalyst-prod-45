@@ -102,3 +102,24 @@ export {
   ExportProgress,
   ExportResults,
 } from './components/export';
+
+// ============================================================
+// Module 3C-3: Batch Update
+// ============================================================
+
+// Types
+export * from './types/batch-update';
+
+// Hooks
+export { useBatchUpdate } from './hooks/useBatchUpdate';
+
+// Components
+export {
+  BatchUpdate,
+  UpdateStepIndicator,
+  FieldUpdateCard,
+  UpdateSummary,
+  ChangePreviewTable,
+  UpdateProgress,
+  UpdateResults,
+} from './components/update';

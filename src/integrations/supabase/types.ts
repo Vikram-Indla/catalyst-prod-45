@@ -887,6 +887,141 @@ export type Database = {
         }
         Relationships: []
       }
+      batch_update_changes: {
+        Row: {
+          applied: boolean | null
+          created_at: string | null
+          field_name: string
+          id: string
+          job_id: string
+          new_value: string | null
+          old_value: string | null
+          rolled_back: boolean | null
+          test_case_id: string
+        }
+        Insert: {
+          applied?: boolean | null
+          created_at?: string | null
+          field_name: string
+          id?: string
+          job_id: string
+          new_value?: string | null
+          old_value?: string | null
+          rolled_back?: boolean | null
+          test_case_id: string
+        }
+        Update: {
+          applied?: boolean | null
+          created_at?: string | null
+          field_name?: string
+          id?: string
+          job_id?: string
+          new_value?: string | null
+          old_value?: string | null
+          rolled_back?: boolean | null
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "batch_update_changes_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "batch_update_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "batch_update_changes_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      batch_update_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          error_message: string | null
+          failed_records: number | null
+          field_updates: Json
+          id: string
+          project_id: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["batch_update_status"] | null
+          test_case_ids: Json
+          total_records: number | null
+          updated_records: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          failed_records?: number | null
+          field_updates?: Json
+          id?: string
+          project_id: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["batch_update_status"] | null
+          test_case_ids?: Json
+          total_records?: number | null
+          updated_records?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          failed_records?: number | null
+          field_updates?: Json
+          id?: string
+          project_id?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["batch_update_status"] | null
+          test_case_ids?: Json
+          total_records?: number | null
+          updated_records?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "batch_update_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "batch_update_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "batch_update_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "batch_update_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "batch_update_jobs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       board_configs: {
         Row: {
           board_type: Database["public"]["Enums"]["board_type"]
@@ -30365,6 +30500,14 @@ export type Database = {
         Returns: undefined
       }
       create_adhoc_cycle: { Args: never; Returns: string }
+      create_batch_update_job: {
+        Args: {
+          p_field_updates: Json
+          p_project_id: string
+          p_test_case_ids: Json
+        }
+        Returns: Json
+      }
       create_default_project_roles: {
         Args: { p_project_id: string }
         Returns: undefined
@@ -30462,6 +30605,7 @@ export type Database = {
         Returns: Database["public"]["Enums"]["dependency_level_v2"]
       }
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
+      execute_batch_update: { Args: { p_job_id: string }; Returns: Json }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
       fail_export_job: {
         Args: { p_error_message: string; p_job_id: string }
@@ -30516,6 +30660,8 @@ export type Database = {
           depth: number
         }[]
       }
+      get_batch_update_preview: { Args: { p_job_id: string }; Returns: Json }
+      get_batch_update_status: { Args: { p_job_id: string }; Returns: Json }
       get_case_metrics: { Args: { p_execution_id: string }; Returns: Json }
       get_coverage_stats: {
         Args: { p_cycle_id?: string; p_project_id: string }
@@ -31019,6 +31165,7 @@ export type Database = {
         Args: { _team_id: string; _user_id: string }
         Returns: boolean
       }
+      validate_batch_update: { Args: { p_job_id: string }; Returns: Json }
       worker_heartbeat: { Args: { p_worker_id: string }; Returns: Json }
     }
     Enums: {
@@ -31040,6 +31187,13 @@ export type Database = {
         | "connect"
         | "disconnect"
       auth_method: "token" | "oauth"
+      batch_update_status:
+        | "pending"
+        | "validating"
+        | "executing"
+        | "completed"
+        | "failed"
+        | "rolled_back"
       board_scope_type: "portfolio" | "program" | "team"
       board_type:
         | "portfolio_kanban"
@@ -31602,6 +31756,14 @@ export const Constants = {
         "disconnect",
       ],
       auth_method: ["token", "oauth"],
+      batch_update_status: [
+        "pending",
+        "validating",
+        "executing",
+        "completed",
+        "failed",
+        "rolled_back",
+      ],
       board_scope_type: ["portfolio", "program", "team"],
       board_type: [
         "portfolio_kanban",
