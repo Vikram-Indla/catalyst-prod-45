@@ -25437,6 +25437,220 @@ export type Database = {
           },
         ]
       }
+      tm_cycle_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          cycle_id: string
+          id: string
+          notes: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          cycle_id: string
+          id?: string
+          notes?: string | null
+          role?: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          cycle_id?: string
+          id?: string
+          notes?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      tm_cycle_milestones: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          cycle_id: string
+          description: string | null
+          id: string
+          is_completed: boolean
+          name: string
+          sort_order: number
+          target_date: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          cycle_id: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          name: string
+          sort_order?: number
+          target_date: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          cycle_id?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          name?: string
+          sort_order?: number
+          target_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+        ]
+      }
       tm_cycle_scope: {
         Row: {
           added_at: string | null
@@ -31224,6 +31438,27 @@ export type Database = {
         Returns: Json
       }
       text2ltree: { Args: { "": string }; Returns: unknown }
+      tm_assign_scope_item: {
+        Args: { p_assigned_to: string; p_scope_id: string }
+        Returns: Json
+      }
+      tm_assign_tester_to_cycle: {
+        Args: {
+          p_cycle_id: string
+          p_notes?: string
+          p_role?: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      tm_bulk_add_cases_to_cycle: {
+        Args: {
+          p_assigned_to?: string
+          p_cycle_id: string
+          p_test_case_ids: string[]
+        }
+        Returns: Json
+      }
       tm_calculate_run_status: {
         Args: { p_run_id: string }
         Returns: Database["public"]["Enums"]["tm_execution_status"]
@@ -31244,6 +31479,20 @@ export type Database = {
         }
         Returns: string
       }
+      tm_create_cycle_milestone: {
+        Args: {
+          p_cycle_id: string
+          p_description?: string
+          p_name: string
+          p_target_date: string
+        }
+        Returns: Json
+      }
+      tm_delete_cycle_milestone: {
+        Args: { p_milestone_id: string }
+        Returns: Json
+      }
+      tm_get_cycle_details: { Args: { p_cycle_id: string }; Returns: Json }
       tm_get_defect_trend: {
         Args: { p_days?: number; p_project_id: string }
         Returns: {
@@ -31278,6 +31527,24 @@ export type Database = {
       tm_next_entity_key: {
         Args: { p_prefix: string; p_project_id: string }
         Returns: string
+      }
+      tm_remove_case_from_cycle: {
+        Args: { p_cycle_id: string; p_test_case_id: string }
+        Returns: Json
+      }
+      tm_remove_tester_from_cycle: {
+        Args: { p_cycle_id: string; p_user_id: string }
+        Returns: Json
+      }
+      tm_update_cycle_milestone: {
+        Args: {
+          p_description?: string
+          p_is_completed?: boolean
+          p_milestone_id: string
+          p_name?: string
+          p_target_date?: string
+        }
+        Returns: Json
       }
       tm_update_cycle_stats: {
         Args: { p_cycle_id: string }
