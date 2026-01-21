@@ -26592,6 +26592,309 @@ export type Database = {
           },
         ]
       }
+      tm_release_gate_results: {
+        Row: {
+          actual_value: number | null
+          cycle_id: string | null
+          evaluated_at: string | null
+          evaluated_by: string | null
+          gate_id: string
+          id: string
+          notes: string | null
+          passed: boolean
+          release_id: string
+        }
+        Insert: {
+          actual_value?: number | null
+          cycle_id?: string | null
+          evaluated_at?: string | null
+          evaluated_by?: string | null
+          gate_id: string
+          id?: string
+          notes?: string | null
+          passed: boolean
+          release_id: string
+        }
+        Update: {
+          actual_value?: number | null
+          cycle_id?: string | null
+          evaluated_at?: string | null
+          evaluated_by?: string | null
+          gate_id?: string
+          id?: string
+          notes?: string | null
+          passed?: boolean
+          release_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_release_gate_results_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_gate_id_fkey"
+            columns: ["gate_id"]
+            isOneToOne: false
+            referencedRelation: "tm_release_quality_gates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_release_quality_gates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          gate_name: string
+          gate_type: string
+          id: string
+          is_blocking: boolean | null
+          release_id: string
+          sort_order: number | null
+          threshold_operator: string
+          threshold_value: number
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          gate_name: string
+          gate_type: string
+          id?: string
+          is_blocking?: boolean | null
+          release_id: string
+          sort_order?: number | null
+          threshold_operator: string
+          threshold_value: number
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          gate_name?: string
+          gate_type?: string
+          id?: string
+          is_blocking?: boolean | null
+          release_id?: string
+          sort_order?: number | null
+          threshold_operator?: string
+          threshold_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_release_readiness: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          blocking_gates_passed: number | null
+          blocking_gates_total: number | null
+          created_by: string | null
+          gates_passed: number | null
+          gates_total: number | null
+          id: string
+          open_blockers: number | null
+          open_criticals: number | null
+          overall_status: string
+          recommendation: string | null
+          release_id: string
+          snapshot_at: string | null
+          test_execution_pct: number | null
+          test_pass_pct: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          blocking_gates_passed?: number | null
+          blocking_gates_total?: number | null
+          created_by?: string | null
+          gates_passed?: number | null
+          gates_total?: number | null
+          id?: string
+          open_blockers?: number | null
+          open_criticals?: number | null
+          overall_status: string
+          recommendation?: string | null
+          release_id: string
+          snapshot_at?: string | null
+          test_execution_pct?: number | null
+          test_pass_pct?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          blocking_gates_passed?: number | null
+          blocking_gates_total?: number | null
+          created_by?: string | null
+          gates_passed?: number | null
+          gates_total?: number | null
+          id?: string
+          open_blockers?: number | null
+          open_criticals?: number | null
+          overall_status?: string
+          recommendation?: string | null
+          release_id?: string
+          snapshot_at?: string | null
+          test_execution_pct?: number | null
+          test_pass_pct?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_roles: {
         Row: {
           created_at: string | null
@@ -27262,6 +27565,7 @@ export type Database = {
           planned_end: string | null
           planned_start: string | null
           project_id: string
+          release_id: string | null
           skipped_count: number | null
           status: Database["public"]["Enums"]["tm_cycle_status"] | null
           test_plan_id: string | null
@@ -27285,6 +27589,7 @@ export type Database = {
           planned_end?: string | null
           planned_start?: string | null
           project_id: string
+          release_id?: string | null
           skipped_count?: number | null
           status?: Database["public"]["Enums"]["tm_cycle_status"] | null
           test_plan_id?: string | null
@@ -27308,6 +27613,7 @@ export type Database = {
           planned_end?: string | null
           planned_start?: string | null
           project_id?: string
+          release_id?: string | null
           skipped_count?: number | null
           status?: Database["public"]["Enums"]["tm_cycle_status"] | null
           test_plan_id?: string | null
@@ -27363,6 +27669,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_traceability_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cycles_test_plan_id_fkey"
@@ -31549,6 +31862,10 @@ export type Database = {
         Returns: Json
       }
       text2ltree: { Args: { "": string }; Returns: unknown }
+      tm_approve_release_readiness: {
+        Args: { p_snapshot_id: string; p_user_id: string }
+        Returns: boolean
+      }
       tm_assign_scope_item: {
         Args: { p_assigned_to: string; p_scope_id: string }
         Returns: Json
@@ -31623,8 +31940,20 @@ export type Database = {
         }
         Returns: Json
       }
+      tm_create_readiness_snapshot: {
+        Args: {
+          p_recommendation?: string
+          p_release_id: string
+          p_user_id?: string
+        }
+        Returns: string
+      }
       tm_delete_cycle_milestone: {
         Args: { p_milestone_id: string }
+        Returns: Json
+      }
+      tm_evaluate_release_gates: {
+        Args: { p_release_id: string; p_user_id?: string }
         Returns: Json
       }
       tm_get_cycle_activity_feed: {
@@ -31772,6 +32101,30 @@ export type Database = {
           skipped: number
           total_tests: number
         }[]
+      }
+      tm_get_release_readiness_history: {
+        Args: { p_release_id: string }
+        Returns: {
+          approved_at: string
+          approved_by_name: string
+          blocking_gates_passed: number
+          blocking_gates_total: number
+          created_by_name: string
+          gates_passed: number
+          gates_total: number
+          id: string
+          open_blockers: number
+          open_criticals: number
+          overall_status: string
+          recommendation: string
+          snapshot_at: string
+          test_execution_pct: number
+          test_pass_pct: number
+        }[]
+      }
+      tm_get_release_test_summary: {
+        Args: { p_release_id: string }
+        Returns: Json
       }
       tm_get_tester_performance: {
         Args: { p_cycle_id: string }
