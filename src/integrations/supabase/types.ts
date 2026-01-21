@@ -28106,9 +28106,12 @@ export type Database = {
         Row: {
           action: string
           created_at: string | null
+          estimated_time_seconds: number | null
           expected_result: string | null
           id: string
+          is_optional: boolean | null
           is_shared: boolean | null
+          notes: string | null
           shared_step_id: string | null
           step_number: number
           test_case_id: string
@@ -28118,9 +28121,12 @@ export type Database = {
         Insert: {
           action: string
           created_at?: string | null
+          estimated_time_seconds?: number | null
           expected_result?: string | null
           id?: string
+          is_optional?: boolean | null
           is_shared?: boolean | null
+          notes?: string | null
           shared_step_id?: string | null
           step_number: number
           test_case_id: string
@@ -28130,9 +28136,12 @@ export type Database = {
         Update: {
           action?: string
           created_at?: string | null
+          estimated_time_seconds?: number | null
           expected_result?: string | null
           id?: string
+          is_optional?: boolean | null
           is_shared?: boolean | null
+          notes?: string | null
           shared_step_id?: string | null
           step_number?: number
           test_case_id?: string
@@ -31887,6 +31896,10 @@ export type Database = {
         }
         Returns: Json
       }
+      tm_bulk_update_steps: {
+        Args: { p_case_id: string; p_steps: Json }
+        Returns: number
+      }
       tm_calculate_run_status: {
         Args: { p_run_id: string }
         Returns: Database["public"]["Enums"]["tm_execution_status"]
@@ -31894,6 +31907,10 @@ export type Database = {
       tm_check_circular_folder: {
         Args: { p_folder_id: string; p_new_parent_id: string }
         Returns: boolean
+      }
+      tm_clone_step: {
+        Args: { p_insert_after?: number; p_step_id: string }
+        Returns: string
       }
       tm_compare_cycles: {
         Args: { p_cycle_ids: string[] }
@@ -31952,9 +31969,26 @@ export type Database = {
         Args: { p_milestone_id: string }
         Returns: Json
       }
+      tm_delete_step: { Args: { p_step_id: string }; Returns: boolean }
       tm_evaluate_release_gates: {
         Args: { p_release_id: string; p_user_id?: string }
         Returns: Json
+      }
+      tm_get_case_steps: {
+        Args: { p_case_id: string }
+        Returns: {
+          action: string
+          created_at: string
+          estimated_time_seconds: number
+          expected_result: string
+          id: string
+          is_optional: boolean
+          notes: string
+          step_number: number
+          step_type: string
+          test_data: string
+          updated_at: string
+        }[]
       }
       tm_get_cycle_activity_feed: {
         Args: { p_cycle_id: string; p_limit?: number }
@@ -32143,6 +32177,17 @@ export type Database = {
           user_name: string
         }[]
       }
+      tm_insert_step_at: {
+        Args: {
+          p_action?: string
+          p_case_id: string
+          p_expected_result?: string
+          p_position: number
+          p_step_type?: string
+          p_test_data?: string
+        }
+        Returns: string
+      }
       tm_next_entity_key: {
         Args: { p_prefix: string; p_project_id: string }
         Returns: string
@@ -32154,6 +32199,10 @@ export type Database = {
       tm_remove_tester_from_cycle: {
         Args: { p_cycle_id: string; p_user_id: string }
         Returns: Json
+      }
+      tm_reorder_steps: {
+        Args: { p_case_id: string; p_step_orders: Json }
+        Returns: boolean
       }
       tm_update_cycle_milestone: {
         Args: {
