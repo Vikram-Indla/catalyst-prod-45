@@ -1,11 +1,14 @@
 /**
- * Reports View - KPIs and charts
+ * Reports View - Enhanced analytics dashboard with charts
+ * Module 4A-4: Plan/Cycle Analytics
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
+import { TrendingUp, BarChart3, Bug, Users } from 'lucide-react';
 import type { TestCycle, CycleStats } from '@/hooks/test-cycles/useCycleDetails';
+import { QualityTrendChart, DefectTrendChart, TesterPerformanceTable, VelocityChart } from './analytics';
 
 interface CycleReportsViewProps {
   cycleId: string;
@@ -43,9 +46,9 @@ export function CycleReportsView({ cycleId, cycle, stats, isLoading }: CycleRepo
         
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground mb-1">Defects Found</p>
+            <p className="text-sm text-muted-foreground mb-1">Failed Tests</p>
             <p className="text-3xl font-bold" style={{ color: CATALYST_V5.danger }}>{stats.failed}</p>
-            <p className="text-xs text-muted-foreground mt-1">From failed tests</p>
+            <p className="text-xs text-muted-foreground mt-1">Defects to investigate</p>
           </CardContent>
         </Card>
         
@@ -58,10 +61,25 @@ export function CycleReportsView({ cycleId, cycle, stats, isLoading }: CycleRepo
         </Card>
       </div>
 
+      {/* Charts Row 1: Quality Trends + Velocity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <QualityTrendChart cycleId={cycleId} />
+        <VelocityChart cycleId={cycleId} />
+      </div>
+
+      {/* Charts Row 2: Defect Trends + Tester Performance */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DefectTrendChart cycleId={cycleId} />
+        <TesterPerformanceTable cycleId={cycleId} />
+      </div>
+
       {/* Summary */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Cycle Summary</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" />
+            Cycle Summary
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-8">
