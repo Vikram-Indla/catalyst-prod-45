@@ -30159,6 +30159,15 @@ export type Database = {
         Args: { p_run_id: string; p_test_case_ids: string[] }
         Returns: Json
       }
+      allocate_workers: {
+        Args: {
+          p_environment_id: string
+          p_run_id: string
+          p_worker_count: number
+          p_worker_pool_id?: string
+        }
+        Returns: Json
+      }
       bulk_assign_roles: {
         Args: {
           _notes?: string
@@ -30308,6 +30317,10 @@ export type Database = {
         Returns: string
       }
       current_user_is_approved: { Args: never; Returns: boolean }
+      deallocate_workers: {
+        Args: { p_run_id: string; p_worker_count?: number }
+        Returns: Json
+      }
       delete_evidence: { Args: { p_evidence_id: string }; Returns: Json }
       delete_execution_run: { Args: { p_run_id: string }; Returns: Json }
       derive_dependency_container: {
@@ -30369,6 +30382,7 @@ export type Database = {
         Args: { p_team_id: string }
         Returns: string
       }
+      get_active_allocations: { Args: { p_project_id: string }; Returns: Json }
       get_all_blockers: {
         Args: { p_item_id: string; p_item_type: string }
         Returns: {
@@ -30397,6 +30411,7 @@ export type Database = {
           blocks_count: number
         }[]
       }
+      get_environments: { Args: { p_project_id: string }; Returns: Json }
       get_execution_run: { Args: { p_run_id: string }; Returns: Json }
       get_execution_summary: {
         Args: {
@@ -30463,6 +30478,7 @@ export type Database = {
         Args: { p_limit?: number; p_run_id: string }
         Returns: Json
       }
+      get_resource_summary: { Args: { p_project_id: string }; Returns: Json }
       get_run_metrics: { Args: { p_run_id: string }; Returns: Json }
       get_run_progress: { Args: { p_run_id: string }; Returns: Json }
       get_run_progress_summary: { Args: { p_run_id: string }; Returns: Json }
@@ -30520,6 +30536,7 @@ export type Database = {
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_worker_activity: { Args: { p_run_id: string }; Returns: Json }
+      get_worker_pools: { Args: { p_project_id: string }; Returns: Json }
       get_worker_status: { Args: { p_run_id: string }; Returns: Json }
       has_ra_role: {
         Args: { required_role: Database["public"]["Enums"]["ra_user_role"] }
@@ -30589,6 +30606,14 @@ export type Database = {
           p_severity?: string
           p_step_result_id: string
           p_title?: string
+        }
+        Returns: Json
+      }
+      reassign_workers: {
+        Args: {
+          p_from_pool_id: string
+          p_to_pool_id: string
+          p_worker_count: number
         }
         Returns: Json
       }
