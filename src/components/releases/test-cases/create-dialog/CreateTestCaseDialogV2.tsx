@@ -119,16 +119,30 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
     }
   }, [open]);
 
-  // Calculate progress
-  const requiredFields = ['title', 'type', 'priority', 'folderId'];
-  const completedFields = requiredFields.filter((f) => {
-    const value = formData[f as keyof TestCaseFormData];
+  // Calculate progress with human-readable labels
+  const requiredFieldsConfig = [
+    { key: 'title', label: 'Title' },
+    { key: 'type', label: 'Type' },
+    { key: 'priority', label: 'Priority' },
+    { key: 'folderId', label: 'Folder' },
+  ];
+  const completedFields = requiredFieldsConfig.filter((f) => {
+    const value = formData[f.key as keyof TestCaseFormData];
     return value && String(value).trim() !== '';
   });
   const hasValidStep = formData.steps.some((s) => s.action && s.expectedResult);
-  const totalRequired = requiredFields.length + 1; // +1 for steps
+  const totalRequired = requiredFieldsConfig.length + 1; // +1 for steps
   const completedCount = completedFields.length + (hasValidStep ? 1 : 0);
   const progress = (completedCount / totalRequired) * 100;
+  
+  // Get missing fields for display
+  const missingFields = requiredFieldsConfig
+    .filter((f) => {
+      const value = formData[f.key as keyof TestCaseFormData];
+      return !value || String(value).trim() === '';
+    })
+    .map((f) => f.label);
+  if (!hasValidStep) missingFields.push('Steps (at least one complete step)');
 
   const handleChange = useCallback((updates: Partial<TestCaseFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
@@ -155,6 +169,13 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
     return Object.keys(newErrors).length === 0;
   };
 
+  // Build specific error message for toast
+  const getMissingFieldsMessage = (): string => {
+    if (missingFields.length === 0) return '';
+    if (missingFields.length === 1) return `Missing: ${missingFields[0]}`;
+    return `Missing: ${missingFields.slice(0, -1).join(', ')} and ${missingFields[missingFields.length - 1]}`;
+  };
+
   const handleSaveDraft = async () => {
     setIsSavingDraft(true);
     await new Promise((r) => setTimeout(r, 500));
@@ -164,7 +185,7 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
 
   const handleSubmit = async () => {
     if (!validate()) {
-      toast.error('Please fill in all required fields');
+      toast.error(getMissingFieldsMessage() || 'Please fill in all required fields');
       return;
     }
     setIsSubmitting(true);
@@ -226,6 +247,15 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
             <Progress value={progress} className="h-1.5 flex-1" />
             <span className="text-xs text-muted-foreground whitespace-nowrap">{completedCount} of {totalRequired} required</span>
           </div>
+          {missingFields.length > 0 && (
+            <div className="flex items-start gap-2 mt-2 p-2 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="text-xs">
+                <span className="font-medium text-amber-700 dark:text-amber-300">Missing required fields: </span>
+                <span className="text-amber-600 dark:text-amber-400">{missingFields.join(', ')}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tabs */}
