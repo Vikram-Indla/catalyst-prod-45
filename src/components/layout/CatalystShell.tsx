@@ -12,6 +12,7 @@ import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanne
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
+import { SpacesScopeProvider } from '@/components/navigation';
 
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
@@ -227,7 +228,9 @@ function CatalystShellContent() {
 export function CatalystShell() {
   return (
     <CatalystContextProvider>
-      <CatalystShellContent />
+      <SpacesScopeProvider>
+        <CatalystShellContent />
+      </SpacesScopeProvider>
     </CatalystContextProvider>
   );
 }
