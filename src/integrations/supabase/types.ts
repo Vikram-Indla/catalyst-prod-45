@@ -13116,6 +13116,7 @@ export type Database = {
       project_members: {
         Row: {
           accepted_at: string | null
+          added_by: string | null
           created_at: string | null
           email: string | null
           id: string
@@ -13131,6 +13132,7 @@ export type Database = {
         }
         Insert: {
           accepted_at?: string | null
+          added_by?: string | null
           created_at?: string | null
           email?: string | null
           id?: string
@@ -13146,6 +13148,7 @@ export type Database = {
         }
         Update: {
           accepted_at?: string | null
+          added_by?: string | null
           created_at?: string | null
           email?: string | null
           id?: string
@@ -13184,6 +13187,27 @@ export type Database = {
           {
             foreignKeyName: "program_members_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
@@ -13262,14 +13286,24 @@ export type Database = {
         Row: {
           archived_at: string | null
           archived_by: string | null
+          avatar_url: string | null
+          category: string | null
           code: string | null
+          color: string | null
           created_at: string | null
+          created_by: string | null
+          default_assignee_id: string | null
           description: string | null
           id: string
+          is_archived: boolean | null
           is_default: boolean | null
+          is_private: boolean | null
+          issue_sequence: number | null
           key: string
+          lead_id: string | null
           name: string
           program_id: string
+          project_type: string
           rte_id: string | null
           settings: Json | null
           status: Database["public"]["Enums"]["program_status"] | null
@@ -13279,14 +13313,24 @@ export type Database = {
         Insert: {
           archived_at?: string | null
           archived_by?: string | null
+          avatar_url?: string | null
+          category?: string | null
           code?: string | null
+          color?: string | null
           created_at?: string | null
+          created_by?: string | null
+          default_assignee_id?: string | null
           description?: string | null
           id?: string
+          is_archived?: boolean | null
           is_default?: boolean | null
+          is_private?: boolean | null
+          issue_sequence?: number | null
           key: string
+          lead_id?: string | null
           name: string
           program_id: string
+          project_type?: string
           rte_id?: string | null
           settings?: Json | null
           status?: Database["public"]["Enums"]["program_status"] | null
@@ -13296,14 +13340,24 @@ export type Database = {
         Update: {
           archived_at?: string | null
           archived_by?: string | null
+          avatar_url?: string | null
+          category?: string | null
           code?: string | null
+          color?: string | null
           created_at?: string | null
+          created_by?: string | null
+          default_assignee_id?: string | null
           description?: string | null
           id?: string
+          is_archived?: boolean | null
           is_default?: boolean | null
+          is_private?: boolean | null
+          issue_sequence?: number | null
           key?: string
+          lead_id?: string | null
           name?: string
           program_id?: string
+          project_type?: string
           rte_id?: string | null
           settings?: Json | null
           status?: Database["public"]["Enums"]["program_status"] | null
@@ -13335,6 +13389,69 @@ export type Database = {
           {
             foreignKeyName: "projects_archived_by_fkey"
             columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
