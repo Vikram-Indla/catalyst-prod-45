@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'planner' | 'spaces';
+export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'planner';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -20,10 +20,6 @@ export interface WorkspaceContext {
  * This is the SINGLE SOURCE OF TRUTH for workspace type
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
-  // Spaces module
-  if (pathname.startsWith('/spaces')) {
-    return 'spaces';
-  }
   
   // Planner module - separate from Home
   if (pathname.startsWith('/planner')) {
@@ -109,8 +105,6 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'Operations';
     case 'planner':
       return 'Planner';
-    case 'spaces':
-      return 'Spaces';
     default:
       return '';
   }

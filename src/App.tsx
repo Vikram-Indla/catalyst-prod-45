@@ -45,14 +45,6 @@ import FeaturesBacklog from "./pages/FeaturesBacklog";
 import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
 const FeatureDetailPage = lazy(() => import("./pages/project/FeatureDetailPage"));
 const FeatureBacklogPage = lazy(() => import("./modules/feature-backlog/pages/FeatureBacklogPage"));
-const SpacesBacklogPage = lazy(() => import("./modules/spaces-backlog/pages/SpacesBacklogPage"));
-const SpacesPage = lazy(() => import("./pages/spaces/SpacesPage"));
-const SpaceViewPage = lazy(() => import("./pages/spaces/SpaceViewPage"));
-const SpaceSummaryPage = lazy(() => import("./pages/spaces/SpaceSummaryPage"));
-const SpaceBoardPage = lazy(() => import("./pages/spaces/SpaceBoardPage"));
-const SpaceBacklogPageView = lazy(() => import("./pages/spaces/SpaceBacklogPageView"));
-const SpaceTimelinePage = lazy(() => import("./pages/spaces/SpaceTimelinePage"));
-const SpaceSettingsPage = lazy(() => import("./pages/spaces/SpaceSettingsPage"));
 const ProjectWorkspace = lazy(() => import("./pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
@@ -415,17 +407,6 @@ const App = () => (
               {/* Starred items page */}
               <Route path="/starred" element={<StarredPage />} />
               
-              {/* Spaces Module */}
-              <Route path="/spaces" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpacesPage /></Suspense>} />
-              <Route path="/spaces/backlog" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpacesBacklogPage /></Suspense>} />
-              <Route path="/spaces/:spaceId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpaceViewPage /></Suspense>}>
-                <Route index element={<Navigate to="summary" replace />} />
-                <Route path="summary" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpaceSummaryPage /></Suspense>} />
-                <Route path="board" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpaceBoardPage /></Suspense>} />
-                <Route path="backlog" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpaceBacklogPageView /></Suspense>} />
-                <Route path="timeline" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpaceTimelinePage /></Suspense>} />
-                <Route path="settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SpaceSettingsPage /></Suspense>} />
-              </Route>
               
               
               <Route path="/search" element={<SearchPage />} />
