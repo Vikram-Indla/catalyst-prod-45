@@ -709,8 +709,6 @@ export default function CommandCenterPage() {
       console.error('CSV export error:', error);
     }
   }, [kpis]);
-    }
-  }, [kpis]);
 
   // KPI click handlers - navigate to filtered views
   const handleKpiClick = useCallback((kpiId: string) => {
