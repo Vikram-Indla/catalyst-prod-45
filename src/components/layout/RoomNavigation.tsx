@@ -30,18 +30,6 @@ const rooms: Room[] = [
     defaultPath: '/strategy-room' 
   },
   { 
-    id: 'program', 
-    label: 'Program', 
-    icon: Briefcase, 
-    defaultPath: '/program-room' 
-  },
-  { 
-    id: 'project', 
-    label: 'Project', 
-    icon: GitBranch, 
-    defaultPath: '/project-room' 
-  },
-  { 
     id: 'team', 
     label: 'Team', 
     icon: Users, 
