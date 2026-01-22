@@ -3,18 +3,19 @@
  * Based on 9.8 Specification
  * 
  * Features:
- * - KPI Overview with trend indicators
+ * - KPI Overview with trend indicators (clickable to filter)
  * - Release Health cards with progress rings
  * - Test Progress stacked bar chart
  * - Defect Trends line chart
- * - Quality Gates status
- * - Activity Feed
+ * - Quality Gates status (clickable)
+ * - Activity Feed (clickable items)
  * - Team Performance
  * - Upcoming Milestones
  * - Auto-refresh (2 min default)
+ * - Export: PDF, CSV, Excel
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -22,7 +23,7 @@ import {
   TestTube2, CheckCircle2, Bug, AlertTriangle,
   TrendingUp, TrendingDown, Minus,
   Calendar, Clock, User, MessageSquare,
-  Shield, Target, Users, Flag
+  Shield, Target, Users, Flag, FileText, FileSpreadsheet, Table2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,7 +34,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip as UITooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { catalystToast } from '@/lib/catalystToast';
@@ -42,6 +50,10 @@ import {
   BarChart, Bar, Legend, Area, AreaChart
 } from 'recharts';
 import { useQueryClient } from '@tanstack/react-query';
+
+// Export utilities
+import { exportToExcel, exportToCsv, exportToPdf } from '@/utils/exports';
+import type { ExportColumn } from '@/utils/exports/types';
 
 // Import real data hooks
 import {
@@ -211,8 +223,16 @@ const mockMilestones = [
 // HELPER COMPONENTS
 // ============================================
 
-// KPI Card
-function KPICard({ kpi, index }: { kpi: Omit<KPIMetric, 'icon'> & { icon: React.ComponentType<any> }; index: number }) {
+// KPI Card with click handler and tooltip
+function KPICard({ 
+  kpi, 
+  index, 
+  onClick 
+}: { 
+  kpi: Omit<KPIMetric, 'icon'> & { icon: React.ComponentType<any> }; 
+  index: number;
+  onClick?: () => void;
+}) {
   const colorMap = {
     primary: { border: CATALYST_V5.primary, bg: CATALYST_V5.primaryLighter, icon: CATALYST_V5.primary },
     teal: { border: CATALYST_V5.teal, bg: CATALYST_V5.tealLighter, icon: CATALYST_V5.teal },
@@ -224,47 +244,79 @@ function KPICard({ kpi, index }: { kpi: Omit<KPIMetric, 'icon'> & { icon: React.
   const Icon = kpi.icon;
   const TrendIcon = kpi.trend.direction === 'up' ? TrendingUp : kpi.trend.direction === 'down' ? TrendingDown : Minus;
   
+  // Determine trend tooltip text
+  const trendLabel = kpi.trend.direction === 'up' ? 'increased' : kpi.trend.direction === 'down' ? 'decreased' : 'unchanged';
+  const trendTooltip = `${kpi.trend.percentage}% ${trendLabel} from last period`;
+  
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className="relative bg-card border rounded-xl p-5 overflow-hidden"
-    >
-      {/* Top color accent */}
-      <div 
-        className="absolute top-0 left-0 right-0 h-1"
-        style={{ backgroundColor: colors.border }}
-      />
-      
-      <div className="flex items-start justify-between">
+    <TooltipProvider>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        className={cn(
+          "relative bg-card border rounded-xl p-5 overflow-hidden transition-all",
+          onClick && "cursor-pointer hover:shadow-md hover:border-primary/30"
+        )}
+        onClick={onClick}
+        role={onClick ? "button" : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        onKeyDown={(e) => {
+          if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            onClick();
+          }
+        }}
+        aria-label={`${kpi.label}: ${kpi.formattedValue}. ${trendTooltip}`}
+      >
+        {/* Top color accent */}
         <div 
-          className="w-11 h-11 rounded-[10px] flex items-center justify-center"
-          style={{ backgroundColor: colors.bg }}
-        >
-          <Icon className="w-5 h-5" style={{ color: colors.icon }} />
+          className="absolute top-0 left-0 right-0 h-1"
+          style={{ backgroundColor: colors.border }}
+        />
+        
+        <div className="flex items-start justify-between">
+          <div 
+            className="w-11 h-11 rounded-[10px] flex items-center justify-center"
+            style={{ backgroundColor: colors.bg }}
+          >
+            <Icon className="w-5 h-5" style={{ color: colors.icon }} />
+          </div>
+          
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <div 
+                className={cn(
+                  "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md cursor-help",
+                  kpi.trend.isPositive 
+                    ? "bg-[#f0fdfa] text-[#0d9488]" 
+                    : "bg-[#fef2f2] text-[#ef4444]"
+                )}
+              >
+                <TrendIcon className="w-3 h-3" />
+                {kpi.trend.percentage}%
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs">
+              {trendTooltip}
+            </TooltipContent>
+          </UITooltip>
         </div>
         
-        <div 
-          className={cn(
-            "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md",
-            kpi.trend.isPositive 
-              ? "bg-[#f0fdfa] text-[#0d9488]" 
-              : "bg-[#fef2f2] text-[#ef4444]"
-          )}
-        >
-          <TrendIcon className="w-3 h-3" />
-          {kpi.trend.percentage}%
+        <div className="mt-4">
+          <div className="text-[32px] font-bold text-foreground leading-none mb-1">
+            {kpi.formattedValue}
+          </div>
+          <div className="text-[13px] text-muted-foreground">{kpi.label}</div>
         </div>
-      </div>
-      
-      <div className="mt-4">
-        <div className="text-[32px] font-bold text-foreground leading-none mb-1">
-          {kpi.formattedValue}
-        </div>
-        <div className="text-[13px] text-muted-foreground">{kpi.label}</div>
-      </div>
-    </motion.div>
+        
+        {onClick && (
+          <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground/60">
+            Click to filter
+          </div>
+        )}
+      </motion.div>
+    </TooltipProvider>
   );
 }
 
@@ -350,8 +402,8 @@ function ReleaseHealthItem({ release, onClick }: { release: ReleaseHealthData; o
   );
 }
 
-// Quality Gate Item
-function QualityGateItem({ gate }: { gate: QualityGate }) {
+// Quality Gate Item - Clickable
+function QualityGateItem({ gate, onClick }: { gate: QualityGate; onClick?: () => void }) {
   const statusConfig = {
     passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
     warning: { bg: 'bg-[#fef3c7]', text: 'text-[#d97706]', icon: AlertTriangle },
@@ -361,21 +413,44 @@ function QualityGateItem({ gate }: { gate: QualityGate }) {
   const Icon = config.icon;
   
   return (
-    <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-      <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', config.bg)}>
-        <Icon className={cn('w-4 h-4', config.text)} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-foreground">{gate.name}</div>
-        <div className="text-xs text-muted-foreground">{gate.threshold}</div>
-      </div>
-      <div className={cn('text-sm font-semibold', config.text)}>{gate.currentValue}</div>
-    </div>
+    <TooltipProvider>
+      <UITooltip>
+        <TooltipTrigger asChild>
+          <div 
+            className={cn(
+              "flex items-center gap-3 p-3 bg-muted/50 rounded-lg transition-colors",
+              onClick && "cursor-pointer hover:bg-muted/80"
+            )}
+            onClick={onClick}
+            role={onClick ? "button" : undefined}
+            tabIndex={onClick ? 0 : undefined}
+            onKeyDown={(e) => {
+              if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                onClick();
+              }
+            }}
+          >
+            <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', config.bg)}>
+              <Icon className={cn('w-4 h-4', config.text)} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium text-foreground">{gate.name}</div>
+              <div className="text-xs text-muted-foreground">{gate.threshold}</div>
+            </div>
+            <div className={cn('text-sm font-semibold', config.text)}>{gate.currentValue}</div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="left" className="text-xs">
+          {gate.status === 'passed' ? 'Gate passing' : gate.status === 'warning' ? 'Gate at risk' : 'Gate failing'} — Click to view details
+        </TooltipContent>
+      </UITooltip>
+    </TooltipProvider>
   );
 }
 
-// Activity Item
-function ActivityItem({ activity }: { activity: ActivityItemType }) {
+// Activity Item - Clickable
+function ActivityItem({ activity, onSubjectClick }: { activity: ActivityItemType; onSubjectClick?: (activity: ActivityItemType) => void }) {
   const typeConfig = {
     passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
     failed: { bg: 'bg-[#fef2f2]', text: 'text-[#ef4444]', icon: AlertTriangle },
@@ -386,20 +461,34 @@ function ActivityItem({ activity }: { activity: ActivityItemType }) {
   const Icon = config.icon;
   
   return (
-    <div className="flex gap-3 py-3.5 border-b border-border last:border-0">
-      <div className={cn('w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0', config.bg)}>
-        <Icon className={cn('w-4 h-4', config.text)} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-[13px] text-foreground leading-relaxed">
-          <span className="font-semibold">{activity.user}</span>
-          {' '}{activity.action}{' '}
-          <span className="text-primary font-medium cursor-pointer hover:underline">{activity.subject}</span>
+    <TooltipProvider>
+      <div className="flex gap-3 py-3.5 border-b border-border last:border-0">
+        <div className={cn('w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0', config.bg)}>
+          <Icon className={cn('w-4 h-4', config.text)} />
         </div>
-        <div className="text-xs text-muted-foreground truncate">{activity.title}</div>
-        <div className="text-[11px] text-muted-foreground/70 mt-1">{activity.time}</div>
+        <div className="flex-1 min-w-0">
+          <div className="text-[13px] text-foreground leading-relaxed">
+            <span className="font-semibold">{activity.user}</span>
+            {' '}{activity.action}{' '}
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className="text-primary font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-primary/20 rounded"
+                  onClick={() => onSubjectClick?.(activity)}
+                >
+                  {activity.subject}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs max-w-[250px]">
+                {activity.title}
+              </TooltipContent>
+            </UITooltip>
+          </div>
+          <div className="text-xs text-muted-foreground truncate" title={activity.title}>{activity.title}</div>
+          <div className="text-[11px] text-muted-foreground/70 mt-1">{activity.time}</div>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 
@@ -474,6 +563,7 @@ export default function CommandCenterPage() {
   const queryClient = useQueryClient();
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const dashboardRef = useRef<HTMLDivElement>(null);
   
   // Real data hooks
   const { data: kpis, isLoading: kpisLoading, refetch: refetchKpis } = useCommandCenterKPIs();
@@ -517,9 +607,149 @@ export default function CommandCenterPage() {
     }
   }, [refetchKpis, refetchReleases, refetchDefects, refetchGates, refetchProgress, refetchTeam, refetchActivities, refetchMilestones]);
   
-  const handleExport = (format: 'pdf' | 'xlsx') => {
-    catalystToast.success(`Exporting as ${format.toUpperCase()}...`);
-  };
+  // Export handlers with real functionality
+  const handleExportPdf = useCallback(async () => {
+    const loadingId = catalystToast.loading('Generating PDF...');
+    try {
+      // Prepare KPI data for export
+      const kpiData = (kpis || []).map(k => ({
+        metric: k.label,
+        value: k.formattedValue,
+        trend: `${k.trend.direction === 'up' ? '↑' : k.trend.direction === 'down' ? '↓' : '→'} ${k.trend.percentage}%`,
+        status: k.trend.isPositive ? 'Positive' : 'Negative',
+      }));
+
+      // Export KPIs to PDF
+      const columns: ExportColumn<typeof kpiData[0]>[] = [
+        { key: 'metric', header: 'Metric' },
+        { key: 'value', header: 'Value' },
+        { key: 'trend', header: 'Trend' },
+        { key: 'status', header: 'Status' },
+      ];
+
+      await exportToPdf(kpiData, columns, {
+        filename: 'command-center-report',
+        title: 'Command Center Report',
+        subtitle: `Generated on ${new Date().toLocaleString()}`,
+        orientation: 'landscape',
+        brandName: 'Catalyst Platform',
+      });
+      
+      catalystToast.dismiss(loadingId);
+      catalystToast.success('PDF exported successfully');
+    } catch (error) {
+      catalystToast.dismiss(loadingId);
+      catalystToast.error('Failed to export PDF');
+      console.error('PDF export error:', error);
+    }
+  }, [kpis]);
+
+  const handleExportExcel = useCallback(() => {
+    const loadingId = catalystToast.loading('Generating Excel...');
+    try {
+      const kpiData = (kpis || []).map(k => ({
+        metric: k.label,
+        value: k.formattedValue,
+        trend: `${k.trend.percentage}%`,
+        direction: k.trend.direction,
+        status: k.trend.isPositive ? 'Positive' : 'Negative',
+      }));
+      
+      const columns: ExportColumn<typeof kpiData[0]>[] = [
+        { key: 'metric', header: 'Metric' },
+        { key: 'value', header: 'Value' },
+        { key: 'trend', header: 'Trend %' },
+        { key: 'direction', header: 'Direction' },
+        { key: 'status', header: 'Status' },
+      ];
+
+      exportToExcel(kpiData, columns, {
+        filename: 'command-center-report',
+        sheetName: 'KPIs',
+        title: 'Command Center Report',
+      });
+      
+      catalystToast.dismiss(loadingId);
+      catalystToast.success('Excel exported successfully');
+    } catch (error) {
+      catalystToast.dismiss(loadingId);
+      catalystToast.error('Failed to export Excel');
+      console.error('Excel export error:', error);
+    }
+  }, [kpis]);
+
+  const handleExportCsv = useCallback(() => {
+    const loadingId = catalystToast.loading('Generating CSV...');
+    try {
+      const kpiData = (kpis || []).map(k => ({
+        metric: k.label,
+        value: k.formattedValue,
+        trend: `${k.trend.percentage}%`,
+        direction: k.trend.direction,
+        status: k.trend.isPositive ? 'Positive' : 'Negative',
+      }));
+      
+      const columns: ExportColumn<typeof kpiData[0]>[] = [
+        { key: 'metric', header: 'Metric' },
+        { key: 'value', header: 'Value' },
+        { key: 'trend', header: 'Trend %' },
+        { key: 'direction', header: 'Direction' },
+        { key: 'status', header: 'Status' },
+      ];
+
+      exportToCsv(kpiData, columns, {
+        filename: 'command-center-report',
+      });
+      
+      catalystToast.dismiss(loadingId);
+      catalystToast.success('CSV exported successfully');
+    } catch (error) {
+      catalystToast.dismiss(loadingId);
+      catalystToast.error('Failed to export CSV');
+      console.error('CSV export error:', error);
+    }
+  }, [kpis]);
+    }
+  }, [kpis]);
+
+  // KPI click handlers - navigate to filtered views
+  const handleKpiClick = useCallback((kpiId: string) => {
+    switch (kpiId) {
+      case 'total_tests':
+        navigate('/releases/test-cases');
+        break;
+      case 'pass_rate':
+        navigate('/releases/test-cases?status=passed');
+        break;
+      case 'open_defects':
+        navigate('/releases/defects?status=open');
+        break;
+      case 'blocked_tests':
+        navigate('/releases/test-cases?status=blocked');
+        break;
+      default:
+        break;
+    }
+  }, [navigate]);
+
+  // Quality gate click handler
+  const handleQualityGateClick = useCallback((gate: QualityGate) => {
+    // Navigate to quality gates with the specific gate highlighted
+    navigate(`/releases/quality-gates?highlight=${gate.id}`);
+  }, [navigate]);
+
+  // Activity item click handler
+  const handleActivityClick = useCallback((activity: ActivityItemType) => {
+    // Navigate based on activity type
+    if (activity.type === 'defect') {
+      navigate(`/releases/defects?search=${activity.subject}`);
+    } else if (activity.type === 'passed' || activity.type === 'failed') {
+      navigate(`/releases/test-cases?search=${activity.subject}`);
+    } else {
+      // For comments and other types, navigate to a general activity view
+      navigate('/releases/activity');
+    }
+  }, [navigate]);
   
   const getTimeAgo = () => {
     const diffMs = Date.now() - lastUpdated.getTime();
@@ -553,7 +783,7 @@ export default function CommandCenterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" ref={dashboardRef} id="command-center-dashboard">
       {/* Page Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b bg-card">
         <div>
@@ -562,30 +792,62 @@ export default function CommandCenterPage() {
         </div>
         
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">Last updated: {getTimeAgo()}</span>
+          <TooltipProvider>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <span className="text-xs text-muted-foreground cursor-default">
+                  Last updated: {getTimeAgo()}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">
+                {lastUpdated.toLocaleString()}
+              </TooltipContent>
+            </UITooltip>
+          </TooltipProvider>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" aria-label="Export dashboard">
                 <Download className="h-4 w-4 mr-2" />
                 Export
                 <ChevronDown className="h-3 w-3 ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleExport('pdf')}>Export as PDF</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport('xlsx')}>Export as Excel</DropdownMenuItem>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={handleExportPdf} className="gap-2">
+                <FileText className="h-4 w-4" />
+                Export as PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportCsv} className="gap-2">
+                <Table2 className="h-4 w-4" />
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleExportExcel} className="gap-2">
+                <FileSpreadsheet className="h-4 w-4" />
+                Export as Excel
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={cn('h-4 w-4', isRefreshing && 'animate-spin')} />
-          </Button>
+          <TooltipProvider>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  aria-label="Refresh dashboard"
+                >
+                  <RefreshCw className={cn('h-4 w-4', isRefreshing && 'animate-spin')} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">
+                Refresh all data
+              </TooltipContent>
+            </UITooltip>
+          </TooltipProvider>
         </div>
       </div>
       
