@@ -117,8 +117,6 @@ export function CatalystHeader() {
     { label: "Home", path: "/for-you", moduleCode: null, visibleToProductOwner: true }, // Always visible
     { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE", requiresEnterpriseAccess: true, visibleToProductOwner: true },
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT", visibleToProductOwner: true },
-    { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO", visibleToProductOwner: false },
-    { label: "Project", hasDropdown: true, moduleCode: "PROGRAM", visibleToProductOwner: false },
     { label: "Spaces", path: "/spaces", moduleCode: null, visibleToProductOwner: true }, // Spaces Module - always visible
     { label: "Releases", path: "/releases/command-center", moduleCode: null, visibleToProductOwner: false }, // Release & Test Management Module
     { label: "Operations", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
