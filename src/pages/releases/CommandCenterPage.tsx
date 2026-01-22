@@ -854,7 +854,12 @@ export default function CommandCenterPage() {
         {/* KPI Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {displayKpis.map((kpi, i) => (
-            <KPICard key={kpi.id} kpi={kpi} index={i} />
+            <KPICard 
+              key={kpi.id} 
+              kpi={kpi} 
+              index={i} 
+              onClick={() => handleKpiClick(kpi.id)}
+            />
           ))}
         </div>
         
@@ -1016,7 +1021,11 @@ export default function CommandCenterPage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {(qualityGates || []).map(gate => (
-                  <QualityGateItem key={gate.id} gate={gate} />
+                  <QualityGateItem 
+                    key={gate.id} 
+                    gate={gate} 
+                    onClick={() => handleQualityGateClick(gate)}
+                  />
                 ))}
               </CardContent>
             </Card>
@@ -1026,14 +1035,23 @@ export default function CommandCenterPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-semibold">Recent Activity</CardTitle>
-                  <Button variant="ghost" size="sm" className="text-xs text-primary">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs text-primary"
+                    onClick={() => navigate('/releases/activity')}
+                  >
                     View All
                   </Button>
                 </div>
               </CardHeader>
               <CardContent className="px-4">
                 {(activities || []).map(activity => (
-                  <ActivityItem key={activity.id} activity={activity} />
+                  <ActivityItem 
+                    key={activity.id} 
+                    activity={activity} 
+                    onSubjectClick={handleActivityClick}
+                  />
                 ))}
               </CardContent>
             </Card>
