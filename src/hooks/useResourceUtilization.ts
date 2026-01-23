@@ -11,6 +11,7 @@ export interface MonthlyAllocation {
 
 export interface ResourceUtilizationItem {
   id: string;
+  rid: string | null;
   resource_name: string;
   assignment_id: string | null;
   assignment_name: string | null;
@@ -64,12 +65,12 @@ export function useResourceUtilization(year: number = new Date().getFullYear()) 
   return useQuery({
     queryKey: ['resource-utilization', year],
     queryFn: async () => {
-      // Fetch resources with their assignments
+      // Fetch resources with their assignments (including rid)
       const { data: resources, error: resourcesError } = await supabase
         .from('resource_inventory')
-        .select('id, name, assignment_id, default_capacity_percent, role_name, department_name, is_active, contract_end_date')
+        .select('id, rid, name, assignment_id, default_capacity_percent, role_name, department_name, is_active, contract_end_date')
         .eq('is_active', true)
-        .order('name');
+        .order('rid', { ascending: true, nullsFirst: false });
 
       if (resourcesError) throw resourcesError;
 
@@ -121,6 +122,7 @@ export function useResourceUtilization(year: number = new Date().getFullYear()) 
 
         return {
           id: resource.id,
+          rid: resource.rid,
           resource_name: resource.name,
           assignment_id: resource.assignment_id,
           assignment_name: resource.assignment_id ? assignmentMap.get(resource.assignment_id) || null : null,
