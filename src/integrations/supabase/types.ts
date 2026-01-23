@@ -15058,6 +15058,7 @@ export type Database = {
           notes: string | null
           profile_id: string | null
           resource_type: string | null
+          rid: string | null
           role_code: string | null
           role_name: string | null
           updated_at: string | null
@@ -15081,6 +15082,7 @@ export type Database = {
           notes?: string | null
           profile_id?: string | null
           resource_type?: string | null
+          rid?: string | null
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
@@ -15104,6 +15106,7 @@ export type Database = {
           notes?: string | null
           profile_id?: string | null
           resource_type?: string | null
+          rid?: string | null
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
