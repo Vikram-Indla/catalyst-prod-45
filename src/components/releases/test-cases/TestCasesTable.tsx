@@ -257,7 +257,7 @@ export function TestCasesTable({
               }}
               onClick={() => onRowClick?.(tc)}
             >
-              <td className="px-4 py-3">
+              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                 <Checkbox 
                   checked={selectedIds.has(tc.dbId || tc.id)}
                   onCheckedChange={(checked) => onSelectRow(tc.dbId || tc.id, !!checked)}
