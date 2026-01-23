@@ -29,7 +29,7 @@ export default function Initiatives() {
   const { data: items, isLoading } = useQuery({
     queryKey: ['initiatives', searchQuery],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('initiatives')
         .select('*, strategic_themes(name)')
         .order('name');
@@ -68,7 +68,7 @@ export default function Initiatives() {
 
   const importMutation = useMutation({
     mutationFn: async (data: any[]) => {
-      const { error } = await supabase.from('initiatives').insert(data.map(row => ({
+      const { error } = await (supabase as any).from('initiatives').insert(data.map(row => ({
         name: row.name,
         description: row.description || null,
         status: row.status || 'proposed',
