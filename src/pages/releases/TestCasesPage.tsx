@@ -39,8 +39,6 @@ import {
   Keyboard,
   Sparkles,
   Wand2,
-  PanelLeftClose,
-  PanelLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -92,7 +90,7 @@ import { toast } from 'sonner';
 import type { GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
 import type { ParsedTestCase, PrefilledTestCase } from '@/components/releases/test-cases/utils';
 import { templateToTestCase } from '@/components/releases/test-cases/utils';
-import { TestFolderSidebar } from '@/components/test-cases/TestFolderSidebar';
+
 
 type ViewMode = 'list' | 'grid' | 'kanban';
 
@@ -142,9 +140,6 @@ export default function TestCasesPage() {
   // Test execution
   const [isExecuteOpen, setIsExecuteOpen] = useState(false);
   
-  // Folder sidebar state
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>('all');
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   // Focused item index for keyboard navigation
   const [focusedIndex, setFocusedIndex] = useState(-1);
@@ -585,43 +580,10 @@ export default function TestCasesPage() {
         </div>
       </div>
 
-      {/* Main Content - Two Column Layout */}
-      <div className="flex-1 overflow-hidden flex gap-6 px-6 py-4">
-        {/* Folder Sidebar */}
-        <aside 
-          className={cn(
-            "flex-shrink-0 transition-all duration-200",
-            isSidebarCollapsed ? "w-0 overflow-hidden" : "w-64"
-          )}
-        >
-          {!isSidebarCollapsed && (
-            <TestFolderSidebar
-              selectedFolderId={selectedFolderId}
-              onFolderSelect={setSelectedFolderId}
-              totalCount={totalCount}
-            />
-          )}
-        </aside>
-
-        {/* Sidebar Toggle Button */}
-        <button
-          onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          className={cn(
-            "flex-shrink-0 w-6 flex items-center justify-center",
-            "text-muted-foreground hover:text-foreground transition-colors",
-            "border border-border rounded-md hover:bg-muted/50"
-          )}
-          title={isSidebarCollapsed ? "Show folders" : "Hide folders"}
-        >
-          {isSidebarCollapsed ? (
-            <PanelLeft className="w-3.5 h-3.5" />
-          ) : (
-            <PanelLeftClose className="w-3.5 h-3.5" />
-          )}
-        </button>
-
+      {/* Main Content */}
+      <div className="flex-1 overflow-hidden px-6 py-4">
         {/* Test Cases Content */}
-        <main className="flex-1 min-w-0 overflow-auto">
+        <div className="h-full overflow-auto">
           <AnimatePresence mode="wait">
             {isLoading ? (
               <motion.div
@@ -698,7 +660,7 @@ export default function TestCasesPage() {
               </motion.div>
             )}
           </AnimatePresence>
-        </main>
+        </div>
       </div>
 
       {/* Pagination */}
