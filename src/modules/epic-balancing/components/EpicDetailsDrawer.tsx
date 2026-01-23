@@ -46,12 +46,11 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_requests')
+      const { data, error } = await (supabase.from('business_requests') as any)
         .select('id, title, request_key')
         .order('request_key');
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; title: string; request_key: string }>;
     },
   });
 

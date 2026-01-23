@@ -53,8 +53,7 @@ export function useBoardData(boardId: string, projectId: string) {
   const boardQuery = useQuery({
     queryKey: ['injira-board', boardId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('injira_boards')
+      const { data, error } = await (supabase.from('injira_boards') as any)
         .select(`
           *,
           columns:injira_board_columns(*)
@@ -105,8 +104,7 @@ export function useBoardData(boardId: string, projectId: string) {
   const sprintsQuery = useQuery({
     queryKey: ['injira-sprints', boardId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('injira_sprints')
+      const { data, error } = await (supabase.from('injira_sprints') as any)
         .select('*')
         .eq('board_id', boardId)
         .order('start_date', { ascending: false });

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 export interface Comment {
@@ -165,12 +166,11 @@ async function saveMentions(commentId: string, usernames: string[]) {
       .single();
     
     if (profile) {
-      await supabase
-        .from('comment_mentions')
+      await fromTable('comment_mentions')
         .insert({
           comment_id: commentId,
           mentioned_user_id: profile.id,
-        })
+        } as any)
         .select();
     }
   }
