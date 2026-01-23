@@ -19,7 +19,7 @@ export async function getFolderTree(projectId: string): Promise<TestFolderWithCo
 
   // First, get all folders for this project
   const { data: folders, error: foldersError } = await (supabase as any)
-    .from('test_folders')
+    .from('tm_folders')
     .select('*')
     .eq('project_id', projectId)
     .order('sort_order', { ascending: true });
@@ -91,7 +91,7 @@ export async function getFolderTree(projectId: string): Promise<TestFolderWithCo
  */
 export async function getFolderById(folderId: string): Promise<TestFolderWithCount | null> {
   const { data, error } = await (supabase as any)
-    .from('test_folders')
+    .from('tm_folders')
     .select('*')
     .eq('id', folderId)
     .single();
@@ -126,7 +126,7 @@ export async function createFolder(input: CreateFolderInput): Promise<TestFolder
 
   // Get the next sort order for siblings
   const { data: siblings } = await (supabase as any)
-    .from('test_folders')
+    .from('tm_folders')
     .select('sort_order')
     .eq('project_id', input.projectId)
     .is('parent_id', input.parentId ?? null)
@@ -138,7 +138,7 @@ export async function createFolder(input: CreateFolderInput): Promise<TestFolder
     : 0;
 
   const { data, error } = await (supabase as any)
-    .from('test_folders')
+    .from('tm_folders')
     .insert({
       name: input.name.trim(),
       description: input.description?.trim() || null,
@@ -186,7 +186,7 @@ export async function updateFolder(
   }
 
   const { data, error } = await (supabase as any)
-    .from('test_folders')
+    .from('tm_folders')
     .update(updateData)
     .eq('id', folderId)
     .select()
@@ -217,7 +217,7 @@ export async function updateFolder(
  */
 export async function deleteFolder(folderId: string): Promise<void> {
   const { error } = await (supabase as any)
-    .from('test_folders')
+    .from('tm_folders')
     .delete()
     .eq('id', folderId);
 
@@ -302,7 +302,7 @@ export function subscribeFolderChanges(
       {
         event: '*',
         schema: 'public',
-        table: 'test_folders',
+        table: 'tm_folders',
         filter: `project_id=eq.${projectId}`,
       },
       () => {
@@ -331,7 +331,7 @@ export function subscribeTestCaseFolderChanges(
       {
         event: 'UPDATE',
         schema: 'public',
-        table: 'test_cases',
+        table: 'tm_test_cases',
         filter: `project_id=eq.${projectId}`,
       },
       (payload: any) => {
