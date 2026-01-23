@@ -44,12 +44,10 @@ import {
 } from '../hooks/useSoftwareLicenses';
 import { formatSAR } from '../hooks/useResourceCost';
 import { LicenseDialog } from './LicenseDialog';
-import type { SoftwareLicenseWithAllocation, LicenseCategory } from '../types';
-import { LICENSE_CATEGORIES } from '../types';
+import type { SoftwareLicenseWithAllocation } from '../types';
 
 export function SoftwareLicensesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingLicense, setEditingLicense] = useState<SoftwareLicenseWithAllocation | null>(null);
@@ -64,15 +62,13 @@ export function SoftwareLicensesPage() {
   const filteredLicenses = useMemo(() => {
     return licenses.filter(license => {
       const matchesSearch = !searchQuery || 
-        license.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        license.vendor.toLowerCase().includes(searchQuery.toLowerCase());
+        license.name.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesCategory = categoryFilter === 'all' || license.category === categoryFilter;
       const matchesStatus = statusFilter === 'all' || license.allocation_status === statusFilter;
       
-      return matchesSearch && matchesCategory && matchesStatus;
+      return matchesSearch && matchesStatus;
     });
-  }, [licenses, searchQuery, categoryFilter, statusFilter]);
+  }, [licenses, searchQuery, statusFilter]);
 
   const handleCreate = () => {
     setEditingLicense(null);
@@ -97,27 +93,11 @@ export function SoftwareLicensesPage() {
     setLicenseToDelete(null);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'complete':
-        return <Badge className="bg-green-100 text-green-700 border-green-200">Fully Allocated</Badge>;
-      case 'partial':
-        return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">Partial</Badge>;
-      case 'over':
-        return <Badge className="bg-red-100 text-red-700 border-red-200">Over-allocated</Badge>;
-      default:
-        return null;
-    }
-  };
-
   const getLicenseTypeBadge = (type: string) => {
-    const colors: Record<string, string> = {
-      annual: 'bg-blue-100 text-blue-700',
-      monthly: 'bg-purple-100 text-purple-700',
-      consumption: 'bg-orange-100 text-orange-700',
-      perpetual: 'bg-green-100 text-green-700',
-    };
-    return <Badge className={colors[type] || 'bg-gray-100 text-gray-700'}>{type}</Badge>;
+    if (type === 'monthly') {
+      return <Badge variant="outline" className="text-purple-600 border-purple-300">Monthly</Badge>;
+    }
+    return <Badge variant="outline" className="text-blue-600 border-blue-300">Annual</Badge>;
   };
 
   return (
@@ -204,20 +184,9 @@ export function SoftwareLicensesPage() {
               className="pl-9"
             />
           </div>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {LICENSE_CATEGORIES.map(cat => (
-                <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder="Allocation Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
@@ -233,11 +202,10 @@ export function SoftwareLicensesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Software</TableHead>
-                <TableHead>Vendor</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Users</TableHead>
-                <TableHead className="text-right">Annual Cost</TableHead>
+                <TableHead className="min-w-[200px]">Software</TableHead>
+                <TableHead>Billing</TableHead>
+                <TableHead className="text-right">Seats</TableHead>
+                <TableHead className="text-right">Cost</TableHead>
                 <TableHead>Allocation</TableHead>
                 <TableHead>Renewal</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
@@ -246,13 +214,13 @@ export function SoftwareLicensesPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : filteredLicenses.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     No licenses found
                   </TableCell>
                 </TableRow>
@@ -264,45 +232,33 @@ export function SoftwareLicensesPage() {
                   return (
                     <TableRow key={license.id}>
                       <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{license.name}</span>
-                          {license.category && (
-                            <span className="text-xs text-muted-foreground capitalize">
-                              {license.category.replace('_', ' ')}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{license.vendor}</Badge>
+                        <span className="font-medium">{license.name}</span>
                       </TableCell>
                       <TableCell>{getLicenseTypeBadge(license.license_type)}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right tabular-nums">
                         {license.user_count || '—'}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex flex-col items-end">
-                          <span className="font-medium">{formatSAR(license.annual_cost)}</span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="font-medium tabular-nums">{formatSAR(license.annual_cost)}</span>
+                          <span className="text-xs text-muted-foreground tabular-nums">
                             {formatSAR(license.annual_cost / 12)}/mo
                           </span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2">
-                            <Progress 
-                              value={allocationPercent} 
-                              className="h-2 w-20"
-                            />
-                            <span className={`text-sm font-medium ${
-                              license.allocation_status === 'complete' ? 'text-green-600' :
-                              license.allocation_status === 'over' ? 'text-red-600' :
-                              'text-yellow-600'
-                            }`}>
-                              {license.total_allocated}%
-                            </span>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <Progress 
+                            value={allocationPercent} 
+                            className="h-2 w-16"
+                          />
+                          <span className={`text-sm font-medium tabular-nums ${
+                            license.allocation_status === 'complete' ? 'text-green-600' :
+                            license.allocation_status === 'over' ? 'text-red-600' :
+                            'text-yellow-600'
+                          }`}>
+                            {license.total_allocated}%
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -317,7 +273,7 @@ export function SoftwareLicensesPage() {
                                   ? 'Expired'
                                   : daysUntilRenewal === 0 
                                   ? 'Today'
-                                  : `${daysUntilRenewal} days`
+                                  : `${daysUntilRenewal}d`
                                 }
                               </span>
                             )}
