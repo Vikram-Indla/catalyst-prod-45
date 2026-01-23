@@ -2160,9 +2160,18 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
 
   // Helper to get assignment names from allocations for a resource
   const getAssignmentNamesForResource = useCallback((resourceId: string): string[] => {
-    const resourceAllocations = allocations.filter(
-      a => a.profile_id === resourceId || a.resource_id === resourceId
-    );
+    const now = new Date();
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const resourceAllocations = allocations.filter((a) => {
+      const matchesResource = a.profile_id === resourceId || a.resource_id === resourceId;
+      if (!matchesResource) return false;
+
+      const allocStart = new Date(a.start_date);
+      const allocEnd = new Date(a.end_date);
+      return allocStart <= currentMonthEnd && allocEnd >= currentMonthStart;
+    });
     const names = resourceAllocations
       .map(a => a.assignment_name)
       .filter((name): name is string => !!name);
@@ -2328,10 +2337,19 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       width: '300px',
       sortable: true,
       render: (_: any, row: ResourceMetric) => {
-        // Get allocations with percentages
-        const resourceAllocations = allocations.filter(
-          a => a.profile_id === row.id || a.resource_id === row.id
-        );
+        // Get allocations with percentages (CURRENT MONTH ONLY)
+        const now = new Date();
+        const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+        const resourceAllocations = allocations.filter((a) => {
+          const matchesResource = a.profile_id === row.id || a.resource_id === row.id;
+          if (!matchesResource) return false;
+
+          const allocStart = new Date(a.start_date);
+          const allocEnd = new Date(a.end_date);
+          return allocStart <= currentMonthEnd && allocEnd >= currentMonthStart;
+        });
         
         if (resourceAllocations.length === 0) {
           return (
