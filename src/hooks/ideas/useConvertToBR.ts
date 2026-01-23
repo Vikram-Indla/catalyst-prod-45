@@ -41,7 +41,7 @@ export function useConvertIdeaToBR() {
       if (ideaError) throw ideaError;
       if (!idea) throw new Error('Idea not found');
 
-      const { data: br, error: brError } = await supabase
+      const { data: br, error: brError } = await (supabase as any)
         .from('business_requests')
         .insert({
           title: brTitle,
@@ -100,7 +100,7 @@ export function useConvertInitiativeToBR() {
       if (initError) throw initError;
       if (!initiative) throw new Error('Initiative not found');
 
-      const { data: br, error: brError } = await supabase
+      const { data: br, error: brError } = await (supabase as any)
         .from('business_requests')
         .insert({
           title: brTitle,

@@ -48,11 +48,11 @@ export function useRisks(programId?: string) {
       // Fetch all departments and business owners for lookup
       const [deptRes, ownerRes] = await Promise.all([
         supabase.from('departments').select('id, name'),
-        supabase.from('business_owners').select('id, name')
+        (supabase as any).from('business_owners').select('id, name')
       ]);
       
-      const deptMap = new Map((deptRes.data || []).map(d => [d.id, d.name]));
-      const ownerMap = new Map((ownerRes.data || []).map(o => [o.id, o.name]));
+      const deptMap = new Map((deptRes.data || []).map((d: any) => [d.id, d.name]));
+      const ownerMap = new Map((ownerRes.data as any[] || []).map((o: any) => [o.id, o.name]));
 
       // Flatten the joined data - resolve UUIDs to names
       return (data || []).map((risk: any) => {

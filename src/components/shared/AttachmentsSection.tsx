@@ -25,7 +25,7 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
   const { data: attachments, isLoading } = useQuery({
     queryKey: ['attachments', entityId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('attachments')
         .select('*')
         .eq('entity_id', entityId)
@@ -33,7 +33,7 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      return (data || []) as any[];
     },
   });
 
@@ -51,7 +51,7 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
 
       if (uploadError) throw uploadError;
 
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from('attachments')
         .insert({
           entity_id: entityId,
@@ -82,7 +82,7 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
 
       if (storageError) throw storageError;
 
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from('attachments')
         .delete()
         .eq('id', attachment.id);

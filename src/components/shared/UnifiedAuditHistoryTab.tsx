@@ -95,7 +95,7 @@ export function UnifiedAuditHistoryTab({ entityId, entityType, embedded = false 
         return { logs: transformedLogs as any[], count: count || 0, page: pageParam };
       }
 
-      const { data: logs, error, count } = await supabase
+      const { data: logs, error, count } = await (supabase as any)
         .from('business_request_audit_logs')
         .select('*', { count: 'exact' })
         .eq('business_request_id', entityId)

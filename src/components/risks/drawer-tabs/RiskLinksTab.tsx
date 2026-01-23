@@ -107,7 +107,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
   const { data: linkedBusinessRequest, isLoading: brLoading } = useQuery({
     queryKey: ['business-request', businessRequestId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .select('id, request_key, title')
         .eq('id', businessRequestId!)

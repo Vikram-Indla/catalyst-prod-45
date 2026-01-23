@@ -143,14 +143,14 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
         }));
 
         // Search business requests
-        const { data: requests } = await supabase
+        const { data: requests } = await (supabase as any)
           .from('business_requests')
           .select('id, request_key, title, updated_at')
           .or(`request_key.ilike.${searchTerm},title.ilike.${searchTerm}`)
           .is('deleted_at', null)
           .limit(5);
         
-        requests?.forEach(r => searchResults.push({
+        (requests as any[] || []).forEach((r: any) => searchResults.push({
           id: r.id,
           key: r.request_key || '',
           summary: r.title,
