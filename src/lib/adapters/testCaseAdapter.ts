@@ -73,6 +73,7 @@ export function tmToUITestCase(tc: TMTestCase): TestCase {
   
   return {
     id: tc.key || tc.id,
+    dbId: tc.id, // Preserve the actual database UUID for operations
     title: tc.title,
     release: 'Current', // TODO: Link to release when available
     type: mapType(tc.type),
@@ -86,6 +87,7 @@ export function tmToUITestCase(tc: TMTestCase): TestCase {
       color: getAvatarColor(assignee?.id),
     },
     updated: formatUpdated(tc.updated_at),
+    folderId: tc.folder_id,
     description: tc.objective,
     preconditions: tc.preconditions,
     createdBy: tc.created_by,

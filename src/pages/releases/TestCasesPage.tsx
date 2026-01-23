@@ -406,7 +406,8 @@ export default function TestCasesPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(new Set(paginatedTestCases.map(tc => tc.id)));
+      // Use dbId for database operations, fall back to id for mock data
+      setSelectedIds(new Set(paginatedTestCases.map(tc => tc.dbId || tc.id)));
     } else {
       setSelectedIds(new Set());
     }
@@ -878,7 +879,7 @@ export default function TestCasesPage() {
           <BulkActionsBar
             selectedCount={selectedIds.size}
             totalCount={totalCount}
-            onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.id)))}
+            onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.dbId || tc.id)))}
             onClear={clearSelection}
             onMove={() => setIsBulkMoveOpen(true)}
             onMoveToFolder={() => setIsMoveToFolderOpen(true)}
