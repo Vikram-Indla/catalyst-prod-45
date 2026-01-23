@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Card, CardHeader, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -34,6 +35,7 @@ import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 import { ResetPasswordDialog } from './ResetPasswordDialog';
 import { BulkUpdateDrawer } from './BulkUpdateDrawer';
+import { BulkEditCommandBar } from './BulkEditCommandBar';
 import { EditUserDrawer } from './EditUserDrawer';
 import { UserInlineCell } from './UserInlineCell';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
@@ -63,6 +65,9 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
   const [editUser, setEditUser] = useState<UserProfile | null>(null);
   const [isBulkUpdateOpen, setIsBulkUpdateOpen] = useState(false);
+  
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   
   const deleteUser = useDeleteUser();
   const approveUser = useApproveUser();
@@ -192,6 +197,35 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
     
     return matchesSearch && matchesRole && matchesApproval && matchesVendor && matchesCountry && matchesLocation && matchesDepartment && matchesAssignment;
   });
+
+  // Bulk selection handlers
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(filteredUsers.map(u => u.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  }, [filteredUsers]);
+
+  const handleSelectRow = useCallback((userId: string, checked: boolean) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(userId);
+      } else {
+        next.delete(userId);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+  }, []);
+
+  const allSelected = filteredUsers.length > 0 && filteredUsers.every(u => selectedIds.has(u.id));
+  const someSelected = filteredUsers.some(u => selectedIds.has(u.id)) && !allSelected;
+
 
   const formatLastLogin = (lastLogin: string | null) => {
     if (!lastLogin) return '-';
@@ -544,6 +578,14 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/30">
+                  <th className="w-10 py-3 px-3">
+                    <Checkbox 
+                      checked={allSelected}
+                      onCheckedChange={handleSelectAll}
+                      aria-label="Select all"
+                      className={cn(someSelected && "data-[state=checked]:bg-primary/50")}
+                    />
+                  </th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Name</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Job Role</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Department</th>
@@ -559,7 +601,20 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-b last:border-b-0 hover:bg-muted/20 transition-colors">
+                  <tr 
+                    key={user.id} 
+                    className={cn(
+                      "border-b last:border-b-0 hover:bg-muted/20 transition-colors",
+                      selectedIds.has(user.id) && "bg-primary/5"
+                    )}
+                  >
+                    <td className="py-3 px-3">
+                      <Checkbox 
+                        checked={selectedIds.has(user.id)}
+                        onCheckedChange={(checked) => handleSelectRow(user.id, !!checked)}
+                        aria-label={`Select ${user.full_name}`}
+                      />
+                    </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-3">
                         <button
@@ -898,6 +953,13 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
         isOpen={isBulkUpdateOpen}
         onClose={() => setIsBulkUpdateOpen(false)}
         users={users}
+      />
+
+      {/* Bulk Edit Command Bar */}
+      <BulkEditCommandBar
+        selectedIds={selectedIds}
+        onClearSelection={handleClearSelection}
+        referenceData={referenceData}
       />
     </Card>
   );
