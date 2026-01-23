@@ -122,14 +122,14 @@ export function usePlannerWorkItems(typeFilter?: WorkItemType | WorkItemType[]) 
 
       const fetchBusinessRequests = async () => {
         if (!typesToFetch.includes('business_request')) return;
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('business_requests')
           .select('id, title, request_key')
           .is('deleted_at', null)
           .order('created_at', { ascending: false })
           .limit(100);
         if (!error && data) {
-          data.forEach(br => {
+          (data as any[]).forEach(br => {
             items.push({
               id: br.id,
               name: br.title || 'Untitled Request',

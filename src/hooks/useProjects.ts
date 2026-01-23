@@ -127,8 +127,7 @@ export function useDefaultProject() {
   return useQuery({
     queryKey: projectKeys.defaultProject,
     queryFn: async (): Promise<Project | null> => {
-      const { data, error } = await supabase
-        .from('projects')
+      const { data, error } = await (supabase.from('projects') as any)
         .select(`
           *,
           lead:profiles!projects_lead_id_fkey(id, full_name, avatar_url),

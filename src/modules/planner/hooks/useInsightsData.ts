@@ -63,7 +63,7 @@ export function useMonthlyInsightsData() {
           .select('id, title, status, severity')
           .is('deleted_at', null)
           .gte('created_at', monthStart.toISOString()),
-        supabase.from('business_requests')
+        (supabase as any).from('business_requests')
           .select('id, title, process_step, created_at')
           .is('deleted_at', null)
           .gte('created_at', monthStart.toISOString()),

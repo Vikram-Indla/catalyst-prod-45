@@ -42,13 +42,13 @@ export function PrioritizationDialog({
       // Don't include wsjf_score - it's a computed column
       const updates = selectedItems.map(async (id) => {
         // Check if record exists
-        const { data: existing } = await (supabase.from('epic_wsjf') as any)
+        const { data: existing } = await (supabase as any).from('epic_wsjf')
           .select('id')
           .eq('epic_id', id)
           .maybeSingle();
         
         if (existing) {
-          return (supabase.from('epic_wsjf') as any)
+          return (supabase as any).from('epic_wsjf')
             .update({
               business_value: businessValue,
               time_value: timeCriticality,
@@ -57,7 +57,7 @@ export function PrioritizationDialog({
             })
             .eq('epic_id', id);
         } else {
-          return (supabase.from('epic_wsjf') as any)
+          return (supabase as any).from('epic_wsjf')
             .insert({
               epic_id: id,
               business_value: businessValue,

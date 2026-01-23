@@ -327,7 +327,7 @@ export function RequestDetailPanel({
     queryKey: ['business-request-attachments-count', request?._dbId],
     queryFn: async () => {
       if (!request?._dbId) return 0;
-      const { count, error } = await supabase
+      const { count, error } = await (supabase as any)
         .from('attachments')
         .select('*', { count: 'exact', head: true })
         .eq('entity_type', 'business_request')
