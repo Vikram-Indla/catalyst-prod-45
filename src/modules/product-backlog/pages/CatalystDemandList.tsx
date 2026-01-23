@@ -94,7 +94,7 @@ export default function CatalystDemandList() {
       if (businessRequests.length === 0) return;
       
       const requestIds = businessRequests.map((br: any) => br.id);
-      const { data: links } = await supabase
+      const { data: links } = await (supabase as any)
         .from('business_request_links')
         .select('business_request_id')
         .in('business_request_id', requestIds);

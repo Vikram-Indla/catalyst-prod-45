@@ -28,7 +28,7 @@ export function useFeatureBacklogPreferences(programId: string) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return DEFAULT_PREFERENCES;
 
-      const { data, error } = await (supabase.from('user_preferences') as any)
+      const { data, error } = await (supabase as any).from('user_preferences')
         .select('value')
         .eq('user_id', user.id)
         .eq('scope', scope)
@@ -52,7 +52,7 @@ export function useFeatureBacklogPreferences(programId: string) {
 
       const newValue = { ...preferences, ...updates };
 
-      const { error } = await (supabase.from('user_preferences') as any)
+      const { error } = await (supabase as any).from('user_preferences')
         .upsert({
           user_id: user.id,
           scope,
