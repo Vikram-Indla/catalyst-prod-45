@@ -7,6 +7,7 @@ export type ApprovalStatus = 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'DIS
 
 export interface UserProfile {
   id: string;
+  rid: string | null;  // 3-digit Resource ID (e.g., 001, 002)
   email: string | null;
   full_name: string | null;
   avatar_url: string | null;
@@ -76,7 +77,7 @@ export function useUsers() {
       // Fetch all profiles with approval and vendor fields
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location, resource_type')
+        .select('*, rid, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location, resource_type')
         .order('vendor', { ascending: true, nullsFirst: false })
         .order('full_name', { ascending: true });
 
