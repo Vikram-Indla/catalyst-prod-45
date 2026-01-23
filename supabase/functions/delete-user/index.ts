@@ -80,17 +80,56 @@ serve(async (req) => {
       );
     }
 
-    // Check if user exists and is inactive/rejected/disabled
-    const { data: targetUser, error: userError } = await supabaseAdmin
+    // IMPORTANT: /admin/users is a merged list of BOTH profiles and unlinked resource_inventory.
+    // The UI may pass either:
+    // - profiles.id (real authenticated user)
+    // - resource_inventory.id (imported/unlinked resource)
+    const { data: targetProfile } = await supabaseAdmin
       .from("profiles")
       .select("id, status, approval_status, full_name, email")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
-    if (userError || !targetUser) {
+    const { data: targetInventory } = await supabaseAdmin
+      .from("resource_inventory")
+      .select("id, name, profile_id")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!targetProfile && !targetInventory) {
       return new Response(
         JSON.stringify({ error: "User not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Inventory-only deletion (imported/unlinked resource)
+    if (!targetProfile && targetInventory) {
+      console.log("Deleting resource_inventory record...");
+      const { error: invDeleteError } = await supabaseAdmin
+        .from("resource_inventory")
+        .delete()
+        .eq("id", userId);
+
+      if (invDeleteError) {
+        // If a hard delete fails due to foreign keys, fall back to deactivation.
+        console.error("Error deleting resource_inventory:", invDeleteError);
+        await supabaseAdmin
+          .from("resource_inventory")
+          .update({ is_active: false })
+          .eq("id", userId);
+      }
+
+      console.log(
+        `Inventory resource ${targetInventory.name || userId} (${userId}) removed by ${requestingUser.email}`,
+      );
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: `Resource ${targetInventory.name || userId} has been removed from the system.`,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -106,6 +145,22 @@ serve(async (req) => {
     // 2. Delete user_roles
     console.log("Deleting user_roles...");
     await supabaseAdmin.from("user_roles").delete().eq("user_id", userId);
+
+    // 2b. Remove any linked resource_inventory rows so the user cannot reappear as "unlinked"
+    console.log("Deleting linked resource_inventory...");
+    const { error: linkedInventoryDeleteError } = await supabaseAdmin
+      .from("resource_inventory")
+      .delete()
+      .eq("profile_id", userId);
+
+    if (linkedInventoryDeleteError) {
+      console.error("Error deleting linked resource_inventory:", linkedInventoryDeleteError);
+      // Fall back to deactivation to avoid FK constraint issues
+      await supabaseAdmin
+        .from("resource_inventory")
+        .update({ is_active: false, profile_id: null })
+        .eq("profile_id", userId);
+    }
 
     // 3. Clear references from profiles table that might reference this user
     console.log("Clearing profile references...");
@@ -178,24 +233,35 @@ serve(async (req) => {
       // Continue - the auth user deletion should cascade
     }
 
-    // 6. Delete the auth user
+    // 7. Delete the auth user
     console.log("Deleting auth user...");
     const { error: authDeleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
     if (authDeleteError) {
-      console.error("Error deleting auth user:", authDeleteError);
-      return new Response(
-        JSON.stringify({ error: authDeleteError.message || "Failed to delete user. Some references may still exist." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      const msg = (authDeleteError.message || "").toLowerCase();
+      // If the auth user is already gone, treat as success (profile/resource cleanup still matters)
+      if (!msg.includes("not found")) {
+        console.error("Error deleting auth user:", authDeleteError);
+        return new Response(
+          JSON.stringify({
+            error:
+              authDeleteError.message ||
+              "Failed to delete user. Some references may still exist.",
+          }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      console.log("Auth user already deleted; continuing.");
     }
 
-    console.log(`User ${targetUser.email} (${userId}) deleted successfully by ${requestingUser.email}`);
+    console.log(
+      `User ${targetProfile?.email || userId} (${userId}) deleted successfully by ${requestingUser.email}`,
+    );
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `User ${targetUser.full_name || targetUser.email} has been removed from the system.`
+        message: `User ${targetProfile?.full_name || targetProfile?.email || userId} has been removed from the system.`
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
