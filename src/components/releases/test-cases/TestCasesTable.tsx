@@ -232,15 +232,26 @@ export function TestCasesTable({
         </thead>
         <tbody className="divide-y">
           {sortedCases.map((tc, index) => (
-            <motion.tr
+            <tr
               key={tc.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.03 }}
               className={cn(
-                "hover:bg-muted/30 cursor-pointer transition-colors",
+                "hover:bg-muted/30 cursor-grab active:cursor-grabbing transition-colors",
                 selectedIds.has(tc.id) && "bg-primary/5"
               )}
+              draggable
+              onDragStart={(e: React.DragEvent<HTMLTableRowElement>) => {
+                e.dataTransfer.setData('text/plain', tc.id);
+                e.dataTransfer.setData('application/json', JSON.stringify({
+                  id: tc.id,
+                  title: tc.title,
+                }));
+                e.dataTransfer.effectAllowed = 'move';
+                // Add visual feedback
+                e.currentTarget.classList.add('opacity-50');
+              }}
+              onDragEnd={(e: React.DragEvent<HTMLTableRowElement>) => {
+                e.currentTarget.classList.remove('opacity-50');
+              }}
               onClick={() => onRowClick?.(tc)}
             >
               <td className="px-4 py-3">
@@ -357,7 +368,7 @@ export function TestCasesTable({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </td>
-            </motion.tr>
+            </tr>
           ))}
         </tbody>
       </table>
