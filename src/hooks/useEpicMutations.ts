@@ -45,6 +45,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 export interface EpicUpdateData {
@@ -224,8 +225,7 @@ export function useEpicMutations() {
    */
   const recomputeTechnicalScore = async (epicId: string): Promise<number | null> => {
     // Fetch the epic's technical scoring record (first/only one - no PI dimension)
-    const { data: scoringData, error } = await supabase
-      .from('epic_wsjf')
+    const { data: scoringData, error } = await fromTable('epic_wsjf')
       .select('*')
       .eq('epic_id', epicId)
       .order('created_at', { ascending: true })
@@ -234,11 +234,12 @@ export function useEpicMutations() {
 
     if (error || !scoringData) return null;
 
+    const scoring = scoringData as any;
     const score = calculateTechnicalScore(
-      scoringData.business_value || 0,
-      scoringData.time_value || 0,
-      scoringData.rroe_value || 0,
-      scoringData.job_size || 1
+      scoring.business_value || 0,
+      scoring.time_value || 0,
+      scoring.rroe_value || 0,
+      scoring.job_size || 1
     );
 
     return score;
@@ -354,17 +355,17 @@ export function useEpicMutations() {
       if (jobSize !== undefined) updateData.job_size = jobSize;
 
       // Check if record exists
-      const { data: existing } = await supabase
-        .from('epic_wsjf')
+      const { data: existing } = await fromTable('epic_wsjf')
         .select('id')
         .eq('epic_id', epicId)
         .maybeSingle();
 
-      if (existing) {
-        await supabase
-          .from('epic_wsjf')
+      const existingRow = existing as any;
+
+      if (existingRow) {
+        await fromTable('epic_wsjf')
           .update(updateData)
-          .eq('id', existing.id);
+          .eq('id', existingRow.id);
       } else {
         // Create new record with a placeholder PI (we'll migrate away from this)
         const { data: anyPi } = await supabase
@@ -374,8 +375,7 @@ export function useEpicMutations() {
           .single();
         
         if (anyPi) {
-          await supabase
-            .from('epic_wsjf')
+          await fromTable('epic_wsjf')
             .insert({
               epic_id: epicId,
               pi_id: anyPi.id,
