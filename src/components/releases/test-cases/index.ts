@@ -5,6 +5,13 @@ export { TestCaseEmptyState } from './TestCaseEmptyState';
 export { CreateTestCaseDialog } from './CreateTestCaseDialog';
 export { BulkActionsBar } from './BulkActionsBar';
 
+// Test Folders
+export { TestFolderSidebar } from './TestFolderSidebar';
+export { CreateFolderDialog } from './CreateFolderDialog';
+export { RenameFolderDialog } from './RenameFolderDialog';
+export { DeleteFolderDialog } from './DeleteFolderDialog';
+export { MoveToFolderDialog } from './MoveToFolderDialog';
+
 // Phase 5: Import/Export & Templates
 export { ExportTestCasesDialog } from './ExportTestCasesDialog';
 export { ImportTestCasesDialog } from './ImportTestCasesDialog';
