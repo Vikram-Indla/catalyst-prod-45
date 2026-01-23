@@ -12739,6 +12739,7 @@ export type Database = {
           country_code: string | null
           country_flag_svg_url: string | null
           created_at: string | null
+          ctc: number | null
           department_id: string | null
           email: string | null
           failed_login_count: number | null
@@ -12775,6 +12776,7 @@ export type Database = {
           country_code?: string | null
           country_flag_svg_url?: string | null
           created_at?: string | null
+          ctc?: number | null
           department_id?: string | null
           email?: string | null
           failed_login_count?: number | null
@@ -12811,6 +12813,7 @@ export type Database = {
           country_code?: string | null
           country_flag_svg_url?: string | null
           created_at?: string | null
+          ctc?: number | null
           department_id?: string | null
           email?: string | null
           failed_login_count?: number | null
@@ -15048,6 +15051,7 @@ export type Database = {
           contract_start_date: string | null
           country_id: string | null
           created_at: string | null
+          ctc: number | null
           default_capacity_percent: number | null
           department_id: string | null
           department_name: string | null
@@ -15072,6 +15076,7 @@ export type Database = {
           contract_start_date?: string | null
           country_id?: string | null
           created_at?: string | null
+          ctc?: number | null
           default_capacity_percent?: number | null
           department_id?: string | null
           department_name?: string | null
@@ -15096,6 +15101,7 @@ export type Database = {
           contract_start_date?: string | null
           country_id?: string | null
           created_at?: string | null
+          ctc?: number | null
           default_capacity_percent?: number | null
           department_id?: string | null
           department_name?: string | null
