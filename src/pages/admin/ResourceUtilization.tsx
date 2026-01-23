@@ -577,8 +577,7 @@ export default function ResourceUtilization() {
                                           "w-16 h-8 flex items-center justify-center text-sm rounded border bg-muted/50 cursor-not-allowed",
                                           "text-muted-foreground"
                                         )}>
-                                          <Lock className="h-3 w-3 mr-1" />
-                                          {displayValue}
+                                          <Lock className="h-4 w-4" />
                                         </div>
                                       </TooltipTrigger>
                                       <TooltipContent>
@@ -687,8 +686,7 @@ export default function ResourceUtilization() {
                                           "w-16 h-8 flex items-center justify-center text-sm rounded border bg-muted/50 cursor-not-allowed",
                                           "text-muted-foreground"
                                         )}>
-                                          <Lock className="h-3 w-3 mr-1" />
-                                          {displayValue}
+                                          <Lock className="h-4 w-4" />
                                         </div>
                                       )}
                                     </TableCell>
