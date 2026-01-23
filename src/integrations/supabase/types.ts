@@ -12754,6 +12754,7 @@ export type Database = {
           rejected_by: string | null
           rejection_reason: string | null
           requested_at: string | null
+          resource_type: string | null
           role: string | null
           signup_attempts_count: number | null
           status: string
@@ -12788,6 +12789,7 @@ export type Database = {
           rejected_by?: string | null
           rejection_reason?: string | null
           requested_at?: string | null
+          resource_type?: string | null
           role?: string | null
           signup_attempts_count?: number | null
           status?: string
@@ -12822,6 +12824,7 @@ export type Database = {
           rejected_by?: string | null
           rejection_reason?: string | null
           requested_at?: string | null
+          resource_type?: string | null
           role?: string | null
           signup_attempts_count?: number | null
           status?: string
@@ -15048,6 +15051,7 @@ export type Database = {
           name: string
           notes: string | null
           profile_id: string | null
+          resource_type: string | null
           role_code: string | null
           role_name: string | null
           updated_at: string | null
@@ -15070,6 +15074,7 @@ export type Database = {
           name: string
           notes?: string | null
           profile_id?: string | null
+          resource_type?: string | null
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
@@ -15092,6 +15097,7 @@ export type Database = {
           name?: string
           notes?: string | null
           profile_id?: string | null
+          resource_type?: string | null
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null

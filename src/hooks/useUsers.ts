@@ -34,6 +34,7 @@ export interface UserProfile {
   department_name: string | null;
   assignment_name: string | null;
   job_role: string | null;  // Job title/role from resource_inventory (e.g. ".NET Developer")
+  resource_type: string | null;  // Fixed, Core, or Freelance
 }
 
 // Derive display status from approval_status
@@ -75,7 +76,7 @@ export function useUsers() {
       // Fetch all profiles with approval and vendor fields
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location')
+        .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location, resource_type')
         .order('vendor', { ascending: true, nullsFirst: false })
         .order('full_name', { ascending: true });
 
@@ -97,7 +98,8 @@ export function useUsers() {
           department_name,
           vendor_id,
           country_id,
-          location_id
+          location_id,
+          resource_type
         `);
       
       // Fetch reference tables for lookups
@@ -197,6 +199,7 @@ export function useUsers() {
           country: inventory?.resolved_country?.name || profile.country || null,
           country_code: inventory?.resolved_country?.code || profile.country_code || null,
           location: inventory?.resolved_location || profile.location || null,
+          resource_type: inventory?.resource_type || profile.resource_type || null,
         } as UserProfile;
       });
 
@@ -232,6 +235,7 @@ export function useUsers() {
             department_name: r.department_id ? departmentMap.get(r.department_id) || null : null,
             assignment_name: r.assignment_id ? assignmentMap.get(r.assignment_id) || null : null,
             job_role: r.role_name || null,
+            resource_type: r.resource_type || null,
           } as UserProfile;
         });
 

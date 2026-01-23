@@ -59,6 +59,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     department: '',
     contract_start_date: '',
     contract_end_date: '',
+    resource_type: '',
   });
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
   const [selectedJobRole, setSelectedJobRole] = useState<string>('');
@@ -253,6 +254,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         contract_end_date: isPermanent 
           ? `${currentYear}-12-31` 
           : (user.contract_end_date ? format(new Date(user.contract_end_date), 'yyyy-MM-dd') : ''),
+        resource_type: user.resource_type || '',
       };
       
       const newRoleIds = user.roles.map(r => r.role_id);
@@ -336,6 +338,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             department_id: selectedDepartment?.id || null,
+            resource_type: formData.resource_type || null,
             updated_at: new Date().toISOString(),
           })
           .eq('id', user.id)
@@ -372,6 +375,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                 assignment_id: selectedAssignmentId || null,
                 contract_start_date: formData.contract_start_date || null,
                 contract_end_date: formData.contract_end_date || null,
+                resource_type: formData.resource_type || null,
                 updated_at: new Date().toISOString(),
               })
               .eq('id', inventoryRecord.id)
@@ -397,6 +401,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             assignment_id: selectedAssignmentId || null,
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
+            resource_type: formData.resource_type || null,
             is_active: true,
           });
 
@@ -440,6 +445,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             assignment_id: selectedAssignmentId || null,
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
+            resource_type: formData.resource_type || null,
             updated_at: new Date().toISOString(),
           })
           .eq('id', user.id)
@@ -801,6 +807,24 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                     {vendors.map((v) => (
                       <SelectItem key={v.id} value={v.name}>{v.name}</SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="resource_type">Resource Type</Label>
+                <Select
+                  value={formData.resource_type || '__none__'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, resource_type: value === '__none__' ? '' : value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select resource type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not specified</SelectItem>
+                    <SelectItem value="Fixed">Fixed</SelectItem>
+                    <SelectItem value="Core">Core</SelectItem>
+                    <SelectItem value="Freelance">Freelance</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
