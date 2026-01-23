@@ -197,6 +197,7 @@ export function SoftwareLicensesPage() {
                 <TableHead className="text-right">Seats</TableHead>
                 <TableHead className="text-right">Cost</TableHead>
                 <TableHead>Allocation</TableHead>
+                <TableHead>Start Date</TableHead>
                 <TableHead>Renewal</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
@@ -250,6 +251,15 @@ export function SoftwareLicensesPage() {
                             {license.total_allocated}%
                           </span>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        {license.start_date ? (
+                          <span className="text-sm">
+                            {format(new Date(license.start_date), 'MMM yyyy')}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         {license.renewal_date ? (
