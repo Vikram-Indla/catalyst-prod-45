@@ -63,7 +63,7 @@ export function useBoardData(boardId: string, projectId: string) {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as { id: string; name: string; columns: any[] } | null;
     },
     enabled: !!boardId,
   });
