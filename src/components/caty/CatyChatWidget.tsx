@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { CatyOrb } from './CatyOrb';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { useQuery } from '@tanstack/react-query';
 
 interface DepartmentStats {
@@ -69,10 +70,9 @@ export function CatyChatWidget() {
       .select('id, profile_id, department_id, contract_start_date, contract_end_date, vendor_id');
 
     // Fetch departments
-    const { data: departments } = await supabase
-      .from('capacity_departments')
+    const { data: departments } = await fromTable('capacity_departments')
       .select('id, name')
-      .order('sort_order');
+      .order('sort_order') as { data: Array<{ id: string; name: string }> | null };
 
     if (!resourceInventory || !departments) return;
 
