@@ -136,8 +136,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
   const { data: businessOwners } = useQuery({
     queryKey: ['business-owners-list'],
     queryFn: async () => {
-      const { data } = await supabase.from('business_owners').select('id, name').eq('is_active', true).order('sort_order');
-      return data || [];
+      const { data } = await (supabase as any).from('business_owners').select('id, name').eq('is_active', true).order('sort_order');
+      return (data || []) as any[];
     },
   });
 

@@ -67,15 +67,16 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
   const { data: scoringStats } = useQuery({
     queryKey: ['demand-scoring-stats'],
     queryFn: async () => {
-      const { data: demands, error } = await supabase
+      const { data: demands, error } = await (supabase as any)
         .from('business_requests')
         .select('id, executive_urgency, business_value, complexity_score, business_score')
         .is('deleted_at', null);
       
       if (error) throw error;
       
-      const total = demands?.length || 0;
-      const scored = demands?.filter(isDemandScored).length || 0;
+      const demandsArr = (demands || []) as any[];
+      const total = demandsArr.length;
+      const scored = demandsArr.filter(isDemandScored).length;
       const notScored = total - scored;
       
       return { total, scored, notScored };
@@ -109,7 +110,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
       // Log previous justification to audit history before overwriting
       if (rankJustification && rankJustification !== editJustification.trim()) {
         try {
-          await supabase.from('business_request_audit_logs').insert({
+          await (supabase as any).from('business_request_audit_logs').insert({
             business_request_id: data.id,
             action: 'justification_updated',
             field_changed: 'rank_override_justification',

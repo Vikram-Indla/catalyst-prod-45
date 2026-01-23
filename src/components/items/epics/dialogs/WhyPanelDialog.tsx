@@ -35,7 +35,7 @@ export function WhyPanelDialog({ open, onOpenChange, epic }: WhyPanelDialogProps
     queryKey: ['technical-scoring-for-why', epic?.id],
     queryFn: async () => {
       if (!epic?.id) return null;
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .select('*')
         .eq('epic_id', epic.id)
@@ -43,7 +43,7 @@ export function WhyPanelDialog({ open, onOpenChange, epic }: WhyPanelDialogProps
         .limit(1)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      return data as any;
     },
     enabled: !!epic?.id && open,
   });

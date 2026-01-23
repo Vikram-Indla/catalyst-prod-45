@@ -65,7 +65,7 @@ async function uploadAttachments(requestId: string, attachments: File[]) {
       .getPublicUrl(fileName);
 
     // Save reference to business_request_links
-    const { error: insertError } = await supabase
+    const { error: insertError } = await (supabase as any)
       .from('business_request_links')
       .insert({
         business_request_id: requestId,
@@ -139,7 +139,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
 
     try {
       // Create the business request
-      const createdRequest = await createMutation.mutateAsync(requestData as any);
+      const createdRequest = await createMutation.mutateAsync(requestData as any) as any;
       
       // Upload attachments if any
       const attachments: File[] = formData.attachments || [];

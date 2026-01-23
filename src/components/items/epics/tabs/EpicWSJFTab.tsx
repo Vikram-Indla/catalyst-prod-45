@@ -42,7 +42,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
   const { data: allWsjfScores, isLoading: scoresLoading } = useQuery({
     queryKey: ['epic-wsjf-all', epic.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .select(`
           *,
@@ -51,7 +51,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
         .eq('epic_id', epic.id);
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!epic?.id,
   });
@@ -60,7 +60,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
   const { data: wsjfData, isLoading: wsjfLoading } = useQuery({
     queryKey: ['epic-wsjf', epic.id, selectedPiId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .select('*')
         .eq('epic_id', epic.id)
@@ -68,7 +68,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
         .maybeSingle();
 
       if (error) throw error;
-      return data;
+      return data as any;
     },
     enabled: !!epic?.id && !!selectedPiId,
   });

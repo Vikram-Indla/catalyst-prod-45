@@ -39,7 +39,7 @@ export function ApplyWSJFToRankDialog({
 
       if (workItemType === 'epic') {
         // For epics, WSJF is in epic_wsjf table
-        let epicQuery = supabase
+        let epicQuery = (supabase as any)
           .from('epic_wsjf')
           .select('epic_id, wsjf_score, epics!inner(id, global_rank, portfolio_id, primary_program_id)')
           .not('wsjf_score', 'is', null)
@@ -48,11 +48,11 @@ export function ApplyWSJFToRankDialog({
         const { data: epicData, error: epicError } = await epicQuery;
         if (epicError) throw epicError;
 
-        items = epicData?.map(item => ({
+        items = (epicData as any[] || []).map((item: any) => ({
           id: item.epic_id,
           wsjf_score: item.wsjf_score || 0,
-          global_rank: (item.epics as any)?.global_rank || null,
-        })) || [];
+          global_rank: item.epics?.global_rank || null,
+        }));
       } else {
         // For features, WSJF is directly on the table
         let featureQuery = supabase

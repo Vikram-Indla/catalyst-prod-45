@@ -55,14 +55,14 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
     queryKey: ['business-request-discussions', requestId],
     queryFn: async () => {
       if (!requestId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_discussions')
         .select('*')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: true });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!requestId,
   });
@@ -72,7 +72,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
     mutationFn: async (message: string) => {
       if (!requestId || !user?.id) throw new Error('Missing data');
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_discussions')
         .insert({
           business_request_id: requestId,

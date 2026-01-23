@@ -24,20 +24,20 @@ export function EpicLinksTab({ epic }: EpicLinksTabProps) {
   const { data: links } = useQuery({
     queryKey: ['epic-links', epic.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_links')
         .select('*')
         .eq('epic_id', epic.id)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     }
   });
 
   const createMutation = useMutation({
     mutationFn: async (link: any) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_links')
         .insert({ ...link, epic_id: epic.id });
       
@@ -52,7 +52,7 @@ export function EpicLinksTab({ epic }: EpicLinksTabProps) {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_links')
         .delete()
         .eq('id', id);
