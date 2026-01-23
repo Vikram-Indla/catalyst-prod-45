@@ -265,6 +265,34 @@ export default function TestCasesPage() {
     localStorage.setItem('catalyst-test-cases-view', viewMode);
   }, [viewMode]);
 
+  // URL Hash Sync: Read folder from URL on mount
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#folder=')) {
+      const folderId = hash.replace('#folder=', '');
+      if (folderId) {
+        setSelectedFolderId(folderId);
+      }
+    }
+  }, []);
+
+  // URL Hash Sync: Update URL when folder selection changes
+  useEffect(() => {
+    if (selectedFolderId) {
+      window.history.replaceState(
+        null,
+        '',
+        `${window.location.pathname}${window.location.search}#folder=${selectedFolderId}`
+      );
+    } else {
+      // Remove hash when "All Test Cases" is selected
+      const newUrl = `${window.location.pathname}${window.location.search}`;
+      if (window.location.hash) {
+        window.history.replaceState(null, '', newUrl);
+      }
+    }
+  }, [selectedFolderId]);
+
   // Listen for drag-drop move test case events from folder sidebar
   useEffect(() => {
     const handleMoveTestCase = (event: CustomEvent<{ testCaseId: string; folderId: string | null }>) => {
