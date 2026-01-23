@@ -9,6 +9,13 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useFolderTree } from '@/hooks/useFolders';
 import { buildFolderTree, getDescendantFolderIds } from '@/types/test-folders';
 import type { FolderTreeNode, TestFolderWithCount } from '@/types/test-folders';
@@ -201,13 +208,35 @@ export function TestFolderSidebar({
                 {totalCount}
               </span>
 
-              {/* More Options Button (visible on hover) */}
-              <button
-                onClick={(e) => e.stopPropagation()}
-                className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-muted-foreground/20 transition-all"
-              >
-                <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
+              {/* More Options Dropdown Menu (visible on hover) */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-muted-foreground/20 transition-all"
+                  >
+                    <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 z-50 bg-popover">
+                  <DropdownMenuItem onClick={() => openCreateDialog(node.id)}>
+                    <FolderPlus className="w-4 h-4 mr-2" />
+                    Add Subfolder
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => openRenameDialog(node.id)}>
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Rename
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => openDeleteDialog(node.id)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </ContextMenuTrigger>
 
