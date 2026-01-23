@@ -13105,6 +13105,53 @@ export type Database = {
           },
         ]
       }
+      project_features: {
+        Row: {
+          backlog_enabled: boolean | null
+          created_at: string | null
+          estimation_type: string | null
+          id: string
+          project_id: string
+          roadmap_enabled: boolean | null
+          sprints_enabled: boolean | null
+          story_points_enabled: boolean | null
+          time_tracking_enabled: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          backlog_enabled?: boolean | null
+          created_at?: string | null
+          estimation_type?: string | null
+          id?: string
+          project_id: string
+          roadmap_enabled?: boolean | null
+          sprints_enabled?: boolean | null
+          story_points_enabled?: boolean | null
+          time_tracking_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          backlog_enabled?: boolean | null
+          created_at?: string | null
+          estimation_type?: string | null
+          id?: string
+          project_id?: string
+          roadmap_enabled?: boolean | null
+          sprints_enabled?: boolean | null
+          story_points_enabled?: boolean | null
+          time_tracking_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_features_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_integrations: {
         Row: {
           config: Json
@@ -13175,6 +13222,71 @@ export type Database = {
           },
           {
             foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string | null
+          email: string
+          expires_at: string | null
+          id: string
+          invited_by: string
+          project_id: string
+          role: string
+          token: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string | null
+          email: string
+          expires_at?: string | null
+          id?: string
+          invited_by: string
+          project_id: string
+          role?: string
+          token?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string | null
+          email?: string
+          expires_at?: string | null
+          id?: string
+          invited_by?: string
+          project_id?: string
+          role?: string
+          token?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_invitations_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
@@ -13327,6 +13439,80 @@ export type Database = {
           {
             foreignKeyName: "project_members_invited_by_fkey"
             columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_notification_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          notify_issue_assigned: boolean | null
+          notify_issue_commented: boolean | null
+          notify_issue_created: boolean | null
+          notify_issue_status_changed: boolean | null
+          notify_mentioned: boolean | null
+          notify_sprint_completed: boolean | null
+          notify_sprint_started: boolean | null
+          project_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notify_issue_assigned?: boolean | null
+          notify_issue_commented?: boolean | null
+          notify_issue_created?: boolean | null
+          notify_issue_status_changed?: boolean | null
+          notify_mentioned?: boolean | null
+          notify_sprint_completed?: boolean | null
+          notify_sprint_started?: boolean | null
+          project_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notify_issue_assigned?: boolean | null
+          notify_issue_commented?: boolean | null
+          notify_issue_created?: boolean | null
+          notify_issue_status_changed?: boolean | null
+          notify_mentioned?: boolean | null
+          notify_sprint_completed?: boolean | null
+          notify_sprint_started?: boolean | null
+          project_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_notification_settings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
@@ -27678,6 +27864,10 @@ export type Database = {
         }
         Returns: Json
       }
+      invite_project_member: {
+        Args: { p_email: string; p_project_id: string; p_role?: string }
+        Returns: string
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_space_member: {
         Args: { _space_id: string; _user_id: string }
@@ -27761,6 +27951,10 @@ export type Database = {
       remove_from_queue: {
         Args: { p_item_ids: string[]; p_run_id: string }
         Returns: Json
+      }
+      remove_project_member: {
+        Args: { p_project_id: string; p_user_id: string }
+        Returns: boolean
       }
       reorder_planner_tasks_down: {
         Args: {
@@ -28498,6 +28692,10 @@ export type Database = {
           p_status?: string
         }
         Returns: Json
+      }
+      update_member_role: {
+        Args: { p_new_role: string; p_project_id: string; p_user_id: string }
+        Returns: boolean
       }
       update_recent_project: {
         Args: { p_project_id: string }
