@@ -50,6 +50,7 @@ import { cn } from '@/lib/utils';
 interface NewAssignmentRow {
   tempId: string;
   resourceId: string;
+  resourceRid: string | null;
   resourceName: string;
   contractEndDate: string | null;
   defaultCapacityPercent: number;
@@ -186,6 +187,7 @@ export default function ResourceUtilization() {
     setNewRows(prev => [...prev, {
       tempId,
       resourceId: resource.id,
+      resourceRid: resource.rid,
       resourceName: resource.resource_name,
       contractEndDate: resource.contract_end_date,
       defaultCapacityPercent: resource.default_capacity_percent,
@@ -473,8 +475,9 @@ export default function ResourceUtilization() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="sticky left-0 bg-background z-10 min-w-[200px]">Resource</TableHead>
-                  <TableHead className="sticky left-[200px] bg-background z-10 min-w-[180px]">Assignment</TableHead>
+                  <TableHead className="sticky left-0 bg-background z-10 min-w-[70px]">RID</TableHead>
+                  <TableHead className="sticky left-[70px] bg-background z-10 min-w-[200px]">Resource</TableHead>
+                  <TableHead className="sticky left-[270px] bg-background z-10 min-w-[180px]">Assignment</TableHead>
                   <TableHead className="min-w-[100px]">Contract End</TableHead>
                   <TableHead className="min-w-[50px] text-center">Add</TableHead>
                   {MONTHS.map(m => (
@@ -485,7 +488,7 @@ export default function ResourceUtilization() {
               <TableBody>
                 {filteredResources.length === 0 && newRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={16} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={17} className="text-center py-8 text-muted-foreground">
                       No resources found matching your criteria
                     </TableCell>
                   </TableRow>
@@ -497,11 +500,14 @@ export default function ResourceUtilization() {
                       
                       return (
                         <React.Fragment key={resource.id}>
-                          <TableRow>
-                            <TableCell className="sticky left-0 bg-background font-medium">
+                        <TableRow>
+                            <TableCell className="sticky left-0 bg-background font-mono text-sm text-muted-foreground">
+                              {resource.rid || '—'}
+                            </TableCell>
+                            <TableCell className="sticky left-[70px] bg-background font-medium">
                               {resource.resource_name}
                             </TableCell>
-                            <TableCell className="sticky left-[200px] bg-background">
+                            <TableCell className="sticky left-[270px] bg-background">
                               {resource.assignment_name ? (
                                 <Badge variant="outline" className="font-normal">
                                   {resource.assignment_name}
@@ -608,10 +614,13 @@ export default function ResourceUtilization() {
                             
                             return (
                               <TableRow key={newRow.tempId} className="bg-accent/30">
-                                <TableCell className="sticky left-0 bg-accent/30 font-medium text-muted-foreground">
+                                <TableCell className="sticky left-0 bg-accent/30 font-mono text-sm text-muted-foreground">
+                                  {newRow.resourceRid || '—'}
+                                </TableCell>
+                                <TableCell className="sticky left-[70px] bg-accent/30 font-medium text-muted-foreground">
                                   {newRow.resourceName}
                                 </TableCell>
-                                <TableCell className="sticky left-[200px] bg-accent/30">
+                                <TableCell className="sticky left-[270px] bg-accent/30">
                                   <Select
                                     value={newRow.assignmentId || ''}
                                     onValueChange={(value) => handleNewRowAssignmentChange(newRow.tempId, value)}
