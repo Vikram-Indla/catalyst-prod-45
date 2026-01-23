@@ -30,14 +30,14 @@ export function useAllBusinessProcesses() {
   return useQuery({
     queryKey: ['business-processes', 'all'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_processes')
         .select('*')
         .order('sort_order', { ascending: true })
         .order('name_en', { ascending: true });
 
       if (error) throw error;
-      return data as BusinessProcess[];
+      return (data || []) as BusinessProcess[];
     },
   });
 }
@@ -47,7 +47,7 @@ export function useActiveBusinessProcesses() {
   return useQuery({
     queryKey: ['business-processes', 'active'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_processes')
         .select('*')
         .eq('active', true)
@@ -55,7 +55,7 @@ export function useActiveBusinessProcesses() {
         .order('name_en', { ascending: true });
 
       if (error) throw error;
-      return data as BusinessProcess[];
+      return (data || []) as BusinessProcess[];
     },
   });
 }
@@ -99,7 +99,7 @@ export function useCreateBusinessProcess() {
 
   return useMutation({
     mutationFn: async (input: CreateBusinessProcessInput) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_processes')
         .insert({
           name_en: input.name_en,
@@ -128,7 +128,7 @@ export function useUpdateBusinessProcess() {
 
   return useMutation({
     mutationFn: async ({ id, ...input }: UpdateBusinessProcessInput & { id: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_processes')
         .update(input)
         .eq('id', id)
@@ -154,7 +154,7 @@ export function useDeleteBusinessProcess() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_processes')
         .update({ active: false })
         .eq('id', id);

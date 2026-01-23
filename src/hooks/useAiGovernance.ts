@@ -418,15 +418,15 @@ export function useAiGovernanceAdmin() {
   // Policies CRUD
   const updatePolicy = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<AiPolicy> & { id: string }) => {
-      const { data: before } = await supabase.from('ai_policies').select().eq('id', id).single();
-      const { data, error } = await supabase
+      const { data: before } = await (supabase as any).from('ai_policies').select().eq('id', id).single();
+      const { data, error } = await (supabase as any)
         .from('ai_policies')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single();
       if (error) throw error;
-      await logAudit(before?.contract_id, 'update', 'policy', id, { before, after: data });
+      await logAudit((before as any)?.contract_id, 'update', 'policy', id, { before, after: data });
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
@@ -434,7 +434,7 @@ export function useAiGovernanceAdmin() {
 
   // Audit log fetch
   const fetchAuditLog = async (contractId?: string): Promise<AiGovernanceAuditLog[]> => {
-    let query = supabase
+    let query = (supabase as any)
       .from('ai_governance_audit_log')
       .select('*')
       .order('created_at', { ascending: false })
@@ -446,7 +446,7 @@ export function useAiGovernanceAdmin() {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data as AiGovernanceAuditLog[];
+    return (data || []) as AiGovernanceAuditLog[];
   };
 
   return {

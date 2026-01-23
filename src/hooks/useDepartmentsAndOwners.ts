@@ -42,14 +42,14 @@ export function useBusinessOwners() {
   return useQuery({
     queryKey: ['business_owners'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_owners')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
       
       if (error) throw error;
-      return data as BusinessOwner[];
+      return (data || []) as BusinessOwner[];
     },
   });
 }

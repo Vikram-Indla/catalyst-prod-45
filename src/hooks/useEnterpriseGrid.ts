@@ -198,7 +198,7 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('enterprise_grid_views')
         .select('*')
         .eq('grid_id', gridId)
@@ -206,7 +206,7 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
         .order('name');
 
       if (error) throw error;
-      return (data || []).map(mapDbViewToGridView);
+      return ((data || []) as any[]).map(mapDbViewToGridView);
     },
     enabled: !!user?.id && enableSavedViews,
   });
@@ -432,14 +432,14 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
     try {
       // If setting as default, unset other defaults first
       if (isDefault) {
-        await supabase
+        await (supabase as any)
           .from('enterprise_grid_views')
           .update({ is_default: false })
           .eq('grid_id', gridId)
           .eq('user_id', user.id);
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('enterprise_grid_views')
         .upsert([{
           user_id: user.id,
@@ -460,9 +460,10 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
         .single();
 
       if (error) throw error;
+      const dataTyped = data as any;
 
       queryClient.invalidateQueries({ queryKey: ['enterprise-grid-views', gridId] });
-      setActiveViewId(data.id);
+      setActiveViewId(dataTyped.id);
       toast.success(`View "${name}" saved`);
     } catch (error) {
       console.error('Error saving view:', error);
@@ -476,7 +477,7 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
 
   const deleteView = useCallback(async (viewId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('enterprise_grid_views')
         .delete()
         .eq('id', viewId);
@@ -500,7 +501,7 @@ export function useEnterpriseGrid(config: EnterpriseGridConfig): UseEnterpriseGr
 
   const renameView = useCallback(async (viewId: string, newName: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('enterprise_grid_views')
         .update({ name: newName, updated_at: new Date().toISOString() })
         .eq('id', viewId);

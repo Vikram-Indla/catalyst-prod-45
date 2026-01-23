@@ -55,14 +55,14 @@ export function useCustomFields(entityType: string, entityId: string) {
   const { data: fieldValues = [], isLoading: valuesLoading } = useQuery({
     queryKey: ['custom-field-values', entityType, entityId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('custom_field_values')
         .select('*')
         .eq('entity_type', entityType)
         .eq('entity_id', entityId);
 
       if (error) throw error;
-      return data as CustomFieldValue[];
+      return (data || []) as CustomFieldValue[];
     },
     enabled: !!entityType && !!entityId,
   });
@@ -79,13 +79,13 @@ export function useCustomFields(entityType: string, entityId: string) {
       const existingValue = fieldValues.find(v => v.custom_field_def_id === fieldDefId);
 
       if (existingValue) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('custom_field_values')
           .update({ value_json: value, updated_at: new Date().toISOString() })
           .eq('id', existingValue.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('custom_field_values')
           .insert({
             custom_field_def_id: fieldDefId,

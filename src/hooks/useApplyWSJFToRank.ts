@@ -10,7 +10,7 @@ export function useApplyWSJFToRankEpics(piId?: string) {
   return useMutation({
     mutationFn: async () => {
       // Fetch epics with technical scores (stored in epic_wsjf table)
-      let query = supabase
+      let query = (supabase as any)
         .from('epic_wsjf')
         .select('epic_id, wsjf_score, pi_id')
         .order('wsjf_score', { ascending: false });
@@ -22,19 +22,21 @@ export function useApplyWSJFToRankEpics(piId?: string) {
       const { data: wsjfData, error: fetchError } = await query;
       if (fetchError) throw fetchError;
 
-      if (!wsjfData || wsjfData.length === 0) {
+      const wsjfDataTyped = (wsjfData || []) as Array<{ epic_id: string; wsjf_score: number; pi_id: string }>;
+
+      if (wsjfDataTyped.length === 0) {
         throw new Error('No WSJF data found for ranking');
       }
 
       // Update global_rank for each epic based on WSJF score order
-      const updates = wsjfData.map((item, index) => ({
+      const updates = wsjfDataTyped.map((item, index) => ({
         id: item.epic_id,
         global_rank: index + 1,
       }));
 
       // Batch update epics
       for (const update of updates) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('epics')
           .update({ global_rank: update.global_rank })
           .eq('id', update.id);
