@@ -83,11 +83,11 @@ export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
           .single();
 
         if (epic?.linked_business_request_id) {
-          const { data: businessRequest } = await supabase
+          const { data: businessRequest } = await (supabase as any)
             .from('business_requests')
             .select('process_step, assignee')
             .eq('id', epic.linked_business_request_id)
-            .single();
+            .single() as { data: { process_step: string; assignee: string } | null };
 
           if (businessRequest) {
             if (businessRequest.process_step === 'ready for implementation') {

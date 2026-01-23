@@ -106,7 +106,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
   const { data: attachments = [], isLoading: attachmentsLoading } = useQuery({
     queryKey: ['feature-attachments', feature.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('attachments')
         .select('*')
         .eq('entity_id', feature.id)
@@ -157,7 +157,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
 
       if (uploadError) throw uploadError;
 
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from('attachments')
         .insert({
           entity_id: feature.id,
@@ -189,7 +189,7 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
 
       if (storageError) throw storageError;
 
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from('attachments')
         .delete()
         .eq('id', attachment.id);
