@@ -29,7 +29,7 @@ export default function ResourceAssignmentsPage() {
   const { allAssignments, isLoadingAll, createAssignment, updateAssignment } = useResourceAssignments();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<ResourceAssignment | null>(null);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ name: '', description: '', assignment_type: '' });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [assignmentToDelete, setAssignmentToDelete] = useState<ResourceAssignment | null>(null);
   const [linkedRecords, setLinkedRecords] = useState<LinkedRecord[]>([]);
@@ -83,8 +83,12 @@ export default function ResourceAssignmentsPage() {
 
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
-    await createAssignment.mutateAsync(formData);
-    setFormData({ name: '', description: '' });
+    await createAssignment.mutateAsync({
+      name: formData.name,
+      description: formData.description,
+      assignment_type: formData.assignment_type || null,
+    });
+    setFormData({ name: '', description: '', assignment_type: '' });
     setCreateModalOpen(false);
   };
 
@@ -92,10 +96,14 @@ export default function ResourceAssignmentsPage() {
     if (!editingAssignment || !formData.name.trim()) return;
     await updateAssignment.mutateAsync({
       id: editingAssignment.id,
-      updates: formData,
+      updates: {
+        name: formData.name,
+        description: formData.description,
+        assignment_type: formData.assignment_type || null,
+      },
     });
     setEditingAssignment(null);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: '', description: '', assignment_type: '' });
   };
 
   const handleDeleteClick = async (assignment: ResourceAssignment) => {
@@ -155,7 +163,7 @@ export default function ResourceAssignmentsPage() {
 
   const openEdit = (assignment: ResourceAssignment) => {
     setEditingAssignment(assignment);
-    setFormData({ name: assignment.name, description: assignment.description || '' });
+    setFormData({ name: assignment.name, description: assignment.description || '', assignment_type: assignment.assignment_type || '' });
   };
 
   if (isLoadingAll) {
@@ -196,7 +204,7 @@ export default function ResourceAssignmentsPage() {
               <th className="w-10 px-4 py-3"></th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Description</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[160px]">Type</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[160px]">Assignment Type</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
             </tr>
@@ -295,6 +303,23 @@ export default function ResourceAssignmentsPage() {
                 placeholder="Brief description..."
               />
             </div>
+            <div className="space-y-2">
+              <Label>Assignment Type</Label>
+              <Select
+                value={formData.assignment_type || '__none__'}
+                onValueChange={(value) => setFormData(f => ({ ...f, assignment_type: value === '__none__' ? '' : value }))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">Not specified</SelectItem>
+                  <SelectItem value="Project">Project</SelectItem>
+                  <SelectItem value="BAU">BAU</SelectItem>
+                  <SelectItem value="Outsources">Outsources</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
@@ -331,6 +356,23 @@ export default function ResourceAssignmentsPage() {
                 onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
                 placeholder="Brief description..."
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Assignment Type</Label>
+              <Select
+                value={formData.assignment_type || '__none__'}
+                onValueChange={(value) => setFormData(f => ({ ...f, assignment_type: value === '__none__' ? '' : value }))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">Not specified</SelectItem>
+                  <SelectItem value="Project">Project</SelectItem>
+                  <SelectItem value="BAU">BAU</SelectItem>
+                  <SelectItem value="Outsources">Outsources</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             {/* License Allocation Section */}
