@@ -3,7 +3,8 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Edit, Trash2, Users } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Users, Upload } from 'lucide-react';
+import { CapacityImportWizard } from '@/modules/capacity-planner/components/import';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -41,6 +42,7 @@ export default function ResourceInventory() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingResource, setEditingResource] = useState<ResourceInventoryItem | null>(null);
+  const [importWizardOpen, setImportWizardOpen] = useState(false);
 
   // Form state
   const [formName, setFormName] = useState('');
@@ -139,10 +141,16 @@ export default function ResourceInventory() {
               Manage team resources and their default capacity allocations
             </p>
           </div>
-          <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Resource
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setImportWizardOpen(true)}>
+              <Upload className="h-4 w-4 mr-2" />
+              Import CSV
+            </Button>
+            <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Resource
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -368,6 +376,9 @@ export default function ResourceInventory() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Import Wizard */}
+        <CapacityImportWizard open={importWizardOpen} onOpenChange={setImportWizardOpen} />
       </div>
     </AdminGuard>
   );
