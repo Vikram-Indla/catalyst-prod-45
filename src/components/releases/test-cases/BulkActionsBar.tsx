@@ -63,14 +63,11 @@ export function BulkActionsBar({
       exit={{ y: 100, opacity: 0 }}
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       className={cn(
-        'fixed bottom-6 left-1/2 -translate-x-1/2 z-50',
+        'fixed bottom-20 left-1/2 -translate-x-1/2 z-50',
         'bg-foreground text-background rounded-full shadow-2xl',
         'flex items-center gap-1 px-2 py-2',
-        // Offset for sidebar: shift right by half sidebar width (128px = 64px offset)
-        'ml-[calc(var(--sidebar-offset,0px)/2)]',
         className
       )}
-      style={{ '--sidebar-offset': '240px' } as React.CSSProperties}
     >
       {/* Selection Info */}
       <div className="flex items-center gap-2 px-3">
