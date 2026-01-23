@@ -107,6 +107,11 @@ export interface TimelineBar {
   status: AllocationStatus;
   startDate: string;
   endDate: string;
+  /**
+   * Fraction (0..1] of the last visible period cell to fill.
+   * Used to visually stop bars mid-cell when contract ends mid-month/week.
+   */
+  endFraction?: number;
 }
 
 // ============================================
