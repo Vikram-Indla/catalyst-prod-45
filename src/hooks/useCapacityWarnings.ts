@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 
 export interface CapacityWarning {
   teamId: string;
@@ -19,8 +19,7 @@ export function useCapacityWarnings(piId: string, programId?: string) {
       const warnings: CapacityWarning[] = [];
       
       // Fetch resource allocations for the given period
-      const { data: allocations, error } = await supabase
-        .from('resource_allocations')
+      const { data: allocations, error } = await fromTable('resource_allocations')
         .select(`
           id,
           allocation_percent,
@@ -33,12 +32,18 @@ export function useCapacityWarnings(piId: string, programId?: string) {
 
       if (error) throw error;
 
+      const allocationRows = (allocations || []) as Array<{
+        resource_id: string;
+        resource_inventory: { id: string; full_name: string } | null;
+        allocation_percent: number | null;
+      }>;
+
       // Group by resource and calculate overallocation
       const resourceMap = new Map<string, { allocated: number; name: string }>();
       
-      allocations?.forEach(alloc => {
+      allocationRows.forEach(alloc => {
         const resourceId = alloc.resource_id;
-        const resourceData = alloc.resource_inventory as any;
+        const resourceData = alloc.resource_inventory;
         const resourceName = resourceData?.full_name || 'Unknown';
         const percentage = alloc.allocation_percent || 0;
         

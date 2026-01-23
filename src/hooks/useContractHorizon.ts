@@ -5,6 +5,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { useMemo, useState } from 'react';
 import type { 
   ContractResource, 
@@ -50,11 +51,10 @@ export function useContractHorizon() {
   const { data: departments = [] } = useQuery({
     queryKey: ['capacity-departments'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('capacity_departments')
+      const { data, error } = await fromTable('capacity_departments')
         .select('id, name');
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; name: string }>;
     }
   });
 

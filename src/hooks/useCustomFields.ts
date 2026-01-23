@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 export type FieldType = 'text' | 'number' | 'date' | 'select' | 'multi_select' | 'boolean';
@@ -55,14 +56,13 @@ export function useCustomFields(entityType: string, entityId: string) {
   const { data: fieldValues = [], isLoading: valuesLoading } = useQuery({
     queryKey: ['custom-field-values', entityType, entityId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('custom_field_values')
+      const { data, error } = await fromTable('custom_field_values')
         .select('*')
         .eq('entity_type', entityType)
         .eq('entity_id', entityId);
 
       if (error) throw error;
-      return data as CustomFieldValue[];
+      return (data || []) as CustomFieldValue[];
     },
     enabled: !!entityType && !!entityId,
   });
@@ -79,14 +79,12 @@ export function useCustomFields(entityType: string, entityId: string) {
       const existingValue = fieldValues.find(v => v.custom_field_def_id === fieldDefId);
 
       if (existingValue) {
-        const { error } = await supabase
-          .from('custom_field_values')
+        const { error } = await fromTable('custom_field_values')
           .update({ value_json: value, updated_at: new Date().toISOString() })
           .eq('id', existingValue.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
-          .from('custom_field_values')
+        const { error } = await fromTable('custom_field_values')
           .insert({
             custom_field_def_id: fieldDefId,
             entity_type: entityType,
