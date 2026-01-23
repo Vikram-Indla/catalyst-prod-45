@@ -240,9 +240,9 @@ export function SoftwareLicensesPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex flex-col items-end">
-                          <span className="font-medium tabular-nums">{formatSAR(license.annual_cost)}</span>
+                          <span className="font-medium tabular-nums">{formatSAR(license.annual_cost / 12)}/mo</span>
                           <span className="text-xs text-muted-foreground tabular-nums">
-                            {formatSAR(license.annual_cost / 12)}/mo
+                            {formatSAR(license.annual_cost)}/yr
                           </span>
                         </div>
                       </TableCell>
