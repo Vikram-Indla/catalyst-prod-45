@@ -28020,6 +28020,14 @@ export type Database = {
         Returns: string
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_project_admin: {
+        Args: { p_project_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_project_member: {
+        Args: { p_project_id: string; p_user_id: string }
+        Returns: boolean
+      }
       is_space_member: {
         Args: { _space_id: string; _user_id: string }
         Returns: boolean
