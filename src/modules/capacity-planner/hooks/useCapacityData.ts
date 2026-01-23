@@ -74,13 +74,16 @@ export function useCapacityData() {
         }
       });
       
-      // STEP 6: Fetch resource_allocations for current allocation (committed only for utilization)
-      const now = new Date().toISOString().split('T')[0];
+      // STEP 6: Fetch resource_allocations for current month (committed only for utilization)
+      // Use current month range to sync with Resource Utilization which saves monthly allocations
+      const now = new Date();
+      const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
       const { data: allocationsData } = await supabase
         .from('resource_allocations')
         .select('resource_id, allocation_percent, start_date, end_date, status')
-        .lte('start_date', now)
-        .gte('end_date', now)
+        .lte('start_date', currentMonthEnd)
+        .gte('end_date', currentMonthStart)
         .eq('status', 'committed');
       
       // Calculate current allocation per resource_inventory ID
