@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { ResourceCostSection } from '@/modules/budget';
 
 export type ResourceModalMode = 'create' | 'edit';
 export type ResourceModalContext = 'admin' | 'capacity';
@@ -578,6 +579,11 @@ export function ResourceModal({
                 </div>
               )}
             </>
+          )}
+
+          {/* Resource Cost Section - only in edit mode */}
+          {mode === 'edit' && user && (
+            <ResourceCostSection resourceId={user.id} />
           )}
 
           <DialogFooter>

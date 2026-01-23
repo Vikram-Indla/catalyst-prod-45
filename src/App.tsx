@@ -913,6 +913,7 @@ const App = () => (
                 <Route path="kanban-settings" element={<KanbanSettings />} />
                 <Route path="resourceinventory" element={<ResourceInventory />} />
                 <Route path="developmentinventory" element={<DevelopmentInventory />} />
+                <Route path="software-licenses" element={<Suspense fallback={<div>Loading...</div>}><SoftwareLicensesPage /></Suspense>} />
                 <Route path="routes-registry" element={<RoutesComponentsRegistry />} />
                 <Route path="snapshots" element={<SnapshotsAdmin />} />
                 <Route path="incidents/workgroups" element={<IncidentWorkgroups />} />
