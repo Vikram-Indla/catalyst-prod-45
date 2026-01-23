@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 interface UpdateAllocationParams {
@@ -31,8 +31,7 @@ export function useAllocationMutation() {
       if (updates.assignment_id !== undefined) updateData.assignment_id = updates.assignment_id;
       if (updates.status !== undefined) updateData.status = updates.status;
       
-      const { data, error } = await supabase
-        .from('resource_allocations')
+      const { data, error } = await fromTable('resource_allocations')
         .update(updateData)
         .eq('id', id)
         .select()

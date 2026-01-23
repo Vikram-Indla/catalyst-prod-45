@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 // NOTE: Function names reference WSJF for legacy/internal reasons
@@ -10,8 +11,7 @@ export function useApplyWSJFToRankEpics(piId?: string) {
   return useMutation({
     mutationFn: async () => {
       // Fetch epics with technical scores (stored in epic_wsjf table)
-      let query = supabase
-        .from('epic_wsjf')
+      let query = fromTable('epic_wsjf')
         .select('epic_id, wsjf_score, pi_id')
         .order('wsjf_score', { ascending: false });
 
@@ -22,12 +22,14 @@ export function useApplyWSJFToRankEpics(piId?: string) {
       const { data: wsjfData, error: fetchError } = await query;
       if (fetchError) throw fetchError;
 
-      if (!wsjfData || wsjfData.length === 0) {
+      const wsjfItems = (wsjfData || []) as Array<{ epic_id: string; wsjf_score: number; pi_id: string }>;
+
+      if (wsjfItems.length === 0) {
         throw new Error('No WSJF data found for ranking');
       }
 
       // Update global_rank for each epic based on WSJF score order
-      const updates = wsjfData.map((item, index) => ({
+      const updates = wsjfItems.map((item, index) => ({
         id: item.epic_id,
         global_rank: index + 1,
       }));

@@ -15,7 +15,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { useUsers } from './useUsers';
 import { useDepartments, useBusinessOwners } from './useDepartmentsAndOwners';
 import { useTeams } from './useTeams';
@@ -49,12 +49,11 @@ export function useAdminOverviewMetrics(): AdminOverviewMetrics {
   const { data: integrationsData, isLoading: integrationsLoading } = useQuery({
     queryKey: ['admin-integrations-count'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('integration_connectors')
+      const { data, error } = await fromTable('integration_connectors')
         .select('id, last_test_status')
         .order('name');
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; last_test_status: string | null }>;
     },
   });
 
@@ -62,8 +61,7 @@ export function useAdminOverviewMetrics(): AdminOverviewMetrics {
   const { data: auditEventsCount, isLoading: auditLoading } = useQuery({
     queryKey: ['admin-audit-events-count'],
     queryFn: async () => {
-      const { count, error } = await supabase
-        .from('activity_logs')
+      const { count, error } = await fromTable('activity_logs')
         .select('*', { count: 'exact', head: true });
       if (error) throw error;
       return count || 0;
@@ -83,12 +81,11 @@ export function useAdminOverviewMetrics(): AdminOverviewMetrics {
   const { data: programs, isLoading: programsLoading } = useQuery({
     queryKey: ['admin-programs-count'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('programs')
+      const { data, error } = await fromTable('programs')
         .select('id')
         .order('name');
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string }>;
     },
   });
 
@@ -96,8 +93,7 @@ export function useAdminOverviewMetrics(): AdminOverviewMetrics {
   const { data: authSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['admin-auth-settings-count'],
     queryFn: async () => {
-      const { count, error } = await supabase
-        .from('auth_settings')
+      const { count, error } = await fromTable('auth_settings')
         .select('*', { count: 'exact', head: true });
       if (error) throw error;
       return count || 0;
@@ -148,8 +144,7 @@ export function useRecentAdminChanges(limit: number = 5) {
         'product_roles', 'auth_settings'
       ];
 
-      const { data, error } = await supabase
-        .from('activity_logs')
+      const { data, error } = await fromTable('activity_logs')
         .select('id, action, actor_id, entity_type, entity_id, created_at')
         .in('entity_type', adminEntityTypes)
         .order('created_at', { ascending: false })
