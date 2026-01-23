@@ -438,6 +438,7 @@ export default function CapacityPlannerPage() {
 
   // Group resources by assignment type - using resource_allocations table for multi-assignment support
   // Uses activeResources (excludes expired contracts) for Allocations/Gantt views
+  // FIXED: Only use CURRENT MONTH allocations to avoid duplicate grouping
   const groupedByAssignment = useMemo(() => {
     const groups: Record<string, ResourceMetric[]> = {};
     
@@ -448,9 +449,20 @@ export default function CapacityPlannerPage() {
     // Always have Unassigned lane
     groups['Unassigned'] = [];
     
-    // Build a map of profile_id -> allocations from the allocations table
+    // Filter allocations to CURRENT MONTH only
+    const now = new Date();
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    const currentMonthAllocations = allocations.filter(alloc => {
+      const allocStart = new Date(alloc.start_date);
+      const allocEnd = new Date(alloc.end_date);
+      return allocStart <= currentMonthEnd && allocEnd >= currentMonthStart;
+    });
+    
+    // Build a map of profile_id -> CURRENT MONTH allocations only
     const allocationsByProfileId = new Map<string, { assignmentName: string; percent: number }[]>();
-    allocations.forEach((alloc) => {
+    currentMonthAllocations.forEach((alloc) => {
       if (!alloc.profile_id || !alloc.assignment_name) return;
       const existing = allocationsByProfileId.get(alloc.profile_id) || [];
       existing.push({ assignmentName: alloc.assignment_name, percent: alloc.allocation_percent });
@@ -462,7 +474,7 @@ export default function CapacityPlannerPage() {
       const resourceAllocations = allocationsByProfileId.get(r.id) || [];
       
       if (resourceAllocations.length > 0) {
-        // Resource has entries in resource_allocations table - add to each assigned column
+        // Resource has entries in resource_allocations table for current month - add to each assigned column
         resourceAllocations.forEach(({ assignmentName, percent }) => {
           if (!groups[assignmentName]) groups[assignmentName] = [];
           // Create a copy with the specific allocation for this column
@@ -1850,14 +1862,24 @@ function CardsView({
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
 }) {
-  // Helper to get allocations for a specific resource
+  // Helper to get allocations for a specific resource - CURRENT MONTH ONLY
   // Match by profile_id OR resource_id since some resources don't have linked profiles
   const getResourceAllocations = (resourceId: string, resourceInventoryId?: string) => {
-    return allocations.filter(a => 
-      a.profile_id === resourceId || 
-      a.resource_id === resourceId ||
-      (resourceInventoryId && a.resource_id === resourceInventoryId)
-    );
+    const now = new Date();
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    return allocations.filter(a => {
+      const matchesResource = a.profile_id === resourceId || 
+        a.resource_id === resourceId ||
+        (resourceInventoryId && a.resource_id === resourceInventoryId);
+      if (!matchesResource) return false;
+      
+      // Filter to CURRENT MONTH only
+      const allocStart = new Date(a.start_date);
+      const allocEnd = new Date(a.end_date);
+      return allocStart <= currentMonthEnd && allocEnd >= currentMonthStart;
+    });
   };
 
   // Helper to calculate total allocation from actual allocations - only for CURRENT period
