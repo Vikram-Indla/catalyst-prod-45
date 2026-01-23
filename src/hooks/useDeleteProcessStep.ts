@@ -15,7 +15,7 @@ export function useLinkedTickets(processStepValue: string | null) {
     queryFn: async () => {
       if (!processStepValue) return { tickets: [], count: 0 };
       
-      const { data, error, count } = await supabase
+      const { data, error, count } = await (supabase as any)
         .from('business_requests')
         .select('id, request_key, title', { count: 'exact' })
         .eq('process_step', processStepValue)
@@ -25,7 +25,7 @@ export function useLinkedTickets(processStepValue: string | null) {
 
       if (error) throw error;
       return { 
-        tickets: data as LinkedTicket[], 
+        tickets: (data || []) as LinkedTicket[], 
         count: count || 0 
       };
     },
@@ -45,7 +45,7 @@ export function useReassignTickets() {
       fromProcessStep: string; 
       toProcessStep: string;
     }) => {
-      const { error, count } = await supabase
+      const { error, count } = await (supabase as any)
         .from('business_requests')
         .update({ process_step: toProcessStep })
         .eq('process_step', fromProcessStep)

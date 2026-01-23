@@ -224,7 +224,7 @@ export function useEpicMutations() {
    */
   const recomputeTechnicalScore = async (epicId: string): Promise<number | null> => {
     // Fetch the epic's technical scoring record (first/only one - no PI dimension)
-    const { data: scoringData, error } = await supabase
+    const { data: scoringData, error } = await (supabase as any)
       .from('epic_wsjf')
       .select('*')
       .eq('epic_id', epicId)
@@ -234,11 +234,12 @@ export function useEpicMutations() {
 
     if (error || !scoringData) return null;
 
+    const scoringTyped = scoringData as any;
     const score = calculateTechnicalScore(
-      scoringData.business_value || 0,
-      scoringData.time_value || 0,
-      scoringData.rroe_value || 0,
-      scoringData.job_size || 1
+      scoringTyped.business_value || 0,
+      scoringTyped.time_value || 0,
+      scoringTyped.rroe_value || 0,
+      scoringTyped.job_size || 1
     );
 
     return score;
@@ -354,17 +355,18 @@ export function useEpicMutations() {
       if (jobSize !== undefined) updateData.job_size = jobSize;
 
       // Check if record exists
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from('epic_wsjf')
         .select('id')
         .eq('epic_id', epicId)
         .maybeSingle();
 
-      if (existing) {
-        await supabase
+      const existingTyped = existing as any;
+      if (existingTyped) {
+        await (supabase as any)
           .from('epic_wsjf')
           .update(updateData)
-          .eq('id', existing.id);
+          .eq('id', existingTyped.id);
       } else {
         // Create new record with a placeholder PI (we'll migrate away from this)
         const { data: anyPi } = await supabase
@@ -374,7 +376,7 @@ export function useEpicMutations() {
           .single();
         
         if (anyPi) {
-          await supabase
+          await (supabase as any)
             .from('epic_wsjf')
             .insert({
               epic_id: epicId,

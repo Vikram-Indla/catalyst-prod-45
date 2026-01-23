@@ -52,7 +52,7 @@ export function useBusinessRequestRoadmapItems(
   const { data: requestsData, isLoading: requestsLoading, error: requestsError } = useQuery({
     queryKey: ['business-request-roadmap-items', filters],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('business_requests')
         .select(`
           id,
@@ -96,7 +96,7 @@ export function useBusinessRequestRoadmapItems(
 
       const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 
@@ -109,7 +109,7 @@ export function useBusinessRequestRoadmapItems(
     queryFn: async () => {
       if (requestIds.length === 0) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_links')
         .select(`
           id,
@@ -121,7 +121,7 @@ export function useBusinessRequestRoadmapItems(
         .eq('linked_item_type', 'feature');
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: requestIds.length > 0,
   });
@@ -188,13 +188,13 @@ export function useBusinessRequestRoadmapItems(
   const { data: ownersData } = useQuery({
     queryKey: ['business-request-roadmap-owners'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_owners')
         .select('id, name')
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return (data || []).map(o => ({ id: o.id, name: o.name || 'Unknown' }));
+      return ((data || []) as any[]).map((o: any) => ({ id: o.id, name: o.name || 'Unknown' }));
     },
   });
 

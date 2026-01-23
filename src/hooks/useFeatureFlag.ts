@@ -7,7 +7,7 @@ export function useFeatureFlag(flagKey: string): boolean {
   const { data: flag } = useQuery({
     queryKey: ['feature-flag', flagKey],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('feature_flags')
         .select('enabled')
         .eq('flag_key', flagKey)
@@ -18,7 +18,7 @@ export function useFeatureFlag(flagKey: string): boolean {
         return { enabled: false };
       }
 
-      return data;
+      return data as { enabled: boolean };
     },
     staleTime: 5 * 60 * 1000,
   });

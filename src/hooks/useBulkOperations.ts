@@ -31,7 +31,7 @@ export function useBulkOperations({
       // Process each item individually to capture per-item errors
       for (const item of items) {
         try {
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('business_requests')
             .update(fieldsToUpdate)
             .eq('id', item.id);
@@ -106,7 +106,7 @@ export function useBulkOperations({
             continue;
           }
 
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('business_requests')
             .update({ process_step: targetStatus })
             .eq('id', item.id);
@@ -169,14 +169,14 @@ export function useBulkOperations({
           
           if (softDelete) {
             // Soft delete - set deleted_at timestamp
-            const { error: updateError } = await supabase
+            const { error: updateError } = await (supabase as any)
               .from('business_requests')
               .update({ deleted_at: new Date().toISOString() })
               .eq('id', item.id);
             error = updateError;
           } else {
             // Hard delete
-            const { error: deleteError } = await supabase
+            const { error: deleteError } = await (supabase as any)
               .from('business_requests')
               .delete()
               .eq('id', item.id);
