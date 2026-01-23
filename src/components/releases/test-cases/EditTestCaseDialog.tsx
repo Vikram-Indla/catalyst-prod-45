@@ -56,8 +56,8 @@ function useUpdateTestCaseApi() {
       steps?: { step_number: number; action: string; expected_result: string; test_data?: string }[];
     }) => {
       const { id, ...updates } = data;
-      const { data: result, error } = await supabase
-        .from('test_cases')
+      const { data: result, error } = await (supabase as any)
+        .from('tm_test_cases')
         .update(updates)
         .eq('id', id)
         .select()

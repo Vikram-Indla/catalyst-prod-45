@@ -21,7 +21,7 @@ interface ResultMappingGridProps {
 interface TestCase {
   id: string;
   title: string;
-  test_key: string | null;
+  case_key: string | null;
 }
 
 export const ResultMappingGrid = memo(function ResultMappingGrid({
@@ -42,8 +42,8 @@ export const ResultMappingGrid = memo(function ResultMappingGrid({
   useEffect(() => {
     async function fetchTestCases() {
       let query = supabase
-        .from('test_cases')
-        .select('id, title, test_key')
+        .from('tm_test_cases')
+        .select('id, title, case_key')
         .order('title');
       
       if (projectId) {
@@ -154,7 +154,7 @@ export const ResultMappingGrid = memo(function ResultMappingGrid({
                       {testCases.map(tc => (
                         <SelectItem key={tc.id} value={tc.id}>
                           <span className="flex items-center gap-2">
-                            {tc.test_key && <span className="text-muted-foreground text-xs">{tc.test_key}</span>}
+                            {tc.case_key && <span className="text-muted-foreground text-xs">{tc.case_key}</span>}
                             <span className="truncate max-w-[150px]">{tc.title}</span>
                           </span>
                         </SelectItem>

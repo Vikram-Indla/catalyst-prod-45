@@ -38,7 +38,7 @@ export async function getFolderTree(projectId: string): Promise<TestFolderWithCo
 
   // Get test case counts per folder
   const { data: counts, error: countsError } = await (supabase as any)
-    .from('test_cases')
+    .from('tm_test_cases')
     .select('folder_id')
     .eq('project_id', projectId)
     .not('folder_id', 'is', null);
@@ -252,7 +252,7 @@ export async function moveTestCasesToFolder(
   }
 
   const { data, error } = await (supabase as any)
-    .from('test_cases')
+    .from('tm_test_cases')
     .update({ folder_id: folderId })
     .in('id', validUUIDs)
     .select('id');
@@ -271,7 +271,7 @@ export async function moveTestCasesToFolder(
  */
 export async function getUnassignedTestCaseCount(projectId: string): Promise<number> {
   const { count, error } = await (supabase as any)
-    .from('test_cases')
+    .from('tm_test_cases')
     .select('id', { count: 'exact', head: true })
     .eq('project_id', projectId)
     .is('folder_id', null);
