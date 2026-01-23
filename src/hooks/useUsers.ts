@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 export type ApprovalStatus = 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'DISABLED';
@@ -110,7 +109,7 @@ export function useUsers() {
         { data: resourceLocations },
       ] = await Promise.all([
         supabase.from('resource_assignments').select('id, name').eq('is_active', true),
-        fromTable('capacity_departments').select('id, name').eq('is_active', true),
+        supabase.from('capacity_departments').select('id, name').eq('is_active', true),
         supabase.from('resource_vendors').select('id, name').eq('is_active', true),
         supabase.from('resource_countries').select('id, name, code').eq('is_active', true),
         supabase.from('resource_locations').select('id, name').eq('is_active', true),
@@ -401,12 +400,12 @@ export function useApproveUser() {
       if (error) throw error;
 
       // Log the approval
-      await fromTable('auth_audit_log').insert({
+      await supabase.from('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_approved',
         actor_id: currentUser?.id,
         created_at: new Date().toISOString()
-      } as any);
+      });
 
       return true;
     },
@@ -442,13 +441,13 @@ export function useRejectUser() {
       if (error) throw error;
 
       // Log the rejection
-      await fromTable('auth_audit_log').insert({
+      await supabase.from('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_rejected',
         actor_id: currentUser?.id,
         event_details: { reason },
         created_at: new Date().toISOString()
-      } as any);
+      });
 
       return true;
     },
@@ -482,12 +481,12 @@ export function useDisableUser() {
       if (error) throw error;
 
       // Log the action
-      await fromTable('auth_audit_log').insert({
+      await supabase.from('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_disabled',
         actor_id: currentUser?.id,
         created_at: new Date().toISOString()
-      } as any);
+      });
 
       return true;
     },

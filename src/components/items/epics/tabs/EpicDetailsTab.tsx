@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -166,11 +165,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: acceptanceCriteria } = useQuery({
     queryKey: ['epic-acceptance-criteria', epic.id],
     queryFn: async () => {
-      const { data } = await fromTable('epic_acceptance_criteria')
+      const { data } = await supabase
+        .from('epic_acceptance_criteria')
         .select('*')
         .eq('epic_id', epic.id)
         .order('created_at');
-      return (data || []) as Array<{ id: string; description: string; is_met: boolean }>;
+      return data || [];
     },
   });
 
@@ -311,7 +311,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   // Mutation to add acceptance criteria
   const addCriteriaMutation = useMutation({
     mutationFn: async (description: string) => {
-      const { error } = await fromTable('epic_acceptance_criteria')
+      const { error } = await supabase
+        .from('epic_acceptance_criteria')
         .insert({ epic_id: epic.id, description });
       if (error) throw error;
     },
@@ -326,7 +327,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   // Mutation to delete acceptance criteria
   const deleteCriteriaMutation = useMutation({
     mutationFn: async (criteriaId: string) => {
-      const { error } = await fromTable('epic_acceptance_criteria')
+      const { error } = await supabase
+        .from('epic_acceptance_criteria')
         .delete()
         .eq('id', criteriaId);
       if (error) throw error;

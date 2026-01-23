@@ -1359,7 +1359,7 @@ export default function CapacityPlannerPage() {
                     const userId = selectedUserId;
 
                     // Create assignment for the user
-                    const { error: assignmentError } = await (supabase as any).from('assignments').insert({
+                    const { error: assignmentError } = await supabase.from('assignments').insert({
                       user_id: userId,
                       project_id: null,
                       allocation_percentage: 0,
@@ -1399,7 +1399,7 @@ export default function CapacityPlannerPage() {
                       if (existing) {
                         const validAllocations = bookingAllocations.filter(a => a.assignmentId);
                         if (validAllocations.length > 0) {
-                          await (supabase as any).from('resource_allocations').insert(
+                          await supabase.from('resource_allocations').insert(
                             validAllocations.map(a => ({
                               resource_id: existing.id,
                               profile_id: userId,

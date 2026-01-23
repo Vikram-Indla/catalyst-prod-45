@@ -156,7 +156,7 @@ export function ProductBacklogEnterpriseTable({
   const updateRanksMutation = useMutation({
     mutationFn: async ({ updates }: { updates: Array<{ id: string; rank: number }> }) => {
       const promises = updates.map(item =>
-        (supabase as any)
+        supabase
           .from('business_requests')
           .update({ rank: item.rank })
           .eq('id', item.id)

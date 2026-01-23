@@ -48,9 +48,6 @@ const FeatureBacklogPage = lazy(() => import("./modules/feature-backlog/pages/Fe
 const ProjectWorkspace = lazy(() => import("./pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
-const ProjectLayout = lazy(() => import("./layouts/ProjectLayout"));
-const ProjectSummary = lazy(() => import("./pages/projects/ProjectSummary"));
-const ProjectBoard = lazy(() => import("./pages/projects/ProjectBoard"));
 
 import { EpicBalancingPage } from "./modules/epic-balancing";
 const UserNotificationSettingsPage = lazy(() => import("./pages/UserNotificationSettingsPage"));
@@ -600,16 +597,9 @@ const App = () => (
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/programs" element={<ProgramDirectory />} />
               <Route path="/projects" element={<ProjectDirectory />} />
-              
-              {/* BUILD UNIT 2.3: Project Layout with Sidebar Navigation */}
-              <Route path="/projects/:projectKey" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectLayout /></Suspense>}>
-                <Route index element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectSummary /></Suspense>} />
-                <Route path="board" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectBoard /></Suspense>} />
-                <Route path="backlog" element={<div className="h-full flex items-center justify-center text-muted-foreground">Backlog - Sprint 7</div>} />
-                <Route path="sprints" element={<div className="h-full flex items-center justify-center text-muted-foreground">Sprints - Sprint 6</div>} />
-                <Route path="reports" element={<div className="h-full flex items-center justify-center text-muted-foreground">Reports - Sprint 9</div>} />
-                <Route path="settings" element={<ProjectSettingsPage />} />
-              </Route>
+              <Route path="/projects/:projectKey" element={<Navigate to={`/projects`} replace />} />
+              <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
+              <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
               <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureDetailPage /></Suspense>} />
               

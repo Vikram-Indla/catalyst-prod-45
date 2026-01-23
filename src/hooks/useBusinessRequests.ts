@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { BusinessRequest, CreateBusinessRequestFormData, ReadinessChecklist } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { Json } from '@/integrations/supabase/types';
@@ -9,7 +8,8 @@ import { Json } from '@/integrations/supabase/types';
 // Helper to generate MIM-XXX format request key
 const generateRequestKey = async (): Promise<string> => {
   // Get all existing request keys to find the max number
-  const { data, error } = await fromTable('business_requests')
+  const { data, error } = await supabase
+    .from('business_requests')
     .select('request_key')
     .not('request_key', 'is', null);
   
@@ -22,7 +22,7 @@ const generateRequestKey = async (): Promise<string> => {
   
   // Find the highest number from existing keys (handles gaps from deleted records)
   let maxNum = 0;
-  ((data || []) as Array<{ request_key: string | null }>).forEach(row => {
+  (data || []).forEach(row => {
     if (row.request_key) {
       const match = row.request_key.match(/MIM-(\d+)/);
       if (match) {
@@ -78,7 +78,8 @@ export function useBusinessRequests(searchQuery?: string) {
   return useQuery({
     queryKey: ['business-requests', searchQuery],
     queryFn: async () => {
-      let query = fromTable('business_requests')
+      let query = supabase
+        .from('business_requests')
         .select('*')
         .is('deleted_at', null) // Filter out soft-deleted items
         .order('created_at', { ascending: false });
@@ -91,11 +92,9 @@ export function useBusinessRequests(searchQuery?: string) {
       const { data, error } = await query;
       if (error) throw error;
       
-      const rows = (data || []) as any[];
-      
       // Collect unique user IDs from requestor and assignee fields
       const userIds = new Set<string>();
-      rows.forEach(row => {
+      (data || []).forEach(row => {
         // Only add if it looks like a UUID (contains dashes and is 36 chars)
         if (row.requestor && row.requestor.length === 36 && row.requestor.includes('-')) {
           userIds.add(row.requestor);
@@ -121,7 +120,7 @@ export function useBusinessRequests(searchQuery?: string) {
       }
       
       // Transform rows and resolve user IDs to names
-      return rows.map(row => {
+      return (data || []).map(row => {
         const transformed = transformRow(row);
         // Resolve requestor/assignee UUIDs to names
         if (row.requestor && profileMap[row.requestor]) {
@@ -169,21 +168,21 @@ export function useBusinessRequest(id: string | null) {
     queryKey: ['business-request', id],
     queryFn: async () => {
       if (!id) return null;
-      const { data, error } = await fromTable('business_requests')
+      const { data, error } = await supabase
+        .from('business_requests')
         .select('*')
         .eq('id', id)
         .single();
       if (error) throw error;
       
-      const row = data as any;
-      const transformed = transformRow(row);
+      const transformed = transformRow(data);
       
       // Resolve requestor UUID to name if it looks like a UUID
-      if (row.requestor && row.requestor.length === 36 && row.requestor.includes('-')) {
+      if (data.requestor && data.requestor.length === 36 && data.requestor.includes('-')) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('full_name, email')
-          .eq('id', row.requestor)
+          .eq('id', data.requestor)
           .single();
         
         if (profile) {
@@ -220,7 +219,8 @@ export function useCreateBusinessRequest() {
       // Generate request key in MIM-XXX format
       const requestKey = await generateRequestKey();
       
-      const { data: result, error } = await fromTable('business_requests')
+      const { data: result, error } = await supabase
+        .from('business_requests')
         .insert([{
           title: data.title,
           description: data.description || null,
@@ -254,11 +254,9 @@ export function useCreateBusinessRequest() {
         .single();
       if (error) throw error;
 
-      const resultRow = result as any;
-
       // Create audit log for creation
-      await fromTable('business_request_audit_logs').insert({
-        business_request_id: resultRow.id,
+      await supabase.from('business_request_audit_logs').insert({
+        business_request_id: result.id,
         actor_id: user?.id || null,
         actor_name: actorName,
         action: 'CREATE',
@@ -267,7 +265,7 @@ export function useCreateBusinessRequest() {
         new_value: data.title
       });
 
-      return resultRow;
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
@@ -300,7 +298,8 @@ export function useUpdateBusinessRequest() {
       }
 
       // Get the current data before update for audit logging
-      const { data: currentData } = await fromTable('business_requests')
+      const { data: currentData } = await supabase
+        .from('business_requests')
         .select('*')
         .eq('id', id)
         .single();
@@ -336,28 +335,27 @@ export function useUpdateBusinessRequest() {
         
         if (newRank !== null) {
           // Get current item's old rank
-          const { data: currentItem } = await fromTable('business_requests')
+          const { data: currentItem } = await supabase
+            .from('business_requests')
             .select('rank')
             .eq('id', id)
             .single();
           
-          const currentRow = currentItem as any;
-          const oldRank = currentRow?.rank;
+          const oldRank = currentItem?.rank;
           
           // Get all items that need to be shifted
-          const { data: allItems } = await fromTable('business_requests')
+          const { data: allItems } = await supabase
+            .from('business_requests')
             .select('id, rank')
             .not('id', 'eq', id)
             .not('rank', 'is', null)
             .order('rank', { ascending: true });
           
-          const allRows = (allItems || []) as Array<{ id: string; rank: number | null }>;
-          
-          if (allRows.length > 0) {
+          if (allItems && allItems.length > 0) {
             // Shift items to make room for the forced rank
             const itemsToUpdate: { id: string; rank: number }[] = [];
             
-            for (const item of allRows) {
+            for (const item of allItems) {
               if (item.rank !== null && item.rank >= newRank) {
                 // Shift item down by 1
                 itemsToUpdate.push({ id: item.id, rank: item.rank + 1 });
@@ -366,7 +364,8 @@ export function useUpdateBusinessRequest() {
             
             // Update shifted items
             for (const item of itemsToUpdate) {
-              await fromTable('business_requests')
+              await supabase
+                .from('business_requests')
                 .update({ rank: item.rank })
                 .eq('id', item.id);
             }
@@ -374,7 +373,8 @@ export function useUpdateBusinessRequest() {
         }
       }
       
-      const { data: result, error } = await fromTable('business_requests')
+      const { data: result, error } = await supabase
+        .from('business_requests')
         .update(updateData)
         .eq('id', id)
         .select()
@@ -406,7 +406,7 @@ export function useUpdateBusinessRequest() {
         
         // Insert all audit logs
         if (auditLogs.length > 0) {
-          await fromTable('business_request_audit_logs').insert(auditLogs);
+          await supabase.from('business_request_audit_logs').insert(auditLogs);
         }
       }
 
@@ -432,20 +432,20 @@ export function useDeleteBusinessRequest() {
   return useMutation({
     mutationFn: async (id: string) => {
       // Get the request_key before soft deleting for the success message
-      const { data: request } = await fromTable('business_requests')
+      const { data: request } = await supabase
+        .from('business_requests')
         .select('request_key')
         .eq('id', id)
         .single();
       
-      const requestRow = request as any;
-      
       // Soft delete by setting deleted_at timestamp
-      const { error } = await fromTable('business_requests')
+      const { error } = await supabase
+        .from('business_requests')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
       
-      return requestRow?.request_key || 'Request';
+      return request?.request_key || 'Request';
     },
     onSuccess: (requestKey) => {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
@@ -467,7 +467,8 @@ export function useDuplicateBusinessRequest() {
       const { data: { user } } = await supabase.auth.getUser();
       
       // Get the original request (only need the title)
-      const { data: original, error: fetchError } = await fromTable('business_requests')
+      const { data: original, error: fetchError } = await supabase
+        .from('business_requests')
         .select('title, request_key')
         .eq('id', id)
         .single();
@@ -475,15 +476,14 @@ export function useDuplicateBusinessRequest() {
       if (fetchError) throw fetchError;
       if (!original) throw new Error('Request not found');
 
-      const originalRow = original as any;
-
       // Generate request key in MIM-XXX format
       const requestKey = await generateRequestKey();
 
       // Create new request with only title copied, status reset to New Demand (new_request), and scoring reset to unscored
-      const { data: newRequest, error: insertError } = await fromTable('business_requests')
+      const { data: newRequest, error: insertError } = await supabase
+        .from('business_requests')
         .insert({
-          title: `${originalRow.title} (Copy)`,
+          title: `${original.title} (Copy)`,
           request_key: requestKey,
           process_step: 'new_request',
           requestor: user?.id || null, // Set reporter to current user
@@ -506,8 +506,6 @@ export function useDuplicateBusinessRequest() {
       
       if (insertError) throw insertError;
       
-      const newRequestRow = newRequest as any;
-      
       // Create audit log for the duplicate (reuse user from above)
       let actorName = 'System';
       if (user) {
@@ -519,17 +517,17 @@ export function useDuplicateBusinessRequest() {
         actorName = profile?.full_name || profile?.email || 'Unknown User';
       }
 
-      await fromTable('business_request_audit_logs').insert({
-        business_request_id: newRequestRow.id,
+      await supabase.from('business_request_audit_logs').insert({
+        business_request_id: newRequest.id,
         actor_id: user?.id || null,
         actor_name: actorName,
         action: 'CREATE',
         field_changed: null,
         old_value: null,
-        new_value: `Duplicated from ${originalRow.request_key}`
+        new_value: `Duplicated from ${original.request_key}`
       });
 
-      return newRequestRow;
+      return newRequest;
     },
     onSuccess: (newRequest) => {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });

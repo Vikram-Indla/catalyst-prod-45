@@ -50,11 +50,11 @@ export default function BusinessOwners() {
   const handleAddOwner = async () => {
     if (!newOwnerName.trim()) return;
 
-    const { data: newOwner, error: ownerError } = await (supabase as any)
+    const { data: newOwner, error: ownerError } = await supabase
       .from('business_owners')
       .insert({ name: newOwnerName.trim() })
       .select()
-      .single() as { data: { id: string } | null; error: any };
+      .single();
 
     if (ownerError || !newOwner) {
       toast.error('Failed to add business owner');
@@ -92,7 +92,7 @@ export default function BusinessOwners() {
   const handleUpdateOwner = async () => {
     if (!editingOwner || !newOwnerName.trim()) return;
 
-    const { error: ownerError } = await (supabase as any)
+    const { error: ownerError } = await supabase
       .from('business_owners')
       .update({ name: newOwnerName.trim() })
       .eq('id', editingOwner.id);
@@ -139,7 +139,7 @@ export default function BusinessOwners() {
   };
 
   const handleToggleActive = async (id: string, currentStatus: boolean) => {
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('business_owners')
       .update({ is_active: !currentStatus })
       .eq('id', id);

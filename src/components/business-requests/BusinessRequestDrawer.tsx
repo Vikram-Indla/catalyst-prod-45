@@ -52,7 +52,6 @@ import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { toast } from 'sonner';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
 import { useBusinessDrawerRoleTabs } from '@/hooks/useBusinessDrawerRoleTabs';
 import { EnterpriseStatusControl, WorkflowFooter, getNextWorkflowAction, StatusDropdown } from './drawer';
@@ -149,7 +148,8 @@ async function logFieldChanges(
     // Insert all audit logs
     if (auditLogs.length > 0) {
       console.log('Inserting audit logs:', auditLogs);
-      const { error } = await fromTable('business_request_audit_logs')
+      const { error } = await supabase
+        .from('business_request_audit_logs')
         .insert(auditLogs);
       
       if (error) {
@@ -195,7 +195,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     queryKey: ['business-request-risks-count', requestId],
     queryFn: async () => {
       if (!requestId) return 0;
-      const { count } = await fromTable('business_request_links')
+      const { count } = await supabase
+        .from('business_request_links')
         .select('id', { count: 'exact', head: true })
         .eq('business_request_id', requestId)
         .eq('kind', 'risk');
@@ -223,7 +224,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     queryKey: ['business-request-links-count', requestId],
     queryFn: async () => {
       if (!requestId) return 0;
-      const { count } = await fromTable('business_request_links')
+      const { count } = await supabase
+        .from('business_request_links')
         .select('id', { count: 'exact', head: true })
         .eq('business_request_id', requestId);
       return count || 0;
@@ -236,7 +238,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     queryKey: ['business-request-audit-count', requestId],
     queryFn: async () => {
       if (!requestId) return 0;
-      const { count } = await fromTable('business_request_audit_logs')
+      const { count } = await supabase
+        .from('business_request_audit_logs')
         .select('id', { count: 'exact', head: true })
         .eq('business_request_id', requestId);
       return count || 0;

@@ -1,6 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { format } from 'date-fns';
 import { History, ArrowRight, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useCallback } from 'react';
@@ -96,7 +95,8 @@ export function UnifiedAuditHistoryTab({ entityId, entityType, embedded = false 
         return { logs: transformedLogs as any[], count: count || 0, page: pageParam };
       }
 
-      const { data: logs, error, count } = await fromTable('business_request_audit_logs')
+      const { data: logs, error, count } = await supabase
+        .from('business_request_audit_logs')
         .select('*', { count: 'exact' })
         .eq('business_request_id', entityId)
         .order('created_at', { ascending: false })

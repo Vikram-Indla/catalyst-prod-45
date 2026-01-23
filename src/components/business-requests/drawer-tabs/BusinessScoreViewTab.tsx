@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   usePrioritizationConfig, 
@@ -181,14 +180,15 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   const { data: allRequests } = useQuery({
     queryKey: ['all-business-requests-for-rank'],
     queryFn: async () => {
-      const { data, error } = await fromTable('business_requests')
+      const { data, error } = await supabase
+        .from('business_requests')
         .select('id, business_score, is_force_ranked, rank, priority_tier')
         .is('deleted_at', null)
         .not('priority_tier', 'is', null)
         .neq('priority_tier', 'unscored')
         .order('business_score', { ascending: false });
       if (error) throw error;
-      return (data || []) as Array<{ id: string; business_score: number | null; is_force_ranked: boolean; rank: number | null; priority_tier: string | null }>;
+      return data || [];
     },
   });
 
@@ -323,7 +323,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         updateData.process_step = 'on_hold';
       }
 
-      const { error } = await fromTable('business_requests')
+      const { error } = await supabase
+        .from('business_requests')
         .update(updateData)
         .eq('id', requestId);
 
@@ -349,7 +350,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         .eq('id', user?.id)
         .single();
 
-      await fromTable('business_request_audit_logs').insert({
+      await supabase.from('business_request_audit_logs').insert({
         business_request_id: requestId,
         actor_id: user?.id,
         actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -360,7 +361,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       });
 
       if (tier === 'rejected') {
-        await fromTable('business_request_audit_logs').insert({
+        await supabase.from('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -435,7 +436,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true;
       try {
-        await fromTable('business_requests')
+        await supabase
+          .from('business_requests')
           .update({ 
             rank: null, 
             is_force_ranked: false,
@@ -452,7 +454,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
           .eq('id', user?.id)
           .single();
 
-        await fromTable('business_request_audit_logs').insert({
+        await supabase.from('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -505,7 +507,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true;
       try {
-        await fromTable('business_requests')
+        await supabase
+          .from('business_requests')
           .update({ 
             rank: pendingRank, 
             is_force_ranked: true,
@@ -521,7 +524,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
           .eq('id', user?.id)
           .single();
 
-        await fromTable('business_request_audit_logs').insert({
+        await supabase.from('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',

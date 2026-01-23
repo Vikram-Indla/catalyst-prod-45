@@ -240,12 +240,12 @@ export default function SearchPage() {
 
     // Search business requests (demands)
     if (type === 'all' || type === 'demand') {
-      const { data: demands } = await (supabase as any)
+      const { data: demands } = await supabase
         .from('business_requests')
         .select('id, request_key, title, process_step, assignee, updated_at')
         .or(`title.ilike.${searchPattern},request_key.ilike.${searchPattern}`)
         .is('deleted_at', null)
-        .limit(50) as { data: Array<{ id: string; request_key: string; title: string; process_step: string; assignee: string | null; updated_at: string }> | null };
+        .limit(50);
       if (demands) {
         results.push(
           ...demands.map((d) => ({

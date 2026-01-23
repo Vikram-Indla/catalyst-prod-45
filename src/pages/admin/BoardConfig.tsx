@@ -12,7 +12,7 @@ export default function BoardConfig() {
   const { data: boardConfigs } = useQuery({
     queryKey: ['board-configs', boardTypeFilter],
     queryFn: async () => {
-      let query = (supabase as any).from('board_configs').select('*').order('board_type');
+      let query = supabase.from('board_configs').select('*').order('board_type');
       
       if (boardTypeFilter) {
         query = query.eq('board_type', boardTypeFilter);
@@ -20,7 +20,7 @@ export default function BoardConfig() {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data || []) as Array<{ id: string; board_type: string; scope_type: string; scope_id: string | null; columns_json: any; swimlane_rule: string | null }>;
+      return data;
     },
   });
 

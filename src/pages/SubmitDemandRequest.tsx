@@ -210,7 +210,7 @@ export default function SubmitDemandRequest() {
     const dayStart = startOfDay(today).toISOString();
     const dayEnd = endOfDay(today).toISOString();
     
-    const { count, error } = await (supabase as any)
+    const { count, error } = await supabase
       .from('business_requests')
       .select('*', { count: 'exact', head: true })
       .ilike('requestor', `%${fullEmail}%`)
@@ -249,7 +249,7 @@ export default function SubmitDemandRequest() {
       
       const fullEmail = `${formData.email}${EMAIL_DOMAIN}`;
       // Insert business request
-      const { data: requestData, error: requestError } = await (supabase as any)
+      const { data: requestData, error: requestError } = await supabase
         .from('business_requests')
         .insert([{
           title: formData.summary,
@@ -264,7 +264,7 @@ export default function SubmitDemandRequest() {
           requestor: `${formData.requestedBy} (${fullEmail})`,
         }])
         .select('id, request_key, created_at')
-        .single() as { data: { id: string; request_key: string; created_at: string } | null; error: any };
+        .single();
       
       if (requestError) throw requestError;
       
@@ -281,9 +281,9 @@ export default function SubmitDemandRequest() {
             console.error('Failed to upload attachment:', uploadError);
           } else {
             // Save attachment reference
-            await (supabase as any).from('attachments').insert({
+            await supabase.from('attachments').insert({
               entity_type: 'business_request',
-              entity_id: requestData!.id,
+              entity_id: requestData.id,
               file_name: attachment.name,
               file_path: filePath,
               file_size: attachment.size,

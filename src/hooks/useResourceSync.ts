@@ -6,7 +6,6 @@
 import { useEffect, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { RESOURCE_QUERY_KEYS, ALL_RESOURCE_QUERY_KEYS } from '@/types/resourceProfile';
 
 /**
@@ -103,13 +102,13 @@ export async function logUserUpdate(
       timestamp: new Date().toISOString(),
     }));
     
-    await fromTable('auth_audit_log').insert([{
+    await supabase.from('auth_audit_log').insert([{
       user_id: userId,
       event_type: 'user_profile_updated',
       actor_id: currentUser?.id || null,
       event_details: eventDetails,
       created_at: new Date().toISOString(),
-    } as any]);
+    }]);
   } catch (error) {
     console.error('Failed to log user update:', error);
     // Don't throw - audit logging failure shouldn't block the update

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -40,14 +39,15 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
   const { data: attachments, isLoading } = useQuery({
     queryKey: ['story-attachments', storyId],
     queryFn: async () => {
-      const { data, error } = await fromTable('attachments')
+      const { data, error } = await supabase
+        .from('attachments')
         .select('*')
         .eq('entity_type', 'stories')
         .eq('entity_id', storyId)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return (data || []) as Array<{ id: string; file_name: string; file_path: string; file_size: number; mime_type: string; created_at: string; uploaded_by?: string }>;
+      return data;
     },
   });
 
@@ -65,7 +65,8 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
       if (uploadError) throw uploadError;
 
       // Create attachment record
-      const { error: recordError } = await fromTable('attachments')
+      const { error: recordError } = await supabase
+        .from('attachments')
         .insert({
           entity_type: 'stories',
           entity_id: storyId,
@@ -97,7 +98,8 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
       if (storageError) throw storageError;
 
       // Delete record
-      const { error: recordError } = await fromTable('attachments')
+      const { error: recordError } = await supabase
+        .from('attachments')
         .delete()
         .eq('id', attachment.id);
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fromTable } from '@/lib/supabase-utils';
+import { supabase } from '@/integrations/supabase/client';
 import { TrendingUp } from 'lucide-react';
 import { WSJFScoringModal } from './WSJFScoringModal';
 
@@ -26,7 +26,8 @@ export function WSJFInlineScores({ epicId, epicTitle, epicKey }: WSJFInlineScore
   const { data: wsjfScores, isLoading } = useQuery({
     queryKey: ['epic-wsjf-inline', epicId],
     queryFn: async () => {
-      const { data, error } = await fromTable('epic_wsjf')
+      const { data, error } = await supabase
+        .from('epic_wsjf')
         .select(`
           *,
           program_increments(id, name)
@@ -34,7 +35,7 @@ export function WSJFInlineScores({ epicId, epicTitle, epicKey }: WSJFInlineScore
         .eq('epic_id', epicId);
       
       if (error) throw error;
-      return (data || []) as Array<{ id: string; pi_id: string; wsjf_score: number | null; program_increments: { id: string; name: string } | null }>;
+      return data || [];
     },
     enabled: !!epicId,
   });

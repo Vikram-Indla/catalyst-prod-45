@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import {
   Dialog,
   DialogContent,
@@ -40,7 +39,8 @@ export function ApplyWSJFToRankDialog({
 
       if (workItemType === 'epic') {
         // For epics, WSJF is in epic_wsjf table
-        let epicQuery = fromTable('epic_wsjf')
+        let epicQuery = supabase
+          .from('epic_wsjf')
           .select('epic_id, wsjf_score, epics!inner(id, global_rank, portfolio_id, primary_program_id)')
           .not('wsjf_score', 'is', null)
           .order('wsjf_score', { ascending: false });
@@ -48,12 +48,11 @@ export function ApplyWSJFToRankDialog({
         const { data: epicData, error: epicError } = await epicQuery;
         if (epicError) throw epicError;
 
-        const epicItems = epicData as Array<{ epic_id: string; wsjf_score: number; epics: { id: string; global_rank: number | null } }> || [];
-        items = epicItems.map(item => ({
+        items = epicData?.map(item => ({
           id: item.epic_id,
           wsjf_score: item.wsjf_score || 0,
-          global_rank: item.epics?.global_rank || null,
-        }));
+          global_rank: (item.epics as any)?.global_rank || null,
+        })) || [];
       } else {
         // For features, WSJF is directly on the table
         let featureQuery = supabase

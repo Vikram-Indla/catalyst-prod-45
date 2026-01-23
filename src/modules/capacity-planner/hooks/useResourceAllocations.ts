@@ -6,7 +6,6 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 import type { ResourceAllocation, AllocationBookingInput } from '../types';
 
@@ -20,7 +19,8 @@ export function useResourceAllocations() {
   const { data: allocations = [], isLoading, refetch } = useQuery({
     queryKey: ['resource-allocations'],
     queryFn: async () => {
-      const { data, error } = await fromTable('resource_allocations')
+      const { data, error } = await supabase
+        .from('resource_allocations')
         .select(
           `
           id,
@@ -59,7 +59,7 @@ export function useResourceAllocations() {
         }
       });
 
-      return ((data || []) as any[]).map((row: any) => {
+      return (data || []).map((row: any) => {
         const profileId = row.resource_inventory?.profile_id as string | undefined;
         const roleName = profileId ? roleNameByUserId.get(profileId) : undefined;
 
@@ -194,13 +194,14 @@ export function useResourceAllocations() {
       const inventoryId = await ensureInventoryId(resourceId);
 
       // Get existing allocations for this resource to determine what to delete
-      const { data: existingAllocations, error: fetchError } = await fromTable('resource_allocations')
+      const { data: existingAllocations, error: fetchError } = await supabase
+        .from('resource_allocations')
         .select('id')
         .eq('resource_id', inventoryId);
 
       if (fetchError) throw fetchError;
 
-      const existingIds = new Set(((existingAllocations || []) as any[]).map(a => a.id));
+      const existingIds = new Set((existingAllocations || []).map(a => a.id));
       const newIds = new Set(newAllocations.filter(a => a.id).map(a => a.id));
 
       // Find allocations that were deleted (exist in DB but not in new array)
@@ -208,7 +209,8 @@ export function useResourceAllocations() {
 
       // Delete removed allocations
       if (idsToDelete.length > 0) {
-        const { error: deleteError } = await fromTable('resource_allocations')
+        const { error: deleteError } = await supabase
+          .from('resource_allocations')
           .delete()
           .in('id', idsToDelete);
 
@@ -219,26 +221,27 @@ export function useResourceAllocations() {
       for (const alloc of newAllocations) {
         if (alloc.id) {
           // Update existing
-          const { error } = await fromTable('resource_allocations')
+          const { error } = await supabase
+            .from('resource_allocations')
             .update({
               assignment_id: alloc.assignment_id,
               allocation_percent: alloc.allocation_percent,
               start_date: alloc.start_date,
               end_date: alloc.end_date,
               updated_at: new Date().toISOString(),
-            } as any)
+            })
             .eq('id', alloc.id);
 
           if (error) throw error;
         } else {
           // Insert new
-          const { error } = await fromTable('resource_allocations').insert({
+          const { error } = await supabase.from('resource_allocations').insert({
             resource_id: inventoryId,
             assignment_id: alloc.assignment_id,
             allocation_percent: alloc.allocation_percent,
             start_date: alloc.start_date,
             end_date: alloc.end_date,
-          } as any);
+          });
 
           if (error) throw error;
         }
@@ -275,14 +278,15 @@ export function useResourceAllocations() {
       const threeMonths = new Date();
       threeMonths.setMonth(threeMonths.getMonth() + 3);
 
-      const { data, error } = await fromTable('resource_allocations')
+      const { data, error } = await supabase
+        .from('resource_allocations')
         .insert({
           resource_id: inventoryId,
           assignment_id: assignmentId,
           allocation_percent: allocationPercent,
           start_date: startDate || today,
           end_date: endDate || threeMonths.toISOString().split('T')[0],
-        } as any)
+        })
         .select()
         .single();
 
@@ -319,8 +323,9 @@ export function useResourceAllocations() {
       if (startDate) updateData.start_date = startDate;
       if (endDate) updateData.end_date = endDate;
 
-      const { data, error } = await fromTable('resource_allocations')
-        .update(updateData as any)
+      const { data, error } = await supabase
+        .from('resource_allocations')
+        .update(updateData)
         .eq('id', allocationId)
         .select()
         .single();
@@ -341,7 +346,7 @@ export function useResourceAllocations() {
   // Remove an allocation
   const removeAllocation = useMutation({
     mutationFn: async (allocationId: string) => {
-      const { error } = await fromTable('resource_allocations').delete().eq('id', allocationId);
+      const { error } = await supabase.from('resource_allocations').delete().eq('id', allocationId);
 
       if (error) throw error;
     },
@@ -371,62 +376,63 @@ export function useResourceAllocations() {
       const inventoryId = await ensureInventoryId(resourceId);
 
       // Get current allocation in source assignment
-      const { data: sourceAlloc } = await fromTable('resource_allocations')
+      const { data: sourceAlloc } = await supabase
+        .from('resource_allocations')
         .select('id, allocation_percent')
         .eq('resource_id', inventoryId)
         .eq('assignment_id', fromAssignmentId)
         .maybeSingle();
 
-      const source = sourceAlloc as { id: string; allocation_percent: number } | null;
-      if (!source) {
+      if (!sourceAlloc) {
         throw new Error('Source allocation not found');
       }
 
-      const newSourcePercent = source.allocation_percent - transferPercent;
+      const newSourcePercent = sourceAlloc.allocation_percent - transferPercent;
 
       // Update or delete source allocation
       if (newSourcePercent <= 0) {
-        const { error } = await fromTable('resource_allocations').delete().eq('id', source.id);
+        const { error } = await supabase.from('resource_allocations').delete().eq('id', sourceAlloc.id);
         if (error) throw error;
       } else {
-        const { error } = await fromTable('resource_allocations')
+        const { error } = await supabase
+          .from('resource_allocations')
           .update({
             allocation_percent: newSourcePercent,
             updated_at: new Date().toISOString(),
-          } as any)
-          .eq('id', source.id);
+          })
+          .eq('id', sourceAlloc.id);
         if (error) throw error;
       }
 
       // Add or update target allocation
-      const { data: targetAlloc } = await fromTable('resource_allocations')
+      const { data: targetAlloc } = await supabase
+        .from('resource_allocations')
         .select('id, allocation_percent')
         .eq('resource_id', inventoryId)
         .eq('assignment_id', toAssignmentId)
         .maybeSingle();
 
-      const target = targetAlloc as { id: string; allocation_percent: number } | null;
-
       const today = new Date().toISOString().split('T')[0];
       const threeMonths = new Date();
       threeMonths.setMonth(threeMonths.getMonth() + 3);
 
-      if (target) {
-        const { error } = await fromTable('resource_allocations')
+      if (targetAlloc) {
+        const { error } = await supabase
+          .from('resource_allocations')
           .update({
-            allocation_percent: target.allocation_percent + transferPercent,
+            allocation_percent: targetAlloc.allocation_percent + transferPercent,
             updated_at: new Date().toISOString(),
-          } as any)
-          .eq('id', target.id);
+          })
+          .eq('id', targetAlloc.id);
         if (error) throw error;
       } else {
-        const { error } = await fromTable('resource_allocations').insert({
+        const { error } = await supabase.from('resource_allocations').insert({
           resource_id: inventoryId,
           assignment_id: toAssignmentId,
           allocation_percent: transferPercent,
           start_date: today,
           end_date: threeMonths.toISOString().split('T')[0],
-        } as any);
+        });
         if (error) throw error;
       }
 
@@ -447,7 +453,8 @@ export function useResourceAllocations() {
     mutationFn: async (resourceId: string) => {
       const inventoryId = await ensureInventoryId(resourceId);
 
-      const { error } = await fromTable('resource_allocations')
+      const { error } = await supabase
+        .from('resource_allocations')
         .delete()
         .eq('resource_id', inventoryId);
 

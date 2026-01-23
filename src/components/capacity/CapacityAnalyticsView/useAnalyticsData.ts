@@ -5,7 +5,6 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { useMemo, useEffect } from 'react';
 import type { AnalyticsResource, AnalyticsAllocation, CapacityRow, MonthCell, ViewScope } from './types';
 
@@ -41,7 +40,7 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
         { data: userProductRoles },
         { data: productRoles },
       ] = await Promise.all([
-        (fromTable('capacity_departments').select('id, name, color, sort_order').eq('is_active', true) as Promise<{ data: Array<{ id: string; name: string; color: string; sort_order: number }> | null }>),
+        supabase.from('capacity_departments').select('id, name, color, sort_order').eq('is_active', true),
         supabase.from('resource_vendors').select('id, name').eq('is_active', true),
         supabase.from('resource_countries').select('id, name, code').eq('is_active', true),
         supabase.from('resource_locations').select('id, name').eq('is_active', true),
@@ -136,7 +135,8 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
     queryKey: ['analytics-allocations', dateRange.start, dateRange.end],
     queryFn: async () => {
       // Fetch allocations with their assignments
-      const { data: allocationsData, error } = await fromTable('resource_allocations')
+      const { data: allocationsData, error } = await supabase
+        .from('resource_allocations')
         .select(`
           id, 
           resource_id, 

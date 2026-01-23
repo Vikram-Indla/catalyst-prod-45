@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fromTable } from '@/lib/supabase-utils';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface FeatureFlag {
@@ -15,12 +15,13 @@ export function useFeatureFlags() {
   return useQuery({
     queryKey: ['feature-flags'],
     queryFn: async () => {
-      const { data, error } = await fromTable('feature_flags')
+      const { data, error } = await supabase
+        .from('feature_flags')
         .select('*')
         .order('flag_key');
       
       if (error) throw error;
-      return (data || []) as FeatureFlag[];
+      return data as FeatureFlag[];
     },
   });
 }
@@ -29,7 +30,8 @@ export function useFeatureFlag(flagKey: string) {
   return useQuery({
     queryKey: ['feature-flag', flagKey],
     queryFn: async () => {
-      const { data, error } = await fromTable('feature_flags')
+      const { data, error } = await supabase
+        .from('feature_flags')
         .select('*')
         .eq('flag_key', flagKey)
         .single();
@@ -51,7 +53,8 @@ export function useUpdateFeatureFlag() {
   
   return useMutation({
     mutationFn: async ({ flagKey, enabled }: { flagKey: string; enabled: boolean }) => {
-      const { data, error } = await fromTable('feature_flags')
+      const { data, error } = await supabase
+        .from('feature_flags')
         .update({ enabled, updated_at: new Date().toISOString() })
         .eq('flag_key', flagKey)
         .select()

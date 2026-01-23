@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import {
   Popover,
   PopoverContent,
@@ -13,12 +12,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Tag, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-
-interface EpicLabel {
-  id: string;
-  name: string;
-  color: string;
-}
 
 interface EpicLabelSelectorProps {
   epicId: string;
@@ -33,37 +26,31 @@ export function EpicLabelSelector({ epicId, onManageLabels }: EpicLabelSelectorP
   const { data: allLabels } = useQuery({
     queryKey: ['epic-labels'],
     queryFn: async () => {
-      const { data, error } = await fromTable('epic_labels')
+      const { data, error } = await supabase
+        .from('epic_labels')
         .select('*')
         .order('name');
       if (error) throw error;
-      return (data || []) as EpicLabel[];
+      return data;
     },
   });
 
   const { data: assignedLabels } = useQuery({
     queryKey: ['epic-label-assignments', epicId],
     queryFn: async () => {
-      const { data, error } = await fromTable('epic_label_assignments')
-        .select('label_id')
+      const { data, error } = await supabase
+        .from('epic_label_assignments')
+        .select('label_id, epic_labels(*)')
         .eq('epic_id', epicId);
       if (error) throw error;
-      
-      // Get labels for the assigned label_ids
-      const labelIds = (data || []).map((a: { label_id: string }) => a.label_id);
-      if (labelIds.length === 0) return [] as EpicLabel[];
-      
-      const { data: labels, error: labelsError } = await fromTable('epic_labels')
-        .select('*')
-        .in('id', labelIds);
-      if (labelsError) throw labelsError;
-      return (labels || []) as EpicLabel[];
+      return data.map(a => a.epic_labels).filter(Boolean);
     },
   });
 
   const assignLabel = useMutation({
     mutationFn: async (labelId: string) => {
-      const { error } = await fromTable('epic_label_assignments')
+      const { error } = await supabase
+        .from('epic_label_assignments')
         .insert({ epic_id: epicId, label_id: labelId });
       if (error) throw error;
     },
@@ -75,7 +62,8 @@ export function EpicLabelSelector({ epicId, onManageLabels }: EpicLabelSelectorP
 
   const removeLabel = useMutation({
     mutationFn: async (labelId: string) => {
-      const { error } = await fromTable('epic_label_assignments')
+      const { error } = await supabase
+        .from('epic_label_assignments')
         .delete()
         .eq('epic_id', epicId)
         .eq('label_id', labelId);

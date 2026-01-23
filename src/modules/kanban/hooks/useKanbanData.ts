@@ -72,14 +72,14 @@ export function useKanbanData() {
   const { data: rawRequests, isLoading, error } = useQuery({
     queryKey: ['business-requests'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('business_requests')
         .select('*')
         .is('deleted_at', null)
         .order('rank', { ascending: true, nullsFirst: false });
       
       if (error) throw error;
-      return (data || []) as any[];
+      return data;
     },
   });
 
@@ -143,13 +143,13 @@ export function useKanbanData() {
       // If moving to Uncategorized, set process_step to null
       const processStepValue = newStatus === UNCATEGORIZED_COLUMN_ID ? null : newStatus;
       
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('business_requests')
         .update({ 
           process_step: processStepValue,
           updated_at: new Date().toISOString()
         })
-        .eq('id', (rawRequest as any).id);
+        .eq('id', rawRequest.id);
       
       if (error) throw error;
     },

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { fromTable } from "@/lib/supabase-utils";
 
 export type ActivityType = "epic" | "feature" | "story" | "demand";
 
@@ -90,7 +89,8 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
             .eq("owner_id", user.id)
             .order("updated_at", { ascending: false })
             .range(offset, offset + Math.floor(limit / 4)),
-          fromTable("business_requests")
+          supabase
+            .from("business_requests")
             .select("id, title, request_key, updated_at, created_at, assignee")
             .eq("assignee", user.id)
             .order("updated_at", { ascending: false })
@@ -147,8 +147,7 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
 
         // Map demands
         if (demandsRes.data) {
-          const typedDemands = (demandsRes.data || []) as Array<{ id: string; title: string; request_key: string | null; updated_at: string; created_at: string; assignee: string | null }>;
-          allItems.push(...typedDemands.map((d) => ({
+          allItems.push(...demandsRes.data.map((d) => ({
             id: d.id,
             type: "demand" as ActivityType,
             key: d.request_key || d.id.substring(0, 8).toUpperCase(),
@@ -212,7 +211,7 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
         supabase.from("epics").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
         supabase.from("features").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
         supabase.from("stories").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
-        fromTable("business_requests").select("id", { count: "exact", head: true }).eq("assignee", user.id),
+        supabase.from("business_requests").select("id", { count: "exact", head: true }).eq("assignee", user.id),
       ]);
 
       const total = 

@@ -13,7 +13,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -72,7 +71,8 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
   const { data: scoringData, isLoading: loadingScoring } = useQuery({
     queryKey: ['epic-technical-score-data', epic.id],
     queryFn: async () => {
-      const { data, error } = await fromTable('epic_wsjf')
+      const { data, error } = await supabase
+        .from('epic_wsjf')
         .select('*')
         .eq('epic_id', epic.id)
         .order('created_at', { ascending: true })
@@ -81,17 +81,16 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
 
       if (error && error.code !== 'PGRST116') throw error;
       
-      const wsjfData = data as { business_value?: number; time_value?: number; rroe_value?: number; job_size?: number; id?: string } | null;
-      if (wsjfData) {
+      if (data) {
         setScoringValues({
-          technical_value: wsjfData.business_value || 0,
-          time_criticality: wsjfData.time_value || 0,
-          risk_reduction: wsjfData.rroe_value || 0,
-          job_size: wsjfData.job_size || 0,
+          technical_value: data.business_value || 0,
+          time_criticality: data.time_value || 0,
+          risk_reduction: data.rroe_value || 0,
+          job_size: data.job_size || 0,
         });
       }
       
-      return wsjfData;
+      return data;
     },
     enabled: !!epic?.id,
   });
@@ -125,21 +124,22 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
         scoringValues.job_size
       );
 
-      const { data: existing } = await fromTable('epic_wsjf')
+      const { data: existing } = await supabase
+        .from('epic_wsjf')
         .select('id')
         .eq('epic_id', epic.id)
         .maybeSingle();
 
-      const existingRecord = existing as { id: string } | null;
-      if (existingRecord) {
-        const { error } = await fromTable('epic_wsjf')
+      if (existing) {
+        const { error } = await supabase
+          .from('epic_wsjf')
           .update({
             business_value: scoringValues.technical_value,
             time_value: scoringValues.time_criticality,
             rroe_value: scoringValues.risk_reduction,
             job_size: scoringValues.job_size,
           })
-          .eq('id', existingRecord.id);
+          .eq('id', existing.id);
         if (error) throw error;
       } else {
         const { data: anyPi } = await supabase
@@ -149,7 +149,8 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
           .single();
         
         if (anyPi) {
-          const { error } = await fromTable('epic_wsjf')
+          const { error } = await supabase
+            .from('epic_wsjf')
             .insert({
               epic_id: epic.id,
               pi_id: anyPi.id,

@@ -5,7 +5,7 @@ import { GitBranch, ArrowRight, Pause, Clock, Check, XCircle, Loader2 } from 'lu
 import { cn } from '@/lib/utils';
 import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useQuery } from '@tanstack/react-query';
-import { fromTable } from '@/lib/supabase-utils';
+import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 
 interface WorkflowViewerModalProps {
@@ -51,7 +51,8 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
   const { data: transitions } = useQuery({
     queryKey: ['workflow-transitions', requestId],
     queryFn: async () => {
-      const { data, error } = await fromTable('business_request_audit_logs')
+      const { data, error } = await supabase
+        .from('business_request_audit_logs')
         .select('old_value, new_value, created_at')
         .eq('business_request_id', requestId)
         .eq('field_changed', 'Process Step')

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,7 +42,8 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
   const { data: allWsjfScores, isLoading: scoresLoading } = useQuery({
     queryKey: ['epic-wsjf-all', epic.id],
     queryFn: async () => {
-      const { data, error } = await fromTable('epic_wsjf')
+      const { data, error } = await supabase
+        .from('epic_wsjf')
         .select(`
           *,
           program_increments(id, name)
@@ -51,7 +51,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
         .eq('epic_id', epic.id);
 
       if (error) throw error;
-      return (data || []) as Array<{ epic_id: string; wsjf_score: number; business_value: number; time_value: number; rroe_value: number; job_size: number; program_increments: { id: string; name: string } }>;
+      return data || [];
     },
     enabled: !!epic?.id,
   });
@@ -60,14 +60,14 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
   const { data: wsjfData, isLoading: wsjfLoading } = useQuery({
     queryKey: ['epic-wsjf', epic.id, selectedPiId],
     queryFn: async () => {
-      const { data, error } = await fromTable('epic_wsjf')
+      const { data, error } = await supabase
+        .from('epic_wsjf')
         .select('*')
         .eq('epic_id', epic.id)
         .eq('pi_id', selectedPiId)
         .maybeSingle();
 
       if (error) throw error;
-      return data as { wsjf_score: number; business_value: number; time_value: number; rroe_value: number; job_size: number } | null;
       return data;
     },
     enabled: !!epic?.id && !!selectedPiId,

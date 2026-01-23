@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 const formSchema = z.object({
@@ -74,7 +73,8 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
   const mutation = useMutation({
     mutationFn: async (values: FormValues) => {
       if (isEditing) {
-        const { error } = await fromTable('permission_grants')
+        const { error } = await supabase
+          .from('permission_grants')
           .update({
             role_id: values.role_id,
             entity_type: values.entity_type,
@@ -85,7 +85,8 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
           .eq('id', grant.id);
         if (error) throw error;
       } else {
-        const { error } = await fromTable('permission_grants')
+        const { error } = await supabase
+          .from('permission_grants')
           .insert([{
             role_id: values.role_id,
             entity_type: values.entity_type,

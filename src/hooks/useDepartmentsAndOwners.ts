@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 
 export interface Department {
   id: string;
@@ -43,13 +42,14 @@ export function useBusinessOwners() {
   return useQuery({
     queryKey: ['business_owners'],
     queryFn: async () => {
-      const { data, error } = await fromTable('business_owners')
+      const { data, error } = await supabase
+        .from('business_owners')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
       
       if (error) throw error;
-      return (data || []) as BusinessOwner[];
+      return data as BusinessOwner[];
     },
   });
 }

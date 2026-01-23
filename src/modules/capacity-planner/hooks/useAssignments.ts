@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { fromTable } from '@/lib/supabase-utils';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { CapacityAssignment } from '../types';
 
@@ -11,8 +11,9 @@ export function useAssignments() {
 
   const createAssignment = useMutation({
     mutationFn: async (assignment: CreateAssignmentInput) => {
-      const { data, error } = await fromTable('assignments')
-        .insert(assignment as any)
+      const { data, error } = await supabase
+        .from('assignments')
+        .insert(assignment)
         .select()
         .single();
       if (error) throw error;
@@ -30,8 +31,9 @@ export function useAssignments() {
 
   const updateAssignment = useMutation({
     mutationFn: async ({ id, ...updates }: UpdateAssignmentInput) => {
-      const { data, error } = await fromTable('assignments')
-        .update(updates as any)
+      const { data, error } = await supabase
+        .from('assignments')
+        .update(updates)
         .eq('id', id)
         .select()
         .single();
@@ -49,7 +51,7 @@ export function useAssignments() {
 
   const deleteAssignment = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await fromTable('assignments').delete().eq('id', id);
+      const { error } = await supabase.from('assignments').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { fromTable } from '@/lib/supabase-utils';
 import {
   Dialog,
   DialogContent,
@@ -200,7 +199,7 @@ export function ResourceModal({
         const startDate = new Date().toISOString().split('T')[0];
 
         // Create assignments
-        const { error: assignmentError } = await fromTable('assignments').insert(
+        const { error: assignmentError } = await supabase.from('assignments').insert(
           selectedUserIds.map((userId) => ({
             user_id: userId,
             project_id: null,

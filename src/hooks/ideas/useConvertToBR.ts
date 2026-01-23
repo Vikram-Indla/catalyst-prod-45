@@ -4,7 +4,6 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 interface ConvertIdeaToBRInput {
@@ -42,7 +41,8 @@ export function useConvertIdeaToBR() {
       if (ideaError) throw ideaError;
       if (!idea) throw new Error('Idea not found');
 
-      const { data: br, error: brError } = await fromTable('business_requests')
+      const { data: br, error: brError } = await supabase
+        .from('business_requests')
         .insert({
           title: brTitle,
           description: brDescription,
@@ -100,7 +100,8 @@ export function useConvertInitiativeToBR() {
       if (initError) throw initError;
       if (!initiative) throw new Error('Initiative not found');
 
-      const { data: br, error: brError } = await fromTable('business_requests')
+      const { data: br, error: brError } = await supabase
+        .from('business_requests')
         .insert({
           title: brTitle,
           description: brDescription,

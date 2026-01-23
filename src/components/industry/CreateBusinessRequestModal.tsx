@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { CatalystCreateDemand } from './create-tabs/CatalystCreateDemand';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 
 interface CreateBusinessRequestModalProps {
   isOpen: boolean;
@@ -66,7 +65,8 @@ async function uploadAttachments(requestId: string, attachments: File[]) {
       .getPublicUrl(fileName);
 
     // Save reference to business_request_links
-    const { error: insertError } = await fromTable('business_request_links')
+    const { error: insertError } = await supabase
+      .from('business_request_links')
       .insert({
         business_request_id: requestId,
         title: file.name,

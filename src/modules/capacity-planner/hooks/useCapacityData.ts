@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { useEffect } from 'react';
 import type { CapacityResource, CapacityAssignment, CapacityProject, CapacityScenario, ResourceMetric, CapacitySummary } from '../types';
 
@@ -20,9 +19,10 @@ export function useCapacityData() {
       if (riError) throw riError;
       
       // STEP 2: Fetch departments to map names
-      const { data: departments } = await fromTable('capacity_departments')
+      const { data: departments } = await supabase
+        .from('capacity_departments')
         .select('id, name');
-      const deptMap = new Map((departments as any[] || []).map(d => [d.id, d.name]));
+      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
       
       // STEP 3: Fetch resource assignments to map names
       const { data: resourceAssignments } = await supabase
@@ -76,7 +76,8 @@ export function useCapacityData() {
       
       // STEP 6: Fetch resource_allocations for current allocation (committed only for utilization)
       const now = new Date().toISOString().split('T')[0];
-      const { data: allocationsData } = await fromTable('resource_allocations')
+      const { data: allocationsData } = await supabase
+        .from('resource_allocations')
         .select('resource_id, allocation_percent, start_date, end_date, status')
         .lte('start_date', now)
         .gte('end_date', now)
@@ -84,7 +85,7 @@ export function useCapacityData() {
       
       // Calculate current allocation per resource_inventory ID
       const currentAllocationByResourceId = new Map<string, number>();
-      ((allocationsData || []) as any[]).forEach((alloc: any) => {
+      (allocationsData || []).forEach((alloc: any) => {
         const current = currentAllocationByResourceId.get(alloc.resource_id) || 0;
         currentAllocationByResourceId.set(alloc.resource_id, current + alloc.allocation_percent);
       });
@@ -159,7 +160,8 @@ export function useCapacityData() {
   const { data: assignments = [], isLoading: assignmentsLoading, isError: assignmentsError } = useQuery({
     queryKey: ['capacity-planner-assignments'],
     queryFn: async () => {
-      const { data, error } = await fromTable('assignments')
+      const { data, error } = await supabase
+        .from('assignments')
         .select('*')
         .in('status', ['active', 'paused'])
         .order('created_at', { ascending: false });
@@ -172,7 +174,8 @@ export function useCapacityData() {
   const { data: scenarios = [], isLoading: scenariosLoading, isError: scenariosError } = useQuery({
     queryKey: ['capacity-planner-scenarios'],
     queryFn: async () => {
-      const { data, error } = await fromTable('capacity_scenarios')
+      const { data, error } = await supabase
+        .from('capacity_scenarios')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;

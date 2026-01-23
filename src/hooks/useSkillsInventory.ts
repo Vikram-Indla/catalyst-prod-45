@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Skill, 
@@ -93,7 +92,8 @@ export const useCertifications = (teamMemberId?: string) => {
   return useQuery({
     queryKey: ['certifications', teamMemberId],
     queryFn: async (): Promise<Certification[]> => {
-      let query = fromTable('certifications')
+      let query = supabase
+        .from('certifications')
         .select('*')
         .order('issue_date', { ascending: false });
 
@@ -104,7 +104,7 @@ export const useCertifications = (teamMemberId?: string) => {
       const { data, error } = await query;
 
       if (error) throw error;
-      return (data || []) as Certification[];
+      return data || [];
     },
   });
 };
@@ -121,12 +121,11 @@ export const useSkillsInventoryStats = () => {
       if (skillsError) throw skillsError;
 
       // Get certifications
-      const { data: certData, error: certsError } = await fromTable('certifications')
+      const { data: certifications, error: certsError } = await supabase
+        .from('certifications')
         .select('id, expiry_date');
 
       if (certsError) throw certsError;
-      
-      const certifications = (certData || []) as Array<{ id: string; expiry_date: string | null }>;
 
       // Get skill requirements for gap analysis
       const { data: requirements, error: reqError } = await supabase
@@ -156,16 +155,16 @@ export const useSkillsInventoryStats = () => {
         : 0;
 
       // Count certifications
-      const totalCertifications = certifications.length;
+      const totalCertifications = certifications?.length || 0;
 
       // Count expiring certifications (within 30 days)
       const thirtyDaysFromNow = new Date();
       thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-      const expiringCertifications = certifications.filter(c => {
+      const expiringCertifications = certifications?.filter(c => {
         if (!c.expiry_date) return false;
         const expiryDate = new Date(c.expiry_date);
         return expiryDate <= thirtyDaysFromNow && expiryDate >= new Date();
-      }).length;
+      }).length || 0;
 
       // Calculate critical gaps
       // Group member skills by skill_id and count
@@ -337,8 +336,9 @@ export const useAddCertification = () => {
 
   return useMutation({
     mutationFn: async (input: AddCertificationInput) => {
-      const { data, error } = await fromTable('certifications')
-        .insert(input as any)
+      const { data, error } = await supabase
+        .from('certifications')
+        .insert(input)
         .select()
         .single();
 

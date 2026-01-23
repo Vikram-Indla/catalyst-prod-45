@@ -28,7 +28,6 @@ import { useKeyboardNavigation } from './useKeyboardNavigation';
 import { DEFAULT_COLUMNS, TableColumn } from './types';
 import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown';
 import { BulkActionsBar } from './BulkActionsBar';
-import { fromTable } from '@/lib/supabase-utils';
 
 import { TablePagination } from './TablePagination';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
@@ -207,7 +206,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
 
     try {
       const updatePromises = updates.map((item) =>
-        fromTable('business_requests')
+        supabase
+          .from('business_requests')
           .update({ rank: item.rank })
           .eq('id', item.id)
       );
@@ -224,7 +224,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   // Handle assignee update
   const handleAssigneeUpdate = useCallback(async (requestId: string, assignee: string | null) => {
     try {
-      const { error } = await fromTable('business_requests')
+      const { error } = await supabase
+        .from('business_requests')
         .update({ assignee })
         .eq('id', requestId);
       
@@ -241,7 +242,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   // Handle status update
   const handleStatusUpdate = useCallback(async (requestId: string, status: string) => {
     try {
-      const { error } = await fromTable('business_requests')
+      const { error } = await supabase
+        .from('business_requests')
         .update({ process_step: status })
         .eq('id', requestId);
       
@@ -258,7 +260,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   // Handle owner update (reporter or business owner)
   const handleOwnerUpdate = useCallback(async (requestId: string, fieldName: string, value: string | null) => {
     try {
-      const { error } = await fromTable('business_requests')
+      const { error } = await supabase
+        .from('business_requests')
         .update({ [fieldName]: value })
         .eq('id', requestId);
       
@@ -275,7 +278,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   // Handle quarter update
   const handleQuarterUpdate = useCallback(async (requestId: string, quarter: string[] | null) => {
     try {
-      const { error } = await fromTable('business_requests')
+      const { error } = await supabase
+        .from('business_requests')
         .update({ planned_quarter: quarter })
         .eq('id', requestId);
       
@@ -292,7 +296,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   // Handle department update
   const handleDepartmentUpdate = useCallback(async (requestId: string, department: string | null) => {
     try {
-      const { error } = await fromTable('business_requests')
+      const { error } = await supabase
+        .from('business_requests')
         .update({ department })
         .eq('id', requestId);
       
@@ -666,7 +671,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
           
           setIsDeleting(true);
           try {
-            const { error } = await fromTable('business_requests')
+            const { error } = await supabase
+              .from('business_requests')
               .delete()
               .in('id', Array.from(selectedIds));
             

@@ -8,7 +8,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 import { Calculator, Info } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -56,12 +55,12 @@ export function TechnicalScoringDialog({
       
       // Fetch existing technical scores from epic_wsjf table
       // NOTE: Table named epic_wsjf for legacy reasons; UI shows "Technical Scoring"
-      const { data: techScoreData } = await fromTable('epic_wsjf')
+      const { data: techScoreData } = await supabase
+        .from('epic_wsjf')
         .select('*')
         .in('epic_id', epicIds);
       
-      const scores = (techScoreData || []) as Array<{ epic_id: string; business_value: number; time_value: number; rroe_value: number; job_size: number; wsjf_score: number }>;
-      const techScoreMap = new Map(scores.map(w => [w.epic_id, w]));
+      const techScoreMap = new Map(techScoreData?.map(w => [w.epic_id, w]) || []);
       
       return data?.map(epic => {
         const existing = techScoreMap.get(epic.id);
@@ -125,7 +124,8 @@ export function TechnicalScoringDialog({
       }));
 
       for (const update of updates) {
-        const { error } = await fromTable('epic_wsjf')
+        const { error } = await supabase
+          .from('epic_wsjf')
           .upsert(update, { onConflict: 'epic_id,pi_id' });
         if (error) throw error;
       }

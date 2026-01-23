@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fromTable } from '@/lib/supabase-utils';
+import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,8 @@ export function EpicLinksTab({ epic }: EpicLinksTabProps) {
   const { data: links } = useQuery({
     queryKey: ['epic-links', epic.id],
     queryFn: async () => {
-      const { data, error } = await fromTable('epic_links')
+      const { data, error } = await supabase
+        .from('epic_links')
         .select('*')
         .eq('epic_id', epic.id)
         .order('created_at', { ascending: false });
@@ -36,7 +37,8 @@ export function EpicLinksTab({ epic }: EpicLinksTabProps) {
 
   const createMutation = useMutation({
     mutationFn: async (link: any) => {
-      const { error } = await fromTable('epic_links')
+      const { error } = await supabase
+        .from('epic_links')
         .insert({ ...link, epic_id: epic.id });
       
       if (error) throw error;
@@ -50,7 +52,8 @@ export function EpicLinksTab({ epic }: EpicLinksTabProps) {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await fromTable('epic_links')
+      const { error } = await supabase
+        .from('epic_links')
         .delete()
         .eq('id', id);
       

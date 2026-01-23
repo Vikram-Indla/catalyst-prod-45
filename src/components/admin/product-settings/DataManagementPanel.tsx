@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,10 +23,12 @@ export function DataManagementPanel() {
   const { data: dataCounts, isLoading, refetch } = useQuery({
     queryKey: ['product-data-counts'],
     queryFn: async () => {
-      const { count: demandCount } = await fromTable('business_requests')
+      const { count: demandCount } = await supabase
+        .from('business_requests')
         .select('*', { count: 'exact', head: true });
 
-      const { count: businessLineCount } = await fromTable('business_lines')
+      const { count: businessLineCount } = await supabase
+        .from('business_lines')
         .select('*', { count: 'exact', head: true });
 
       const { count: statusCount } = await supabase
@@ -44,7 +45,8 @@ export function DataManagementPanel() {
 
   const handleExportConfig = async () => {
     try {
-      const { data: businessLines } = await fromTable('business_lines')
+      const { data: businessLines } = await supabase
+        .from('business_lines')
         .select('*');
 
       const { data: statuses } = await supabase

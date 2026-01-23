@@ -9,7 +9,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { fromTable } from '@/lib/supabase-utils';
+import { supabase } from '@/integrations/supabase/client';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { TechnicalScoreBadge } from '@/components/shared/TechnicalScoreBadge';
@@ -43,17 +43,18 @@ export function EpicRollUpSummary({ epic, compact = false }: EpicRollUpSummaryPr
   const { data: technicalScore } = useQuery({
     queryKey: ['epic-technical-score', epic.id],
     queryFn: async () => {
-      const { data } = await fromTable('epic_wsjf')
+      const { data } = await supabase
+        .from('epic_wsjf')
         .select('business_value, time_value, rroe_value, job_size')
         .eq('epic_id', epic.id)
         .maybeSingle();
       
       if (!data) return null;
       
-      const wsjf = data as { business_value: number; time_value: number; rroe_value: number; job_size: number };
-      if (!wsjf.business_value || !wsjf.time_value || !wsjf.rroe_value || !wsjf.job_size) return null;
+      const { business_value, time_value, rroe_value, job_size } = data;
+      if (!business_value || !time_value || !rroe_value || !job_size) return null;
       
-      return Math.round(((wsjf.business_value + wsjf.time_value + wsjf.rroe_value) / wsjf.job_size) * 100) / 100;
+      return Math.round(((business_value + time_value + rroe_value) / job_size) * 100) / 100;
     },
   });
 

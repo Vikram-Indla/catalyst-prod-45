@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fromTable } from '@/lib/supabase-utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
@@ -21,13 +20,14 @@ export function useCapacityDepartments() {
   const { data: departments = [], isLoading } = useQuery({
     queryKey: ['capacity-departments'],
     queryFn: async () => {
-      const { data, error } = await fromTable('capacity_departments')
+      const { data, error } = await supabase
+        .from('capacity_departments')
         .select('*')
         .eq('is_active', true)
         .order('sort_order');
       
       if (error) throw error;
-      return (data || []) as CapacityDepartment[];
+      return data as CapacityDepartment[];
     },
   });
 
@@ -48,13 +48,14 @@ export function useCapacityDepartments() {
   const createDepartment = useMutation({
     mutationFn: async (input: { name: string; description?: string; color?: string }) => {
       const maxOrder = departments.length > 0 ? Math.max(...departments.map(d => d.sort_order)) : 0;
-      const { data, error } = await fromTable('capacity_departments')
+      const { data, error } = await supabase
+        .from('capacity_departments')
         .insert({
           name: input.name,
           description: input.description || null,
           color: input.color || '#0d9488',
           sort_order: maxOrder + 1,
-        } as any)
+        })
         .select()
         .single();
       
@@ -63,7 +64,7 @@ export function useCapacityDepartments() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
-      toast.success(`Department "${(data as any).name}" created`);
+      toast.success(`Department "${data.name}" created`);
     },
     onError: (error) => {
       toast.error(`Failed to create department: ${error.message}`);
@@ -72,8 +73,9 @@ export function useCapacityDepartments() {
 
   const updateDepartment = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<CapacityDepartment> }) => {
-      const { data, error } = await fromTable('capacity_departments')
-        .update({ ...updates, updated_at: new Date().toISOString() } as any)
+      const { data, error } = await supabase
+        .from('capacity_departments')
+        .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single();
@@ -92,8 +94,9 @@ export function useCapacityDepartments() {
 
   const deleteDepartment = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await fromTable('capacity_departments')
-        .update({ is_active: false } as any)
+      const { error } = await supabase
+        .from('capacity_departments')
+        .update({ is_active: false })
         .eq('id', id);
       
       if (error) throw error;

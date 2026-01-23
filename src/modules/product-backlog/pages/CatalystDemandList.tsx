@@ -94,7 +94,7 @@ export default function CatalystDemandList() {
       if (businessRequests.length === 0) return;
       
       const requestIds = businessRequests.map((br: any) => br.id);
-      const { data: links } = await (supabase as any)
+      const { data: links } = await supabase
         .from('business_request_links')
         .select('business_request_id')
         .in('business_request_id', requestIds);
@@ -323,7 +323,7 @@ export default function CatalystDemandList() {
         localUpdates[key] = val;
       }
 
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('business_requests')
         .update(updatePayload)
         .eq('id', selectedRequest._dbId);
@@ -354,7 +354,7 @@ export default function CatalystDemandList() {
       updatePayload = { end_date: dbValue, impl_target_end_date: dbValue };
     }
     
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('business_requests')
       .update(updatePayload)
       .eq('id', selectedRequest._dbId);
@@ -387,11 +387,11 @@ export default function CatalystDemandList() {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Fetch original (only need title)
-    const { data: original, error: fetchError } = await (supabase as any)
+    const { data: original, error: fetchError } = await supabase
       .from('business_requests')
       .select('title, id')
       .eq('id', selectedRequest._dbId)
-      .maybeSingle() as { data: { title: string; id: string } | null; error: any };
+      .maybeSingle();
 
     if (fetchError || !original) {
       toast.error('Failed to clone request');
@@ -399,7 +399,7 @@ export default function CatalystDemandList() {
     }
 
     // Create a fresh demand: only copy the summary/title, reset status + scoring
-    const { data: newRequest, error: insertError } = await (supabase as any)
+    const { data: newRequest, error: insertError } = await supabase
       .from('business_requests')
       .insert({
         title: `${original.title} (Copy)`,
@@ -418,7 +418,7 @@ export default function CatalystDemandList() {
         rank_override_justification: null,
       })
       .select('request_key, id')
-      .single() as { data: { request_key: string; id: string } | null; error: any };
+      .single();
 
     if (insertError || !newRequest) {
       toast.error('Failed to clone request');
@@ -439,7 +439,7 @@ export default function CatalystDemandList() {
   const handleDelete = async () => {
     if (!selectedRequest) return;
 
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('business_requests')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', selectedRequest._dbId);

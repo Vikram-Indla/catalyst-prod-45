@@ -47,7 +47,7 @@ export default function Permissions() {
   const { data: grants } = useQuery({
     queryKey: ['permission-grants', roleFilter],
     queryFn: async () => {
-      let query = (supabase as any)
+      let query = supabase
         .from('permission_grants')
         .select('*, permission_roles(name)')
         .order('entity_type');
@@ -58,14 +58,14 @@ export default function Permissions() {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as any[];
+      return data;
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async ({ type, id }: { type: 'role' | 'grant'; id: string }) => {
       const table = type === 'role' ? 'permission_roles' : 'permission_grants';
-      const { error } = await (supabase as any).from(table).delete().eq('id', id);
+      const { error } = await supabase.from(table).delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: (_, variables) => {

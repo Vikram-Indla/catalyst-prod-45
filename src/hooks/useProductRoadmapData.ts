@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { Demand, DemandOwner, DemandAssignee, DemandMilestone, PriorityTier, HealthStatus, PlannedQuarter } from '@/types/product-roadmap';
 import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 
@@ -76,7 +75,8 @@ export function useProductRoadmapData() {
   const { data: demandsData = [], isLoading: demandsLoading } = useQuery({
     queryKey: ['product-roadmap-demands'],
     queryFn: async () => {
-      const { data, error } = await fromTable('business_requests')
+      const { data, error } = await supabase
+        .from('business_requests')
         .select(`
           id,
           request_key,
@@ -98,7 +98,7 @@ export function useProductRoadmapData() {
         .order('rank', { ascending: true, nullsFirst: false });
       
       if (error) throw error;
-      return (data || []) as any[];
+      return data || [];
     },
   });
 

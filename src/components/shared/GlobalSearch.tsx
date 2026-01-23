@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { useNavigate } from 'react-router-dom';
 
 interface SearchResult {
@@ -106,7 +105,8 @@ export function GlobalSearch() {
         .limit(5);
 
       // Search business requests
-      const businessRequestsQuery = fromTable('business_requests')
+      const businessRequestsQuery = supabase
+        .from('business_requests')
         .select('id, title, request_key, process_step')
         .or(isKeySearch
           ? `request_key.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`
@@ -173,8 +173,7 @@ export function GlobalSearch() {
       }
 
       if (businessRequests.data) {
-        const brData = businessRequests.data as Array<{ id: string; request_key: string; title: string; process_step: string }>;
-        results.push(...brData.map(br => ({
+        results.push(...businessRequests.data.map(br => ({
           id: br.id,
           key: br.request_key || `MIM-${br.id.slice(0, 4)}`,
           name: br.title,

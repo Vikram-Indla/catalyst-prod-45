@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -36,14 +35,15 @@ export function WhyPanelDialog({ open, onOpenChange, epic }: WhyPanelDialogProps
     queryKey: ['technical-scoring-for-why', epic?.id],
     queryFn: async () => {
       if (!epic?.id) return null;
-      const { data, error } = await fromTable('epic_wsjf')
+      const { data, error } = await supabase
+        .from('epic_wsjf')
         .select('*')
         .eq('epic_id', epic.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
       if (error) throw error;
-      return data as { global_rank?: number; wsjf_score?: number; business_value?: number; time_value?: number; rroe_value?: number; job_size?: number } | null;
+      return data;
     },
     enabled: !!epic?.id && open,
   });

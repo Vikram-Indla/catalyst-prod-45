@@ -41,7 +41,6 @@ import {
   PlannedQuarterSelect 
 } from '@/components/ui/lookup-select';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import {
   Popover,
   PopoverContent,
@@ -84,12 +83,13 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests-for-epic-drawer'],
     queryFn: async () => {
-      const { data, error } = await fromTable('business_requests')
+      const { data, error } = await supabase
+        .from('business_requests')
         .select('id, request_key, title, rank, business_score')
         .is('deleted_at', null)
         .order('request_key');
       if (error) throw error;
-      return (data || []) as Array<{ id: string; request_key: string; title: string; rank?: number; business_score?: number }>;
+      return data;
     },
   });
 

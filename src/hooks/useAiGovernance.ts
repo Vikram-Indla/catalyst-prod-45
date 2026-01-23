@@ -6,7 +6,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import type {
   AiContract,
   AiRouteScope,
@@ -26,7 +25,8 @@ export function useAiGovernance(domain: string = 'capacity') {
   const { data: contract, isLoading: contractLoading } = useQuery({
     queryKey: [GOVERNANCE_QUERY_KEY, 'contract', domain],
     queryFn: async () => {
-      const { data, error } = await fromTable('ai_contracts')
+      const { data, error } = await supabase
+        .from('ai_contracts')
         .select('*')
         .eq('domain', domain)
         .eq('is_active', true)
@@ -41,12 +41,13 @@ export function useAiGovernance(domain: string = 'capacity') {
     queryKey: [GOVERNANCE_QUERY_KEY, 'routes', contract?.id],
     enabled: !!contract?.id,
     queryFn: async () => {
-      const { data, error } = await fromTable('ai_route_scopes')
+      const { data, error } = await supabase
+        .from('ai_route_scopes')
         .select('*')
         .eq('contract_id', contract!.id)
         .eq('is_active', true);
       if (error) throw error;
-      return (data || []) as AiRouteScope[];
+      return data as AiRouteScope[];
     },
   });
 
@@ -55,12 +56,13 @@ export function useAiGovernance(domain: string = 'capacity') {
     queryKey: [GOVERNANCE_QUERY_KEY, 'tables', contract?.id],
     enabled: !!contract?.id,
     queryFn: async () => {
-      const { data, error } = await fromTable('ai_table_allowlist')
+      const { data, error } = await supabase
+        .from('ai_table_allowlist')
         .select('*')
         .eq('contract_id', contract!.id)
         .eq('is_active', true);
       if (error) throw error;
-      return (data || []) as AiTableAllowlist[];
+      return data as AiTableAllowlist[];
     },
   });
 
@@ -69,13 +71,13 @@ export function useAiGovernance(domain: string = 'capacity') {
     queryKey: [GOVERNANCE_QUERY_KEY, 'semantics', contract?.id],
     enabled: !!contract?.id,
     queryFn: async () => {
-      const { data, error } = await fromTable('ai_semantic_dictionary')
+      const { data, error } = await supabase
+        .from('ai_semantic_dictionary')
         .select('*')
         .eq('contract_id', contract!.id)
         .eq('is_active', true);
       if (error) throw error;
-      const items = (data || []) as any[];
-      return items.map(d => ({
+      return (data || []).map(d => ({
         ...d,
         resolution: typeof d.resolution === 'string' ? JSON.parse(d.resolution) : d.resolution
       })) as AiSemanticDictionary[];
@@ -87,12 +89,13 @@ export function useAiGovernance(domain: string = 'capacity') {
     queryKey: [GOVERNANCE_QUERY_KEY, 'policies', contract?.id],
     enabled: !!contract?.id,
     queryFn: async () => {
-      const { data, error } = await fromTable('ai_policies')
+      const { data, error } = await supabase
+        .from('ai_policies')
         .select('*')
         .eq('contract_id', contract!.id)
         .eq('is_active', true);
       if (error) throw error;
-      return (data || []) as AiPolicy[];
+      return data as AiPolicy[];
     },
   });
 
@@ -204,7 +207,7 @@ export function useAiGovernanceAdmin() {
     diff: Record<string, any>
   ) => {
     const { data: { user } } = await supabase.auth.getUser();
-    await fromTable('ai_governance_audit_log').insert({
+    await supabase.from('ai_governance_audit_log').insert({
       actor_id: user?.id,
       contract_id: contractId,
       action,
@@ -225,22 +228,23 @@ export function useAiGovernanceAdmin() {
         created_by: contract.created_by,
         updated_by: contract.updated_by,
       };
-      const { data, error } = await fromTable('ai_contracts')
+      const { data, error } = await supabase
+        .from('ai_contracts')
         .insert(insertData)
         .select()
         .single();
       if (error) throw error;
-      const result = data as any;
-      await logAudit(result.id, 'create', 'contract', result.id, { after: result });
-      return result;
+      await logAudit(data.id, 'create', 'contract', data.id, { after: data });
+      return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
   });
 
   const updateContract = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<AiContract> & { id: string }) => {
-      const { data: before } = await fromTable('ai_contracts').select().eq('id', id).single();
-      const { data, error } = await fromTable('ai_contracts')
+      const { data: before } = await supabase.from('ai_contracts').select().eq('id', id).single();
+      const { data, error } = await supabase
+        .from('ai_contracts')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
@@ -261,29 +265,29 @@ export function useAiGovernanceAdmin() {
         allowed_intents: scope.allowed_intents ?? [],
         is_active: scope.is_active ?? true,
       };
-      const { data, error } = await fromTable('ai_route_scopes')
+      const { data, error } = await supabase
+        .from('ai_route_scopes')
         .insert(insertData)
         .select()
         .single();
       if (error) throw error;
-      const result = data as any;
-      await logAudit(scope.contract_id!, 'create', 'route_scope', result.id, { after: result });
-      return result;
+      await logAudit(scope.contract_id!, 'create', 'route_scope', data.id, { after: data });
+      return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
   });
 
   const updateRouteScope = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<AiRouteScope> & { id: string }) => {
-      const { data: before } = await fromTable('ai_route_scopes').select().eq('id', id).single();
-      const beforeData = before as any;
-      const { data, error } = await fromTable('ai_route_scopes')
+      const { data: before } = await supabase.from('ai_route_scopes').select().eq('id', id).single();
+      const { data, error } = await supabase
+        .from('ai_route_scopes')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single();
       if (error) throw error;
-      await logAudit(beforeData?.contract_id, 'update', 'route_scope', id, { before: beforeData, after: data });
+      await logAudit(before?.contract_id, 'update', 'route_scope', id, { before, after: data });
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
@@ -291,11 +295,10 @@ export function useAiGovernanceAdmin() {
 
   const deleteRouteScope = useMutation({
     mutationFn: async (id: string) => {
-      const { data: before } = await fromTable('ai_route_scopes').select().eq('id', id).single();
-      const beforeData = before as any;
-      const { error } = await fromTable('ai_route_scopes').delete().eq('id', id);
+      const { data: before } = await supabase.from('ai_route_scopes').select().eq('id', id).single();
+      const { error } = await supabase.from('ai_route_scopes').delete().eq('id', id);
       if (error) throw error;
-      await logAudit(beforeData?.contract_id, 'delete', 'route_scope', id, { before: beforeData });
+      await logAudit(before?.contract_id, 'delete', 'route_scope', id, { before });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
   });
@@ -311,29 +314,29 @@ export function useAiGovernanceAdmin() {
         pii_level: entry.pii_level ?? 'none',
         is_active: entry.is_active ?? true,
       };
-      const { data, error } = await fromTable('ai_table_allowlist')
+      const { data, error } = await supabase
+        .from('ai_table_allowlist')
         .insert(insertData)
         .select()
         .single();
       if (error) throw error;
-      const result = data as any;
-      await logAudit(entry.contract_id!, 'create', 'table_allowlist', result.id, { after: result });
-      return result;
+      await logAudit(entry.contract_id!, 'create', 'table_allowlist', data.id, { after: data });
+      return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
   });
 
   const updateTableEntry = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<AiTableAllowlist> & { id: string }) => {
-      const { data: before } = await fromTable('ai_table_allowlist').select().eq('id', id).single();
-      const beforeData = before as any;
-      const { data, error } = await fromTable('ai_table_allowlist')
+      const { data: before } = await supabase.from('ai_table_allowlist').select().eq('id', id).single();
+      const { data, error } = await supabase
+        .from('ai_table_allowlist')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single();
       if (error) throw error;
-      await logAudit(beforeData?.contract_id, 'update', 'table_allowlist', id, { before: beforeData, after: data });
+      await logAudit(before?.contract_id, 'update', 'table_allowlist', id, { before, after: data });
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
@@ -341,11 +344,10 @@ export function useAiGovernanceAdmin() {
 
   const deleteTableEntry = useMutation({
     mutationFn: async (id: string) => {
-      const { data: before } = await fromTable('ai_table_allowlist').select().eq('id', id).single();
-      const beforeData = before as any;
-      const { error } = await fromTable('ai_table_allowlist').delete().eq('id', id);
+      const { data: before } = await supabase.from('ai_table_allowlist').select().eq('id', id).single();
+      const { error } = await supabase.from('ai_table_allowlist').delete().eq('id', id);
       if (error) throw error;
-      await logAudit(beforeData?.contract_id, 'delete', 'table_allowlist', id, { before: beforeData });
+      await logAudit(before?.contract_id, 'delete', 'table_allowlist', id, { before });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
   });
@@ -353,7 +355,15 @@ export function useAiGovernanceAdmin() {
   // Semantic Dictionary CRUD
   const createSemanticEntry = useMutation({
     mutationFn: async (entry: Partial<AiSemanticDictionary>) => {
-      const insertData = {
+      const insertData: {
+        contract_id: string;
+        canonical_concept: string;
+        ui_label: string;
+        synonyms: string[];
+        resolution: unknown;
+        threshold: number;
+        is_active: boolean;
+      } = {
         contract_id: entry.contract_id!,
         canonical_concept: entry.canonical_concept!,
         ui_label: entry.ui_label!,
@@ -362,34 +372,34 @@ export function useAiGovernanceAdmin() {
         threshold: entry.threshold ?? 0.78,
         is_active: entry.is_active ?? true,
       };
-      const { data, error } = await fromTable('ai_semantic_dictionary')
-        .insert(insertData)
+      const { data, error } = await supabase
+        .from('ai_semantic_dictionary')
+        .insert(insertData as any)
         .select()
         .single();
       if (error) throw error;
-      const result = data as any;
-      await logAudit(entry.contract_id!, 'create', 'semantic_dictionary', result.id, { after: result });
-      return result;
+      await logAudit(entry.contract_id!, 'create', 'semantic_dictionary', data.id, { after: data });
+      return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
   });
 
   const updateSemanticEntry = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<AiSemanticDictionary> & { id: string }) => {
-      const { data: before } = await fromTable('ai_semantic_dictionary').select().eq('id', id).single();
-      const beforeData = before as any;
+      const { data: before } = await supabase.from('ai_semantic_dictionary').select().eq('id', id).single();
       const updateData = {
         ...updates,
         updated_at: new Date().toISOString(),
         ...(updates.resolution && { resolution: JSON.stringify(updates.resolution) })
       };
-      const { data, error } = await fromTable('ai_semantic_dictionary')
+      const { data, error } = await supabase
+        .from('ai_semantic_dictionary')
         .update(updateData)
         .eq('id', id)
         .select()
         .single();
       if (error) throw error;
-      await logAudit(beforeData?.contract_id, 'update', 'semantic_dictionary', id, { before: beforeData, after: data });
+      await logAudit(before?.contract_id, 'update', 'semantic_dictionary', id, { before, after: data });
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
@@ -397,11 +407,10 @@ export function useAiGovernanceAdmin() {
 
   const deleteSemanticEntry = useMutation({
     mutationFn: async (id: string) => {
-      const { data: before } = await fromTable('ai_semantic_dictionary').select().eq('id', id).single();
-      const beforeData = before as any;
-      const { error } = await fromTable('ai_semantic_dictionary').delete().eq('id', id);
+      const { data: before } = await supabase.from('ai_semantic_dictionary').select().eq('id', id).single();
+      const { error } = await supabase.from('ai_semantic_dictionary').delete().eq('id', id);
       if (error) throw error;
-      await logAudit(beforeData?.contract_id, 'delete', 'semantic_dictionary', id, { before: beforeData });
+      await logAudit(before?.contract_id, 'delete', 'semantic_dictionary', id, { before });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
   });
@@ -409,15 +418,15 @@ export function useAiGovernanceAdmin() {
   // Policies CRUD
   const updatePolicy = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<AiPolicy> & { id: string }) => {
-      const { data: before } = await fromTable('ai_policies').select().eq('id', id).single();
-      const beforeData = before as any;
-      const { data, error } = await fromTable('ai_policies')
+      const { data: before } = await supabase.from('ai_policies').select().eq('id', id).single();
+      const { data, error } = await supabase
+        .from('ai_policies')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single();
       if (error) throw error;
-      await logAudit(beforeData?.contract_id, 'update', 'policy', id, { before: beforeData, after: data });
+      await logAudit(before?.contract_id, 'update', 'policy', id, { before, after: data });
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [GOVERNANCE_QUERY_KEY] }),
@@ -425,7 +434,8 @@ export function useAiGovernanceAdmin() {
 
   // Audit log fetch
   const fetchAuditLog = async (contractId?: string): Promise<AiGovernanceAuditLog[]> => {
-    let query = fromTable('ai_governance_audit_log')
+    let query = supabase
+      .from('ai_governance_audit_log')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(100);
@@ -436,7 +446,7 @@ export function useAiGovernanceAdmin() {
 
     const { data, error } = await query;
     if (error) throw error;
-    return (data || []) as AiGovernanceAuditLog[];
+    return data as AiGovernanceAuditLog[];
   };
 
   return {

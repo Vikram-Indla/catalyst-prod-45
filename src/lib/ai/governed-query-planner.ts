@@ -193,10 +193,11 @@ async function executeGovernedQuery(
             .eq('id', person.resourceInventoryId)
             .single();
           if (ri?.department_id) {
-          const { data } = await (supabase as any).from('capacity_departments')
-            .select(res.column)
-            .eq('id', ri.department_id)
-            .single();
+            const { data } = await supabase
+              .from('capacity_departments')
+              .select(res.column)
+              .eq('id', ri.department_id)
+              .single();
             value = data?.[res.column as keyof typeof data];
           }
           break;
@@ -278,7 +279,8 @@ async function executeGovernedQuery(
         }
         case 'resource_allocations': {
           const today = new Date().toISOString().split('T')[0];
-          const { data } = await (supabase as any).from('resource_allocations')
+          const { data } = await supabase
+            .from('resource_allocations')
             .select(res.column)
             .eq('resource_id', person.resourceInventoryId)
             .lte('start_date', today)

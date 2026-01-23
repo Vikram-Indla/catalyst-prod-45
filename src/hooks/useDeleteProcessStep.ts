@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 export interface LinkedTicket {
@@ -16,7 +15,8 @@ export function useLinkedTickets(processStepValue: string | null) {
     queryFn: async () => {
       if (!processStepValue) return { tickets: [], count: 0 };
       
-      const { data, error, count } = await fromTable('business_requests')
+      const { data, error, count } = await supabase
+        .from('business_requests')
         .select('id, request_key, title', { count: 'exact' })
         .eq('process_step', processStepValue)
         .is('deleted_at', null)
@@ -25,7 +25,7 @@ export function useLinkedTickets(processStepValue: string | null) {
 
       if (error) throw error;
       return { 
-        tickets: (data || []) as LinkedTicket[], 
+        tickets: data as LinkedTicket[], 
         count: count || 0 
       };
     },
@@ -45,7 +45,8 @@ export function useReassignTickets() {
       fromProcessStep: string; 
       toProcessStep: string;
     }) => {
-      const { error, count } = await fromTable('business_requests')
+      const { error, count } = await supabase
+        .from('business_requests')
         .update({ process_step: toProcessStep })
         .eq('process_step', fromProcessStep)
         .is('deleted_at', null);

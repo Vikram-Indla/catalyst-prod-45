@@ -138,7 +138,7 @@ export function useWorkbenchData(
     queryKey: ['workbench-business-requests', brIds],
     queryFn: async () => {
       if (brIds.length === 0) return [];
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('business_requests')
         .select('id, request_key, title')
         .in('id', brIds);

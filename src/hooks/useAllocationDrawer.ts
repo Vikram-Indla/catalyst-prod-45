@@ -7,7 +7,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { 
   parseISO, 
   startOfWeek, 
@@ -64,15 +63,15 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
     queryKey: ['resource-assignments-drawer', resource.id],
     queryFn: async (): Promise<Assignment[]> => {
       // First get all allocations for this resource to find which assignments are used
-      const { data: allocations, error: allocError } = await fromTable('resource_allocations')
+      const { data: allocations, error: allocError } = await supabase
+        .from('resource_allocations')
         .select('assignment_id')
         .eq('resource_id', resource.id);
       
       if (allocError) throw allocError;
       
       // Get unique assignment IDs
-      const allocData = (allocations || []) as Array<{ assignment_id: string }>;
-      const assignmentIds = [...new Set(allocData.map(a => a.assignment_id).filter(Boolean))];
+      const assignmentIds = [...new Set((allocations || []).map(a => a.assignment_id).filter(Boolean))];
       
       if (assignmentIds.length === 0) {
         // Fall back to fetching all active assignments
@@ -114,7 +113,8 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
   const { data: serverAllocations = [], isLoading: isLoadingAllocations } = useQuery({
     queryKey: ['resource-allocations-drawer', resource.id],
     queryFn: async () => {
-      const { data, error } = await fromTable('resource_allocations')
+      const { data, error } = await supabase
+        .from('resource_allocations')
         .select('*')
         .eq('resource_id', resource.id);
       
@@ -123,17 +123,7 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
       // Convert to weekly allocations for the grid
       const weeklyAllocations: WeeklyAllocation[] = [];
       
-      const allocData = (data || []) as Array<{
-        id: string;
-        resource_id: string;
-        assignment_id: string;
-        start_date: string;
-        end_date: string | null;
-        allocation_percent: number | null;
-        status: string | null;
-      }>;
-      
-      allocData.forEach(alloc => {
+      (data || []).forEach(alloc => {
         // For each allocation, generate weekly entries
         const startDate = parseISO(alloc.start_date);
         const endDate = alloc.end_date ? parseISO(alloc.end_date) : startDate;
@@ -228,7 +218,8 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
       // Delete existing and insert new for each assignment
       for (const [assignmentId, weeklyAllocs] of Object.entries(byAssignment)) {
         // Delete existing allocations for this assignment
-        await fromTable('resource_allocations')
+        await supabase
+          .from('resource_allocations')
           .delete()
           .eq('resource_id', resource.id)
           .eq('assignment_id', assignmentId);
@@ -239,7 +230,8 @@ export function useAllocationDrawer({ resource, onClose }: UseAllocationDrawerPr
         // Insert grouped allocations
         for (const group of grouped) {
           if (group.percentage > 0) {
-            await fromTable('resource_allocations')
+            await supabase
+              .from('resource_allocations')
               .insert({
                 resource_id: resource.id,
                 assignment_id: assignmentId,

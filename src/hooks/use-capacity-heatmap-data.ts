@@ -7,7 +7,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import type { HeatmapResource, ProjectAllocation, MonthlyUtilization } from '@/types/capacity-heatmap';
 import { getUtilizationStatus, calculateOrgStats } from '@/lib/capacity-heatmap/utils';
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
@@ -47,10 +46,10 @@ export function useCapacityHeatmapData(monthCount = 12) {
       if (riError) throw riError;
 
       // === STEP 2: Fetch departments to map names ===
-      const { data: departments } = await fromTable('capacity_departments')
+      const { data: departments } = await supabase
+        .from('capacity_departments')
         .select('id, name');
-      const typedDepts = (departments || []) as Array<{ id: string; name: string }>;
-      const deptMap = new Map(typedDepts.map(d => [d.id, d.name]));
+      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
 
       // === STEP 2b: Fetch vendors to map names ===
       const { data: resourceVendors } = await supabase
@@ -96,7 +95,8 @@ export function useCapacityHeatmapData(monthCount = 12) {
       });
 
       // === STEP 5: Fetch resource_allocations with date ranges ===
-      const { data: allocationsData, error: allocError } = await fromTable('resource_allocations')
+      const { data: allocationsData, error: allocError } = await supabase
+        .from('resource_allocations')
         .select(`
           id,
           resource_id,

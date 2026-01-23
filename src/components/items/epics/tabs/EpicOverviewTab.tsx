@@ -14,7 +14,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { fromTable } from '@/lib/supabase-utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -95,14 +94,14 @@ export function EpicOverviewTab({ epic }: EpicOverviewTabProps) {
   const { data: technicalScore } = useQuery({
     queryKey: ['epic-technical-score', epic.id],
     queryFn: async () => {
-      const { data } = await fromTable('epic_wsjf')
+      const { data } = await supabase
+        .from('epic_wsjf')
         .select('business_value, time_value, rroe_value, job_size')
         .eq('epic_id', epic.id)
         .maybeSingle();
       
-      const wsjfData = data as { business_value?: number; time_value?: number; rroe_value?: number; job_size?: number } | null;
-      if (!wsjfData) return null;
-      const { business_value, time_value, rroe_value, job_size } = wsjfData;
+      if (!data) return null;
+      const { business_value, time_value, rroe_value, job_size } = data;
       if (!job_size) return null;
       return Math.round(((business_value || 0) + (time_value || 0) + (rroe_value || 0)) / job_size * 100) / 100;
     },

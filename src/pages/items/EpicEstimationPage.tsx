@@ -99,11 +99,11 @@ export default function EpicEstimationPage() {
   // Update Technical Scoring field mutation
   const updateScoringMutation = useMutation({
     mutationFn: async ({ epicId, field, value }: { epicId: string; field: ScoringField; value: number }) => {
-      const { data: existing } = await (supabase as any)
+      const { data: existing } = await supabase
         .from('epic_wsjf')
         .select('id, business_value, time_value, rroe_value, job_size')
         .eq('epic_id', epicId)
-        .maybeSingle() as { data: { id: string; business_value: number; time_value: number; rroe_value: number; job_size: number } | null };
+        .maybeSingle();
 
       const updatedValues = {
         business_value: existing?.business_value || 0,
@@ -118,13 +118,13 @@ export default function EpicEstimationPage() {
         : null;
 
       if (existing) {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('epic_wsjf')
           .update({ [field]: value, wsjf_score: techScore })
           .eq('id', existing.id);
         if (error) throw error;
       } else {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('epic_wsjf')
           .insert({ epic_id: epicId, [field]: value, wsjf_score: techScore });
         if (error) throw error;

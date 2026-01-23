@@ -33,7 +33,7 @@ export default function ResourceAssignmentsPage() {
     const records: LinkedRecord[] = [];
 
     // Check resource_allocations
-    const { data: allocations } = await (supabase as any)
+    const { data: allocations } = await supabase
       .from('resource_allocations')
       .select(`
         id,

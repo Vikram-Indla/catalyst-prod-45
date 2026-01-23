@@ -53,7 +53,8 @@ export function useBoardData(boardId: string, projectId: string) {
   const boardQuery = useQuery({
     queryKey: ['injira-board', boardId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('injira_boards')
+      const { data, error } = await supabase
+        .from('injira_boards')
         .select(`
           *,
           columns:injira_board_columns(*)
@@ -104,7 +105,8 @@ export function useBoardData(boardId: string, projectId: string) {
   const sprintsQuery = useQuery({
     queryKey: ['injira-sprints', boardId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('injira_sprints')
+      const { data, error } = await supabase
+        .from('injira_sprints')
         .select('*')
         .eq('board_id', boardId)
         .order('start_date', { ascending: false });
@@ -216,7 +218,8 @@ export function useSprintManagement(boardId: string, tenantId: string) {
       startDate?: string;
       endDate?: string;
     }) => {
-      const { data: sprint, error } = await (supabase as any).from('injira_sprints')
+      const { data: sprint, error } = await supabase
+        .from('injira_sprints')
         .insert({
           board_id: boardId,
           tenant_id: tenantId,
@@ -241,12 +244,14 @@ export function useSprintManagement(boardId: string, tenantId: string) {
   const startSprintMutation = useMutation({
     mutationFn: async (sprintId: string) => {
       // Close any currently active sprint first
-      await (supabase as any).from('injira_sprints')
+      await supabase
+        .from('injira_sprints')
         .update({ state: 'closed' })
         .eq('board_id', boardId)
         .eq('state', 'active');
 
-      const { data, error } = await (supabase as any).from('injira_sprints')
+      const { data, error } = await supabase
+        .from('injira_sprints')
         .update({
           state: 'active',
           start_date: new Date().toISOString(),
@@ -281,7 +286,8 @@ export function useSprintManagement(boardId: string, tenantId: string) {
           .neq('status_id', 'done');
       }
 
-      const { data, error } = await (supabase as any).from('injira_sprints')
+      const { data, error } = await supabase
+        .from('injira_sprints')
         .update({
           state: 'closed',
           complete_date: new Date().toISOString(),

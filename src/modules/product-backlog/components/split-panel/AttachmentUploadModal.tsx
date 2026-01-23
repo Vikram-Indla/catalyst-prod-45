@@ -60,7 +60,7 @@ export function AttachmentUploadModal({
   const { data: attachments = [], isLoading } = useQuery({
     queryKey: ['business-request-attachments', requestId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('business_request_links')
         .select('*')
         .eq('business_request_id', requestId)
@@ -68,7 +68,7 @@ export function AttachmentUploadModal({
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return (data || []) as Attachment[];
+      return data as Attachment[];
     },
     enabled: open && !!requestId,
   });
@@ -98,7 +98,7 @@ export function AttachmentUploadModal({
         .getPublicUrl(fileName);
 
       // Create link record in business_request_links (same as LinksViewTab)
-      const { error: dbError } = await (supabase as any)
+      const { error: dbError } = await supabase
         .from('business_request_links')
         .insert({
           business_request_id: requestId,
@@ -139,7 +139,7 @@ export function AttachmentUploadModal({
       }
 
       // Delete from database
-      const { error: dbError } = await (supabase as any)
+      const { error: dbError } = await supabase
         .from('business_request_links')
         .delete()
         .eq('id', attachment.id);

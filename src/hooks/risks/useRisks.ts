@@ -3,7 +3,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { fromTable } from "@/lib/supabase-utils";
 import { Risk, RiskFormData } from "@/types/risks";
 import { useToast } from "@/hooks/use-toast";
 
@@ -49,11 +48,11 @@ export function useRisks(programId?: string) {
       // Fetch all departments and business owners for lookup
       const [deptRes, ownerRes] = await Promise.all([
         supabase.from('departments').select('id, name'),
-        fromTable('business_owners').select('id, name')
+        supabase.from('business_owners').select('id, name')
       ]);
       
       const deptMap = new Map((deptRes.data || []).map(d => [d.id, d.name]));
-      const ownerMap = new Map(((ownerRes.data || []) as Array<{ id: string; name: string }>).map(o => [o.id, o.name]));
+      const ownerMap = new Map((ownerRes.data || []).map(o => [o.id, o.name]));
 
       // Flatten the joined data - resolve UUIDs to names
       return (data || []).map((risk: any) => {
