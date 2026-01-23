@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -75,8 +75,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
     const newStatus = result.destination.droppableId;
 
     try {
-      const { error } = await supabase
-        .from('business_requests')
+      const { error } = await fromTable('business_requests')
         .update({ process_step: newStatus })
         .eq('id', requestId);
 

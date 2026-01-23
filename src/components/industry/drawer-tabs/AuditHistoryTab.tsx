@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { formatDistanceToNow, format } from 'date-fns';
 import { History, ArrowRight } from 'lucide-react';
 import { BusinessRequest } from '@/types/business-request';
@@ -17,8 +17,7 @@ export function AuditHistoryTab({ data }: AuditHistoryTabProps) {
     queryKey: ['business-request-audit', requestId],
     queryFn: async () => {
       if (!requestId) return [];
-      const { data, error } = await supabase
-        .from('business_request_audit_logs')
+      const { data, error } = await fromTable('business_request_audit_logs')
         .select('*')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false });
