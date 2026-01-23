@@ -71,6 +71,9 @@ function formatUpdated(updatedAt?: string | null): string {
 export function tmToUITestCase(tc: TMTestCase): TestCase {
   const assignee = tc.created_by_profile || tc.created_by_user;
   
+  // Extract folder information from the joined relation
+  const folder = (tc as any).folder as { id: string; name: string; path?: string } | null;
+  
   return {
     id: tc.key || tc.id,
     dbId: tc.id, // Preserve the actual database UUID for operations
@@ -88,6 +91,8 @@ export function tmToUITestCase(tc: TMTestCase): TestCase {
     },
     updated: formatUpdated(tc.updated_at),
     folderId: tc.folder_id,
+    folderName: folder?.name || null,
+    folderPath: folder?.path || folder?.name || null,
     description: tc.objective,
     preconditions: tc.preconditions,
     createdBy: tc.created_by,
