@@ -74,8 +74,9 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   
   // Sorting state
-  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  // Default sort: RID ascending
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>('rid');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   const deleteUser = useDeleteUser();
   const approveUser = useApproveUser();
