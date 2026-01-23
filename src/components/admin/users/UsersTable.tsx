@@ -28,7 +28,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Search, MoreHorizontal, Power, PowerOff, Trash2, KeyRound, CheckCircle, XCircle, Clock, Upload, Pencil } from 'lucide-react';
+import { Search, MoreHorizontal, Power, PowerOff, Trash2, KeyRound, CheckCircle, XCircle, Clock, Upload, Pencil, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+
+// Sortable column types
+type SortColumn = 'rid' | 'full_name' | 'job_role' | 'department_name' | 'assignment_name' | 'contract_start_date' | 'contract_end_date' | 'vendor' | 'resource_type' | 'country' | 'location';
+type SortDirection = 'asc' | 'desc' | null;
 import { UserProfile, useDeleteUser, useApproveUser, useRejectUser, useDisableUser, ApprovalStatus, getDisplayStatus } from '@/hooks/useUsers';
 import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -69,6 +73,10 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   // Bulk selection state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   
+  // Sorting state
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
   const deleteUser = useDeleteUser();
   const approveUser = useApproveUser();
   const rejectUser = useRejectUser();
@@ -179,25 +187,121 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const uniqueDepartments = [...new Set(users.map(u => u.department_name).filter(Boolean))];
   const uniqueAssignments = [...new Set(users.map(u => u.assignment_name).filter(Boolean))];
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      (user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
-      (user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
-      (user.job_role?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      const matchesSearch = 
+        (user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
+        (user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
+        (user.job_role?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+      
+      const matchesRole = roleFilter === 'all' || 
+        user.roles.some(r => r.role_name === roleFilter);
+      
+      const matchesApproval = approvalFilter === 'all' || user.approval_status === approvalFilter;
+      
+      const matchesVendor = vendorFilter === 'all' || user.vendor === vendorFilter;
+      const matchesCountry = countryFilter === 'all' || user.country === countryFilter;
+      const matchesLocation = locationFilter === 'all' || user.location === locationFilter;
+      const matchesDepartment = departmentFilter === 'all' || user.department_name === departmentFilter;
+      const matchesAssignment = assignmentFilter === 'all' || user.assignment_name === assignmentFilter;
+      
+      return matchesSearch && matchesRole && matchesApproval && matchesVendor && matchesCountry && matchesLocation && matchesDepartment && matchesAssignment;
+    });
+  }, [users, searchTerm, roleFilter, approvalFilter, vendorFilter, countryFilter, locationFilter, departmentFilter, assignmentFilter]);
+
+  // Sorted users
+  const sortedUsers = useMemo(() => {
+    if (!sortColumn || !sortDirection) return filteredUsers;
     
-    const matchesRole = roleFilter === 'all' || 
-      user.roles.some(r => r.role_name === roleFilter);
-    
-    const matchesApproval = approvalFilter === 'all' || user.approval_status === approvalFilter;
-    
-    const matchesVendor = vendorFilter === 'all' || user.vendor === vendorFilter;
-    const matchesCountry = countryFilter === 'all' || user.country === countryFilter;
-    const matchesLocation = locationFilter === 'all' || user.location === locationFilter;
-    const matchesDepartment = departmentFilter === 'all' || user.department_name === departmentFilter;
-    const matchesAssignment = assignmentFilter === 'all' || user.assignment_name === assignmentFilter;
-    
-    return matchesSearch && matchesRole && matchesApproval && matchesVendor && matchesCountry && matchesLocation && matchesDepartment && matchesAssignment;
-  });
+    return [...filteredUsers].sort((a, b) => {
+      let aVal: string | null | undefined;
+      let bVal: string | null | undefined;
+      
+      switch (sortColumn) {
+        case 'rid':
+          aVal = a.rid;
+          bVal = b.rid;
+          break;
+        case 'full_name':
+          aVal = a.full_name;
+          bVal = b.full_name;
+          break;
+        case 'job_role':
+          aVal = a.job_role;
+          bVal = b.job_role;
+          break;
+        case 'department_name':
+          aVal = a.department_name;
+          bVal = b.department_name;
+          break;
+        case 'assignment_name':
+          aVal = a.assignment_name;
+          bVal = b.assignment_name;
+          break;
+        case 'contract_start_date':
+          aVal = a.contract_start_date;
+          bVal = b.contract_start_date;
+          break;
+        case 'contract_end_date':
+          aVal = a.contract_end_date;
+          bVal = b.contract_end_date;
+          break;
+        case 'vendor':
+          aVal = a.vendor;
+          bVal = b.vendor;
+          break;
+        case 'resource_type':
+          aVal = a.resource_type;
+          bVal = b.resource_type;
+          break;
+        case 'country':
+          aVal = a.country;
+          bVal = b.country;
+          break;
+        case 'location':
+          aVal = a.location;
+          bVal = b.location;
+          break;
+        default:
+          return 0;
+      }
+      
+      // Handle nulls - push to end
+      if (!aVal && !bVal) return 0;
+      if (!aVal) return sortDirection === 'asc' ? 1 : -1;
+      if (!bVal) return sortDirection === 'asc' ? -1 : 1;
+      
+      const comparison = aVal.localeCompare(bVal, undefined, { numeric: true, sensitivity: 'base' });
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+  }, [filteredUsers, sortColumn, sortDirection]);
+
+  // Sort handler
+  const handleSort = useCallback((column: SortColumn) => {
+    if (sortColumn === column) {
+      // Cycle: asc -> desc -> null
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortColumn(null);
+        setSortDirection(null);
+      }
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  }, [sortColumn, sortDirection]);
+
+  // Sort icon component
+  const SortIcon = ({ column }: { column: SortColumn }) => {
+    if (sortColumn !== column) {
+      return <ArrowUpDown className="w-3 h-3 ml-1 opacity-40" />;
+    }
+    if (sortDirection === 'asc') {
+      return <ArrowUp className="w-3 h-3 ml-1" />;
+    }
+    return <ArrowDown className="w-3 h-3 ml-1" />;
+  };
 
   // Bulk selection handlers
   const handleSelectAll = useCallback((checked: boolean) => {
@@ -587,23 +691,111 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                       className={cn(someSelected && "data-[state=checked]:bg-primary/50")}
                     />
                   </th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground w-16">RID</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Name</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Job Role</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Department</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Assignment</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract Start</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract End</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Vendor</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Resource Type</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Country</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Location</th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground w-16 cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('rid')}
+                  >
+                    <div className="flex items-center">
+                      RID
+                      <SortIcon column="rid" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('full_name')}
+                  >
+                    <div className="flex items-center">
+                      Name
+                      <SortIcon column="full_name" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('job_role')}
+                  >
+                    <div className="flex items-center">
+                      Job Role
+                      <SortIcon column="job_role" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('department_name')}
+                  >
+                    <div className="flex items-center">
+                      Department
+                      <SortIcon column="department_name" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('assignment_name')}
+                  >
+                    <div className="flex items-center">
+                      Assignment
+                      <SortIcon column="assignment_name" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('contract_start_date')}
+                  >
+                    <div className="flex items-center">
+                      Contract Start
+                      <SortIcon column="contract_start_date" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('contract_end_date')}
+                  >
+                    <div className="flex items-center">
+                      Contract End
+                      <SortIcon column="contract_end_date" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('vendor')}
+                  >
+                    <div className="flex items-center">
+                      Vendor
+                      <SortIcon column="vendor" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('resource_type')}
+                  >
+                    <div className="flex items-center">
+                      Resource Type
+                      <SortIcon column="resource_type" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('country')}
+                  >
+                    <div className="flex items-center">
+                      Country
+                      <SortIcon column="country" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('location')}
+                  >
+                    <div className="flex items-center">
+                      Location
+                      <SortIcon column="location" />
+                    </div>
+                  </th>
                   <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => (
-                  <tr 
+                {sortedUsers.map((user) => (
+                  <tr
                     key={user.id} 
                     className={cn(
                       "border-b last:border-b-0 hover:bg-muted/20 transition-colors",
