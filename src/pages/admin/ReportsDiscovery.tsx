@@ -75,14 +75,14 @@ export default function ReportsDiscovery() {
   const { data: customReports } = useQuery({
     queryKey: ["report-definitions"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("report_definitions")
         .select("*")
         .eq("enabled", true)
         .order("name");
 
       if (error) throw error;
-      return data;
+      return (data || []) as Array<{ name: string; description: string; category: string; report_type: string }>;
     },
   });
 

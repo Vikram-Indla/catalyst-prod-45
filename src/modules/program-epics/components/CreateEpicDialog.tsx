@@ -230,13 +230,13 @@ export function CreateEpicDialog({
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests-for-epic-link'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .select('id, request_key, title, rank, business_score')
         .is('deleted_at', null)
         .order('request_key');
       if (error) throw error;
-      return data;
+      return (data || []) as Array<{ id: string; request_key: string; title: string; rank: number | null; business_score: number | null }>;
     },
     enabled: open,
   });
