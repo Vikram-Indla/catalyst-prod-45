@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, FileText, Zap, Star, BookOpen, AlertTriangle, CheckSquare, Bug } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { fromTable } from "@/lib/supabase-utils";
 import { getValidatedWorkItemRoute } from "@/lib/workItemRoutes";
 
 interface GlobalSearchPaletteProps {
@@ -143,14 +144,14 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
         }));
 
         // Search business requests
-        const { data: requests } = await supabase
-          .from('business_requests')
+        const { data: requests } = await fromTable('business_requests')
           .select('id, request_key, title, updated_at')
           .or(`request_key.ilike.${searchTerm},title.ilike.${searchTerm}`)
           .is('deleted_at', null)
           .limit(5);
         
-        requests?.forEach(r => searchResults.push({
+        const typedRequests = (requests || []) as Array<{ id: string; request_key: string | null; title: string; updated_at: string }>;
+        typedRequests.forEach(r => searchResults.push({
           id: r.id,
           key: r.request_key || '',
           summary: r.title,

@@ -4,6 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 interface IdeaAttachment {
@@ -25,8 +26,7 @@ export function useIdeaAttachments(ideaId: string | undefined) {
     queryFn: async () => {
       if (!ideaId) return [];
       
-      const { data, error } = await supabase
-        .from('attachments')
+      const { data, error } = await fromTable('attachments')
         .select(`
           *,
           uploader:profiles!uploaded_by(full_name, avatar_url)
@@ -67,8 +67,7 @@ export function useUploadIdeaAttachment() {
       if (uploadError) throw uploadError;
 
       // Create attachment record
-      const { data, error } = await supabase
-        .from('attachments')
+      const { data, error } = await fromTable('attachments')
         .insert({
           entity_type: 'improvement_idea',
           entity_id: ideaId,
@@ -111,8 +110,7 @@ export function useDeleteIdeaAttachment() {
         .remove([filePath]);
 
       // Delete record
-      const { error } = await supabase
-        .from('attachments')
+      const { error } = await fromTable('attachments')
         .delete()
         .eq('id', attachmentId);
       

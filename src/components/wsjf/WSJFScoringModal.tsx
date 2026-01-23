@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { X, ExternalLink, Grid3X3 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -71,15 +72,14 @@ export function WSJFScoringModal({
     queryKey: ['wsjf-scoring', workItemType, workItemId, piId],
     queryFn: async () => {
       if (workItemType === 'epic' && piId) {
-        const { data, error } = await supabase
-          .from('epic_wsjf')
+        const { data, error } = await fromTable('epic_wsjf')
           .select('*')
           .eq('epic_id', workItemId)
           .eq('pi_id', piId)
           .maybeSingle();
         
         if (error) throw error;
-        return data;
+        return data as { business_value: number; time_value: number; rroe_value: number; job_size: number; wsjf_score: number } | null;
       } else if (workItemType === 'feature') {
         const { data, error } = await supabase
           .from('features')
@@ -128,8 +128,7 @@ export function WSJFScoringModal({
       
       if (workItemType === 'epic' && piId) {
         // First try to update existing record
-        const { data: existing } = await supabase
-          .from('epic_wsjf')
+        const { data: existing } = await fromTable('epic_wsjf')
           .select('id')
           .eq('epic_id', workItemId)
           .eq('pi_id', piId)
@@ -137,8 +136,7 @@ export function WSJFScoringModal({
         
         if (existing) {
           // Update existing record (don't include wsjf_score - it's computed)
-          const { error } = await supabase
-            .from('epic_wsjf')
+          const { error } = await fromTable('epic_wsjf')
             .update({
               business_value: localValues.business_value,
               time_value: localValues.time_value,
@@ -151,8 +149,7 @@ export function WSJFScoringModal({
           if (error) throw error;
         } else {
           // Insert new record (don't include wsjf_score - it's computed)
-          const { error } = await supabase
-            .from('epic_wsjf')
+          const { error } = await fromTable('epic_wsjf')
             .insert({
               epic_id: workItemId,
               pi_id: piId,

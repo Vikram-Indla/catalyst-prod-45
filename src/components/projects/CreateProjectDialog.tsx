@@ -66,7 +66,7 @@ export function CreateProjectDialog({
   const [projectType, setProjectType] = useState<ProjectType>('scrum');
   const [category, setCategory] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
-  const [selectedColor, setSelectedColor] = useState(PROJECT_COLORS[0]);
+  const [selectedColor, setSelectedColor] = useState<string>(PROJECT_COLORS[0]);
   
   // Validation state
   const [keyError, setKeyError] = useState('');
