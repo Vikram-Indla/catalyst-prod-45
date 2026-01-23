@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import {
   Dialog,
   DialogContent,
@@ -40,19 +40,17 @@ export function LabelsManagementDialog({ open, onOpenChange }: LabelsManagementD
   const { data: labels } = useQuery({
     queryKey: ['epic-labels'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('epic_labels')
+      const { data, error } = await fromTable('epic_labels')
         .select('*')
         .order('name');
       if (error) throw error;
-      return data;
+      return (data || []) as Array<{ id: string; name: string; color: string }>;
     },
   });
 
   const createLabel = useMutation({
     mutationFn: async ({ name, color }: { name: string; color: string }) => {
-      const { error } = await supabase
-        .from('epic_labels')
+      const { error } = await fromTable('epic_labels')
         .insert({ name, color });
       if (error) throw error;
     },
@@ -73,8 +71,7 @@ export function LabelsManagementDialog({ open, onOpenChange }: LabelsManagementD
 
   const updateLabel = useMutation({
     mutationFn: async ({ id, name, color }: { id: string; name: string; color: string }) => {
-      const { error } = await supabase
-        .from('epic_labels')
+      const { error } = await fromTable('epic_labels')
         .update({ name, color })
         .eq('id', id);
       if (error) throw error;
@@ -88,8 +85,7 @@ export function LabelsManagementDialog({ open, onOpenChange }: LabelsManagementD
 
   const deleteLabel = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('epic_labels')
+      const { error } = await fromTable('epic_labels')
         .delete()
         .eq('id', id);
       if (error) throw error;

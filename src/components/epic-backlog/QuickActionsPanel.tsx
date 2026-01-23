@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { fromTable } from "@/lib/supabase-utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast as showToast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -49,13 +50,12 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
   const { data: attachments } = useQuery({
     queryKey: ['attachments', epicId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('attachments')
+      const { data } = await fromTable('attachments')
         .select('*')
         .eq('entity_type', 'epic')
         .eq('entity_id', epicId)
         .order('created_at', { ascending: false });
-      return data || [];
+      return (data || []) as Array<{ id: string; file_name: string; file_size: number; file_path: string; mime_type: string }>;
     },
   });
 
@@ -164,8 +164,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
       if (uploadError) throw uploadError;
 
       // Create attachment record
-      const { error: dbError } = await supabase
-        .from('attachments')
+      const { error: dbError } = await fromTable('attachments')
         .insert({
           entity_type: 'epic',
           entity_id: epicId,

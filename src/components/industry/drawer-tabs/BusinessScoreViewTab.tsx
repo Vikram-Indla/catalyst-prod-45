@@ -8,7 +8,7 @@ import { BusinessRequest } from '@/types/business-request';
 import { Lock, ChevronDown, ChevronUp, Save, Pencil } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 
 interface BusinessScoreViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
@@ -67,8 +67,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
   const { data: scoringStats } = useQuery({
     queryKey: ['demand-scoring-stats'],
     queryFn: async () => {
-      const { data: demands, error } = await supabase
-        .from('business_requests')
+      const { data: demands, error } = await fromTable('business_requests')
         .select('id, executive_urgency, business_value, complexity_score, business_score')
         .is('deleted_at', null);
       
@@ -109,7 +108,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
       // Log previous justification to audit history before overwriting
       if (rankJustification && rankJustification !== editJustification.trim()) {
         try {
-          await supabase.from('business_request_audit_logs').insert({
+          await fromTable('business_request_audit_logs').insert({
             business_request_id: data.id,
             action: 'justification_updated',
             field_changed: 'rank_override_justification',
