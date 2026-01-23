@@ -44,6 +44,7 @@ import {
 } from '../hooks/useSoftwareLicenses';
 import { formatSAR } from '../hooks/useResourceCost';
 import { LicenseDialog } from './LicenseDialog';
+import { LicenseGanttChart } from './LicenseGanttChart';
 import type { SoftwareLicenseWithAllocation } from '../types';
 
 export function SoftwareLicensesPage() {
@@ -140,9 +141,9 @@ export function SoftwareLicensesPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">
-                    {formatSAR(licenses.reduce((sum, l) => sum + l.annual_cost, 0))}
+                    {formatSAR(licenses.reduce((sum, l) => sum + l.annual_cost, 0) / 12)}
                   </p>
-                  <p className="text-sm text-muted-foreground">Total Cost/Year</p>
+                  <p className="text-sm text-muted-foreground">Total Cost/Month</p>
                 </div>
               </div>
             </CardContent>
@@ -185,6 +186,9 @@ export function SoftwareLicensesPage() {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Gantt Chart */}
+        <LicenseGanttChart licenses={licenses} />
 
         {/* Table */}
         <Card className="flex-1">
