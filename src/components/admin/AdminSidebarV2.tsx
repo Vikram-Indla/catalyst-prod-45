@@ -14,7 +14,8 @@ import {
   Code2,
   Map,
   Wand2,
-  Bell
+  Bell,
+  Wallet
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -45,11 +46,21 @@ const adminPockets = [
     children: [
       { label: 'Users', path: '/admin/users' },
       { label: 'Roles & Permissions', path: '/admin/roles-permissions' },
+      { label: 'Resource Utilization', path: '/admin/resource-utilization' },
       { label: 'Resource Departments', path: '/admin/capacity-departments' },
       { label: 'Resource Assignments', path: '/admin/resource-assignments' },
       { label: 'Resource Locations', path: '/admin/resource-locations' },
       { label: 'Resource Countries', path: '/admin/resource-countries' },
       { label: 'Resource Vendors', path: '/admin/resource-vendors' },
+    ],
+  },
+  {
+    id: 'budget',
+    label: 'Budget & Licensing',
+    icon: Wallet,
+    path: '/admin/budget',
+    children: [
+      { label: 'Software Licenses', path: '/admin/software-licenses' },
     ],
   },
   {
