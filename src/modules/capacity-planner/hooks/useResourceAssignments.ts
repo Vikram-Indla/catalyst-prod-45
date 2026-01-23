@@ -8,6 +8,7 @@ export interface ResourceAssignment {
   description: string | null;
   is_active: boolean;
   sort_order: number;
+  assignment_type: string | null;
   created_at: string;
   updated_at: string;
 }

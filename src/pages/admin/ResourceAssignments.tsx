@@ -11,6 +11,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { LicenseAllocationSection } from '@/modules/budget';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface LinkedRecord {
   resource_name: string;
@@ -137,6 +144,15 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
+  // Auto-save assignment type when changed
+  const handleAssignmentTypeChange = async (assignment: ResourceAssignment, value: string) => {
+    const newValue = value === '__none__' ? null : value;
+    await updateAssignment.mutateAsync({
+      id: assignment.id,
+      updates: { assignment_type: newValue },
+    });
+  };
+
   const openEdit = (assignment: ResourceAssignment) => {
     setEditingAssignment(assignment);
     setFormData({ name: assignment.name, description: assignment.description || '' });
@@ -180,6 +196,7 @@ export default function ResourceAssignmentsPage() {
               <th className="w-10 px-4 py-3"></th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Description</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[160px]">Type</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
             </tr>
@@ -203,6 +220,22 @@ export default function ResourceAssignmentsPage() {
                 </td>
                 <td className="px-4 py-3 text-sm text-muted-foreground">
                   {assignment.description || '—'}
+                </td>
+                <td className="px-4 py-3">
+                  <Select
+                    value={assignment.assignment_type || '__none__'}
+                    onValueChange={(value) => handleAssignmentTypeChange(assignment, value)}
+                  >
+                    <SelectTrigger className="h-9 w-[140px] bg-background">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover z-[400]">
+                      <SelectItem value="__none__">Not specified</SelectItem>
+                      <SelectItem value="Project">Project</SelectItem>
+                      <SelectItem value="BAU">BAU</SelectItem>
+                      <SelectItem value="Outsources">Outsources</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </td>
                 <td className="px-4 py-3 text-center">
                   <Switch
@@ -230,7 +263,7 @@ export default function ResourceAssignmentsPage() {
             ))}
             {allAssignments.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                   No assignments configured. Click "Add Assignment" to create one.
                 </td>
               </tr>
