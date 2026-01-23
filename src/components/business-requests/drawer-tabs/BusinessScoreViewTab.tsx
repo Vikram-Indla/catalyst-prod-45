@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   usePrioritizationConfig, 
@@ -180,15 +181,14 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   const { data: allRequests } = useQuery({
     queryKey: ['all-business-requests-for-rank'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_requests')
+      const { data, error } = await fromTable('business_requests')
         .select('id, business_score, is_force_ranked, rank, priority_tier')
         .is('deleted_at', null)
         .not('priority_tier', 'is', null)
         .neq('priority_tier', 'unscored')
         .order('business_score', { ascending: false });
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; business_score: number | null; is_force_ranked: boolean; rank: number | null; priority_tier: string | null }>;
     },
   });
 

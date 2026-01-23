@@ -7,6 +7,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import { CatalystCreateDemand } from './create-tabs/CatalystCreateDemand';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { ProgressRing, KeyboardShortcuts, AutoSaveIndicator, AutoSaveStatus } from './create-form';
 
 interface CreateBusinessRequestModalProps {
@@ -84,8 +85,7 @@ async function uploadAttachments(requestId: string, attachments: File[]) {
       .from('attachments')
       .getPublicUrl(fileName);
 
-    const { error: insertError } = await supabase
-      .from('business_request_links')
+    const { error: insertError } = await fromTable('business_request_links')
       .insert({
         business_request_id: requestId,
         title: file.name,
@@ -201,13 +201,13 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       const createdRequest = await createMutation.mutateAsync(requestData as any);
       
       const attachments: File[] = formData.attachments || [];
-      if (attachments.length > 0 && createdRequest?.id) {
+      if (attachments.length > 0 && (createdRequest as any)?.id) {
         setIsUploading(true);
-        await uploadAttachments(createdRequest.id, attachments);
+        await uploadAttachments((createdRequest as any).id, attachments);
         setIsUploading(false);
       }
       
-      const requestKey = createdRequest?.request_key || createdRequest?.id?.slice(0, 8);
+      const requestKey = (createdRequest as any)?.request_key || (createdRequest as any)?.id?.slice(0, 8);
       const summary = formData.title.length > 50 ? formData.title.slice(0, 50) + '...' : formData.title;
       catalystToast.success('Request Created', `${requestKey}: "${summary}"`);
       
