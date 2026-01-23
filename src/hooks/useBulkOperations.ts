@@ -1,7 +1,7 @@
 // useBulkOperations - Hook for executing bulk operations on entities
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { BulkOperationSummary, BulkOperationResult } from '@/components/bulk-operations/types';
 
 interface UseBulkOperationsOptions {
@@ -31,8 +31,7 @@ export function useBulkOperations({
       // Process each item individually to capture per-item errors
       for (const item of items) {
         try {
-          const { error } = await supabase
-            .from('business_requests')
+          const { error } = await fromTable('business_requests')
             .update(fieldsToUpdate)
             .eq('id', item.id);
 
@@ -106,8 +105,7 @@ export function useBulkOperations({
             continue;
           }
 
-          const { error } = await supabase
-            .from('business_requests')
+          const { error } = await fromTable('business_requests')
             .update({ process_step: targetStatus })
             .eq('id', item.id);
 
@@ -169,15 +167,13 @@ export function useBulkOperations({
           
           if (softDelete) {
             // Soft delete - set deleted_at timestamp
-            const { error: updateError } = await supabase
-              .from('business_requests')
+            const { error: updateError } = await fromTable('business_requests')
               .update({ deleted_at: new Date().toISOString() })
               .eq('id', item.id);
             error = updateError;
           } else {
             // Hard delete
-            const { error: deleteError } = await supabase
-              .from('business_requests')
+            const { error: deleteError } = await fromTable('business_requests')
               .delete()
               .eq('id', item.id);
             error = deleteError;
