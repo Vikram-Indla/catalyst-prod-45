@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { validateAllocationAgainstContract } from '@/utils/allocationValidation';
 
 interface UpdateAllocationParams {
   id: string;
@@ -10,6 +11,8 @@ interface UpdateAllocationParams {
   profile_id?: string;
   assignment_id?: string;
   status?: string;
+  contractEndDate?: string | null; // Pass this for validation
+  resourceName?: string;
 }
 
 export function useAllocationMutation() {
@@ -17,7 +20,14 @@ export function useAllocationMutation() {
   
   return useMutation({
     mutationFn: async (params: UpdateAllocationParams) => {
-      const { id, ...updates } = params;
+      const { id, contractEndDate, resourceName, ...updates } = params;
+      
+      // Validate end date against contract if being updated
+      if (updates.end_date !== undefined && contractEndDate) {
+        if (!validateAllocationAgainstContract(updates.end_date, contractEndDate, resourceName)) {
+          throw new Error('VALIDATION_FAILED');
+        }
+      }
       
       // Build the update object, only including defined values
       const updateData: Record<string, unknown> = {
@@ -66,6 +76,8 @@ export function useAllocationMutation() {
     // On error, rollback
     onError: (err, params, context) => {
       queryClient.setQueryData(['resource-allocations'], context?.previousAllocations);
+      // Don't show duplicate error for validation failures
+      if (err instanceof Error && err.message === 'VALIDATION_FAILED') return;
       toast.error('Failed to save changes', {
         description: 'Your changes could not be saved. Please try again.',
       });
