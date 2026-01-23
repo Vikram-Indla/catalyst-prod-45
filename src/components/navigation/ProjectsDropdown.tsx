@@ -1,16 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   ChevronDown, 
-  Plus, 
   Star, 
   Clock, 
-  LayoutGrid,
   Loader2,
   FolderKanban
 } from 'lucide-react';
 import { useRecentProjects, useStarredProjects } from '@/hooks/useJiraNavigation';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +54,7 @@ function ProjectItem({ project, onNavigate }: ProjectItemProps) {
 
 export function ProjectsDropdown() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   
   const { data: recentProjects, isLoading: recentLoading } = useRecentProjects();
@@ -67,24 +65,38 @@ export function ProjectsDropdown() {
   const hasRecent = recentProjects && recentProjects.length > 0;
 
   const handleNavigate = () => setOpen(false);
+  
+  // Check if Projects is active based on route
+  const isActive = location.pathname.startsWith('/projects');
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          className={cn(
-            "flex items-center gap-1.5 font-medium text-muted-foreground hover:text-foreground",
-            open && "bg-muted"
-          )}
+        <button 
+          style={{
+            height: '36px',
+            padding: '0 14px',
+            fontSize: '14px',
+            fontWeight: isActive ? 600 : 500,
+            color: isActive ? 'hsl(var(--primary))' : 'var(--nav-text)',
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            cursor: 'pointer',
+            transition: 'background 0.15s ease, color 0.15s ease',
+            border: 'none',
+            background: isActive ? 'rgba(37, 99, 235, 0.08)' : (open ? 'var(--nav-hover-bg)' : 'transparent'),
+            position: 'relative',
+            fontFamily: 'inherit',
+            outline: 'none',
+          }}
+          onMouseEnter={(e) => { if (!isActive && !open) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+          onMouseLeave={(e) => { if (!open) e.currentTarget.style.background = isActive ? 'rgba(37, 99, 235, 0.08)' : 'transparent'; }}
         >
-          <FolderKanban className="w-4 h-4" />
           Projects
-          <ChevronDown className={cn(
-            "w-4 h-4 transition-transform duration-200",
-            open && "rotate-180"
-          )} />
-        </Button>
+          <ChevronDown style={{ width: '16px', height: '16px' }} />
+        </button>
       </DropdownMenuTrigger>
       
       <DropdownMenuContent 
@@ -140,9 +152,8 @@ export function ProjectsDropdown() {
             {/* Actions */}
             <DropdownMenuGroup>
               <DropdownMenuItem asChild className="cursor-pointer">
-                <Link to="/projects" className="flex items-center gap-2" onClick={handleNavigate}>
-                  <LayoutGrid className="w-4 h-4" />
-                  <span>View all projects</span>
+                <Link to="/projects" onClick={handleNavigate}>
+                  View all projects
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem 
@@ -152,8 +163,7 @@ export function ProjectsDropdown() {
                   navigate('/projects/create');
                 }}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                <span>Create project</span>
+                Create project
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </>
