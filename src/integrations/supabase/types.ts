@@ -85,6 +85,41 @@ export type Database = {
         }
         Relationships: []
       }
+      assignment_license_allocations: {
+        Row: {
+          allocation_percent: number
+          assignment_id: string
+          created_at: string | null
+          id: string
+          license_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          allocation_percent: number
+          assignment_id: string
+          created_at?: string | null
+          id?: string
+          license_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          allocation_percent?: number
+          assignment_id?: string
+          created_at?: string | null
+          id?: string
+          license_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_license_allocations_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "software_licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       capacity_departments: {
         Row: {
           color: string | null
@@ -14930,6 +14965,42 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_cost_history: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          effective_from: string
+          effective_to: string | null
+          id: string
+          monthly_cost: number
+          resource_id: string
+          resource_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          effective_from: string
+          effective_to?: string | null
+          id?: string
+          monthly_cost: number
+          resource_id: string
+          resource_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          monthly_cost?: number
+          resource_id?: string
+          resource_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       resource_countries: {
         Row: {
           code: string | null
@@ -16237,6 +16308,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      software_licenses: {
+        Row: {
+          annual_cost: number
+          category: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          license_type: string
+          name: string
+          renewal_date: string | null
+          start_date: string
+          updated_at: string | null
+          user_count: number | null
+          vendor: string
+        }
+        Insert: {
+          annual_cost: number
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          license_type: string
+          name: string
+          renewal_date?: string | null
+          start_date: string
+          updated_at?: string | null
+          user_count?: number | null
+          vendor: string
+        }
+        Update: {
+          annual_cost?: number
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          license_type?: string
+          name?: string
+          renewal_date?: string | null
+          start_date?: string
+          updated_at?: string | null
+          user_count?: number | null
+          vendor?: string
+        }
+        Relationships: []
       }
       space_activity: {
         Row: {
@@ -26906,6 +27022,22 @@ export type Database = {
       }
     }
     Views: {
+      license_allocation_totals: {
+        Row: {
+          allocation_status: string | null
+          license_id: string | null
+          total_allocated: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_license_allocations_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "software_licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ra_generation_summary: {
         Row: {
           avg_confidence: number | null
@@ -26923,6 +27055,20 @@ export type Database = {
           title: string | null
           updated_at: string | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      resource_current_cost: {
+        Row: {
+          annual_cost: number | null
+          created_at: string | null
+          created_by: string | null
+          effective_from: string | null
+          effective_to: string | null
+          id: string | null
+          monthly_cost: number | null
+          resource_id: string | null
+          resource_type: string | null
         }
         Relationships: []
       }
