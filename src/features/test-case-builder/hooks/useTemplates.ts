@@ -236,8 +236,8 @@ export function useApplyTemplate() {
       if (templateData.tags) updateFields.tags = templateData.tags;
 
       if (Object.keys(updateFields).length > 0) {
-        const { error: updateError } = await supabase
-          .from('test_cases')
+        const { error: updateError } = await (supabase as any)
+          .from('tm_test_cases')
           .update(updateFields)
           .eq('id', testCaseId);
 
@@ -247,20 +247,20 @@ export function useApplyTemplate() {
       // Insert steps if provided
       if (templateData.steps && templateData.steps.length > 0) {
         // Delete existing steps
-        await supabase.from('test_steps').delete().eq('test_case_id', testCaseId);
+        await (supabase as any).from('tm_test_steps').delete().eq('test_case_id', testCaseId);
 
         // Insert new steps
         const stepsToInsert = templateData.steps.map((step) => ({
           test_case_id: testCaseId,
-          step_order: step.order_index,
+          step_number: step.order_index,
           action: step.action,
           expected_result: step.expected_result,
           test_data: step.test_data || null,
           notes: step.notes || null,
         }));
 
-        const { error: stepsError } = await supabase
-          .from('test_steps')
+        const { error: stepsError } = await (supabase as any)
+          .from('tm_test_steps')
           .insert(stepsToInsert);
 
         if (stepsError) throw stepsError;
@@ -295,32 +295,32 @@ export function useCreateTemplateFromTestCase() {
       isGlobal?: boolean;
     }): Promise<TestCaseTemplate> => {
       // Fetch test case
-      const { data: testCase, error: tcError } = await supabase
-        .from('test_cases')
-        .select('*, test_steps(*)')
+      const { data: testCase, error: tcError } = await (supabase as any)
+        .from('tm_test_cases')
+        .select('*')
         .eq('id', testCaseId)
         .single();
 
       if (tcError) throw tcError;
 
       // Fetch steps
-      const { data: steps } = await supabase
-        .from('test_steps')
+      const { data: steps } = await (supabase as any)
+        .from('tm_test_steps')
         .select('*')
         .eq('test_case_id', testCaseId)
-        .order('step_order', { ascending: true });
+        .order('step_number', { ascending: true });
 
       const { data: user } = await supabase.auth.getUser();
 
       // Build template data
       const templateData: TemplateData = {
-        objective: testCase.objective || undefined,
+        objective: testCase.description || undefined,
         preconditions: testCase.preconditions || undefined,
-        priority: testCase.priority as TemplateData['priority'],
+        priority: testCase.priority_id as TemplateData['priority'],
         test_type: testCase.test_type as TemplateData['test_type'],
         tags: testCase.tags || undefined,
         steps: (steps || []).map((s: any) => ({
-          order_index: s.step_order || s.order_index,
+          order_index: s.step_number || s.step_order || s.order_index,
           action: s.action,
           expected_result: s.expected_result,
           test_data: s.test_data || undefined,
