@@ -6,7 +6,7 @@ import { ResponsivePageContainer, ResponsivePageHeader } from '@/components/layo
 import { UsersTable } from '@/components/admin/users/UsersTable';
 import { UsersStatsCards } from '@/components/admin/users/UsersStatsCards';
 import { ResourceModal } from '@/components/shared/ResourceModal';
-import { UsersImportDialog } from '@/components/admin/users/UsersImportDialog';
+import { CapacityImportWizard } from '@/modules/capacity-planner/components/import';
 import { useUsers } from '@/hooks/useUsers';
 
 /**
@@ -76,10 +76,10 @@ export default function Users() {
           context="admin"
         />
 
-        {/* Import Dialog */}
-        <UsersImportDialog
-          isOpen={isImportDialogOpen}
-          onClose={() => setIsImportDialogOpen(false)}
+        {/* Import Wizard */}
+        <CapacityImportWizard
+          open={isImportDialogOpen}
+          onOpenChange={setIsImportDialogOpen}
         />
       </ResponsivePageContainer>
     </SuperAdminGuard>
