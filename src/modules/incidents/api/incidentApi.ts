@@ -255,7 +255,7 @@ export const incidentApi = {
   },
 
   async getBusinessProcesses(): Promise<BusinessProcess[]> {
-    const { data } = await supabase.from('business_processes').select('*').eq('active', true).order('sort_order');
+    const { data } = await (supabase as any).from('business_processes').select('*').eq('active', true).order('sort_order');
     return (data || []) as unknown as BusinessProcess[];
   },
 

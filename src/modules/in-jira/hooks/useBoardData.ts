@@ -53,7 +53,7 @@ export function useBoardData(boardId: string, projectId: string) {
   const boardQuery = useQuery({
     queryKey: ['injira-board', boardId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('injira_boards')
         .select(`
           *,
@@ -105,14 +105,14 @@ export function useBoardData(boardId: string, projectId: string) {
   const sprintsQuery = useQuery({
     queryKey: ['injira-sprints', boardId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('injira_sprints')
         .select('*')
         .eq('board_id', boardId)
         .order('start_date', { ascending: false });
 
       if (error) throw error;
-      return (data || []).map(sprint => ({
+      return ((data || []) as any[]).map((sprint: any) => ({
         id: sprint.id,
         name: sprint.name,
         goal: sprint.goal,
@@ -218,7 +218,7 @@ export function useSprintManagement(boardId: string, tenantId: string) {
       startDate?: string;
       endDate?: string;
     }) => {
-      const { data: sprint, error } = await supabase
+      const { data: sprint, error } = await (supabase as any)
         .from('injira_sprints')
         .insert({
           board_id: boardId,
@@ -244,13 +244,13 @@ export function useSprintManagement(boardId: string, tenantId: string) {
   const startSprintMutation = useMutation({
     mutationFn: async (sprintId: string) => {
       // Close any currently active sprint first
-      await supabase
+      await (supabase as any)
         .from('injira_sprints')
         .update({ state: 'closed' })
         .eq('board_id', boardId)
         .eq('state', 'active');
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('injira_sprints')
         .update({
           state: 'active',
@@ -286,7 +286,7 @@ export function useSprintManagement(boardId: string, tenantId: string) {
           .neq('status_id', 'done');
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('injira_sprints')
         .update({
           state: 'closed',

@@ -174,7 +174,7 @@ export function useCapacityData() {
   const { data: scenarios = [], isLoading: scenariosLoading, isError: scenariosError } = useQuery({
     queryKey: ['capacity-planner-scenarios'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('capacity_scenarios')
         .select('*')
         .order('created_at', { ascending: false });
