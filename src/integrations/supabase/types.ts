@@ -27879,6 +27879,11 @@ export type Database = {
         Returns: Json
       }
       get_export_status: { Args: { p_job_id: string }; Returns: Json }
+      get_folder_descendants: {
+        Args: { p_folder_id: string }
+        Returns: string[]
+      }
+      get_folder_tree: { Args: { p_project_id: string }; Returns: Json }
       get_import_history: {
         Args: { p_connector_id: string; p_limit?: number }
         Returns: Json
