@@ -240,7 +240,11 @@ export function useBulkSaveAllocations() {
     },
     onSuccess: (_, variables) => {
       const year = variables[0]?.year || new Date().getFullYear();
+      // Invalidate all related queries for bi-directional sync
       queryClient.invalidateQueries({ queryKey: ['resource-utilization', year] });
+      queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
       toast.success('Allocations saved successfully');
     },
     onError: (error: Error) => {

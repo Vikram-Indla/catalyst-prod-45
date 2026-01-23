@@ -64,6 +64,7 @@ export interface ResourceRole {
 
 /**
  * Query keys for consistent cache invalidation
+ * NOTE: resource_allocations and resource_utilization are bi-directionally synced
  */
 export const RESOURCE_QUERY_KEYS = {
   // Admin users
@@ -76,6 +77,10 @@ export const RESOURCE_QUERY_KEYS = {
   capacityAssignments: ['capacity-planner-assignments'] as const,
   capacityScenarios: ['capacity-planner-scenarios'] as const,
   resourceAllocations: ['resource-allocations'] as const,
+  capacitySummary: ['capacity-summary'] as const,
+  
+  // Resource utilization (bi-synced with allocations)
+  resourceUtilization: (year?: number) => year ? ['resource-utilization', year] as const : ['resource-utilization'] as const,
   
   // Reference data
   productRoles: ['product-roles'] as const,
