@@ -214,55 +214,107 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
 
   // ============================================
   // Timeline Bars
+  // Merge consecutive monthly records for the same assignment into ONE bar
   // ============================================
   
   const timelineBars = useMemo((): TimelineBar[] => {
-    return allocations.map((alloc: any) => {
-      const startDate = parseISO(alloc.startDate);
-      const endDate = parseISO(alloc.endDate);
-      
-      // Find start and end period indices
-      let startIndex = periods.findIndex(p => {
-        const periodDate = parseISO(p.date);
-        if (view === 'weeks') {
-          return !isBefore(periodDate, startOfWeek(startDate, { weekStartsOn: 1 }));
-        } else {
-          return !isBefore(periodDate, startOfMonth(startDate));
-        }
-      });
-      
-      if (startIndex === -1) startIndex = 0;
-      
-      let endIndex = periods.findIndex(p => {
-        const periodDate = parseISO(p.date);
-        if (view === 'weeks') {
-          return isBefore(endOfWeek(endDate, { weekStartsOn: 1 }), periodDate);
-        } else {
-          return isBefore(endOfMonth(endDate), periodDate);
-        }
-      });
-      
-      if (endIndex === -1) endIndex = periods.length;
-      else endIndex = endIndex - 1;
-      
-      // Clamp to visible range
-      startIndex = Math.max(0, startIndex);
-      endIndex = Math.min(periods.length - 1, endIndex);
-      
-      return {
-        allocationId: alloc.id,
-        assignmentId: alloc.assignmentId,
-        assignmentName: alloc.assignmentName,
-        assignmentColor: alloc.assignmentColor,
-        startIndex,
-        endIndex,
-        spanCount: Math.max(1, endIndex - startIndex + 1),
-        percentage: alloc.percentage,
-        status: alloc.status,
-        startDate: alloc.startDate,
-        endDate: alloc.endDate,
-      };
+    // Group allocations by assignmentId, then merge overlapping/adjacent ones
+    const byAssignment = new Map<string, typeof allocations>();
+    allocations.forEach((alloc: any) => {
+      const existing = byAssignment.get(alloc.assignmentId) || [];
+      existing.push(alloc);
+      byAssignment.set(alloc.assignmentId, existing);
     });
+    
+    const result: TimelineBar[] = [];
+    
+    byAssignment.forEach((assignmentAllocs, assignmentId) => {
+      // Sort by start date
+      const sorted = [...assignmentAllocs].sort((a: any, b: any) => 
+        new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+      );
+      
+      // Merge consecutive/overlapping allocations with the same status
+      const merged: { startDate: string; endDate: string; percentage: number; status: string; id: string; assignmentName: string; assignmentColor: string }[] = [];
+      
+      sorted.forEach((alloc: any) => {
+        const lastMerged = merged[merged.length - 1];
+        
+        if (lastMerged && lastMerged.status === alloc.status && lastMerged.percentage === alloc.percentage) {
+          // Check if this allocation is adjacent or overlapping with the last one
+          const lastEnd = new Date(lastMerged.endDate);
+          const thisStart = new Date(alloc.startDate);
+          const daysDiff = (thisStart.getTime() - lastEnd.getTime()) / (1000 * 60 * 60 * 24);
+          
+          if (daysDiff <= 1) {
+            // Merge: extend the end date
+            lastMerged.endDate = alloc.endDate;
+            return;
+          }
+        }
+        
+        // Start a new merged segment
+        merged.push({
+          id: alloc.id,
+          startDate: alloc.startDate,
+          endDate: alloc.endDate,
+          percentage: alloc.percentage,
+          status: alloc.status,
+          assignmentName: alloc.assignmentName,
+          assignmentColor: alloc.assignmentColor,
+        });
+      });
+      
+      // Convert merged segments to timeline bars
+      merged.forEach((seg) => {
+        const startDate = parseISO(seg.startDate);
+        const endDate = parseISO(seg.endDate);
+        
+        // Find start and end period indices
+        let startIndex = periods.findIndex(p => {
+          const periodDate = parseISO(p.date);
+          if (view === 'weeks') {
+            return !isBefore(periodDate, startOfWeek(startDate, { weekStartsOn: 1 }));
+          } else {
+            return !isBefore(periodDate, startOfMonth(startDate));
+          }
+        });
+        
+        if (startIndex === -1) startIndex = 0;
+        
+        let endIndex = periods.findIndex(p => {
+          const periodDate = parseISO(p.date);
+          if (view === 'weeks') {
+            return isBefore(endOfWeek(endDate, { weekStartsOn: 1 }), periodDate);
+          } else {
+            return isBefore(endOfMonth(endDate), periodDate);
+          }
+        });
+        
+        if (endIndex === -1) endIndex = periods.length;
+        else endIndex = endIndex - 1;
+        
+        // Clamp to visible range
+        startIndex = Math.max(0, startIndex);
+        endIndex = Math.min(periods.length - 1, endIndex);
+        
+        result.push({
+          allocationId: seg.id,
+          assignmentId,
+          assignmentName: seg.assignmentName,
+          assignmentColor: seg.assignmentColor,
+          startIndex,
+          endIndex,
+          spanCount: Math.max(1, endIndex - startIndex + 1),
+          percentage: seg.percentage,
+          status: seg.status as any,
+          startDate: seg.startDate,
+          endDate: seg.endDate,
+        });
+      });
+    });
+    
+    return result;
   }, [allocations, periods, view]);
 
   // ============================================
@@ -316,6 +368,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
 
   // ============================================
   // Unique Assignments from Allocations
+  // Deduplicate: show ONE assignment row per unique assignment_id
   // ============================================
   
   const assignmentsInUse = useMemo((): Assignment[] => {
@@ -451,20 +504,47 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
   }, []);
 
   // ============================================
-  // Summary Stats
+  // Summary Stats - CURRENT PERIOD ONLY
+  // Shows the allocation for the current month/week, not sum of all historical records
   // ============================================
   
   const summary = useMemo(() => {
-    const committed = allocations
-      .filter((a: any) => a.status === 'committed')
-      .reduce((sum, a: any) => sum + a.percentage, 0);
+    // Find the current period
+    const currentPeriod = periods.find(p => p.isCurrent);
+    if (!currentPeriod) {
+      // Fallback: if no current period in view, show 0
+      return { committed: 0, forecast: 0, total: 0 };
+    }
     
-    const forecast = allocations
-      .filter((a: any) => a.status === 'forecast')
-      .reduce((sum, a: any) => sum + a.percentage, 0);
+    const periodDate = parseISO(currentPeriod.date);
+    let committed = 0;
+    let forecast = 0;
+    
+    allocations.forEach((alloc: any) => {
+      const startDate = parseISO(alloc.startDate);
+      const endDate = parseISO(alloc.endDate);
+      
+      // Check if this allocation overlaps with the current period
+      let overlaps = false;
+      if (view === 'weeks') {
+        const periodEnd = endOfWeek(periodDate, { weekStartsOn: 1 });
+        overlaps = !isBefore(periodEnd, startDate) && !isBefore(endDate, periodDate);
+      } else {
+        const periodEnd = endOfMonth(periodDate);
+        overlaps = !isBefore(periodEnd, startDate) && !isBefore(endDate, periodDate);
+      }
+      
+      if (overlaps) {
+        if (alloc.status === 'committed') {
+          committed += alloc.percentage;
+        } else {
+          forecast += alloc.percentage;
+        }
+      }
+    });
     
     return { committed, forecast, total: committed + forecast };
-  }, [allocations]);
+  }, [allocations, periods, view]);
 
   return {
     // Data
