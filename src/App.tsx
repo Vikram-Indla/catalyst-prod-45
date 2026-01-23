@@ -184,6 +184,7 @@ import AdminOverview from "./pages/admin/AdminOverview";
 import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import KanbanSettings from "./pages/admin/KanbanSettings";
 import ResourceInventory from "./pages/admin/ResourceInventory";
+const ResourceUtilizationPage = lazy(() => import("./pages/admin/ResourceUtilization"));
 import MockDataGenerator from "./pages/admin/MockDataGenerator";
 const AiIntegrationPage = lazy(() => import("./pages/admin/AiIntegrationPage"));
 import ProcessSteps from "./pages/admin/ProcessSteps";
@@ -912,6 +913,7 @@ const App = () => (
                 <Route path="theme-audit" element={<ThemeAuditPage />} />
                 <Route path="kanban-settings" element={<KanbanSettings />} />
                 <Route path="resourceinventory" element={<ResourceInventory />} />
+                <Route path="resource-utilization" element={<Suspense fallback={<div>Loading...</div>}><ResourceUtilizationPage /></Suspense>} />
                 <Route path="developmentinventory" element={<DevelopmentInventory />} />
                 <Route path="software-licenses" element={<Suspense fallback={<div>Loading...</div>}><SoftwareLicensesPage /></Suspense>} />
                 <Route path="routes-registry" element={<RoutesComponentsRegistry />} />
