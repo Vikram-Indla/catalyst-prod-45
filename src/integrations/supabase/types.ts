@@ -8642,6 +8642,71 @@ export type Database = {
           },
         ]
       }
+      jira_user_preferences: {
+        Row: {
+          board_density: string | null
+          created_at: string | null
+          default_project_id: string | null
+          id: string
+          recent_issues: string[] | null
+          recent_projects: string[] | null
+          sidebar_collapsed: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          board_density?: string | null
+          created_at?: string | null
+          default_project_id?: string | null
+          id?: string
+          recent_issues?: string[] | null
+          recent_projects?: string[] | null
+          sidebar_collapsed?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          board_density?: string | null
+          created_at?: string | null
+          default_project_id?: string | null
+          id?: string
+          recent_issues?: string[] | null
+          recent_projects?: string[] | null
+          sidebar_collapsed?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_user_preferences_default_project_id_fkey"
+            columns: ["default_project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jira_work_item_links: {
         Row: {
           catalyst_entity_id: string
@@ -13278,6 +13343,56 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_stars: {
+        Row: {
+          created_at: string | null
+          id: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_stars_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
         ]
@@ -28293,6 +28408,10 @@ export type Database = {
           p_status?: string
         }
         Returns: Json
+      }
+      update_recent_project: {
+        Args: { p_project_id: string }
+        Returns: undefined
       }
       update_step_result_v2: {
         Args: {
