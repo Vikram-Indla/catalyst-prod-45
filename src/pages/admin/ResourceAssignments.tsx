@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { LicenseAllocationSection } from '@/modules/budget';
 
 interface LinkedRecord {
   resource_name: string;
@@ -298,6 +299,11 @@ export default function ResourceAssignmentsPage() {
                 placeholder="Brief description..."
               />
             </div>
+            
+            {/* License Allocation Section */}
+            {editingAssignment && (
+              <LicenseAllocationSection assignmentId={editingAssignment.id} />
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingAssignment(null)}>Cancel</Button>
