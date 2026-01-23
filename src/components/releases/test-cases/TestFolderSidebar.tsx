@@ -16,13 +16,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useFolderTree } from '@/hooks/useFolders';
+import { useFolderTree, useMoveTestCases } from '@/hooks/useFolders';
 import { buildFolderTree, getDescendantFolderIds } from '@/types/test-folders';
 import type { FolderTreeNode, TestFolderWithCount } from '@/types/test-folders';
 import { CreateFolderDialog } from './CreateFolderDialog';
 import { RenameFolderDialog } from './RenameFolderDialog';
 import { DeleteFolderDialog } from './DeleteFolderDialog';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface TestFolderSidebarProps {
   projectId: string;
@@ -39,6 +40,9 @@ export function TestFolderSidebar({
 }: TestFolderSidebarProps) {
   // Fetch folder tree
   const { data: folders = [], isLoading, error } = useFolderTree(projectId);
+  
+  // Mutation for moving test cases
+  const moveTestCases = useMoveTestCases(projectId);
   
   // Local state for expanded folders
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -115,6 +119,7 @@ export function TestFolderSidebar({
   // Handle drag over for drop target
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     e.currentTarget.classList.add('bg-primary/10', 'ring-2', 'ring-primary', 'ring-dashed');
   };
 
@@ -123,15 +128,31 @@ export function TestFolderSidebar({
     e.currentTarget.classList.remove('bg-primary/10', 'ring-2', 'ring-primary', 'ring-dashed');
   };
 
-  // Handle drop
+  // Handle drop - directly call mutation
   const handleDrop = (e: React.DragEvent, folderId: string | null) => {
     e.preventDefault();
+    e.stopPropagation();
     e.currentTarget.classList.remove('bg-primary/10', 'ring-2', 'ring-primary', 'ring-dashed');
+    
     const testCaseId = e.dataTransfer.getData('text/plain');
+    
     if (testCaseId) {
-      window.dispatchEvent(new CustomEvent('moveTestCase', {
-        detail: { testCaseId, folderId }
-      }));
+      // Get folder name for toast
+      const targetFolder = folderId 
+        ? folders.find(f => f.id === folderId)?.name || 'folder'
+        : 'Unassigned';
+      
+      moveTestCases.mutate(
+        { testCaseIds: [testCaseId], folderId },
+        {
+          onSuccess: () => {
+            // Toast is already shown by the hook
+          },
+          onError: () => {
+            toast.error('Failed to move test case');
+          },
+        }
+      );
     }
   };
 
