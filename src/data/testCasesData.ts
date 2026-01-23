@@ -12,6 +12,7 @@ export interface TestCaseStep {
 
 export interface TestCase {
   id: string;
+  dbId?: string; // Actual database UUID (for operations like moving to folders)
   title: string;
   release: string;
   type: 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e';

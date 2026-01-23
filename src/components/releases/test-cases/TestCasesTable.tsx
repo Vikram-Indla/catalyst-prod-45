@@ -240,9 +240,12 @@ export function TestCasesTable({
               )}
               draggable
               onDragStart={(e: React.DragEvent<HTMLTableRowElement>) => {
-                e.dataTransfer.setData('text/plain', tc.id);
+                // Use dbId (actual UUID) for database operations, fall back to id
+                const testCaseDbId = tc.dbId || tc.id;
+                e.dataTransfer.setData('text/plain', testCaseDbId);
                 e.dataTransfer.setData('application/json', JSON.stringify({
-                  id: tc.id,
+                  id: testCaseDbId,
+                  displayId: tc.id,
                   title: tc.title,
                 }));
                 e.dataTransfer.effectAllowed = 'move';
@@ -256,8 +259,8 @@ export function TestCasesTable({
             >
               <td className="px-4 py-3">
                 <Checkbox 
-                  checked={selectedIds.has(tc.id)}
-                  onCheckedChange={(checked) => onSelectRow(tc.id, !!checked)}
+                  checked={selectedIds.has(tc.dbId || tc.id)}
+                  onCheckedChange={(checked) => onSelectRow(tc.dbId || tc.id, !!checked)}
                 />
               </td>
               <td className="px-4 py-3">
