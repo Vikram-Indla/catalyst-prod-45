@@ -138,12 +138,12 @@ export function useWorkbenchData(
     queryKey: ['workbench-business-requests', brIds],
     queryFn: async () => {
       if (brIds.length === 0) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .select('id, request_key, title')
         .in('id', brIds);
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; request_key: string; title: string }>;
     },
     enabled: brIds.length > 0,
   });

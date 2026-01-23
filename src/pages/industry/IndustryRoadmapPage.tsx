@@ -293,7 +293,7 @@ export default function IndustryRoadmapPage() {
   const { data: requestsData, isLoading } = useQuery({
     queryKey: ['industry-roadmap-requests'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .select(`
           id,
@@ -339,7 +339,7 @@ export default function IndustryRoadmapPage() {
         .order('business_score', { ascending: false, nullsFirst: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
   
@@ -360,13 +360,13 @@ export default function IndustryRoadmapPage() {
   const { data: ownersData } = useQuery({
     queryKey: ['industry-roadmap-owners'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_owners')
         .select('id, name')
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; name: string }>;
     },
   });
 

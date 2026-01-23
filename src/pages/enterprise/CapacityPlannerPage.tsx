@@ -1359,7 +1359,7 @@ export default function CapacityPlannerPage() {
                     const userId = selectedUserId;
 
                     // Create assignment for the user
-                    const { error: assignmentError } = await supabase.from('assignments').insert({
+                    const { error: assignmentError } = await (supabase as any).from('assignments').insert({
                       user_id: userId,
                       project_id: null,
                       allocation_percentage: 0,
