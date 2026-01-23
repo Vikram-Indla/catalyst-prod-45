@@ -201,15 +201,15 @@ export function LicenseGanttChart({ licenses }: LicenseGanttChartProps) {
                       } ${idx === monthlySegments.length - 1 ? 'rounded-r' : ''}`}
                       style={{
                         left: `${segment.left}%`,
-                        width: `${Math.max(segment.width, 0.5)}%`,
+                        width: `${Math.max(segment.width, 2)}%`,
+                        minWidth: '20px',
                         borderRight: idx < monthlySegments.length - 1 ? '1px solid rgba(255,255,255,0.3)' : 'none',
                       }}
+                      title={`${segment.month}: ${formatSAR(monthlyCost)}`}
                     >
-                      {segment.width > 6 && (
-                        <span className="text-[9px] font-medium text-white truncate px-0.5">
-                          {formatSAR(monthlyCost)}
-                        </span>
-                      )}
+                      <span className="text-[9px] font-medium text-white truncate px-0.5">
+                        {segment.width > 4 ? formatSAR(monthlyCost) : segment.month.charAt(0)}
+                      </span>
                     </div>
                   ))}
 
