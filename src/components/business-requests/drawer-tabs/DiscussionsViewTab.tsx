@@ -51,14 +51,14 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
   const { data: discussions = [], isLoading } = useQuery({
     queryKey: ['business-request-discussions', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_discussions')
         .select('id, message, user_id, created_at')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!requestId
   });
@@ -75,7 +75,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_request_discussions')
         .insert({
           business_request_id: requestId,

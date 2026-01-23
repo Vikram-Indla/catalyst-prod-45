@@ -148,7 +148,7 @@ async function logFieldChanges(
     // Insert all audit logs
     if (auditLogs.length > 0) {
       console.log('Inserting audit logs:', auditLogs);
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_request_audit_logs')
         .insert(auditLogs);
       
@@ -195,7 +195,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     queryKey: ['business-request-risks-count', requestId],
     queryFn: async () => {
       if (!requestId) return 0;
-      const { count } = await supabase
+      const { count } = await (supabase as any)
         .from('business_request_links')
         .select('id', { count: 'exact', head: true })
         .eq('business_request_id', requestId)
@@ -224,7 +224,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     queryKey: ['business-request-links-count', requestId],
     queryFn: async () => {
       if (!requestId) return 0;
-      const { count } = await supabase
+      const { count } = await (supabase as any)
         .from('business_request_links')
         .select('id', { count: 'exact', head: true })
         .eq('business_request_id', requestId);
@@ -238,7 +238,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     queryKey: ['business-request-audit-count', requestId],
     queryFn: async () => {
       if (!requestId) return 0;
-      const { count } = await supabase
+      const { count } = await (supabase as any)
         .from('business_request_audit_logs')
         .select('id', { count: 'exact', head: true })
         .eq('business_request_id', requestId);

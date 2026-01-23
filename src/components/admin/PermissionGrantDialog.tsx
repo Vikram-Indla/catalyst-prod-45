@@ -73,7 +73,7 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
   const mutation = useMutation({
     mutationFn: async (values: FormValues) => {
       if (isEditing) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('permission_grants')
           .update({
             role_id: values.role_id,
@@ -85,7 +85,7 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
           .eq('id', grant.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('permission_grants')
           .insert([{
             role_id: values.role_id,

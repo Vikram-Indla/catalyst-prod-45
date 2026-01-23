@@ -83,7 +83,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
     const newStatus = result.destination.droppableId;
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_requests')
         .update({ process_step: newStatus })
         .eq('id', requestId);

@@ -119,7 +119,7 @@ export function BulkEditModal({ isOpen, onClose, resources }: BulkEditModalProps
       
       // Update allocation if selected
       if (editAllocation) {
-        const { error: allocationError } = await supabase
+        const { error: allocationError } = await (supabase as any)
           .from('assignments')
           .update({
             allocation_percentage: allocationPercentage,

@@ -51,7 +51,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
   const { data: transitions } = useQuery({
     queryKey: ['workflow-transitions', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_audit_logs')
         .select('old_value, new_value, created_at')
         .eq('business_request_id', requestId)
@@ -73,7 +73,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
       }
 
       // Process all audit logs to build complete transition history
-      data?.forEach((log: { old_value: string | null; new_value: string | null; created_at: string }) => {
+      (data as any[] || []).forEach((log: { old_value: string | null; new_value: string | null; created_at: string }) => {
         if (log.new_value) {
           timeline.push({
             fromStep: log.old_value,
