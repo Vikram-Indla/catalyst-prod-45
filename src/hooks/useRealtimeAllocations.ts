@@ -9,6 +9,26 @@ interface RealtimePayload {
   old: any;
 }
 
+/**
+ * Fetches user display name from profiles table
+ */
+async function fetchUserName(userId: string | null | undefined): Promise<string | null> {
+  if (!userId) return null;
+  
+  try {
+    const { data, error } = await (supabase as any)
+      .from('profiles')
+      .select('full_name')
+      .eq('id', userId)
+      .single();
+    
+    if (error || !data) return null;
+    return data.full_name || null;
+  } catch {
+    return null;
+  }
+}
+
 export function useRealtimeAllocations() {
   const queryClient = useQueryClient();
   
@@ -29,11 +49,12 @@ export function useRealtimeAllocations() {
           schema: 'public',
           table: 'resource_allocations',
         },
-        (payload: any) => {
+        async (payload: any) => {
           const { eventType, new: newRecord, old: oldRecord } = payload;
           
           // Check if change was made by another user
-          const isExternalChange = newRecord?.updated_by !== currentUserId;
+          const modifierId = newRecord?.updated_by || newRecord?.created_by;
+          const isExternalChange = modifierId && modifierId !== currentUserId;
           
           if (eventType === 'INSERT') {
             queryClient.setQueryData(['resource-allocations'], (old: any[]) => {
@@ -43,8 +64,11 @@ export function useRealtimeAllocations() {
             });
             
             if (isExternalChange) {
+              const userName = await fetchUserName(modifierId);
               toast.info('New allocation added', {
-                description: 'An allocation was added by another user',
+                description: userName 
+                  ? `An allocation was added by ${userName}`
+                  : 'An allocation was added by another user',
               });
             }
             
@@ -57,8 +81,11 @@ export function useRealtimeAllocations() {
             });
             
             if (isExternalChange) {
+              const userName = await fetchUserName(modifierId);
               toast.info('Allocation updated', {
-                description: 'An allocation was modified by another user',
+                description: userName
+                  ? `An allocation was modified by ${userName}`
+                  : 'An allocation was modified by another user',
                 action: {
                   label: 'View',
                   onClick: () => {
@@ -80,8 +107,13 @@ export function useRealtimeAllocations() {
             });
             
             if (isExternalChange) {
+              // For deletes, we might not have the user who deleted, so check old record
+              const deleterId = oldRecord?.updated_by;
+              const userName = await fetchUserName(deleterId);
               toast.info('Allocation removed', {
-                description: 'An allocation was deleted by another user',
+                description: userName
+                  ? `An allocation was deleted by ${userName}`
+                  : 'An allocation was deleted by another user',
               });
             }
           }
