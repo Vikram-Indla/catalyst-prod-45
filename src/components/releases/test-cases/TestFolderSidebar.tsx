@@ -134,9 +134,27 @@ export function TestFolderSidebar({
     e.stopPropagation();
     e.currentTarget.classList.remove('bg-primary/10', 'ring-2', 'ring-primary', 'ring-dashed');
     
-    const testCaseId = e.dataTransfer.getData('text/plain');
+    // Try to get the ID from multiple data transfer formats
+    let testCaseId = e.dataTransfer.getData('text/plain');
     
-    if (testCaseId) {
+    // Try to parse JSON data as fallback (which contains the actual dbId)
+    if (!testCaseId || !testCaseId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      try {
+        const jsonData = e.dataTransfer.getData('application/json');
+        if (jsonData) {
+          const parsed = JSON.parse(jsonData);
+          testCaseId = parsed.id;
+          console.log('[DROP] Parsed ID from JSON:', testCaseId);
+        }
+      } catch (err) {
+        console.warn('[DROP] Failed to parse JSON data');
+      }
+    }
+    
+    console.log('[DROP] Test case ID:', testCaseId, 'Target folder:', folderId);
+    console.log('[DROP] Data types available:', e.dataTransfer.types);
+    
+    if (testCaseId && testCaseId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
       // Get folder name for toast
       const targetFolder = folderId 
         ? folders.find(f => f.id === folderId)?.name || 'folder'
@@ -145,14 +163,21 @@ export function TestFolderSidebar({
       moveTestCases.mutate(
         { testCaseIds: [testCaseId], folderId },
         {
-          onSuccess: () => {
-            // Toast is already shown by the hook
+          onSuccess: (count) => {
+            if (count > 0) {
+              console.log('[DROP] Successfully moved to', targetFolder);
+            } else {
+              toast.error('Test case not found in database');
+            }
           },
           onError: () => {
             toast.error('Failed to move test case');
           },
         }
       );
+    } else {
+      console.error('[DROP] Invalid test case ID format:', testCaseId);
+      toast.error('Could not identify test case. Please try again.');
     }
   };
 

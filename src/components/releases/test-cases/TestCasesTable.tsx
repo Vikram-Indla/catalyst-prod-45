@@ -242,7 +242,10 @@ export function TestCasesTable({
               onDragStart={(e: React.DragEvent<HTMLTableRowElement>) => {
                 // Use dbId (actual UUID) for database operations, fall back to id
                 const testCaseDbId = tc.dbId || tc.id;
+                console.log('[DRAG START] Test case:', { id: tc.id, dbId: tc.dbId, using: testCaseDbId });
+                
                 e.dataTransfer.setData('text/plain', testCaseDbId);
+                e.dataTransfer.setData('text', testCaseDbId);
                 e.dataTransfer.setData('application/json', JSON.stringify({
                   id: testCaseDbId,
                   displayId: tc.id,
@@ -254,6 +257,7 @@ export function TestCasesTable({
               }}
               onDragEnd={(e: React.DragEvent<HTMLTableRowElement>) => {
                 e.currentTarget.classList.remove('opacity-50');
+                console.log('[DRAG END]');
               }}
               onClick={() => onRowClick?.(tc)}
             >
