@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -44,13 +45,12 @@ export function QuickAddRow({
   const createMutation = useMutation({
     mutationFn: async (title: string): Promise<{ id: string }> => {
       if (createType === 'business_request') {
-        const { data, error } = await supabase
-          .from('business_requests')
+        const { data, error } = await fromTable('business_requests')
           .insert([{ title, process_step: 'NEW_REQUEST' }])
           .select('id')
           .single();
         if (error) throw error;
-        return data;
+        return data as { id: string };
       } else {
         // epic
         const { data, error } = await supabase

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { fromTable } from '@/lib/supabase-utils';
 import {
   Dialog,
   DialogContent,

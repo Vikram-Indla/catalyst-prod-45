@@ -8,6 +8,7 @@ import { useState, useRef, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -107,14 +108,13 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
   const { data: linkedBusinessRequest, isLoading: brLoading } = useQuery({
     queryKey: ['business-request', businessRequestId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_requests')
+      const { data, error } = await fromTable('business_requests')
         .select('id, request_key, title')
         .eq('id', businessRequestId!)
         .single();
       
       if (error) throw error;
-      return data;
+      return data as { id: string; request_key: string; title: string };
     },
     enabled: !!businessRequestId
   });
