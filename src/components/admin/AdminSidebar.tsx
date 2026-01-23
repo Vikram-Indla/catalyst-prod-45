@@ -19,7 +19,9 @@ import {
   Boxes,
   Code2,
   AlertTriangle,
-  FlaskConical
+  FlaskConical,
+  Wallet,
+  PieChart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -60,11 +62,18 @@ const adminSections = [
     items: [
       { label: 'Users', path: '/admin/users', icon: Users },
       { label: 'Roles & Permissions', path: '/admin/roles-permissions', icon: Shield },
+      { label: 'Resource Utilization', path: '/admin/resource-utilization', icon: PieChart },
       { label: 'Resource Departments', path: '/admin/capacity-departments', icon: Building2 },
       { label: 'Resource Assignments', path: '/admin/resource-assignments', icon: Users },
       { label: 'Resource Locations', path: '/admin/resource-locations', icon: Building2 },
       { label: 'Resource Countries', path: '/admin/resource-countries', icon: Building2 },
       { label: 'Resource Vendors', path: '/admin/resource-vendors', icon: Building2 },
+    ],
+  },
+  {
+    title: 'Budget & Licensing',
+    items: [
+      { label: 'Software Licenses', path: '/admin/software-licenses', icon: Wallet },
     ],
   },
   {
