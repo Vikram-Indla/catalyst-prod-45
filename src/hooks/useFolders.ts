@@ -28,10 +28,17 @@ export function useFolderTree(projectId: string | undefined) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: folderKeys.tree(projectId!),
-    queryFn: () => folderService.getFolderTree(projectId!),
+    queryKey: folderKeys.tree(projectId || ''),
+    queryFn: async () => {
+      if (!projectId) return [];
+      console.log('[useFolderTree] Fetching folders for project:', projectId);
+      const result = await folderService.getFolderTree(projectId);
+      console.log('[useFolderTree] Got folders:', result);
+      return result;
+    },
     enabled: !!projectId,
-    staleTime: 30000, // Consider data fresh for 30 seconds
+    staleTime: 0, // Always refetch to ensure fresh data
+    refetchOnWindowFocus: true,
   });
 
   // Subscribe to real-time changes
@@ -39,10 +46,12 @@ export function useFolderTree(projectId: string | undefined) {
     if (!projectId) return;
 
     const unsubscribeFolders = folderService.subscribeFolderChanges(projectId, () => {
+      console.log('[useFolderTree] Folder change detected, refetching...');
       queryClient.invalidateQueries({ queryKey: folderKeys.tree(projectId) });
     });
 
     const unsubscribeTestCases = folderService.subscribeTestCaseFolderChanges(projectId, () => {
+      console.log('[useFolderTree] Test case folder change detected, refetching...');
       queryClient.invalidateQueries({ queryKey: folderKeys.tree(projectId) });
       queryClient.invalidateQueries({ queryKey: folderKeys.unassignedCount(projectId) });
     });
@@ -91,8 +100,11 @@ export function useCreateFolder(projectId: string) {
 
   return useMutation({
     mutationFn: (input: CreateFolderInput) => folderService.createFolder(input),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: folderKeys.tree(projectId) });
+    onSuccess: async (data) => {
+      console.log('[useCreateFolder] Folder created, invalidating queries...');
+      // Force immediate refetch
+      await queryClient.invalidateQueries({ queryKey: folderKeys.tree(projectId) });
+      await queryClient.refetchQueries({ queryKey: folderKeys.tree(projectId) });
       toast.success(`Folder "${data.name}" created`);
     },
     onError: (error: Error) => {
