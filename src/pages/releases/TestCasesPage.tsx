@@ -326,8 +326,11 @@ export default function TestCasesPage() {
     }
 
     // Apply folder filter on client side
-    // Note: folder_id would need to be added to the TestCase type and adapter
-    // For now, this is a placeholder - actual filtering would require folder_id on test cases
+    if (folderIdsToInclude !== null) {
+      cases = cases.filter(tc => 
+        tc.folderId && folderIdsToInclude.includes(tc.folderId)
+      );
+    }
     
     return cases;
   }, [apiTestCases, filters.releases, folderIdsToInclude]);
