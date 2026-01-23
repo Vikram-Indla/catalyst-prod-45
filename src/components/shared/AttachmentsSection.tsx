@@ -33,7 +33,7 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return (data || []) as Array<{ id: string; file_name: string; file_path: string; file_size: number; mime_type: string; created_at: string }>;
+      return (data || []) as Array<{ id: string; file_name: string; file_path: string; file_size: number; mime_type: string; created_at: string; uploaded_by?: string }>;
     },
   });
 

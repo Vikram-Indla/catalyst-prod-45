@@ -200,7 +200,7 @@ export function ResourceModal({
         const startDate = new Date().toISOString().split('T')[0];
 
         // Create assignments
-        const { error: assignmentError } = await supabase.from('assignments').insert(
+        const { error: assignmentError } = await fromTable('assignments').insert(
           selectedUserIds.map((userId) => ({
             user_id: userId,
             project_id: null,

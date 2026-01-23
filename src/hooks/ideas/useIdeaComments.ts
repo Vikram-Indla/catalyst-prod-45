@@ -4,6 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import type { IdeaComment } from '@/types/improvement-ideas';
 import { toast } from 'sonner';
 
@@ -29,8 +30,7 @@ export function useIdeaComments(ideaId: string | undefined) {
     queryFn: async () => {
       if (!ideaId) return [];
       
-      const { data, error } = await supabase
-        .from('idea_comments')
+      const { data, error } = await fromTable('idea_comments')
         .select(`
           *,
           user:profiles(full_name, avatar_url)
@@ -64,8 +64,7 @@ export function useCreateIdeaComment() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
-        .from('idea_comments')
+      const { data, error } = await fromTable('idea_comments')
         .insert({
           idea_id: ideaId,
           user_id: user.id,
@@ -100,8 +99,7 @@ export function useDeleteIdeaComment() {
   
   return useMutation({
     mutationFn: async ({ commentId, ideaId }: { commentId: string; ideaId: string }) => {
-      const { error } = await supabase
-        .from('idea_comments')
+      const { error } = await fromTable('idea_comments')
         .delete()
         .eq('id', commentId);
       
@@ -126,8 +124,7 @@ export function useIdeaCommentsCount(ideaId: string | undefined) {
     queryFn: async () => {
       if (!ideaId) return 0;
       
-      const { count, error } = await supabase
-        .from('idea_comments')
+      const { count, error } = await fromTable('idea_comments')
         .select('*', { count: 'exact', head: true })
         .eq('idea_id', ideaId)
         .is('deleted_at', null);

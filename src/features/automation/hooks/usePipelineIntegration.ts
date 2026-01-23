@@ -4,6 +4,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from '@/hooks/use-toast';
 import type { AutomationConnector } from '../types/connector';
 import type { WebhookEndpoint } from '../types/pipeline';
@@ -113,8 +114,7 @@ export function usePipelineStats(connectorId: string | null) {
 
     try {
       // Get aggregated stats from automation_results
-      const { data, error } = await supabase
-        .from('automation_results')
+      const { data, error } = await fromTable('automation_results')
         .select('status, duration_ms, imported_at')
         .eq('connector_id', connectorId)
         .order('imported_at', { ascending: false })
@@ -122,14 +122,15 @@ export function usePipelineStats(connectorId: string | null) {
 
       if (error) throw error;
 
-      if (data && data.length > 0) {
-        const passed = data.filter(r => r.status === 'passed').length;
-        const durations = data.filter(r => r.duration_ms).map(r => r.duration_ms as number);
+      const typedData = (data || []) as Array<{ status: string; duration_ms: number | null; imported_at: string }>;
+      if (typedData.length > 0) {
+        const passed = typedData.filter(r => r.status === 'passed').length;
+        const durations = typedData.filter(r => r.duration_ms).map(r => r.duration_ms as number);
         
         setStats({
-          total_runs: data.length,
-          last_run: data[0]?.imported_at || null,
-          pass_rate: Math.round((passed / data.length) * 100),
+          total_runs: typedData.length,
+          last_run: typedData[0]?.imported_at || null,
+          pass_rate: Math.round((passed / typedData.length) * 100),
           avg_duration_ms: durations.length > 0 
             ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
             : 0

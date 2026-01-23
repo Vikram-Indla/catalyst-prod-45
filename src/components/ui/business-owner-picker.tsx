@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { Check, ChevronsUpDown, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -41,8 +41,7 @@ export function BusinessOwnerPicker({
   const { data: businessOwners, isLoading } = useQuery({
     queryKey: ['distinct-business-owners'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_requests')
+      const { data, error } = await fromTable('business_requests')
         .select('business_owner')
         .not('business_owner', 'is', null)
         .not('business_owner', 'eq', '');
@@ -50,7 +49,8 @@ export function BusinessOwnerPicker({
       if (error) throw error;
 
       // Get unique values
-      const uniqueOwners = [...new Set(data.map(d => d.business_owner).filter(Boolean))] as string[];
+      const typedData = (data || []) as Array<{ business_owner: string | null }>;
+      const uniqueOwners = [...new Set(typedData.map(d => d.business_owner).filter(Boolean))] as string[];
       return uniqueOwners.sort();
     },
     staleTime: 5 * 60 * 1000,
