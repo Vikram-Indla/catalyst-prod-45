@@ -555,14 +555,25 @@ export default function CapacityPlannerPage() {
     toast.success('Department updated');
   }, []);
 
-  // Get allocations for a specific resource
+  // Get allocations for a specific resource - CURRENT MONTH ONLY
   // Match by both profile_id OR resource_id to handle resources without linked profiles
   const getResourceAllocations = useCallback((resourceId: string, resourceInventoryId?: string): ResourceAllocation[] => {
-    return allocations.filter(a => 
-      a.profile_id === resourceId || 
-      a.resource_id === resourceId ||
-      (resourceInventoryId && a.resource_id === resourceInventoryId)
-    );
+    const now = new Date();
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    return allocations.filter(a => {
+      // Match resource
+      const matchesResource = a.profile_id === resourceId || 
+        a.resource_id === resourceId ||
+        (resourceInventoryId && a.resource_id === resourceInventoryId);
+      if (!matchesResource) return false;
+      
+      // Filter to CURRENT MONTH only
+      const allocStart = new Date(a.start_date);
+      const allocEnd = new Date(a.end_date);
+      return allocStart <= currentMonthEnd && allocEnd >= currentMonthStart;
+    });
   }, [allocations]);
 
   // Calculate BASE summary stats from ALL resources (not filtered by status)
