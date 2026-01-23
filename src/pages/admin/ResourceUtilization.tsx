@@ -1,10 +1,26 @@
-import React, { useState, useMemo } from 'react';
-import { useResourceUtilization, ResourceUtilizationItem } from '@/hooks/useResourceUtilization';
+import React, { useState, useMemo, useCallback } from 'react';
+import { 
+  useResourceUtilization, 
+  useBulkSaveAllocations, 
+  MONTHS,
+  ResourceUtilizationItem,
+  SaveAllocationInput 
+} from '@/hooks/useResourceUtilization';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Search, Users, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { 
+  Search, 
+  Users, 
+  TrendingUp, 
+  AlertTriangle, 
+  CheckCircle, 
+  Save,
+  Calendar,
+  Lock
+} from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -20,25 +36,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
-function getUtilizationStatus(percent: number) {
-  if (percent === 0) return { label: 'Available', color: 'bg-muted text-muted-foreground', variant: 'secondary' as const };
-  if (percent <= 80) return { label: 'Healthy', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', variant: 'default' as const };
-  if (percent <= 100) return { label: 'At Capacity', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400', variant: 'default' as const };
-  return { label: 'Over Allocated', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400', variant: 'destructive' as const };
+function getUtilizationColor(percent: number): string {
+  if (percent === 0) return 'bg-muted';
+  if (percent <= 80) return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400';
+  if (percent <= 100) return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400';
+  return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400';
 }
 
-function getProgressVariant(percent: number): "primary" | "success" | "warning" | "danger" {
-  if (percent === 0) return 'primary';
-  if (percent <= 80) return 'success';
-  if (percent <= 100) return 'warning';
-  return 'danger';
+function getInputBorderColor(percent: number): string {
+  if (percent === 0) return 'border-muted';
+  if (percent <= 80) return 'border-green-300 dark:border-green-700';
+  if (percent <= 100) return 'border-yellow-300 dark:border-yellow-700';
+  return 'border-red-300 dark:border-red-700';
 }
 
 export default function ResourceUtilization() {
-  const { data: resources = [], isLoading, isError } = useResourceUtilization();
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const { data: resources = [], isLoading, isError, refetch } = useResourceUtilization(selectedYear);
+  const bulkSave = useBulkSaveAllocations();
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [assignmentFilter, setAssignmentFilter] = useState<string>('all');
+  
+  // Track pending changes: { `${resourceId}:${month}`: newValue }
+  const [pendingChanges, setPendingChanges] = useState<Map<string, number>>(new Map());
 
   // Get unique assignments for filter
   const uniqueAssignments = useMemo(() => {
@@ -52,36 +81,106 @@ export default function ResourceUtilization() {
   // Filter resources
   const filteredResources = useMemo(() => {
     return resources.filter(resource => {
-      // Search filter
       const matchesSearch = !searchQuery || 
         resource.resource_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         resource.assignment_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         resource.role_name?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      // Status filter
-      let matchesStatus = true;
-      if (statusFilter !== 'all') {
-        const status = getUtilizationStatus(resource.utilization_percent);
-        matchesStatus = status.label.toLowerCase().replace(' ', '-') === statusFilter;
-      }
+      const matchesAssignment = assignmentFilter === 'all' || 
+        resource.assignment_name === assignmentFilter;
 
-      return matchesSearch && matchesStatus && resource.is_active;
+      return matchesSearch && matchesAssignment && resource.is_active;
     });
-  }, [resources, searchQuery, statusFilter]);
+  }, [resources, searchQuery, assignmentFilter]);
 
   // Calculate summary stats
   const stats = useMemo(() => {
     const activeResources = resources.filter(r => r.is_active);
-    const available = activeResources.filter(r => r.utilization_percent === 0).length;
-    const healthy = activeResources.filter(r => r.utilization_percent > 0 && r.utilization_percent <= 80).length;
-    const atCapacity = activeResources.filter(r => r.utilization_percent > 80 && r.utilization_percent <= 100).length;
-    const overAllocated = activeResources.filter(r => r.utilization_percent > 100).length;
+    const currentMonth = new Date().getMonth() + 1;
+    
+    let available = 0, healthy = 0, atCapacity = 0, overAllocated = 0, totalUtilization = 0;
+    
+    activeResources.forEach(r => {
+      const currentAlloc = r.monthly_allocations.find(m => m.month === currentMonth);
+      const percent = currentAlloc?.allocation_percent ?? r.default_capacity_percent;
+      
+      if (percent === 0) available++;
+      else if (percent <= 80) healthy++;
+      else if (percent <= 100) atCapacity++;
+      else overAllocated++;
+      
+      totalUtilization += percent;
+    });
+
     const avgUtilization = activeResources.length > 0 
-      ? Math.round(activeResources.reduce((sum, r) => sum + r.utilization_percent, 0) / activeResources.length)
+      ? Math.round(totalUtilization / activeResources.length)
       : 0;
 
     return { total: activeResources.length, available, healthy, atCapacity, overAllocated, avgUtilization };
   }, [resources]);
+
+  // Handle allocation change
+  const handleAllocationChange = useCallback((resourceId: string, month: number, value: string) => {
+    const numValue = parseInt(value, 10);
+    if (isNaN(numValue) || numValue < 0 || numValue > 200) return;
+    
+    const key = `${resourceId}:${month}`;
+    setPendingChanges(prev => {
+      const next = new Map(prev);
+      next.set(key, numValue);
+      return next;
+    });
+  }, []);
+
+  // Get display value for a cell
+  const getDisplayValue = useCallback((resource: ResourceUtilizationItem, month: number): number => {
+    const key = `${resource.id}:${month}`;
+    if (pendingChanges.has(key)) {
+      return pendingChanges.get(key)!;
+    }
+    const monthData = resource.monthly_allocations.find(m => m.month === month);
+    return monthData?.allocation_percent ?? resource.default_capacity_percent;
+  }, [pendingChanges]);
+
+  // Save all pending changes
+  const handleSaveAll = useCallback(async () => {
+    if (pendingChanges.size === 0) return;
+
+    const inputs: SaveAllocationInput[] = [];
+    
+    pendingChanges.forEach((newPercent, key) => {
+      const [resourceId, monthStr] = key.split(':');
+      const month = parseInt(monthStr, 10);
+      
+      const resource = resources.find(r => r.id === resourceId);
+      if (!resource || !resource.assignment_id) return;
+      
+      const monthData = resource.monthly_allocations.find(m => m.month === month);
+      
+      inputs.push({
+        resource_id: resourceId,
+        assignment_id: resource.assignment_id,
+        month,
+        year: selectedYear,
+        allocation_percent: newPercent,
+        existing_allocation_id: monthData?.allocation_id ?? null,
+      });
+    });
+
+    if (inputs.length > 0) {
+      await bulkSave.mutateAsync(inputs);
+      setPendingChanges(new Map());
+    }
+  }, [pendingChanges, resources, selectedYear, bulkSave]);
+
+  // Check if there are pending changes
+  const hasPendingChanges = pendingChanges.size > 0;
+
+  // Format contract end date
+  const formatContractEnd = (date: string | null) => {
+    if (!date) return null;
+    return new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
 
   if (isLoading) {
     return (
@@ -112,8 +211,29 @@ export default function ResourceUtilization() {
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Resource Utilization</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            View resource allocation across assignments
+            Manage monthly resource allocation across assignments
           </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
+            <SelectTrigger className="w-[120px]">
+              <Calendar className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[currentYear - 1, currentYear, currentYear + 1].map(year => (
+                <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button 
+            onClick={handleSaveAll} 
+            disabled={!hasPendingChanges || bulkSave.isPending}
+            className="gap-2"
+          >
+            <Save className="h-4 w-4" />
+            {bulkSave.isPending ? 'Saving...' : `Save Changes${hasPendingChanges ? ` (${pendingChanges.size})` : ''}`}
+          </Button>
         </div>
       </div>
 
@@ -203,94 +323,147 @@ export default function ResourceUtilization() {
                 className="pl-9"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by status" />
+            <Select value={assignmentFilter} onValueChange={setAssignmentFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filter by assignment" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="available">Available</SelectItem>
-                <SelectItem value="healthy">Healthy</SelectItem>
-                <SelectItem value="at-capacity">At Capacity</SelectItem>
-                <SelectItem value="over-allocated">Over Allocated</SelectItem>
+                <SelectItem value="all">All Assignments</SelectItem>
+                {uniqueAssignments.map(assignment => (
+                  <SelectItem key={assignment} value={assignment}>{assignment}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* Data Table */}
+      {/* Data Table with Monthly Columns */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-medium">
-            Resources ({filteredResources.length})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-medium">
+              Resources ({filteredResources.length})
+            </CardTitle>
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded bg-green-200 dark:bg-green-900" /> 1-80%
+              </span>
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded bg-yellow-200 dark:bg-yellow-900" /> 81-100%
+              </span>
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded bg-red-200 dark:bg-red-900" /> &gt;100%
+              </span>
+              <span className="flex items-center gap-1">
+                <Lock className="h-3 w-3" /> Contract Ended
+              </span>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[250px]">Resource Name</TableHead>
-                <TableHead className="w-[200px]">Assignment</TableHead>
-                <TableHead className="w-[150px]">Role</TableHead>
-                <TableHead className="w-[200px]">Utilization</TableHead>
-                <TableHead className="w-[120px] text-right">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredResources.length === 0 ? (
+          <ScrollArea className="w-full">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No resources found matching your criteria
-                  </TableCell>
+                  <TableHead className="sticky left-0 bg-background z-10 min-w-[200px]">Resource</TableHead>
+                  <TableHead className="sticky left-[200px] bg-background z-10 min-w-[180px]">Assignment</TableHead>
+                  <TableHead className="min-w-[100px]">Contract End</TableHead>
+                  {MONTHS.map(m => (
+                    <TableHead key={m.num} className="text-center min-w-[70px]">{m.name}</TableHead>
+                  ))}
                 </TableRow>
-              ) : (
-                filteredResources.map((resource) => {
-                  const status = getUtilizationStatus(resource.utilization_percent);
-                  const progressVariant = getProgressVariant(resource.utilization_percent);
-                  
-                  return (
+              </TableHeader>
+              <TableBody>
+                {filteredResources.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={15} className="text-center py-8 text-muted-foreground">
+                      No resources found matching your criteria
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredResources.map((resource) => (
                     <TableRow key={resource.id}>
-                      <TableCell className="font-medium">{resource.resource_name}</TableCell>
-                      <TableCell>
+                      <TableCell className="sticky left-0 bg-background font-medium">
+                        {resource.resource_name}
+                      </TableCell>
+                      <TableCell className="sticky left-[200px] bg-background">
                         {resource.assignment_name ? (
-                          <span className="text-foreground">{resource.assignment_name}</span>
+                          <Badge variant="outline" className="font-normal">
+                            {resource.assignment_name}
+                          </Badge>
                         ) : (
-                          <span className="text-muted-foreground italic">Unassigned</span>
+                          <span className="text-muted-foreground italic text-sm">Unassigned</span>
                         )}
                       </TableCell>
                       <TableCell>
-                        {resource.role_name ? (
-                          <span className="text-sm">{resource.role_name}</span>
+                        {resource.contract_end_date ? (
+                          <span className="text-sm text-muted-foreground">
+                            {formatContractEnd(resource.contract_end_date)}
+                          </span>
                         ) : (
                           <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1">
-                            <Progress 
-                              value={Math.min(resource.utilization_percent, 100)} 
-                              size="lg"
-                              variant={progressVariant}
-                            />
-                          </div>
-                          <span className="text-sm font-medium w-12 text-right">
-                            {resource.utilization_percent}%
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge className={status.color} variant={status.variant}>
-                          {status.label}
-                        </Badge>
-                      </TableCell>
+                      {resource.monthly_allocations.map((monthData) => {
+                        const displayValue = getDisplayValue(resource, monthData.month);
+                        const isEditable = monthData.is_editable;
+                        const key = `${resource.id}:${monthData.month}`;
+                        const hasChange = pendingChanges.has(key);
+                        
+                        return (
+                          <TableCell key={monthData.month} className="p-1">
+                            {isEditable ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Input
+                                    type="number"
+                                    min={0}
+                                    max={200}
+                                    value={displayValue}
+                                    onChange={(e) => handleAllocationChange(resource.id, monthData.month, e.target.value)}
+                                    className={cn(
+                                      "w-16 h-8 text-center text-sm p-1",
+                                      getInputBorderColor(displayValue),
+                                      hasChange && "ring-2 ring-primary ring-offset-1"
+                                    )}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Utilization % for {MONTHS[monthData.month - 1].name} {selectedYear}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className={cn(
+                                    "w-16 h-8 flex items-center justify-center text-sm rounded border bg-muted/50 cursor-not-allowed",
+                                    "text-muted-foreground"
+                                  )}>
+                                    <Lock className="h-3 w-3 mr-1" />
+                                    {displayValue}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>
+                                    {!resource.assignment_id 
+                                      ? 'No assignment - cannot set allocation'
+                                      : `Contract ends ${formatContractEnd(resource.contract_end_date)}`
+                                    }
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </TableCell>
+                        );
+                      })}
                     </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>
