@@ -234,10 +234,27 @@ export async function moveTestCasesToFolder(
   testCaseIds: string[],
   folderId: string | null
 ): Promise<number> {
+  console.log('[FolderService] moveTestCasesToFolder called with:', { testCaseIds, folderId });
+  
+  // Filter out any invalid IDs (empty strings, display IDs like "TC-XXXX")
+  const validUUIDs = testCaseIds.filter(id => {
+    if (!id || id.trim() === '') return false;
+    // UUID pattern: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidPattern.test(id);
+  });
+  
+  console.log('[FolderService] Valid UUIDs:', validUUIDs);
+  
+  if (validUUIDs.length === 0) {
+    console.warn('[FolderService] No valid UUIDs provided. Original IDs:', testCaseIds);
+    return 0;
+  }
+
   const { data, error } = await (supabase as any)
     .from('test_cases')
     .update({ folder_id: folderId })
-    .in('id', testCaseIds)
+    .in('id', validUUIDs)
     .select('id');
 
   if (error) {
@@ -245,6 +262,7 @@ export async function moveTestCasesToFolder(
     throw new Error(`Failed to move test cases: ${error.message}`);
   }
 
+  console.log('[FolderService] Moved test cases:', data);
   return data?.length || 0;
 }
 
