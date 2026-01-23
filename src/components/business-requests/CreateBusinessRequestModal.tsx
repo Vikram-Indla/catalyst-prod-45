@@ -84,7 +84,7 @@ async function uploadAttachments(requestId: string, attachments: File[]) {
       .from('attachments')
       .getPublicUrl(fileName);
 
-    const { error: insertError } = await supabase
+    const { error: insertError } = await (supabase as any)
       .from('business_request_links')
       .insert({
         business_request_id: requestId,

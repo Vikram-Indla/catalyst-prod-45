@@ -227,7 +227,7 @@ export function CreateEntityDialog({
       let result: { id: string; name: string } | null = null;
 
       if (entityType === 'product') {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('business_lines')
           .insert({
             name: name.trim(),

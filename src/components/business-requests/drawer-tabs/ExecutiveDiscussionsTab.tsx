@@ -79,14 +79,14 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
   const { data: discussions = [], isLoading } = useQuery({
     queryKey: ['business-request-discussions', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_discussions')
         .select('id, message, user_id, created_at')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!requestId
   });
@@ -95,7 +95,7 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
   const { data: activityLogs = [] } = useQuery({
     queryKey: ['business-request-activity', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_audit_logs')
         .select('*')
         .eq('business_request_id', requestId)
@@ -103,7 +103,7 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
         .limit(50);
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!requestId
   });
@@ -133,7 +133,7 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
         formattedMessage = `<!--META:${JSON.stringify(meta)}-->${message}`;
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_request_discussions')
         .insert({
           business_request_id: requestId,

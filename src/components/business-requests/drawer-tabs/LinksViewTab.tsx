@@ -329,14 +329,14 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
   const { data: legacyLinks = [], isLoading: linksLoading } = useQuery({
     queryKey: ['business-request-links', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_links')
         .select('*')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!requestId
   });
@@ -430,7 +430,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
         .eq('id', user?.id)
         .single();
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_request_links')
         .insert({ 
           title: link.title,
@@ -478,7 +478,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const { error: insertError } = await supabase
+        const { error: insertError } = await (supabase as any)
           .from('business_request_links')
           .insert({
             business_request_id: requestId,
@@ -518,7 +518,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
         .eq('id', user?.id)
         .single();
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_request_links')
         .insert({ 
           title: doc.title,
@@ -554,7 +554,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
         .eq('id', user?.id)
         .single();
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_request_links')
         .insert({ 
           title: `${workItem.key} – ${workItem.title}`,
@@ -588,7 +588,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature,
         await supabase.storage.from('attachments').remove([link.file_path]);
       }
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_request_links')
         .delete()
         .eq('id', link.id);

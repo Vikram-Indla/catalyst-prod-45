@@ -23,11 +23,11 @@ export function DataManagementPanel() {
   const { data: dataCounts, isLoading, refetch } = useQuery({
     queryKey: ['product-data-counts'],
     queryFn: async () => {
-      const { count: demandCount } = await supabase
+      const { count: demandCount } = await (supabase as any)
         .from('business_requests')
         .select('*', { count: 'exact', head: true });
 
-      const { count: businessLineCount } = await supabase
+      const { count: businessLineCount } = await (supabase as any)
         .from('business_lines')
         .select('*', { count: 'exact', head: true });
 
@@ -45,7 +45,7 @@ export function DataManagementPanel() {
 
   const handleExportConfig = async () => {
     try {
-      const { data: businessLines } = await supabase
+      const { data: businessLines } = await (supabase as any)
         .from('business_lines')
         .select('*');
 

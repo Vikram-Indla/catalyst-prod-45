@@ -26,7 +26,7 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const { data, error, count } = await supabase
+      const { data, error, count } = await (supabase as any)
         .from('business_request_audit_logs')
         .select('*', { count: 'exact' })
         .eq('business_request_id', requestId)

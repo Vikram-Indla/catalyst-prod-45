@@ -87,7 +87,7 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
       const to = from + PAGE_SIZE - 1;
 
       // Query audit logs directly (no FK to profiles)
-      const { data, error, count } = await supabase
+      const { data, error, count } = await (supabase as any)
         .from('business_request_audit_logs')
         .select('*', { count: 'exact' })
         .eq('business_request_id', requestId)
@@ -96,7 +96,7 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
 
       if (error) throw error;
       
-      return { logs: data || [], count: count || 0, page: pageParam };
+      return { logs: (data || []) as AuditLog[], count: count || 0, page: pageParam };
     },
     getNextPageParam: (lastPage) => {
       const totalLoaded = (lastPage.page + 1) * PAGE_SIZE;
@@ -110,7 +110,8 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
   const allLogs = data?.pages.flatMap(page => page.logs) || [];
   
   // Deduplicate logs - remove entries with exact same id or same action/field/timestamp/actor
-  const deduplicatedLogs = allLogs.reduce<AuditLog[]>((acc, log) => {
+  const deduplicatedLogs = allLogs.reduce<AuditLog[]>((acc, logItem) => {
+    const log = logItem as AuditLog;
     const isDuplicate = acc.some(existing => 
       existing.id === log.id || (
         existing.action === log.action &&

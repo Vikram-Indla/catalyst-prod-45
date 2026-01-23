@@ -469,7 +469,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       if ((selectedAssignmentId || '') !== (initialAssignmentId || '')) changedFields.push('assignment');
       
       if (changedFields.length > 0) {
-        await supabase.from('auth_audit_log').insert({
+        await (supabase as any).from('auth_audit_log').insert({
           user_id: user.id,
           event_type: 'user_profile_updated',
           actor_id: currentUser?.id,
