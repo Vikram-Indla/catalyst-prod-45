@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Search, Edit, Trash2, Package, AlertCircle, DollarSign } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Package, AlertCircle } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -137,7 +137,7 @@ export function SoftwareLicensesPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-blue-600" />
+                  <span className="text-blue-600 font-bold text-sm">﷼</span>
                 </div>
                 <div>
                   <p className="text-2xl font-bold">
@@ -186,9 +186,6 @@ export function SoftwareLicensesPage() {
             </SelectContent>
           </Select>
         </div>
-
-        {/* Gantt Chart */}
-        <LicenseGanttChart licenses={licenses} />
 
         {/* Table */}
         <Card className="flex-1">
@@ -300,6 +297,9 @@ export function SoftwareLicensesPage() {
             </TableBody>
           </Table>
         </Card>
+
+        {/* Gantt Chart */}
+        <LicenseGanttChart licenses={licenses} />
       </div>
 
       {/* Create/Edit Dialog */}
