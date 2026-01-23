@@ -18,6 +18,12 @@ interface EpicLabelSelectorProps {
   onManageLabels?: () => void;
 }
 
+type EpicLabel = {
+  id: string;
+  name: string;
+  color: string;
+};
+
 export function EpicLabelSelector({ epicId, onManageLabels }: EpicLabelSelectorProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
@@ -26,30 +32,32 @@ export function EpicLabelSelector({ epicId, onManageLabels }: EpicLabelSelectorP
   const { data: allLabels } = useQuery({
     queryKey: ['epic-labels'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_labels')
         .select('*')
         .order('name');
       if (error) throw error;
-      return data;
+      return (data || []) as EpicLabel[];
     },
   });
 
   const { data: assignedLabels } = useQuery({
     queryKey: ['epic-label-assignments', epicId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_label_assignments')
         .select('label_id, epic_labels(*)')
         .eq('epic_id', epicId);
       if (error) throw error;
-      return data.map(a => a.epic_labels).filter(Boolean);
+
+      const rows = (data || []) as any[];
+      return rows.map((a) => a.epic_labels).filter(Boolean) as EpicLabel[];
     },
   });
 
   const assignLabel = useMutation({
     mutationFn: async (labelId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_label_assignments')
         .insert({ epic_id: epicId, label_id: labelId });
       if (error) throw error;
@@ -62,7 +70,7 @@ export function EpicLabelSelector({ epicId, onManageLabels }: EpicLabelSelectorP
 
   const removeLabel = useMutation({
     mutationFn: async (labelId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_label_assignments')
         .delete()
         .eq('epic_id', epicId)
@@ -75,7 +83,7 @@ export function EpicLabelSelector({ epicId, onManageLabels }: EpicLabelSelectorP
     },
   });
 
-  const assignedLabelIds = new Set(assignedLabels?.map(l => l.id) || []);
+  const assignedLabelIds = new Set((assignedLabels || []).map((l) => l.id));
 
   const handleToggleLabel = (labelId: string) => {
     if (assignedLabelIds.has(labelId)) {

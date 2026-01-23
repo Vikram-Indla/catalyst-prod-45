@@ -26,6 +26,13 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
   const [editedName, setEditedName] = useState(epicName);
   const [newComment, setNewComment] = useState("");
 
+  type AttachmentRow = {
+    id: string;
+    file_name: string;
+    file_size: number;
+    created_at?: string | null;
+  };
+
   // Subscription state
   const { data: subscription } = useQuery({
     queryKey: ['epic-subscription', epicId],
@@ -33,7 +40,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return null;
       
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('notifications')
         .select('*')
         .eq('entity_id', epicId)
@@ -49,13 +56,13 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
   const { data: attachments } = useQuery({
     queryKey: ['attachments', epicId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('attachments')
         .select('*')
         .eq('entity_type', 'epic')
         .eq('entity_id', epicId)
         .order('created_at', { ascending: false });
-      return data || [];
+      return (data || []) as AttachmentRow[];
     },
   });
 
@@ -101,13 +108,13 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
 
       if (subscription) {
         // Unsubscribe
-        await supabase
+        await (supabase as any)
           .from('notifications')
           .delete()
           .eq('id', subscription.id);
       } else {
         // Subscribe
-        await supabase
+        await (supabase as any)
           .from('notifications')
           .insert({
             user_id: user.user.id,
@@ -164,7 +171,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
       if (uploadError) throw uploadError;
 
       // Create attachment record
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from('attachments')
         .insert({
           entity_type: 'epic',

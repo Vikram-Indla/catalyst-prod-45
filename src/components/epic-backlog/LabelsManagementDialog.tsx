@@ -18,6 +18,12 @@ interface LabelsManagementDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+type EpicLabel = {
+  id: string;
+  name: string;
+  color: string;
+};
+
 const LABEL_COLORS = [
   { name: 'Red', value: 'red', bg: 'bg-destructive' },
   { name: 'Orange', value: 'orange', bg: 'bg-brand-primary' },
@@ -40,18 +46,18 @@ export function LabelsManagementDialog({ open, onOpenChange }: LabelsManagementD
   const { data: labels } = useQuery({
     queryKey: ['epic-labels'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_labels')
         .select('*')
         .order('name');
       if (error) throw error;
-      return data;
+      return (data || []) as EpicLabel[];
     },
   });
 
   const createLabel = useMutation({
     mutationFn: async ({ name, color }: { name: string; color: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_labels')
         .insert({ name, color });
       if (error) throw error;
@@ -73,7 +79,7 @@ export function LabelsManagementDialog({ open, onOpenChange }: LabelsManagementD
 
   const updateLabel = useMutation({
     mutationFn: async ({ id, name, color }: { id: string; name: string; color: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_labels')
         .update({ name, color })
         .eq('id', id);
@@ -88,7 +94,7 @@ export function LabelsManagementDialog({ open, onOpenChange }: LabelsManagementD
 
   const deleteLabel = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_labels')
         .delete()
         .eq('id', id);
