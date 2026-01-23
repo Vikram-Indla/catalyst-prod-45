@@ -1,5 +1,5 @@
 /**
- * License Create/Edit Dialog
+ * License Create/Edit Dialog - Simplified
  */
 
 import React, { useEffect } from 'react';
@@ -22,6 +22,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -41,17 +42,13 @@ import {
 import { cn } from '@/lib/utils';
 import { useCreateLicense, useUpdateLicense } from '../hooks/useSoftwareLicenses';
 import { formatSAR } from '../hooks/useResourceCost';
-import type { SoftwareLicenseWithAllocation, LicenseCategory, LicenseType } from '../types';
-import { LICENSE_CATEGORIES, LICENSE_TYPES } from '../types';
+import type { SoftwareLicenseWithAllocation, LicenseType } from '../types';
 
 const licenseSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  vendor: z.string().min(1, 'Vendor is required'),
-  category: z.string().nullable(),
-  license_type: z.enum(['annual', 'monthly', 'consumption', 'perpetual']),
+  license_type: z.enum(['annual', 'monthly']),
   user_count: z.number().nullable(),
   annual_cost: z.number().min(0, 'Cost must be positive'),
-  start_date: z.date(),
   renewal_date: z.date().nullable(),
 });
 
@@ -72,12 +69,9 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
     resolver: zodResolver(licenseSchema),
     defaultValues: {
       name: '',
-      vendor: '',
-      category: null,
       license_type: 'annual',
       user_count: null,
       annual_cost: 0,
-      start_date: new Date(),
       renewal_date: null,
     },
   });
@@ -86,40 +80,35 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
     if (license) {
       form.reset({
         name: license.name,
-        vendor: license.vendor,
-        category: license.category,
-        license_type: license.license_type,
+        license_type: license.license_type === 'monthly' ? 'monthly' : 'annual',
         user_count: license.user_count,
         annual_cost: license.annual_cost,
-        start_date: new Date(license.start_date),
         renewal_date: license.renewal_date ? new Date(license.renewal_date) : null,
       });
     } else {
       form.reset({
         name: '',
-        vendor: '',
-        category: null,
         license_type: 'annual',
         user_count: null,
         annual_cost: 0,
-        start_date: new Date(),
         renewal_date: null,
       });
     }
   }, [license, form]);
 
+  const licenseType = form.watch('license_type');
   const annualCost = form.watch('annual_cost');
   const monthlyCost = annualCost / 12;
 
   const onSubmit = async (data: LicenseFormData) => {
     const payload = {
       name: data.name,
-      vendor: data.vendor,
-      category: data.category as LicenseCategory | null,
+      vendor: '', // Not used but kept for DB compatibility
+      category: null,
       license_type: data.license_type as LicenseType,
       user_count: data.user_count,
       annual_cost: data.annual_cost,
-      start_date: format(data.start_date, 'yyyy-MM-dd'),
+      start_date: format(new Date(), 'yyyy-MM-dd'), // Default to today
       renewal_date: data.renewal_date ? format(data.renewal_date, 'yyyy-MM-dd') : null,
     };
 
@@ -136,21 +125,21 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Edit License' : 'Add License'}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Software Name *</FormLabel>
+                  <FormLabel>Software Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Jira Align Enterprise" {...field} />
+                    <Input placeholder="e.g., Jira, Figma, Salesforce" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,83 +148,41 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
 
             <FormField
               control={form.control}
-              name="vendor"
+              name="license_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vendor *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Atlassian" {...field} />
-                  </FormControl>
+                  <FormLabel>Billing Cycle</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="annual">Annual</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select 
-                      value={field.value || ''} 
-                      onValueChange={(value) => field.onChange(value || null)}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {LICENSE_CATEGORIES.map(cat => (
-                          <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="license_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>License Type *</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {LICENSE_TYPES.map(type => (
-                          <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
             <FormField
               control={form.control}
               name="user_count"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Users / Seats</FormLabel>
+                  <FormLabel>Number of Seats</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
-                      placeholder="Leave empty for usage-based"
+                      placeholder="Optional"
                       value={field.value ?? ''}
                       onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
                     />
                   </FormControl>
+                  <FormDescription>Leave empty for unlimited or usage-based</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -246,7 +193,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
               name="annual_cost"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Annual Cost (SAR) *</FormLabel>
+                  <FormLabel>{licenseType === 'monthly' ? 'Monthly Cost (SAR)' : 'Annual Cost (SAR)'}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input 
@@ -254,94 +201,70 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
                         placeholder="0"
                         className="pr-12"
                         {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value) || 0;
+                          // If monthly, store as annual (×12)
+                          field.onChange(licenseType === 'monthly' ? value * 12 : value);
+                        }}
+                        value={licenseType === 'monthly' ? (field.value / 12).toFixed(0) : field.value}
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                         SAR
                       </span>
                     </div>
                   </FormControl>
-                  <p className="text-xs text-muted-foreground">
-                    Monthly: {formatSAR(monthlyCost)}
-                  </p>
+                  {licenseType === 'annual' && annualCost > 0 && (
+                    <FormDescription>
+                      ~{formatSAR(monthlyCost)}/month
+                    </FormDescription>
+                  )}
+                  {licenseType === 'monthly' && annualCost > 0 && (
+                    <FormDescription>
+                      {formatSAR(annualCost)}/year total
+                    </FormDescription>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="start_date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Start Date *</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              'w-full pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="renewal_date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Renewal Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            'w-full pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? format(field.value, 'PPP') : 'Select renewal date'}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value || undefined}
+                        onSelect={(date) => field.onChange(date || null)}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>When does this license need to be renewed?</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="renewal_date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Renewal Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              'w-full pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            {field.value ? format(field.value, 'PPP') : 'Pick a date'}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value || undefined}
-                          onSelect={(date) => field.onChange(date || null)}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <DialogFooter>
+            <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
