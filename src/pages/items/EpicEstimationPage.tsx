@@ -99,17 +99,18 @@ export default function EpicEstimationPage() {
   // Update Technical Scoring field mutation
   const updateScoringMutation = useMutation({
     mutationFn: async ({ epicId, field, value }: { epicId: string; field: ScoringField; value: number }) => {
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from('epic_wsjf')
         .select('id, business_value, time_value, rroe_value, job_size')
         .eq('epic_id', epicId)
         .maybeSingle();
+      const existingTyped = existing as { id: string; business_value: number; time_value: number; rroe_value: number; job_size: number } | null;
 
       const updatedValues = {
-        business_value: existing?.business_value || 0,
-        time_value: existing?.time_value || 0,
-        rroe_value: existing?.rroe_value || 0,
-        job_size: existing?.job_size || 0,
+        business_value: existingTyped?.business_value || 0,
+        time_value: existingTyped?.time_value || 0,
+        rroe_value: existingTyped?.rroe_value || 0,
+        job_size: existingTyped?.job_size || 0,
         [field]: value
       };
 
@@ -117,14 +118,14 @@ export default function EpicEstimationPage() {
         ? Math.round(((updatedValues.business_value || 0) + (updatedValues.time_value || 0) + (updatedValues.rroe_value || 0)) / updatedValues.job_size * 100) / 100
         : null;
 
-      if (existing) {
-        const { error } = await supabase
+      if (existingTyped) {
+        const { error } = await (supabase as any)
           .from('epic_wsjf')
           .update({ [field]: value, wsjf_score: techScore })
-          .eq('id', existing.id);
+          .eq('id', existingTyped.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('epic_wsjf')
           .insert({ epic_id: epicId, [field]: value, wsjf_score: techScore });
         if (error) throw error;

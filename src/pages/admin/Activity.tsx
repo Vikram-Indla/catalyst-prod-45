@@ -42,14 +42,14 @@ export default function Activity() {
   const { data: announcements } = useQuery({
     queryKey: ['announcements-active'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('announcements')
         .select('*')
         .eq('is_active', true)
         .limit(5);
       
       if (error) throw error;
-      return data;
+      return (data || []) as Array<{ id: string; title: string }>;
     },
   });
 

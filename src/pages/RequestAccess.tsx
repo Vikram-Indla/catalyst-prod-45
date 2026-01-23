@@ -413,7 +413,7 @@ export default function RequestAccess() {
       });
 
       // Insert the business request with ALL fields mapped correctly to drawer fields
-      const { data: requestData, error: requestError } = await supabase
+      const { data: requestData, error: requestError } = await (supabase as any)
         .from('business_requests')
         .insert([{
           title: formData.summary,
@@ -443,7 +443,7 @@ export default function RequestAccess() {
       // 1. Add a system comment in Discussions capturing the external requester info
       const externalComment = `**Submitted via External Request Form**\n\n**Requested by:** ${formData.reporter}\n**Email:** ${formData.email}\n\n_This demand was submitted by an external user through the public intake form._`;
       
-      const { error: discussionError } = await supabase
+      const { error: discussionError } = await (supabase as any)
         .from('business_request_discussions')
         .insert([{
           business_request_id: requestData.id,
@@ -461,7 +461,7 @@ export default function RequestAccess() {
       // 2. Add a structured audit log entry for Audit History
       const auditDetails = `Requester Name: ${formData.reporter} | Email: ${formData.email} | Auto-comment generated in Discussions`;
       
-      const { error: auditError } = await supabase
+      const { error: auditError } = await (supabase as any)
         .from('business_request_audit_logs')
         .insert([{
           business_request_id: requestData.id,

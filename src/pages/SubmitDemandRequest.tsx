@@ -210,7 +210,7 @@ export default function SubmitDemandRequest() {
     const dayStart = startOfDay(today).toISOString();
     const dayEnd = endOfDay(today).toISOString();
     
-    const { count, error } = await supabase
+    const { count, error } = await (supabase as any)
       .from('business_requests')
       .select('*', { count: 'exact', head: true })
       .ilike('requestor', `%${fullEmail}%`)
@@ -249,7 +249,7 @@ export default function SubmitDemandRequest() {
       
       const fullEmail = `${formData.email}${EMAIL_DOMAIN}`;
       // Insert business request
-      const { data: requestData, error: requestError } = await supabase
+      const { data: requestData, error: requestError } = await (supabase as any)
         .from('business_requests')
         .insert([{
           title: formData.summary,
@@ -265,13 +265,14 @@ export default function SubmitDemandRequest() {
         }])
         .select('id, request_key, created_at')
         .single();
+      const requestDataTyped = requestData as { id: string; request_key: string; created_at: string } | null;
       
       if (requestError) throw requestError;
       
       // Upload attachments if any
-      if (attachments.length > 0 && requestData?.id) {
+      if (attachments.length > 0 && requestDataTyped?.id) {
         for (const attachment of attachments) {
-          const filePath = `business-requests/${requestData.id}/${attachment.id}-${attachment.name}`;
+          const filePath = `business-requests/${requestDataTyped.id}/${attachment.id}-${attachment.name}`;
           
           const { error: uploadError } = await supabase.storage
             .from('attachments')
@@ -281,9 +282,9 @@ export default function SubmitDemandRequest() {
             console.error('Failed to upload attachment:', uploadError);
           } else {
             // Save attachment reference
-            await supabase.from('attachments').insert({
+            await (supabase as any).from('attachments').insert({
               entity_type: 'business_request',
-              entity_id: requestData.id,
+              entity_id: requestDataTyped.id,
               file_name: attachment.name,
               file_path: filePath,
               file_size: attachment.size,
@@ -295,11 +296,11 @@ export default function SubmitDemandRequest() {
       }
       
       // Format request ID
-      const requestId = requestData?.request_key || `MIM-${String(requestData?.id || 0).padStart(3, '0')}`;
+      const requestId = requestDataTyped?.request_key || `MIM-${String(requestDataTyped?.id || 0).padStart(3, '0')}`;
       
       setSubmittedData({
         requestId,
-        submittedAt: new Date(requestData?.created_at || Date.now()),
+        submittedAt: new Date(requestDataTyped?.created_at || Date.now()),
       });
       setShowConfirmation(true);
       

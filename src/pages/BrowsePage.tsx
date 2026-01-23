@@ -69,7 +69,7 @@ export default function BrowsePage() {
           .select('id, story_key')
           .ilike('story_key', normalizedKey)
           .maybeSingle(),
-        supabase
+        (supabase as any)
           .from('business_requests')
           .select('id, request_key')
           .ilike('request_key', normalizedKey)
@@ -112,7 +112,8 @@ export default function BrowsePage() {
         const foundStory = storyByIdResult.data[0];
         result = { id: foundStory.id, type: 'story', key: foundStory.story_key || workItemKey };
       } else if (demandResult.data) {
-        result = { id: demandResult.data.id, type: 'demand', key: demandResult.data.request_key || workItemKey };
+        const demandData = demandResult.data as { id: string; request_key: string };
+        result = { id: demandData.id, type: 'demand', key: demandData.request_key || workItemKey };
       }
 
       // If not found, check historical keys
