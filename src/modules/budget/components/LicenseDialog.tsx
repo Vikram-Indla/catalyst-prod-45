@@ -49,6 +49,7 @@ const licenseSchema = z.object({
   license_type: z.enum(['annual', 'monthly']),
   user_count: z.number().nullable(),
   annual_cost: z.number().min(0, 'Cost must be positive'),
+  start_date: z.date(),
   renewal_date: z.date().nullable(),
 });
 
@@ -72,6 +73,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
       license_type: 'annual',
       user_count: null,
       annual_cost: 0,
+      start_date: new Date(),
       renewal_date: null,
     },
   });
@@ -83,6 +85,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
         license_type: license.license_type === 'monthly' ? 'monthly' : 'annual',
         user_count: license.user_count,
         annual_cost: license.annual_cost,
+        start_date: license.start_date ? new Date(license.start_date) : new Date(),
         renewal_date: license.renewal_date ? new Date(license.renewal_date) : null,
       });
     } else {
@@ -91,6 +94,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
         license_type: 'annual',
         user_count: null,
         annual_cost: 0,
+        start_date: new Date(),
         renewal_date: null,
       });
     }
@@ -108,7 +112,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
       license_type: data.license_type as LicenseType,
       user_count: data.user_count,
       annual_cost: data.annual_cost,
-      start_date: format(new Date(), 'yyyy-MM-dd'), // Default to today
+      start_date: format(data.start_date, 'yyyy-MM-dd'),
       renewal_date: data.renewal_date ? format(data.renewal_date, 'yyyy-MM-dd') : null,
     };
 
@@ -125,7 +129,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Edit License' : 'Add License'}</DialogTitle>
         </DialogHeader>
@@ -228,41 +232,80 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="renewal_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Renewal Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            'w-full pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? format(field.value, 'PPP') : 'Select renewal date'}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value || undefined}
-                        onSelect={(date) => field.onChange(date || null)}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>When does this license need to be renewed?</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Date fields in a row */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="start_date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Start Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? format(field.value, 'MMM d, yyyy') : 'Select date'}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="renewal_date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Renewal Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? format(field.value, 'MMM d, yyyy') : 'Select date'}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value || undefined}
+                          onSelect={(date) => field.onChange(date || null)}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
