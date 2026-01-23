@@ -86,9 +86,11 @@ export function useRealtimeAllocations() {
             }
           }
           
-          // Invalidate related queries
+          // Invalidate related queries for bi-directional sync
           queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
           queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+          // Also invalidate resource-utilization for all years
+          queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
         }
       )
       .subscribe();
