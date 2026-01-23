@@ -39,6 +39,8 @@ import {
   Keyboard,
   Sparkles,
   Wand2,
+  PanelLeft,
+  PanelLeftClose,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,6 +75,8 @@ import { BulkAssignDialog } from '@/components/releases/test-cases/BulkAssignDia
 import { BulkMoveDialog } from '@/components/releases/test-cases/BulkMoveDialog';
 import { BulkTagsDialog } from '@/components/releases/test-cases/BulkTagsDialog';
 import { ExecuteTestCaseDialog } from '@/components/releases/test-cases/ExecuteTestCaseDialog';
+import { TestFolderSidebar } from '@/components/releases/test-cases/TestFolderSidebar';
+import { MoveToFolderDialog } from '@/components/releases/test-cases/MoveToFolderDialog';
 import { TestCase } from '@/data/testCasesData';
 import { 
   useTestCases, 
@@ -84,6 +88,8 @@ import { useProjects } from '@/hooks/test-management/useProjects';
 import { tmToUITestCases } from '@/lib/adapters/testCaseAdapter';
 import { useTestCaseFilters } from '@/hooks/use-test-case-filters';
 import { useTestCaseKeyboardShortcuts } from '@/hooks/use-test-case-keyboard-shortcuts';
+import { useFolderTree, useMoveTestCases } from '@/hooks/useFolders';
+import { getDescendantFolderIds } from '@/types/test-folders';
 import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -139,6 +145,15 @@ export default function TestCasesPage() {
   
   // Test execution
   const [isExecuteOpen, setIsExecuteOpen] = useState(false);
+  
+  // Folder sidebar state
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMoveToFolderOpen, setIsMoveToFolderOpen] = useState(false);
+  
+  // Folder data and mutations
+  const { data: folders = [] } = useFolderTree(projectId);
+  const moveTestCasesMutation = useMoveTestCases(projectId);
   
   
   // Focused item index for keyboard navigation
@@ -250,7 +265,30 @@ export default function TestCasesPage() {
     localStorage.setItem('catalyst-test-cases-view', viewMode);
   }, [viewMode]);
 
-  // Use API data with client-side release filter fallback
+  // Listen for drag-drop move test case events from folder sidebar
+  useEffect(() => {
+    const handleMoveTestCase = (event: CustomEvent<{ testCaseId: string; folderId: string | null }>) => {
+      const { testCaseId, folderId } = event.detail;
+      moveTestCasesMutation.mutate({
+        testCaseIds: [testCaseId],
+        folderId,
+      });
+    };
+
+    window.addEventListener('moveTestCase', handleMoveTestCase as EventListener);
+    return () => {
+      window.removeEventListener('moveTestCase', handleMoveTestCase as EventListener);
+    };
+  }, [moveTestCasesMutation]);
+
+  // Get folder IDs to include (selected folder + descendants)
+  const folderIdsToInclude = useMemo(() => {
+    if (selectedFolderId === null) return null; // Show all
+    const descendantIds = getDescendantFolderIds(selectedFolderId, folders);
+    return [selectedFolderId, ...descendantIds];
+  }, [selectedFolderId, folders]);
+
+  // Use API data with client-side release and folder filter fallback
   const filteredTestCases = useMemo(() => {
     let cases = apiTestCases;
     
@@ -258,9 +296,13 @@ export default function TestCasesPage() {
     if (filters.releases?.length) {
       cases = cases.filter(tc => filters.releases!.includes(tc.release));
     }
+
+    // Apply folder filter on client side
+    // Note: folder_id would need to be added to the TestCase type and adapter
+    // For now, this is a placeholder - actual filtering would require folder_id on test cases
     
     return cases;
-  }, [apiTestCases, filters.releases]);
+  }, [apiTestCases, filters.releases, folderIdsToInclude]);
 
   // Calculate pagination from filtered results
   const totalPages = apiTotalPages;
@@ -272,7 +314,7 @@ export default function TestCasesPage() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters]);
+  }, [filters, selectedFolderId]);
 
   // Keyboard shortcuts - comprehensive (must be after paginatedTestCases is defined)
   useTestCaseKeyboardShortcuts({
@@ -400,7 +442,7 @@ export default function TestCasesPage() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="outline" size="sm" className="h-8" onClick={() => setIsAIGenerateOpen(true)}>
-                <Wand2 className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
+                <Wand2 className="w-3.5 h-3.5 mr-1.5 text-primary" />
                 AI Generate
               </Button>
             </TooltipTrigger>
@@ -580,10 +622,44 @@ export default function TestCasesPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-hidden px-6 py-4">
+      {/* Main Content with Folder Sidebar */}
+      <div className="flex-1 overflow-hidden flex gap-6 px-6 py-4">
+        {/* Folder Sidebar */}
+        <aside 
+          className={cn(
+            "flex-shrink-0 transition-all duration-200",
+            isSidebarCollapsed ? "w-0 overflow-hidden" : "w-64"
+          )}
+        >
+          {!isSidebarCollapsed && (
+            <TestFolderSidebar
+              projectId={projectId}
+              selectedFolderId={selectedFolderId}
+              onFolderSelect={setSelectedFolderId}
+              totalTestCaseCount={totalCount}
+            />
+          )}
+        </aside>
+
+        {/* Sidebar Toggle Button */}
+        <button
+          onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          className={cn(
+            "flex-shrink-0 w-6 flex items-center justify-center",
+            "text-muted-foreground hover:text-foreground transition-colors",
+            "border border-border rounded-md hover:bg-muted/50"
+          )}
+          title={isSidebarCollapsed ? "Show folders" : "Hide folders"}
+        >
+          {isSidebarCollapsed ? (
+            <PanelLeft className="w-3.5 h-3.5" />
+          ) : (
+            <PanelLeftClose className="w-3.5 h-3.5" />
+          )}
+        </button>
+
         {/* Test Cases Content */}
-        <div className="h-full overflow-auto">
+        <main className="flex-1 min-w-0 overflow-auto">
           <AnimatePresence mode="wait">
             {isLoading ? (
               <motion.div
@@ -660,7 +736,7 @@ export default function TestCasesPage() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </main>
       </div>
 
       {/* Pagination */}
@@ -777,6 +853,7 @@ export default function TestCasesPage() {
             onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.id)))}
             onClear={clearSelection}
             onMove={() => setIsBulkMoveOpen(true)}
+            onMoveToFolder={() => setIsMoveToFolderOpen(true)}
             onAssign={() => setIsBulkAssignOpen(true)}
             onAddTags={() => setIsBulkTagsOpen(true)}
             onDelete={() => {
@@ -958,6 +1035,18 @@ export default function TestCasesPage() {
           if (tagsToAdd.length) changes.push(`added ${tagsToAdd.length} tag(s)`);
           if (tagsToRemove.length) changes.push(`removed ${tagsToRemove.length} tag(s)`);
           toast.success(`Updated tags: ${changes.join(', ')}`);
+          setSelectedIds(new Set());
+          refetch();
+        }}
+      />
+
+      {/* Move to Folder Dialog */}
+      <MoveToFolderDialog
+        open={isMoveToFolderOpen}
+        onOpenChange={setIsMoveToFolderOpen}
+        projectId={projectId}
+        selectedTestCaseIds={Array.from(selectedIds)}
+        onSuccess={() => {
           setSelectedIds(new Set());
           refetch();
         }}
