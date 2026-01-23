@@ -94,17 +94,7 @@ serve(async (req) => {
       );
     }
 
-    // Allow deletion only for disabled or rejected users
-    const canDelete = targetUser.approval_status === 'DISABLED' || 
-                      targetUser.approval_status === 'REJECTED' ||
-                      targetUser.status === 'Inactive';
-                      
-    if (!canDelete) {
-      return new Response(
-        JSON.stringify({ error: "Only inactive, disabled, or rejected users can be permanently deleted. Please disable the user first." }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // Allow deletion for any user (admin already verified above)
 
     // Delete all related records in order to handle foreign key constraints
     // that don't have ON DELETE CASCADE
