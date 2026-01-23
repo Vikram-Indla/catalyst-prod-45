@@ -13,6 +13,7 @@ import {
   Play,
   Copy,
   Download,
+  Folder,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -22,12 +23,13 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-interface BulkActionsBarProps {
+export interface BulkActionsBarProps {
   selectedCount: number;
   totalCount: number;
   onSelectAll: () => void;
   onClear: () => void;
   onMove?: () => void;
+  onMoveToFolder?: () => void;
   onAssign?: () => void;
   onAddTags?: () => void;
   onDelete?: () => void;
@@ -43,6 +45,7 @@ export function BulkActionsBar({
   onSelectAll,
   onClear,
   onMove,
+  onMoveToFolder,
   onAssign,
   onAddTags,
   onDelete,
@@ -103,6 +106,23 @@ export function BulkActionsBar({
           </Tooltip>
         )}
 
+        {onMoveToFolder && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-background hover:bg-muted-foreground/20 h-8 px-3"
+                onClick={onMoveToFolder}
+              >
+                <Folder className="w-4 h-4 mr-1.5" />
+                To Folder
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Move to folder</TooltipContent>
+          </Tooltip>
+        )}
+
         {onMove && (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -113,7 +133,7 @@ export function BulkActionsBar({
                 onClick={onMove}
               >
                 <FolderInput className="w-4 h-4 mr-1.5" />
-                Move
+                To Release
               </Button>
             </TooltipTrigger>
             <TooltipContent>Move to another release</TooltipContent>
@@ -194,7 +214,7 @@ export function BulkActionsBar({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/20 h-8 px-2"
+                className="text-destructive hover:text-destructive hover:bg-destructive/20 h-8 px-2"
                 onClick={onDelete}
               >
                 <Trash2 className="w-4 h-4" />
