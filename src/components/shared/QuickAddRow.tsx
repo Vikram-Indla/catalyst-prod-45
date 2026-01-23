@@ -44,13 +44,13 @@ export function QuickAddRow({
   const createMutation = useMutation({
     mutationFn: async (title: string): Promise<{ id: string }> => {
       if (createType === 'business_request') {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('business_requests')
           .insert([{ title, process_step: 'NEW_REQUEST' }])
           .select('id')
           .single();
         if (error) throw error;
-        return data;
+        return data as { id: string };
       } else {
         // epic
         const { data, error } = await supabase

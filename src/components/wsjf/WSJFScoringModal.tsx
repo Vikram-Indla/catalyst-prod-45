@@ -71,7 +71,7 @@ export function WSJFScoringModal({
     queryKey: ['wsjf-scoring', workItemType, workItemId, piId],
     queryFn: async () => {
       if (workItemType === 'epic' && piId) {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('epic_wsjf')
           .select('*')
           .eq('epic_id', workItemId)
@@ -79,7 +79,7 @@ export function WSJFScoringModal({
           .maybeSingle();
         
         if (error) throw error;
-        return data;
+        return data as any;
       } else if (workItemType === 'feature') {
         const { data, error } = await supabase
           .from('features')
@@ -128,7 +128,7 @@ export function WSJFScoringModal({
       
       if (workItemType === 'epic' && piId) {
         // First try to update existing record
-        const { data: existing } = await supabase
+        const { data: existing } = await (supabase as any)
           .from('epic_wsjf')
           .select('id')
           .eq('epic_id', workItemId)
@@ -137,7 +137,7 @@ export function WSJFScoringModal({
         
         if (existing) {
           // Update existing record (don't include wsjf_score - it's computed)
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('epic_wsjf')
             .update({
               business_value: localValues.business_value,
@@ -151,7 +151,7 @@ export function WSJFScoringModal({
           if (error) throw error;
         } else {
           // Insert new record (don't include wsjf_score - it's computed)
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('epic_wsjf')
             .insert({
               epic_id: workItemId,

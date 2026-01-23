@@ -96,7 +96,7 @@ export function useAdminOverviewMetrics(): AdminOverviewMetrics {
   const { data: authSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['admin-auth-settings-count'],
     queryFn: async () => {
-      const { count, error } = await supabase
+      const { count, error } = await (supabase as any)
         .from('auth_settings')
         .select('*', { count: 'exact', head: true });
       if (error) throw error;

@@ -39,7 +39,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
   const { data: attachments, isLoading } = useQuery({
     queryKey: ['story-attachments', storyId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('attachments')
         .select('*')
         .eq('entity_type', 'stories')
@@ -65,7 +65,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
       if (uploadError) throw uploadError;
 
       // Create attachment record
-      const { error: recordError } = await supabase
+      const { error: recordError } = await (supabase as any)
         .from('attachments')
         .insert({
           entity_type: 'stories',
@@ -98,7 +98,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
       if (storageError) throw storageError;
 
       // Delete record
-      const { error: recordError } = await supabase
+      const { error: recordError } = await (supabase as any)
         .from('attachments')
         .delete()
         .eq('id', attachment.id);

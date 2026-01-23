@@ -29,7 +29,7 @@ export function useIdeaComments(ideaId: string | undefined) {
     queryFn: async () => {
       if (!ideaId) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('idea_comments')
         .select(`
           *,
@@ -64,7 +64,7 @@ export function useCreateIdeaComment() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('idea_comments')
         .insert({
           idea_id: ideaId,
@@ -100,7 +100,7 @@ export function useDeleteIdeaComment() {
   
   return useMutation({
     mutationFn: async ({ commentId, ideaId }: { commentId: string; ideaId: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('idea_comments')
         .delete()
         .eq('id', commentId);
@@ -126,7 +126,7 @@ export function useIdeaCommentsCount(ideaId: string | undefined) {
     queryFn: async () => {
       if (!ideaId) return 0;
       
-      const { count, error } = await supabase
+      const { count, error } = await (supabase as any)
         .from('idea_comments')
         .select('*', { count: 'exact', head: true })
         .eq('idea_id', ideaId)

@@ -105,7 +105,7 @@ export function GlobalSearch() {
         .limit(5);
 
       // Search business requests
-      const businessRequestsQuery = supabase
+      const businessRequestsQuery = (supabase as any)
         .from('business_requests')
         .select('id, title, request_key, process_step')
         .or(isKeySearch
@@ -173,7 +173,7 @@ export function GlobalSearch() {
       }
 
       if (businessRequests.data) {
-        results.push(...businessRequests.data.map(br => ({
+        results.push(...(businessRequests.data as any[]).map((br: any) => ({
           id: br.id,
           key: br.request_key || `MIM-${br.id.slice(0, 4)}`,
           name: br.title,

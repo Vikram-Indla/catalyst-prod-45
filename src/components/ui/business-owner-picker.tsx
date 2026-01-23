@@ -41,7 +41,7 @@ export function BusinessOwnerPicker({
   const { data: businessOwners, isLoading } = useQuery({
     queryKey: ['distinct-business-owners'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .select('business_owner')
         .not('business_owner', 'is', null)
@@ -50,7 +50,7 @@ export function BusinessOwnerPicker({
       if (error) throw error;
 
       // Get unique values
-      const uniqueOwners = [...new Set(data.map(d => d.business_owner).filter(Boolean))] as string[];
+      const uniqueOwners = [...new Set((data as any[]).map((d: any) => d.business_owner).filter(Boolean))] as string[];
       return uniqueOwners.sort();
     },
     staleTime: 5 * 60 * 1000,

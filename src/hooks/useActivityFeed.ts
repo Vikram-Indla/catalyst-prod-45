@@ -89,7 +89,7 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
             .eq("owner_id", user.id)
             .order("updated_at", { ascending: false })
             .range(offset, offset + Math.floor(limit / 4)),
-          supabase
+          (supabase as any)
             .from("business_requests")
             .select("id, title, request_key, updated_at, created_at, assignee")
             .eq("assignee", user.id)
@@ -147,7 +147,7 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
 
         // Map demands
         if (demandsRes.data) {
-          allItems.push(...demandsRes.data.map((d) => ({
+          allItems.push(...(demandsRes.data as any[]).map((d: any) => ({
             id: d.id,
             type: "demand" as ActivityType,
             key: d.request_key || d.id.substring(0, 8).toUpperCase(),
@@ -211,7 +211,7 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
         supabase.from("epics").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
         supabase.from("features").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
         supabase.from("stories").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
-        supabase.from("business_requests").select("id", { count: "exact", head: true }).eq("assignee", user.id),
+        (supabase as any).from("business_requests").select("id", { count: "exact", head: true }).eq("assignee", user.id),
       ]);
 
       const total = 

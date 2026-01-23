@@ -26,7 +26,7 @@ export function WSJFInlineScores({ epicId, epicTitle, epicKey }: WSJFInlineScore
   const { data: wsjfScores, isLoading } = useQuery({
     queryKey: ['epic-wsjf-inline', epicId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .select(`
           *,
@@ -35,7 +35,7 @@ export function WSJFInlineScores({ epicId, epicTitle, epicKey }: WSJFInlineScore
         .eq('epic_id', epicId);
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!epicId,
   });

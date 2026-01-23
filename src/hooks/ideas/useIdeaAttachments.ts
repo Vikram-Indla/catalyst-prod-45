@@ -25,7 +25,7 @@ export function useIdeaAttachments(ideaId: string | undefined) {
     queryFn: async () => {
       if (!ideaId) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('attachments')
         .select(`
           *,
@@ -67,7 +67,7 @@ export function useUploadIdeaAttachment() {
       if (uploadError) throw uploadError;
 
       // Create attachment record
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('attachments')
         .insert({
           entity_type: 'improvement_idea',
@@ -111,7 +111,7 @@ export function useDeleteIdeaAttachment() {
         .remove([filePath]);
 
       // Delete record
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('attachments')
         .delete()
         .eq('id', attachmentId);

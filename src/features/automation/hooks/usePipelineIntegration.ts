@@ -113,7 +113,7 @@ export function usePipelineStats(connectorId: string | null) {
 
     try {
       // Get aggregated stats from automation_results
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('automation_results')
         .select('status, duration_ms, imported_at')
         .eq('connector_id', connectorId)
@@ -123,12 +123,12 @@ export function usePipelineStats(connectorId: string | null) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const passed = data.filter(r => r.status === 'passed').length;
-        const durations = data.filter(r => r.duration_ms).map(r => r.duration_ms as number);
+        const passed = (data as any[]).filter((r: any) => r.status === 'passed').length;
+        const durations = (data as any[]).filter((r: any) => r.duration_ms).map((r: any) => r.duration_ms as number);
         
         setStats({
           total_runs: data.length,
-          last_run: data[0]?.imported_at || null,
+          last_run: (data as any[])[0]?.imported_at || null,
           pass_rate: Math.round((passed / data.length) * 100),
           avg_duration_ms: durations.length > 0 
             ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
