@@ -37,6 +37,7 @@ import { Loader2, Save, X, User, Building, MapPin, Briefcase, Check, ChevronsUpD
 import { UserProfile } from '@/hooks/useUsers';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 import { getCountryInfo } from '@/lib/countryLookup';
 import { format } from 'date-fns';
@@ -168,13 +169,12 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
   const { data: departments = [] } = useQuery({
     queryKey: ['capacity-departments'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('capacity_departments')
+      const { data, error } = await fromTable('capacity_departments')
         .select('id, name')
         .eq('is_active', true)
         .order('sort_order');
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ id: string; name: string }>;
     },
   });
 
@@ -469,7 +469,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       if ((selectedAssignmentId || '') !== (initialAssignmentId || '')) changedFields.push('assignment');
       
       if (changedFields.length > 0) {
-        await supabase.from('auth_audit_log').insert({
+        await fromTable('auth_audit_log').insert({
           user_id: user.id,
           event_type: 'user_profile_updated',
           actor_id: currentUser?.id,

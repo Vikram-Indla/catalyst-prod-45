@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { format, isSameMinute, parseISO } from 'date-fns';
 import { History, ArrowRight, Loader2, Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -87,8 +88,7 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
       const to = from + PAGE_SIZE - 1;
 
       // Query audit logs directly (no FK to profiles)
-      const { data, error, count } = await supabase
-        .from('business_request_audit_logs')
+      const { data, error, count } = await fromTable('business_request_audit_logs')
         .select('*', { count: 'exact' })
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false })
@@ -96,7 +96,7 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
 
       if (error) throw error;
       
-      return { logs: data || [], count: count || 0, page: pageParam };
+      return { logs: (data || []) as AuditLog[], count: count || 0, page: pageParam };
     },
     getNextPageParam: (lastPage) => {
       const totalLoaded = (lastPage.page + 1) * PAGE_SIZE;

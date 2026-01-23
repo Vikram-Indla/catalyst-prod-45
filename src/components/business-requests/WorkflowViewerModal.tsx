@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useProcessStepOptions, useProcessStepInfo } from '@/contexts/ProcessStepsContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { format } from 'date-fns';
 
 interface WorkflowViewerModalProps {
@@ -51,8 +52,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
   const { data: transitions } = useQuery({
     queryKey: ['workflow-transitions', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_request_audit_logs')
+      const { data, error } = await fromTable('business_request_audit_logs')
         .select('old_value, new_value, created_at')
         .eq('business_request_id', requestId)
         .eq('field_changed', 'Process Step')
@@ -73,7 +73,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
       }
 
       // Process all audit logs to build complete transition history
-      data?.forEach((log: { old_value: string | null; new_value: string | null; created_at: string }) => {
+      (data as any[])?.forEach((log: { old_value: string | null; new_value: string | null; created_at: string }) => {
         if (log.new_value) {
           timeline.push({
             fromStep: log.old_value,

@@ -6,6 +6,7 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -79,8 +80,7 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
   const { data: discussions = [], isLoading } = useQuery({
     queryKey: ['business-request-discussions', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_request_discussions')
+      const { data, error } = await fromTable('business_request_discussions')
         .select('id, message, user_id, created_at')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false });
@@ -95,8 +95,7 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
   const { data: activityLogs = [] } = useQuery({
     queryKey: ['business-request-activity', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_request_audit_logs')
+      const { data, error } = await fromTable('business_request_audit_logs')
         .select('*')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false })
