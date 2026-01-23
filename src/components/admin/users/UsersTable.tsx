@@ -31,7 +31,7 @@ import {
 import { Search, MoreHorizontal, Power, PowerOff, Trash2, KeyRound, CheckCircle, XCircle, Clock, Download, Pencil, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 // Sortable column types
-type SortColumn = 'rid' | 'full_name' | 'job_role' | 'department_name' | 'assignment_name' | 'contract_start_date' | 'contract_end_date' | 'vendor' | 'resource_type' | 'country' | 'location';
+type SortColumn = 'rid' | 'full_name' | 'job_role' | 'department_name' | 'assignment_name' | 'contract_start_date' | 'contract_end_date' | 'vendor' | 'resource_type' | 'country' | 'location' | 'ctc';
 type SortDirection = 'asc' | 'desc' | null;
 import { UserProfile, useDeleteUser, useApproveUser, useRejectUser, useDisableUser, ApprovalStatus, getDisplayStatus } from '@/hooks/useUsers';
 import { format, isToday, isYesterday } from 'date-fns';
@@ -263,6 +263,12 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
           aVal = a.location;
           bVal = b.location;
           break;
+        case 'ctc':
+          // Sort numerically for CTC
+          const aNum = a.ctc ?? 0;
+          const bNum = b.ctc ?? 0;
+          const numComparison = aNum - bNum;
+          return sortDirection === 'asc' ? numComparison : -numComparison;
         default:
           return 0;
       }
@@ -797,6 +803,15 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                       <SortIcon column="location" />
                     </div>
                   </th>
+                  <th 
+                    className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
+                    onClick={() => handleSort('ctc')}
+                  >
+                    <div className="flex items-center">
+                      CTC (SAR)
+                      <SortIcon column="ctc" />
+                    </div>
+                  </th>
                   <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
@@ -1003,6 +1018,24 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                             field: 'location_id',
                             value,
                             displayValue,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
+                    </td>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="text"
+                        value={user.ctc?.toString() || null}
+                        displayValue={user.ctc ? `SAR ${user.ctc.toLocaleString('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : undefined}
+                        placeholder="-"
+                        onSave={async (value) => {
+                          const numValue = value ? parseFloat(value.replace(/[^0-9.-]/g, '')) : null;
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'ctc',
+                            value: numValue?.toString() || null,
+                            displayValue: numValue ? `SAR ${numValue.toLocaleString('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : null,
                             hasEmail: !!user.email,
                           });
                         }}

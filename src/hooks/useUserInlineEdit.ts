@@ -18,7 +18,8 @@ export type EditableUserField =
   | 'vendor_id' 
   | 'resource_type' 
   | 'country_id' 
-  | 'location_id';
+  | 'location_id'
+  | 'ctc';
 
 interface InlineEditParams {
   userId: string;
@@ -45,7 +46,7 @@ export function useUserInlineEdit(referenceData: ReferenceData) {
       const inventoryFields = [
         'job_role', 'department_id', 'assignment_id', 
         'contract_start_date', 'contract_end_date', 
-        'vendor_id', 'resource_type', 'country_id', 'location_id'
+        'vendor_id', 'resource_type', 'country_id', 'location_id', 'ctc'
       ];
       const profileFields = ['full_name'];
 
@@ -201,6 +202,7 @@ export function useUserInlineEdit(referenceData: ReferenceData) {
             resource_type: 'resource_type',
             country_id: 'country',
             location_id: 'location',
+            ctc: 'ctc',
           };
 
           const targetField = fieldMap[field];
