@@ -60,7 +60,7 @@ export function useVersions(projectId: string | null | undefined) {
       if (!projectId) return [];
 
       // Fetch versions
-      const { data: versionsData, error: versionsError } = await supabase
+      const { data: versionsData, error: versionsError } = await (supabase as any)
         .from('injira_versions')
         .select('*')
         .eq('project_id', projectId)
@@ -70,7 +70,7 @@ export function useVersions(projectId: string | null | undefined) {
 
       // Get issue counts per version with status category breakdown
       const versionsWithProgress: VersionWithProgress[] = await Promise.all(
-        versionsData.map(async (v) => {
+        ((versionsData || []) as any[]).map(async (v: any) => {
           // Get issues linked to this version
           const { data: issueVersions } = await supabase
             .from('injira_issue_versions')
@@ -131,15 +131,15 @@ export function useVersions(projectId: string | null | undefined) {
           const progress = issueCount > 0 ? Math.round((doneCount / issueCount) * 100) : 0;
 
           return {
-            id: v.id,
-            name: v.name,
-            description: v.description,
-            startDate: v.start_date,
-            releaseDate: v.release_date,
-            released: v.released || false,
-            archived: v.archived || false,
-            projectId: v.project_id,
-            sequence: v.sort_order || 0,
+            id: v.id as string,
+            name: v.name as string,
+            description: v.description as string | undefined,
+            startDate: v.start_date as string | undefined,
+            releaseDate: v.release_date as string | undefined,
+            released: (v.released || false) as boolean,
+            archived: (v.archived || false) as boolean,
+            projectId: v.project_id as string,
+            sequence: (v.sort_order || 0) as number,
             issueCount,
             doneCount,
             inProgressCount,
@@ -158,29 +158,31 @@ export function useVersions(projectId: string | null | undefined) {
   const createVersionMutation = useMutation({
     mutationFn: async (data: CreateVersionData) => {
       // Get tenant ID first
-      const { data: project } = await supabase
+      const { data: project } = await (supabase as any)
         .from('injira_projects')
         .select('tenant_id')
         .eq('id', data.projectId)
         .single();
+      const projectTyped = project as { tenant_id: string } | null;
 
-      if (!project) throw new Error('Project not found');
+      if (!projectTyped) throw new Error('Project not found');
 
       // Get max sort_order
-      const { data: maxSeq } = await supabase
+      const { data: maxSeq } = await (supabase as any)
         .from('injira_versions')
         .select('sort_order')
         .eq('project_id', data.projectId)
         .order('sort_order', { ascending: false })
         .limit(1)
         .maybeSingle();
+      const maxSeqTyped = maxSeq as { sort_order: number } | null;
 
-      const nextSequence = (maxSeq?.sort_order || 0) + 1;
+      const nextSequence = (maxSeqTyped?.sort_order || 0) + 1;
 
-      const { data: version, error } = await supabase
+      const { data: version, error } = await (supabase as any)
         .from('injira_versions')
         .insert({
-          tenant_id: project.tenant_id,
+          tenant_id: projectTyped.tenant_id,
           project_id: data.projectId,
           name: data.name,
           description: data.description,
@@ -215,7 +217,7 @@ export function useVersions(projectId: string | null | undefined) {
       if (data.released !== undefined) updateData.released = data.released;
       if (data.archived !== undefined) updateData.archived = data.archived;
 
-      const { data: version, error } = await supabase
+      const { data: version, error } = await (supabase as any)
         .from('injira_versions')
         .update(updateData)
         .eq('id', id)
@@ -269,7 +271,7 @@ export function useVersions(projectId: string | null | undefined) {
   // Delete version mutation
   const deleteVersionMutation = useMutation({
     mutationFn: async (versionId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('injira_versions')
         .delete()
         .eq('id', versionId);

@@ -100,23 +100,24 @@ export function useResourceManagement() {
       allocationPercentage: number 
     }) => {
       // Check if assignment exists
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from('assignments')
         .select('id')
         .eq('user_id', resourceId)
         .eq('project_id', projectId)
         .eq('status', 'active')
         .maybeSingle();
+      const existingTyped = existing as { id: string } | null;
 
-      if (existing) {
+      if (existingTyped) {
         // Update existing assignment (and return the updated row for optimistic UI)
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('assignments')
           .update({ 
             allocation_percentage: allocationPercentage,
             updated_at: new Date().toISOString()
           })
-          .eq('id', existing.id)
+          .eq('id', existingTyped.id)
           .select('*')
           .single();
 
@@ -125,7 +126,7 @@ export function useResourceManagement() {
       }
 
       // Create new assignment (and return inserted row for optimistic UI)
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('assignments')
         .insert({
           user_id: resourceId,

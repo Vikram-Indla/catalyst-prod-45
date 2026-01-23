@@ -52,7 +52,7 @@ export function useBusinessRequestRoadmapItems(
   const { data: requestsData, isLoading: requestsLoading, error: requestsError } = useQuery({
     queryKey: ['business-request-roadmap-items', filters],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('business_requests')
         .select(`
           id,
