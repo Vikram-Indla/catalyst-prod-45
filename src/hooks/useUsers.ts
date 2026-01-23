@@ -84,10 +84,11 @@ export function useUsers() {
       if (profilesError) throw profilesError;
 
       // Fetch ALL resource_inventory records (including those without profile_id)
-      const { data: resourceInventory } = await supabase
+      const { data: resourceInventory } = await (supabase as any)
         .from('resource_inventory')
         .select(`
           id,
+          rid,
           profile_id, 
           name,
           contract_start_date, 
@@ -127,7 +128,7 @@ export function useUsers() {
 
       // Create lookup map by profile_id with resolved names (for linked records)
       const inventoryByProfileId = new Map(
-        (resourceInventory || [])
+        ((resourceInventory || []) as any[])
           .filter(r => r.profile_id)
           .map(r => [r.profile_id, {
             ...r,
@@ -205,12 +206,13 @@ export function useUsers() {
       });
 
       // Build user list from unlinked resource_inventory records
-      const unlinkedInventory = (resourceInventory || [])
+      const unlinkedInventory = ((resourceInventory || []) as any[])
         .filter(r => !r.profile_id)
         .map(r => {
           const resolvedCountry = r.country_id ? countryMap.get(r.country_id) : null;
           return {
             id: r.id, // Use inventory id as the user id
+            rid: r.rid || null, // Use RID from resource_inventory
             email: null, // No email stored in resource_inventory
             full_name: r.name || null,
             avatar_url: null,
