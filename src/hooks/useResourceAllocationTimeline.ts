@@ -269,7 +269,20 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       // Convert merged segments to timeline bars
       merged.forEach((seg) => {
         const startDate = parseISO(seg.startDate);
-        const endDate = parseISO(seg.endDate);
+        let endDate = parseISO(seg.endDate);
+        
+        // CRITICAL: Clamp end date to contract end date - never show allocations beyond contract
+        const contractEndDate = resource.contractEnd ? parseISO(resource.contractEnd) : null;
+        let clampedEndDate = seg.endDate;
+        if (contractEndDate && isBefore(contractEndDate, endDate)) {
+          endDate = contractEndDate;
+          clampedEndDate = resource.contractEnd!;
+        }
+        
+        // Skip allocations that start after contract end
+        if (contractEndDate && isBefore(contractEndDate, startDate)) {
+          return; // Don't render this bar at all
+        }
         
         // Find start and end period indices
         let startIndex = periods.findIndex(p => {
@@ -310,13 +323,13 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
           percentage: seg.percentage,
           status: seg.status as any,
           startDate: seg.startDate,
-          endDate: seg.endDate,
+          endDate: clampedEndDate, // Use clamped end date
         });
       });
     });
     
     return result;
-  }, [allocations, periods, view]);
+  }, [allocations, periods, view, resource.contractEnd]);
 
   // ============================================
   // Capacity Calculation
