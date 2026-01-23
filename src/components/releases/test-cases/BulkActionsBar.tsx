@@ -63,7 +63,7 @@ export function BulkActionsBar({
       exit={{ y: 100, opacity: 0 }}
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       className={cn(
-        'fixed bottom-6 left-1/2 -translate-x-1/2 z-50',
+        'sticky bottom-4 z-40 mx-auto w-fit',
         'bg-foreground text-background rounded-full shadow-2xl',
         'flex items-center gap-1 px-2 py-2',
         className
