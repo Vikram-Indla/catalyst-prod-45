@@ -16,13 +16,13 @@ export default function Announcements() {
   const { data: announcements, isLoading } = useQuery({
     queryKey: ['admin-announcements'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('announcements')
         .select('*')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      return (data || []) as Array<{ id: string; title: string; message: string; type: string; target_audience: string; start_date: string; end_date: string; is_active: boolean }>;
     },
   });
 

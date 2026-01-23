@@ -10,7 +10,7 @@ export function useRoadmapDemands(filters: RoadmapFilters) {
   return useQuery({
     queryKey: ['roadmap-demands', filters],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('business_requests')
         .select(`
           id,
@@ -92,7 +92,7 @@ export function useUpdateDemandDates() {
       start_date: string | null;
       end_date: string | null;
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .update({
           start_date,
@@ -119,7 +119,7 @@ export function useReorderDemands() {
     mutationFn: async (reorderedItems: { id: string; rank: number }[]) => {
       // Batch update ranks
       const updates = reorderedItems.map((item) =>
-        supabase
+        (supabase as any)
           .from('business_requests')
           .update({ rank: item.rank })
           .eq('id', item.id)
@@ -138,7 +138,7 @@ export function useUpdateDemandProgress() {
 
   return useMutation({
     mutationFn: async ({ id, progress }: { id: string; progress: number }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .update({
           progress,
@@ -162,7 +162,7 @@ export function useUpdateDemandProduct() {
 
   return useMutation({
     mutationFn: async ({ id, product_id }: { id: string; product_id: string | null }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .update({
           product_id,

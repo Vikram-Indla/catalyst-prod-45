@@ -215,7 +215,7 @@ export default function DemandIntakeCatalyst() {
   // Bulk action mutations
   const bulkUpdateStatusMutation = useMutation({
     mutationFn: async (status: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_requests')
         .update({ process_step: status })
         .in('id', selectedRows);
@@ -230,7 +230,7 @@ export default function DemandIntakeCatalyst() {
 
   const bulkAssignMutation = useMutation({
     mutationFn: async (assignee: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_requests')
         .update({ assignee })
         .in('id', selectedRows);
@@ -245,7 +245,7 @@ export default function DemandIntakeCatalyst() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_requests')
         .delete()
         .in('id', selectedRows);

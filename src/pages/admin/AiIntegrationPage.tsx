@@ -18,13 +18,13 @@ export default function AiIntegrationPage() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['ai-integration-settings'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('ai_integration_settings')
         .select('*')
         .limit(1)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      return data as { id: string; provider: string; model: string; is_active: boolean } | null;
     },
   });
 
@@ -36,7 +36,7 @@ export default function AiIntegrationPage() {
       const isActive = formData.get('is_active') === 'on';
 
       if (settings?.id) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('ai_integration_settings')
           .update({
             provider,
@@ -47,7 +47,7 @@ export default function AiIntegrationPage() {
           .eq('id', settings.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('ai_integration_settings')
           .insert({
             provider,

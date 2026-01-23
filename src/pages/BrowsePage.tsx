@@ -69,11 +69,11 @@ export default function BrowsePage() {
           .select('id, story_key')
           .ilike('story_key', normalizedKey)
           .maybeSingle(),
-        supabase
+        (supabase as any)
           .from('business_requests')
           .select('id, request_key')
           .ilike('request_key', normalizedKey)
-          .maybeSingle(),
+          .maybeSingle() as Promise<{ data: { id: string; request_key: string } | null; error: any }>,
         // Also search by ID prefix for features (when display_id is null)
         // Use RPC function that handles text casting properly
         idFromGeneratedKey && normalizedKey.startsWith('F-')

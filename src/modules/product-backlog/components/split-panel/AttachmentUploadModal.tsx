@@ -139,7 +139,7 @@ export function AttachmentUploadModal({
       }
 
       // Delete from database
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from('business_request_links')
         .delete()
         .eq('id', attachment.id);
