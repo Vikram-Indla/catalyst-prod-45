@@ -4,6 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { useAuth } from '@/lib/auth';
 import type {
   IdeaGroup,
@@ -148,8 +149,7 @@ export function useIdeas(
     queryFn: async () => {
       if (!groupId) return [];
       
-      let query = supabase
-        .from('ideas')
+      let query = fromTable('ideas')
         .select('*')
         .eq('idea_group_id', groupId);
       
@@ -192,8 +192,7 @@ export function useIdea(ideaId: string | null) {
     queryKey: ['idea', ideaId],
     queryFn: async () => {
       if (!ideaId) return null;
-      const { data, error } = await supabase
-        .from('ideas')
+      const { data, error } = await fromTable('ideas')
         .select('*, idea_group:idea_groups(*)')
         .eq('id', ideaId)
         .single();
@@ -210,8 +209,7 @@ export function useCreateIdea() {
   
   return useMutation({
     mutationFn: async (request: CreateIdeaRequest) => {
-      const { data, error } = await supabase
-        .from('ideas')
+      const { data, error } = await fromTable('ideas')
         .insert({
           ...request,
           created_by_id: user?.id,
@@ -236,8 +234,7 @@ export function useUpdateIdea() {
   
   return useMutation({
     mutationFn: async ({ id, ...request }: UpdateIdeaRequest & { id: string }) => {
-      const { data, error } = await supabase
-        .from('ideas')
+      const { data, error } = await fromTable('ideas')
         .update(request)
         .eq('id', id)
         .select()
@@ -261,8 +258,7 @@ export function useDeleteIdea() {
   
   return useMutation({
     mutationFn: async (ideaId: string) => {
-      const { error } = await supabase
-        .from('ideas')
+      const { error } = await fromTable('ideas')
         .delete()
         .eq('id', ideaId);
       if (error) throw error;
@@ -528,14 +524,13 @@ export function useUserVotesForGroup(groupId: string | null) {
     queryFn: async () => {
       if (!groupId || !user?.id) return [];
       
-      const { data: ideas } = await supabase
-        .from('ideas')
+      const { data: ideas } = await fromTable('ideas')
         .select('id')
         .eq('idea_group_id', groupId);
       
-      if (!ideas || ideas.length === 0) return [];
+      if (!ideas || (ideas as any[]).length === 0) return [];
       
-      const ideaIds = ideas.map(i => i.id);
+      const ideaIds = (ideas as Array<{ id: string }>).map(i => i.id);
       const { data, error } = await supabase
         .from('ideation_votes')
         .select('*')
@@ -638,19 +633,19 @@ export function useIdeationMetrics(groupId: string | null) {
         };
       }
       
-      const { data: ideas, error } = await supabase
-        .from('ideas')
+      const { data, error } = await fromTable('ideas')
         .select('id, status, vote_score, comment_count, created_by_id')
         .eq('idea_group_id', groupId);
       
       if (error) throw error;
       
-      const total = ideas?.length || 0;
-      const managed = ideas?.filter(i => ['Planned', 'Completed', 'Shelved'].includes(i.status)).length || 0;
-      const withVotes = ideas?.filter(i => i.vote_score !== 0).length || 0;
-      const withComments = ideas?.filter(i => i.comment_count > 0).length || 0;
+      const ideas = (data || []) as Array<{ id: string; status: string; vote_score: number; comment_count: number; created_by_id: string | null }>;
+      const total = ideas.length;
+      const managed = ideas.filter(i => ['Planned', 'Completed', 'Shelved'].includes(i.status)).length;
+      const withVotes = ideas.filter(i => i.vote_score !== 0).length;
+      const withComments = ideas.filter(i => i.comment_count > 0).length;
       
-      const userIdeas = ideas?.filter(i => i.created_by_id === user?.id) || [];
+      const userIdeas = ideas.filter(i => i.created_by_id === user?.id);
       const userTotal = userIdeas.length;
       const userWithVotes = userIdeas.filter(i => i.vote_score !== 0).length;
       const userWithComments = userIdeas.filter(i => i.comment_count > 0).length;

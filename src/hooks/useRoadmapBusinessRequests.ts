@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { fromTable } from '@/lib/supabase-utils';
 import { supabase } from '@/integrations/supabase/client';
 import { BusinessRequestRoadmapItem, RoadmapStatus, MilestoneState } from '@/types/roadmapTypes';
 
@@ -67,22 +68,38 @@ interface MilestoneRow {
   business_request_id: string;
 }
 
+interface BusinessRequestRow {
+  id: string;
+  request_key: string | null;
+  title: string | null;
+  business_owner: string | null;
+  process_step: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  impl_start_date: string | null;
+  impl_target_end_date: string | null;
+  rank: number | null;
+  delivery_platform: string | null;
+  health: string | null;
+}
+
 export function useRoadmapBusinessRequests() {
   return useQuery({
     queryKey: ['roadmap-business-requests'],
     queryFn: async () => {
       // Fetch business requests
       // Use impl_start_date (Kickoff) for bar start, impl_target_end_date (Target Complete) for bar end
-      const { data: requests, error: reqError } = await supabase
-        .from('business_requests')
+      const { data, error: reqError } = await fromTable('business_requests')
         .select('id, request_key, title, business_owner, process_step, start_date, end_date, impl_start_date, impl_target_end_date, rank, delivery_platform, health')
         .is('deleted_at', null)
         .order('rank', { ascending: true, nullsFirst: false });
 
       if (reqError) throw reqError;
 
+      const requests = (data || []) as BusinessRequestRow[];
+
       // Fetch all milestones for these business requests
-      const requestIds = (requests || []).map(r => r.id);
+      const requestIds = requests.map(r => r.id);
       let milestones: MilestoneRow[] = [];
       
       if (requestIds.length > 0) {
@@ -106,7 +123,7 @@ export function useRoadmapBusinessRequests() {
       });
 
       // Transform to roadmap items with date normalization
-      const roadmapItems: BusinessRequestRoadmapItem[] = (requests || [])
+      const roadmapItems: BusinessRequestRoadmapItem[] = requests
         .filter(r => r.request_key) // Only include requests with a key
         .map((r, index) => {
           const requestMilestones = milestonesByRequest[r.id] || [];

@@ -4,6 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import type { 
   ImprovementInitiative, 
   ImprovementIdea, 
@@ -387,8 +388,7 @@ export function useMyVote(ideaId: string | undefined) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data, error } = await supabase
-        .from('idea_votes')
+      const { data, error } = await fromTable('idea_votes')
         .select('*')
         .eq('idea_id', ideaId)
         .eq('user_id', user.id)
@@ -409,8 +409,7 @@ export function useCastIdeaVote() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
-        .from('idea_votes')
+      const { data, error } = await fromTable('idea_votes')
         .upsert({
           idea_id: ideaId,
           user_id: user.id,
@@ -438,8 +437,7 @@ export function useRemoveIdeaVote() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
-        .from('idea_votes')
+      const { error } = await fromTable('idea_votes')
         .delete()
         .eq('idea_id', ideaId)
         .eq('user_id', user.id);
