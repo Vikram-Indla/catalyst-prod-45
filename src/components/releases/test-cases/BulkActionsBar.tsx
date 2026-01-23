@@ -1,9 +1,8 @@
 /**
- * BulkActionsBar — Floating action bar for bulk operations
- * Features: Selection count, select all, quick actions, keyboard hint
+ * BulkActionsBar — Floating pill action bar for bulk operations
+ * Features: Selection count, select all, quick actions with thin pill design
  */
 
-import { motion } from 'framer-motion';
 import { 
   X, 
   FolderInput, 
@@ -14,6 +13,7 @@ import {
   Copy,
   Download,
   Folder,
+  Calendar,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -57,188 +57,196 @@ export function BulkActionsBar({
   if (selectedCount === 0) return null;
 
   return (
-    <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 100, opacity: 0 }}
-      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+    <div 
       className={cn(
-        'fixed bottom-20 left-1/2 -translate-x-1/2 z-50',
-        'bg-foreground text-background rounded-full shadow-2xl',
-        'flex items-center gap-1 px-2 py-2',
+        'fixed bottom-5 left-1/2 -translate-x-1/2 z-50',
+        'animate-in slide-in-from-bottom-4 duration-200',
         className
       )}
     >
-      {/* Selection Info */}
-      <div className="flex items-center gap-2 px-3">
-        <span className="text-sm font-semibold">{selectedCount}</span>
-        <span className="text-sm text-muted-foreground/70">selected</span>
-      </div>
-
-      {/* Select All */}
-      {selectedCount < totalCount && (
-        <button
-          onClick={onSelectAll}
-          className="text-xs text-primary-foreground/70 hover:text-primary-foreground underline px-2"
-        >
-          Select all {totalCount}
-        </button>
-      )}
-
-      <div className="w-px h-6 bg-muted-foreground/30 mx-1" />
-
-      {/* Actions */}
-      <div className="flex items-center gap-0.5">
-        {onExecute && (
+      <div className="flex items-center bg-slate-900/95 backdrop-blur-sm text-white h-10 px-1.5 rounded-full shadow-2xl border border-slate-700/50">
+        
+        {/* Selection Count */}
+        <div className="flex items-center gap-1.5 pl-3 pr-2">
+          <span className="text-sm font-semibold">{selectedCount}</span>
+          <span className="text-xs text-slate-400">selected</span>
+        </div>
+        
+        {/* Select All (if not all selected) */}
+        {selectedCount < totalCount && (
+          <button
+            onClick={onSelectAll}
+            className="text-xs text-slate-400 hover:text-white underline px-1.5 transition-colors"
+          >
+            All {totalCount}
+          </button>
+        )}
+        
+        <div className="w-px h-5 bg-slate-600" />
+        
+        {/* Move to Folder (Primary Action) */}
+        {onMoveToFolder && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
                 size="sm"
-                className="text-background hover:bg-muted-foreground/20 h-8 px-3"
+                className="h-7 px-2.5 mx-1 text-xs font-medium bg-blue-600 hover:bg-blue-700 rounded-full border-0"
+                onClick={onMoveToFolder}
+              >
+                <Folder className="w-3.5 h-3.5 mr-1.5" />
+                Move
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Move to folder</TooltipContent>
+          </Tooltip>
+        )}
+        
+        {/* Execute */}
+        {onExecute && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
                 onClick={onExecute}
               >
-                <Play className="w-4 h-4 mr-1.5" />
+                <Play className="w-3.5 h-3.5 mr-1.5" />
                 Execute
               </Button>
             </TooltipTrigger>
             <TooltipContent>Run selected test cases</TooltipContent>
           </Tooltip>
         )}
-
-        {onMoveToFolder && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-background hover:bg-muted-foreground/20 h-8 px-3"
-                onClick={onMoveToFolder}
-              >
-                <Folder className="w-4 h-4 mr-1.5" />
-                To Folder
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to folder</TooltipContent>
-          </Tooltip>
-        )}
-
-        {onMove && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-background hover:bg-muted-foreground/20 h-8 px-3"
-                onClick={onMove}
-              >
-                <FolderInput className="w-4 h-4 mr-1.5" />
-                To Release
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to another release</TooltipContent>
-          </Tooltip>
-        )}
-
+        
+        {/* Assign */}
         {onAssign && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-background hover:bg-muted-foreground/20 h-8 px-3"
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
                 onClick={onAssign}
               >
-                <UserPlus className="w-4 h-4 mr-1.5" />
+                <UserPlus className="w-3.5 h-3.5 mr-1.5" />
                 Assign
               </Button>
             </TooltipTrigger>
             <TooltipContent>Assign to team member</TooltipContent>
           </Tooltip>
         )}
-
+        
+        {/* Move to Release */}
+        {onMove && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
+                onClick={onMove}
+              >
+                <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                Release
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Move to another release</TooltipContent>
+          </Tooltip>
+        )}
+        
+        {/* Tags */}
         {onAddTags && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-background hover:bg-muted-foreground/20 h-8 px-3"
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
                 onClick={onAddTags}
               >
-                <Tags className="w-4 h-4 mr-1.5" />
+                <Tags className="w-3.5 h-3.5 mr-1.5" />
                 Tags
               </Button>
             </TooltipTrigger>
             <TooltipContent>Add or remove tags</TooltipContent>
           </Tooltip>
         )}
-
+        
+        {/* Clone/Duplicate */}
         {onDuplicate && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-background hover:bg-muted-foreground/20 h-8 px-2"
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
                 onClick={onDuplicate}
               >
-                <Copy className="w-4 h-4" />
+                <Copy className="w-3.5 h-3.5 mr-1.5" />
+                Clone
               </Button>
             </TooltipTrigger>
             <TooltipContent>Duplicate selected</TooltipContent>
           </Tooltip>
         )}
-
+        
+        {/* Export */}
         {onExport && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-background hover:bg-muted-foreground/20 h-8 px-2"
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
                 onClick={onExport}
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-3.5 h-3.5 mr-1.5" />
+                Export
               </Button>
             </TooltipTrigger>
             <TooltipContent>Export selected</TooltipContent>
           </Tooltip>
         )}
-
-        <div className="w-px h-6 bg-muted-foreground/30 mx-1" />
-
+        
+        <div className="w-px h-5 bg-slate-600" />
+        
+        {/* Delete (Danger) */}
         {onDelete && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive hover:bg-destructive/20 h-8 px-2"
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2.5 text-xs text-red-400 hover:bg-red-500/20 rounded-full"
                 onClick={onDelete}
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                Delete
               </Button>
             </TooltipTrigger>
             <TooltipContent>Delete selected (Del)</TooltipContent>
           </Tooltip>
         )}
+        
+        <div className="w-px h-5 bg-slate-600" />
+        
+        {/* Close / Clear Selection */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 mr-0.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full"
+              onClick={onClear}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Clear selection (Esc)</TooltipContent>
+        </Tooltip>
+        
       </div>
-
-      <div className="w-px h-6 bg-muted-foreground/30 mx-1" />
-
-      {/* Close */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            onClick={onClear}
-            className="p-2 text-muted-foreground hover:text-background transition-colors rounded-full hover:bg-muted-foreground/20"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent>Clear selection (Esc)</TooltipContent>
-      </Tooltip>
-    </motion.div>
+    </div>
   );
 }
