@@ -293,7 +293,7 @@ export default function IndustryRoadmapPage() {
   const { data: requestsData, isLoading } = useQuery({
     queryKey: ['industry-roadmap-requests'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .select(`
           id,
@@ -360,7 +360,7 @@ export default function IndustryRoadmapPage() {
   const { data: ownersData } = useQuery({
     queryKey: ['industry-roadmap-owners'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_owners')
         .select('id, name')
         .eq('is_active', true)
@@ -1312,7 +1312,7 @@ export default function IndustryRoadmapPage() {
         onOpenChange={setFiltersDialogOpen}
         filters={filters}
         onFiltersChange={handleFiltersChange}
-        owners={ownersData || []}
+        owners={(ownersData || []) as any}
         products={productsData || []}
         processSteps={processStepsData || []}
       />

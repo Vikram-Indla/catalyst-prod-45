@@ -260,7 +260,7 @@ export default function DemandIntakeCatalyst() {
 
   // Handle row update from EnterpriseTable inline editing
   const handleRowUpdate = async (rowId: string, columnId: string, newValue: any) => {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('business_requests')
       .update({ [columnId]: newValue })
       .eq('id', rowId);
@@ -276,7 +276,7 @@ export default function DemandIntakeCatalyst() {
 
   // Handle row delete from EnterpriseTable
   const handleRowDelete = async (rowId: string) => {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('business_requests')
       .delete()
       .eq('id', rowId);
