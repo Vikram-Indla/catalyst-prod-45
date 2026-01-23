@@ -77,6 +77,9 @@ export function RenameFolderDialog({
               autoFocus
               onFocus={(e) => e.target.select()}
             />
+            <p className="text-xs text-muted-foreground mt-1.5">
+              {name.length}/100 characters
+            </p>
           </div>
 
           <DialogFooter>
