@@ -387,7 +387,7 @@ export function useMyVote(ideaId: string | undefined) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('idea_votes')
         .select('*')
         .eq('idea_id', ideaId)
@@ -409,7 +409,7 @@ export function useCastIdeaVote() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('idea_votes')
         .upsert({
           idea_id: ideaId,
@@ -438,7 +438,7 @@ export function useRemoveIdeaVote() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('idea_votes')
         .delete()
         .eq('idea_id', ideaId)

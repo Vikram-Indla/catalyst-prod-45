@@ -11,7 +11,7 @@ export function useAssignments() {
 
   const createAssignment = useMutation({
     mutationFn: async (assignment: CreateAssignmentInput) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('assignments')
         .insert(assignment)
         .select()
@@ -31,7 +31,7 @@ export function useAssignments() {
 
   const updateAssignment = useMutation({
     mutationFn: async ({ id, ...updates }: UpdateAssignmentInput) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('assignments')
         .update(updates)
         .eq('id', id)
@@ -51,7 +51,7 @@ export function useAssignments() {
 
   const deleteAssignment = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('assignments').delete().eq('id', id);
+      const { error } = await (supabase as any).from('assignments').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {

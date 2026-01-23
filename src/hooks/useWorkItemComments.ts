@@ -165,7 +165,7 @@ async function saveMentions(commentId: string, usernames: string[]) {
       .single();
     
     if (profile) {
-      await supabase
+      await (supabase as any)
         .from('comment_mentions')
         .insert({
           comment_id: commentId,

@@ -15,13 +15,13 @@ export function useFeatureFlags() {
   return useQuery({
     queryKey: ['feature-flags'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('feature_flags')
         .select('*')
         .order('flag_key');
       
       if (error) throw error;
-      return data as FeatureFlag[];
+      return (data || []) as FeatureFlag[];
     },
   });
 }
@@ -30,7 +30,7 @@ export function useFeatureFlag(flagKey: string) {
   return useQuery({
     queryKey: ['feature-flag', flagKey],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('feature_flags')
         .select('*')
         .eq('flag_key', flagKey)
@@ -53,7 +53,7 @@ export function useUpdateFeatureFlag() {
   
   return useMutation({
     mutationFn: async ({ flagKey, enabled }: { flagKey: string; enabled: boolean }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('feature_flags')
         .update({ enabled, updated_at: new Date().toISOString() })
         .eq('flag_key', flagKey)

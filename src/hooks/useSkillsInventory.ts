@@ -92,7 +92,7 @@ export const useCertifications = (teamMemberId?: string) => {
   return useQuery({
     queryKey: ['certifications', teamMemberId],
     queryFn: async (): Promise<Certification[]> => {
-      let query = supabase
+      let query = (supabase as any)
         .from('certifications')
         .select('*')
         .order('issue_date', { ascending: false });
@@ -104,7 +104,7 @@ export const useCertifications = (teamMemberId?: string) => {
       const { data, error } = await query;
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as Certification[];
     },
   });
 };
@@ -121,7 +121,7 @@ export const useSkillsInventoryStats = () => {
       if (skillsError) throw skillsError;
 
       // Get certifications
-      const { data: certifications, error: certsError } = await supabase
+      const { data: certifications, error: certsError } = await (supabase as any)
         .from('certifications')
         .select('id, expiry_date');
 
@@ -155,12 +155,12 @@ export const useSkillsInventoryStats = () => {
         : 0;
 
       // Count certifications
-      const totalCertifications = certifications?.length || 0;
+      const totalCertifications = (certifications as any[])?.length || 0;
 
       // Count expiring certifications (within 30 days)
       const thirtyDaysFromNow = new Date();
       thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-      const expiringCertifications = certifications?.filter(c => {
+      const expiringCertifications = (certifications as any[])?.filter((c: any) => {
         if (!c.expiry_date) return false;
         const expiryDate = new Date(c.expiry_date);
         return expiryDate <= thirtyDaysFromNow && expiryDate >= new Date();
@@ -336,7 +336,7 @@ export const useAddCertification = () => {
 
   return useMutation({
     mutationFn: async (input: AddCertificationInput) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('certifications')
         .insert(input)
         .select()
