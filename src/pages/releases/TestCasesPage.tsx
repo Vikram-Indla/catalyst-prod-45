@@ -691,81 +691,111 @@ export default function TestCasesPage() {
         </button>
 
         {/* Test Cases Content */}
-        <main className="flex-1 min-w-0 overflow-auto">
-          <AnimatePresence mode="wait">
-            {isLoading ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex items-center justify-center h-64"
-              >
-                <RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
-              </motion.div>
-            ) : paginatedTestCases.length === 0 ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <TestCaseEmptyState onClearFilters={handleClearAllFilters} onCreateClick={() => setIsCreateOpen(true)} />
-              </motion.div>
-            ) : viewMode === 'list' ? (
-              <motion.div
-                key="list"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <TestCasesTable 
-                  testCases={paginatedTestCases}
-                  selectedIds={selectedIds}
-                  onSelectAll={handleSelectAll}
-                  onSelectRow={handleSelectRow}
-                  allSelected={selectedIds.size === paginatedTestCases.length && paginatedTestCases.length > 0}
-                  onRowClick={(tc) => {
-                    setSelectedTestCase(tc);
-                    setIsDetailDrawerOpen(true);
-                  }}
-                />
-              </motion.div>
-            ) : viewMode === 'grid' ? (
-              <motion.div
-                key="grid"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <TestCasesGrid 
-                  testCases={paginatedTestCases}
-                  selectedIds={selectedIds}
-                  onSelectRow={handleSelectRow}
-                  onCardClick={(tc) => {
-                    setSelectedTestCase(tc);
-                    setIsDetailDrawerOpen(true);
-                  }}
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="kanban"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <TestCasesKanban 
-                  testCases={filteredTestCases}
-                  onCardClick={(tc) => {
-                    setSelectedTestCase(tc);
-                    setIsDetailDrawerOpen(true);
-                  }}
-                />
-              </motion.div>
+        <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-auto">
+            <AnimatePresence mode="wait">
+              {isLoading ? (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center justify-center h-64"
+                >
+                  <RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
+                </motion.div>
+              ) : paginatedTestCases.length === 0 ? (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <TestCaseEmptyState onClearFilters={handleClearAllFilters} onCreateClick={() => setIsCreateOpen(true)} />
+                </motion.div>
+              ) : viewMode === 'list' ? (
+                <motion.div
+                  key="list"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TestCasesTable 
+                    testCases={paginatedTestCases}
+                    selectedIds={selectedIds}
+                    onSelectAll={handleSelectAll}
+                    onSelectRow={handleSelectRow}
+                    allSelected={selectedIds.size === paginatedTestCases.length && paginatedTestCases.length > 0}
+                    onRowClick={(tc) => {
+                      setSelectedTestCase(tc);
+                      setIsDetailDrawerOpen(true);
+                    }}
+                  />
+                </motion.div>
+              ) : viewMode === 'grid' ? (
+                <motion.div
+                  key="grid"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TestCasesGrid 
+                    testCases={paginatedTestCases}
+                    selectedIds={selectedIds}
+                    onSelectRow={handleSelectRow}
+                    onCardClick={(tc) => {
+                      setSelectedTestCase(tc);
+                      setIsDetailDrawerOpen(true);
+                    }}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="kanban"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TestCasesKanban 
+                    testCases={filteredTestCases}
+                    onCardClick={(tc) => {
+                      setSelectedTestCase(tc);
+                      setIsDetailDrawerOpen(true);
+                    }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Bulk Actions Bar - Inside main content area */}
+          <AnimatePresence>
+            {selectedIds.size > 0 && (
+              <BulkActionsBar
+                selectedCount={selectedIds.size}
+                totalCount={totalCount}
+                onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.dbId || tc.id)))}
+                onClear={clearSelection}
+                onMove={() => setIsBulkMoveOpen(true)}
+                onMoveToFolder={() => setIsMoveToFolderOpen(true)}
+                onAssign={() => setIsBulkAssignOpen(true)}
+                onAddTags={() => setIsBulkTagsOpen(true)}
+                onDelete={() => {
+                  const ids = Array.from(selectedIds);
+                  deleteTestCasesMutation.mutate({ case_ids: ids, project_id: projectId });
+                  setSelectedIds(new Set());
+                }}
+                onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
+                onDuplicate={() => {
+                  const ids = Array.from(selectedIds);
+                  ids.forEach(id => duplicateTestCaseMutation.mutate({ id, project_id: projectId }));
+                  toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
+                }}
+                onExport={() => setIsExportOpen(true)}
+              />
             )}
           </AnimatePresence>
         </main>
@@ -876,33 +906,6 @@ export default function TestCasesPage() {
         </div>
       )}
 
-      {/* Bulk Actions Bar */}
-      <AnimatePresence>
-        {selectedIds.size > 0 && (
-          <BulkActionsBar
-            selectedCount={selectedIds.size}
-            totalCount={totalCount}
-            onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.dbId || tc.id)))}
-            onClear={clearSelection}
-            onMove={() => setIsBulkMoveOpen(true)}
-            onMoveToFolder={() => setIsMoveToFolderOpen(true)}
-            onAssign={() => setIsBulkAssignOpen(true)}
-            onAddTags={() => setIsBulkTagsOpen(true)}
-            onDelete={() => {
-              const ids = Array.from(selectedIds);
-              deleteTestCasesMutation.mutate({ case_ids: ids, project_id: projectId });
-              setSelectedIds(new Set());
-            }}
-            onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
-            onDuplicate={() => {
-              const ids = Array.from(selectedIds);
-              ids.forEach(id => duplicateTestCaseMutation.mutate({ id, project_id: projectId }));
-              toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
-            }}
-            onExport={() => setIsExportOpen(true)}
-          />
-        )}
-      </AnimatePresence>
 
       {/* Create Test Case Dialog - Enterprise 5-Tab Version */}
       <CreateTestCaseDialogEnterprise
