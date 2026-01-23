@@ -37,18 +37,24 @@ export function LicenseGanttChart({ licenses }: LicenseGanttChartProps) {
   }, [licenses]);
 
   // Calculate bar position and width for each license
-  const getBarStyle = (renewalDate: string) => {
+  const getBarStyle = (startDate: string | null, renewalDate: string) => {
     const renewal = new Date(renewalDate);
     const today = new Date();
     
-    // Bar starts from today (or year start if today is before year start)
-    const barStart = isBefore(today, yearStart) ? yearStart : today;
+    // Bar starts from start_date (or year start if before, or today if no start_date)
+    let barStart: Date;
+    if (startDate) {
+      const start = new Date(startDate);
+      barStart = isBefore(start, yearStart) ? yearStart : start;
+    } else {
+      barStart = isBefore(today, yearStart) ? yearStart : today;
+    }
     
     // Bar ends at renewal date (capped at year end)
     const barEnd = isAfter(renewal, yearEnd) ? yearEnd : renewal;
     
-    // If renewal is before today, show a small indicator at the renewal date
-    if (isBefore(renewal, today)) {
+    // If renewal is before bar start, show a small indicator at the renewal date
+    if (isBefore(renewal, barStart)) {
       const renewalPosition = Math.max(0, (differenceInDays(renewal, yearStart) / totalDays) * 100);
       return {
         left: `${renewalPosition}%`,
@@ -120,7 +126,7 @@ export function LicenseGanttChart({ licenses }: LicenseGanttChartProps) {
 
           {/* License rows */}
           {licensesWithRenewals.map((license) => {
-            const barStyle = getBarStyle(license.renewal_date!);
+            const barStyle = getBarStyle(license.start_date, license.renewal_date!);
             const barColor = getBarColor(license.renewal_date!);
             const monthlyCost = license.annual_cost / 12;
 
