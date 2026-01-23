@@ -3,7 +3,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { format, startOfYear, endOfYear, differenceInDays, addMonths, isBefore, isAfter } from 'date-fns';
+import { format, startOfYear, endOfYear, startOfMonth, endOfMonth, differenceInDays, addMonths, isBefore, isAfter, eachMonthOfInterval } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatSAR } from '../hooks/useResourceCost';
 import type { SoftwareLicenseWithAllocation } from '../types';
@@ -86,6 +86,49 @@ export function LicenseGanttChart({ licenses }: LicenseGanttChartProps) {
     return 'bg-blue-500'; // OK
   };
 
+  // Get monthly segments for a license within the visible year
+  const getMonthlySegments = (startDate: string | null, renewalDate: string) => {
+    const renewal = new Date(renewalDate);
+    const today = new Date();
+    
+    // Determine effective start
+    let effectiveStart: Date;
+    if (startDate) {
+      effectiveStart = new Date(startDate);
+    } else {
+      effectiveStart = today;
+    }
+    
+    // Clamp to year bounds
+    const visibleStart = isBefore(effectiveStart, yearStart) ? yearStart : effectiveStart;
+    const visibleEnd = isAfter(renewal, yearEnd) ? yearEnd : renewal;
+    
+    // If renewal is before visible start, no segments
+    if (isBefore(visibleEnd, visibleStart)) {
+      return [];
+    }
+    
+    // Get all months in the interval
+    const monthsInRange = eachMonthOfInterval({ start: visibleStart, end: visibleEnd });
+    
+    return monthsInRange.map((monthStart) => {
+      const monthEnd = endOfMonth(monthStart);
+      
+      // Clamp segment to actual license period
+      const segmentStart = isBefore(monthStart, visibleStart) ? visibleStart : monthStart;
+      const segmentEnd = isAfter(monthEnd, visibleEnd) ? visibleEnd : monthEnd;
+      
+      const startPosition = (differenceInDays(segmentStart, yearStart) / totalDays) * 100;
+      const endPosition = (differenceInDays(segmentEnd, yearStart) / totalDays) * 100;
+      
+      return {
+        month: format(monthStart, 'MMM'),
+        left: startPosition,
+        width: endPosition - startPosition,
+      };
+    });
+  };
+
   if (licensesWithRenewals.length === 0) {
     return (
       <Card>
@@ -129,6 +172,7 @@ export function LicenseGanttChart({ licenses }: LicenseGanttChartProps) {
             const barStyle = getBarStyle(license.start_date, license.renewal_date!);
             const barColor = getBarColor(license.renewal_date!);
             const monthlyCost = license.annual_cost / 12;
+            const monthlySegments = getMonthlySegments(license.start_date, license.renewal_date!);
 
             return (
               <div key={license.id} className="flex items-center gap-2 py-1.5">
@@ -148,21 +192,26 @@ export function LicenseGanttChart({ licenses }: LicenseGanttChartProps) {
                     />
                   ))}
                   
-                  {/* The bar */}
-                  <div
-                    className={`absolute top-1 bottom-1 ${barColor} rounded flex items-center justify-center transition-all`}
-                    style={{
-                      left: barStyle.left,
-                      width: barStyle.width,
-                      minWidth: barStyle.isExpired ? '4px' : '60px',
-                    }}
-                  >
-                    {!barStyle.isExpired && (
-                      <span className="text-[10px] font-medium text-white truncate px-1">
-                        {formatSAR(monthlyCost)}/mo
-                      </span>
-                    )}
-                  </div>
+                  {/* Monthly cost segments */}
+                  {monthlySegments.map((segment, idx) => (
+                    <div
+                      key={`${license.id}-${segment.month}-${idx}`}
+                      className={`absolute top-1 bottom-1 ${barColor} flex items-center justify-center transition-all ${
+                        idx === 0 ? 'rounded-l' : ''
+                      } ${idx === monthlySegments.length - 1 ? 'rounded-r' : ''}`}
+                      style={{
+                        left: `${segment.left}%`,
+                        width: `${Math.max(segment.width, 0.5)}%`,
+                        borderRight: idx < monthlySegments.length - 1 ? '1px solid rgba(255,255,255,0.3)' : 'none',
+                      }}
+                    >
+                      {segment.width > 6 && (
+                        <span className="text-[9px] font-medium text-white truncate px-0.5">
+                          {formatSAR(monthlyCost)}
+                        </span>
+                      )}
+                    </div>
+                  ))}
 
                   {/* Today marker */}
                   <div
