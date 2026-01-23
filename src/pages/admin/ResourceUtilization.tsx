@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   useResourceUtilization, 
   useBulkSaveAllocations, 
@@ -19,7 +21,9 @@ import {
   CheckCircle, 
   Save,
   Calendar,
-  Lock
+  Lock,
+  Plus,
+  X
 } from 'lucide-react';
 import {
   Table,
@@ -42,6 +46,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+
+interface NewAssignmentRow {
+  tempId: string;
+  resourceId: string;
+  resourceName: string;
+  contractEndDate: string | null;
+  defaultCapacityPercent: number;
+  assignmentId: string | null;
+  monthlyValues: { [month: number]: number };
+}
 
 function getUtilizationColor(percent: number): string {
   if (percent === 0) return 'bg-muted';
@@ -66,8 +80,25 @@ export default function ResourceUtilization() {
   const [searchQuery, setSearchQuery] = useState('');
   const [assignmentFilter, setAssignmentFilter] = useState<string>('all');
   
-  // Track pending changes: { `${resourceId}:${month}`: newValue }
+  // Track pending changes: { `${resourceId}:${assignmentId}:${month}`: newValue }
   const [pendingChanges, setPendingChanges] = useState<Map<string, number>>(new Map());
+  
+  // Track new assignment rows added via plus button
+  const [newRows, setNewRows] = useState<NewAssignmentRow[]>([]);
+  
+  // Fetch all available assignments for dropdown
+  const { data: availableAssignments = [] } = useQuery({
+    queryKey: ['resource-assignments-active'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_assignments')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   // Get unique assignments for filter
   const uniqueAssignments = useMemo(() => {
@@ -119,22 +150,75 @@ export default function ResourceUtilization() {
     return { total: activeResources.length, available, healthy, atCapacity, overAllocated, avgUtilization };
   }, [resources]);
 
-  // Handle allocation change
-  const handleAllocationChange = useCallback((resourceId: string, month: number, value: string) => {
+  // Handle allocation change for existing rows
+  const handleAllocationChange = useCallback((resourceId: string, assignmentId: string | null, month: number, value: string) => {
     const numValue = parseInt(value, 10);
     if (isNaN(numValue) || numValue < 0 || numValue > 200) return;
     
-    const key = `${resourceId}:${month}`;
+    const key = `${resourceId}:${assignmentId || 'null'}:${month}`;
     setPendingChanges(prev => {
       const next = new Map(prev);
       next.set(key, numValue);
       return next;
     });
   }, []);
+  
+  // Handle allocation change for new rows
+  const handleNewRowAllocationChange = useCallback((tempId: string, month: number, value: string) => {
+    const numValue = parseInt(value, 10);
+    if (isNaN(numValue) || numValue < 0 || numValue > 200) return;
+    
+    setNewRows(prev => prev.map(row => 
+      row.tempId === tempId 
+        ? { ...row, monthlyValues: { ...row.monthlyValues, [month]: numValue } }
+        : row
+    ));
+  }, []);
+  
+  // Add new assignment row for a resource
+  const handleAddRow = useCallback((resource: ResourceUtilizationItem) => {
+    const tempId = `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const initialMonthlyValues: { [month: number]: number } = {};
+    MONTHS.forEach(m => {
+      initialMonthlyValues[m.num] = resource.default_capacity_percent;
+    });
+    
+    setNewRows(prev => [...prev, {
+      tempId,
+      resourceId: resource.id,
+      resourceName: resource.resource_name,
+      contractEndDate: resource.contract_end_date,
+      defaultCapacityPercent: resource.default_capacity_percent,
+      assignmentId: null,
+      monthlyValues: initialMonthlyValues,
+    }]);
+  }, []);
+  
+  // Remove new row
+  const handleRemoveNewRow = useCallback((tempId: string) => {
+    setNewRows(prev => prev.filter(row => row.tempId !== tempId));
+  }, []);
+  
+  // Update assignment selection for new row
+  const handleNewRowAssignmentChange = useCallback((tempId: string, assignmentId: string) => {
+    setNewRows(prev => prev.map(row => 
+      row.tempId === tempId 
+        ? { ...row, assignmentId }
+        : row
+    ));
+  }, []);
+  
+  // Check if month is editable for new rows
+  const isMonthEditableForNewRow = useCallback((contractEndDate: string | null, month: number): boolean => {
+    if (!contractEndDate) return true;
+    const contractEnd = new Date(contractEndDate);
+    const monthStart = new Date(selectedYear, month - 1, 1);
+    return contractEnd >= monthStart;
+  }, [selectedYear]);
 
   // Get display value for a cell
   const getDisplayValue = useCallback((resource: ResourceUtilizationItem, month: number): number => {
-    const key = `${resource.id}:${month}`;
+    const key = `${resource.id}:${resource.assignment_id || 'null'}:${month}`;
     if (pendingChanges.has(key)) {
       return pendingChanges.get(key)!;
     }
@@ -142,17 +226,20 @@ export default function ResourceUtilization() {
     return monthData?.allocation_percent ?? resource.default_capacity_percent;
   }, [pendingChanges]);
 
-  // Save all pending changes
+  // Save all pending changes including new rows
   const handleSaveAll = useCallback(async () => {
-    if (pendingChanges.size === 0) return;
-
     const inputs: SaveAllocationInput[] = [];
     
+    // Process pending changes for existing rows
     pendingChanges.forEach((newPercent, key) => {
-      const [resourceId, monthStr] = key.split(':');
-      const month = parseInt(monthStr, 10);
+      const parts = key.split(':');
+      const resourceId = parts[0];
+      const assignmentIdStr = parts[1];
+      const month = parseInt(parts[2], 10);
       
-      const resource = resources.find(r => r.id === resourceId);
+      const assignmentId = assignmentIdStr === 'null' ? null : assignmentIdStr;
+      
+      const resource = resources.find(r => r.id === resourceId && r.assignment_id === assignmentId);
       if (!resource || !resource.assignment_id) return;
       
       const monthData = resource.monthly_allocations.find(m => m.month === month);
@@ -166,15 +253,35 @@ export default function ResourceUtilization() {
         existing_allocation_id: monthData?.allocation_id ?? null,
       });
     });
+    
+    // Process new rows
+    newRows.forEach(row => {
+      if (!row.assignmentId) return; // Skip rows without assignment selected
+      
+      MONTHS.forEach(m => {
+        const isEditable = isMonthEditableForNewRow(row.contractEndDate, m.num);
+        if (!isEditable) return;
+        
+        inputs.push({
+          resource_id: row.resourceId,
+          assignment_id: row.assignmentId!,
+          month: m.num,
+          year: selectedYear,
+          allocation_percent: row.monthlyValues[m.num] ?? row.defaultCapacityPercent,
+          existing_allocation_id: null,
+        });
+      });
+    });
 
     if (inputs.length > 0) {
       await bulkSave.mutateAsync(inputs);
       setPendingChanges(new Map());
+      setNewRows([]);
     }
-  }, [pendingChanges, resources, selectedYear, bulkSave]);
+  }, [pendingChanges, resources, selectedYear, bulkSave, newRows, isMonthEditableForNewRow]);
 
-  // Check if there are pending changes
-  const hasPendingChanges = pendingChanges.size > 0;
+  // Check if there are pending changes (including new rows with assignments)
+  const hasPendingChanges = pendingChanges.size > 0 || newRows.some(r => r.assignmentId !== null);
 
   // Format contract end date
   const formatContractEnd = (date: string | null) => {
@@ -369,96 +476,222 @@ export default function ResourceUtilization() {
                   <TableHead className="sticky left-0 bg-background z-10 min-w-[200px]">Resource</TableHead>
                   <TableHead className="sticky left-[200px] bg-background z-10 min-w-[180px]">Assignment</TableHead>
                   <TableHead className="min-w-[100px]">Contract End</TableHead>
+                  <TableHead className="min-w-[50px] text-center">Add</TableHead>
                   {MONTHS.map(m => (
                     <TableHead key={m.num} className="text-center min-w-[70px]">{m.name}</TableHead>
                   ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredResources.length === 0 ? (
+                {filteredResources.length === 0 && newRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={15} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={16} className="text-center py-8 text-muted-foreground">
                       No resources found matching your criteria
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredResources.map((resource) => (
-                    <TableRow key={resource.id}>
-                      <TableCell className="sticky left-0 bg-background font-medium">
-                        {resource.resource_name}
-                      </TableCell>
-                      <TableCell className="sticky left-[200px] bg-background">
-                        {resource.assignment_name ? (
-                          <Badge variant="outline" className="font-normal">
-                            {resource.assignment_name}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground italic text-sm">Unassigned</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {resource.contract_end_date ? (
-                          <span className="text-sm text-muted-foreground">
-                            {formatContractEnd(resource.contract_end_date)}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      {resource.monthly_allocations.map((monthData) => {
-                        const displayValue = getDisplayValue(resource, monthData.month);
-                        const isEditable = monthData.is_editable;
-                        const key = `${resource.id}:${monthData.month}`;
-                        const hasChange = pendingChanges.has(key);
-                        
-                        return (
-                          <TableCell key={monthData.month} className="p-1">
-                            {isEditable ? (
+                  <>
+                    {filteredResources.map((resource) => {
+                      // Get new rows for this resource
+                      const resourceNewRows = newRows.filter(r => r.resourceId === resource.id);
+                      
+                      return (
+                        <React.Fragment key={resource.id}>
+                          <TableRow>
+                            <TableCell className="sticky left-0 bg-background font-medium">
+                              {resource.resource_name}
+                            </TableCell>
+                            <TableCell className="sticky left-[200px] bg-background">
+                              {resource.assignment_name ? (
+                                <Badge variant="outline" className="font-normal">
+                                  {resource.assignment_name}
+                                </Badge>
+                              ) : (
+                                <span className="text-muted-foreground italic text-sm">Unassigned</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {resource.contract_end_date ? (
+                                <span className="text-sm text-muted-foreground">
+                                  {formatContractEnd(resource.contract_end_date)}
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Input
-                                    type="number"
-                                    min={0}
-                                    max={200}
-                                    value={displayValue}
-                                    onChange={(e) => handleAllocationChange(resource.id, monthData.month, e.target.value)}
-                                    className={cn(
-                                      "w-16 h-8 text-center text-sm p-1",
-                                      getInputBorderColor(displayValue),
-                                      hasChange && "ring-2 ring-primary ring-offset-1"
-                                    )}
-                                  />
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    onClick={() => handleAddRow(resource)}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>Utilization % for {MONTHS[monthData.month - 1].name} {selectedYear}</p>
+                                  <p>Add another assignment for {resource.resource_name}</p>
                                 </TooltipContent>
                               </Tooltip>
-                            ) : (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className={cn(
-                                    "w-16 h-8 flex items-center justify-center text-sm rounded border bg-muted/50 cursor-not-allowed",
-                                    "text-muted-foreground"
-                                  )}>
-                                    <Lock className="h-3 w-3 mr-1" />
-                                    {displayValue}
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>
-                                    {!resource.assignment_id 
-                                      ? 'No assignment - cannot set allocation'
-                                      : `Contract ends ${formatContractEnd(resource.contract_end_date)}`
-                                    }
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  ))
+                            </TableCell>
+                            {resource.monthly_allocations.map((monthData) => {
+                              const displayValue = getDisplayValue(resource, monthData.month);
+                              const isEditable = monthData.is_editable;
+                              const key = `${resource.id}:${resource.assignment_id || 'null'}:${monthData.month}`;
+                              const hasChange = pendingChanges.has(key);
+                              
+                              return (
+                                <TableCell key={monthData.month} className="p-1">
+                                  {isEditable ? (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Input
+                                          type="number"
+                                          min={0}
+                                          max={200}
+                                          value={displayValue}
+                                          onChange={(e) => handleAllocationChange(resource.id, resource.assignment_id, monthData.month, e.target.value)}
+                                          className={cn(
+                                            "w-16 h-8 text-center text-sm p-1",
+                                            getInputBorderColor(displayValue),
+                                            hasChange && "ring-2 ring-primary ring-offset-1"
+                                          )}
+                                        />
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>Utilization % for {MONTHS[monthData.month - 1].name} {selectedYear}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  ) : (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className={cn(
+                                          "w-16 h-8 flex items-center justify-center text-sm rounded border bg-muted/50 cursor-not-allowed",
+                                          "text-muted-foreground"
+                                        )}>
+                                          <Lock className="h-3 w-3 mr-1" />
+                                          {displayValue}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>
+                                          {!resource.assignment_id 
+                                            ? 'No assignment - cannot set allocation'
+                                            : `Contract ends ${formatContractEnd(resource.contract_end_date)}`
+                                          }
+                                        </p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  )}
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                          
+                          {/* Render new assignment rows for this resource */}
+                          {resourceNewRows.map((newRow) => {
+                            // Get assignments already used by this resource
+                            const usedAssignmentIds = new Set<string>();
+                            if (resource.assignment_id) usedAssignmentIds.add(resource.assignment_id);
+                            resourceNewRows.forEach(r => {
+                              if (r.assignmentId && r.tempId !== newRow.tempId) {
+                                usedAssignmentIds.add(r.assignmentId);
+                              }
+                            });
+                            
+                            // Filter available assignments
+                            const selectableAssignments = availableAssignments.filter(
+                              a => !usedAssignmentIds.has(a.id) || a.id === newRow.assignmentId
+                            );
+                            
+                            return (
+                              <TableRow key={newRow.tempId} className="bg-accent/30">
+                                <TableCell className="sticky left-0 bg-accent/30 font-medium text-muted-foreground">
+                                  {newRow.resourceName}
+                                </TableCell>
+                                <TableCell className="sticky left-[200px] bg-accent/30">
+                                  <Select
+                                    value={newRow.assignmentId || ''}
+                                    onValueChange={(value) => handleNewRowAssignmentChange(newRow.tempId, value)}
+                                  >
+                                    <SelectTrigger className="w-[160px] h-8">
+                                      <SelectValue placeholder="Select assignment..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {selectableAssignments.map(assignment => (
+                                        <SelectItem key={assignment.id} value={assignment.id}>
+                                          {assignment.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                                <TableCell>
+                                  {newRow.contractEndDate ? (
+                                    <span className="text-sm text-muted-foreground">
+                                      {formatContractEnd(newRow.contractEndDate)}
+                                    </span>
+                                  ) : (
+                                    <span className="text-muted-foreground">—</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-7 w-7 text-destructive hover:text-destructive"
+                                        onClick={() => handleRemoveNewRow(newRow.tempId)}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Remove this row</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TableCell>
+                                {MONTHS.map((m) => {
+                                  const isEditable = isMonthEditableForNewRow(newRow.contractEndDate, m.num) && newRow.assignmentId !== null;
+                                  const displayValue = newRow.monthlyValues[m.num] ?? newRow.defaultCapacityPercent;
+                                  
+                                  return (
+                                    <TableCell key={m.num} className="p-1">
+                                      {isEditable ? (
+                                        <Input
+                                          type="number"
+                                          min={0}
+                                          max={200}
+                                          value={displayValue}
+                                          onChange={(e) => handleNewRowAllocationChange(newRow.tempId, m.num, e.target.value)}
+                                          className={cn(
+                                            "w-16 h-8 text-center text-sm p-1",
+                                            getInputBorderColor(displayValue),
+                                            "ring-2 ring-accent ring-offset-1"
+                                          )}
+                                        />
+                                      ) : (
+                                        <div className={cn(
+                                          "w-16 h-8 flex items-center justify-center text-sm rounded border bg-muted/50 cursor-not-allowed",
+                                          "text-muted-foreground"
+                                        )}>
+                                          <Lock className="h-3 w-3 mr-1" />
+                                          {displayValue}
+                                        </div>
+                                      )}
+                                    </TableCell>
+                                  );
+                                })}
+                              </TableRow>
+                            );
+                          })}
+                        </React.Fragment>
+                      );
+                    })}
+                  </>
                 )}
               </TableBody>
             </Table>
