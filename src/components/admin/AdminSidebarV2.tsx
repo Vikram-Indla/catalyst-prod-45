@@ -44,8 +44,8 @@ const adminPockets = [
     icon: Users,
     path: '/admin/users-access',
     children: [
-      { label: 'Users', path: '/admin/users' },
-      { label: 'Roles & Permissions', path: '/admin/roles-permissions' },
+      { label: 'Resource Names', path: '/admin/users' },
+      { label: 'Resource Roles', path: '/admin/roles-permissions' },
       { label: 'Resource Utilization', path: '/admin/resource-utilization' },
       { label: 'Resource Departments', path: '/admin/capacity-departments' },
       { label: 'Resource Assignments', path: '/admin/resource-assignments' },
