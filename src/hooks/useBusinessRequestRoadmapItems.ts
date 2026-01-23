@@ -4,6 +4,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { RoadmapItem } from '@/config/roadmaps/types';
 
 interface BusinessRequestRoadmapFilters {
@@ -52,8 +53,7 @@ export function useBusinessRequestRoadmapItems(
   const { data: requestsData, isLoading: requestsLoading, error: requestsError } = useQuery({
     queryKey: ['business-request-roadmap-items', filters],
     queryFn: async () => {
-      let query = supabase
-        .from('business_requests')
+      let query = fromTable('business_requests')
         .select(`
           id,
           request_key,
@@ -96,7 +96,7 @@ export function useBusinessRequestRoadmapItems(
 
       const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 
@@ -109,8 +109,7 @@ export function useBusinessRequestRoadmapItems(
     queryFn: async () => {
       if (requestIds.length === 0) return [];
 
-      const { data, error } = await supabase
-        .from('business_request_links')
+      const { data, error } = await fromTable('business_request_links')
         .select(`
           id,
           business_request_id,
@@ -121,7 +120,7 @@ export function useBusinessRequestRoadmapItems(
         .eq('linked_item_type', 'feature');
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: requestIds.length > 0,
   });
@@ -188,13 +187,12 @@ export function useBusinessRequestRoadmapItems(
   const { data: ownersData } = useQuery({
     queryKey: ['business-request-roadmap-owners'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_owners')
+      const { data, error } = await fromTable('business_owners')
         .select('id, name')
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return (data || []).map(o => ({ id: o.id, name: o.name || 'Unknown' }));
+      return ((data || []) as Array<{ id: string; name: string | null }>).map(o => ({ id: o.id, name: o.name || 'Unknown' }));
     },
   });
 
