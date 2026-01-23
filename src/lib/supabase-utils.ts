@@ -35,4 +35,5 @@ export const untypedTables = {
   workflows: () => fromTable('workflows'),
   workflowSteps: () => fromTable('workflow_steps'),
   workflowTransitions: () => fromTable('workflow_transitions'),
+  attachments: () => fromTable('attachments'),
 } as const;

@@ -323,8 +323,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         updateData.process_step = 'on_hold';
       }
 
-      const { error } = await supabase
-        .from('business_requests')
+      const { error } = await fromTable('business_requests')
         .update(updateData)
         .eq('id', requestId);
 
@@ -350,7 +349,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         .eq('id', user?.id)
         .single();
 
-      await supabase.from('business_request_audit_logs').insert({
+      await fromTable('business_request_audit_logs').insert({
         business_request_id: requestId,
         actor_id: user?.id,
         actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -361,7 +360,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       });
 
       if (tier === 'rejected') {
-        await supabase.from('business_request_audit_logs').insert({
+        await fromTable('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -436,8 +435,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true;
       try {
-        await supabase
-          .from('business_requests')
+        await fromTable('business_requests')
           .update({ 
             rank: null, 
             is_force_ranked: false,
@@ -454,7 +452,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
           .eq('id', user?.id)
           .single();
 
-        await supabase.from('business_request_audit_logs').insert({
+        await fromTable('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',
@@ -507,8 +505,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true;
       try {
-        await supabase
-          .from('business_requests')
+        await fromTable('business_requests')
           .update({ 
             rank: pendingRank, 
             is_force_ranked: true,
@@ -524,7 +521,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
           .eq('id', user?.id)
           .single();
 
-        await supabase.from('business_request_audit_logs').insert({
+        await fromTable('business_request_audit_logs').insert({
           business_request_id: requestId,
           actor_id: user?.id,
           actor_name: profile?.full_name || user?.email || 'Unknown User',

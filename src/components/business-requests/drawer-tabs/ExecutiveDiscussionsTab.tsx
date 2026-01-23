@@ -132,8 +132,7 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
         formattedMessage = `<!--META:${JSON.stringify(meta)}-->${message}`;
       }
 
-      const { error } = await supabase
-        .from('business_request_discussions')
+      const { error } = await fromTable('business_request_discussions')
         .insert({
           business_request_id: requestId,
           message: formattedMessage,
