@@ -80,8 +80,7 @@ export function useProject(projectId: string | undefined) {
     queryFn: async (): Promise<Project | null> => {
       if (!projectId) return null;
 
-      const { data, error } = await supabase
-        .from('projects')
+      const { data, error } = await (supabase.from('projects') as any)
         .select(`
           *,
           lead:profiles!projects_lead_id_fkey(id, full_name, avatar_url),
@@ -104,8 +103,7 @@ export function useProjectByKey(key: string | undefined) {
     queryFn: async (): Promise<Project | null> => {
       if (!key) return null;
 
-      const { data, error } = await supabase
-        .from('projects')
+      const { data, error } = await (supabase.from('projects') as any)
         .select(`
           *,
           lead:profiles!projects_lead_id_fkey(id, full_name, avatar_url),
