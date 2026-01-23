@@ -136,7 +136,7 @@ export function TestFolderSidebar({
     const totalCount = getFolderTotalCount(node.id);
 
     return (
-      <div key={node.id}>
+      <div key={node.id} role="treeitem" aria-selected={isSelected} aria-expanded={hasChildren ? isExpanded : undefined}>
         <ContextMenu>
           <ContextMenuTrigger asChild>
             <div
@@ -151,6 +151,13 @@ export function TestFolderSidebar({
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, node.id)}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onFolderSelect(node.id);
+                }
+              }}
             >
               {/* Expand/Collapse Button */}
               {hasChildren ? (
@@ -261,7 +268,11 @@ export function TestFolderSidebar({
         </div>
 
         {/* Folder Tree */}
-        <div className="flex-1 overflow-y-auto py-1">
+        <div 
+          className="flex-1 overflow-y-auto py-1"
+          role="tree"
+          aria-label="Test case folders"
+        >
           {isLoading ? (
             <div className="space-y-1 px-2">
               <Skeleton className="h-7 w-full" />
