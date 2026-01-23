@@ -14937,6 +14937,7 @@ export type Database = {
       }
       resource_assignments: {
         Row: {
+          assignment_type: string | null
           color: string | null
           created_at: string | null
           description: string | null
@@ -14947,6 +14948,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          assignment_type?: string | null
           color?: string | null
           created_at?: string | null
           description?: string | null
@@ -14957,6 +14959,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          assignment_type?: string | null
           color?: string | null
           created_at?: string | null
           description?: string | null
