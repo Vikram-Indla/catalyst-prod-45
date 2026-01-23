@@ -7,30 +7,83 @@ import type { TestFolderWithCount, CreateFolderInput, UpdateFolderInput } from '
 
 /**
  * Get folder tree with test case counts for a project
- * Uses the get_folder_tree database function
+ * Uses direct query for reliability
  */
 export async function getFolderTree(projectId: string): Promise<TestFolderWithCount[]> {
-  const { data, error } = await (supabase as any).rpc('get_folder_tree', {
-    p_project_id: projectId,
-  });
-
-  if (error) {
-    console.error('Error fetching folder tree:', error);
-    throw new Error(`Failed to fetch folders: ${error.message}`);
+  console.log('[FolderService] getFolderTree called with projectId:', projectId);
+  
+  if (!projectId) {
+    console.warn('[FolderService] No projectId provided');
+    return [];
   }
 
-  // Map database response to TypeScript interface
-  return ((data as any[]) || []).map((folder: any) => ({
+  // First, get all folders for this project
+  const { data: folders, error: foldersError } = await (supabase as any)
+    .from('test_folders')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('sort_order', { ascending: true });
+
+  if (foldersError) {
+    console.error('[FolderService] Error fetching folders:', foldersError);
+    throw new Error(`Failed to fetch folders: ${foldersError.message}`);
+  }
+
+  console.log('[FolderService] Raw folders from DB:', folders);
+
+  if (!folders || folders.length === 0) {
+    console.log('[FolderService] No folders found for project');
+    return [];
+  }
+
+  // Get test case counts per folder
+  const { data: counts, error: countsError } = await (supabase as any)
+    .from('test_cases')
+    .select('folder_id')
+    .eq('project_id', projectId)
+    .not('folder_id', 'is', null);
+
+  if (countsError) {
+    console.error('[FolderService] Error fetching counts:', countsError);
+  }
+
+  // Count test cases per folder
+  const countMap = new Map<string, number>();
+  if (counts) {
+    counts.forEach((tc: any) => {
+      if (tc.folder_id) {
+        countMap.set(tc.folder_id, (countMap.get(tc.folder_id) || 0) + 1);
+      }
+    });
+  }
+
+  // Calculate depth for each folder
+  const getDepth = (folder: any, allFolders: any[]): number => {
+    let depth = 0;
+    let current = folder;
+    while (current?.parent_id) {
+      depth++;
+      current = allFolders.find((f: any) => f.id === current.parent_id);
+      if (!current || depth > 10) break; // Prevent infinite loop
+    }
+    return depth;
+  };
+
+  // Transform to expected format
+  const result: TestFolderWithCount[] = folders.map((folder: any) => ({
     id: folder.id,
     name: folder.name,
     description: folder.description,
-    parentId: folder.parentId,
-    sortOrder: folder.sortOrder,
-    depth: folder.depth,
-    count: folder.count,
-    createdBy: folder.createdBy,
-    createdAt: folder.createdAt,
+    parentId: folder.parent_id,
+    sortOrder: folder.sort_order || 0,
+    depth: getDepth(folder, folders),
+    count: countMap.get(folder.id) || 0,
+    createdBy: folder.created_by,
+    createdAt: folder.created_at,
   }));
+
+  console.log('[FolderService] Transformed folders:', result);
+  return result;
 }
 
 /**
@@ -69,6 +122,8 @@ export async function getFolderById(folderId: string): Promise<TestFolderWithCou
  * Create a new folder
  */
 export async function createFolder(input: CreateFolderInput): Promise<TestFolderWithCount> {
+  console.log('[FolderService] createFolder called with:', input);
+
   // Get the next sort order for siblings
   const { data: siblings } = await (supabase as any)
     .from('test_folders')
@@ -95,9 +150,11 @@ export async function createFolder(input: CreateFolderInput): Promise<TestFolder
     .single();
 
   if (error) {
-    console.error('Error creating folder:', error);
+    console.error('[FolderService] Error creating folder:', error);
     throw new Error(`Failed to create folder: ${error.message}`);
   }
+
+  console.log('[FolderService] Created folder:', data);
 
   return {
     id: data.id,
@@ -136,7 +193,7 @@ export async function updateFolder(
     .single();
 
   if (error) {
-    console.error('Error updating folder:', error);
+    console.error('[FolderService] Error updating folder:', error);
     throw new Error(`Failed to update folder: ${error.message}`);
   }
 
@@ -165,7 +222,7 @@ export async function deleteFolder(folderId: string): Promise<void> {
     .eq('id', folderId);
 
   if (error) {
-    console.error('Error deleting folder:', error);
+    console.error('[FolderService] Error deleting folder:', error);
     throw new Error(`Failed to delete folder: ${error.message}`);
   }
 }
@@ -184,7 +241,7 @@ export async function moveTestCasesToFolder(
     .select('id');
 
   if (error) {
-    console.error('Error moving test cases:', error);
+    console.error('[FolderService] Error moving test cases:', error);
     throw new Error(`Failed to move test cases: ${error.message}`);
   }
 
@@ -202,7 +259,7 @@ export async function getUnassignedTestCaseCount(projectId: string): Promise<num
     .is('folder_id', null);
 
   if (error) {
-    console.error('Error counting unassigned test cases:', error);
+    console.error('[FolderService] Error counting unassigned test cases:', error);
     return 0;
   }
 
