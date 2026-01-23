@@ -44,7 +44,7 @@ export function useResourceAssignments() {
   });
 
   const createAssignment = useMutation({
-    mutationFn: async (input: { name: string; description?: string }) => {
+    mutationFn: async (input: { name: string; description?: string; assignment_type?: string | null }) => {
       // Get max sort order
       const { data: maxData } = await supabase
         .from('resource_assignments')
@@ -60,6 +60,7 @@ export function useResourceAssignments() {
         .insert({
           name: input.name,
           description: input.description || null,
+          assignment_type: input.assignment_type || null,
           sort_order: nextOrder,
         })
         .select()
