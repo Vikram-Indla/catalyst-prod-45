@@ -18,6 +18,7 @@ import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
 
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
 import { ReleaseDropdown } from "./ReleaseDropdown";
+import { ProjectsDropdown } from "@/components/navigation/ProjectsDropdown";
 import { catalystToast } from "@/lib/catalystToast";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import { useCatalystContext } from "@/contexts/CatalystContext";
@@ -117,7 +118,7 @@ export function CatalystHeader() {
     { label: "Home", path: "/for-you", moduleCode: null, visibleToProductOwner: true }, // Always visible
     { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE", requiresEnterpriseAccess: true, visibleToProductOwner: true },
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT", visibleToProductOwner: true },
-    
+    { label: "Projects", hasDropdown: true, moduleCode: null, visibleToProductOwner: true }, // JIRA-like project management
     { label: "Releases", path: "/releases/command-center", moduleCode: null, visibleToProductOwner: false }, // Release & Test Management Module
     { label: "Operations", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
     { label: "Planner", path: "/planner/boards", moduleCode: null, visibleToProductOwner: true }, // Always visible - direct navigation
@@ -331,6 +332,9 @@ export function CatalystHeader() {
                         )}
                       </Popover>
                     )
+                  ) : item.label === "Projects" ? (
+                    // Projects: JIRA-style dropdown with starred/recent
+                    <ProjectsDropdown />
                   ) : item.label === "Project" ? (
                     // Project: Direct navigation if single accessible project
                     singleItemNav.project.hasSingleItem && singleItemNav.project.directPath ? (
