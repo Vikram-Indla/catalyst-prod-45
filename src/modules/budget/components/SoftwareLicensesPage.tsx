@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Search, Edit, Trash2, Package, AlertCircle } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Package, AlertCircle, DollarSign } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -118,7 +118,7 @@ export function SoftwareLicensesPage() {
 
       <div className="flex-1 flex flex-col p-6 space-y-6 overflow-auto">
         {/* Stats Cards */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
@@ -135,25 +135,14 @@ export function SoftwareLicensesPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                  <Package className="h-5 w-5 text-green-600" />
+                <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <DollarSign className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats?.fully_allocated || 0}</p>
-                  <p className="text-sm text-muted-foreground">Fully Allocated</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-yellow-100 flex items-center justify-center">
-                  <Package className="h-5 w-5 text-yellow-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stats?.partially_allocated || 0}</p>
-                  <p className="text-sm text-muted-foreground">Partial Allocation</p>
+                  <p className="text-2xl font-bold">
+                    {formatSAR(licenses.reduce((sum, l) => sum + l.annual_cost, 0))}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Total Cost/Year</p>
                 </div>
               </div>
             </CardContent>
