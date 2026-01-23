@@ -182,16 +182,16 @@ export function BulkEditCommandBar({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+        className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4"
       >
-        <div className="bg-background border border-border shadow-2xl rounded-xl px-4 py-3 flex items-center gap-3">
+        <div className="bg-background border border-border shadow-2xl rounded-xl px-4 py-3 flex items-center gap-3 max-w-fit overflow-x-auto">
           {/* Selection count */}
-          <div className="flex items-center gap-2 pr-3 border-r border-border">
+          <div className="flex items-center gap-2 pr-3 border-r border-border shrink-0">
             <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
               <Users className="h-4 w-4 text-primary" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold">{selectedCount} selected</span>
+              <span className="text-sm font-semibold whitespace-nowrap">{selectedCount} selected</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                 Resources
               </span>
@@ -199,7 +199,7 @@ export function BulkEditCommandBar({
           </div>
 
           {/* Field editors */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {fields.map((field) => {
               const currentValue = pendingUpdates[field.key];
               const hasValue = currentValue !== undefined;
@@ -215,12 +215,12 @@ export function BulkEditCommandBar({
                       variant={hasValue ? 'default' : 'outline'}
                       size="sm"
                       className={cn(
-                        "h-8 gap-1.5 text-xs",
+                        "h-8 gap-1.5 text-xs shrink-0 whitespace-nowrap",
                         hasValue && "bg-primary text-primary-foreground"
                       )}
                     >
                       {field.icon}
-                      <span className="hidden sm:inline">{field.label}</span>
+                      <span>{field.label}</span>
                       {hasValue && (
                         <Badge 
                           variant="secondary" 
@@ -232,7 +232,7 @@ export function BulkEditCommandBar({
                       <ChevronDown className="h-3 w-3 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-64 p-3" align="center">
+                  <PopoverContent className="w-64 p-3" align="center" side="top">
                     <div className="space-y-3">
                       <Label className="text-xs font-medium flex items-center gap-2">
                         {field.icon}
