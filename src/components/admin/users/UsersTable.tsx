@@ -28,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Search, MoreHorizontal, Power, PowerOff, Trash2, KeyRound, CheckCircle, XCircle, Clock, Upload, Pencil, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, MoreHorizontal, Power, PowerOff, Trash2, KeyRound, CheckCircle, XCircle, Clock, Download, Pencil, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 // Sortable column types
 type SortColumn = 'rid' | 'full_name' | 'job_role' | 'department_name' | 'assignment_name' | 'contract_start_date' | 'contract_end_date' | 'vendor' | 'resource_type' | 'country' | 'location';
@@ -38,10 +38,10 @@ import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 import { ResetPasswordDialog } from './ResetPasswordDialog';
-import { BulkUpdateDrawer } from './BulkUpdateDrawer';
 import { BulkEditCommandBar } from './BulkEditCommandBar';
 import { EditUserDrawer } from './EditUserDrawer';
 import { UserInlineCell } from './UserInlineCell';
+import { exportUsersToExcel } from './exportUsersToExcel';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
 import { useUserInlineEdit } from '@/hooks/useUserInlineEdit';
 import { formatContractEndDate, getCountryInfo } from '@/lib/countryLookup';
@@ -68,7 +68,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const [userToReject, setUserToReject] = useState<UserProfile | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
   const [editUser, setEditUser] = useState<UserProfile | null>(null);
-  const [isBulkUpdateOpen, setIsBulkUpdateOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   
   // Bulk selection state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -436,17 +436,23 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
           <CardTitle className="text-lg sm:text-xl">User List</CardTitle>
           <CardDescription className="text-xs sm:text-sm">View and manage all users in the system</CardDescription>
         </div>
-        {isSuperAdmin && (
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setIsBulkUpdateOpen(true)}
-            className="flex items-center gap-2 w-full sm:w-auto"
-          >
-            <Upload className="h-4 w-4" />
-            Bulk Update
-          </Button>
-        )}
+        <Button 
+          variant="outline" 
+          size="sm"
+          disabled={isExporting || filteredUsers.length === 0}
+          onClick={() => {
+            setIsExporting(true);
+            try {
+              exportUsersToExcel(filteredUsers);
+            } finally {
+              setIsExporting(false);
+            }
+          }}
+          className="flex items-center gap-2 w-full sm:w-auto"
+        >
+          <Download className="h-4 w-4" />
+          {isExporting ? 'Exporting...' : 'Download Excel'}
+        </Button>
       </CardHeader>
       <CardContent>
         {/* Filters - Row 1 */}
@@ -1144,13 +1150,6 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
         isOpen={!!editUser}
         onClose={() => setEditUser(null)}
         user={editUser}
-      />
-
-      {/* Bulk Update Drawer */}
-      <BulkUpdateDrawer
-        isOpen={isBulkUpdateOpen}
-        onClose={() => setIsBulkUpdateOpen(false)}
-        users={users}
       />
 
       {/* Bulk Edit Command Bar */}
