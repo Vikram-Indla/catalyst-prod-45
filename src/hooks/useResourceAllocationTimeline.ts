@@ -23,6 +23,7 @@ import {
   isSameMonth,
   startOfDay,
 } from 'date-fns';
+import { validateAllocationDatesAgainstContract } from '@/utils/allocationValidation';
 import type { 
   AllocationResource, 
   Assignment, 
@@ -409,6 +410,16 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
         endDate = format(endOfMonth(new Date(input.end_year, (input.end_month || 1) - 1, 1)), 'yyyy-MM-dd');
       }
       
+      // Validate against contract end date
+      if (!validateAllocationDatesAgainstContract(
+        startDate,
+        endDate,
+        resource.contractEnd,
+        resource.name
+      )) {
+        throw new Error('VALIDATION_FAILED'); // Will be caught and not shown as duplicate error
+      }
+      
       const { data, error } = await supabase
         .from('resource_allocations')
         .insert({
@@ -431,6 +442,8 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       refetch();
     },
     onError: (error) => {
+      // Don't show duplicate error for validation failures (already shown via toast)
+      if (error instanceof Error && error.message === 'VALIDATION_FAILED') return;
       toast.error('Failed to add assignment', {
         description: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -439,6 +452,18 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
 
   const updateAllocation = useMutation({
     mutationFn: async ({ id, ...updates }: { id: string; percentage?: number; status?: AllocationStatus; startDate?: string; endDate?: string }) => {
+      // Validate end date against contract if being updated
+      if (updates.endDate !== undefined) {
+        if (!validateAllocationDatesAgainstContract(
+          updates.startDate || new Date().toISOString().split('T')[0],
+          updates.endDate,
+          resource.contractEnd,
+          resource.name
+        )) {
+          throw new Error('VALIDATION_FAILED');
+        }
+      }
+      
       const updateData: any = { updated_at: new Date().toISOString() };
       if (updates.percentage !== undefined) updateData.allocation_percent = updates.percentage;
       if (updates.status !== undefined) updateData.status = updates.status;
@@ -458,6 +483,8 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       refetch();
     },
     onError: (error) => {
+      // Don't show duplicate error for validation failures
+      if (error instanceof Error && error.message === 'VALIDATION_FAILED') return;
       toast.error('Failed to update allocation', {
         description: error instanceof Error ? error.message : 'Unknown error'
       });
