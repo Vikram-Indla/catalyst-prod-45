@@ -193,6 +193,7 @@ import CreateMenuConfig from "./pages/admin/CreateMenuConfig";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
+const SoftwareLicensesPage = lazy(() => import("./modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
 import EpicStatuses from "./pages/admin/EpicStatuses";
 import FeatureStatuses from "./pages/admin/FeatureStatuses";
