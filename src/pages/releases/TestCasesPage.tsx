@@ -441,7 +441,7 @@ export default function TestCasesPage() {
   }, [refetch]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Context Bar / Breadcrumb */}
       <div className="flex items-center justify-between px-6 py-3 bg-muted/30 border-b">
         <div className="flex items-center gap-2 text-sm">
@@ -655,11 +655,11 @@ export default function TestCasesPage() {
       </div>
 
       {/* Main Content with Folder Sidebar */}
-      <div className="flex-1 overflow-hidden flex gap-6 px-6 py-4">
+      <div className="flex-1 min-h-0 flex gap-6 px-6 py-4 overflow-hidden">
         {/* Folder Sidebar */}
         <aside 
           className={cn(
-            "flex-shrink-0 transition-all duration-200",
+            "flex-shrink-0 transition-all duration-200 overflow-y-auto",
             isSidebarCollapsed ? "w-0 overflow-hidden" : "w-64"
           )}
         >
@@ -677,7 +677,7 @@ export default function TestCasesPage() {
         <button
           onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           className={cn(
-            "flex-shrink-0 w-6 flex items-center justify-center",
+            "flex-shrink-0 w-6 flex items-center justify-center self-stretch",
             "text-muted-foreground hover:text-foreground transition-colors",
             "border border-border rounded-md hover:bg-muted/50"
           )}
@@ -691,8 +691,8 @@ export default function TestCasesPage() {
         </button>
 
         {/* Test Cases Content */}
-        <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto">
+        <main className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-auto">
             <AnimatePresence mode="wait">
               {isLoading ? (
                 <motion.div
@@ -770,36 +770,36 @@ export default function TestCasesPage() {
               )}
             </AnimatePresence>
           </div>
-
-          {/* Bulk Actions Bar - Inside main content area */}
-          <AnimatePresence>
-            {selectedIds.size > 0 && (
-              <BulkActionsBar
-                selectedCount={selectedIds.size}
-                totalCount={totalCount}
-                onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.dbId || tc.id)))}
-                onClear={clearSelection}
-                onMove={() => setIsBulkMoveOpen(true)}
-                onMoveToFolder={() => setIsMoveToFolderOpen(true)}
-                onAssign={() => setIsBulkAssignOpen(true)}
-                onAddTags={() => setIsBulkTagsOpen(true)}
-                onDelete={() => {
-                  const ids = Array.from(selectedIds);
-                  deleteTestCasesMutation.mutate({ case_ids: ids, project_id: projectId });
-                  setSelectedIds(new Set());
-                }}
-                onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
-                onDuplicate={() => {
-                  const ids = Array.from(selectedIds);
-                  ids.forEach(id => duplicateTestCaseMutation.mutate({ id, project_id: projectId }));
-                  toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
-                }}
-                onExport={() => setIsExportOpen(true)}
-              />
-            )}
-          </AnimatePresence>
         </main>
       </div>
+
+      {/* Bulk Actions Bar - Fixed at bottom, offset for sidebar */}
+      <AnimatePresence>
+        {selectedIds.size > 0 && (
+          <BulkActionsBar
+            selectedCount={selectedIds.size}
+            totalCount={totalCount}
+            onSelectAll={() => setSelectedIds(new Set(paginatedTestCases.map(tc => tc.dbId || tc.id)))}
+            onClear={clearSelection}
+            onMove={() => setIsBulkMoveOpen(true)}
+            onMoveToFolder={() => setIsMoveToFolderOpen(true)}
+            onAssign={() => setIsBulkAssignOpen(true)}
+            onAddTags={() => setIsBulkTagsOpen(true)}
+            onDelete={() => {
+              const ids = Array.from(selectedIds);
+              deleteTestCasesMutation.mutate({ case_ids: ids, project_id: projectId });
+              setSelectedIds(new Set());
+            }}
+            onExecute={() => toast.success(`Starting execution for ${selectedIds.size} test case(s)...`)}
+            onDuplicate={() => {
+              const ids = Array.from(selectedIds);
+              ids.forEach(id => duplicateTestCaseMutation.mutate({ id, project_id: projectId }));
+              toast.success(`Duplicating ${selectedIds.size} test case(s)...`);
+            }}
+            onExport={() => setIsExportOpen(true)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Pagination */}
       {totalCount > 0 && (
