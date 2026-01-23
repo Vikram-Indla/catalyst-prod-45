@@ -452,6 +452,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract Start</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract End</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Vendor</th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Resource Type</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Country</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Location</th>
                   <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground">Actions</th>
@@ -509,6 +510,17 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                     <td className="py-3 px-3">
                       <div className="text-sm">
                         {user.vendor || <span className="text-muted-foreground">-</span>}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="text-sm">
+                        {user.resource_type ? (
+                          <Badge variant="outline" className="text-xs">
+                            {user.resource_type}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
                       </div>
                     </td>
                     <td className="py-3 px-3">
