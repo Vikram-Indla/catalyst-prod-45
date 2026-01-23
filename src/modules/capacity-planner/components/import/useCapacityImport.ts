@@ -138,22 +138,23 @@ export function useCapacityImport() {
             const field = findMatchingField(header, RESOURCE_IMPORT_FIELDS);
             if (!field || !selectedFields.includes(field.key)) continue;
             
-            let value = row[header];
+            const rawValue = row[header];
+            let processedValue: unknown = rawValue;
             
             // Resolve lookups
-            if (field.lookupTable && value) {
-              value = resolveLookup(String(value), field, lookupData);
+            if (field.lookupTable && rawValue) {
+              processedValue = resolveLookup(String(rawValue), field, lookupData);
             }
             
             // Type conversions
-            if (field.type === 'number' && value) {
-              value = parseInt(String(value), 10);
+            if (field.type === 'number' && rawValue) {
+              processedValue = parseInt(String(rawValue), 10);
             } else if (field.type === 'boolean') {
-              value = String(value).toLowerCase() === 'true' || value === '1';
+              processedValue = String(rawValue).toLowerCase() === 'true' || rawValue === '1';
             }
             
-            if (value !== null && value !== undefined) {
-              record[field.dbColumn] = value;
+            if (processedValue !== null && processedValue !== undefined) {
+              record[field.dbColumn] = processedValue;
             }
           }
 
@@ -166,17 +167,17 @@ export function useCapacityImport() {
           const existingId = existingMap.get(name.toLowerCase());
           
           if (existingId) {
-            // Update existing
-            const { error } = await supabase
+            // Update existing - cast to any for type stability
+            const { error } = await (supabase as any)
               .from('resource_inventory')
               .update(record)
               .eq('id', existingId);
             
             if (error) throw error;
           } else {
-            // Insert new
+            // Insert new - cast to any for type stability
             record.name = name;
-            const { error } = await supabase
+            const { error } = await (supabase as any)
               .from('resource_inventory')
               .insert(record);
             
