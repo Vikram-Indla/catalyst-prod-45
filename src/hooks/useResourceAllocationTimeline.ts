@@ -6,8 +6,9 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
-import { 
+import {
   startOfWeek, 
   addWeeks, 
   addMonths,
@@ -109,8 +110,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
   } = useQuery({
     queryKey: ['resource-allocations-timeline', resource.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('resource_allocations')
+      const { data, error } = await fromTable('resource_allocations')
         .select(`
           id,
           resource_id,
@@ -356,8 +356,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
         endDate = format(endOfMonth(new Date(input.end_year, (input.end_month || 1) - 1, 1)), 'yyyy-MM-dd');
       }
       
-      const { data, error } = await supabase
-        .from('resource_allocations')
+      const { data, error } = await fromTable('resource_allocations')
         .insert({
           resource_id: input.resource_id,
           assignment_id: input.assignment_id,
@@ -365,7 +364,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
           start_date: startDate,
           end_date: endDate,
           status: input.status,
-        })
+        } as any)
         .select()
         .single();
       
@@ -392,8 +391,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
       if (updates.endDate !== undefined) updateData.end_date = updates.endDate;
       
-      const { error } = await supabase
-        .from('resource_allocations')
+      const { error } = await fromTable('resource_allocations')
         .update(updateData)
         .eq('id', id);
       
@@ -413,8 +411,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
 
   const deleteAllocation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('resource_allocations')
+      const { error } = await fromTable('resource_allocations')
         .delete()
         .eq('id', id);
       

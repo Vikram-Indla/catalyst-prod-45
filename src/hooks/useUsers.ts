@@ -109,7 +109,7 @@ export function useUsers() {
         { data: resourceLocations },
       ] = await Promise.all([
         supabase.from('resource_assignments').select('id, name').eq('is_active', true),
-        supabase.from('capacity_departments').select('id, name').eq('is_active', true),
+        (supabase.from('capacity_departments') as any).select('id, name').eq('is_active', true),
         supabase.from('resource_vendors').select('id, name').eq('is_active', true),
         supabase.from('resource_countries').select('id, name, code').eq('is_active', true),
         supabase.from('resource_locations').select('id, name').eq('is_active', true),
@@ -400,7 +400,7 @@ export function useApproveUser() {
       if (error) throw error;
 
       // Log the approval
-      await supabase.from('auth_audit_log').insert({
+      await (supabase.from('auth_audit_log') as any).insert({
         user_id: userId,
         event_type: 'user_approved',
         actor_id: currentUser?.id,
@@ -441,7 +441,7 @@ export function useRejectUser() {
       if (error) throw error;
 
       // Log the rejection
-      await supabase.from('auth_audit_log').insert({
+      await (supabase.from('auth_audit_log') as any).insert({
         user_id: userId,
         event_type: 'user_rejected',
         actor_id: currentUser?.id,
@@ -481,7 +481,7 @@ export function useDisableUser() {
       if (error) throw error;
 
       // Log the action
-      await supabase.from('auth_audit_log').insert({
+      await (supabase.from('auth_audit_log') as any).insert({
         user_id: userId,
         event_type: 'user_disabled',
         actor_id: currentUser?.id,

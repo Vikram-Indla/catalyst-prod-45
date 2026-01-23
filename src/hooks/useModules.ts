@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 import { toast } from 'sonner';
 
 export interface Module {
@@ -36,13 +36,12 @@ export function useModules() {
   return useQuery({
     queryKey: ['modules'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('modules')
+      const { data, error } = await fromTable('modules')
         .select('*')
         .order('display_order');
       
       if (error) throw error;
-      return data as Module[];
+      return (data || []) as Module[];
     },
   });
 }
@@ -51,12 +50,11 @@ export function useOrgModules() {
   return useQuery({
     queryKey: ['org-modules'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('org_modules')
+      const { data, error } = await fromTable('org_modules')
         .select('*');
       
       if (error) throw error;
-      return data as OrgModule[];
+      return (data || []) as OrgModule[];
     },
   });
 }
@@ -65,13 +63,12 @@ export function useModulePackages() {
   return useQuery({
     queryKey: ['module-packages'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('module_packages')
+      const { data, error } = await fromTable('module_packages')
         .select('*')
         .order('display_order');
       
       if (error) throw error;
-      return data as ModulePackage[];
+      return (data || []) as ModulePackage[];
     },
   });
 }
@@ -82,13 +79,13 @@ export function usePackageModules(packageCode: string | null) {
     queryFn: async () => {
       if (!packageCode || packageCode === 'CUSTOM') return [];
       
-      const { data, error } = await supabase
-        .from('package_modules')
+      const { data, error } = await fromTable('package_modules')
         .select('module_code')
         .eq('package_code', packageCode);
       
       if (error) throw error;
-      return data.map(pm => pm.module_code);
+      const rows = (data || []) as Array<{ module_code: string }>;
+      return rows.map(pm => pm.module_code);
     },
     enabled: !!packageCode && packageCode !== 'CUSTOM',
   });
@@ -98,8 +95,7 @@ export function useActivePackage() {
   return useQuery({
     queryKey: ['active-package'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('active_package')
+      const { data, error } = await fromTable('active_package')
         .select('*')
         .limit(1)
         .single();
@@ -125,8 +121,7 @@ export function useUpdateModuleSettings() {
     }) => {
       // Update org_modules
       for (const [moduleCode, isEnabled] of Object.entries(moduleSettings)) {
-        const { error } = await supabase
-          .from('org_modules')
+        const { error } = await fromTable('org_modules')
           .update({ is_enabled: isEnabled, updated_at: new Date().toISOString() })
           .eq('module_code', moduleCode);
         
@@ -134,8 +129,7 @@ export function useUpdateModuleSettings() {
       }
       
       // Update active_package
-      const { error: packageError } = await supabase
-        .from('active_package')
+      const { error: packageError } = await fromTable('active_package')
         .update({ 
           package_code: packageCode === 'CUSTOM' ? null : packageCode,
           is_custom: isCustom,

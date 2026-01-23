@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { fromTable } from '@/lib/supabase-utils';
 
 export type FeatureFlagKey = 'home_v2_enabled' | 'home_v2_shadow_mode';
 
@@ -7,8 +7,7 @@ export function useFeatureFlag(flagKey: string): boolean {
   const { data: flag } = useQuery({
     queryKey: ['feature-flag', flagKey],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('feature_flags')
+      const { data, error } = await fromTable('feature_flags')
         .select('enabled')
         .eq('flag_key', flagKey)
         .single();
@@ -18,7 +17,7 @@ export function useFeatureFlag(flagKey: string): boolean {
         return { enabled: false };
       }
 
-      return data;
+      return data as { enabled: boolean };
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -33,13 +32,13 @@ export function useFeatureFlags(flagKeys: FeatureFlagKey[]): {
   const { data, isLoading } = useQuery({
     queryKey: ['feature-flags', flagKeys.join(',')],
     queryFn: async (): Promise<Record<string, boolean>> => {
-      const { data, error } = await supabase
-        .from('feature_flags')
+      const { data, error } = await fromTable('feature_flags')
         .select('flag_key, enabled')
         .in('flag_key', flagKeys);
 
       if (error) return {};
-      return (data || []).reduce((acc, flag) => {
+      const rows = (data || []) as Array<{ flag_key: string; enabled: boolean }>;
+      return rows.reduce((acc, flag) => {
         acc[flag.flag_key] = flag.enabled;
         return acc;
       }, {} as Record<string, boolean>);
