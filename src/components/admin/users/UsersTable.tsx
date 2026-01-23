@@ -165,8 +165,9 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const assignmentOptions = useMemo(() => 
     assignments.map(a => ({ value: a.id, label: a.name })), [assignments]);
   const resourceTypeOptions = [
+    { value: 'Permanent', label: 'Permanent' },
     { value: 'Fixed', label: 'Fixed' },
-    { value: 'Core', label: 'Core' },
+    { value: 'Variable', label: 'Variable' },
     { value: 'Freelance', label: 'Freelance' },
   ];
 

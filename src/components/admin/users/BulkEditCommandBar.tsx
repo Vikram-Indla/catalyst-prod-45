@@ -98,8 +98,9 @@ export function BulkEditCommandBar({
       icon: <UserCog className="h-4 w-4" />,
       type: 'select',
       options: [
+        { value: 'Permanent', label: 'Permanent' },
         { value: 'Fixed', label: 'Fixed' },
-        { value: 'Core', label: 'Core' },
+        { value: 'Variable', label: 'Variable' },
         { value: 'Freelance', label: 'Freelance' },
       ],
     },

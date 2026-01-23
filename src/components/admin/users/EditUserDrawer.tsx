@@ -822,8 +822,9 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">Not specified</SelectItem>
+                    <SelectItem value="Permanent">Permanent</SelectItem>
                     <SelectItem value="Fixed">Fixed</SelectItem>
-                    <SelectItem value="Core">Core</SelectItem>
+                    <SelectItem value="Variable">Variable</SelectItem>
                     <SelectItem value="Freelance">Freelance</SelectItem>
                   </SelectContent>
                 </Select>
