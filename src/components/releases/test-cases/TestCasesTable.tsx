@@ -142,17 +142,17 @@ export function TestCasesTable({
   });
 
   return (
-    <div className="bg-background border rounded-lg overflow-hidden">
-      <table className="w-full">
+    <div className="bg-background border rounded-lg overflow-x-auto">
+      <table className="w-full min-w-[1400px]">
         <thead className="bg-muted/50 border-b">
           <tr>
-            <th className="w-10 px-4 py-3">
+            <th className="w-12 px-3 py-3">
               <Checkbox 
                 checked={allSelected}
                 onCheckedChange={onSelectAll}
               />
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-24 px-3 py-3 text-left">
               <button 
                 onClick={() => handleSort('id')}
                 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
@@ -161,7 +161,7 @@ export function TestCasesTable({
                 <SortIcon field="id" currentField={sortField} direction={sortDir} />
               </button>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="min-w-[200px] px-3 py-3 text-left">
               <button 
                 onClick={() => handleSort('title')}
                 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
@@ -170,22 +170,22 @@ export function TestCasesTable({
                 <SortIcon field="title" currentField={sortField} direction={sortDir} />
               </button>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-36 px-3 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Folder
               </span>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-28 px-3 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Release
               </span>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-28 px-3 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Type
               </span>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-28 px-3 py-3 text-left">
               <button 
                 onClick={() => handleSort('priority')}
                 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
@@ -194,7 +194,7 @@ export function TestCasesTable({
                 <SortIcon field="priority" currentField={sortField} direction={sortDir} />
               </button>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-28 px-3 py-3 text-left">
               <button 
                 onClick={() => handleSort('status')}
                 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
@@ -203,22 +203,22 @@ export function TestCasesTable({
                 <SortIcon field="status" currentField={sortField} direction={sortDir} />
               </button>
             </th>
-            <th className="px-4 py-3 text-center">
+            <th className="w-16 px-3 py-3 text-center">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Steps
               </span>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-24 px-3 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Last Run
               </span>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-32 px-3 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Assignee
               </span>
             </th>
-            <th className="px-4 py-3 text-left">
+            <th className="w-28 px-3 py-3 text-left">
               <button 
                 onClick={() => handleSort('updated')}
                 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
@@ -227,7 +227,7 @@ export function TestCasesTable({
                 <SortIcon field="updated" currentField={sortField} direction={sortDir} />
               </button>
             </th>
-            <th className="w-12 px-4 py-3"></th>
+            <th className="w-12 px-3 py-3"></th>
           </tr>
         </thead>
         <tbody className="divide-y">
@@ -261,13 +261,13 @@ export function TestCasesTable({
               }}
               onClick={() => onRowClick?.(tc)}
             >
-              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+              <td className="w-12 px-3 py-3" onClick={(e) => e.stopPropagation()}>
                 <Checkbox 
                   checked={selectedIds.has(tc.dbId || tc.id)}
                   onCheckedChange={(checked) => onSelectRow(tc.dbId || tc.id, !!checked)}
                 />
               </td>
-              <td className="px-4 py-3">
+              <td className="w-24 px-3 py-3">
                 <Link 
                   to={`/releases/test-cases/${tc.id}`}
                   className="text-sm font-mono text-primary font-medium hover:underline"
@@ -276,24 +276,23 @@ export function TestCasesTable({
                   {tc.id}
                 </Link>
               </td>
-    <td className="px-4 py-3 max-w-xs">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="text-sm text-foreground truncate block">
-            {tc.title}
-          </span>
-        </TooltipTrigger>
+              <td className="min-w-[200px] px-3 py-3">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="text-sm text-foreground truncate block max-w-[300px]">
+                      {tc.title}
+                    </span>
+                  </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-sm">
                     {tc.title}
                   </TooltipContent>
                 </Tooltip>
               </td>
-              {/* Folder Column */}
-              <td className="px-4 py-3 max-w-[140px]">
+              <td className="w-36 px-3 py-3">
                 {tc.folderPath ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="text-sm text-muted-foreground truncate block">
+                      <span className="text-sm text-muted-foreground truncate block max-w-[140px]">
                         {tc.folderPath}
                       </span>
                     </TooltipTrigger>
@@ -305,43 +304,43 @@ export function TestCasesTable({
                   <span className="text-sm text-muted-foreground">—</span>
                 )}
               </td>
-              <td className="px-4 py-3">
+              <td className="w-28 px-3 py-3">
                 <Badge variant="secondary" className="font-mono text-xs">
                   {tc.release}
                 </Badge>
               </td>
-              <td className="px-4 py-3">
+              <td className="w-28 px-3 py-3">
                 <TypeBadge type={tc.type} />
               </td>
-              <td className="px-4 py-3">
+              <td className="w-28 px-3 py-3">
                 <PriorityBadge priority={tc.priority} />
               </td>
-              <td className="px-4 py-3">
+              <td className="w-28 px-3 py-3">
                 <StatusBadge status={tc.status} />
               </td>
-              <td className="px-4 py-3 text-center">
+              <td className="w-16 px-3 py-3 text-center">
                 <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
                   <ListChecks className="w-3.5 h-3.5" />
                   {tc.steps}
                 </span>
               </td>
-              <td className="px-4 py-3">
+              <td className="w-24 px-3 py-3">
                 <LastRunBadge status={tc.lastRun} />
               </td>
-              <td className="px-4 py-3">
+              <td className="w-32 px-3 py-3">
                 <div className="flex items-center gap-2">
                   <Avatar className="w-6 h-6">
                     <AvatarFallback className={cn("text-xs font-medium", avatarColors[tc.assignee.color])}>
                       {tc.assignee.avatar}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-muted-foreground">{tc.assignee.name}</span>
+                  <span className="text-sm text-muted-foreground truncate max-w-[80px]">{tc.assignee.name}</span>
                 </div>
               </td>
-              <td className="px-4 py-3">
+              <td className="w-28 px-3 py-3">
                 <span className="text-sm text-muted-foreground">{tc.updated}</span>
               </td>
-              <td className="px-4 py-3">
+              <td className="w-12 px-3 py-3">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
