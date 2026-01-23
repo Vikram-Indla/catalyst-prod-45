@@ -33,13 +33,13 @@ export function useFeatureFlags(flagKeys: FeatureFlagKey[]): {
   const { data, isLoading } = useQuery({
     queryKey: ['feature-flags', flagKeys.join(',')],
     queryFn: async (): Promise<Record<string, boolean>> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('feature_flags')
         .select('flag_key, enabled')
         .in('flag_key', flagKeys);
 
       if (error) return {};
-      return (data || []).reduce((acc, flag) => {
+      return ((data || []) as any[]).reduce((acc, flag: any) => {
         acc[flag.flag_key] = flag.enabled;
         return acc;
       }, {} as Record<string, boolean>);

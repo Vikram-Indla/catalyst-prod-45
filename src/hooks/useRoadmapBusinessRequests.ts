@@ -73,7 +73,7 @@ export function useRoadmapBusinessRequests() {
     queryFn: async () => {
       // Fetch business requests
       // Use impl_start_date (Kickoff) for bar start, impl_target_end_date (Target Complete) for bar end
-      const { data: requests, error: reqError } = await supabase
+      const { data: requests, error: reqError } = await (supabase as any)
         .from('business_requests')
         .select('id, request_key, title, business_owner, process_step, start_date, end_date, impl_start_date, impl_target_end_date, rank, delivery_platform, health')
         .is('deleted_at', null)
@@ -82,7 +82,7 @@ export function useRoadmapBusinessRequests() {
       if (reqError) throw reqError;
 
       // Fetch all milestones for these business requests
-      const requestIds = (requests || []).map(r => r.id);
+      const requestIds = ((requests || []) as any[]).map((r: any) => r.id);
       let milestones: MilestoneRow[] = [];
       
       if (requestIds.length > 0) {
@@ -106,9 +106,9 @@ export function useRoadmapBusinessRequests() {
       });
 
       // Transform to roadmap items with date normalization
-      const roadmapItems: BusinessRequestRoadmapItem[] = (requests || [])
-        .filter(r => r.request_key) // Only include requests with a key
-        .map((r, index) => {
+      const roadmapItems: BusinessRequestRoadmapItem[] = ((requests || []) as any[])
+        .filter((r: any) => r.request_key) // Only include requests with a key
+        .map((r: any, index: number) => {
           const requestMilestones = milestonesByRequest[r.id] || [];
           
           // Calculate start and end dates

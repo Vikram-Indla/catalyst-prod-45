@@ -98,7 +98,7 @@ export function useActivePackage() {
   return useQuery({
     queryKey: ['active-package'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('active_package')
         .select('*')
         .limit(1)
@@ -134,7 +134,7 @@ export function useUpdateModuleSettings() {
       }
       
       // Update active_package
-      const { error: packageError } = await supabase
+      const { error: packageError } = await (supabase as any)
         .from('active_package')
         .update({ 
           package_code: packageCode === 'CUSTOM' ? null : packageCode,

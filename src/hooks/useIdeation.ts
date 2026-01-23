@@ -148,7 +148,7 @@ export function useIdeas(
     queryFn: async () => {
       if (!groupId) return [];
       
-      let query = supabase
+      let query = (supabase as any)
         .from('ideas')
         .select('*')
         .eq('idea_group_id', groupId);
@@ -192,7 +192,7 @@ export function useIdea(ideaId: string | null) {
     queryKey: ['idea', ideaId],
     queryFn: async () => {
       if (!ideaId) return null;
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('ideas')
         .select('*, idea_group:idea_groups(*)')
         .eq('id', ideaId)
@@ -210,7 +210,7 @@ export function useCreateIdea() {
   
   return useMutation({
     mutationFn: async (request: CreateIdeaRequest) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('ideas')
         .insert({
           ...request,
@@ -236,7 +236,7 @@ export function useUpdateIdea() {
   
   return useMutation({
     mutationFn: async ({ id, ...request }: UpdateIdeaRequest & { id: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('ideas')
         .update(request)
         .eq('id', id)
@@ -261,7 +261,7 @@ export function useDeleteIdea() {
   
   return useMutation({
     mutationFn: async (ideaId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('ideas')
         .delete()
         .eq('id', ideaId);
@@ -528,14 +528,14 @@ export function useUserVotesForGroup(groupId: string | null) {
     queryFn: async () => {
       if (!groupId || !user?.id) return [];
       
-      const { data: ideas } = await supabase
+      const { data: ideas } = await (supabase as any)
         .from('ideas')
         .select('id')
         .eq('idea_group_id', groupId);
       
       if (!ideas || ideas.length === 0) return [];
       
-      const ideaIds = ideas.map(i => i.id);
+      const ideaIds = ((ideas || []) as any[]).map((i: any) => i.id);
       const { data, error } = await supabase
         .from('ideation_votes')
         .select('*')
@@ -638,22 +638,23 @@ export function useIdeationMetrics(groupId: string | null) {
         };
       }
       
-      const { data: ideas, error } = await supabase
+      const { data: ideasData, error } = await (supabase as any)
         .from('ideas')
         .select('id, status, vote_score, comment_count, created_by_id')
         .eq('idea_group_id', groupId);
       
       if (error) throw error;
       
-      const total = ideas?.length || 0;
-      const managed = ideas?.filter(i => ['Planned', 'Completed', 'Shelved'].includes(i.status)).length || 0;
-      const withVotes = ideas?.filter(i => i.vote_score !== 0).length || 0;
-      const withComments = ideas?.filter(i => i.comment_count > 0).length || 0;
+      const ideas = (ideasData || []) as any[];
+      const total = ideas.length;
+      const managed = ideas.filter((i: any) => ['Planned', 'Completed', 'Shelved'].includes(i.status)).length;
+      const withVotes = ideas.filter((i: any) => i.vote_score !== 0).length;
+      const withComments = ideas.filter((i: any) => i.comment_count > 0).length;
       
-      const userIdeas = ideas?.filter(i => i.created_by_id === user?.id) || [];
+      const userIdeas = ideas.filter((i: any) => i.created_by_id === user?.id);
       const userTotal = userIdeas.length;
-      const userWithVotes = userIdeas.filter(i => i.vote_score !== 0).length;
-      const userWithComments = userIdeas.filter(i => i.comment_count > 0).length;
+      const userWithVotes = userIdeas.filter((i: any) => i.vote_score !== 0).length;
+      const userWithComments = userIdeas.filter((i: any) => i.comment_count > 0).length;
       
       return {
         total_ideas: total,

@@ -400,7 +400,7 @@ export function useApproveUser() {
       if (error) throw error;
 
       // Log the approval
-      await supabase.from('auth_audit_log').insert({
+      await (supabase as any).from('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_approved',
         actor_id: currentUser?.id,
@@ -441,7 +441,7 @@ export function useRejectUser() {
       if (error) throw error;
 
       // Log the rejection
-      await supabase.from('auth_audit_log').insert({
+      await (supabase as any).from('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_rejected',
         actor_id: currentUser?.id,
@@ -481,7 +481,7 @@ export function useDisableUser() {
       if (error) throw error;
 
       // Log the action
-      await supabase.from('auth_audit_log').insert({
+      await (supabase as any).from('auth_audit_log').insert({
         user_id: userId,
         event_type: 'user_disabled',
         actor_id: currentUser?.id,

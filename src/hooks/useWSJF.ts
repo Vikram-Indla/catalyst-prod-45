@@ -16,7 +16,7 @@ export const useWSJF = (epicId: string, piId: string) => {
   return useQuery({
     queryKey: ['wsjf', epicId, piId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .select('*')
         .eq('epic_id', epicId)
@@ -39,7 +39,7 @@ export const useUpdateWSJF = () => {
       field: string; 
       value: number; 
     }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .upsert({ 
           epic_id: epicId, 

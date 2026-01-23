@@ -75,7 +75,7 @@ export function useProductRoadmapData() {
   const { data: demandsData = [], isLoading: demandsLoading } = useQuery({
     queryKey: ['product-roadmap-demands'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .select(`
           id,
@@ -98,7 +98,7 @@ export function useProductRoadmapData() {
         .order('rank', { ascending: true, nullsFirst: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 

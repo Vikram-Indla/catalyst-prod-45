@@ -78,7 +78,7 @@ export function useBusinessLines() {
   return useQuery({
     queryKey: ['business-lines'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_lines')
         .select('*')
         .order('sort_order');
@@ -94,7 +94,7 @@ export function useCreateBusinessLine() {
   
   return useMutation({
     mutationFn: async (businessLine: Omit<BusinessLine, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_lines')
         .insert(businessLine)
         .select()
@@ -119,7 +119,7 @@ export function useUpdateBusinessLine() {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<BusinessLine> & { id: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_lines')
         .update(updates)
         .eq('id', id)
@@ -144,7 +144,7 @@ export function useDeleteBusinessLine() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('business_lines')
         .delete()
         .eq('id', id);

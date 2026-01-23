@@ -102,7 +102,7 @@ export async function logUserUpdate(
       timestamp: new Date().toISOString(),
     }));
     
-    await supabase.from('auth_audit_log').insert([{
+    await (supabase as any).from('auth_audit_log').insert([{
       user_id: userId,
       event_type: 'user_profile_updated',
       actor_id: currentUser?.id || null,

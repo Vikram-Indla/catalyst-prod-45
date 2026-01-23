@@ -160,7 +160,7 @@ export function useCapacityData() {
   const { data: assignments = [], isLoading: assignmentsLoading, isError: assignmentsError } = useQuery({
     queryKey: ['capacity-planner-assignments'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('assignments')
         .select('*')
         .in('status', ['active', 'paused'])
