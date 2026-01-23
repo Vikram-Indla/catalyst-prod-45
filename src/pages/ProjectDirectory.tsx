@@ -1,16 +1,19 @@
 // =====================================================
 // PROJECT DIRECTORY PAGE - BUILD_UNIT_2.1 SPEC COMPLIANT
+// Enhanced with Grid/List view toggle - Phase 2
 // =====================================================
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Search, Plus, Star, MoreHorizontal, Archive, 
-  Settings, Eye, Lock, Globe, Users 
+  Settings, Eye, Lock, Users 
 } from 'lucide-react';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
+import { ProjectCard } from '@/components/projects/ProjectCard';
+import { ViewToggle, type ViewMode } from '@/components/projects/ViewToggle';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -33,6 +36,8 @@ import { cn } from '@/lib/utils';
 import { useProjects, useArchiveProject } from '@/hooks/useProjects';
 import { PROJECT_TYPE_CONFIG, PROJECT_COLORS, type ProjectType } from '@/types/project';
 
+const VIEW_STORAGE_KEY = 'catalyst-project-directory-view';
+
 export default function ProjectDirectory() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,6 +49,15 @@ export default function ProjectDirectory() {
   const [filterProgramId, setFilterProgramId] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
   const [showArchived, setShowArchived] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    const stored = localStorage.getItem(VIEW_STORAGE_KEY);
+    return (stored === 'grid' || stored === 'list') ? stored : 'list';
+  });
+
+  // Persist view mode
+  useEffect(() => {
+    localStorage.setItem(VIEW_STORAGE_KEY, viewMode);
+  }, [viewMode]);
 
   // Fetch projects with filters
   const { data: projects = [], isLoading, error } = useProjects({
@@ -127,13 +141,13 @@ export default function ProjectDirectory() {
             {projects.length} project{projects.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Button onClick={() => setShowCreateDialog(true)} className="bg-brand-primary hover:bg-brand-primary-hover">
+        <Button onClick={() => setShowCreateDialog(true)} className="bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))]">
           <Plus className="w-4 h-4 mr-1" /> Create project
         </Button>
       </div>
 
       {/* FILTERS */}
-      <div className="flex gap-3 mb-4 flex-wrap">
+      <div className="flex gap-3 mb-4 flex-wrap items-center">
         <div className="relative w-[280px]">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -178,9 +192,14 @@ export default function ProjectDirectory() {
           <Archive className="w-4 h-4" />
           {showArchived ? 'Showing archived' : 'Show archived'}
         </Button>
+        
+        {/* View Toggle - pushed to right */}
+        <div className="ml-auto">
+          <ViewToggle view={viewMode} onViewChange={setViewMode} />
+        </div>
       </div>
 
-      {/* TABLE */}
+      {/* CONTENT */}
       {isLoading ? (
         <div className="flex justify-center py-12">Loading...</div>
       ) : sortedProjects.length === 0 ? (
@@ -188,7 +207,21 @@ export default function ProjectDirectory() {
           <p className="text-muted-foreground mb-4">No projects found</p>
           <Button onClick={() => setShowCreateDialog(true)}>Create project</Button>
         </div>
+      ) : viewMode === 'grid' ? (
+        /* GRID VIEW */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {sortedProjects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              isStarred={starredProjects.has(project.id)}
+              onToggleStar={(e) => toggleStar(project.id, e)}
+              onArchive={(archive, e) => handleArchive(project.id, archive, e)}
+            />
+          ))}
+        </div>
       ) : (
+        /* LIST VIEW (TABLE) */
         <div className="border border-border rounded-lg overflow-hidden">
           <div className="grid grid-cols-[40px_1fr_90px_120px_180px_160px_50px] bg-muted px-3 py-2 text-[11px] font-semibold uppercase text-muted-foreground border-b border-border">
             <div></div>
