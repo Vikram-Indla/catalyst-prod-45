@@ -587,6 +587,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                       className={cn(someSelected && "data-[state=checked]:bg-primary/50")}
                     />
                   </th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground w-16">RID</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Name</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Job Role</th>
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Department</th>
@@ -615,6 +616,9 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                         onCheckedChange={(checked) => handleSelectRow(user.id, !!checked)}
                         aria-label={`Select ${user.full_name}`}
                       />
+                    </td>
+                    <td className="py-3 px-3 text-xs font-mono text-muted-foreground">
+                      {user.rid || '—'}
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-3">

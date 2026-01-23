@@ -12755,6 +12755,7 @@ export type Database = {
           rejection_reason: string | null
           requested_at: string | null
           resource_type: string | null
+          rid: string | null
           role: string | null
           signup_attempts_count: number | null
           status: string
@@ -12790,6 +12791,7 @@ export type Database = {
           rejection_reason?: string | null
           requested_at?: string | null
           resource_type?: string | null
+          rid?: string | null
           role?: string | null
           signup_attempts_count?: number | null
           status?: string
@@ -12825,6 +12827,7 @@ export type Database = {
           rejection_reason?: string | null
           requested_at?: string | null
           resource_type?: string | null
+          rid?: string | null
           role?: string | null
           signup_attempts_count?: number | null
           status?: string
