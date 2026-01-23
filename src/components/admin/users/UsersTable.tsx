@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardHeader, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -35,8 +35,12 @@ import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContai
 import { ResetPasswordDialog } from './ResetPasswordDialog';
 import { BulkUpdateDrawer } from './BulkUpdateDrawer';
 import { EditUserDrawer } from './EditUserDrawer';
+import { UserInlineCell } from './UserInlineCell';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
+import { useUserInlineEdit } from '@/hooks/useUserInlineEdit';
 import { formatContractEndDate, getCountryInfo } from '@/lib/countryLookup';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UsersTableProps {
   users: UserProfile[];
@@ -65,6 +69,101 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const rejectUser = useRejectUser();
   const disableUser = useDisableUser();
   const { data: isSuperAdmin } = useIsSuperAdmin();
+
+  // Fetch reference data for inline editing dropdowns
+  const { data: vendors = [] } = useQuery({
+    queryKey: ['resource-vendors'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_vendors')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: locations = [] } = useQuery({
+    queryKey: ['resource-locations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_locations')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: countries = [] } = useQuery({
+    queryKey: ['resource-countries'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_countries')
+        .select('id, name, code')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: departments = [] } = useQuery({
+    queryKey: ['capacity-departments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('capacity_departments')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: assignments = [] } = useQuery({
+    queryKey: ['resource-assignments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_assignments')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Reference data for inline edit hook
+  const referenceData = useMemo(() => ({
+    vendors,
+    locations,
+    countries,
+    departments,
+    assignments,
+  }), [vendors, locations, countries, departments, assignments]);
+
+  // Inline edit mutation
+  const inlineEdit = useUserInlineEdit(referenceData);
+
+  // Dropdown options for inline cells
+  const vendorOptions = useMemo(() => 
+    vendors.map(v => ({ value: v.id, label: v.name })), [vendors]);
+  const locationOptions = useMemo(() => 
+    locations.map(l => ({ value: l.id, label: l.name })), [locations]);
+  const countryOptions = useMemo(() => 
+    countries.map(c => ({ value: c.id, label: c.name })), [countries]);
+  const departmentOptions = useMemo(() => 
+    departments.map(d => ({ value: d.id, label: d.name })), [departments]);
+  const assignmentOptions = useMemo(() => 
+    assignments.map(a => ({ value: a.id, label: a.name })), [assignments]);
+  const resourceTypeOptions = [
+    { value: 'Fixed', label: 'Fixed' },
+    { value: 'Core', label: 'Core' },
+    { value: 'Freelance', label: 'Freelance' },
+  ];
 
   // Get unique values for filter dropdowns
   const allRoles = [...new Set(users.flatMap(u => u.roles.map(r => r.role_name)))];
@@ -476,81 +575,179 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="text-sm">
-                        {user.job_role || <span className="text-muted-foreground">-</span>}
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="text"
+                        value={user.job_role}
+                        placeholder="-"
+                        onSave={async (value) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'job_role',
+                            value,
+                            displayValue: value,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="text-sm">
-                        {user.department_name ? (
-                          <Badge variant="outline" className="text-xs">
-                            {user.department_name}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="select"
+                        value={departments.find(d => d.name === user.department_name)?.id || null}
+                        displayValue={user.department_name ? (
+                          <Badge variant="outline" className="text-xs">{user.department_name}</Badge>
+                        ) : undefined}
+                        options={departmentOptions}
+                        placeholder="-"
+                        onSave={async (value, displayValue) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'department_id',
+                            value,
+                            displayValue,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="text-sm">
-                        {user.assignment_name || <span className="text-muted-foreground">-</span>}
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="select"
+                        value={assignments.find(a => a.name === user.assignment_name)?.id || null}
+                        displayValue={user.assignment_name || undefined}
+                        options={assignmentOptions}
+                        placeholder="-"
+                        onSave={async (value, displayValue) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'assignment_id',
+                            value,
+                            displayValue,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="text-sm">
-                        {formatContractEndDate(user.contract_start_date)}
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="date"
+                        value={user.contract_start_date}
+                        formatDate
+                        placeholder="-"
+                        onSave={async (value) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'contract_start_date',
+                            value,
+                            displayValue: value,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="text-sm">
-                        {formatContractEndDate(user.contract_end_date)}
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="date"
+                        value={user.contract_end_date}
+                        formatDate
+                        placeholder="-"
+                        onSave={async (value) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'contract_end_date',
+                            value,
+                            displayValue: value,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="text-sm">
-                        {user.vendor || <span className="text-muted-foreground">-</span>}
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="select"
+                        value={vendors.find(v => v.name === user.vendor)?.id || null}
+                        displayValue={user.vendor || undefined}
+                        options={vendorOptions}
+                        placeholder="-"
+                        onSave={async (value, displayValue) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'vendor_id',
+                            value,
+                            displayValue,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="text-sm">
-                        {user.resource_type ? (
-                          <Badge variant="outline" className="text-xs">
-                            {user.resource_type}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="select"
+                        value={user.resource_type}
+                        displayValue={user.resource_type ? (
+                          <Badge variant="outline" className="text-xs">{user.resource_type}</Badge>
+                        ) : undefined}
+                        options={resourceTypeOptions}
+                        placeholder="-"
+                        onSave={async (value, displayValue) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'resource_type',
+                            value,
+                            displayValue,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-1">
-                        {(() => {
-                          const flagUrl = user.country_flag_svg_url || 
-                            (user.country ? getCountryInfo(user.country)?.svg : null);
-                          return flagUrl ? (
-                            <img 
-                              src={flagUrl} 
-                              alt={user.country || ''} 
-                              className="h-3 w-5 object-cover rounded-sm"
-                            />
-                          ) : null;
-                        })()}
-                        <span className="text-sm">
-                          {user.country || <span className="text-muted-foreground">-</span>}
-                        </span>
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="select"
+                        value={countries.find(c => c.name === user.country)?.id || null}
+                        displayValue={user.country ? (
+                          <div className="flex items-center gap-1">
+                            {(() => {
+                              const flagUrl = user.country_flag_svg_url || getCountryInfo(user.country)?.svg;
+                              return flagUrl ? (
+                                <img src={flagUrl} alt={user.country} className="h-3 w-5 object-cover rounded-sm" />
+                              ) : null;
+                            })()}
+                            <span className="text-sm">{user.country}</span>
+                          </div>
+                        ) : undefined}
+                        options={countryOptions}
+                        placeholder="-"
+                        onSave={async (value, displayValue) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'country_id',
+                            value,
+                            displayValue,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="text-sm">
-                        {user.location ? (
-                          <Badge variant="outline" className="text-xs">
-                            {user.location}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </div>
+                    <td className="py-2 px-3">
+                      <UserInlineCell
+                        type="select"
+                        value={locations.find(l => l.name === user.location)?.id || null}
+                        displayValue={user.location ? (
+                          <Badge variant="outline" className="text-xs">{user.location}</Badge>
+                        ) : undefined}
+                        options={locationOptions}
+                        placeholder="-"
+                        onSave={async (value, displayValue) => {
+                          await inlineEdit.mutateAsync({
+                            userId: user.id,
+                            field: 'location_id',
+                            value,
+                            displayValue,
+                            hasEmail: !!user.email,
+                          });
+                        }}
+                      />
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center justify-end gap-2">
