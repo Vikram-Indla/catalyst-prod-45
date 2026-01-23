@@ -25,6 +25,10 @@ export interface TestCase {
     color: 'blue' | 'teal' | 'gray';
   };
   updated: string;
+  // Folder information
+  folderId?: string | null;
+  folderName?: string | null;
+  folderPath?: string | null; // Full path like "Authentication / Login"
   // Extended fields (optional for backward compatibility)
   description?: string;
   preconditions?: string;

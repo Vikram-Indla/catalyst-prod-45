@@ -172,6 +172,11 @@ export function TestCasesTable({
             </th>
             <th className="px-4 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Folder
+              </span>
+            </th>
+            <th className="px-4 py-3 text-left">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Release
               </span>
             </th>
@@ -264,6 +269,23 @@ export function TestCasesTable({
                     {tc.title}
                   </TooltipContent>
                 </Tooltip>
+              </td>
+              {/* Folder Column */}
+              <td className="px-4 py-3 max-w-[140px]">
+                {tc.folderPath ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-sm text-muted-foreground truncate block">
+                        {tc.folderPath}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-sm">
+                      {tc.folderPath}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <span className="text-sm text-muted-foreground">—</span>
+                )}
               </td>
               <td className="px-4 py-3">
                 <Badge variant="secondary" className="font-mono text-xs">

@@ -19959,10 +19959,12 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          organization_id: string | null
           parent_id: string | null
           project_id: string
           sort_order: number | null
           updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           created_at?: string | null
@@ -19970,10 +19972,12 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          organization_id?: string | null
           parent_id?: string | null
           project_id: string
           sort_order?: number | null
           updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           created_at?: string | null
@@ -19981,10 +19985,12 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          organization_id?: string | null
           parent_id?: string | null
           project_id?: string
           sort_order?: number | null
           updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
