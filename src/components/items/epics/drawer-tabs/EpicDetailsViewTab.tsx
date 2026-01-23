@@ -83,13 +83,13 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests-for-epic-drawer'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_requests')
         .select('id, request_key, title, rank, business_score')
         .is('deleted_at', null)
         .order('request_key');
       if (error) throw error;
-      return data;
+      return (data || []) as any[];
     },
   });
 

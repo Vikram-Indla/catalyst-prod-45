@@ -43,7 +43,7 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
   const { data: scoringData, isLoading } = useQuery({
     queryKey: ['epic-technical-score', epic.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .select('*')
         .eq('epic_id', epic.id)
@@ -53,17 +53,18 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
 
       if (error && error.code !== 'PGRST116') throw error;
       
+      const wsjfData = data as any;
       // Initialize local values from DB
-      if (data) {
+      if (wsjfData) {
         setLocalValues({
-          technical_value: data.business_value || 0,
-          time_criticality: data.time_value || 0,
-          risk_reduction: data.rroe_value || 0,
-          job_size: data.job_size || 0,
+          technical_value: wsjfData.business_value || 0,
+          time_criticality: wsjfData.time_value || 0,
+          risk_reduction: wsjfData.rroe_value || 0,
+          job_size: wsjfData.job_size || 0,
         });
       }
       
-      return data;
+      return wsjfData;
     },
     enabled: !!epic?.id,
   });
@@ -79,15 +80,16 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
       );
 
       // Check if record exists
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from('epic_wsjf')
         .select('id')
         .eq('epic_id', epic.id)
         .maybeSingle();
 
-      if (existing) {
+      const existingData = existing as any;
+      if (existingData) {
         // Update existing record
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('epic_wsjf')
           .update({
             business_value: localValues.technical_value,
@@ -95,7 +97,7 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
             rroe_value: localValues.risk_reduction,
             job_size: localValues.job_size,
           })
-          .eq('id', existing.id);
+          .eq('id', existingData.id);
         
         if (error) throw error;
       } else {
@@ -107,7 +109,7 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
           .single();
         
         if (anyPi) {
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('epic_wsjf')
             .insert({
               epic_id: epic.id,

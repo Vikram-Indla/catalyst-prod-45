@@ -94,14 +94,15 @@ export function EpicOverviewTab({ epic }: EpicOverviewTabProps) {
   const { data: technicalScore } = useQuery({
     queryKey: ['epic-technical-score', epic.id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('epic_wsjf')
         .select('business_value, time_value, rroe_value, job_size')
         .eq('epic_id', epic.id)
         .maybeSingle();
       
       if (!data) return null;
-      const { business_value, time_value, rroe_value, job_size } = data;
+      const wsjfData = data as { business_value?: number; time_value?: number; rroe_value?: number; job_size?: number };
+      const { business_value, time_value, rroe_value, job_size } = wsjfData;
       if (!job_size) return null;
       return Math.round(((business_value || 0) + (time_value || 0) + (rroe_value || 0)) / job_size * 100) / 100;
     },

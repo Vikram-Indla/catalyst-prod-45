@@ -177,7 +177,7 @@ export function EpicFeaturesViewTab({ epicId }: EpicFeaturesViewTabProps) {
         link_type: workItem.type,
       };
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_links')
         .insert(insertData);
       

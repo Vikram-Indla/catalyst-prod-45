@@ -71,7 +71,7 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
   const { data: scoringData, isLoading: loadingScoring } = useQuery({
     queryKey: ['epic-technical-score-data', epic.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_wsjf')
         .select('*')
         .eq('epic_id', epic.id)
@@ -81,16 +81,17 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
 
       if (error && error.code !== 'PGRST116') throw error;
       
-      if (data) {
+      const wsjfData = data as any;
+      if (wsjfData) {
         setScoringValues({
-          technical_value: data.business_value || 0,
-          time_criticality: data.time_value || 0,
-          risk_reduction: data.rroe_value || 0,
-          job_size: data.job_size || 0,
+          technical_value: wsjfData.business_value || 0,
+          time_criticality: wsjfData.time_value || 0,
+          risk_reduction: wsjfData.rroe_value || 0,
+          job_size: wsjfData.job_size || 0,
         });
       }
       
-      return data;
+      return wsjfData;
     },
     enabled: !!epic?.id,
   });
@@ -124,14 +125,15 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
         scoringValues.job_size
       );
 
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from('epic_wsjf')
         .select('id')
         .eq('epic_id', epic.id)
         .maybeSingle();
 
-      if (existing) {
-        const { error } = await supabase
+      const existingData = existing as any;
+      if (existingData) {
+        const { error } = await (supabase as any)
           .from('epic_wsjf')
           .update({
             business_value: scoringValues.technical_value,
@@ -139,7 +141,7 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
             rroe_value: scoringValues.risk_reduction,
             job_size: scoringValues.job_size,
           })
-          .eq('id', existing.id);
+          .eq('id', existingData.id);
         if (error) throw error;
       } else {
         const { data: anyPi } = await supabase
@@ -149,7 +151,7 @@ export function EpicEstimationTab({ epic }: EpicEstimationTabProps) {
           .single();
         
         if (anyPi) {
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('epic_wsjf')
             .insert({
               epic_id: epic.id,

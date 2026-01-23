@@ -17,14 +17,14 @@ export function AuditHistoryTab({ data }: AuditHistoryTabProps) {
     queryKey: ['business-request-audit', requestId],
     queryFn: async () => {
       if (!requestId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('business_request_audit_logs')
         .select('*')
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: !!requestId,
   });

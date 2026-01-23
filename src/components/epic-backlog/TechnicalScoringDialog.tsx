@@ -55,12 +55,12 @@ export function TechnicalScoringDialog({
       
       // Fetch existing technical scores from epic_wsjf table
       // NOTE: Table named epic_wsjf for legacy reasons; UI shows "Technical Scoring"
-      const { data: techScoreData } = await supabase
+      const { data: techScoreData } = await (supabase as any)
         .from('epic_wsjf')
         .select('*')
         .in('epic_id', epicIds);
       
-      const techScoreMap = new Map(techScoreData?.map(w => [w.epic_id, w]) || []);
+      const techScoreMap = new Map((techScoreData as any[] || []).map((w: any) => [w.epic_id, w]));
       
       return data?.map(epic => {
         const existing = techScoreMap.get(epic.id);
@@ -124,7 +124,7 @@ export function TechnicalScoringDialog({
       }));
 
       for (const update of updates) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('epic_wsjf')
           .upsert(update, { onConflict: 'epic_id,pi_id' });
         if (error) throw error;

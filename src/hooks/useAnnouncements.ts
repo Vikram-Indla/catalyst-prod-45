@@ -14,7 +14,7 @@ export function useAnnouncements() {
       const now = new Date().toISOString();
       
       // Get active announcements
-      const { data: activeAnnouncements, error } = await supabase
+      const { data: activeAnnouncements, error } = await (supabase as any)
         .from('announcements')
         .select('*')
         .eq('is_active', true)
@@ -24,16 +24,16 @@ export function useAnnouncements() {
       if (error) throw error;
 
       // Get dismissed announcements
-      const { data: dismissals } = await supabase
+      const { data: dismissals } = await (supabase as any)
         .from('announcement_dismissals')
         .select('announcement_id')
         .eq('user_id', user.id);
 
-      const dismissedIds = new Set(dismissals?.map(d => d.announcement_id) || []);
+      const dismissedIds = new Set((dismissals as any[] || []).map((d: any) => d.announcement_id));
 
       // Filter out dismissed dismissible announcements
-      return activeAnnouncements.filter(
-        announcement => !announcement.is_dismissible || !dismissedIds.has(announcement.id)
+      return (activeAnnouncements as any[] || []).filter(
+        (announcement: any) => !announcement.is_dismissible || !dismissedIds.has(announcement.id)
       );
     },
     enabled: !!user,
@@ -43,7 +43,7 @@ export function useAnnouncements() {
     mutationFn: async (announcementId: string) => {
       if (!user) return;
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('announcement_dismissals')
         .insert({
           announcement_id: announcementId,

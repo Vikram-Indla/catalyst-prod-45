@@ -165,12 +165,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const { data: acceptanceCriteria } = useQuery({
     queryKey: ['epic-acceptance-criteria', epic.id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('epic_acceptance_criteria')
         .select('*')
         .eq('epic_id', epic.id)
         .order('created_at');
-      return data || [];
+      return (data || []) as any[];
     },
   });
 
@@ -311,7 +311,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   // Mutation to add acceptance criteria
   const addCriteriaMutation = useMutation({
     mutationFn: async (description: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_acceptance_criteria')
         .insert({ epic_id: epic.id, description });
       if (error) throw error;
@@ -327,7 +327,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   // Mutation to delete acceptance criteria
   const deleteCriteriaMutation = useMutation({
     mutationFn: async (criteriaId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('epic_acceptance_criteria')
         .delete()
         .eq('id', criteriaId);
