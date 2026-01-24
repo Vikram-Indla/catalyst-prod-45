@@ -332,7 +332,7 @@ html:has(body[data-scroll-locked]) {
     --users-surface-active: 213 27% 96%;    /* #f1f5f9 */
     --users-text: 222 47% 11%;              /* #0f172a */
     --users-text-secondary: 215 16% 47%;    /* #475569 */
-    --users-text-muted: 215 16% 64%;        /* #94a3b8 */
+    --users-text-muted: 215 16% 47%;        /* #64748b - WCAG AA compliant */
     --users-border: 214 32% 91%;            /* #e2e8f0 */
     --users-border-light: 213 27% 96%;      /* #f1f5f9 */
     --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.12);
