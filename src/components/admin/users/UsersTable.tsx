@@ -620,7 +620,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
 
         {/* Mobile Card View */}
         <div className="block lg:hidden space-y-3">
-          {filteredUsers.map((user) => (
+          {paginatedUsers.map((user) => (
             <div key={user.id} className="border rounded-lg p-4 bg-card hover:bg-muted/20 transition-colors">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
