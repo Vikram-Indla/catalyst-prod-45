@@ -91,7 +91,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_vendors')
-        .select('id, name')
+        .select('id, name, vendor_code')
         .eq('is_active', true)
         .order('sort_order');
       if (error) throw error;
@@ -130,7 +130,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('capacity_departments')
-        .select('id, name')
+        .select('id, name, department_id')
         .eq('is_active', true)
         .order('sort_order');
       if (error) throw error;
@@ -143,7 +143,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_assignments')
-        .select('id, name')
+        .select('id, name, assignment_id')
         .eq('is_active', true)
         .order('sort_order');
       if (error) throw error;
@@ -745,6 +745,9 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                       <SortIcon column="job_role" />
                     </div>
                   </th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground select-none w-16">
+                    DID
+                  </th>
                   <th 
                     className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
                     onClick={() => handleSort('department_name')}
@@ -753,6 +756,9 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                       Department
                       <SortIcon column="department_name" />
                     </div>
+                  </th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground select-none w-16">
+                    AID
                   </th>
                   <th 
                     className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
@@ -780,6 +786,9 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                       Contract End
                       <SortIcon column="contract_end_date" />
                     </div>
+                  </th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground select-none w-16">
+                    VID
                   </th>
                   <th 
                     className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
@@ -880,6 +889,11 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                       />
                     </td>
                     <td className="py-2 px-3">
+                      <span className="text-xs font-mono text-primary">
+                        {departments.find(d => d.name === user.department_name)?.department_id || '—'}
+                      </span>
+                    </td>
+                    <td className="py-2 px-3">
                       <UserInlineCell
                         type="select"
                         value={departments.find(d => d.name === user.department_name)?.id || null}
@@ -898,6 +912,11 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                           });
                         }}
                       />
+                    </td>
+                    <td className="py-2 px-3">
+                      <span className="text-xs font-mono text-primary">
+                        {assignments.find(a => a.name === user.assignment_name)?.assignment_id || '—'}
+                      </span>
                     </td>
                     <td className="py-2 px-3">
                       <UserInlineCell
@@ -950,6 +969,11 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                           });
                         }}
                       />
+                    </td>
+                    <td className="py-2 px-3">
+                      <span className="text-xs font-mono text-primary">
+                        {vendors.find(v => v.name === user.vendor)?.vendor_code || '—'}
+                      </span>
                     </td>
                     <td className="py-2 px-3">
                       <UserInlineCell
