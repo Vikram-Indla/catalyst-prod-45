@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 export interface ResourceLocation {
   id: string;
   name: string;
-  description: string | null;
   is_active: boolean;
   sort_order: number;
   created_at: string | null;
@@ -57,13 +56,12 @@ export function useResourceLocations() {
   }, [queryClient]);
 
   const createLocation = useMutation({
-    mutationFn: async (input: { name: string; description?: string }) => {
+    mutationFn: async (input: { name: string }) => {
       const maxOrder = locations.length > 0 ? Math.max(...locations.map(l => l.sort_order)) : 0;
       const { data, error } = await supabase
         .from('resource_locations')
         .insert({
           name: input.name,
-          description: input.description || null,
           sort_order: maxOrder + 1,
         })
         .select()

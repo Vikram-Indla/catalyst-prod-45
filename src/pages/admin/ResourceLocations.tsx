@@ -18,7 +18,7 @@ export default function ResourceLocationsPage() {
   const { allLocations, isLoadingAll, createLocation, updateLocation, deleteLocation } = useResourceLocations();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<ResourceLocation | null>(null);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ name: '' });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [locationToDelete, setLocationToDelete] = useState<ResourceLocation | null>(null);
   const [linkedRecords, setLinkedRecords] = useState<LinkedRecord[]>([]);
@@ -48,7 +48,7 @@ export default function ResourceLocationsPage() {
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
     await createLocation.mutateAsync(formData);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: '' });
     setCreateModalOpen(false);
   };
 
@@ -59,7 +59,7 @@ export default function ResourceLocationsPage() {
       updates: formData,
     });
     setEditingLocation(null);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: '' });
   };
 
   const handleDeleteClick = async (location: ResourceLocation) => {
@@ -95,7 +95,7 @@ export default function ResourceLocationsPage() {
 
   const openEdit = (location: ResourceLocation) => {
     setEditingLocation(location);
-    setFormData({ name: location.name, description: location.description || '' });
+    setFormData({ name: location.name });
   };
 
   if (isLoadingAll) {
@@ -133,7 +133,6 @@ export default function ResourceLocationsPage() {
             <tr>
               <th className="w-10 px-4 py-3"></th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Description</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
             </tr>
@@ -154,9 +153,6 @@ export default function ResourceLocationsPage() {
                     </div>
                     <span className="text-sm font-medium text-foreground">{location.name}</span>
                   </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">
-                  {location.description || '—'}
                 </td>
                 <td className="px-4 py-3 text-center">
                   <Switch
@@ -184,7 +180,7 @@ export default function ResourceLocationsPage() {
             ))}
             {allLocations.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
                   No locations configured. Click "Add Location" to create one.
                 </td>
               </tr>
@@ -206,14 +202,6 @@ export default function ResourceLocationsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g., On-Site"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                value={formData.description}
-                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                placeholder="Brief description..."
               />
             </div>
           </div>
@@ -243,14 +231,6 @@ export default function ResourceLocationsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g., On-Site"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                value={formData.description}
-                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                placeholder="Brief description..."
               />
             </div>
           </div>
