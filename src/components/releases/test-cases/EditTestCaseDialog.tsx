@@ -3,7 +3,7 @@
  * FULLY WIRED: Loads real steps from DB, persists all fields including priority/type
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -139,21 +139,28 @@ export function EditTestCaseDialog({
   const [steps, setSteps] = useState<TestStep[]>([]);
   const [activeTab, setActiveTab] = useState('details');
   const [stepsInitialized, setStepsInitialized] = useState(false);
+  const [formInitialized, setFormInitialized] = useState(false);
 
-  // Build priority/type lookup maps from DB
-  const priorityIdByName = priorities.reduce((acc, p) => {
-    acc[p.name.toLowerCase()] = p.id;
-    return acc;
-  }, {} as Record<string, string>);
+  // Memoize priority/type lookup maps to prevent useEffect re-runs
+  const priorityIdByName = useMemo(() => 
+    priorities.reduce((acc, p) => {
+      acc[p.name.toLowerCase()] = p.id;
+      return acc;
+    }, {} as Record<string, string>),
+    [priorities]
+  );
 
-  const typeIdByName = types.reduce((acc, t) => {
-    acc[t.name.toLowerCase()] = t.id;
-    return acc;
-  }, {} as Record<string, string>);
+  const typeIdByName = useMemo(() => 
+    types.reduce((acc, t) => {
+      acc[t.name.toLowerCase()] = t.id;
+      return acc;
+    }, {} as Record<string, string>),
+    [types]
+  );
 
-  // Reset form when test case changes
+  // Reset form ONLY when dialog opens or test case changes - NOT on every render
   useEffect(() => {
-    if (testCase && open) {
+    if (testCase && open && !formInitialized) {
       setTitle(testCase.title);
       setDescription(testCase.description || '');
       setPreconditions(testCase.preconditions || '');
@@ -166,7 +173,6 @@ export function EditTestCaseDialog({
       if (testCase.priority_id) {
         setPriorityId(testCase.priority_id);
       } else if (testCase.priority) {
-        // Try to map from label
         const mappedId = priorityIdByName[testCase.priority] || PRIORITY_LABEL_TO_ID[testCase.priority];
         setPriorityId(mappedId || '');
       }
@@ -175,12 +181,18 @@ export function EditTestCaseDialog({
       if (testCase.type_id) {
         setTypeId(testCase.type_id);
       } else if (testCase.type) {
-        // Try to map from label
         const mappedId = typeIdByName[testCase.type] || TYPE_LABEL_TO_ID[testCase.type];
         setTypeId(mappedId || '');
       }
+      
+      setFormInitialized(true);
     }
-  }, [testCase, open, priorityIdByName, typeIdByName]);
+    
+    // Reset initialization flag when dialog closes
+    if (!open) {
+      setFormInitialized(false);
+    }
+  }, [testCase, open, formInitialized, priorityIdByName, typeIdByName]);
 
   // Initialize steps from DB when loaded
   useEffect(() => {
@@ -329,12 +341,7 @@ export function EditTestCaseDialog({
                   name="edit-title"
                   autoComplete="off"
                   value={title}
-                  onChange={(e) => {
-                    console.log('[EditDialog] Title onChange:', e.target.value);
-                    setTitle(e.target.value);
-                  }}
-                  onFocus={() => console.log('[EditDialog] Title focused')}
-                  onKeyDown={(e) => console.log('[EditDialog] Title keydown:', e.key)}
+                  onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter test case title"
                 />
               </div>
