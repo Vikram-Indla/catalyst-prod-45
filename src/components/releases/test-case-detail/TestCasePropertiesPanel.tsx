@@ -1,5 +1,5 @@
 /**
- * Test Case Properties Panel Component
+ * Test Case Properties Panel Component — Wired to real DB data
  */
 
 import { useState } from 'react';
@@ -24,7 +24,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Select,
   SelectContent,
@@ -34,85 +34,110 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import type { TestCaseDetail } from '@/data/testCaseDetailData';
+import { format, formatDistanceToNow } from 'date-fns';
+import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
 
 interface TestCasePropertiesPanelProps {
-  testCase: TestCaseDetail;
+  testCase: TestCaseDetailData;
 }
 
-const statusConfig = {
-  draft: { label: 'Draft', className: 'bg-gray-100 text-gray-600 border-gray-200' },
-  ready: { label: 'Ready', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  approved: { label: 'Approved', className: 'bg-green-50 text-green-700 border-green-200' },
-  deprecated: { label: 'Deprecated', className: 'bg-red-50 text-red-600 border-red-200' },
+const statusConfig: Record<string, { label: string; className: string }> = {
+  'DRAFT': { label: 'Draft', className: 'bg-gray-100 text-gray-600 border-gray-200' },
+  'REVIEW': { label: 'Ready', className: 'bg-blue-50 text-blue-700 border-blue-200' },
+  'APPROVED': { label: 'Approved', className: 'bg-green-50 text-green-700 border-green-200' },
+  'DEPRECATED': { label: 'Deprecated', className: 'bg-red-50 text-red-600 border-red-200' },
 };
 
-const priorityConfig = {
-  critical: { label: 'Critical', icon: AlertTriangle, className: 'text-red-600' },
-  high: { label: 'High', icon: ArrowUp, className: 'text-orange-600' },
-  medium: { label: 'Medium', icon: Minus, className: 'text-gray-600' },
-  low: { label: 'Low', icon: ArrowDown, className: 'text-blue-600' },
+const priorityConfig: Record<string, { label: string; icon: typeof AlertTriangle; className: string }> = {
+  'Critical': { label: 'Critical', icon: AlertTriangle, className: 'text-red-600' },
+  'High': { label: 'High', icon: ArrowUp, className: 'text-orange-600' },
+  'Medium': { label: 'Medium', icon: Minus, className: 'text-gray-600' },
+  'Low': { label: 'Low', icon: ArrowDown, className: 'text-blue-600' },
 };
 
-const typeConfig = {
-  functional: { className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  regression: { className: 'bg-purple-50 text-purple-700 border-purple-200' },
-  smoke: { className: 'bg-orange-50 text-orange-700 border-orange-200' },
-  integration: { className: 'bg-teal-50 text-teal-700 border-teal-200' },
-  e2e: { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+const typeConfig: Record<string, { className: string }> = {
+  'Functional': { className: 'bg-blue-50 text-blue-700 border-blue-200' },
+  'Regression': { className: 'bg-purple-50 text-purple-700 border-purple-200' },
+  'Smoke': { className: 'bg-orange-50 text-orange-700 border-orange-200' },
+  'Integration': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
+  'E2E': { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  'Performance': { className: 'bg-pink-50 text-pink-700 border-pink-200' },
+  'Security': { className: 'bg-red-50 text-red-700 border-red-200' },
 };
 
-const avatarColors: Record<string, string> = {
-  blue: 'bg-blue-100 text-blue-700',
-  green: 'bg-green-100 text-green-700',
-  purple: 'bg-purple-100 text-purple-700',
-  orange: 'bg-orange-100 text-orange-700',
-};
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
 
-const assigneeOptions = [
-  { name: 'Vikram S.', avatar: 'VS', color: 'blue' },
-  { name: 'Ahmed A.', avatar: 'AA', color: 'green' },
-  { name: 'Sara K.', avatar: 'SK', color: 'purple' },
-  { name: 'Mohammed R.', avatar: 'MR', color: 'orange' },
-];
-
-export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCasePropertiesPanelProps) {
-  const [testCase, setTestCase] = useState(initialTestCase);
+export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelProps) {
   const [editingField, setEditingField] = useState<string | null>(null);
-  const [tags, setTags] = useState(initialTestCase.tags);
+  const [tags, setTags] = useState<string[]>(testCase.labels?.map(l => l.name) || []);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState('');
 
-  const status = statusConfig[testCase.status];
-  const type = typeConfig[testCase.type];
-  const priority = priorityConfig[testCase.priority];
+  // Derived values from DB data
+  const statusKey = testCase.status || 'DRAFT';
+  const status = statusConfig[statusKey] || statusConfig['DRAFT'];
+
+  const priorityName = testCase.priority?.name || 'Medium';
+  const priority = priorityConfig[priorityName] || priorityConfig['Medium'];
   const PriorityIcon = priority.icon;
 
+  const typeName = testCase.type?.name || 'Functional';
+  const type = typeConfig[typeName] || typeConfig['Functional'];
+
+  // Release display
+  const releaseLabel = testCase.release 
+    ? (testCase.release.version || testCase.release.name || 'Unassigned')
+    : 'Unassigned';
+
+  // Folder display
+  const folderPath = testCase.folder?.path || testCase.folder?.name || '—';
+
+  // Assignee
+  const assigneeName = testCase.assigned_user?.full_name || 'Unassigned';
+  const assigneeAvatar = testCase.assigned_user?.avatar_url;
+
+  // Estimated duration
+  const estimatedMinutes = testCase.estimated_duration_minutes;
+  const estimatedTime = estimatedMinutes 
+    ? `${estimatedMinutes} minutes`
+    : testCase.steps?.length 
+      ? `${Math.ceil((testCase.steps.length * 30) / 60)} minutes`
+      : '—';
+
+  // Created / Updated
+  const createdByName = testCase.created_by_profile?.full_name || 'Unknown';
+  const createdAt = testCase.created_at 
+    ? format(new Date(testCase.created_at), 'MMM d, yyyy')
+    : '—';
+  const updatedAt = testCase.updated_at 
+    ? formatDistanceToNow(new Date(testCase.updated_at), { addSuffix: true })
+    : '—';
+
   const handleStatusChange = (value: string) => {
-    setTestCase({ ...testCase, status: value as TestCaseDetail['status'] });
     setEditingField(null);
-    toast.success('Status updated');
+    toast.info('Status update not implemented yet');
   };
 
   const handlePriorityChange = (value: string) => {
-    setTestCase({ ...testCase, priority: value as TestCaseDetail['priority'] });
     setEditingField(null);
-    toast.success('Priority updated');
+    toast.info('Priority update not implemented yet');
   };
 
   const handleTypeChange = (value: string) => {
-    setTestCase({ ...testCase, type: value as TestCaseDetail['type'] });
     setEditingField(null);
-    toast.success('Type updated');
+    toast.info('Type update not implemented yet');
   };
 
   const handleAssigneeChange = (value: string) => {
-    const assignee = assigneeOptions.find(a => a.name === value);
-    if (assignee) {
-      setTestCase({ ...testCase, assignee });
-      setEditingField(null);
-      toast.success('Assignee updated');
-    }
+    setEditingField(null);
+    toast.info('Assignee update not implemented yet');
   };
 
   const handleAddTag = () => {
@@ -120,13 +145,13 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
       setTags([...tags, newTag.trim()]);
       setNewTag('');
       setIsAddingTag(false);
-      toast.success('Tag added');
+      toast.info('Tag management not persisted to DB yet');
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
-    toast.success('Tag removed');
+    toast.info('Tag management not persisted to DB yet');
   };
 
   return (
@@ -139,9 +164,13 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
           label="Release"
           icon={Package}
           value={
-            <Link to={`/releases/all/${testCase.release}`} className="text-primary hover:underline">
-              {testCase.release}
-            </Link>
+            testCase.release?.id ? (
+              <Link to={`/releases/all/${testCase.release.id}`} className="text-primary hover:underline">
+                {releaseLabel}
+              </Link>
+            ) : (
+              <span className="text-muted-foreground">{releaseLabel}</span>
+            )
           }
         />
 
@@ -149,7 +178,7 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
         <PropertyField
           label="Folder"
           icon={Folder}
-          value={testCase.folder}
+          value={folderPath}
         />
 
         {/* Status */}
@@ -159,15 +188,15 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
             <span>Status</span>
           </div>
           {editingField === 'status' ? (
-            <Select value={testCase.status} onValueChange={handleStatusChange}>
+            <Select value={statusKey} onValueChange={handleStatusChange}>
               <SelectTrigger className="w-32 h-7">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="ready">Ready</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="deprecated">Deprecated</SelectItem>
+                <SelectItem value="DRAFT">Draft</SelectItem>
+                <SelectItem value="REVIEW">Ready</SelectItem>
+                <SelectItem value="APPROVED">Approved</SelectItem>
+                <SelectItem value="DEPRECATED">Deprecated</SelectItem>
               </SelectContent>
             </Select>
           ) : (
@@ -187,15 +216,15 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
             <span>Priority</span>
           </div>
           {editingField === 'priority' ? (
-            <Select value={testCase.priority} onValueChange={handlePriorityChange}>
+            <Select value={priorityName} onValueChange={handlePriorityChange}>
               <SelectTrigger className="w-32 h-7">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="critical">Critical</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="Critical">Critical</SelectItem>
+                <SelectItem value="High">High</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Low">Low</SelectItem>
               </SelectContent>
             </Select>
           ) : (
@@ -216,22 +245,24 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
             <span>Type</span>
           </div>
           {editingField === 'type' ? (
-            <Select value={testCase.type} onValueChange={handleTypeChange}>
+            <Select value={typeName} onValueChange={handleTypeChange}>
               <SelectTrigger className="w-32 h-7">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="functional">Functional</SelectItem>
-                <SelectItem value="regression">Regression</SelectItem>
-                <SelectItem value="smoke">Smoke</SelectItem>
-                <SelectItem value="integration">Integration</SelectItem>
-                <SelectItem value="e2e">E2E</SelectItem>
+                <SelectItem value="Functional">Functional</SelectItem>
+                <SelectItem value="Regression">Regression</SelectItem>
+                <SelectItem value="Smoke">Smoke</SelectItem>
+                <SelectItem value="Integration">Integration</SelectItem>
+                <SelectItem value="E2E">E2E</SelectItem>
+                <SelectItem value="Performance">Performance</SelectItem>
+                <SelectItem value="Security">Security</SelectItem>
               </SelectContent>
             </Select>
           ) : (
             <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('type')}>
               <Badge variant="outline" className={cn('text-xs capitalize', type.className)}>
-                {testCase.type}
+                {typeName}
               </Badge>
               <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
@@ -244,47 +275,25 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
             <User className="w-4 h-4" />
             <span>Assignee</span>
           </div>
-          {editingField === 'assignee' ? (
-            <Select value={testCase.assignee.name} onValueChange={handleAssigneeChange}>
-              <SelectTrigger className="w-36 h-7">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {assigneeOptions.map((a) => (
-                  <SelectItem key={a.name} value={a.name}>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-4 w-4">
-                        <AvatarFallback className={cn('text-[8px]', avatarColors[a.color])}>
-                          {a.avatar}
-                        </AvatarFallback>
-                      </Avatar>
-                      {a.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : (
-            <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('assignee')}>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-5 w-5">
-                  <AvatarFallback className={cn('text-xs', avatarColors[testCase.assignee.color])}>
-                    {testCase.assignee.avatar}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm">{testCase.assignee.name}</span>
-              </div>
-              <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('assignee')}>
+            <div className="flex items-center gap-2">
+              <Avatar className="h-5 w-5">
+                {assigneeAvatar && <AvatarImage src={assigneeAvatar} alt={assigneeName} />}
+                <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
+                  {getInitials(assigneeName)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm">{assigneeName}</span>
             </div>
-          )}
+            <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
         </div>
 
         {/* Estimated Time */}
         <PropertyField
           label="Est. Duration"
           icon={Clock}
-          value="5 minutes"
-          editable
+          value={estimatedTime}
         />
 
         <hr className="my-4 border-border" />
@@ -295,7 +304,7 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
             Preconditions
           </label>
           <p className="text-sm text-foreground">
-            {testCase.preconditions}
+            {testCase.preconditions || 'None specified'}
           </p>
         </div>
 
@@ -353,15 +362,15 @@ export function TestCasePropertiesPanel({ testCase: initialTestCase }: TestCaseP
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Created</span>
-            <span className="text-foreground">{testCase.createdAt} by {testCase.createdBy}</span>
+            <span className="text-foreground">{createdAt} by {createdByName}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Updated</span>
-            <span className="text-foreground">{testCase.updatedAt}</span>
+            <span className="text-foreground">{updatedAt}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Version</span>
-            <span className="text-foreground">v{testCase.version}</span>
+            <span className="text-foreground">v{testCase.version || 1}</span>
           </div>
         </div>
       </div>

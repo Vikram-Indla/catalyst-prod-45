@@ -1,6 +1,6 @@
 /**
  * Test Case Header Component
- * Displays title, status, meta information
+ * Displays title, status, meta information — wired to real DB data
  */
 
 import { useState } from 'react';
@@ -8,66 +8,103 @@ import { Pencil, CheckCircle, XCircle, Circle, AlertTriangle, ArrowUp, Minus, Ar
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import type { TestCaseDetail } from '@/data/testCaseDetailData';
+import { format } from 'date-fns';
+import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
 
 interface TestCaseHeaderProps {
-  testCase: TestCaseDetail;
+  testCase: TestCaseDetailData;
 }
 
-const statusConfig = {
-  draft: { label: 'Draft', className: 'bg-gray-100 text-gray-600 border-gray-200' },
-  ready: { label: 'Ready', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  approved: { label: 'Approved', className: 'bg-green-50 text-green-700 border-green-200' },
-  deprecated: { label: 'Deprecated', className: 'bg-red-50 text-red-600 border-red-200' },
+// Status config mapped to DB values (DRAFT, REVIEW, APPROVED, DEPRECATED)
+const statusConfig: Record<string, { label: string; className: string }> = {
+  'DRAFT': { label: 'Draft', className: 'bg-gray-100 text-gray-600 border-gray-200' },
+  'REVIEW': { label: 'Ready', className: 'bg-blue-50 text-blue-700 border-blue-200' },
+  'APPROVED': { label: 'Approved', className: 'bg-green-50 text-green-700 border-green-200' },
+  'DEPRECATED': { label: 'Deprecated', className: 'bg-red-50 text-red-600 border-red-200' },
 };
 
-const lastRunConfig = {
+const lastRunConfig: Record<string, { label: string; icon: typeof CheckCircle; className: string }> = {
   passed: { label: 'Passed', icon: CheckCircle, className: 'text-green-600' },
   failed: { label: 'Failed', icon: XCircle, className: 'text-red-600' },
+  blocked: { label: 'Blocked', icon: Minus, className: 'text-yellow-600' },
   not_run: { label: 'Not Run', icon: Circle, className: 'text-gray-400' },
 };
 
-const priorityConfig = {
-  critical: { icon: AlertTriangle, className: 'text-red-600', label: 'Critical' },
-  high: { icon: ArrowUp, className: 'text-orange-600', label: 'High' },
-  medium: { icon: Minus, className: 'text-yellow-600', label: 'Medium' },
-  low: { icon: ArrowDown, className: 'text-gray-500', label: 'Low' },
+// Priority config mapped to tm_case_priorities.name
+const priorityConfig: Record<string, { icon: typeof AlertTriangle; className: string; label: string }> = {
+  'Critical': { icon: AlertTriangle, className: 'text-red-600', label: 'Critical' },
+  'High': { icon: ArrowUp, className: 'text-orange-600', label: 'High' },
+  'Medium': { icon: Minus, className: 'text-yellow-600', label: 'Medium' },
+  'Low': { icon: ArrowDown, className: 'text-gray-500', label: 'Low' },
 };
 
-const typeConfig = {
-  functional: { className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  regression: { className: 'bg-purple-50 text-purple-700 border-purple-200' },
-  smoke: { className: 'bg-orange-50 text-orange-700 border-orange-200' },
-  integration: { className: 'bg-teal-50 text-teal-700 border-teal-200' },
-  e2e: { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+// Type config mapped to tm_case_types.name
+const typeConfig: Record<string, { className: string }> = {
+  'Functional': { className: 'bg-blue-50 text-blue-700 border-blue-200' },
+  'Regression': { className: 'bg-purple-50 text-purple-700 border-purple-200' },
+  'Smoke': { className: 'bg-orange-50 text-orange-700 border-orange-200' },
+  'Integration': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
+  'E2E': { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  'Performance': { className: 'bg-pink-50 text-pink-700 border-pink-200' },
+  'Security': { className: 'bg-red-50 text-red-700 border-red-200' },
 };
 
-const avatarColors: Record<string, string> = {
-  blue: 'bg-blue-100 text-blue-700',
-  green: 'bg-green-100 text-green-700',
-  purple: 'bg-purple-100 text-purple-700',
-  orange: 'bg-orange-100 text-orange-700',
-};
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
 
 export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(testCase.title);
 
-  const status = statusConfig[testCase.status];
-  const lastRun = lastRunConfig[testCase.lastRun];
-  const priority = priorityConfig[testCase.priority];
-  const type = typeConfig[testCase.type];
+  // Map DB data to display values
+  const statusKey = testCase.status || 'DRAFT';
+  const status = statusConfig[statusKey] || statusConfig['DRAFT'];
+
+  // Last run from execution data
+  const lastRunStatus = testCase.last_execution?.status || 'not_run';
+  const lastRun = lastRunConfig[lastRunStatus] || lastRunConfig['not_run'];
   const LastRunIcon = lastRun.icon;
+
+  // Priority from joined priority table
+  const priorityName = testCase.priority?.name || 'Medium';
+  const priority = priorityConfig[priorityName] || priorityConfig['Medium'];
   const PriorityIcon = priority.icon;
+
+  // Type from joined type table
+  const typeName = testCase.type?.name || 'Functional';
+  const type = typeConfig[typeName] || typeConfig['Functional'];
+
+  // Assignee from joined profile
+  const assigneeName = testCase.assigned_user?.full_name || 'Unassigned';
+  const assigneeAvatar = testCase.assigned_user?.avatar_url;
+
+  // Estimated duration
+  const estimatedMinutes = testCase.estimated_duration_minutes;
+  const estimatedTime = estimatedMinutes 
+    ? `${estimatedMinutes} min` 
+    : testCase.steps?.length 
+      ? `${Math.ceil((testCase.steps.length * 30) / 60)} min` // estimate 30s per step
+      : '—';
+
+  // Created date
+  const createdAt = testCase.created_at 
+    ? format(new Date(testCase.created_at), 'MMM d, yyyy')
+    : '—';
 
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       {/* Top row: ID, Status, Last Run, Created */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-mono text-primary font-semibold">{testCase.id}</span>
+          <span className="text-sm font-mono text-primary font-semibold">{testCase.key}</span>
           <Badge variant="outline" className={cn('text-xs font-medium', status.className)}>
             {status.label}
           </Badge>
@@ -77,7 +114,7 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
           </div>
         </div>
         <span className="text-sm text-muted-foreground">
-          Created {testCase.createdAt}
+          Created {createdAt}
         </span>
       </div>
 
@@ -115,17 +152,17 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
         )}
       </div>
 
-      {/* Description */}
+      {/* Description / Objective */}
       <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-        {testCase.description}
+        {testCase.objective || testCase.preconditions || 'No description provided.'}
       </p>
 
       {/* Meta row */}
-      <div className="flex items-center gap-6 text-sm">
+      <div className="flex items-center gap-6 text-sm flex-wrap">
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">Type:</span>
           <Badge variant="outline" className={cn('text-xs font-medium capitalize', type.className)}>
-            {testCase.type}
+            {typeName}
           </Badge>
         </div>
 
@@ -141,17 +178,18 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
           <span className="text-muted-foreground">Assignee:</span>
           <div className="flex items-center gap-1.5">
             <Avatar className="h-5 w-5">
-              <AvatarFallback className={cn('text-xs', avatarColors[testCase.assignee.color])}>
-                {testCase.assignee.avatar}
+              {assigneeAvatar && <AvatarImage src={assigneeAvatar} alt={assigneeName} />}
+              <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
+                {getInitials(assigneeName)}
               </AvatarFallback>
             </Avatar>
-            <span>{testCase.assignee.name}</span>
+            <span>{assigneeName}</span>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">Est. Time:</span>
-          <span>{testCase.estimatedTime}</span>
+          <span>{estimatedTime}</span>
         </div>
       </div>
     </div>

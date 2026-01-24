@@ -166,10 +166,18 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
   });
 }
 
+export interface TestCaseDetailData extends TMTestCase {
+  release?: { id: string; name?: string; version?: string } | null;
+  assigned_user?: { id: string; full_name?: string; avatar_url?: string } | null;
+  created_by_profile?: { id: string; full_name?: string; avatar_url?: string } | null;
+  last_execution?: { status: string; executed_at: string | null } | null;
+  estimated_duration_minutes?: number | null;
+}
+
 export function useTestCase(caseId: string | undefined) {
   return useQuery({
     queryKey: ['tm-case', caseId],
-    queryFn: async (): Promise<TMTestCase | null> => {
+    queryFn: async (): Promise<TestCaseDetailData | null> => {
       if (!caseId) return null;
 
       const { data: testCase, error: caseError } = await supabase
@@ -178,7 +186,10 @@ export function useTestCase(caseId: string | undefined) {
           *,
           priority:tm_case_priorities(*),
           type:tm_case_types(*),
-          folder:tm_folders(id, name, path)
+          folder:tm_folders(id, name, path),
+          release:release_versions(id, name, version),
+          created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url),
+          assigned_user:profiles!tm_test_cases_assigned_to_fkey(id, full_name, avatar_url)
         `)
         .eq('id', caseId)
         .single();
@@ -200,6 +211,18 @@ export function useTestCase(caseId: string | undefined) {
 
       if (labelsError) throw labelsError;
 
+      // Fetch last execution status
+      const { data: executions } = await supabase
+        .from('test_cycle_executions')
+        .select('status, executed_at')
+        .eq('case_id', caseId)
+        .order('executed_at', { ascending: false })
+        .limit(1);
+
+      const lastExecution = executions && executions.length > 0 
+        ? { status: executions[0].status || 'not_run', executed_at: executions[0].executed_at }
+        : null;
+
       const mappedSteps = (steps || []).map(s => ({
         id: s.id,
         case_id: s.test_case_id,
@@ -220,7 +243,12 @@ export function useTestCase(caseId: string | undefined) {
         objective: testCase.description,
         steps: mappedSteps,
         labels: caseLabels?.map(cl => cl.label).filter(Boolean) || [],
-      } as unknown as TMTestCase;
+        release: (testCase as any).release || null,
+        assigned_user: (testCase as any).assigned_user || null,
+        created_by_profile: (testCase as any).created_by_profile || null,
+        last_execution: lastExecution,
+        estimated_duration_minutes: (testCase as any).estimated_duration_minutes || null,
+      } as unknown as TestCaseDetailData;
     },
     enabled: !!caseId,
   });
