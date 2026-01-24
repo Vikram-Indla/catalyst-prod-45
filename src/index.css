@@ -298,6 +298,43 @@ html:has(body[data-scroll-locked]) {
     --shadow-color: 0 0% 10%;            /* #1a1a1a */
     --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.05);
     --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.08);
+    
+    /* ═══════════════════════════════════════════════════════════════
+       USERS MODULE — RING-FENCED DESIGN SYSTEM
+       Only applies to /admin/users route components
+       ═══════════════════════════════════════════════════════════════ */
+    
+    /* Primary */
+    --users-primary: 217 91% 53%;           /* #2563eb */
+    --users-primary-hover: 217 91% 45%;     /* #1d4ed8 */
+    --users-primary-light: 217 91% 53% / 0.08;
+    
+    /* Resource Types */
+    --users-variable: 217 91% 53%;          /* #2563eb blue */
+    --users-variable-bg: 217 91% 53% / 0.08;
+    --users-permanent: 173 58% 39%;         /* #0d9488 teal */
+    --users-permanent-bg: 173 58% 39% / 0.10;
+    --users-fixed: 38 92% 50%;              /* #d97706 amber */
+    --users-fixed-bg: 38 92% 50% / 0.10;
+    --users-freelance: 262 83% 58%;         /* #8b5cf6 purple */
+    --users-freelance-bg: 262 83% 58% / 0.10;
+    
+    /* Status */
+    --users-success: 160 84% 39%;           /* #10b981 */
+    --users-success-bg: 160 84% 39% / 0.10;
+    --users-danger: 0 84% 60%;              /* #ef4444 */
+    --users-danger-bg: 0 84% 60% / 0.10;
+    
+    /* Neutrals */
+    --users-bg: 210 40% 98%;                /* #f8fafc */
+    --users-surface: 0 0% 100%;             /* #ffffff */
+    --users-surface-hover: 210 40% 98%;     /* #f8fafc */
+    --users-surface-active: 213 27% 96%;    /* #f1f5f9 */
+    --users-text: 222 47% 11%;              /* #0f172a */
+    --users-text-secondary: 215 16% 47%;    /* #475569 */
+    --users-text-muted: 215 16% 64%;        /* #94a3b8 */
+    --users-border: 214 32% 91%;            /* #e2e8f0 */
+    --users-border-light: 213 27% 96%;      /* #f1f5f9 */
     --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.12);
     --shadow-brand: 0 4px 14px -2px rgba(37, 99, 235, 0.25);
     --shadow-ai: 0 4px 14px -2px rgba(124, 58, 237, 0.3);
