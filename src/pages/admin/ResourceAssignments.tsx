@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +32,12 @@ interface LinkedRecord {
   table_source: 'allocation' | 'inventory';
 }
 
+interface Vendor {
+  id: string;
+  name: string;
+  is_active: boolean;
+}
+
 export default function ResourceAssignmentsPage() {
   const queryClient = useQueryClient();
   const { allAssignments, isLoadingAll, createAssignment, updateAssignment } = useResourceAssignments();
@@ -42,6 +48,7 @@ export default function ResourceAssignmentsPage() {
     description: '', 
     assignment_type: '',
     project_id: '',
+    vendor_id: '',
     budget: '',
     assignment_status: 'yet_to_start' as AssignmentStatus
   });
@@ -50,6 +57,11 @@ export default function ResourceAssignmentsPage() {
   const [linkedRecords, setLinkedRecords] = useState<LinkedRecord[]>([]);
   const [isCheckingLinks, setIsCheckingLinks] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Budget inline edit state
+  const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null);
+  const [editingBudgetValue, setEditingBudgetValue] = useState('');
+  const budgetInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch projects for dropdown
   const { data: projects = [] } = useQuery({
@@ -63,6 +75,28 @@ export default function ResourceAssignmentsPage() {
       return data;
     },
   });
+
+  // Fetch vendors for dropdown
+  const { data: vendors = [] } = useQuery({
+    queryKey: ['resource-vendors-list'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_vendors')
+        .select('id, name, is_active')
+        .eq('is_active', true)
+        .order('name', { ascending: true });
+      if (error) throw error;
+      return data as Vendor[];
+    },
+  });
+
+  // Focus budget input when editing
+  useEffect(() => {
+    if (editingBudgetId && budgetInputRef.current) {
+      budgetInputRef.current.focus();
+      budgetInputRef.current.select();
+    }
+  }, [editingBudgetId]);
 
   const checkLinkedRecords = async (assignmentId: string) => {
     setIsCheckingLinks(true);
@@ -115,6 +149,7 @@ export default function ResourceAssignmentsPage() {
       description: '', 
       assignment_type: '',
       project_id: '',
+      vendor_id: '',
       budget: '',
       assignment_status: 'yet_to_start'
     });
@@ -140,6 +175,7 @@ export default function ResourceAssignmentsPage() {
         description: formData.description,
         assignment_type: formData.assignment_type || null,
         project_id: formData.project_id || null,
+        vendor_id: formData.vendor_id || null,
         budget: formData.budget ? parseFloat(formData.budget) : null,
         assignment_status: formData.assignment_status || 'yet_to_start',
       } as any,
@@ -203,6 +239,50 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
+  // Auto-save status when changed
+  const handleStatusChange = async (assignment: ResourceAssignment, value: string) => {
+    await updateAssignment.mutateAsync({
+      id: assignment.id,
+      updates: { assignment_status: value as AssignmentStatus },
+    });
+  };
+
+  // Auto-save vendor when changed
+  const handleVendorChange = async (assignment: ResourceAssignment, value: string) => {
+    const newValue = value === '__none__' ? null : value;
+    await updateAssignment.mutateAsync({
+      id: assignment.id,
+      updates: { vendor_id: newValue } as any,
+    });
+  };
+
+  // Inline budget editing handlers
+  const handleBudgetDoubleClick = (assignment: ResourceAssignment) => {
+    setEditingBudgetId(assignment.id);
+    setEditingBudgetValue(assignment.budget?.toString() || '');
+  };
+
+  const handleBudgetBlur = async (assignment: ResourceAssignment) => {
+    const newBudget = editingBudgetValue.trim() ? parseFloat(editingBudgetValue) : null;
+    if (newBudget !== assignment.budget) {
+      await updateAssignment.mutateAsync({
+        id: assignment.id,
+        updates: { budget: newBudget },
+      });
+    }
+    setEditingBudgetId(null);
+    setEditingBudgetValue('');
+  };
+
+  const handleBudgetKeyDown = (e: React.KeyboardEvent, assignment: ResourceAssignment) => {
+    if (e.key === 'Enter') {
+      handleBudgetBlur(assignment);
+    } else if (e.key === 'Escape') {
+      setEditingBudgetId(null);
+      setEditingBudgetValue('');
+    }
+  };
+
   const openEdit = (assignment: ResourceAssignment) => {
     setEditingAssignment(assignment);
     setFormData({ 
@@ -210,6 +290,7 @@ export default function ResourceAssignmentsPage() {
       description: assignment.description || '', 
       assignment_type: assignment.assignment_type || '',
       project_id: assignment.project_id || '',
+      vendor_id: assignment.vendor_id || '',
       budget: assignment.budget?.toString() || '',
       assignment_status: assignment.assignment_status || 'yet_to_start'
     });
@@ -252,9 +333,10 @@ export default function ResourceAssignmentsPage() {
             <tr>
               <th className="w-10 px-4 py-3"></th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Status</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Budget</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[160px]">Assignment Type</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[140px]">Status</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Budget</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[140px]">Vendor</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[150px]">Assignment Type</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
             </tr>
@@ -285,24 +367,74 @@ export default function ResourceAssignmentsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <Badge variant="secondary" className={`${statusConfig.color} text-xs`}>
-                    {statusConfig.label}
-                  </Badge>
+                  <Select
+                    value={status}
+                    onValueChange={(value) => handleStatusChange(assignment, value)}
+                  >
+                    <SelectTrigger className="h-8 w-[130px] bg-background text-xs">
+                      <Badge variant="secondary" className={`${statusConfig.color} text-xs`}>
+                        {statusConfig.label}
+                      </Badge>
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover z-[400]">
+                      <SelectItem value="yet_to_start">Yet to Start</SelectItem>
+                      <SelectItem value="on_hold">On Hold</SelectItem>
+                      <SelectItem value="in_progress">In Progress</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </td>
-                <td className="px-4 py-3 text-sm text-foreground">
-                  {assignment.budget ? (
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span>{assignment.budget.toLocaleString()}</span>
+                <td className="px-4 py-3">
+                  {editingBudgetId === assignment.id ? (
+                    <Input
+                      ref={budgetInputRef}
+                      type="number"
+                      value={editingBudgetValue}
+                      onChange={(e) => setEditingBudgetValue(e.target.value)}
+                      onBlur={() => handleBudgetBlur(assignment)}
+                      onKeyDown={(e) => handleBudgetKeyDown(e, assignment)}
+                      className="h-8 w-[100px] text-sm"
+                      placeholder="0"
+                    />
+                  ) : (
+                    <div
+                      className="flex items-center gap-1 cursor-text px-2 py-1 -mx-2 rounded hover:bg-muted min-w-[80px]"
+                      onDoubleClick={() => handleBudgetDoubleClick(assignment)}
+                      title="Double-click to edit"
+                    >
+                      {assignment.budget ? (
+                        <>
+                          <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="text-sm">{assignment.budget.toLocaleString()}</span>
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">—</span>
+                      )}
                     </div>
-                  ) : '—'}
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  <Select
+                    value={assignment.vendor_id || '__none__'}
+                    onValueChange={(value) => handleVendorChange(assignment, value)}
+                  >
+                    <SelectTrigger className="h-8 w-[130px] bg-background text-xs">
+                      <SelectValue placeholder="Select vendor" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover z-[400]">
+                      <SelectItem value="__none__">Not specified</SelectItem>
+                      {vendors.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </td>
                 <td className="px-4 py-3">
                   <Select
                     value={assignment.assignment_type || '__none__'}
                     onValueChange={(value) => handleAssignmentTypeChange(assignment, value)}
                   >
-                    <SelectTrigger className="h-9 w-[140px] bg-background">
+                    <SelectTrigger className="h-8 w-[140px] bg-background text-xs">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-[400]">
@@ -341,7 +473,7 @@ export default function ResourceAssignmentsPage() {
             })}
             {allAssignments.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
                   No assignments configured. Click "Add Assignment" to create one.
                 </td>
               </tr>
@@ -462,6 +594,23 @@ export default function ResourceAssignmentsPage() {
                 onChange={(e) => setFormData(f => ({ ...f, budget: e.target.value }))}
                 placeholder="e.g., 50000"
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Vendor</Label>
+              <Select
+                value={formData.vendor_id || '__none__'}
+                onValueChange={(value) => setFormData(f => ({ ...f, vendor_id: value === '__none__' ? '' : value }))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select vendor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">Not specified</SelectItem>
+                  {vendors.map((v) => (
+                    <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label>Assignment Type</Label>

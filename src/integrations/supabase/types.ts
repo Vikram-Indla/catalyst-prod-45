@@ -14955,6 +14955,7 @@ export type Database = {
           project_id: string | null
           sort_order: number | null
           updated_at: string | null
+          vendor_id: string | null
         }
         Insert: {
           assignment_status?: string | null
@@ -14969,6 +14970,7 @@ export type Database = {
           project_id?: string | null
           sort_order?: number | null
           updated_at?: string | null
+          vendor_id?: string | null
         }
         Update: {
           assignment_status?: string | null
@@ -14983,6 +14985,7 @@ export type Database = {
           project_id?: string | null
           sort_order?: number | null
           updated_at?: string | null
+          vendor_id?: string | null
         }
         Relationships: [
           {
@@ -14990,6 +14993,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_assignments_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "resource_vendors"
             referencedColumns: ["id"]
           },
         ]

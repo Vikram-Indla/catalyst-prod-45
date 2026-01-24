@@ -8,6 +8,11 @@ export interface ProjectInfo {
   status: string | null;
 }
 
+export interface VendorInfo {
+  id: string;
+  name: string;
+}
+
 export type AssignmentStatus = 'yet_to_start' | 'on_hold' | 'in_progress' | 'completed';
 
 export interface ResourceAssignment {
@@ -18,9 +23,11 @@ export interface ResourceAssignment {
   sort_order: number;
   assignment_type: string | null;
   project_id: string | null;
+  vendor_id: string | null;
   budget: number | null;
   assignment_status: AssignmentStatus | null;
   project?: ProjectInfo | null;
+  vendor?: VendorInfo | null;
   created_at: string;
   updated_at: string;
 }
@@ -42,7 +49,9 @@ export function useResourceAssignments() {
       
       // Fetch project data separately if there are project_ids
       const projectIds = (data || []).map((a: any) => a.project_id).filter(Boolean);
+      const vendorIds = (data || []).map((a: any) => a.vendor_id).filter(Boolean);
       let projectsMap: Record<string, ProjectInfo> = {};
+      let vendorsMap: Record<string, VendorInfo> = {};
       
       if (projectIds.length > 0) {
         const { data: projects } = await (supabase as any)
@@ -56,11 +65,25 @@ export function useResourceAssignments() {
           });
         }
       }
+
+      if (vendorIds.length > 0) {
+        const { data: vendors } = await (supabase as any)
+          .from('resource_vendors')
+          .select('id, name')
+          .in('id', vendorIds);
+        
+        if (vendors) {
+          vendors.forEach((v: VendorInfo) => {
+            vendorsMap[v.id] = v;
+          });
+        }
+      }
       
-      // Map assignments with project data
+      // Map assignments with project and vendor data
       return (data || []).map((a: any) => ({
         ...a,
         project: a.project_id ? projectsMap[a.project_id] || null : null,
+        vendor: a.vendor_id ? vendorsMap[a.vendor_id] || null : null,
       })) as ResourceAssignment[];
     },
   });
@@ -78,7 +101,9 @@ export function useResourceAssignments() {
       
       // Fetch project data separately if there are project_ids
       const projectIds = (data || []).map((a: any) => a.project_id).filter(Boolean);
+      const vendorIds = (data || []).map((a: any) => a.vendor_id).filter(Boolean);
       let projectsMap: Record<string, ProjectInfo> = {};
+      let vendorsMap: Record<string, VendorInfo> = {};
       
       if (projectIds.length > 0) {
         const { data: projects } = await (supabase as any)
@@ -92,11 +117,25 @@ export function useResourceAssignments() {
           });
         }
       }
+
+      if (vendorIds.length > 0) {
+        const { data: vendors } = await (supabase as any)
+          .from('resource_vendors')
+          .select('id, name')
+          .in('id', vendorIds);
+        
+        if (vendors) {
+          vendors.forEach((v: VendorInfo) => {
+            vendorsMap[v.id] = v;
+          });
+        }
+      }
       
-      // Map assignments with project data
+      // Map assignments with project and vendor data
       return (data || []).map((a: any) => ({
         ...a,
         project: a.project_id ? projectsMap[a.project_id] || null : null,
+        vendor: a.vendor_id ? vendorsMap[a.vendor_id] || null : null,
       })) as ResourceAssignment[];
     },
   });
