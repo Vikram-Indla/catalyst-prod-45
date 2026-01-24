@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { getEstimatedDurationDisplay } from '@/utils/test-case-duration';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { 
   GripVertical, 
@@ -310,7 +311,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testC
     setEditingStep({ action: '', expectedResult: '' });
   };
 
-  const estimatedTime = `${Math.max(steps.length * 0.5 + 2, 1)} min`;
+  const estimatedTime = getEstimatedDurationDisplay({ steps });
 
   return (
     <div className="space-y-4">
