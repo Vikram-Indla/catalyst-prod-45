@@ -859,13 +859,25 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => setEditUser(user)}
-                          className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer flex-shrink-0"
-                          title="Edit user"
-                        >
-                          {getInitials(user.full_name)}
-                        </button>
+                        <div className="relative flex-shrink-0">
+                          <button
+                            onClick={() => setEditUser(user)}
+                            className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer"
+                            title="Edit user"
+                          >
+                            {getInitials(user.full_name)}
+                          </button>
+                          {(() => {
+                            const flagUrl = user.country_flag_svg_url || getCountryInfo(user.country)?.svg;
+                            return flagUrl ? (
+                              <img 
+                                src={flagUrl} 
+                                alt={user.country || ''} 
+                                className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm"
+                              />
+                            ) : null;
+                          })()}
+                        </div>
                         <div className="min-w-0">
                           <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
                           <div className="text-xs text-muted-foreground truncate">{user.email}</div>
