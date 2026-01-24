@@ -21,6 +21,9 @@ export interface CycleTestCase {
   status: 'passed' | 'failed' | 'in_progress' | 'not_run';
   progress?: string;
   priority: 'critical' | 'high' | 'medium' | 'low';
+  // Canonical assignee fields (matching TMCycleScope/TMDefect pattern)
+  assigned_to?: string | null;
+  assignee?: { id: string; full_name: string; avatar_url?: string } | null;
 }
 
 export interface ExecutionTestCase {

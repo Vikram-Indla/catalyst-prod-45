@@ -90,26 +90,30 @@ function mapLastRun(lastExecution: { status: string; executed_at: string | null 
 
 /**
  * Convert a single TMTestCase to UI TestCase format
+ * 
+ * ASSIGNEE CONTRACT:
+ * - tc.assigned_to: UUID from database (canonical field)
+ * - tc.assignee: Joined object { id, full_name, avatar_url } from profiles table
+ * - NO fallback to created_by_profile for assignee (that's a different semantic)
  */
 export function tmToUITestCase(tc: TMTestCase): TestCase {
-  // Get assigned user or fall back to creator
-  const assignedUser = (tc as any).assigned_user;
-  const assignee = assignedUser || tc.created_by_profile || tc.created_by_user;
+  // Use canonical assignee from joined relation (NO fallback to creator)
+  const assignee = tc.assignee;
   
-  // Get creator profile for "Created by" display
+  // Get creator profile for "Created by" display (separate from assignee)
   const creatorProfile = tc.created_by_profile || tc.created_by_user;
   
-  // Extract folder information from the joined relation
-  const folder = (tc as any).folder as { id: string; name: string; path?: string } | null;
+  // Extract folder information from the typed relation
+  const folder = tc.folder;
   
-  // Extract release information from the joined relation
-  const release = (tc as any).release as { id: string; name: string; version?: string } | null;
+  // Extract release information from the joined relation (may be extended on query)
+  const release = (tc as { release?: { id: string; name: string; version?: string } }).release;
   
   // Steps count from aggregated query (not from steps array which may not be loaded)
-  const stepsCount = (tc as any).steps_count ?? (tc.steps?.length || 0);
+  const stepsCount = (tc as { steps_count?: number }).steps_count ?? (tc.steps?.length || 0);
   
   // Last execution from aggregated query
-  const lastExecution = (tc as any).last_execution as { status: string; executed_at: string | null } | null;
+  const lastExecution = (tc as { last_execution?: { status: string; executed_at: string | null } }).last_execution;
   
   return {
     id: tc.id,   // Always use the actual database UUID
