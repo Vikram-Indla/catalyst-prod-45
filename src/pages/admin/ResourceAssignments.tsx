@@ -56,9 +56,9 @@ const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: strin
   closed: { label: 'Closed', color: 'bg-gray-500/15 text-gray-600' },
 };
 
-const ASSIGNMENT_TYPE_ORDER = ['Outsourced', 'Cosourced', 'BAU', 'Project', 'Unspecified'];
+const ASSIGNMENT_TYPE_ORDER = ['Outsourced', 'Cosourced', 'Insourced', 'Project', 'Unspecified'];
 const ASSIGNMENT_TYPE_COLORS: Record<string, string> = {
-  BAU: 'bg-blue-500/10 text-blue-700 border-blue-200',
+  Insourced: 'bg-blue-500/10 text-blue-700 border-blue-200',
   Project: 'bg-purple-500/10 text-purple-700 border-purple-200',
   Outsourced: 'bg-amber-500/10 text-amber-700 border-amber-200',
   Cosourced: 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
@@ -239,20 +239,24 @@ function SortableRow({
         )}
       </td>
       <td className="px-4 py-3">
-        <Select
-          value={assignment.vendor_id || '__none__'}
-          onValueChange={(value) => onVendorChange(assignment, value)}
-        >
-          <SelectTrigger className="h-8 w-[110px] bg-background text-xs">
-            <SelectValue placeholder="Select vendor" />
-          </SelectTrigger>
-          <SelectContent className="bg-popover z-[400]">
-            <SelectItem value="__none__">Not specified</SelectItem>
-            {vendors.map((v) => (
-              <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
+          <Select
+            value={assignment.vendor_id || '__none__'}
+            onValueChange={(value) => onVendorChange(assignment, value)}
+          >
+            <SelectTrigger className="h-8 w-[110px] bg-background text-xs">
+              <SelectValue placeholder="Select vendor" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-[400]">
+              <SelectItem value="__none__">Not specified</SelectItem>
+              {vendors.map((v) => (
+                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <span className="text-muted-foreground text-sm">—</span>
+        )}
       </td>
       <td className="px-4 py-3">
         <Select
@@ -265,7 +269,7 @@ function SortableRow({
           <SelectContent className="bg-popover z-[400]">
             <SelectItem value="__none__">Not specified</SelectItem>
             <SelectItem value="Project">Project</SelectItem>
-            <SelectItem value="BAU">BAU</SelectItem>
+            <SelectItem value="Insourced">Insourced</SelectItem>
             <SelectItem value="Outsourced">Outsourced</SelectItem>
             <SelectItem value="Cosourced">Cosourced</SelectItem>
           </SelectContent>
@@ -846,7 +850,7 @@ export default function ResourceAssignmentsPage() {
                 <SelectContent>
                   <SelectItem value="__none__">Not specified</SelectItem>
                   <SelectItem value="Project">Project</SelectItem>
-                  <SelectItem value="BAU">BAU</SelectItem>
+                  <SelectItem value="Insourced">Insourced</SelectItem>
                   <SelectItem value="Outsourced">Outsourced</SelectItem>
                   <SelectItem value="Cosourced">Cosourced</SelectItem>
                 </SelectContent>
@@ -953,7 +957,7 @@ export default function ResourceAssignmentsPage() {
                 <SelectContent>
                   <SelectItem value="__none__">Not specified</SelectItem>
                   <SelectItem value="Project">Project</SelectItem>
-                  <SelectItem value="BAU">BAU</SelectItem>
+                  <SelectItem value="Insourced">Insourced</SelectItem>
                   <SelectItem value="Outsourced">Outsourced</SelectItem>
                   <SelectItem value="Cosourced">Cosourced</SelectItem>
                 </SelectContent>
