@@ -26,10 +26,10 @@ export function useAssignmentBudgets(assignmentIds: string[]) {
     queryFn: async () => {
       if (!assignmentIds.length) return {};
 
-      // Fetch all resources linked to these assignments with their CTC and resource_id
+      // Fetch all resources linked to these assignments with their CTC and rid
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select('id, resource_id, name, ctc, contract_end_date, assignment_id')
+        .select('id, rid, name, ctc, contract_end_date, assignment_id')
         .in('assignment_id', assignmentIds);
 
       if (error) throw error;
@@ -52,7 +52,7 @@ export function useAssignmentBudgets(assignmentIds: string[]) {
           const ctc = parseFloat(resource.ctc) || 0;
           budgetMap[assignmentId].linkedResources.push({
             id: resource.id,
-            resourceId: resource.resource_id || '—',
+            resourceId: resource.rid || '—',
             name: resource.name,
             ctc: resource.ctc ? parseFloat(resource.ctc) : null,
             contract_end_date: resource.contract_end_date,
