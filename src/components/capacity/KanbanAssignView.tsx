@@ -704,14 +704,23 @@ function CompactResourceCard({
                   : "bg-card/50 border-border hover:border-border-strong hover:bg-card"
             )}
           >
-            {/* Avatar - semi-transparent for ghost cards */}
-            <div className={cn(
-              'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0',
-              deptColor.bg, 
-              deptColor.text,
-              isGhostCard && 'opacity-60'
-            )}>
-              {initials}
+            {/* Avatar with country flag - semi-transparent for ghost cards */}
+            <div className="relative shrink-0">
+              <div className={cn(
+                'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold',
+                deptColor.bg, 
+                deptColor.text,
+                isGhostCard && 'opacity-60'
+              )}>
+                {initials}
+              </div>
+              {(resource as any).country_flag_svg && !isGhostCard && (
+                <img 
+                  src={(resource as any).country_flag_svg} 
+                  alt="" 
+                  className="absolute -bottom-0.5 -right-0.5 h-3 w-4 object-cover rounded-sm border border-background shadow-sm"
+                />
+              )}
             </div>
 
             {/* Info */}

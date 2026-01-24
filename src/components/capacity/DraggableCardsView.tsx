@@ -139,6 +139,7 @@ function DraggableResourceCard({
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
   const assignmentName = resource.assignmentName || 'Unassigned';
+  const countryFlagSvg = (resource as any).country_flag_svg;
 
   return (
     <div 
@@ -160,14 +161,23 @@ function DraggableResourceCard({
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
 
-        {/* Avatar with 360° hover animation */}
-        <Avatar360 
-          initials={initials}
-          onClick={on360Click}
-          bgColor={deptColor.bg}
-          textColor={deptColor.text}
-          size="md"
-        />
+        {/* Avatar with 360° hover animation + country flag */}
+        <div className="relative">
+          <Avatar360 
+            initials={initials}
+            onClick={on360Click}
+            bgColor={deptColor.bg}
+            textColor={deptColor.text}
+            size="md"
+          />
+          {countryFlagSvg && (
+            <img 
+              src={countryFlagSvg} 
+              alt="" 
+              className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm"
+            />
+          )}
+        </div>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
