@@ -30,7 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { TestCase } from '@/data/testCasesData';
+import { TestCase } from '@/types/test-cases';
 import { exportTestCases, type ExportFormat } from './utils/exportTestCases';
 
 interface ExportTestCasesDialogProps {

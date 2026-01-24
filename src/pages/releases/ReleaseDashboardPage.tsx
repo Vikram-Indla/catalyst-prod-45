@@ -30,7 +30,7 @@ import { QualityGatesWidget } from '@/components/releases/dashboard/QualityGates
 import { CoverageMatrixWidget } from '@/components/releases/dashboard/CoverageMatrixWidget';
 import { ActivityFeedWidget } from '@/components/releases/dashboard/ActivityFeedWidget';
 import { EnvironmentComparisonWidget } from '@/components/releases/dashboard/EnvironmentComparisonWidget';
-import { TestDetailDrawer } from '@/components/releases/dashboard/TestDetailDrawer';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 // Data
 import {
@@ -252,12 +252,22 @@ export default function ReleaseDashboardPage() {
         </div>
       </main>
 
-      {/* Test Detail Drawer */}
-      <TestDetailDrawer
-        test={selectedTestCase}
-        open={isDrawerOpen}
-        onOpenChange={setIsDrawerOpen}
-      />
+      {/* Test Detail Drawer - Simple inline version for dashboard */}
+      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <SheetContent className="w-[400px] sm:max-w-[400px]">
+          <SheetHeader>
+            <SheetTitle>{selectedTestCase?.title || 'Test Case'}</SheetTitle>
+          </SheetHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              Status: <span className="font-medium">{selectedTestCase?.status}</span>
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Priority: <span className="font-medium">{selectedTestCase?.priority}</span>
+            </p>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

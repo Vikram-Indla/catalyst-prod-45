@@ -3,7 +3,7 @@
  * Supports CSV, JSON, and XLSX formats
  */
 
-import { TestCase } from '@/data/testCasesData';
+import { TestCase } from '@/types/test-cases';
 import * as XLSX from 'xlsx';
 
 export type ExportFormat = 'csv' | 'json' | 'xlsx';

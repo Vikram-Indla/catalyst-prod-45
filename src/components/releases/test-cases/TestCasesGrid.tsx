@@ -8,7 +8,7 @@ import { ListChecks, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { TestCase } from '@/data/testCasesData';
+import { TestCase } from '@/types/test-cases';
 import { TypeBadge, PriorityBadge, StatusBadge, LastRunBadge } from './badges';
 import { cn } from '@/lib/utils';
 

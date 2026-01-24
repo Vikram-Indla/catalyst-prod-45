@@ -36,7 +36,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { TestCase } from '@/data/testCasesData';
+import { TestCase } from '@/types/test-cases';
 import { TypeBadge, PriorityBadge, StatusBadge, LastRunBadge } from './badges';
 import { cn } from '@/lib/utils';
 import { useCloneTestCase, useDeleteTestCase } from '@/hooks/test-management';

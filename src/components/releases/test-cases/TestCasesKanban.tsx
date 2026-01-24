@@ -28,7 +28,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { TestCase } from '@/data/testCasesData';
+import { TestCase } from '@/types/test-cases';
 import { PriorityBadge, TypeBadge, LastRunBadge } from './badges';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
