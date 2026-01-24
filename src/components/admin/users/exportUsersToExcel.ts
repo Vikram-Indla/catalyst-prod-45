@@ -14,14 +14,12 @@ interface ExportColumn {
 }
 
 const EXPORT_COLUMNS: ExportColumn[] = [
-  { key: 'rid', header: 'Resource ID', width: 14 },
-  { key: 'full_name', header: 'Full Name', width: 28 },
-  { key: 'email', header: 'Email Address', width: 35 },
+  { key: 'rid', header: 'RID', width: 8 },
+  { key: 'full_name', header: 'Name', width: 28 },
+  { key: 'email', header: 'Email', width: 35 },
   { key: 'job_role', header: 'Job Role', width: 25 },
-  { key: 'department_name', header: 'Department', width: 22 },
+  { key: 'department_name', header: 'Department', width: 18 },
   { key: 'assignment_name', header: 'Assignment', width: 22 },
-  { key: 'resource_type', header: 'Resource Type', width: 16 },
-  { key: 'vendor', header: 'Vendor', width: 20 },
   { 
     key: 'contract_start_date', 
     header: 'Contract Start', 
@@ -34,23 +32,10 @@ const EXPORT_COLUMNS: ExportColumn[] = [
     width: 16,
     formatter: (val) => val ? format(new Date(val), 'dd MMM yyyy') : '—'
   },
+  { key: 'vendor', header: 'Vendor', width: 18 },
+  { key: 'resource_type', header: 'Resource Type', width: 16 },
   { key: 'country', header: 'Country', width: 18 },
-  { key: 'location', header: 'Location', width: 20 },
-  { 
-    key: 'roles_display', 
-    header: 'System Roles', 
-    width: 30,
-    formatter: (_, user) => user.roles?.map(r => r.role_name).join(', ') || '—'
-  },
-  { 
-    key: 'approval_status', 
-    header: 'Status', 
-    width: 14,
-    formatter: (val) => {
-      if (!val) return 'Pending';
-      return String(val).charAt(0).toUpperCase() + String(val).slice(1);
-    }
-  },
+  { key: 'location', header: 'Location', width: 14 },
 ];
 
 export function exportUsersToExcel(users: UserProfile[]): void {
