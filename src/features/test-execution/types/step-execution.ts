@@ -32,6 +32,10 @@ export interface RunContext {
   name: string;
   environment: string;
   configuration: Record<string, unknown>;
+  // Phase 3: Data-Driven Testing fields
+  test_data_row_id?: string | null;
+  test_data_row_snapshot?: Record<string, string> | null;
+  test_data_row_number?: number | null;
 }
 
 export interface ExecutionContext {
