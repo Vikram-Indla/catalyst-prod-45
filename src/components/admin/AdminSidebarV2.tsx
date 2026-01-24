@@ -10,7 +10,6 @@ import {
   ChevronDown,
   Search,
   Pin,
-  Boxes,
   Code2,
   Map,
   Wand2,
@@ -107,16 +106,6 @@ const adminPockets = [
       { label: 'Jira Integration', path: '/admin/jira-config' },
       { label: 'Slack', path: '/admin/slack' },
       { label: 'Import Data', path: '/admin/import-data' },
-    ],
-  },
-  {
-    id: 'inventory',
-    label: 'Inventory',
-    icon: Boxes,
-    path: '/admin/resourceinventory',
-    children: [
-      { label: 'Product Inventory', path: '/admin/resourceinventory' },
-      { label: 'Development Inventory', path: '/admin/developmentinventory' },
     ],
   },
   {
