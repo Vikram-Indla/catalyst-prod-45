@@ -99,6 +99,7 @@ interface SortableRowProps {
   onPaymentStatusChange: (assignment: ResourceAssignment, value: string) => void;
   onStartDateChange: (assignment: ResourceAssignment, value: string) => void;
   onEndDateChange: (assignment: ResourceAssignment, value: string) => void;
+  onBudgetChange: (assignment: ResourceAssignment, value: number | null) => void;
   onToggleActive: (assignment: ResourceAssignment) => void;
   onEdit: (assignment: ResourceAssignment) => void;
   onDelete: (assignment: ResourceAssignment) => void;
@@ -117,6 +118,7 @@ function SortableRow({
   onPaymentStatusChange,
   onStartDateChange,
   onEndDateChange,
+  onBudgetChange,
   onToggleActive,
   onEdit,
   onDelete,
@@ -200,21 +202,36 @@ function SortableRow({
           </SelectContent>
         </Select>
       </td>
-      {/* Budget - Read-only, calculated from linked resources' CTC */}
+      {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
       <td className="px-4 py-3">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded bg-muted/50 min-w-[80px] cursor-help">
-                <span className="text-xs text-muted-foreground">﷼</span>
-                <span className="text-sm text-foreground">{totalBudget.toLocaleString()}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded bg-muted/50 min-w-[80px] cursor-help">
+                  <span className="text-xs text-muted-foreground">﷼</span>
+                  <span className="text-sm text-foreground">{totalBudget.toLocaleString()}</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <Input
+            type="number"
+            className="h-8 w-[100px] text-sm"
+            defaultValue={assignment.budget || ''}
+            onBlur={(e) => {
+              const val = e.target.value ? parseFloat(e.target.value) : null;
+              if (val !== assignment.budget) {
+                onBudgetChange(assignment, val);
+              }
+            }}
+            placeholder="0"
+          />
+        )}
       </td>
       <td className="px-4 py-3">
         <Popover>
@@ -630,6 +647,13 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
+  const handleBudgetChange = async (assignment: ResourceAssignment, value: number | null) => {
+    await updateAssignment.mutateAsync({
+      id: assignment.id,
+      updates: { budget: value } as any,
+    });
+  };
+
 
   const openEdit = (assignment: ResourceAssignment) => {
     setEditingAssignment(assignment);
@@ -824,6 +848,7 @@ export default function ResourceAssignmentsPage() {
                               onPaymentStatusChange={handlePaymentStatusChange}
                               onStartDateChange={handleStartDateChange}
                               onEndDateChange={handleEndDateChange}
+                              onBudgetChange={handleBudgetChange}
                               onToggleActive={handleToggleActive}
                               onEdit={openEdit}
                               onDelete={handleDeleteClick}
