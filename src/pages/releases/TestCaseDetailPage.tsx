@@ -5,8 +5,8 @@
  * Features: Keyboard navigation, tab persistence, enhanced animations, quick actions
  */
 
-import { useState, useEffect } from 'react';
-import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useState, useCallback } from 'react';
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import {
@@ -23,6 +23,9 @@ import {
   Keyboard,
   FileText,
   GitCommit,
+  Loader2,
+  AlertTriangle,
+} from 'lucide-react';
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -40,12 +43,14 @@ import { TestCasePropertiesPanel } from '@/components/releases/test-case-detail/
 import { RequirementsCoverage } from '@/components/releases/test-case-detail/RequirementsCoverage';
 import { TestCaseVersionHistory } from '@/components/releases/test-case-detail/TestCaseVersionHistory';
 import { QuickActionsBar } from '@/components/releases/test-case-detail/QuickActionsBar';
-import { testCaseDetailData, testCaseSteps, executionHistory } from '@/data/testCaseDetailData';
+import { useTestCase, useCloneTestCase, useTestCaseSteps } from '@/hooks/test-management/useTestCases';
 import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
+import { useTestCaseExecutionHistory, ExecutionHistoryRecord } from '@/hooks/test-management/useTestCaseExecutionHistory';
 import { cn } from '@/lib/utils';
 
 export default function TestCaseDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   
   // Persist active tab in URL
@@ -54,7 +59,13 @@ export default function TestCaseDetailPage() {
     setSearchParams({ tab }, { replace: true });
   };
   
-  const testCase = testCaseDetailData;
+  // Real data from DB
+  const { data: testCase, isLoading, isError, refetch } = useTestCase(id);
+  const { data: stepsData } = useTestCaseSteps(id);
+  const { data: executionHistory = [] } = useTestCaseExecutionHistory(id);
+  
+  // Clone mutation
+  const cloneMutation = useCloneTestCase();
   
   // Keyboard navigation between test cases
   const { 
@@ -67,13 +78,64 @@ export default function TestCaseDetailPage() {
   } = useTestCaseNavigation({ currentId: id || '' });
 
   // Quick action handlers
-  const handleExecute = () => {
-    toast.success('Starting test execution...');
-  };
+  const handleExecute = useCallback(() => {
+    toast.info('Execution module not enabled yet', {
+      description: 'This feature will be available in a future release.',
+    });
+  }, []);
 
-  const handleDuplicate = () => {
-    toast.success(`Test case duplicated as ${id}-copy`);
-  };
+  const handleDuplicate = useCallback(async () => {
+    if (!testCase || !testCase.project_id) return;
+    
+    try {
+      const clonedCase = await cloneMutation.mutateAsync({
+        id: testCase.id,
+        project_id: testCase.project_id,
+      });
+      toast.success(`Test case duplicated as ${clonedCase.key}`);
+      navigate(`/releases/test-cases/${clonedCase.id}`);
+    } catch (error) {
+      toast.error('Failed to duplicate test case');
+    }
+  }, [testCase, cloneMutation, navigate]);
+
+  const handleVersionHistory = useCallback(() => {
+    toast.info('Version history not implemented yet', {
+      description: 'This feature will be available in a future release.',
+    });
+  }, []);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError || !testCase) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-4">
+        <AlertTriangle className="w-12 h-12 text-destructive" />
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">Test Case Not Found</h2>
+          <p className="text-muted-foreground">The test case you're looking for doesn't exist or couldn't be loaded.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => refetch()}>
+            Retry
+          </Button>
+          <Button onClick={() => navigate('/releases/test-cases')}>
+            Back to Test Cases
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const steps = stepsData || testCase.steps || [];
 
   return (
     <motion.div 
@@ -93,10 +155,12 @@ export default function TestCaseDetailPage() {
               Test Cases
             </Link>
             <span className="text-muted-foreground">/</span>
-            <span className="font-semibold text-foreground">{id || 'TC-001'}</span>
-            <span className="text-xs text-muted-foreground ml-2">
-              ({currentIndex + 1} of {totalCount})
-            </span>
+            <span className="font-semibold text-foreground">{testCase.key || id}</span>
+            {totalCount > 0 && (
+              <span className="text-xs text-muted-foreground ml-2">
+                ({currentIndex + 1} of {totalCount})
+              </span>
+            )}
           </div>
           
           {/* Back link + Navigation */}
@@ -162,28 +226,43 @@ export default function TestCaseDetailPage() {
             variant="outline" 
             size="sm" 
             className="h-8"
-            onClick={() => toast.success('Test case duplicated as TC-002')}
+            onClick={handleDuplicate}
+            disabled={cloneMutation.isPending}
           >
-            <Copy className="w-3.5 h-3.5 mr-1.5" />
+            {cloneMutation.isPending ? (
+              <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <Copy className="w-3.5 h-3.5 mr-1.5" />
+            )}
             Duplicate
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-8"
-            onClick={() => toast.info('Version history coming soon')}
-          >
-            <History className="w-3.5 h-3.5 mr-1.5" />
-            Version History
-          </Button>
-          <Button 
-            size="sm" 
-            className="h-8 bg-teal-600 hover:bg-teal-700 text-white"
-            onClick={() => toast.success('Starting test execution...')}
-          >
-            <Play className="w-3.5 h-3.5 mr-1.5" />
-            Run Test
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8"
+                onClick={handleVersionHistory}
+              >
+                <History className="w-3.5 h-3.5 mr-1.5" />
+                Version History
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Version history not implemented yet</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="sm" 
+                className="h-8 bg-teal-600 hover:bg-teal-700 text-white"
+                onClick={handleExecute}
+              >
+                <Play className="w-3.5 h-3.5 mr-1.5" />
+                Run Test
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Execution module not enabled yet</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -216,7 +295,7 @@ export default function TestCaseDetailPage() {
                     <ListChecks className="w-4 h-4 mr-2" />
                     Steps
                     <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
-                      {testCaseSteps.length}
+                      {steps.length}
                     </span>
                   </TabsTrigger>
                   <TabsTrigger 
@@ -235,7 +314,7 @@ export default function TestCaseDetailPage() {
                   >
                     <FileText className="w-4 h-4 mr-2" />
                     Requirements
-                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">4</span>
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">0</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="links" 
@@ -243,7 +322,7 @@ export default function TestCaseDetailPage() {
                   >
                     <Link2 className="w-4 h-4 mr-2" />
                     Links
-                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">3</span>
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">0</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="comments" 
@@ -252,7 +331,7 @@ export default function TestCaseDetailPage() {
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Comments
-                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">5</span>
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">0</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="versions" 
@@ -260,12 +339,17 @@ export default function TestCaseDetailPage() {
                   >
                     <GitCommit className="w-4 h-4 mr-2" />
                     Versions
-                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">3</span>
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
+                      {testCase.version || 1}
+                    </span>
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="steps" className="mt-6">
-                  <TestCaseSteps steps={testCaseSteps} />
+                  <TestCaseSteps 
+                    testCaseId={testCase.id}
+                    steps={steps}
+                  />
                 </TabsContent>
 
                 <TabsContent value="history" className="mt-6">
@@ -273,7 +357,7 @@ export default function TestCaseDetailPage() {
                 </TabsContent>
 
                 <TabsContent value="requirements" className="mt-6">
-                  <RequirementsCoverage />
+                  <RequirementsCoverage requirements={[]} />
                 </TabsContent>
 
                 <TabsContent value="links" className="mt-6">
@@ -285,7 +369,7 @@ export default function TestCaseDetailPage() {
                 </TabsContent>
 
                 <TabsContent value="versions" className="mt-6">
-                  <TestCaseVersionHistory />
+                  <TestCaseVersionHistory versions={[]} />
                 </TabsContent>
               </Tabs>
             </motion.div>
@@ -305,7 +389,7 @@ export default function TestCaseDetailPage() {
 
       {/* Quick Actions Bar */}
       <QuickActionsBar 
-        testCaseId={id || 'TC-001'} 
+        testCaseId={testCase.key || testCase.id} 
         onExecute={handleExecute}
         onDuplicate={handleDuplicate}
       />

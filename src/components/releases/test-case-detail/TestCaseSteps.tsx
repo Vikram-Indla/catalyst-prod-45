@@ -1,5 +1,5 @@
 /**
- * Test Case Steps Component
+ * Test Case Steps Component — Wired to real DB data
  * Displays and manages test steps with full interactivity
  */
 
@@ -30,73 +30,93 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import type { TestStep } from '@/data/testCaseDetailData';
+import { useAddTestStep } from '@/hooks/test-management/useTestSteps';
+import type { TMCaseStep } from '@/types/test-management';
 
-interface TestCaseStepsProps {
-  steps: TestStep[];
+interface TestStep {
+  id: string;
+  action: string;
+  expectedResult: string;
+  test_data?: string;
+  attachments?: { id: string; name: string }[];
 }
 
-export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
-  const [steps, setSteps] = useState<TestStep[]>(initialSteps);
+interface TestCaseStepsProps {
+  testCaseId: string;
+  steps: TMCaseStep[];
+}
+
+// Convert DB step format to UI format
+function mapDbStepsToUi(dbSteps: TMCaseStep[]): TestStep[] {
+  return dbSteps.map(s => ({
+    id: s.id,
+    action: s.action,
+    expectedResult: s.expected_result,
+    test_data: s.test_data,
+    attachments: [],
+  }));
+}
+
+export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps) {
+  const [steps, setSteps] = useState<TestStep[]>(mapDbStepsToUi(dbSteps));
   const [showAddForm, setShowAddForm] = useState(false);
   const [newStep, setNewStep] = useState({ action: '', expectedResult: '' });
   const [isGenerating, setIsGenerating] = useState(false);
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [editingStep, setEditingStep] = useState({ action: '', expectedResult: '' });
 
-  const handleAddStep = () => {
+  // Add step mutation
+  const addStepMutation = useAddTestStep();
+
+  const handleAddStep = async () => {
     if (newStep.action.trim() && newStep.expectedResult.trim()) {
-      const step: TestStep = {
-        id: `step-${Date.now()}`,
-        action: newStep.action,
-        expectedResult: newStep.expectedResult,
-        attachments: [],
-      };
-      setSteps([...steps, step]);
-      setNewStep({ action: '', expectedResult: '' });
-      setShowAddForm(false);
-      toast.success('Step added successfully');
+      try {
+        await addStepMutation.mutateAsync({
+          test_case_id: testCaseId,
+          step_number: steps.length + 1,
+          action: newStep.action,
+          expected_result: newStep.expectedResult,
+        });
+        
+        // Optimistically add to local state
+        const step: TestStep = {
+          id: `step-${Date.now()}`,
+          action: newStep.action,
+          expectedResult: newStep.expectedResult,
+          attachments: [],
+        };
+        setSteps([...steps, step]);
+        setNewStep({ action: '', expectedResult: '' });
+        setShowAddForm(false);
+        toast.success('Step added successfully');
+      } catch (error) {
+        toast.error('Failed to add step');
+      }
     }
   };
 
   const handleAIGenerate = async () => {
     setIsGenerating(true);
     
-    // Simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // AI generation disabled until module is implemented
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Mock AI-generated steps
-    const aiSteps: TestStep[] = [
-      {
-        id: `step-ai-${Date.now()}-1`,
-        action: "Verify the login form has CSRF token protection",
-        expectedResult: "Hidden CSRF token field is present in the form HTML",
-        attachments: []
-      },
-      {
-        id: `step-ai-${Date.now()}-2`,
-        action: "Attempt login with SQL injection in email field",
-        expectedResult: "System sanitizes input and shows 'Invalid email format' error",
-        attachments: []
-      },
-      {
-        id: `step-ai-${Date.now()}-3`,
-        action: "Verify rate limiting after 5 failed attempts",
-        expectedResult: "Account is temporarily locked with message 'Too many attempts. Try again in 15 minutes.'",
-        attachments: []
-      }
-    ];
-    
-    setSteps([...steps, ...aiSteps]);
     setIsGenerating(false);
-    toast.success(`AI generated ${aiSteps.length} test steps`);
+    toast.info('AI step generation not enabled yet', {
+      description: 'This feature will be available in a future release.',
+    });
   };
 
   const handleDeleteStep = (stepId: string) => {
     setSteps(steps.filter(s => s.id !== stepId));
-    toast.success('Step deleted');
+    toast.info('Step deleted locally (DB sync pending)');
   };
 
   const handleDuplicateStep = (step: TestStep) => {
@@ -105,7 +125,7 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
     const newSteps = [...steps];
     newSteps.splice(index + 1, 0, newStep);
     setSteps(newSteps);
-    toast.success('Step duplicated');
+    toast.info('Step duplicated locally (DB sync pending)');
   };
 
   const handleMoveStep = (stepId: string, direction: 'up' | 'down') => {
@@ -117,7 +137,7 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
     const newSteps = [...steps];
     [newSteps[index], newSteps[newIndex]] = [newSteps[newIndex], newSteps[index]];
     setSteps(newSteps);
-    toast.success(`Step moved ${direction}`);
+    toast.info(`Step moved ${direction} (DB sync pending)`);
   };
 
   const startEditing = (step: TestStep) => {
@@ -133,7 +153,7 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
           : s
       ));
       setEditingStepId(null);
-      toast.success('Step updated');
+      toast.info('Step updated locally (DB sync pending)');
     }
   };
 
@@ -142,7 +162,7 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
     setEditingStep({ action: '', expectedResult: '' });
   };
 
-  const estimatedTime = `${steps.length * 0.5 + 2} min`;
+  const estimatedTime = `${Math.max(steps.length * 0.5 + 2, 1)} min`;
 
   return (
     <div className="space-y-4">
@@ -151,30 +171,35 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
         <div>
           <h3 className="font-semibold text-foreground">Test Steps</h3>
           <p className="text-sm text-muted-foreground">
-            {steps.length} steps · Est. {estimatedTime}
+            {steps.length} step{steps.length !== 1 ? 's' : ''} · Est. {estimatedTime}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-8"
-            onClick={handleAIGenerate}
-            disabled={isGenerating}
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
-                AI Generate Steps
-              </>
-            )}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8"
+                onClick={handleAIGenerate}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
+                    AI Generate Steps
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>AI step generation not enabled yet</TooltipContent>
+          </Tooltip>
           <Button size="sm" className="h-8" onClick={() => setShowAddForm(true)}>
             <Plus className="w-3.5 h-3.5 mr-1.5" />
             Add Step
@@ -182,34 +207,47 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
         </div>
       </div>
 
+      {/* Empty State */}
+      {steps.length === 0 && !showAddForm && (
+        <div className="text-center py-12 border border-dashed border-border rounded-lg bg-muted/30">
+          <p className="text-muted-foreground mb-4">No test steps defined yet</p>
+          <Button size="sm" onClick={() => setShowAddForm(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add First Step
+          </Button>
+        </div>
+      )}
+
       {/* Steps List with Reorder */}
-      <Reorder.Group 
-        axis="y" 
-        values={steps} 
-        onReorder={setSteps}
-        className="space-y-3"
-      >
-        {steps.map((step, index) => (
-          <Reorder.Item key={step.id} value={step}>
-            <StepCard 
-              step={step} 
-              index={index}
-              isEditing={editingStepId === step.id}
-              editingStep={editingStep}
-              onEditingStepChange={setEditingStep}
-              onStartEdit={() => startEditing(step)}
-              onSaveEdit={saveEdit}
-              onCancelEdit={cancelEdit}
-              onDelete={() => handleDeleteStep(step.id)}
-              onDuplicate={() => handleDuplicateStep(step)}
-              onMoveUp={() => handleMoveStep(step.id, 'up')}
-              onMoveDown={() => handleMoveStep(step.id, 'down')}
-              isFirst={index === 0}
-              isLast={index === steps.length - 1}
-            />
-          </Reorder.Item>
-        ))}
-      </Reorder.Group>
+      {steps.length > 0 && (
+        <Reorder.Group 
+          axis="y" 
+          values={steps} 
+          onReorder={setSteps}
+          className="space-y-3"
+        >
+          {steps.map((step, index) => (
+            <Reorder.Item key={step.id} value={step}>
+              <StepCard 
+                step={step} 
+                index={index}
+                isEditing={editingStepId === step.id}
+                editingStep={editingStep}
+                onEditingStepChange={setEditingStep}
+                onStartEdit={() => startEditing(step)}
+                onSaveEdit={saveEdit}
+                onCancelEdit={cancelEdit}
+                onDelete={() => handleDeleteStep(step.id)}
+                onDuplicate={() => handleDuplicateStep(step)}
+                onMoveUp={() => handleMoveStep(step.id, 'up')}
+                onMoveDown={() => handleMoveStep(step.id, 'down')}
+                isFirst={index === 0}
+                isLast={index === steps.length - 1}
+              />
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+      )}
 
       {/* Add Step Form */}
       <AnimatePresence>
@@ -278,9 +316,13 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
                   <Button 
                     size="sm" 
                     onClick={handleAddStep}
-                    disabled={!newStep.action.trim() || !newStep.expectedResult.trim()}
+                    disabled={!newStep.action.trim() || !newStep.expectedResult.trim() || addStepMutation.isPending}
                   >
-                    <Plus className="w-4 h-4 mr-2" />
+                    {addStepMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Plus className="w-4 h-4 mr-2" />
+                    )}
                     Add Step
                   </Button>
                 </div>
@@ -398,7 +440,7 @@ function StepCard({
           </div>
 
           {/* Attachments */}
-          {step.attachments.length > 0 && (
+          {step.attachments && step.attachments.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-1">
               {step.attachments.map((att) => (
                 <div
