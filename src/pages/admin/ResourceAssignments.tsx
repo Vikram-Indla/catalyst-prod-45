@@ -1117,6 +1117,80 @@ export default function ResourceAssignmentsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Linked Resources Modal - Enterprise Grade */}
+      <Dialog open={resourceModalOpen} onOpenChange={setResourceModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <div className="text-lg font-semibold">Linked Resources</div>
+                <div className="text-sm font-normal text-muted-foreground">
+                  {resourceModalAssignment?.name || 'Assignment'}
+                </div>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            {resourceModalResources.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <User className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p>No resources linked to this assignment.</p>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {/* Table Header */}
+                <div className="flex items-center px-4 py-2 bg-muted/50 rounded-lg text-[11px] font-semibold text-muted-foreground uppercase">
+                  <div className="w-16">RID</div>
+                  <div className="flex-1">Name</div>
+                </div>
+                
+                {/* Table Rows */}
+                <ScrollArea className="h-[280px]">
+                  <div className="space-y-1">
+                    {resourceModalResources.map((resource) => (
+                      <div 
+                        key={resource.id} 
+                        className="flex items-center px-4 py-3 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors"
+                      >
+                        <div className="w-16">
+                          <span className="text-xs font-mono font-medium text-primary bg-primary/10 px-2 py-1 rounded">
+                            {resource.resourceId || '—'}
+                          </span>
+                        </div>
+                        <div className="flex-1 flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                            <User className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <span className="text-sm font-medium text-foreground">{resource.name}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+                
+                {/* Footer Summary */}
+                <div className="flex items-center justify-between px-4 py-3 mt-3 bg-muted/30 rounded-lg border border-border">
+                  <span className="text-sm text-muted-foreground">Total Resources</span>
+                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-700">
+                    {resourceModalResources.length}
+                  </Badge>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResourceModalOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
