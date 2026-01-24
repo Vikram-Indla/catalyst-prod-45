@@ -23938,7 +23938,6 @@ export type Database = {
           release_version_id: string | null
           status: Database["public"]["Enums"]["tm_case_status"] | null
           test_format: string | null
-          test_type: string | null
           title: string
           updated_at: string | null
           version: number | null
@@ -23977,7 +23976,6 @@ export type Database = {
           release_version_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
           test_format?: string | null
-          test_type?: string | null
           title: string
           updated_at?: string | null
           version?: number | null
@@ -24016,7 +24014,6 @@ export type Database = {
           release_version_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
           test_format?: string | null
-          test_type?: string | null
           title?: string
           updated_at?: string | null
           version?: number | null

@@ -30,19 +30,21 @@ export function useTestRepository(
       const priorityMap = new Map(priorities?.map(p => [p.id, p.name]) || []);
 
       // Build the main query for test cases
+      // Note: test_type column was removed - now using case_type_id FK
       let query = supabase
         .from('tm_test_cases')
         .select(`
           id,
           case_key,
           title,
-          test_type,
+          case_type_id,
           priority_id,
           estimated_time,
           automation_status,
           created_at,
           folder_id,
-          tm_folders(name)
+          tm_folders(name),
+          tm_case_types(name)
         `)
         .eq('project_id', projectId);
 
@@ -51,9 +53,9 @@ export function useTestRepository(
         query = query.or(`title.ilike.%${filters.search}%,case_key.ilike.%${filters.search}%`);
       }
 
-      // Apply test type filter
+      // Apply test type filter (now via case_type_id)
       if (filters.testType) {
-        query = query.eq('test_type', filters.testType);
+        // Need to filter by type name - done client-side after join
       }
 
       // Apply automation status filter
@@ -74,6 +76,7 @@ export function useTestRepository(
       // Transform to match expected TestCase interface
       let testCases: TestCase[] = (data || []).map(tc => {
         const folderData = tc.tm_folders as { name: string } | null;
+        const typeData = tc.tm_case_types as { name: string } | null;
         const priorityName = tc.priority_id ? priorityMap.get(tc.priority_id) : undefined;
         
         return {
@@ -81,7 +84,7 @@ export function useTestRepository(
           test_case_id: tc.case_key,
           title: tc.title,
           module: folderData?.name || 'Uncategorized',
-          test_type: (tc.test_type || 'functional') as TestCase['test_type'],
+          test_type: (typeData?.name?.toLowerCase() || 'functional') as TestCase['test_type'],
           priority: mapPriorityName(priorityName) as TestCase['priority'],
           estimated_duration_minutes: tc.estimated_time,
           automation_status: (tc.automation_status || 'manual') as TestCase['automation_status'],
@@ -98,6 +101,11 @@ export function useTestRepository(
       // Apply priority filter - done client-side since we need the joined data
       if (filters.priority) {
         testCases = testCases.filter(tc => tc.priority === filters.priority);
+      }
+
+      // Apply test type filter - done client-side since we need the joined data
+      if (filters.testType) {
+        testCases = testCases.filter(tc => tc.test_type === filters.testType);
       }
 
       // Hide already added if filter is on

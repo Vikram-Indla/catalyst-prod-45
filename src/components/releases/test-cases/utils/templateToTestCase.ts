@@ -2,6 +2,8 @@
  * Convert template data to pre-filled test case form data
  */
 
+import type { TestCaseType } from '@/types/test-cases';
+
 export interface Template {
   id: string;
   name: string;
@@ -16,7 +18,7 @@ export interface Template {
 export interface PrefilledTestCase {
   title: string;
   description: string;
-  type: 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e' | 'performance' | 'security' | 'usability';
+  type: TestCaseType;
   priority: 'critical' | 'high' | 'medium' | 'low';
   folder: string;
   preconditions?: string;

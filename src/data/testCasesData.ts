@@ -2,6 +2,8 @@
  * Mock data for Test Cases
  */
 
+import type { TestCaseType } from '@/types/test-cases';
+
 export interface TestCaseStep {
   id: string;
   step: number;
@@ -15,7 +17,7 @@ export interface TestCase {
   key?: string; // Display key like "INV-0001" or "TC-001"
   title: string;
   release: string;
-  type: 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e';
+  type: TestCaseType;
   priority: 'critical' | 'high' | 'medium' | 'low';
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
   steps: number;
