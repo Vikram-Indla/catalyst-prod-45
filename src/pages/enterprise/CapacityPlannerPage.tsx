@@ -797,6 +797,8 @@ export default function CapacityPlannerPage() {
           projectPeriodRange={projectPeriodRange}
           onProjectPeriodTypeChange={setProjectPeriodType}
           onProjectPeriodNavigate={handleProjectPeriodNavigate}
+          onRefresh={handleRetry}
+          isRefreshing={isRetrying || isFetching}
         />
 
         {/* Main Content */}
@@ -1378,7 +1380,7 @@ export default function CapacityPlannerPage() {
                   setIsAddingResources(true);
                   try {
                     const startDate = new Date().toISOString().split('T')[0];
-                    const userById = new Map(resources.map((r) => [r.id, r]));
+                    const userById = new Map<string, ResourceMetric>(resources.map((r) => [r.id, r] as [string, ResourceMetric]));
                     const userId = selectedUserId;
 
                     // Create assignment for the user
