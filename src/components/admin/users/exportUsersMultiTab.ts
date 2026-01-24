@@ -114,6 +114,9 @@ export async function exportUsersMultiTab(
 
   // ==================== SHEET 2: UTILIZATION ====================
   const currentYear = new Date().getFullYear();
+  const yearStart = `${currentYear}-01-01`;
+  const yearEnd = `${currentYear}-12-31`;
+  
   const utilizationHeaders = ['RID', 'Resource Name', 'Assignment', 'Contract End', 
     ...MONTHS.map(m => m.name), 'Avg'];
 
@@ -121,12 +124,15 @@ export async function exportUsersMultiTab(
   const { data: inventory } = await supabase
     .from('resource_inventory')
     .select('id, rid, name, assignment_id, contract_end_date, default_capacity_percent')
-    .or('is_active.is.null,is_active.eq.true');
+    .eq('is_active', true)
+    .order('rid', { ascending: true, nullsFirst: false });
 
   const { data: allocations } = await supabase
-    .from('monthly_resource_allocations')
-    .select('resource_id, assignment_id, month, allocation_percent')
-    .eq('year', currentYear);
+    .from('resource_allocations')
+    .select('id, resource_id, assignment_id, allocation_percent, start_date, end_date, status')
+    .gte('start_date', yearStart)
+    .lte('end_date', yearEnd)
+    .eq('status', 'committed');
 
   const { data: assignmentList } = await supabase
     .from('resource_assignments')
@@ -134,12 +140,26 @@ export async function exportUsersMultiTab(
     .or('is_active.is.null,is_active.eq.true');
 
   const assignmentMap = new Map((assignmentList || []).map(a => [a.id, a.name]));
+  
+  // Build allocation map: resource_id -> month -> allocation_percent
   const allocationMap = new Map<string, Map<number, number>>();
   
-  (allocations || []).forEach((a: { resource_id: string; assignment_id: string | null; month: number; allocation_percent: number }) => {
-    const key = `${a.resource_id}:${a.assignment_id || 'null'}`;
-    if (!allocationMap.has(key)) allocationMap.set(key, new Map());
-    allocationMap.get(key)!.set(a.month, a.allocation_percent);
+  (allocations || []).forEach(a => {
+    if (!a.start_date || !a.end_date) return;
+    const startDate = new Date(a.start_date);
+    const endDate = new Date(a.end_date);
+    
+    // For each month, check if allocation covers it
+    for (const m of MONTHS) {
+      const monthStart = new Date(currentYear, m.num - 1, 1);
+      const monthEnd = new Date(currentYear, m.num, 0);
+      
+      if (startDate <= monthEnd && endDate >= monthStart) {
+        const key = `${a.resource_id}:${a.assignment_id || 'null'}`;
+        if (!allocationMap.has(key)) allocationMap.set(key, new Map());
+        allocationMap.get(key)!.set(m.num, a.allocation_percent);
+      }
+    }
   });
 
   const utilizationData = (inventory || []).map(r => {
