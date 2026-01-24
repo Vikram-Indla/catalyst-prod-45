@@ -15061,6 +15061,7 @@ export type Database = {
       resource_countries: {
         Row: {
           code: string | null
+          country_id: string | null
           created_at: string | null
           flag_svg: string | null
           id: string
@@ -15071,6 +15072,7 @@ export type Database = {
         }
         Insert: {
           code?: string | null
+          country_id?: string | null
           created_at?: string | null
           flag_svg?: string | null
           id?: string
@@ -15081,6 +15083,7 @@ export type Database = {
         }
         Update: {
           code?: string | null
+          country_id?: string | null
           created_at?: string | null
           flag_svg?: string | null
           id?: string
