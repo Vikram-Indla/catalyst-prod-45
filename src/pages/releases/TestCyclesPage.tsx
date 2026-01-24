@@ -26,6 +26,7 @@ import { CycleCardEnhanced } from '@/components/releases/test-cycles/CycleCardEn
 import { CycleKPICards } from '@/components/releases/test-cycles/CycleKPICards';
 import { CycleTableView } from '@/components/releases/test-cycles/CycleTableView';
 import { CreateCycleModalEnhanced, CreateCycleFormData } from '@/components/releases/test-cycles/CreateCycleModalEnhanced';
+import { EditTestCycleDialog } from '@/components/releases/test-cycles/EditTestCycleDialog';
 import { 
   useTestCyclesEnhanced, 
   useCycleKPIs, 
@@ -71,6 +72,8 @@ export default function TestCyclesPage() {
   
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedCycleForEdit, setSelectedCycleForEdit] = useState<CycleWithDetails | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   
   // Fetch releases for filter dropdown
@@ -134,7 +137,8 @@ export default function TestCyclesPage() {
   };
   
   const handleEditCycle = (cycle: CycleWithDetails) => {
-    navigate(`/releases/test-cycles/${cycle.id}`);
+    setSelectedCycleForEdit(cycle);
+    setIsEditModalOpen(true);
   };
   
   const handleDeleteCycle = (cycleId: string) => {
@@ -439,6 +443,22 @@ export default function TestCyclesPage() {
         onOpenChange={setIsCreateModalOpen}
         onCreateCycle={handleCreateCycle}
         isCreating={createCycleMutation.isPending}
+      />
+      
+      {/* Edit Modal */}
+      <EditTestCycleDialog
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        cycle={selectedCycleForEdit ? {
+          id: selectedCycleForEdit.id,
+          name: selectedCycleForEdit.name,
+          description: selectedCycleForEdit.description,
+          status: selectedCycleForEdit.status,
+          startDate: selectedCycleForEdit.planned_start,
+          endDate: selectedCycleForEdit.planned_end,
+          environment: selectedCycleForEdit.environment,
+        } : null}
+        onSuccess={() => setSelectedCycleForEdit(null)}
       />
     </div>
   );
