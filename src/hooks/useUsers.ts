@@ -103,7 +103,7 @@ export function useUsers() {
         supabase.from('resource_assignments').select('id, name').eq('is_active', true),
         supabase.from('capacity_departments').select('id, name').eq('is_active', true),
         supabase.from('resource_vendors').select('id, name').eq('is_active', true),
-        supabase.from('resource_countries').select('id, name, code').eq('is_active', true),
+        supabase.from('resource_countries').select('id, name, code, flag_svg').eq('is_active', true),
         supabase.from('resource_locations').select('id, name').eq('is_active', true),
       ]);
 
@@ -111,7 +111,7 @@ export function useUsers() {
       const assignmentMap = new Map((resourceAssignments || []).map(a => [a.id, a.name]));
       const departmentMap = new Map((capacityDepartments || []).map(d => [d.id, d.name]));
       const vendorMap = new Map((resourceVendors || []).map(v => [v.id, v.name]));
-      const countryMap = new Map((resourceCountries || []).map(c => [c.id, { name: c.name, code: c.code }]));
+      const countryMap = new Map((resourceCountries || []).map(c => [c.id, { name: c.name, code: c.code, flag_svg: c.flag_svg }]));
       const locationMap = new Map((resourceLocations || []).map(l => [l.id, l.name]));
 
       // Create lookup map by profile_id with resolved names (for linked records)
@@ -191,6 +191,7 @@ export function useUsers() {
           job_role: inventory?.role_name || null,
           country: inventory?.resolved_country?.name || profile.country || null,
           country_code: inventory?.resolved_country?.code || profile.country_code || null,
+          country_flag_svg_url: inventory?.resolved_country?.flag_svg || profile.country_flag_svg_url || null,
           location: inventory?.resolved_location || profile.location || null,
           resource_type: inventory?.resource_type || profile.resource_type || null,
           ctc: inventory?.ctc ?? profile.ctc ?? null,
@@ -225,7 +226,7 @@ export function useUsers() {
             vendor_name: r.vendor_id ? vendorMap.get(r.vendor_id) || r.vendor_name : r.vendor_name,
             country: resolvedCountry?.name || null,
             country_code: resolvedCountry?.code || null,
-            country_flag_svg_url: null,
+            country_flag_svg_url: resolvedCountry?.flag_svg || null,
             location: r.location_id ? locationMap.get(r.location_id) || null : null,
             department_id: r.department_id || null,
             department_name: r.department_id ? departmentMap.get(r.department_id) || null : null,
