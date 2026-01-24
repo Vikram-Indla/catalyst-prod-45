@@ -42,7 +42,7 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
       ] = await Promise.all([
         supabase.from('capacity_departments').select('id, name, color, sort_order').eq('is_active', true),
         supabase.from('resource_vendors').select('id, name').eq('is_active', true),
-        supabase.from('resource_countries').select('id, name, code').eq('is_active', true),
+        supabase.from('resource_countries').select('id, name, code, flag_svg').eq('is_active', true),
         supabase.from('resource_locations').select('id, name').eq('is_active', true),
         supabase.from('profiles').select('id, full_name, email, department_id, contract_end_date, country, country_code, country_flag_svg_url, location, vendor, avatar_url'),
         supabase.from('user_product_roles').select('user_id, role_id'),
@@ -52,7 +52,7 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
       // Build lookup maps
       const deptMap = new Map(departments?.map(d => [d.id, d]) || []);
       const vendorMap = new Map(resourceVendors?.map(v => [v.id, v.name]) || []);
-      const countryMap = new Map(resourceCountries?.map(c => [c.id, { id: c.id, name: c.name, code: c.code }]) || []);
+      const countryMap = new Map(resourceCountries?.map(c => [c.id, { id: c.id, name: c.name, code: c.code, flag_svg: c.flag_svg }]) || []);
       const locationMap = new Map(resourceLocations?.map(l => [l.id, { id: l.id, name: l.name }]) || []);
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
       const profileByName = new Map(profiles?.map(p => [p.full_name?.toLowerCase(), p]) || []);

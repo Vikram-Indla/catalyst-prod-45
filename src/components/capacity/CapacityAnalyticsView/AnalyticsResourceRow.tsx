@@ -35,12 +35,9 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
   const avatarBgClass = 'bg-emerald-500';
   
-  // Country flag - resource.country is an object with id, name, code
-  const countryCode = resource.country?.code;
+  // Country flag - use flag_svg from database (same as admin/users)
   const countryName = resource.country?.name;
-  const flagUrl = countryCode 
-    ? `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`
-    : null;
+  const flagUrl = resource.country?.flag_svg || null;
 
   // Utilization color - colored borders based on percentage
   const getUtilizationColor = (percent: number) => {
