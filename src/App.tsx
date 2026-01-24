@@ -183,7 +183,7 @@ import ProductSettings from "./pages/admin/ProductSettings";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import KanbanSettings from "./pages/admin/KanbanSettings";
-import ResourceInventory from "./pages/admin/ResourceInventory";
+
 const ResourceUtilizationPage = lazy(() => import("./pages/admin/ResourceUtilization"));
 import MockDataGenerator from "./pages/admin/MockDataGenerator";
 const AiIntegrationPage = lazy(() => import("./pages/admin/AiIntegrationPage"));
@@ -193,7 +193,7 @@ const TaskListPage = lazy(() => import("./modules/planner/pages/TaskListPage"));
 import CreateMenuConfig from "./pages/admin/CreateMenuConfig";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
-import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
+
 const SoftwareLicensesPage = lazy(() => import("./modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
 import EpicStatuses from "./pages/admin/EpicStatuses";
@@ -911,9 +911,7 @@ const App = () => (
                 <Route path="design-audit" element={<DesignAuditPage />} />
                 <Route path="theme-audit" element={<ThemeAuditPage />} />
                 <Route path="kanban-settings" element={<KanbanSettings />} />
-                <Route path="resourceinventory" element={<ResourceInventory />} />
                 <Route path="resource-utilization" element={<Suspense fallback={<div>Loading...</div>}><ResourceUtilizationPage /></Suspense>} />
-                <Route path="developmentinventory" element={<DevelopmentInventory />} />
                 <Route path="software-licenses" element={<Suspense fallback={<div>Loading...</div>}><SoftwareLicensesPage /></Suspense>} />
                 <Route path="routes-registry" element={<RoutesComponentsRegistry />} />
                 <Route path="snapshots" element={<SnapshotsAdmin />} />

@@ -848,16 +848,6 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     tags: ['product', 'settings']
   },
   {
-    id: 'admin-resources',
-    category: 'Admin',
-    name: 'ResourceInventory',
-    route: '/admin/resourceinventory',
-    filePath: 'src/pages/admin/ResourceInventory.tsx',
-    description: 'Resource inventory',
-    type: 'Page',
-    tags: ['resources', 'inventory']
-  },
-  {
     id: 'admin-kanban',
     category: 'Admin',
     name: 'KanbanSettings',
