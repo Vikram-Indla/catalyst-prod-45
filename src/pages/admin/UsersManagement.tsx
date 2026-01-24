@@ -401,17 +401,20 @@ export default function UsersManagement() {
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
                   </th>
-                  <th>RID</th>
+                  <th style={{ width: 60 }}>RID</th>
                   <th style={{ minWidth: 220 }}>NAME</th>
-                  <th>JOB ROLE</th>
-                  <th>DEPARTMENT</th>
-                  <th>ASSIGNMENT</th>
-                  <th>START</th>
-                  <th>END</th>
-                  <th>VENDOR</th>
-                  <th>TYPE</th>
-                  <th>COUNTRY</th>
-                  <th>LOCATION</th>
+                  <th style={{ width: 140 }}>JOB ROLE</th>
+                  <th style={{ width: 50 }}>DID</th>
+                  <th style={{ width: 100 }}>DEPARTMENT</th>
+                  <th style={{ width: 50 }}>AID</th>
+                  <th style={{ width: 150 }}>ASSIGNMENT</th>
+                  <th style={{ width: 80 }}>START</th>
+                  <th style={{ width: 80 }}>END</th>
+                  <th style={{ width: 50 }}>VID</th>
+                  <th style={{ width: 80 }}>VENDOR</th>
+                  <th style={{ width: 100 }}>TYPE</th>
+                  <th style={{ width: 100 }}>COUNTRY</th>
+                  <th style={{ width: 80 }}>LOCATION</th>
                 </tr>
               </thead>
               <tbody>
@@ -452,7 +455,17 @@ export default function UsersManagement() {
                       </div>
                     </td>
                     <td>{user.job_role || '—'}</td>
+                    <td>
+                      {user.did ? (
+                        <span className="um-id-badge">{user.did}</span>
+                      ) : '—'}
+                    </td>
                     <td>{user.department_name || '—'}</td>
+                    <td>
+                      {user.aid ? (
+                        <span className="um-id-badge">{user.aid}</span>
+                      ) : '—'}
+                    </td>
                     <td>{user.assignment_name || '—'}</td>
                     <td>
                       <span className="um-date-cell">
@@ -463,6 +476,11 @@ export default function UsersManagement() {
                       <span className="um-date-cell">
                         {formatDateDisplay(user.contract_end_date)}
                       </span>
+                    </td>
+                    <td>
+                      {user.vid ? (
+                        <span className="um-id-badge">{user.vid}</span>
+                      ) : '—'}
                     </td>
                     <td>{user.vendor || '—'}</td>
                     <td>
@@ -483,7 +501,7 @@ export default function UsersManagement() {
                 ))}
                 {paginatedUsers.length === 0 && (
                   <tr>
-                    <td colSpan={12} className="um-empty-state">
+                    <td colSpan={15} className="um-empty-state">
                       No users found matching your criteria
                     </td>
                   </tr>
@@ -865,6 +883,18 @@ const ringFencedCSS = `
   font-size: 12px;
   color: var(--um-text-muted);
   font-weight: 600;
+}
+
+/* ID Badges (DID, AID, VID) */
+.users-module .um-id-badge {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--um-primary);
+  background: var(--um-primary-light);
+  padding: 3px 6px;
+  border-radius: 4px;
+  display: inline-block;
 }
 
 /* Avatar + Flag Component */

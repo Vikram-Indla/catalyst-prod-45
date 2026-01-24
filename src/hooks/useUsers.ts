@@ -34,9 +34,12 @@ export interface UserProfile {
   // Additional capacity planning fields from resource_inventory
   department_id: string | null;  // UUID FK to capacity_departments
   department_name: string | null;
+  did: string | null;  // Short Department ID code (e.g., D04)
   assignment_id: string | null;  // UUID FK to resource_assignments
   assignment_name: string | null;
+  aid: string | null;  // Short Assignment ID code (e.g., A12)
   vendor_id: string | null;  // UUID FK to resource_vendors
+  vid: string | null;  // Short Vendor ID code (e.g., V04)
   job_role: string | null;  // Job title/role from resource_inventory (e.g. ".NET Developer")
   resource_type: string | null;  // Fixed, Variable, or Freelance
   ctc: number | null;  // Cost to Company in SAR
@@ -123,25 +126,33 @@ export function useUsers() {
           .or('is_active.is.null,is_active.eq.true'),
       ]);
 
-      // Create lookup maps
-      const assignmentMap = new Map((resourceAssignments || []).map(a => [a.id, a.name]));
-      const departmentMap = new Map((capacityDepartments || []).map(d => [d.id, d.name]));
-      const vendorMap = new Map((resourceVendors || []).map(v => [v.id, v.name]));
+      // Create lookup maps (include short codes for DID/AID/VID)
+      const assignmentMap = new Map((resourceAssignments || []).map(a => [a.id, { name: a.name, aid: a.assignment_id }]));
+      const departmentMap = new Map((capacityDepartments || []).map(d => [d.id, { name: d.name, did: d.department_id }]));
+      const vendorMap = new Map((resourceVendors || []).map(v => [v.id, { name: v.name, vid: v.vendor_code }]));
       const countryMap = new Map((resourceCountries || []).map(c => [c.id, { name: c.name, code: c.code, flag_svg: c.flag_svg }]));
       const locationMap = new Map((resourceLocations || []).map(l => [l.id, l.name]));
 
-      // Create lookup map by profile_id with resolved names (for linked records)
+      // Create lookup map by profile_id with resolved names and codes (for linked records)
       const inventoryByProfileId = new Map(
         ((resourceInventory || []) as any[])
           .filter(r => r.profile_id)
-          .map(r => [r.profile_id, {
-            ...r,
-            assignment_name: r.assignment_id ? assignmentMap.get(r.assignment_id) : null,
-            department_name: r.department_id ? departmentMap.get(r.department_id) : null,
-            resolved_vendor_name: r.vendor_id ? vendorMap.get(r.vendor_id) : r.vendor_name,
-            resolved_country: r.country_id ? countryMap.get(r.country_id) : null,
-            resolved_location: r.location_id ? locationMap.get(r.location_id) : null,
-          }])
+          .map(r => {
+            const assignmentData = r.assignment_id ? assignmentMap.get(r.assignment_id) : null;
+            const departmentData = r.department_id ? departmentMap.get(r.department_id) : null;
+            const vendorData = r.vendor_id ? vendorMap.get(r.vendor_id) : null;
+            return [r.profile_id, {
+              ...r,
+              assignment_name: assignmentData?.name || null,
+              aid: assignmentData?.aid || null,
+              department_name: departmentData?.name || null,
+              did: departmentData?.did || null,
+              resolved_vendor_name: vendorData?.name || r.vendor_name,
+              vid: vendorData?.vid || null,
+              resolved_country: r.country_id ? countryMap.get(r.country_id) : null,
+              resolved_location: r.location_id ? locationMap.get(r.location_id) : null,
+            }];
+          })
       );
 
       // Fetch all user_product_roles with role info
@@ -200,10 +211,13 @@ export function useUsers() {
           vendor_name: inventory?.resolved_vendor_name || inventory?.vendor_name || profile.vendor || null,
           vendor: inventory?.resolved_vendor_name || profile.vendor || null,
           vendor_id: inventory?.vendor_id || null,
+          vid: inventory?.vid || null,
           department_id: inventory?.department_id || null,
           department_name: inventory?.department_name || null,
+          did: inventory?.did || null,
           assignment_id: inventory?.assignment_id || null,
           assignment_name: inventory?.assignment_name || null,
+          aid: inventory?.aid || null,
           job_role: inventory?.role_name || null,
           country: inventory?.resolved_country?.name || profile.country || null,
           country_code: inventory?.resolved_country?.code || profile.country_code || null,
@@ -219,6 +233,9 @@ export function useUsers() {
         .filter(r => !r.profile_id)
         .map(r => {
           const resolvedCountry = r.country_id ? countryMap.get(r.country_id) : null;
+          const deptData = r.department_id ? departmentMap.get(r.department_id) : null;
+          const assignData = r.assignment_id ? assignmentMap.get(r.assignment_id) : null;
+          const vendorData = r.vendor_id ? vendorMap.get(r.vendor_id) : null;
           return {
             id: r.id, // Use inventory id as the user id
             rid: r.rid || null, // Use RID from resource_inventory
@@ -236,19 +253,22 @@ export function useUsers() {
             updated_at: null,
             roles: [],
             business_lines: [],
-            vendor: r.vendor_id ? vendorMap.get(r.vendor_id) || r.vendor_name : r.vendor_name,
+            vendor: vendorData?.name || r.vendor_name,
             contract_start_date: r.contract_start_date || null,
             contract_end_date: r.contract_end_date || null,
-            vendor_name: r.vendor_id ? vendorMap.get(r.vendor_id) || r.vendor_name : r.vendor_name,
+            vendor_name: vendorData?.name || r.vendor_name,
             country: resolvedCountry?.name || null,
             country_code: resolvedCountry?.code || null,
             country_flag_svg_url: resolvedCountry?.flag_svg || null,
             location: r.location_id ? locationMap.get(r.location_id) || null : null,
             department_id: r.department_id || null,
-            department_name: r.department_id ? departmentMap.get(r.department_id) || null : null,
+            department_name: deptData?.name || null,
+            did: deptData?.did || null,
             assignment_id: r.assignment_id || null,
-            assignment_name: r.assignment_id ? assignmentMap.get(r.assignment_id) || null : null,
+            assignment_name: assignData?.name || null,
+            aid: assignData?.aid || null,
             vendor_id: r.vendor_id || null,
+            vid: vendorData?.vid || null,
             job_role: r.role_name || null,
             resource_type: r.resource_type || null,
             ctc: r.ctc ?? null,
