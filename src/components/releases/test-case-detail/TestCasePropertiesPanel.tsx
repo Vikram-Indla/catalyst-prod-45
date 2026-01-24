@@ -1,5 +1,5 @@
 /**
- * Test Case Properties Panel Component — Wired to real DB data
+ * Test Case Properties Panel Component — Fully wired to DB with correct query invalidation
  */
 
 import { useState } from 'react';
@@ -48,6 +48,22 @@ const PRIORITY_ID_MAP: Record<string, string> = {
   'Low': '00000000-0000-0000-0001-000000000004',
 };
 
+// Type ID mapping from tm_case_types table
+const TYPE_ID_MAP: Record<string, string> = {
+  'Functional': '00000000-0000-0000-0002-000000000001',
+  'Performance': '00000000-0000-0000-0002-000000000002',
+  'Security': '00000000-0000-0000-0002-000000000003',
+  'API': '00000000-0000-0000-0002-000000000004',
+};
+
+// Status mapping (status is an enum in DB)
+const STATUS_TO_DB: Record<string, string> = {
+  'DRAFT': 'draft',
+  'REVIEW': 'ready',
+  'APPROVED': 'approved',
+  'DEPRECATED': 'deprecated',
+};
+
 interface TestCasePropertiesPanelProps {
   testCase: TestCaseDetailData;
 }
@@ -68,12 +84,9 @@ const priorityConfig: Record<string, { label: string; icon: typeof AlertTriangle
 
 const typeConfig: Record<string, { className: string }> = {
   'Functional': { className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  'Regression': { className: 'bg-purple-50 text-purple-700 border-purple-200' },
-  'Smoke': { className: 'bg-orange-50 text-orange-700 border-orange-200' },
-  'Integration': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
-  'E2E': { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
   'Performance': { className: 'bg-pink-50 text-pink-700 border-pink-200' },
   'Security': { className: 'bg-red-50 text-red-700 border-red-200' },
+  'API': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
 };
 
 function getInitials(name: string): string {
@@ -91,7 +104,11 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
   const [tags, setTags] = useState<string[]>(testCase.labels?.map(l => l.name) || []);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState('');
+  
+  // Loading states for each field
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isUpdatingPriority, setIsUpdatingPriority] = useState(false);
+  const [isUpdatingType, setIsUpdatingType] = useState(false);
 
   // Derived values from DB data
   const statusKey = testCase.status || 'DRAFT';
@@ -133,13 +150,41 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
     ? formatDistanceToNow(new Date(testCase.updated_at), { addSuffix: true })
     : '—';
 
-  const handleStatusChange = (value: string) => {
+  // Invalidate both detail and list queries with CORRECT keys
+  const invalidateQueries = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['tm-case', testCase.id] });
+    await queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
+  };
+
+  const handleStatusChange = async (value: string) => {
+    const dbStatus = STATUS_TO_DB[value] as 'draft' | 'ready' | 'approved' | 'deprecated';
+    if (!dbStatus) {
+      toast.error('Invalid status value');
+      return;
+    }
+
+    setIsUpdatingStatus(true);
     setEditingField(null);
-    toast.info('Status update not implemented yet');
+
+    try {
+      const { error } = await supabase
+        .from('tm_test_cases')
+        .update({ status: dbStatus })
+        .eq('id', testCase.id);
+
+      if (error) throw error;
+
+      await invalidateQueries();
+      toast.success(`Status updated to ${statusConfig[value]?.label || value}`);
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      toast.error('Failed to update status');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
   };
 
   const handlePriorityChange = async (value: string) => {
-    const previousPriority = priorityName;
     const priorityId = PRIORITY_ID_MAP[value];
     
     if (!priorityId) {
@@ -158,28 +203,48 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
       if (error) throw error;
 
-      // Invalidate queries to refetch updated data
-      queryClient.invalidateQueries({ queryKey: ['testCase', testCase.id] });
-      queryClient.invalidateQueries({ queryKey: ['testCases'] });
-      
+      await invalidateQueries();
       toast.success(`Priority updated to ${value}`);
     } catch (error) {
       console.error('Failed to update priority:', error);
       toast.error('Failed to update priority');
-      // UI will revert on refetch
     } finally {
       setIsUpdatingPriority(false);
     }
   };
 
-  const handleTypeChange = (value: string) => {
+  const handleTypeChange = async (value: string) => {
+    const typeId = TYPE_ID_MAP[value];
+    
+    if (!typeId) {
+      toast.error('Invalid type value');
+      return;
+    }
+
+    setIsUpdatingType(true);
     setEditingField(null);
-    toast.info('Type update not implemented yet');
+
+    try {
+      const { error } = await supabase
+        .from('tm_test_cases')
+        .update({ case_type_id: typeId })
+        .eq('id', testCase.id);
+
+      if (error) throw error;
+
+      await invalidateQueries();
+      toast.success(`Type updated to ${value}`);
+    } catch (error) {
+      console.error('Failed to update type:', error);
+      toast.error('Failed to update type');
+    } finally {
+      setIsUpdatingType(false);
+    }
   };
 
   const handleAssigneeChange = (value: string) => {
     setEditingField(null);
-    toast.info('Assignee update not implemented yet');
+    toast.info('Assignee picker not implemented yet');
   };
 
   const handleAddTag = () => {
@@ -229,7 +294,12 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             <CircleDot className="w-4 h-4" />
             <span>Status</span>
           </div>
-          {editingField === 'status' ? (
+          {isUpdatingStatus ? (
+            <div className="flex items-center gap-1">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Updating...</span>
+            </div>
+          ) : editingField === 'status' ? (
             <Select value={statusKey} onValueChange={handleStatusChange}>
               <SelectTrigger className="w-32 h-7">
                 <SelectValue />
@@ -257,7 +327,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             <Flag className="w-4 h-4" />
             <span>Priority</span>
           </div>
-        {isUpdatingPriority ? (
+          {isUpdatingPriority ? (
             <div className="flex items-center gap-1">
               <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
               <span className="text-sm text-muted-foreground">Updating...</span>
@@ -291,19 +361,21 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             <Tag className="w-4 h-4" />
             <span>Type</span>
           </div>
-          {editingField === 'type' ? (
+          {isUpdatingType ? (
+            <div className="flex items-center gap-1">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Updating...</span>
+            </div>
+          ) : editingField === 'type' ? (
             <Select value={typeName} onValueChange={handleTypeChange}>
               <SelectTrigger className="w-32 h-7">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Functional">Functional</SelectItem>
-                <SelectItem value="Regression">Regression</SelectItem>
-                <SelectItem value="Smoke">Smoke</SelectItem>
-                <SelectItem value="Integration">Integration</SelectItem>
-                <SelectItem value="E2E">E2E</SelectItem>
                 <SelectItem value="Performance">Performance</SelectItem>
                 <SelectItem value="Security">Security</SelectItem>
+                <SelectItem value="API">API</SelectItem>
               </SelectContent>
             </Select>
           ) : (
