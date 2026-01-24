@@ -245,9 +245,22 @@ export function CreateTestCaseDialogV2({
         tags: formData.tags.length > 0 ? formData.tags : undefined,
       });
       
-      // Store the draft ID for subsequent updates
-      setDraftId(result.id);
-      setDraftCaseKey(result.case_key);
+      toast.success('Draft saved', { description: result.case_key || 'Test case draft saved' });
+      
+      // Close the modal after successful save
+      if (createAnother) {
+        // Reset form for "Create another" flow
+        setFormData({
+          ...defaultFormData,
+          folderId: formData.folderId, // Keep folder selection
+        });
+        setActiveTab('details');
+        setDraftId(null);
+        setDraftCaseKey(null);
+      } else {
+        // Close the dialog
+        onOpenChange(false);
+      }
     } catch (error) {
       // Error toast handled by mutation
     } finally {
