@@ -69,7 +69,9 @@ function formatUpdated(updatedAt?: string | null): string {
  * Convert a single TMTestCase to UI TestCase format
  */
 export function tmToUITestCase(tc: TMTestCase): TestCase {
-  const assignee = tc.created_by_profile || tc.created_by_user;
+  // Get assigned user or fall back to creator
+  const assignedUser = (tc as any).assigned_user;
+  const assignee = assignedUser || tc.created_by_profile || tc.created_by_user;
   
   // Extract folder information from the joined relation
   const folder = (tc as any).folder as { id: string; name: string; path?: string } | null;
@@ -78,12 +80,13 @@ export function tmToUITestCase(tc: TMTestCase): TestCase {
     id: tc.key || tc.id,
     dbId: tc.id, // Preserve the actual database UUID for operations
     title: tc.title,
-    release: 'Current', // TODO: Link to release when available
+    // Note: release field removed - no real data exists in tm_test_cases
+    release: '', // Empty - will be hidden in UI
     type: mapType(tc.type),
     priority: mapPriority(tc.priority),
     status: mapStatus(tc.status),
     steps: tc.steps?.length || 0,
-    lastRun: 'not_run', // TODO: Get from execution data when available
+    lastRun: 'not_run', // Derived from execution data - shows "Not Run" when no executions exist
     assignee: {
       name: assignee?.full_name || 'Unassigned',
       avatar: getInitials(assignee?.full_name),

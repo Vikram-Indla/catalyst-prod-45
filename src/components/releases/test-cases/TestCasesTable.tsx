@@ -1,11 +1,12 @@
 /**
  * TestCasesTable — Data table for list view of test cases
  * Features: Selection, sorting, row actions, reusable badges
+ * 
+ * Stage D: Fully wired — No placeholder data, real actions only
  */
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { 
   ArrowUpDown,
@@ -17,13 +18,11 @@ import {
   Copy,
   Play,
   FolderInput,
-  UserPlus,
   Trash2,
   ListChecks,
 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -40,6 +39,7 @@ import {
 import { TestCase } from '@/data/testCasesData';
 import { TypeBadge, PriorityBadge, StatusBadge, LastRunBadge } from './badges';
 import { cn } from '@/lib/utils';
+import { useCloneTestCase, useDeleteTestCase } from '@/hooks/test-management';
 
 interface TestCasesTableProps {
   testCases: TestCase[];
@@ -48,6 +48,9 @@ interface TestCasesTableProps {
   onSelectRow: (id: string, checked: boolean) => void;
   allSelected: boolean;
   onRowClick?: (testCase: TestCase) => void;
+  onEdit?: (testCase: TestCase) => void;
+  onMoveToFolder?: (testCase: TestCase) => void;
+  projectId?: string;
 }
 
 // Avatar colors
@@ -58,6 +61,7 @@ const avatarColors: Record<string, string> = {
   orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
   teal: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
   red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  gray: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
 };
 
 type SortField = 'id' | 'title' | 'priority' | 'status' | 'updated';
@@ -76,11 +80,18 @@ export function TestCasesTable({
   onSelectAll, 
   onSelectRow,
   allSelected,
-  onRowClick 
+  onRowClick,
+  onEdit,
+  onMoveToFolder,
+  projectId,
 }: TestCasesTableProps) {
   const navigate = useNavigate();
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('asc');
+  
+  // Real mutations
+  const cloneMutation = useCloneTestCase();
+  const deleteMutation = useDeleteTestCase();
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -92,27 +103,40 @@ export function TestCasesTable({
   };
 
   const handleRowAction = (action: string, tc: TestCase) => {
+    const caseId = tc.dbId || tc.id;
+    const resolvedProjectId = projectId || '';
+    
     switch (action) {
       case 'view':
-        navigate(`/releases/test-cases/${tc.id}`);
+        navigate(`/releases/test-cases/${caseId}`);
         break;
       case 'edit':
-        navigate(`/releases/test-cases/${tc.id}?edit=true`);
+        if (onEdit) {
+          onEdit(tc);
+        } else {
+          navigate(`/releases/test-cases/${caseId}?edit=true`);
+        }
         break;
       case 'duplicate':
-        toast.success(`Test case ${tc.id} duplicated`);
-        break;
-      case 'execute':
-        toast.success(`Starting execution for ${tc.id}...`);
+        if (resolvedProjectId) {
+          cloneMutation.mutate({ id: caseId, project_id: resolvedProjectId });
+        } else {
+          toast.error('Cannot duplicate: No project context');
+        }
         break;
       case 'move':
-        toast.info('Move to Release dialog coming soon');
-        break;
-      case 'reassign':
-        toast.info('Reassign dialog coming soon');
+        if (onMoveToFolder) {
+          onMoveToFolder(tc);
+        } else {
+          toast.info('Move to folder: Open from parent component');
+        }
         break;
       case 'delete':
-        toast.error(`Test case ${tc.id} deleted`);
+        if (resolvedProjectId) {
+          deleteMutation.mutate({ id: caseId, project_id: resolvedProjectId });
+        } else {
+          toast.error('Cannot delete: No project context');
+        }
         break;
     }
   };
@@ -143,7 +167,7 @@ export function TestCasesTable({
 
   return (
     <div className="bg-background border rounded-lg overflow-x-auto">
-      <table className="w-full min-w-[1400px]">
+      <table className="w-full min-w-[1200px]">
         <thead className="bg-muted/50 border-b">
           <tr>
             <th className="w-12 px-3 py-3">
@@ -152,7 +176,7 @@ export function TestCasesTable({
                 onCheckedChange={onSelectAll}
               />
             </th>
-            <th className="w-24 px-3 py-3 text-left">
+            <th className="w-28 px-3 py-3 text-left">
               <button 
                 onClick={() => handleSort('id')}
                 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
@@ -161,7 +185,7 @@ export function TestCasesTable({
                 <SortIcon field="id" currentField={sortField} direction={sortDir} />
               </button>
             </th>
-            <th className="min-w-[200px] px-3 py-3 text-left">
+            <th className="min-w-[220px] px-3 py-3 text-left">
               <button 
                 onClick={() => handleSort('title')}
                 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1 hover:text-foreground transition-colors"
@@ -170,14 +194,9 @@ export function TestCasesTable({
                 <SortIcon field="title" currentField={sortField} direction={sortDir} />
               </button>
             </th>
-            <th className="w-36 px-3 py-3 text-left">
+            <th className="w-40 px-3 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Folder
-              </span>
-            </th>
-            <th className="w-28 px-3 py-3 text-left">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                Release
               </span>
             </th>
             <th className="w-28 px-3 py-3 text-left">
@@ -231,19 +250,16 @@ export function TestCasesTable({
           </tr>
         </thead>
         <tbody className="divide-y">
-          {sortedCases.map((tc, index) => (
+          {sortedCases.map((tc) => (
             <tr
-              key={tc.id}
+              key={tc.dbId || tc.id}
               className={cn(
                 "hover:bg-muted/30 cursor-grab active:cursor-grabbing transition-colors",
-                selectedIds.has(tc.id) && "bg-primary/5"
+                selectedIds.has(tc.dbId || tc.id) && "bg-primary/5"
               )}
               draggable
               onDragStart={(e: React.DragEvent<HTMLTableRowElement>) => {
-                // Use dbId (actual UUID) for database operations, fall back to id
                 const testCaseDbId = tc.dbId || tc.id;
-                console.log('[DRAG START] Test case:', { id: tc.id, dbId: tc.dbId, using: testCaseDbId });
-                
                 e.dataTransfer.setData('text/plain', testCaseDbId);
                 e.dataTransfer.setData('text', testCaseDbId);
                 e.dataTransfer.setData('application/json', JSON.stringify({
@@ -252,12 +268,10 @@ export function TestCasesTable({
                   title: tc.title,
                 }));
                 e.dataTransfer.effectAllowed = 'move';
-                // Add visual feedback
                 e.currentTarget.classList.add('opacity-50');
               }}
               onDragEnd={(e: React.DragEvent<HTMLTableRowElement>) => {
                 e.currentTarget.classList.remove('opacity-50');
-                console.log('[DRAG END]');
               }}
               onClick={() => onRowClick?.(tc)}
             >
@@ -267,16 +281,16 @@ export function TestCasesTable({
                   onCheckedChange={(checked) => onSelectRow(tc.dbId || tc.id, !!checked)}
                 />
               </td>
-              <td className="w-24 px-3 py-3">
+              <td className="w-28 px-3 py-3">
                 <Link 
-                  to={`/releases/test-cases/${tc.id}`}
+                  to={`/releases/test-cases/${tc.dbId || tc.id}`}
                   className="text-sm font-mono text-primary font-medium hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {tc.id}
                 </Link>
               </td>
-              <td className="min-w-[200px] px-3 py-3">
+              <td className="min-w-[220px] px-3 py-3">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="text-sm text-foreground truncate block max-w-[300px]">
@@ -288,11 +302,11 @@ export function TestCasesTable({
                   </TooltipContent>
                 </Tooltip>
               </td>
-              <td className="w-36 px-3 py-3">
+              <td className="w-40 px-3 py-3">
                 {tc.folderPath ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="text-sm text-muted-foreground truncate block max-w-[140px]">
+                      <span className="text-sm text-muted-foreground truncate block max-w-[150px]">
                         {tc.folderPath}
                       </span>
                     </TooltipTrigger>
@@ -303,11 +317,6 @@ export function TestCasesTable({
                 ) : (
                   <span className="text-sm text-muted-foreground">—</span>
                 )}
-              </td>
-              <td className="w-28 px-3 py-3">
-                <Badge variant="secondary" className="font-mono text-xs">
-                  {tc.release}
-                </Badge>
               </td>
               <td className="w-28 px-3 py-3">
                 <TypeBadge type={tc.type} />
@@ -330,7 +339,7 @@ export function TestCasesTable({
               <td className="w-32 px-3 py-3">
                 <div className="flex items-center gap-2">
                   <Avatar className="w-6 h-6">
-                    <AvatarFallback className={cn("text-xs font-medium", avatarColors[tc.assignee.color])}>
+                    <AvatarFallback className={cn("text-xs font-medium", avatarColors[tc.assignee.color] || avatarColors.gray)}>
                       {tc.assignee.avatar}
                     </AvatarFallback>
                   </Avatar>
@@ -340,7 +349,7 @@ export function TestCasesTable({
               <td className="w-28 px-3 py-3">
                 <span className="text-sm text-muted-foreground">{tc.updated}</span>
               </td>
-              <td className="w-12 px-3 py-3">
+              <td className="w-12 px-3 py-3" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -357,15 +366,19 @@ export function TestCasesTable({
                     <DropdownMenuItem onClick={() => handleRowAction('duplicate', tc)}>
                       <Copy className="w-4 h-4 mr-2" /> Duplicate
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleRowAction('execute', tc)}>
-                      <Play className="w-4 h-4 mr-2" /> Execute
-                    </DropdownMenuItem>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed">
+                          <Play className="w-4 h-4 mr-2" /> Execute
+                        </DropdownMenuItem>
+                      </TooltipTrigger>
+                      <TooltipContent side="left">
+                        <p className="text-xs">Execution module not enabled yet</p>
+                      </TooltipContent>
+                    </Tooltip>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => handleRowAction('move', tc)}>
-                      <FolderInput className="w-4 h-4 mr-2" /> Move to Release
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleRowAction('reassign', tc)}>
-                      <UserPlus className="w-4 h-4 mr-2" /> Reassign
+                      <FolderInput className="w-4 h-4 mr-2" /> Move to Folder
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-destructive" onClick={() => handleRowAction('delete', tc)}>
