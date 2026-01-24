@@ -51,8 +51,15 @@ interface TestStep {
   test_data?: string;
 }
 
+// UUID validation helper
+function isValidUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+}
+
 interface TestCase {
-  id: string;
+  id: string;       // Display key like "TES-0001"
+  dbId?: string;    // Actual database UUID
   title: string;
   description?: string;
   preconditions?: string;
@@ -108,8 +115,12 @@ export function EditTestCaseDialog({
   const queryClient = useQueryClient();
   const updateTestCaseMutation = useUpdateTestCase();
   
-  // Load real steps from DB
-  const { data: dbSteps = [], isLoading: stepsLoading } = useTestCaseSteps(testCase?.id);
+  // Resolve UUID: prefer dbId (actual UUID), fall back to id only if it's a valid UUID
+  const caseUuid = testCase?.dbId ?? (testCase?.id && isValidUUID(testCase.id) ? testCase.id : null);
+  const displayKey = testCase?.id || 'Unknown';
+  
+  // Load real steps from DB using UUID
+  const { data: dbSteps = [], isLoading: stepsLoading } = useTestCaseSteps(caseUuid);
   
   // Load priorities and types for mapping
   const { data: priorities = [] } = useCasePriorities(projectId);
@@ -236,6 +247,12 @@ export function EditTestCaseDialog({
       return;
     }
 
+    // Validate UUID before saving
+    if (!caseUuid) {
+      toast.error('Cannot save: invalid test case UUID');
+      return;
+    }
+
     const resolvedProjectId = projectId || testCase.project_id;
     if (!resolvedProjectId) {
       toast.error('Project ID not available');
@@ -245,7 +262,7 @@ export function EditTestCaseDialog({
     // Use the canonical useUpdateTestCase hook which properly persists everything
     updateTestCaseMutation.mutate(
       {
-        id: testCase.id,
+        id: caseUuid, // Use the actual UUID, not the display key
         project_id: resolvedProjectId,
         title: title.trim(),
         objective: description.trim() || undefined,
@@ -281,7 +298,7 @@ export function EditTestCaseDialog({
         <DialogHeader className="px-6 py-4 border-b flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-sm font-mono text-muted-foreground">{testCase.id}</span>
+              <span className="text-sm font-mono text-muted-foreground">{displayKey}</span>
               <DialogTitle className="mt-1">Edit Test Case</DialogTitle>
             </div>
           </div>

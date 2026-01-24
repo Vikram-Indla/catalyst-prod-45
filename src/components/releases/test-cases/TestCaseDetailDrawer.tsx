@@ -65,8 +65,15 @@ import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCase
 import { useCaseRequirements, REQUIREMENT_TYPE_LABELS } from '@/hooks/test-cases/useRequirementLinks';
 import { useQueryClient } from '@tanstack/react-query';
 
+// UUID validation helper
+function isValidUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+}
+
 interface TestCase {
-  id: string;
+  id: string;       // Display key like "TES-0001"
+  dbId?: string;    // Actual database UUID
   title: string;
   description?: string;
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
@@ -107,15 +114,19 @@ export function TestCaseDetailDrawer({
   const cloneMutation = useCloneTestCase();
   const deleteMutation = useDeleteTestCase();
 
-  // Real DB hooks
-  const { data: steps = [], isLoading: stepsLoading } = useTestCaseSteps(testCase?.id);
-  const { data: executionHistory = [], isLoading: historyLoading } = useTestCaseExecutionHistory(testCase?.id);
-  const { data: requirementLinks = [], isLoading: linksLoading } = useCaseRequirements(testCase?.id || null);
+  // Resolve UUID: prefer dbId (actual UUID), fall back to id only if it's a valid UUID
+  const caseUuid = testCase?.dbId ?? (testCase?.id && isValidUUID(testCase.id) ? testCase.id : null);
+  const displayKey = testCase?.id || 'Unknown';
+
+  // Real DB hooks - use UUID for all queries
+  const { data: steps = [], isLoading: stepsLoading } = useTestCaseSteps(caseUuid);
+  const { data: executionHistory = [], isLoading: historyLoading } = useTestCaseExecutionHistory(caseUuid);
+  const { data: requirementLinks = [], isLoading: linksLoading } = useCaseRequirements(caseUuid);
 
   if (!testCase) return null;
 
   const handleCopyId = () => {
-    navigator.clipboard.writeText(testCase.id);
+    navigator.clipboard.writeText(displayKey);
     toast.success('Test case ID copied');
   };
 
@@ -125,9 +136,13 @@ export function TestCaseDetailDrawer({
       toast.error('Cannot duplicate: project ID not available');
       return;
     }
+    if (!caseUuid) {
+      toast.error('Cannot duplicate: invalid test case UUID');
+      return;
+    }
     
     cloneMutation.mutate(
-      { id: testCase.id, project_id: resolvedProjectId },
+      { id: caseUuid, project_id: resolvedProjectId },
       {
         onSuccess: () => {
           toast.success('Test case duplicated');
@@ -146,9 +161,13 @@ export function TestCaseDetailDrawer({
       toast.error('Cannot delete: project ID not available');
       return;
     }
+    if (!caseUuid) {
+      toast.error('Cannot delete: invalid test case UUID');
+      return;
+    }
     
     deleteMutation.mutate(
-      { id: testCase.id, project_id: resolvedProjectId },
+      { id: caseUuid, project_id: resolvedProjectId },
       {
         onSuccess: () => {
           toast.success('Test case deleted');
@@ -164,8 +183,8 @@ export function TestCaseDetailDrawer({
   };
 
   const handleOpenInNewTab = () => {
-    // Navigate to full detail page
-    window.open(`/releases/test-cases/${testCase.id}`, '_blank');
+    // Navigate to full detail page using dbId (UUID) for routing
+    window.open(`/releases/test-cases/${caseUuid || testCase.id}`, '_blank');
   };
 
   return (
@@ -181,7 +200,7 @@ export function TestCaseDetailDrawer({
                     onClick={handleCopyId}
                     className="text-sm font-mono text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {testCase.id}
+                    {displayKey}
                   </button>
                   <Copy className="w-3 h-3 text-muted-foreground" />
                 </div>
