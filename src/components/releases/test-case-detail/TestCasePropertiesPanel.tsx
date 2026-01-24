@@ -46,8 +46,8 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTestCaseLabels, useAddTestCaseLabel, useRemoveTestCaseLabel, useCreateLabel } from '@/hooks/test-management/useTestCaseTags';
-import { useAutoVersioning } from '@/hooks/test-management/useAutoVersioning';
 import { useSelectableReleases, useUpdateTestCaseRelease } from '@/hooks/test-management/useTestCaseRelease';
+import { handleTestCaseChange } from '@/lib/testCaseAuditService';
 import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
 
 // Priority ID mapping from tm_case_priorities table
@@ -118,7 +118,6 @@ function getInitials(name: string): string {
 
 export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelProps) {
   const queryClient = useQueryClient();
-  const { createVersion } = useAutoVersioning();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState('');
@@ -199,6 +198,10 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
   const invalidateQueries = async () => {
     await queryClient.invalidateQueries({ queryKey: ['tm-case', testCase.id] });
     await queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
+    await queryClient.invalidateQueries({ queryKey: ['tm-case-versions', testCase.id] });
+    await queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', testCase.id] });
+    await queryClient.invalidateQueries({ queryKey: ['tm-case-audit-log', testCase.id] });
+    await queryClient.invalidateQueries({ queryKey: ['tm-case-audit-log-count', testCase.id] });
   };
 
   const handleStatusChange = async (value: string) => {
@@ -219,8 +222,15 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
       if (error) throw error;
 
-      // Create version snapshot after successful update
-      await createVersion({ testCaseId: testCase.id, changeSummary: `Status changed to ${statusConfig[value]?.label || value}` });
+      // Log audit + create version (status is content-significant)
+      await handleTestCaseChange({
+        testCaseId: testCase.id,
+        projectId: testCase.project_id,
+        changedField: 'status',
+        oldValue: testCase.status,
+        newValue: dbStatus,
+        changeSummary: `Status changed to ${statusConfig[value]?.label || value}`,
+      });
 
       await invalidateQueries();
       toast.success(`Status updated to ${statusConfig[value]?.label || value}`);
@@ -251,8 +261,15 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
       if (error) throw error;
 
-      // Create version snapshot after successful update
-      await createVersion({ testCaseId: testCase.id, changeSummary: `Priority changed to ${value}` });
+      // Log audit + create version (priority is content-significant)
+      await handleTestCaseChange({
+        testCaseId: testCase.id,
+        projectId: testCase.project_id,
+        changedField: 'priority_id',
+        oldValue: testCase.priority?.name,
+        newValue: value,
+        changeSummary: `Priority changed to ${value}`,
+      });
 
       await invalidateQueries();
       toast.success(`Priority updated to ${value}`);
@@ -283,8 +300,15 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
       if (error) throw error;
 
-      // Create version snapshot after successful update
-      await createVersion({ testCaseId: testCase.id, changeSummary: `Type changed to ${value}` });
+      // Log audit + create version (type is content-significant)
+      await handleTestCaseChange({
+        testCaseId: testCase.id,
+        projectId: testCase.project_id,
+        changedField: 'case_type_id',
+        oldValue: testCase.type?.name,
+        newValue: value,
+        changeSummary: `Type changed to ${value}`,
+      });
 
       await invalidateQueries();
       toast.success(`Type updated to ${value}`);
@@ -308,9 +332,16 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
       if (error) throw error;
 
-      // Create version snapshot after successful update
+      // Log audit only for assignee (not a version-triggering change)
       const selectedMember = teamMembers.find(m => m.id === userId);
-      await createVersion({ testCaseId: testCase.id, changeSummary: `Assignee changed to ${selectedMember?.full_name || 'user'}` });
+      await handleTestCaseChange({
+        testCaseId: testCase.id,
+        projectId: testCase.project_id,
+        changedField: 'assigned_to',
+        oldValue: testCase.assigned_user?.full_name,
+        newValue: selectedMember?.full_name || 'user',
+        changeSummary: `Assignee changed to ${selectedMember?.full_name || 'user'}`,
+      });
 
       await invalidateQueries();
       toast.success('Assignee updated');
@@ -377,9 +408,14 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
                     projectId: testCase.project_id,
                     releaseId: value === 'unassigned' ? null : value,
                   });
-                  await createVersion({ 
-                    testCaseId: testCase.id, 
-                    changeSummary: value === 'unassigned' ? 'Release cleared' : `Release changed` 
+                  // Log audit only for release (not a version-triggering change)
+                  await handleTestCaseChange({
+                    testCaseId: testCase.id,
+                    projectId: testCase.project_id,
+                    changedField: 'release_id',
+                    oldValue: testCase.release?.name,
+                    newValue: value === 'unassigned' ? null : value,
+                    changeSummary: value === 'unassigned' ? 'Release cleared' : `Release changed`,
                   });
                   await invalidateQueries();
                 } catch (error) {

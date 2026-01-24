@@ -36,6 +36,7 @@ import {
 import { TestCaseHeader } from '@/components/releases/test-case-detail/TestCaseHeader';
 import { TestCaseSteps } from '@/components/releases/test-case-detail/TestCaseSteps';
 import { TestCaseExecutionHistory } from '@/components/releases/test-case-detail/TestCaseExecutionHistory';
+import { TestCaseChangeHistory } from '@/components/releases/test-case-detail/TestCaseChangeHistory';
 import { TestCaseLinksAttachments } from '@/components/releases/test-case-detail/TestCaseLinksAttachments';
 import { TestCaseComments } from '@/components/releases/test-case-detail/TestCaseComments';
 import { TestCasePropertiesPanel } from '@/components/releases/test-case-detail/TestCasePropertiesPanel';
@@ -47,6 +48,7 @@ import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
 import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCaseExecutionHistory';
 import { useTestCaseCommentsCount } from '@/hooks/test-management/useTestCaseComments';
 import { useTestCaseVersionsCount } from '@/hooks/test-management/useTestCaseVersions';
+import { useTestCaseAuditLogCount } from '@/hooks/test-management/useTestCaseAuditLog';
 import { isValidUUID } from '@/lib/utils/assertUuid';
 import { cn } from '@/lib/utils';
 
@@ -71,6 +73,7 @@ export default function TestCaseDetailPage() {
   const { data: executionHistory = [] } = useTestCaseExecutionHistory(isValidId ? id : undefined);
   const { data: commentsCount = 0 } = useTestCaseCommentsCount(isValidId ? id : undefined);
   const { data: versionsCount = 0 } = useTestCaseVersionsCount(isValidId ? id : undefined);
+  const { data: changesCount = 0 } = useTestCaseAuditLogCount(isValidId ? id : undefined);
   
   // Clone mutation
   const cloneMutation = useCloneTestCase();
@@ -309,13 +312,23 @@ export default function TestCaseDetailPage() {
                     </span>
                   </TabsTrigger>
                   <TabsTrigger 
-                    value="history" 
+                    value="runs" 
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
                   >
-                    <Clock className="w-4 h-4 mr-2" />
-                    History
+                    <Play className="w-4 h-4 mr-2" />
+                    Runs
                     <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
                       {executionHistory.length}
+                    </span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="changes" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
+                  >
+                    <History className="w-4 h-4 mr-2" />
+                    Changes
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
+                      {changesCount}
                     </span>
                   </TabsTrigger>
                   <TabsTrigger 
@@ -366,8 +379,12 @@ export default function TestCaseDetailPage() {
                   />
                 </TabsContent>
 
-                <TabsContent value="history" className="mt-6">
+                <TabsContent value="runs" className="mt-6">
                   <TestCaseExecutionHistory history={executionHistory} />
+                </TabsContent>
+
+                <TabsContent value="changes" className="mt-6">
+                  <TestCaseChangeHistory testCaseId={testCase.id} />
                 </TabsContent>
 
                 <TabsContent value="requirements" className="mt-6">
