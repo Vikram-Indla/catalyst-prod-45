@@ -45,6 +45,7 @@ import { QuickActionsBar } from '@/components/releases/test-case-detail/QuickAct
 import { useTestCase, useCloneTestCase, useTestCaseSteps } from '@/hooks/test-management/useTestCases';
 import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
 import { useTestCaseExecutionHistory, ExecutionHistoryRecord } from '@/hooks/test-management/useTestCaseExecutionHistory';
+import { useTestCaseCommentsCount } from '@/hooks/test-management/useTestCaseComments';
 import { cn } from '@/lib/utils';
 
 export default function TestCaseDetailPage() {
@@ -62,6 +63,7 @@ export default function TestCaseDetailPage() {
   const { data: testCase, isLoading, isError, refetch } = useTestCase(id);
   const { data: stepsData } = useTestCaseSteps(id);
   const { data: executionHistory = [] } = useTestCaseExecutionHistory(id);
+  const { data: commentsCount = 0 } = useTestCaseCommentsCount(id);
   
   // Clone mutation
   const cloneMutation = useCloneTestCase();
@@ -330,7 +332,9 @@ export default function TestCaseDetailPage() {
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Comments
-                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">0</span>
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
+                      {commentsCount}
+                    </span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="versions" 

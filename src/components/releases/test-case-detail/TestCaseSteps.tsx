@@ -1,9 +1,9 @@
 /**
- * Test Case Steps Component — Wired to real DB data
- * Displays and manages test steps with full interactivity
+ * Test Case Steps Component — Fully wired to DB
+ * All CRUD operations persist to tm_test_steps
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { 
   GripVertical, 
@@ -37,7 +37,13 @@ import {
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { useAddTestStep } from '@/hooks/test-management/useTestSteps';
+import { 
+  useAddTestStep, 
+  useUpdateTestStep, 
+  useDeleteTestStep,
+  useReorderTestSteps,
+  useDuplicateTestStep,
+} from '@/hooks/test-management/useTestSteps';
 import type { TMCaseStep } from '@/types/test-management';
 
 interface TestStep {
@@ -72,8 +78,17 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [editingStep, setEditingStep] = useState({ action: '', expectedResult: '' });
 
-  // Add step mutation
+  // Sync local state when DB data changes
+  useEffect(() => {
+    setSteps(mapDbStepsToUi(dbSteps));
+  }, [dbSteps]);
+
+  // Mutations
   const addStepMutation = useAddTestStep();
+  const updateStepMutation = useUpdateTestStep();
+  const deleteStepMutation = useDeleteTestStep();
+  const reorderStepsMutation = useReorderTestSteps();
+  const duplicateStepMutation = useDuplicateTestStep();
 
   const handleAddStep = async () => {
     if (newStep.action.trim() && newStep.expectedResult.trim()) {
@@ -85,14 +100,6 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
           expected_result: newStep.expectedResult,
         });
         
-        // Optimistically add to local state
-        const step: TestStep = {
-          id: `step-${Date.now()}`,
-          action: newStep.action,
-          expectedResult: newStep.expectedResult,
-          attachments: [],
-        };
-        setSteps([...steps, step]);
         setNewStep({ action: '', expectedResult: '' });
         setShowAddForm(false);
         toast.success('Step added successfully');
@@ -104,56 +111,96 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
 
   const handleAIGenerate = async () => {
     setIsGenerating(true);
-    
-    // AI generation disabled until module is implemented
     await new Promise(resolve => setTimeout(resolve, 500));
-    
     setIsGenerating(false);
     toast.info('AI step generation not enabled yet', {
       description: 'This feature will be available in a future release.',
     });
   };
 
-  const handleDeleteStep = (stepId: string) => {
-    setSteps(steps.filter(s => s.id !== stepId));
-    toast.info('Step deleted locally (DB sync pending)');
+  const handleDeleteStep = async (stepId: string) => {
+    try {
+      await deleteStepMutation.mutateAsync({
+        id: stepId,
+        test_case_id: testCaseId,
+      });
+    } catch (error) {
+      toast.error('Failed to delete step');
+    }
   };
 
-  const handleDuplicateStep = (step: TestStep) => {
-    const newStep: TestStep = { ...step, id: `step-${Date.now()}` };
-    const index = steps.findIndex(s => s.id === step.id);
-    const newSteps = [...steps];
-    newSteps.splice(index + 1, 0, newStep);
-    setSteps(newSteps);
-    toast.info('Step duplicated locally (DB sync pending)');
+  const handleDuplicateStep = async (step: TestStep) => {
+    try {
+      await duplicateStepMutation.mutateAsync({
+        stepId: step.id,
+        test_case_id: testCaseId,
+      });
+    } catch (error) {
+      toast.error('Failed to duplicate step');
+    }
   };
 
-  const handleMoveStep = (stepId: string, direction: 'up' | 'down') => {
+  const handleMoveStep = async (stepId: string, direction: 'up' | 'down') => {
     const index = steps.findIndex(s => s.id === stepId);
     if ((direction === 'up' && index === 0) || (direction === 'down' && index === steps.length - 1)) {
       return;
     }
+    
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     const newSteps = [...steps];
     [newSteps[index], newSteps[newIndex]] = [newSteps[newIndex], newSteps[index]];
+    
+    // Optimistically update UI
     setSteps(newSteps);
-    toast.info(`Step moved ${direction} (DB sync pending)`);
+    
+    // Persist to DB
+    try {
+      await reorderStepsMutation.mutateAsync({
+        test_case_id: testCaseId,
+        stepIds: newSteps.map(s => s.id),
+      });
+    } catch (error) {
+      // Revert on error
+      setSteps(mapDbStepsToUi(dbSteps));
+      toast.error('Failed to reorder steps');
+    }
   };
+
+  const handleReorder = useCallback(async (newOrder: TestStep[]) => {
+    // Optimistically update UI
+    setSteps(newOrder);
+    
+    // Persist to DB
+    try {
+      await reorderStepsMutation.mutateAsync({
+        test_case_id: testCaseId,
+        stepIds: newOrder.map(s => s.id),
+      });
+    } catch (error) {
+      // Revert on error
+      setSteps(mapDbStepsToUi(dbSteps));
+    }
+  }, [testCaseId, reorderStepsMutation, dbSteps]);
 
   const startEditing = (step: TestStep) => {
     setEditingStepId(step.id);
     setEditingStep({ action: step.action, expectedResult: step.expectedResult });
   };
 
-  const saveEdit = () => {
-    if (editingStep.action.trim() && editingStep.expectedResult.trim()) {
-      setSteps(steps.map(s => 
-        s.id === editingStepId 
-          ? { ...s, action: editingStep.action, expectedResult: editingStep.expectedResult }
-          : s
-      ));
-      setEditingStepId(null);
-      toast.info('Step updated locally (DB sync pending)');
+  const saveEdit = async () => {
+    if (editingStep.action.trim() && editingStep.expectedResult.trim() && editingStepId) {
+      try {
+        await updateStepMutation.mutateAsync({
+          id: editingStepId,
+          test_case_id: testCaseId,
+          action: editingStep.action,
+          expected_result: editingStep.expectedResult,
+        });
+        setEditingStepId(null);
+        toast.success('Step updated');
+      } catch (error) {
+        toast.error('Failed to update step');
+      }
     }
   };
 
@@ -223,7 +270,7 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
         <Reorder.Group 
           axis="y" 
           values={steps} 
-          onReorder={setSteps}
+          onReorder={handleReorder}
           className="space-y-3"
         >
           {steps.map((step, index) => (
@@ -243,6 +290,8 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
                 onMoveDown={() => handleMoveStep(step.id, 'down')}
                 isFirst={index === 0}
                 isLast={index === steps.length - 1}
+                isUpdating={updateStepMutation.isPending && editingStepId === step.id}
+                isDeleting={deleteStepMutation.isPending}
               />
             </Reorder.Item>
           ))}
@@ -350,6 +399,8 @@ interface StepCardProps {
   onMoveDown: () => void;
   isFirst: boolean;
   isLast: boolean;
+  isUpdating?: boolean;
+  isDeleting?: boolean;
 }
 
 function StepCard({ 
@@ -367,6 +418,8 @@ function StepCard({
   onMoveDown,
   isFirst,
   isLast,
+  isUpdating,
+  isDeleting,
 }: StepCardProps) {
   return (
     <motion.div
@@ -411,12 +464,16 @@ function StepCard({
             />
           </div>
           <div className="flex gap-2 justify-end">
-            <Button variant="ghost" size="sm" onClick={onCancelEdit}>
+            <Button variant="ghost" size="sm" onClick={onCancelEdit} disabled={isUpdating}>
               <X className="w-4 h-4 mr-1" />
               Cancel
             </Button>
-            <Button size="sm" onClick={onSaveEdit}>
-              <Check className="w-4 h-4 mr-1" />
+            <Button size="sm" onClick={onSaveEdit} disabled={isUpdating}>
+              {isUpdating ? (
+                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+              ) : (
+                <Check className="w-4 h-4 mr-1" />
+              )}
               Save
             </Button>
           </div>
@@ -483,7 +540,7 @@ function StepCard({
                 Move Down
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={onDelete}>
+              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={onDelete} disabled={isDeleting}>
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete
               </DropdownMenuItem>
