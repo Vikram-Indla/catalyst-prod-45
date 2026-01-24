@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus, type PaymentStatus } from '@/modules/capacity-planner/hooks/useResourceAssignments';
+import { useInsourcedBudgets } from '@/modules/capacity-planner/hooks/useInsourcedBudget';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon, Download } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon, Download, Users } from 'lucide-react';
 import { exportAssignmentsToExcel } from '@/components/admin/assignments/exportAssignmentsToExcel';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,6 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { LicenseAllocationSection } from '@/modules/budget';
 import { Badge } from '@/components/ui/badge';
@@ -93,6 +95,7 @@ interface SortableRowProps {
   editingBudgetId: string | null;
   editingBudgetValue: string;
   budgetInputRef: React.RefObject<HTMLInputElement>;
+  insourcedBudget?: { totalBudget: number; resourceCount: number };
   onStatusChange: (assignment: ResourceAssignment, value: string) => void;
   onVendorChange: (assignment: ResourceAssignment, value: string) => void;
   onAssignmentTypeChange: (assignment: ResourceAssignment, value: string) => void;
@@ -116,6 +119,7 @@ function SortableRow({
   editingBudgetId,
   editingBudgetValue,
   budgetInputRef,
+  insourcedBudget,
   onStatusChange,
   onVendorChange,
   onAssignmentTypeChange,
@@ -192,7 +196,28 @@ function SortableRow({
         </Select>
       </td>
       <td className="px-4 py-3">
-        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
+        {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
+          // Insourced: Show calculated budget from linked resources' CTC
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded bg-blue-500/10 min-w-[80px] cursor-help">
+                  <span className="text-xs text-muted-foreground">﷼</span>
+                  <span className="text-sm text-blue-700">{(insourcedBudget?.totalBudget || 0).toLocaleString()}</span>
+                  {insourcedBudget?.resourceCount ? (
+                    <span className="flex items-center gap-0.5 ml-1 text-xs text-blue-600">
+                      <Users className="h-3 w-3" />
+                      {insourcedBudget.resourceCount}
+                    </span>
+                  ) : null}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Sum of {insourcedBudget?.resourceCount || 0} linked resources' CTC</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
           editingBudgetId === assignment.id ? (
             <Input
               ref={budgetInputRef}
@@ -225,62 +250,54 @@ function SortableRow({
         )}
       </td>
       <td className="px-4 py-3">
-        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "h-8 w-[130px] justify-start text-left font-normal text-xs",
-                  !assignment.start_date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-3 w-3" />
-                {assignment.start_date ? format(parseISO(assignment.start_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-popover z-[500]" align="start">
-              <Calendar
-                mode="single"
-                selected={assignment.start_date ? parseISO(assignment.start_date) : undefined}
-                onSelect={(date) => onStartDateChange(assignment, date ? format(date, 'yyyy-MM-dd') : '')}
-                initialFocus
-                className={cn("p-3 pointer-events-auto")}
-              />
-            </PopoverContent>
-          </Popover>
-        ) : (
-          <span className="text-muted-foreground text-sm">—</span>
-        )}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "h-8 w-[130px] justify-start text-left font-normal text-xs",
+                !assignment.start_date && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-3 w-3" />
+              {assignment.start_date ? format(parseISO(assignment.start_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 bg-popover z-[500]" align="start">
+            <Calendar
+              mode="single"
+              selected={assignment.start_date ? parseISO(assignment.start_date) : undefined}
+              onSelect={(date) => onStartDateChange(assignment, date ? format(date, 'yyyy-MM-dd') : '')}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
       </td>
       <td className="px-4 py-3">
-        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "h-8 w-[130px] justify-start text-left font-normal text-xs",
-                  !assignment.end_date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-3 w-3" />
-                {assignment.end_date ? format(parseISO(assignment.end_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-popover z-[500]" align="start">
-              <Calendar
-                mode="single"
-                selected={assignment.end_date ? parseISO(assignment.end_date) : undefined}
-                onSelect={(date) => onEndDateChange(assignment, date ? format(date, 'yyyy-MM-dd') : '')}
-                initialFocus
-                className={cn("p-3 pointer-events-auto")}
-              />
-            </PopoverContent>
-          </Popover>
-        ) : (
-          <span className="text-muted-foreground text-sm">—</span>
-        )}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "h-8 w-[130px] justify-start text-left font-normal text-xs",
+                !assignment.end_date && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-3 w-3" />
+              {assignment.end_date ? format(parseISO(assignment.end_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 bg-popover z-[500]" align="start">
+            <Calendar
+              mode="single"
+              selected={assignment.end_date ? parseISO(assignment.end_date) : undefined}
+              onSelect={(date) => onEndDateChange(assignment, date ? format(date, 'yyyy-MM-dd') : '')}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
       </td>
       <td className="px-4 py-3">
         {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
@@ -319,7 +336,12 @@ function SortableRow({
         </Select>
       </td>
       <td className="px-4 py-3">
-        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
+        {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
+          // Insourced: Always show "On Track" as read-only
+          <Badge variant="secondary" className={`${PAYMENT_STATUS_CONFIG['on_track'].color} text-xs`}>
+            {PAYMENT_STATUS_CONFIG['on_track'].label}
+          </Badge>
+        ) : (assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
           <Select
             value={assignment.payment_status || 'unpaid'}
             onValueChange={(value) => onPaymentStatusChange(assignment, value)}
@@ -369,6 +391,17 @@ function SortableRow({
 export default function ResourceAssignmentsPage() {
   const queryClient = useQueryClient();
   const { allAssignments, isLoadingAll, createAssignment, updateAssignment } = useResourceAssignments();
+  
+  // Get IDs of Insourced/BAU assignments to fetch their linked resources' budgets
+  const insourcedAssignmentIds = useMemo(() => 
+    allAssignments
+      .filter(a => a.assignment_type === 'BAU' || a.assignment_type === 'Insourced')
+      .map(a => a.id),
+    [allAssignments]
+  );
+  
+  const { data: insourcedBudgets = {} } = useInsourcedBudgets(insourcedAssignmentIds);
+  
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<ResourceAssignment | null>(null);
   const [formData, setFormData] = useState({ 
@@ -856,6 +889,7 @@ export default function ResourceAssignmentsPage() {
                               editingBudgetId={editingBudgetId}
                               editingBudgetValue={editingBudgetValue}
                               budgetInputRef={budgetInputRef}
+                              insourcedBudget={insourcedBudgets[assignment.id]}
                               onStatusChange={handleStatusChange}
                               onVendorChange={handleVendorChange}
                               onAssignmentTypeChange={handleAssignmentTypeChange}
