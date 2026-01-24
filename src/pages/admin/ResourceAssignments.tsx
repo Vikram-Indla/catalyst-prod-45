@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus, type PaymentStatus } from '@/modules/capacity-planner/hooks/useResourceAssignments';
-import { useInsourcedBudgets } from '@/modules/capacity-planner/hooks/useInsourcedBudget';
+import { useAssignmentBudgets, type LinkedResource, type AssignmentBudgetData } from '@/modules/capacity-planner/hooks/useInsourcedBudget';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon, Download, Users } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon, Download, Users, User } from 'lucide-react';
 import { exportAssignmentsToExcel } from '@/components/admin/assignments/exportAssignmentsToExcel';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -92,23 +92,17 @@ interface SortableRowProps {
   status: AssignmentStatus;
   statusConfig: { label: string; color: string };
   vendors: Vendor[];
-  editingBudgetId: string | null;
-  editingBudgetValue: string;
-  budgetInputRef: React.RefObject<HTMLInputElement>;
-  insourcedBudget?: { totalBudget: number; resourceCount: number };
+  budgetData?: AssignmentBudgetData;
   onStatusChange: (assignment: ResourceAssignment, value: string) => void;
   onVendorChange: (assignment: ResourceAssignment, value: string) => void;
   onAssignmentTypeChange: (assignment: ResourceAssignment, value: string) => void;
   onPaymentStatusChange: (assignment: ResourceAssignment, value: string) => void;
   onStartDateChange: (assignment: ResourceAssignment, value: string) => void;
   onEndDateChange: (assignment: ResourceAssignment, value: string) => void;
-  onBudgetDoubleClick: (assignment: ResourceAssignment) => void;
-  onBudgetBlur: (assignment: ResourceAssignment) => void;
-  onBudgetKeyDown: (e: React.KeyboardEvent, assignment: ResourceAssignment) => void;
-  onBudgetValueChange: (value: string) => void;
   onToggleActive: (assignment: ResourceAssignment) => void;
   onEdit: (assignment: ResourceAssignment) => void;
   onDelete: (assignment: ResourceAssignment) => void;
+  onResourceCountClick: (assignment: ResourceAssignment, resources: LinkedResource[]) => void;
 }
 
 function SortableRow({
@@ -116,23 +110,17 @@ function SortableRow({
   status,
   statusConfig,
   vendors,
-  editingBudgetId,
-  editingBudgetValue,
-  budgetInputRef,
-  insourcedBudget,
+  budgetData,
   onStatusChange,
   onVendorChange,
   onAssignmentTypeChange,
   onPaymentStatusChange,
   onStartDateChange,
   onEndDateChange,
-  onBudgetDoubleClick,
-  onBudgetBlur,
-  onBudgetKeyDown,
-  onBudgetValueChange,
   onToggleActive,
   onEdit,
   onDelete,
+  onResourceCountClick,
 }: SortableRowProps) {
   const {
     attributes,
@@ -149,6 +137,9 @@ function SortableRow({
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 100 : 'auto',
   };
+
+  const resourceCount = budgetData?.resourceCount || 0;
+  const totalBudget = budgetData?.totalBudget || 0;
 
   return (
     <tr
@@ -177,6 +168,20 @@ function SortableRow({
           </div>
         </div>
       </td>
+      {/* Resource Count - Clickable */}
+      <td className="px-4 py-3">
+        {resourceCount > 0 ? (
+          <button
+            onClick={() => onResourceCountClick(assignment, budgetData?.linkedResources || [])}
+            className="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors cursor-pointer"
+          >
+            <Users className="h-3.5 w-3.5 text-emerald-600" />
+            <span className="text-sm font-medium text-emerald-700">{resourceCount}</span>
+          </button>
+        ) : (
+          <span className="text-muted-foreground text-sm">0</span>
+        )}
+      </td>
       <td className="px-4 py-3">
         <Select
           value={status}
@@ -195,59 +200,21 @@ function SortableRow({
           </SelectContent>
         </Select>
       </td>
+      {/* Budget - Read-only, calculated from linked resources' CTC */}
       <td className="px-4 py-3">
-        {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
-          // Insourced: Show calculated budget from linked resources' CTC
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded bg-blue-500/10 min-w-[80px] cursor-help">
-                  <span className="text-xs text-muted-foreground">﷼</span>
-                  <span className="text-sm text-blue-700">{(insourcedBudget?.totalBudget || 0).toLocaleString()}</span>
-                  {insourcedBudget?.resourceCount ? (
-                    <span className="flex items-center gap-0.5 ml-1 text-xs text-blue-600">
-                      <Users className="h-3 w-3" />
-                      {insourcedBudget.resourceCount}
-                    </span>
-                  ) : null}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Sum of {insourcedBudget?.resourceCount || 0} linked resources' CTC</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        ) : (assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-          editingBudgetId === assignment.id ? (
-            <Input
-              ref={budgetInputRef}
-              type="number"
-              value={editingBudgetValue}
-              onChange={(e) => onBudgetValueChange(e.target.value)}
-              onBlur={() => onBudgetBlur(assignment)}
-              onKeyDown={(e) => onBudgetKeyDown(e, assignment)}
-              className="h-8 w-[100px] text-sm"
-              placeholder="0"
-            />
-          ) : (
-            <div
-              className="flex items-center gap-1 cursor-text px-2 py-1 -mx-2 rounded hover:bg-muted min-w-[80px]"
-              onDoubleClick={() => onBudgetDoubleClick(assignment)}
-              title="Double-click to edit"
-            >
-              {assignment.budget !== null && assignment.budget !== undefined ? (
-                <>
-                  <span className="text-xs text-muted-foreground">﷼</span>
-                  <span className="text-sm">{assignment.budget.toLocaleString()}</span>
-                </>
-              ) : (
-                <span className="text-muted-foreground text-sm">—</span>
-              )}
-            </div>
-          )
-        ) : (
-          <span className="text-muted-foreground text-sm">—</span>
-        )}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded bg-muted/50 min-w-[80px] cursor-help">
+                <span className="text-xs text-muted-foreground">﷼</span>
+                <span className="text-sm text-foreground">{totalBudget.toLocaleString()}</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </td>
       <td className="px-4 py-3">
         <Popover>
@@ -392,15 +359,10 @@ export default function ResourceAssignmentsPage() {
   const queryClient = useQueryClient();
   const { allAssignments, isLoadingAll, createAssignment, updateAssignment } = useResourceAssignments();
   
-  // Get IDs of Insourced/BAU assignments to fetch their linked resources' budgets
-  const insourcedAssignmentIds = useMemo(() => 
-    allAssignments
-      .filter(a => a.assignment_type === 'BAU' || a.assignment_type === 'Insourced')
-      .map(a => a.id),
-    [allAssignments]
-  );
+  // Get IDs of ALL assignments to fetch their linked resources' budgets
+  const allAssignmentIds = useMemo(() => allAssignments.map(a => a.id), [allAssignments]);
   
-  const { data: insourcedBudgets = {} } = useInsourcedBudgets(insourcedAssignmentIds);
+  const { data: assignmentBudgets = {} } = useAssignmentBudgets(allAssignmentIds);
   
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<ResourceAssignment | null>(null);
@@ -423,10 +385,10 @@ export default function ResourceAssignmentsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
-  // Budget inline edit state
-  const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null);
-  const [editingBudgetValue, setEditingBudgetValue] = useState('');
-  const budgetInputRef = useRef<HTMLInputElement>(null);
+  // Resource modal state
+  const [resourceModalOpen, setResourceModalOpen] = useState(false);
+  const [resourceModalAssignment, setResourceModalAssignment] = useState<ResourceAssignment | null>(null);
+  const [resourceModalResources, setResourceModalResources] = useState<LinkedResource[]>([]);
 
   // DnD sensors
   const sensors = useSensors(
@@ -863,6 +825,7 @@ export default function ResourceAssignmentsPage() {
                         <th className="w-10 px-4 py-2"></th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[60px]">AID</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[80px]">Resources</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Status</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Budget (SAR)</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Start Date</th>
@@ -886,23 +849,21 @@ export default function ResourceAssignmentsPage() {
                               status={status}
                               statusConfig={statusConfig}
                               vendors={vendors}
-                              editingBudgetId={editingBudgetId}
-                              editingBudgetValue={editingBudgetValue}
-                              budgetInputRef={budgetInputRef}
-                              insourcedBudget={insourcedBudgets[assignment.id]}
+                              budgetData={assignmentBudgets[assignment.id]}
                               onStatusChange={handleStatusChange}
                               onVendorChange={handleVendorChange}
                               onAssignmentTypeChange={handleAssignmentTypeChange}
                               onPaymentStatusChange={handlePaymentStatusChange}
                               onStartDateChange={handleStartDateChange}
                               onEndDateChange={handleEndDateChange}
-                              onBudgetDoubleClick={handleBudgetDoubleClick}
-                              onBudgetBlur={handleBudgetBlur}
-                              onBudgetKeyDown={handleBudgetKeyDown}
-                              onBudgetValueChange={setEditingBudgetValue}
                               onToggleActive={handleToggleActive}
                               onEdit={openEdit}
                               onDelete={handleDeleteClick}
+                              onResourceCountClick={(assignment, resources) => {
+                                setResourceModalAssignment(assignment);
+                                setResourceModalResources(resources);
+                                setResourceModalOpen(true);
+                              }}
                             />
                           );
                         })}
