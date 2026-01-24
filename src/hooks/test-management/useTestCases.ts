@@ -578,7 +578,11 @@ export function useCloneTestCase(options?: { silent?: boolean }) {
       } as unknown as TMTestCase;
     },
     onSuccess: (data) => {
+      // Invalidate all relevant queries to ensure the cloned case appears with steps
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', data.project_id] });
       if (!silent) {
         catalystToast.success('Test case cloned', `${data.key}: ${data.title}`);
       }

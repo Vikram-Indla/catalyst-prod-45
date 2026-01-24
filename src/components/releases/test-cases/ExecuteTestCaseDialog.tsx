@@ -48,7 +48,8 @@ interface TestStep {
 }
 
 interface TestCase {
-  id: string;
+  id: string;       // UUID for DB operations
+  key?: string;     // Display key like "INV-0001"
   title: string;
   description?: string;
   status: 'draft' | 'ready' | 'approved' | 'deprecated';

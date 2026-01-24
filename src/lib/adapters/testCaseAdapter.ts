@@ -1,11 +1,15 @@
 /**
  * Adapter to convert Supabase TMTestCase → UI TestCase format
  * Used by TestCasesPage and related components
+ * 
+ * ID CONTRACT:
+ * - id: ALWAYS the database UUID (for DB operations)
+ * - key: ALWAYS the display key like "INV-0001" (for UI display)
  */
 
 import type { TMTestCase } from '@/types/test-management';
 import type { TestCase } from '@/data/testCasesData';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 
 // Helper to get avatar color based on user ID hash - Catalyst V5 (Blue, Teal, Gray only)
 function getAvatarColor(userId?: string): 'blue' | 'teal' | 'gray' {
@@ -55,13 +59,23 @@ function mapStatus(status: string): 'draft' | 'ready' | 'approved' | 'deprecated
   return 'draft';
 }
 
-// Format relative time
+// Format relative time for "updated" column
 function formatUpdated(updatedAt?: string | null): string {
   if (!updatedAt) return 'Unknown';
   try {
     return formatDistanceToNow(new Date(updatedAt), { addSuffix: true });
   } catch {
     return 'Unknown';
+  }
+}
+
+// Format absolute timestamp for metadata display (e.g., "24 Jan 2026, 12:21")
+function formatTimestamp(isoString?: string | null): string {
+  if (!isoString) return '—';
+  try {
+    return format(new Date(isoString), 'd MMM yyyy, HH:mm');
+  } catch {
+    return '—';
   }
 }
 
@@ -81,6 +95,9 @@ export function tmToUITestCase(tc: TMTestCase): TestCase {
   // Get assigned user or fall back to creator
   const assignedUser = (tc as any).assigned_user;
   const assignee = assignedUser || tc.created_by_profile || tc.created_by_user;
+  
+  // Get creator profile for "Created by" display
+  const creatorProfile = tc.created_by_profile || tc.created_by_user;
   
   // Extract folder information from the joined relation
   const folder = (tc as any).folder as { id: string; name: string; path?: string } | null;
@@ -116,9 +133,11 @@ export function tmToUITestCase(tc: TMTestCase): TestCase {
     folderPath: folder?.path || folder?.name || null,
     description: tc.objective,
     preconditions: tc.preconditions,
-    createdBy: tc.created_by,
-    createdAt: tc.created_at,
-    updatedAt: tc.updated_at,
+    // Created by: use profile name if available, otherwise show "Unknown"
+    createdBy: creatorProfile?.full_name || 'Unknown',
+    // Timestamps: format for human-readable display
+    createdAt: formatTimestamp(tc.created_at),
+    updatedAt: formatTimestamp(tc.updated_at),
     testSteps: tc.steps?.map(s => ({
       id: s.id,
       step: s.step_number,
