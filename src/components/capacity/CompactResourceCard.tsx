@@ -34,6 +34,7 @@ interface CompactResourceCardProps {
   assignmentName?: string | null;
   totalAllocation: number;
   allocations?: ResourceAllocation[];
+  country_flag_svg?: string | null;
   onOpen360: () => void;
   onEdit: () => void;
 }
@@ -46,6 +47,7 @@ export function CompactResourceCard({
   assignmentName,
   totalAllocation,
   allocations = [],
+  country_flag_svg,
   onOpen360, 
   onEdit 
 }: CompactResourceCardProps) {
@@ -192,21 +194,30 @@ export function CompactResourceCard({
       >
         {/* ========== ZONE A: Identity (Top) ========== */}
         <div className="flex items-start gap-2.5 mb-2.5">
-          {/* Avatar with contract ring */}
+          {/* Avatar with contract ring + country flag */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div 
-                onClick={(e) => { e.stopPropagation(); onOpen360(); }}
-                className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-pointer shrink-0 transition-all",
-                  "ring-[3px] ring-offset-2",
-                  "dark:ring-offset-[var(--surface-0)]",
-                  ringStyles[contractStatus.status],
-                  contractStatus.status === 'critical' && "animate-pulse"
+              <div className="relative shrink-0">
+                <div 
+                  onClick={(e) => { e.stopPropagation(); onOpen360(); }}
+                  className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-pointer transition-all",
+                    "ring-[3px] ring-offset-2",
+                    "dark:ring-offset-[var(--surface-0)]",
+                    ringStyles[contractStatus.status],
+                    contractStatus.status === 'critical' && "animate-pulse"
+                  )}
+                  style={{ backgroundColor: isOverAllocated ? CATALYST_V5.error.hex : theme.accent }}
+                >
+                  {initials}
+                </div>
+                {country_flag_svg && (
+                  <img 
+                    src={country_flag_svg} 
+                    alt="" 
+                    className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm"
+                  />
                 )}
-                style={{ backgroundColor: isOverAllocated ? CATALYST_V5.error.hex : theme.accent }}
-              >
-                {initials}
               </div>
             </TooltipTrigger>
             <TooltipContent 
