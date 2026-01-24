@@ -60,9 +60,13 @@ const PRIORITY_ID_MAP: Record<string, string> = {
 // Type ID mapping from tm_case_types table
 const TYPE_ID_MAP: Record<string, string> = {
   'Functional': '00000000-0000-0000-0002-000000000001',
-  'Performance': '00000000-0000-0000-0002-000000000002',
-  'Security': '00000000-0000-0000-0002-000000000003',
-  'API': '00000000-0000-0000-0002-000000000004',
+  'Regression': '00000000-0000-0000-0002-000000000002',
+  'Smoke': '00000000-0000-0000-0002-000000000003',
+  'Integration': '00000000-0000-0000-0002-000000000004',
+  'End-to-End': '00000000-0000-0000-0002-000000000005',
+  'Performance': '00000000-0000-0000-0002-000000000006',
+  'Security': '00000000-0000-0000-0002-000000000007',
+  'Usability': '00000000-0000-0000-0002-000000000008',
 };
 
 // Status mapping (status is an enum in DB)
@@ -93,9 +97,13 @@ const priorityConfig: Record<string, { label: string; icon: typeof AlertTriangle
 
 const typeConfig: Record<string, { className: string }> = {
   'Functional': { className: 'bg-blue-50 text-blue-700 border-blue-200' },
+  'Regression': { className: 'bg-purple-50 text-purple-700 border-purple-200' },
+  'Smoke': { className: 'bg-amber-50 text-amber-700 border-amber-200' },
+  'Integration': { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  'End-to-End': { className: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
   'Performance': { className: 'bg-pink-50 text-pink-700 border-pink-200' },
   'Security': { className: 'bg-red-50 text-red-700 border-red-200' },
-  'API': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
+  'Usability': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
 };
 
 function getInitials(name: string): string {
@@ -519,9 +527,13 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Functional">Functional</SelectItem>
+                <SelectItem value="Regression">Regression</SelectItem>
+                <SelectItem value="Smoke">Smoke</SelectItem>
+                <SelectItem value="Integration">Integration</SelectItem>
+                <SelectItem value="End-to-End">End-to-End</SelectItem>
                 <SelectItem value="Performance">Performance</SelectItem>
                 <SelectItem value="Security">Security</SelectItem>
-                <SelectItem value="API">API</SelectItem>
+                <SelectItem value="Usability">Usability</SelectItem>
               </SelectContent>
             </Select>
           ) : (
