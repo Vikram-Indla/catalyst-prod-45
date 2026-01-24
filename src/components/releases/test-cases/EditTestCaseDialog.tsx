@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Plus,
@@ -300,11 +301,14 @@ export function EditTestCaseDialog({
             <div>
               <span className="text-sm font-mono text-muted-foreground">{displayKey}</span>
               <DialogTitle className="mt-1">Edit Test Case</DialogTitle>
+              <DialogDescription className="sr-only">
+                Edit test case details including title, description, status, priority, type, and steps
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="px-6 pt-4 flex-shrink-0">
             <TabsList className="grid grid-cols-2 w-64">
               <TabsTrigger value="details">Details</TabsTrigger>
@@ -314,7 +318,8 @@ export function EditTestCaseDialog({
             </TabsList>
           </div>
 
-          <ScrollArea className="flex-1 min-h-0 px-6 py-4">
+          {/* Scrollable content area with proper overflow */}
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
             <TabsContent value="details" className="mt-0 space-y-6">
               {/* Title */}
               <div className="space-y-2">
@@ -539,7 +544,7 @@ export function EditTestCaseDialog({
                 </>
               )}
             </TabsContent>
-          </ScrollArea>
+          </div>
         </Tabs>
 
         <DialogFooter className="px-6 py-4 border-t flex-shrink-0">
