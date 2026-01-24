@@ -368,8 +368,15 @@ export default function TestCasesPage() {
     setCurrentPage(1);
   }, [filters, selectedFolderId]);
 
-  // Keyboard shortcuts - comprehensive (must be after paginatedTestCases is defined)
+  // Compute if any dialog is open - disable keyboard shortcuts completely
+  const anyDialogOpen = isCreateOpen || isEditOpen || isDetailDrawerOpen || 
+    isExportOpen || isImportOpen || isTemplatesOpen || isAIGenerateOpen ||
+    isKeyboardShortcutsOpen || isAdvancedFiltersOpen || isBulkAssignOpen ||
+    isBulkMoveOpen || isBulkTagsOpen || isExecuteOpen || isMoveToFolderOpen;
+
+  // Keyboard shortcuts - DISABLED when any dialog is open
   useTestCaseKeyboardShortcuts({
+    enabled: !anyDialogOpen,
     onSearch: () => searchInputRef.current?.focus(),
     onCreate: () => setIsCreateOpen(true),
     onAdvancedFilters: () => setIsAdvancedFiltersOpen(true),
