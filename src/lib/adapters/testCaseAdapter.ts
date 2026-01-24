@@ -95,8 +95,8 @@ export function tmToUITestCase(tc: TMTestCase): TestCase {
   const lastExecution = (tc as any).last_execution as { status: string; executed_at: string | null } | null;
   
   return {
-    id: tc.key || tc.id,
-    dbId: tc.id, // Preserve the actual database UUID for operations
+    id: tc.id,   // Always use the actual database UUID
+    key: tc.key || tc.id, // Display key like "INV-0001"
     title: tc.title,
     // Release from FK join - show version if available, else name, else "Unassigned"
     release: release ? (release.version || release.name) : 'Unassigned',
