@@ -955,6 +955,8 @@ export default function TestCasesPage() {
         }}
         onSuccess={handleCreateSuccess}
         prefillData={templatePrefillData}
+        projectId={projectId}
+        initialFolderId={selectedFolderId}
       />
 
       {/* Export Test Cases Dialog */}

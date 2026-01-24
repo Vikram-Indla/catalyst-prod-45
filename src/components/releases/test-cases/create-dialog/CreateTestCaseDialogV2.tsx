@@ -3,7 +3,7 @@
  * 5-Tab Modal with enterprise features
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dialog,
@@ -40,6 +40,7 @@ import { DataTab } from './DataTab';
 import { AttachmentsTab } from './AttachmentsTab';
 import { AdditionalTab } from './AdditionalTab';
 import { TestCaseFormData, defaultFormData, TabInfo } from './types';
+import { useFolders } from '@/hooks/test-management/useFolders';
 
 // Import prefill type for template support
 import type { PrefilledTestCase } from '../utils';
@@ -49,6 +50,10 @@ export interface CreateTestCaseDialogV2Props {
   onOpenChange: (open: boolean) => void;
   onSuccess?: (data: TestCaseFormData & { id: string }) => void;
   prefillData?: PrefilledTestCase | null;
+  /** Project ID for fetching folders */
+  projectId?: string;
+  /** Initial folder ID to preselect (from URL hash or sidebar selection) */
+  initialFolderId?: string | null;
 }
 
 const TABS: TabInfo[] = [
@@ -63,7 +68,14 @@ const TAB_ICONS: Record<string, React.ElementType> = {
   FileText, ListOrdered, Database, Paperclip, Settings,
 };
 
-export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillData }: CreateTestCaseDialogV2Props) {
+export function CreateTestCaseDialogV2({ 
+  open, 
+  onOpenChange, 
+  onSuccess, 
+  prefillData,
+  projectId,
+  initialFolderId,
+}: CreateTestCaseDialogV2Props) {
   const [formData, setFormData] = useState<TestCaseFormData>(defaultFormData);
   const [activeTab, setActiveTab] = useState('details');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -76,6 +88,18 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
   
   // Generate consistent TC number when dialog opens
   const [tcNumber] = useState(() => `TC-${String(Math.floor(Math.random() * 900) + 100)}`);
+
+  // Fetch folders from tm_folders table
+  const { data: foldersData = [], isLoading: foldersLoading } = useFolders(projectId);
+  
+  // Transform folders for the dropdown
+  const folderOptions = useMemo(() => {
+    return foldersData.map(folder => ({
+      id: folder.id,
+      name: folder.name,
+      path: folder.path,
+    }));
+  }, [foldersData]);
 
   // Map prefill data to form data when dialog opens
   useEffect(() => {
@@ -103,12 +127,22 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
         description: prefillData.description || '',
         type: prefillData.type || 'functional',
         priority: priorityMap[prefillData.priority] || 'P3',
-        folderId: prefillData.folder || '',
+        folderId: prefillData.folder || initialFolderId || '',
         preconditions: prefillData.preconditions || '',
         steps: stepsFromPrefill,
       });
     }
-  }, [open, prefillData]);
+  }, [open, prefillData, initialFolderId]);
+
+  // Set initial folder when dialog opens (without prefill data)
+  useEffect(() => {
+    if (open && !prefillData && initialFolderId) {
+      setFormData(prev => ({
+        ...prev,
+        folderId: initialFolderId,
+      }));
+    }
+  }, [open, prefillData, initialFolderId]);
 
   // Reset on close
   useEffect(() => {
@@ -194,7 +228,10 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
     onSuccess?.({ ...formData, id: newId });
     toast.success(`Test case ${newId} created`, { description: formData.title });
     if (createAnother) {
-      setFormData(defaultFormData);
+      setFormData({
+        ...defaultFormData,
+        folderId: formData.folderId, // Keep folder selection for "Create another"
+      });
       setActiveTab('details');
     } else {
       onOpenChange(false);
@@ -292,7 +329,15 @@ export function CreateTestCaseDialogV2({ open, onOpenChange, onSuccess, prefillD
         <div className="flex-1 overflow-y-auto px-6" style={{ maxHeight: isFullscreen ? 'calc(100vh - 220px)' : '50vh' }}>
           <AnimatePresence mode="wait">
             <motion.div key={activeTab} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.15 }}>
-              {activeTab === 'details' && <DetailsTab data={formData} onChange={handleChange} errors={errors} />}
+              {activeTab === 'details' && (
+                <DetailsTab 
+                  data={formData} 
+                  onChange={handleChange} 
+                  errors={errors}
+                  folders={folderOptions}
+                  foldersLoading={foldersLoading}
+                />
+              )}
               {activeTab === 'steps' && (
                 <StepsTab 
                   data={formData} 
