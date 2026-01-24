@@ -24,8 +24,7 @@ export interface TestCycle {
   releaseId: string | null;
   releaseName: string | null;
   releaseVersion: string | null;
-  cycleType: string;
-  status: 'draft' | 'active' | 'paused' | 'completed' | 'planned' | 'in_progress';
+  status: 'planned' | 'in_progress' | 'paused' | 'completed';
   startDate: string | null;
   endDate: string | null;
   environment: string | null;
@@ -36,15 +35,13 @@ export interface TestCycle {
   isOverdue: boolean;
 }
 
-// Map DB status to UI status
+// Map DB status to UI status - keep as-is from database
 function mapStatus(dbStatus: string | null): TestCycle['status'] {
-  const statusMap: Record<string, TestCycle['status']> = {
-    'planned': 'planned',
-    'in_progress': 'active',
-    'completed': 'completed',
-    'archived': 'draft',
-  };
-  return statusMap[dbStatus || 'planned'] || 'planned';
+  const validStatuses: TestCycle['status'][] = ['planned', 'in_progress', 'paused', 'completed'];
+  if (dbStatus && validStatuses.includes(dbStatus as TestCycle['status'])) {
+    return dbStatus as TestCycle['status'];
+  }
+  return 'planned';
 }
 
 export function useCycleDetails(cycleId: string) {
@@ -93,10 +90,9 @@ export function useCycleDetails(cycleId: string) {
         name: cycleData.name,
         cycleKey: cycleData.cycle_key,
         description: cycleData.description,
-        releaseId: null, // No release_id column in tm_test_cycles
+        releaseId: null,
         releaseName: null,
         releaseVersion: null,
-        cycleType: 'regression',
         status: mapStatus(cycleData.status),
         startDate: cycleData.planned_start,
         endDate: cycleData.planned_end,
