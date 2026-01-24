@@ -585,9 +585,13 @@ export default function TestCasesPage() {
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="functional">Functional</SelectItem>
+              <SelectItem value="regression">Regression</SelectItem>
+              <SelectItem value="smoke">Smoke</SelectItem>
+              <SelectItem value="integration">Integration</SelectItem>
+              <SelectItem value="e2e">End-to-End</SelectItem>
               <SelectItem value="performance">Performance</SelectItem>
               <SelectItem value="security">Security</SelectItem>
-              <SelectItem value="api">API</SelectItem>
+              <SelectItem value="usability">Usability</SelectItem>
             </SelectContent>
           </Select>
           
