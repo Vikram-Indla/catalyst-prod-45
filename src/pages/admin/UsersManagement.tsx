@@ -702,6 +702,7 @@ const ringFencedCSS = `
   font-size: 12px;
   font-weight: 500;
   color: var(--um-text-secondary);
+  white-space: nowrap;
 }
 .users-module .um-stat-value {
   font-size: 28px;
