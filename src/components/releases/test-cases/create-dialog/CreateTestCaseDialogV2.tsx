@@ -42,7 +42,8 @@ import { AdditionalTab } from './AdditionalTab';
 import { TestCaseFormData, TestCaseStep, defaultFormData, TabInfo } from './types';
 import { supabase } from '@/integrations/supabase/client';
 import { useFolders } from '@/hooks/test-management/useFolders';
-import { useUpsertTestCaseDraft } from '@/hooks/test-management';
+import { useUpsertTestCaseDraft, useCreateTestCase } from '@/hooks/test-management';
+import { useInvalidateRepositoryData } from '@/hooks/test-management/useRepositoryData';
 
 // Import prefill type for template support
 import type { PrefilledTestCase } from '../utils';
@@ -94,11 +95,10 @@ export function CreateTestCaseDialogV2({
   const [draftId, setDraftId] = useState<string | null>(null);
   const [draftCaseKey, setDraftCaseKey] = useState<string | null>(null);
   
-  // Draft mutation
+  // Mutations
   const upsertDraftMutation = useUpsertTestCaseDraft();
-  
-  // Generate consistent TC number when dialog opens (shown until draft is saved)
-  const [tcNumber] = useState(() => `TC-${String(Math.floor(Math.random() * 900) + 100)}`);
+  const createTestCaseMutation = useCreateTestCase();
+  const invalidateRepositoryData = useInvalidateRepositoryData();
 
   // Fetch folders from tm_folders table
   const { data: foldersData = [], isLoading: foldersLoading } = useFolders(projectId);
@@ -279,21 +279,90 @@ export function CreateTestCaseDialogV2({
       toast.error(getMissingFieldsMessage() || 'Please fill in all required fields');
       return;
     }
-    setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 800));
-    const newId = `TC-${String(Math.floor(Math.random() * 900) + 100)}`;
-    onSuccess?.({ ...formData, id: newId });
-    toast.success(`Test case ${newId} created`, { description: formData.title });
-    if (createAnother) {
-      setFormData({
-        ...defaultFormData,
-        folderId: formData.folderId, // Keep folder selection for "Create another"
-      });
-      setActiveTab('details');
-    } else {
-      onOpenChange(false);
+    
+    if (!projectId) {
+      toast.error('Project ID is required');
+      return;
     }
-    setIsSubmitting(false);
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Map priority levels to priority_id UUIDs
+      const priorityMap: Record<string, string> = {
+        'P1': '00000000-0000-0000-0001-000000000001', // Critical
+        'P2': '00000000-0000-0000-0001-000000000002', // High
+        'P3': '00000000-0000-0000-0001-000000000003', // Medium
+        'P4': '00000000-0000-0000-0001-000000000004', // Low
+      };
+      
+      // Map type to type_id UUIDs
+      const typeMap: Record<string, string> = {
+        'functional': '00000000-0000-0000-0002-000000000001',
+        'regression': '00000000-0000-0000-0002-000000000002',
+        'smoke': '00000000-0000-0000-0002-000000000003',
+        'integration': '00000000-0000-0000-0002-000000000004',
+        'e2e': '00000000-0000-0000-0002-000000000005',
+        'performance': '00000000-0000-0000-0002-000000000006',
+        'security': '00000000-0000-0000-0002-000000000007',
+        'usability': '00000000-0000-0000-0002-000000000008',
+      };
+      
+      // Transform steps to match CreateCaseInput format
+      const stepsInput = formData.steps
+        .filter(s => s.action.trim() || s.expectedResult.trim())
+        .map(s => ({
+          action: s.action,
+          expected_result: s.expectedResult,
+          test_data: s.testData || undefined,
+        }));
+      
+      // Call real mutation - status 'REVIEW' maps to 'ready' in DB (usable state)
+      const result = await createTestCaseMutation.mutateAsync({
+        project_id: projectId,
+        title: formData.title.trim(),
+        objective: formData.description.trim() || undefined,
+        preconditions: formData.preconditions?.trim() || undefined,
+        folder_id: formData.folderId || undefined,
+        priority_id: priorityMap[formData.priority] || priorityMap['P3'],
+        type_id: typeMap[formData.type] || typeMap['functional'],
+        assigned_to: formData.assigneeId || undefined,
+        status: 'REVIEW', // Created test cases are ready for use
+        steps: stepsInput.length > 0 ? stepsInput : undefined,
+      });
+      
+      // Invalidate repository data to refresh folder tree counts
+      invalidateRepositoryData(projectId);
+      
+      // Show success toast with REAL case_key from database
+      const realCaseKey = result.key || result.id;
+      toast.success(`Test case ${realCaseKey} created`, { description: formData.title });
+      
+      // Call onSuccess callback with real data
+      onSuccess?.({ ...formData, id: result.id });
+      
+      if (createAnother) {
+        // Reset form for "Create another" flow
+        setFormData({
+          ...defaultFormData,
+          folderId: formData.folderId, // Keep folder selection
+        });
+        setActiveTab('details');
+        setDraftId(null);
+        setDraftCaseKey(null);
+      } else {
+        // Close the dialog
+        onOpenChange(false);
+      }
+    } catch (error) {
+      // User-facing error toast
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      toast.error('Failed to create test case', { description: errorMessage });
+      console.error('[CreateTestCaseDialog] Database insert failed:', error);
+      // Keep modal open so user can retry
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // AI Generate Steps handler
@@ -382,7 +451,7 @@ export function CreateTestCaseDialogV2({
             <div>
               <h2 className="text-lg font-semibold">Create Test Case</h2>
               <p className="text-xs text-muted-foreground">
-                {draftCaseKey || tcNumber} • {draftId ? 'Draft' : 'New Test Case'}
+                {draftCaseKey || 'New Test Case'} • {draftId ? 'Draft' : 'Unsaved'}
               </p>
             </div>
           </div>

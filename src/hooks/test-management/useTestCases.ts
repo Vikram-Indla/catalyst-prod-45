@@ -395,6 +395,9 @@ export function useCreateTestCase(options?: { silent?: boolean }) {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', data.project_id] });
+      // Invalidate repository tree to update folder counts in UI
+      queryClient.invalidateQueries({ queryKey: ['repository-tree', data.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-folders', data.project_id] });
       if (!silent) {
         catalystToast.success('Test case created');
       }
