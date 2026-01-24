@@ -39,7 +39,8 @@ import { StepsTab } from './StepsTab';
 import { DataTab } from './DataTab';
 import { AttachmentsTab } from './AttachmentsTab';
 import { AdditionalTab } from './AdditionalTab';
-import { TestCaseFormData, defaultFormData, TabInfo } from './types';
+import { TestCaseFormData, TestCaseStep, defaultFormData, TabInfo } from './types';
+import { supabase } from '@/integrations/supabase/client';
 import { useFolders } from '@/hooks/test-management/useFolders';
 import { useUpsertTestCaseDraft } from '@/hooks/test-management';
 
@@ -86,6 +87,8 @@ export function CreateTestCaseDialogV2({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showTemplates, setShowTemplates] = useState(false);
   const [showAIGenerate, setShowAIGenerate] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGeneratingSteps, setIsGeneratingSteps] = useState(false);
   
   // Draft ID for upsert (null = new, string = update existing)
   const [draftId, setDraftId] = useState<string | null>(null);
@@ -272,6 +275,68 @@ export function CreateTestCaseDialogV2({
       onOpenChange(false);
     }
     setIsSubmitting(false);
+  };
+
+  // AI Generate Steps handler
+  const handleAIGenerateSteps = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Please describe what you want to test');
+      return;
+    }
+
+    setIsGeneratingSteps(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-generate-test-cases', {
+        body: {
+          prompt: aiPrompt,
+          projectName: 'Test Project',
+          testType: formData.type || 'functional',
+          includeEdgeCases: true,
+          includeNegativeTests: false,
+          includePerformance: false,
+          includeSecurity: false,
+        },
+      });
+
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      // Extract steps from the first generated test case
+      const generatedTestCase = data?.data?.testCases?.[0];
+      const generatedSteps = generatedTestCase?.steps || [];
+
+      if (generatedSteps.length === 0) {
+        toast.error('No steps were generated. Try a more detailed description.');
+        return;
+      }
+
+      // Transform to match TestCaseStep interface
+      const transformedSteps: TestCaseStep[] = generatedSteps.map((step: { stepNumber: number; action: string; testData?: string; expectedResult: string }, index: number) => ({
+        id: `step-ai-${Date.now()}-${index}`,
+        order: index + 1,
+        action: step.action || '',
+        testData: step.testData || '',
+        expectedResult: step.expectedResult || '',
+        attachments: [],
+        isComplete: Boolean(step.action && step.expectedResult),
+      }));
+
+      // Update formData.steps - this is what the UI reads from
+      setFormData(prev => ({
+        ...prev,
+        steps: transformedSteps,
+      }));
+
+      toast.success(`AI generated ${transformedSteps.length} test steps`);
+      setShowAIGenerate(false);
+      setAiPrompt('');
+      setActiveTab('steps'); // Switch to steps tab to show results
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to generate steps';
+      toast.error(message);
+    } finally {
+      setIsGeneratingSteps(false);
+    }
   };
 
   const getTabBadge = (tabId: string): number | undefined => {
@@ -462,7 +527,10 @@ export function CreateTestCaseDialogV2({
       </Dialog>
 
       {/* AI Generate Dialog */}
-      <Dialog open={showAIGenerate} onOpenChange={setShowAIGenerate}>
+      <Dialog open={showAIGenerate} onOpenChange={(open) => {
+        setShowAIGenerate(open);
+        if (!open) setAiPrompt('');
+      }}>
         <DialogContent className="max-w-lg">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -477,18 +545,34 @@ export function CreateTestCaseDialogV2({
             <Textarea
               placeholder="e.g., Test the user registration flow with email verification..."
               className="min-h-[100px]"
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              disabled={isGeneratingSteps}
             />
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowAIGenerate(false)}>Cancel</Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAIGenerate(false)}
+                disabled={isGeneratingSteps}
+              >
+                Cancel
+              </Button>
               <Button 
                 className="bg-violet-600 hover:bg-violet-700"
-                onClick={() => {
-                  toast.success('AI generated 5 test steps');
-                  setShowAIGenerate(false);
-                }}
+                onClick={handleAIGenerateSteps}
+                disabled={isGeneratingSteps || !aiPrompt.trim()}
               >
-                <Sparkles className="w-4 h-4 mr-1.5" />
-                Generate
+                {isGeneratingSteps ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-1.5" />
+                    Generate
+                  </>
+                )}
               </Button>
             </div>
           </div>
