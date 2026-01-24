@@ -7,6 +7,7 @@ export interface ResourceCountry {
   id: string;
   name: string;
   code: string | null;
+  flag_svg: string | null;
   is_active: boolean;
   sort_order: number;
   created_at: string | null;
@@ -57,13 +58,14 @@ export function useResourceCountries() {
   }, [queryClient]);
 
   const createCountry = useMutation({
-    mutationFn: async (input: { name: string; code?: string }) => {
+    mutationFn: async (input: { name: string; code?: string; flag_svg?: string }) => {
       const maxOrder = countries.length > 0 ? Math.max(...countries.map(c => c.sort_order)) : 0;
       const { data, error } = await supabase
         .from('resource_countries')
         .insert({
           name: input.name,
           code: input.code || null,
+          flag_svg: input.flag_svg || null,
           sort_order: maxOrder + 1,
         })
         .select()
