@@ -8,7 +8,7 @@ import {
   Search, Download, Plus, Filter, ChevronDown, Clock, 
   LayoutGrid, Table2, CalendarDays, Grid3X3, 
   Presentation, Briefcase, Users, Layers, FileText, Calendar,
-  ChevronLeft, ChevronRight, BarChart3
+  ChevronLeft, ChevronRight, BarChart3, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -70,6 +70,9 @@ interface SleekCapacityHeaderProps {
   projectPeriodRange?: PeriodRange;
   onProjectPeriodTypeChange?: (type: PeriodType) => void;
   onProjectPeriodNavigate?: (direction: 1 | -1) => void;
+  // Hard refresh
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
 // Dynamic Track Filter Component
@@ -158,6 +161,8 @@ export function SleekCapacityHeader({
   projectPeriodRange,
   onProjectPeriodTypeChange,
   onProjectPeriodNavigate,
+  onRefresh,
+  isRefreshing = false,
 }: SleekCapacityHeaderProps) {
   const [lastRefresh] = useState(() => new Date());
   const [timeAgo, setTimeAgo] = useState('just now');
@@ -261,6 +266,17 @@ export function SleekCapacityHeader({
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
+            title="Hard refresh data"
+          >
+            <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", isRefreshing && "animate-spin")} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+          </Button>
           <Button 
             variant="ghost" 
             size="sm"

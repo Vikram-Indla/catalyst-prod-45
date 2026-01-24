@@ -9,7 +9,9 @@ export function useCapacityData() {
   // Fetch all resources from resource_inventory table (single source of truth)
   const { data: resources = [], isLoading: resourcesLoading, isFetching: resourcesFetching, isError: resourcesError, error: resourcesErrorObj, refetch: refetchResources } = useQuery({
     queryKey: ['capacity-planner-resources'],
-    staleTime: 30000, // Reduce unnecessary refetches during DnD
+    staleTime: 0, // Always fetch fresh data to ensure country flags are current
+    gcTime: 0, // Don't cache - force fresh fetch
+    refetchOnMount: 'always', // Always refetch when component mounts
     queryFn: async () => {
       // STEP 1: Fetch all resources from resource_inventory (72 records)
       const { data: resourceInventory, error: riError } = await supabase
@@ -94,7 +96,7 @@ export function useCapacityData() {
       });
       
       // STEP 7: Map resource_inventory to CapacityResource format
-      return (resourceInventory || []).map(ri => {
+      const mappedResources = (resourceInventory || []).map(ri => {
         // Try to find linked profile by profile_id or name
         const profile = ri.profile_id 
           ? profileMap.get(ri.profile_id) 
@@ -138,7 +140,17 @@ export function useCapacityData() {
           country_flag_svg: countryData?.flag_svg || null,
           location: locationName || null,
         };
-      }) as CapacityResource[];
+      });
+      
+      // QA: Log resources with country flags for verification
+      const resourcesWithFlags = mappedResources.filter(r => r.country_flag_svg);
+      console.log('[Capacity QA] Resources with country flags:', resourcesWithFlags.map(r => ({
+        name: r.name,
+        country: r.country,
+        flag_svg: r.country_flag_svg
+      })));
+      
+      return mappedResources as CapacityResource[];
     },
   });
 
