@@ -1,40 +1,41 @@
 /**
- * Hook to calculate Insourced assignment budget based on linked resources' CTC
- * For BAU/Insourced assignments, budget = sum of all linked resources' CTC values
+ * Hook to calculate assignment budget based on linked resources' CTC
+ * Budget = sum of all linked resources' CTC values
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-interface LinkedResource {
+export interface LinkedResource {
   id: string;
+  resourceId: string; // RID from resource_inventory
   name: string;
   ctc: number | null;
   contract_end_date: string | null;
 }
 
-interface InsourcedBudgetData {
+export interface AssignmentBudgetData {
   assignmentId: string;
   linkedResources: LinkedResource[];
   totalBudget: number;
   resourceCount: number;
 }
 
-export function useInsourcedBudgets(assignmentIds: string[]) {
+export function useAssignmentBudgets(assignmentIds: string[]) {
   return useQuery({
-    queryKey: ['insourced-budgets', assignmentIds],
+    queryKey: ['assignment-budgets', assignmentIds],
     queryFn: async () => {
       if (!assignmentIds.length) return {};
 
-      // Fetch all resources linked to these assignments with their CTC
+      // Fetch all resources linked to these assignments with their CTC and resource_id
       const { data, error } = await (supabase as any)
         .from('resource_inventory')
-        .select('id, name, CTC, contract_end_date, assignment_id')
+        .select('id, resource_id, name, CTC, contract_end_date, assignment_id')
         .in('assignment_id', assignmentIds);
 
       if (error) throw error;
 
       // Group by assignment_id and calculate totals
-      const budgetMap: Record<string, InsourcedBudgetData> = {};
+      const budgetMap: Record<string, AssignmentBudgetData> = {};
 
       assignmentIds.forEach(assignmentId => {
         budgetMap[assignmentId] = {
@@ -51,6 +52,7 @@ export function useInsourcedBudgets(assignmentIds: string[]) {
           const ctc = parseFloat(resource.CTC) || 0;
           budgetMap[assignmentId].linkedResources.push({
             id: resource.id,
+            resourceId: resource.resource_id || '—',
             name: resource.name,
             ctc: resource.CTC ? parseFloat(resource.CTC) : null,
             contract_end_date: resource.contract_end_date,
@@ -66,3 +68,6 @@ export function useInsourcedBudgets(assignmentIds: string[]) {
     staleTime: 30000,
   });
 }
+
+// Legacy export for backward compatibility
+export const useInsourcedBudgets = useAssignmentBudgets;
