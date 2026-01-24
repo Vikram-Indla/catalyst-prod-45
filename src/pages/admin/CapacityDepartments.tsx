@@ -20,7 +20,7 @@ export default function CapacityDepartmentsPage() {
   const { departments, isLoading, createDepartment, updateDepartment, deleteDepartment } = useCapacityDepartments();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<CapacityDepartment | null>(null);
-  const [formData, setFormData] = useState({ name: '', color: '#0d9488' });
+  const [formData, setFormData] = useState({ name: '' });
   
   // Delete modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -30,8 +30,8 @@ export default function CapacityDepartmentsPage() {
 
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
-    await createDepartment.mutateAsync({ name: formData.name, color: formData.color });
-    setFormData({ name: '', color: '#0d9488' });
+    await createDepartment.mutateAsync({ name: formData.name });
+    setFormData({ name: '' });
     setCreateModalOpen(false);
   };
 
@@ -39,10 +39,10 @@ export default function CapacityDepartmentsPage() {
     if (!editingDepartment || !formData.name.trim()) return;
     await updateDepartment.mutateAsync({
       id: editingDepartment.id,
-      updates: { name: formData.name, color: formData.color },
+      updates: { name: formData.name },
     });
     setEditingDepartment(null);
-    setFormData({ name: '', color: '#0d9488' });
+    setFormData({ name: '' });
   };
 
   const copyToClipboard = (text: string) => {
@@ -88,7 +88,7 @@ export default function CapacityDepartmentsPage() {
 
   const openEdit = (dept: CapacityDepartment) => {
     setEditingDepartment(dept);
-    setFormData({ name: dept.name, color: dept.color });
+    setFormData({ name: dept.name });
   };
 
   if (isLoading) {
@@ -130,7 +130,6 @@ export default function CapacityDepartmentsPage() {
                 <th className="w-10 px-4 py-3"></th>
                 <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-24">DID</th>
                 <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-                <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Color</th>
                 <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
               </tr>
             </thead>
@@ -157,21 +156,7 @@ export default function CapacityDepartmentsPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: dept.color }}
-                      />
-                      <span className="text-sm font-medium text-foreground">{dept.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span 
-                      className="inline-block px-2 py-1 rounded text-xs font-mono"
-                      style={{ backgroundColor: `${dept.color}20`, color: dept.color }}
-                    >
-                      {dept.color}
-                    </span>
+                    <span className="text-sm font-medium text-foreground">{dept.name}</span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-1">
@@ -193,7 +178,7 @@ export default function CapacityDepartmentsPage() {
               ))}
               {departments.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
                     No departments configured. Click "Add Department" to create one.
                   </td>
                 </tr>
@@ -217,22 +202,6 @@ export default function CapacityDepartmentsPage() {
                 onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g., Engineering"
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Color</Label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={formData.color}
-                  onChange={(e) => setFormData(f => ({ ...f, color: e.target.value }))}
-                  className="w-10 h-10 rounded cursor-pointer"
-                />
-                <Input
-                  value={formData.color}
-                  onChange={(e) => setFormData(f => ({ ...f, color: e.target.value }))}
-                  className="flex-1 font-mono"
-                />
-              </div>
             </div>
           </div>
           <DialogFooter>
@@ -262,22 +231,6 @@ export default function CapacityDepartmentsPage() {
                 onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g., Engineering"
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Color</Label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={formData.color}
-                  onChange={(e) => setFormData(f => ({ ...f, color: e.target.value }))}
-                  className="w-10 h-10 rounded cursor-pointer"
-                />
-                <Input
-                  value={formData.color}
-                  onChange={(e) => setFormData(f => ({ ...f, color: e.target.value }))}
-                  className="flex-1 font-mono"
-                />
-              </div>
             </div>
           </div>
           <DialogFooter>
