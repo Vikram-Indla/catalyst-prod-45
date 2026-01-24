@@ -1,9 +1,8 @@
 /**
  * Enterprise-grade Multi-Tab Excel Export
- * Exports data from 3 admin pages into separate sheets:
+ * Exports data from 2 admin pages into separate sheets:
  * - Sheet 1: Resources (from /admin/users)
- * - Sheet 2: Utilization (from /admin/resource-utilization)
- * - Sheet 3: Assignments (from /admin/resource-assignments)
+ * - Sheet 2: Assignments (from /admin/resource-assignments)
  */
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
@@ -28,13 +27,6 @@ interface ExportUserData {
   location: string | null;
   ctc: number | null;
 }
-
-const MONTHS = [
-  { num: 1, name: 'Jan' }, { num: 2, name: 'Feb' }, { num: 3, name: 'Mar' },
-  { num: 4, name: 'Apr' }, { num: 5, name: 'May' }, { num: 6, name: 'Jun' },
-  { num: 7, name: 'Jul' }, { num: 8, name: 'Aug' }, { num: 9, name: 'Sep' },
-  { num: 10, name: 'Oct' }, { num: 11, name: 'Nov' }, { num: 12, name: 'Dec' },
-];
 
 function formatDate(date: string | null): string {
   if (!date) return '—';
@@ -98,73 +90,7 @@ export async function exportUsersMultiTab(
   usersSheet['!autofilter'] = { ref: `A1:O${userData.length + 1}` };
   XLSX.utils.book_append_sheet(workbook, usersSheet, 'Resources');
 
-  // ==================== SHEET 2: UTILIZATION ====================
-  // Matches /admin/resource-utilization table columns exactly
-  const currentYear = new Date().getFullYear();
-  const yearStart = `${currentYear}-01-01`;
-  const yearEnd = `${currentYear}-12-31`;
-  
-  const utilizationHeaders = ['RID', 'Resource Name', 'Assignment', 'Contract End', 
-    ...MONTHS.map(m => m.name), 'Avg'];
-
-  // Fetch utilization data from resource_inventory (same as useResourceUtilization)
-  const { data: inventory } = await supabase
-    .from('resource_inventory')
-    .select('id, rid, name, assignment_id, contract_end_date, default_capacity_percent')
-    .eq('is_active', true)
-    .order('rid', { ascending: true, nullsFirst: false });
-
-  const { data: allocations } = await supabase
-    .from('resource_allocations')
-    .select('id, resource_id, assignment_id, allocation_percent, start_date, end_date, status')
-    .gte('start_date', yearStart)
-    .lte('end_date', yearEnd)
-    .eq('status', 'committed');
-
-  const { data: assignmentList } = await supabase
-    .from('resource_assignments')
-    .select('id, name')
-    .or('is_active.is.null,is_active.eq.true');
-
-  const assignmentNameMap = new Map((assignmentList || []).map(a => [a.id, a.name]));
-  
-  // Build allocation map: resource_id:assignment_id:month -> allocation_percent
-  const allocationMap = new Map<string, number>();
-  
-  (allocations || []).forEach(a => {
-    if (!a.start_date) return;
-    const startDate = new Date(a.start_date);
-    const month = startDate.getMonth() + 1;
-    const key = `${a.resource_id}:${a.assignment_id}:${month}`;
-    allocationMap.set(key, a.allocation_percent);
-  });
-
-  const utilizationData = (inventory || []).map(r => {
-    const monthValues = MONTHS.map(m => {
-      const key = `${r.id}:${r.assignment_id}:${m.num}`;
-      return allocationMap.get(key) ?? r.default_capacity_percent ?? 100;
-    });
-    const avg = Math.round(monthValues.reduce((a, b) => a + b, 0) / 12);
-    
-    return [
-      r.rid || '—',
-      r.name,
-      r.assignment_id ? (assignmentNameMap.get(r.assignment_id) || '—') : '—',
-      formatDate(r.contract_end_date),
-      ...monthValues,
-      avg
-    ];
-  });
-
-  const utilizationSheet = XLSX.utils.aoa_to_sheet([utilizationHeaders, ...utilizationData]);
-  utilizationSheet['!cols'] = [
-    { wch: 8 }, { wch: 28 }, { wch: 22 }, { wch: 14 },
-    ...MONTHS.map(() => ({ wch: 6 })), { wch: 6 }
-  ];
-  utilizationSheet['!autofilter'] = { ref: `A1:Q${utilizationData.length + 1}` };
-  XLSX.utils.book_append_sheet(workbook, utilizationSheet, 'Utilization');
-
-  // ==================== SHEET 3: ASSIGNMENTS ====================
+  // ==================== SHEET 2: ASSIGNMENTS ====================
   // Matches /admin/resource-assignments table columns exactly
   const assignmentHeaders = ['AID', 'Assignment Name', 'Type', 'Status', 'Budget (SAR)', 
     'Start Date', 'End Date', 'Vendor', 'Payment Status', 'Active'];
