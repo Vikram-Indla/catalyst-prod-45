@@ -41,7 +41,7 @@ import { ResetPasswordDialog } from './ResetPasswordDialog';
 import { BulkEditCommandBar } from './BulkEditCommandBar';
 import { EditUserDrawer } from './EditUserDrawer';
 import { UserInlineCell } from './UserInlineCell';
-import { exportUsersToExcel } from './exportUsersToExcel';
+import { exportUsersMultiTab } from './exportUsersMultiTab';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
 import { useUserInlineEdit } from '@/hooks/useUserInlineEdit';
 import { formatContractEndDate, getCountryInfo } from '@/lib/countryLookup';
@@ -457,10 +457,36 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
           variant="outline" 
           size="sm"
           disabled={isExporting || filteredUsers.length === 0}
-          onClick={() => {
+          onClick={async () => {
             setIsExporting(true);
             try {
-              exportUsersToExcel(filteredUsers);
+              // Transform UserProfile to export format
+              const exportUsers = filteredUsers.map(u => ({
+                id: u.id,
+                rid: u.rid,
+                full_name: u.full_name,
+                job_role: u.job_role,
+                department_id: u.department_id,
+                department_name: u.department_name,
+                assignment_id: u.assignment_id,
+                assignment_name: u.assignment_name,
+                contract_start_date: u.contract_start_date,
+                contract_end_date: u.contract_end_date,
+                vendor_id: u.vendor_id,
+                vendor: u.vendor,
+                resource_type: u.resource_type,
+                country: u.country,
+                location: u.location,
+                ctc: u.ctc,
+              }));
+              await exportUsersMultiTab(
+                exportUsers,
+                departments.map(d => ({ id: d.id, department_id: d.department_id ?? null })),
+                assignments.map(a => ({ id: a.id, assignment_id: a.assignment_id ?? null })),
+                vendors.map(v => ({ id: v.id, vendor_code: v.vendor_code ?? null }))
+              );
+            } catch (err) {
+              console.error('Export failed:', err);
             } finally {
               setIsExporting(false);
             }
