@@ -38,6 +38,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { assertUuid } from '@/lib/utils/assertUuid';
 import type { CaseStatus } from '@/types/test-management';
 
 // Use canonical hooks
@@ -52,11 +53,7 @@ interface TestStep {
   test_data?: string;
 }
 
-// UUID validation helper
-function isValidUUID(str: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(str);
-}
+// Local TestCase interface for this dialog
 
 interface TestCase {
   id: string;       // Actual database UUID
@@ -260,8 +257,8 @@ export function EditTestCaseDialog({
       return;
     }
 
-    // Validate UUID before saving
-    if (!caseUuid) {
+    // Validate UUID before saving - HARD GUARD against display key usage
+    if (!caseUuid || !assertUuid(caseUuid, 'caseUuid')) {
       toast.error('Cannot save: invalid test case UUID');
       return;
     }
@@ -293,6 +290,12 @@ export function EditTestCaseDialog({
       {
         onSuccess: () => {
           toast.success('Test case updated');
+          // Invalidate all related queries to ensure consistency
+          queryClient.invalidateQueries({ queryKey: ['tm-cases', resolvedProjectId] });
+          queryClient.invalidateQueries({ queryKey: ['tm-case', caseUuid] });
+          queryClient.invalidateQueries({ queryKey: ['tm-case-steps', caseUuid] });
+          queryClient.invalidateQueries({ queryKey: ['tm-case-versions', caseUuid] });
+          queryClient.invalidateQueries({ queryKey: ['tm-case-execution-history', caseUuid] });
           onOpenChange(false);
           onSuccess?.();
         },
