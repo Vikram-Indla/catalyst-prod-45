@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format, parseISO } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -52,7 +56,7 @@ const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: strin
   closed: { label: 'Closed', color: 'bg-gray-500/15 text-gray-600' },
 };
 
-const ASSIGNMENT_TYPE_ORDER = ['BAU', 'Project', 'Outsourced', 'Cosourced', 'Unspecified'];
+const ASSIGNMENT_TYPE_ORDER = ['Outsourced', 'Cosourced', 'BAU', 'Project', 'Unspecified'];
 const ASSIGNMENT_TYPE_COLORS: Record<string, string> = {
   BAU: 'bg-blue-500/10 text-blue-700 border-blue-200',
   Project: 'bg-purple-500/10 text-purple-700 border-purple-200',
@@ -207,12 +211,29 @@ function SortableRow({
       </td>
       <td className="px-4 py-3">
         {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-          <Input
-            type="date"
-            value={assignment.end_date || ''}
-            onChange={(e) => onEndDateChange(assignment, e.target.value)}
-            className="h-8 w-[100px] text-xs"
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "h-8 w-[130px] justify-start text-left font-normal text-xs",
+                  !assignment.end_date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-3 w-3" />
+                {assignment.end_date ? format(parseISO(assignment.end_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-popover z-[500]" align="start">
+              <Calendar
+                mode="single"
+                selected={assignment.end_date ? parseISO(assignment.end_date) : undefined}
+                onSelect={(date) => onEndDateChange(assignment, date ? format(date, 'yyyy-MM-dd') : '')}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
         ) : (
           <span className="text-muted-foreground text-sm">—</span>
         )}
