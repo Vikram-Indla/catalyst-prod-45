@@ -1,6 +1,7 @@
 /**
  * useCreateRunWithDataRows — Data-Driven Test Execution Hook
  * Creates one execution run per selected data row, with snapshot for traceability
+ * ATOMIC: All-or-nothing — if any run fails, all created runs are rolled back
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -42,109 +43,151 @@ export function useCreateRunWithDataRows() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const createdRuns: CreatedRunInfo[] = [];
-      const errors: string[] = [];
+      const createdRunIds: string[] = [];
 
-      // If no data rows selected, create a single regular run
-      if (input.selected_rows.length === 0) {
-        const { count } = await supabase
-          .from('tm_test_runs')
-          .select('*', { count: 'exact', head: true })
-          .eq('cycle_scope_id', input.scope_id);
+      // Rollback helper — deletes all created runs and their step results
+      const rollback = async (errorMessage: string) => {
+        if (createdRunIds.length > 0) {
+          // Delete step results first (FK constraint)
+          await supabase
+            .from('tm_step_results')
+            .delete()
+            .in('test_run_id', createdRunIds);
+          
+          // Delete runs
+          await supabase
+            .from('tm_test_runs')
+            .delete()
+            .in('id', createdRunIds);
+        }
+        throw new Error(errorMessage);
+      };
 
-        const runNumber = (count || 0) + 1;
+      try {
+        // If no data rows selected, create a single regular run
+        if (input.selected_rows.length === 0) {
+          const { count } = await supabase
+            .from('tm_test_runs')
+            .select('*', { count: 'exact', head: true })
+            .eq('cycle_scope_id', input.scope_id);
 
-        const { data: run, error: runError } = await supabase
-          .from('tm_test_runs')
-          .insert({
-            cycle_scope_id: input.scope_id,
-            run_number: runNumber,
-            status: 'in_progress' as DbExecutionStatus,
-            executed_by: user.id,
-            started_at: new Date().toISOString(),
-          })
-          .select()
-          .single();
+          const runNumber = (count || 0) + 1;
 
-        if (runError) throw runError;
+          const { data: run, error: runError } = await supabase
+            .from('tm_test_runs')
+            .insert({
+              cycle_scope_id: input.scope_id,
+              run_number: runNumber,
+              status: 'in_progress' as DbExecutionStatus,
+              executed_by: user.id,
+              started_at: new Date().toISOString(),
+            })
+            .select()
+            .single();
 
-        // Create step results
-        await createStepResultsForRun(run.id, input.case_id);
+          if (runError) throw runError;
 
-        createdRuns.push({
-          run_id: run.id,
-          data_row_id: null,
-          data_row_number: null,
-        });
-      } else {
-        // Get current run count for this scope
+          createdRunIds.push(run.id);
+
+          // Create step results
+          await createStepResultsForRun(run.id, input.case_id);
+
+          // Update scope status
+          await supabase
+            .from('tm_cycle_scope')
+            .update({ current_status: 'in_progress' as DbExecutionStatus })
+            .eq('id', input.scope_id);
+
+          return {
+            created_runs: [{
+              run_id: run.id,
+              data_row_id: null,
+              data_row_number: null,
+            }],
+            first_run_id: run.id,
+            total_count: 1,
+          };
+        }
+
+        // DDT: Create one run per selected data row (ALL-OR-NOTHING)
         const { count: existingCount } = await supabase
           .from('tm_test_runs')
           .select('*', { count: 'exact', head: true })
           .eq('cycle_scope_id', input.scope_id);
 
         let runNumber = (existingCount || 0) + 1;
+        const createdRuns: CreatedRunInfo[] = [];
 
-        // Create one run per selected data row
         for (const row of input.selected_rows) {
+          const { data: run, error: runError } = await supabase
+            .from('tm_test_runs')
+            .insert({
+              cycle_scope_id: input.scope_id,
+              run_number: runNumber,
+              status: 'in_progress' as DbExecutionStatus,
+              executed_by: user.id,
+              started_at: new Date().toISOString(),
+              test_data_row_id: row.id,
+              test_data_row_snapshot: row.row_data,
+              test_data_row_number: row.row_order + 1,
+            })
+            .select()
+            .single();
+
+          if (runError) {
+            await rollback(`Failed to create run for Row ${row.row_order + 1}: ${runError.message}`);
+            return null as never; // Never reached, rollback throws
+          }
+
+          createdRunIds.push(run.id);
+
+          // Create step results for this run
           try {
-            const { data: run, error: runError } = await supabase
-              .from('tm_test_runs')
-              .insert({
-                cycle_scope_id: input.scope_id,
-                run_number: runNumber,
-                status: 'in_progress' as DbExecutionStatus,
-                executed_by: user.id,
-                started_at: new Date().toISOString(),
-                test_data_row_id: row.id,
-                test_data_row_snapshot: row.row_data,
-                test_data_row_number: row.row_order + 1,
-              })
-              .select()
-              .single();
-
-            if (runError) {
-              errors.push(`Row ${row.row_order + 1}: ${runError.message}`);
-              continue;
-            }
-
-            // Create step results for this run
             await createStepResultsForRun(run.id, input.case_id);
+          } catch (stepError) {
+            await rollback(`Failed to create steps for Row ${row.row_order + 1}: ${stepError instanceof Error ? stepError.message : 'Unknown error'}`);
+            return null as never;
+          }
 
-            createdRuns.push({
-              run_id: run.id,
-              data_row_id: row.id,
-              data_row_number: row.row_order + 1,
-            });
+          createdRuns.push({
+            run_id: run.id,
+            data_row_id: row.id,
+            data_row_number: row.row_order + 1,
+          });
 
-            runNumber++;
-          } catch (err) {
-            errors.push(`Row ${row.row_order + 1}: ${err instanceof Error ? err.message : 'Unknown error'}`);
+          runNumber++;
+        }
+
+        // All runs created successfully — update scope status
+        await supabase
+          .from('tm_cycle_scope')
+          .update({ current_status: 'in_progress' as DbExecutionStatus })
+          .eq('id', input.scope_id);
+
+        return {
+          created_runs: createdRuns,
+          first_run_id: createdRuns[0].run_id,
+          total_count: createdRuns.length,
+        };
+
+      } catch (error) {
+        // Any unexpected error — attempt rollback
+        if (createdRunIds.length > 0) {
+          try {
+            await supabase
+              .from('tm_step_results')
+              .delete()
+              .in('test_run_id', createdRunIds);
+            await supabase
+              .from('tm_test_runs')
+              .delete()
+              .in('id', createdRunIds);
+          } catch (rollbackError) {
+            console.error('Rollback failed:', rollbackError);
           }
         }
+        throw error;
       }
-
-      // If no runs were created successfully, throw error
-      if (createdRuns.length === 0) {
-        throw new Error(`Failed to create any runs. Errors: ${errors.join('; ')}`);
-      }
-
-      // Update scope status to in_progress
-      await supabase
-        .from('tm_cycle_scope')
-        .update({ current_status: 'in_progress' as DbExecutionStatus })
-        .eq('id', input.scope_id);
-
-      // Show partial success warning if some failed
-      if (errors.length > 0 && createdRuns.length > 0) {
-        console.warn('Some runs failed to create:', errors);
-      }
-
-      return {
-        created_runs: createdRuns,
-        first_run_id: createdRuns[0].run_id,
-        total_count: createdRuns.length,
-      };
     },
     onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-runs', variables.cycle_id] });
@@ -196,7 +239,6 @@ async function createStepResultsForRun(runId: string, caseId: string) {
 // Hook to fetch data rows for selection
 export function useTestDataRowsForExecution(testCaseId: string | undefined) {
   return {
-    // Re-export from useTestData but with a simpler interface for execution
     async fetchRows(): Promise<DataRowSelection[]> {
       if (!testCaseId) return [];
       

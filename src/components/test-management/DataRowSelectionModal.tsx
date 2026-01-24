@@ -79,11 +79,14 @@ export function DataRowSelectionModal({
     return columnOrder.slice(0, 3);
   }, [columnOrder]);
 
-  // Format row preview
+  // Format row preview — safely handle non-string values
   const formatRowPreview = (row: DataRowSelection) => {
     return previewColumns
       .map(col => {
-        const value = row.row_data[col];
+        const rawValue = row.row_data[col];
+        if (rawValue === null || rawValue === undefined) return null;
+        // Normalize to string
+        const value = String(rawValue);
         if (!value) return null;
         const truncated = value.length > 20 ? value.substring(0, 20) + '…' : value;
         return `${col}=${truncated}`;
