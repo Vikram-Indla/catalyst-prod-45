@@ -40,8 +40,8 @@ export function useCapacityData() {
       // STEP 3c: Fetch resource countries to map names and flags
       const { data: resourceCountries } = await supabase
         .from('resource_countries')
-        .select('id, name, code');
-      const countryMap = new Map(resourceCountries?.map(c => [c.id, { name: c.name, code: c.code }]) || []);
+        .select('id, name, code, flag_svg');
+      const countryMap = new Map(resourceCountries?.map(c => [c.id, { name: c.name, code: c.code, flag_svg: c.flag_svg }]) || []);
       
       // STEP 3d: Fetch resource locations to map names
       const { data: resourceLocations } = await supabase
@@ -135,6 +135,7 @@ export function useCapacityData() {
           vendor_name: ri.vendor_id ? vendorMap.get(ri.vendor_id) || ri.vendor_name || null : ri.vendor_name || null,
           country: countryData?.name || null,
           country_code: countryData?.code || null,
+          country_flag_svg: countryData?.flag_svg || null,
           location: locationName || null,
         };
       }) as CapacityResource[];

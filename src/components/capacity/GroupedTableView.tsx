@@ -24,6 +24,7 @@ interface ResourceMetric {
   allocation?: number;
   assignmentName?: string | null;
   allocations?: ResourceAllocation[];
+  country_flag_svg?: string | null;
 }
 
 type GroupByField = 'department' | 'role' | 'assignment' | 'status';
@@ -232,11 +233,20 @@ export function GroupedTableView({
                       <td className="border-r border-border dark:border-[var(--border-subtle)]"></td>
                       <td className="px-4 py-3 border-r border-border dark:border-[var(--border-subtle)]">
                         <div className="flex items-center gap-3">
-                          <div 
-                            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                            style={{ backgroundColor: theme.accent }}
-                          >
-                            {initials}
+                          <div className="relative shrink-0">
+                            <div 
+                              className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                              style={{ backgroundColor: theme.accent }}
+                            >
+                              {initials}
+                            </div>
+                            {resource.country_flag_svg && (
+                              <img 
+                                src={resource.country_flag_svg} 
+                                alt="" 
+                                className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm"
+                              />
+                            )}
                           </div>
                           <span className="font-medium text-foreground dark:text-[var(--text-primary)]">{resource.name}</span>
                         </div>
