@@ -100,11 +100,27 @@ export function useUsers() {
         { data: resourceCountries },
         { data: resourceLocations },
       ] = await Promise.all([
-        supabase.from('resource_assignments').select('id, name, assignment_id').eq('is_active', true),
-        supabase.from('capacity_departments').select('id, name, department_id').eq('is_active', true),
-        supabase.from('resource_vendors').select('id, name, vendor_code').eq('is_active', true),
-        supabase.from('resource_countries').select('id, name, code, flag_svg').eq('is_active', true),
-        supabase.from('resource_locations').select('id, name').eq('is_active', true),
+        // Include legacy rows where is_active is NULL (treat as active), but exclude explicit false
+        supabase
+          .from('resource_assignments')
+          .select('id, name, assignment_id')
+          .or('is_active.is.null,is_active.eq.true'),
+        supabase
+          .from('capacity_departments')
+          .select('id, name, department_id')
+          .or('is_active.is.null,is_active.eq.true'),
+        supabase
+          .from('resource_vendors')
+          .select('id, name, vendor_code')
+          .or('is_active.is.null,is_active.eq.true'),
+        supabase
+          .from('resource_countries')
+          .select('id, name, code, flag_svg')
+          .or('is_active.is.null,is_active.eq.true'),
+        supabase
+          .from('resource_locations')
+          .select('id, name')
+          .or('is_active.is.null,is_active.eq.true'),
       ]);
 
       // Create lookup maps

@@ -92,7 +92,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       const { data, error } = await supabase
         .from('resource_vendors')
         .select('id, name, vendor_code')
-        .eq('is_active', true)
+        // include legacy rows where is_active is NULL
+        .or('is_active.is.null,is_active.eq.true')
         .order('sort_order');
       if (error) throw error;
       return data || [];
@@ -105,7 +106,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       const { data, error } = await supabase
         .from('resource_locations')
         .select('id, name')
-        .eq('is_active', true)
+        // include legacy rows where is_active is NULL
+        .or('is_active.is.null,is_active.eq.true')
         .order('sort_order');
       if (error) throw error;
       return data || [];
@@ -118,7 +120,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       const { data, error } = await supabase
         .from('resource_countries')
         .select('id, name, code')
-        .eq('is_active', true)
+        // include legacy rows where is_active is NULL
+        .or('is_active.is.null,is_active.eq.true')
         .order('sort_order');
       if (error) throw error;
       return data || [];
@@ -131,7 +134,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       const { data, error } = await supabase
         .from('capacity_departments')
         .select('id, name, department_id')
-        .eq('is_active', true)
+        // include legacy rows where is_active is NULL
+        .or('is_active.is.null,is_active.eq.true')
         .order('sort_order');
       if (error) throw error;
       return data || [];
@@ -144,7 +148,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       const { data, error } = await supabase
         .from('resource_assignments')
         .select('id, name, assignment_id')
-        .eq('is_active', true)
+        // include legacy rows where is_active is NULL
+        .or('is_active.is.null,is_active.eq.true')
         .order('sort_order');
       if (error) throw error;
       return data || [];
