@@ -38,6 +38,7 @@ export {
   useBulkUpdateTestCases,
   type BulkCaseStatus,
   type DraftCaseInput,
+  type DraftStepInput,
 } from './useTestCases';
 
 // Test Steps

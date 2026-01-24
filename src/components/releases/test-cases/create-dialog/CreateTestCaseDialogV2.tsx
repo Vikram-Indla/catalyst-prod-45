@@ -243,6 +243,12 @@ export function CreateTestCaseDialogV2({
         assigned_to: formData.assigneeId || undefined,
         release_id: formData.releaseId || undefined,
         tags: formData.tags.length > 0 ? formData.tags : undefined,
+        // Pass steps to persist
+        steps: formData.steps.map(step => ({
+          action: step.action,
+          expected_result: step.expectedResult,
+          test_data: step.testData,
+        })),
       });
       
       toast.success('Draft saved', { description: result.case_key || 'Test case draft saved' });
