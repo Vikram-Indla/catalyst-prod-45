@@ -35,8 +35,8 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 // Dark mode: NO visible border, shadow provides depth
 const dialogContentVariants = cva(
   cn(
-    "fixed left-[50%] top-[50%] z-[250] grid w-full translate-x-[-50%] translate-y-[-50%]",
-    "gap-4 rounded-xl",
+    "fixed left-[50%] top-[50%] z-[250] w-full translate-x-[-50%] translate-y-[-50%]",
+    "rounded-xl",
     // Light mode: white bg, subtle border
     "bg-background border border-border/60",
     // Dark mode: surface elevation, NO visible border, shadow for depth
