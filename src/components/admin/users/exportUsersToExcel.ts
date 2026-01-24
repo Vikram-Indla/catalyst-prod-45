@@ -77,7 +77,7 @@ export function exportUsersToExcel(users: UserProfile[]): void {
     [''],
     ['Resource Type Breakdown'],
     ['Fixed', users.filter(u => u.resource_type === 'Fixed').length],
-    ['Core', users.filter(u => u.resource_type === 'Core').length],
+    ['Variable', users.filter(u => u.resource_type === 'Variable' || u.resource_type === 'Core').length],
     ['Freelance', users.filter(u => u.resource_type === 'Freelance').length],
     ['Unclassified', users.filter(u => !u.resource_type).length],
     [''],

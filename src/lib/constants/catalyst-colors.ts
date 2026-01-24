@@ -112,7 +112,7 @@ export function getTimelineBarStyle(projectName?: string | null): {
   // Map common project patterns to colors
   const name = projectName?.toLowerCase() || '';
   
-  if (name.includes('bau') || name.includes('ops') || name.includes('platform')) {
+  if (name.includes('insourced') || name.includes('ops') || name.includes('platform')) {
     return {
       background: BAR_GRADIENTS.primary,
       boxShadow: '0 2px 4px rgba(37, 99, 235, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1)',

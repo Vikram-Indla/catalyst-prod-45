@@ -39,8 +39,7 @@ function formatDate(date: string | null): string {
 
 function normalizeType(type: string | null): string {
   if (!type) return 'Unspecified';
-  if (type === 'BAU') return 'Insourced';
-  if (type === 'Project') return 'Outsourced';
+  if (type === 'BAU') return 'Insourced'; // Legacy mapping
   return type;
 }
 
