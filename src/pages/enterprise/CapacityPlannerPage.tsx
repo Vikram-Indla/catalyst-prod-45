@@ -961,6 +961,7 @@ export default function CapacityPlannerPage() {
                     departmentFilter={departmentFilter}
                     onDepartmentChange={setDepartmentFilter}
                     onResourceClick={(id) => handleOpenAllocationModal(id)}
+                    searchQuery={searchQuery}
                   />
                 </motion.div>
               )}
