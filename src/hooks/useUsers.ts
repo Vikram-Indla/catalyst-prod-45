@@ -100,9 +100,9 @@ export function useUsers() {
         { data: resourceCountries },
         { data: resourceLocations },
       ] = await Promise.all([
-        supabase.from('resource_assignments').select('id, name').eq('is_active', true),
-        supabase.from('capacity_departments').select('id, name').eq('is_active', true),
-        supabase.from('resource_vendors').select('id, name').eq('is_active', true),
+        supabase.from('resource_assignments').select('id, name, assignment_id').eq('is_active', true),
+        supabase.from('capacity_departments').select('id, name, department_id').eq('is_active', true),
+        supabase.from('resource_vendors').select('id, name, vendor_code').eq('is_active', true),
         supabase.from('resource_countries').select('id, name, code, flag_svg').eq('is_active', true),
         supabase.from('resource_locations').select('id, name').eq('is_active', true),
       ]);
