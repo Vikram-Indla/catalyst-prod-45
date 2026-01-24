@@ -22,8 +22,8 @@ export const StatCard: React.FC<StatCardProps> = ({
       onKeyDown={(e) => e.key === 'Enter' && onClick()}
     >
       <div className="ct-stat-header">
-        <div className={`ct-stat-dot ${type}`} />
-        <span className="ct-stat-label">{label}</span>
+        <div className={`ct-stat-dot ${type}`} style={{ flexShrink: 0 }} />
+        <span className="ct-stat-label" style={{ overflow: 'visible', whiteSpace: 'nowrap' }}>{label}</span>
       </div>
       <div className="ct-stat-value">{value}</div>
     </div>
