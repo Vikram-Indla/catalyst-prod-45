@@ -164,7 +164,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
   // Release display
   const releaseLabel = testCase.release 
-    ? (testCase.release.version || testCase.release.name || 'Unassigned')
+    ? (testCase.release.name || 'Unassigned')
     : 'Unassigned';
 
   // Folder display
@@ -395,7 +395,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
                 {selectableReleases.map((release) => (
                   <SelectItem key={release.id} value={release.id}>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{release.version || release.name}</span>
+                      <span className="font-medium">{release.name}</span>
                       {release.status && (
                         <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
                           {release.status}
