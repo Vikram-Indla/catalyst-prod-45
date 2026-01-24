@@ -196,5 +196,16 @@ export {
   useCloneTestPlan,
 } from './useTestPlans';
 
+// Test Data (parameters/rows for data-driven testing)
+export {
+  useTestDataParameters,
+  useTestDataRows,
+  useSaveTestData,
+  hasTestDataToSave,
+  type TestDataParameter,
+  type TestDataRow,
+  type SaveTestDataInput,
+} from './useTestData';
+
 // Types
 export * from '@/types/test-management';

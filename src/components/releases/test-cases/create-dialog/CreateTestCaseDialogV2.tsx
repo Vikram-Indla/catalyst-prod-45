@@ -42,7 +42,7 @@ import { AdditionalTab } from './AdditionalTab';
 import { TestCaseFormData, TestCaseStep, defaultFormData, TabInfo } from './types';
 import { supabase } from '@/integrations/supabase/client';
 import { useFolders } from '@/hooks/test-management/useFolders';
-import { useUpsertTestCaseDraft, useCreateTestCase } from '@/hooks/test-management';
+import { useUpsertTestCaseDraft, useCreateTestCase, useSaveTestData, hasTestDataToSave } from '@/hooks/test-management';
 import { useInvalidateRepositoryData } from '@/hooks/test-management/useRepositoryData';
 
 // Import prefill type for template support
@@ -98,6 +98,7 @@ export function CreateTestCaseDialogV2({
   // Mutations
   const upsertDraftMutation = useUpsertTestCaseDraft();
   const createTestCaseMutation = useCreateTestCase();
+  const saveTestDataMutation = useSaveTestData();
   const invalidateRepositoryData = useInvalidateRepositoryData();
 
   // Fetch folders from tm_folders table
@@ -251,6 +252,25 @@ export function CreateTestCaseDialogV2({
         })),
       });
       
+      // Persist test data if there is any
+      if (hasTestDataToSave(formData.parameterHeaders, formData.parameters)) {
+        try {
+          await saveTestDataMutation.mutateAsync({
+            testCaseId: result.id,
+            parameterHeaders: formData.parameterHeaders.filter(h => h.trim() !== ''),
+            rows: formData.parameters,
+          });
+          console.log('[CreateTestCaseDialog] Test data saved for draft:', result.id);
+        } catch (testDataError) {
+          // Show error but don't fail the whole save - draft was already created
+          const errorMessage = testDataError instanceof Error ? testDataError.message : 'Failed to save test data';
+          toast.error('Draft saved, but test data failed', { description: errorMessage });
+          console.error('[CreateTestCaseDialog] Test data save failed:', testDataError);
+          // Keep modal open so user can retry
+          return;
+        }
+      }
+      
       toast.success('Draft saved', { description: result.case_key || 'Test case draft saved' });
       
       // Close the modal after successful save
@@ -268,7 +288,11 @@ export function CreateTestCaseDialogV2({
         onOpenChange(false);
       }
     } catch (error) {
-      // Error toast handled by mutation
+      // User-facing error toast
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save draft';
+      toast.error('Failed to save draft', { description: errorMessage });
+      console.error('[CreateTestCaseDialog] Draft save failed:', error);
+      // Keep modal open so user can retry
     } finally {
       setIsSavingDraft(false);
     }
@@ -330,6 +354,27 @@ export function CreateTestCaseDialogV2({
         status: 'REVIEW', // Created test cases are ready for use
         steps: stepsInput.length > 0 ? stepsInput : undefined,
       });
+      
+      // Persist test data if there is any (MUST succeed before showing success)
+      if (hasTestDataToSave(formData.parameterHeaders, formData.parameters)) {
+        try {
+          const testDataResult = await saveTestDataMutation.mutateAsync({
+            testCaseId: result.id,
+            parameterHeaders: formData.parameterHeaders.filter(h => h.trim() !== ''),
+            rows: formData.parameters,
+          });
+          console.log('[CreateTestCaseDialog] Test data saved:', testDataResult);
+        } catch (testDataError) {
+          // Test data save failed - show error and keep modal open
+          const errorMessage = testDataError instanceof Error ? testDataError.message : 'Failed to save test data';
+          toast.error('Test case created, but test data failed to save', { 
+            description: `${errorMessage}. Please try saving the data again from the test case detail page.` 
+          });
+          console.error('[CreateTestCaseDialog] Test data save failed:', testDataError);
+          // Still close modal since test case was created - data can be re-added
+          // But inform user clearly about the partial success
+        }
+      }
       
       // Invalidate repository data to refresh folder tree counts
       invalidateRepositoryData(projectId);
