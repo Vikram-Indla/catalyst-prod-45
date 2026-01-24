@@ -58,18 +58,13 @@ import { ExecutionStatusBadge } from './badges/ExecutionStatusBadge';
 import { AutomationBadge } from './badges/AutomationBadge';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { assertUuid, isValidUUID } from '@/lib/utils/assertUuid';
 
 // Real hooks
 import { useTestCaseSteps, useCloneTestCase, useDeleteTestCase } from '@/hooks/test-management/useTestCases';
 import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCaseExecutionHistory';
 import { useCaseRequirements, REQUIREMENT_TYPE_LABELS } from '@/hooks/test-cases/useRequirementLinks';
 import { useQueryClient } from '@tanstack/react-query';
-
-// UUID validation helper
-function isValidUUID(str: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(str);
-}
 
 interface TestCase {
   id: string;       // Actual database UUID
@@ -136,7 +131,7 @@ export function TestCaseDetailDrawer({
       toast.error('Cannot duplicate: project ID not available');
       return;
     }
-    if (!caseUuid) {
+    if (!caseUuid || !assertUuid(caseUuid, 'handleDuplicate.caseUuid')) {
       toast.error('Cannot duplicate: invalid test case UUID');
       return;
     }
@@ -161,7 +156,7 @@ export function TestCaseDetailDrawer({
       toast.error('Cannot delete: project ID not available');
       return;
     }
-    if (!caseUuid) {
+    if (!caseUuid || !assertUuid(caseUuid, 'handleDelete.caseUuid')) {
       toast.error('Cannot delete: invalid test case UUID');
       return;
     }
@@ -183,8 +178,10 @@ export function TestCaseDetailDrawer({
   };
 
   const handleOpenInNewTab = () => {
-    // Navigate to full detail page using dbId (UUID) for routing
-    window.open(`/releases/test-cases/${caseUuid || testCase.id}`, '_blank');
+    // Navigate to full detail page using UUID for routing
+    if (caseUuid && assertUuid(caseUuid, 'handleOpenInNewTab.caseUuid')) {
+      window.open(`/releases/test-cases/${caseUuid}`, '_blank');
+    }
   };
 
   return (
