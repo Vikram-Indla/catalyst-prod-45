@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 export interface CapacityDepartment {
   id: string;
+  department_id: string;
   name: string;
   description: string | null;
   color: string;
@@ -46,16 +47,15 @@ export function useCapacityDepartments() {
   }, [queryClient]);
 
   const createDepartment = useMutation({
-    mutationFn: async (input: { name: string; description?: string; color?: string }) => {
+    mutationFn: async (input: { name: string; color?: string }) => {
       const maxOrder = departments.length > 0 ? Math.max(...departments.map(d => d.sort_order)) : 0;
       const { data, error } = await supabase
         .from('capacity_departments')
         .insert({
           name: input.name,
-          description: input.description || null,
           color: input.color || '#0d9488',
           sort_order: maxOrder + 1,
-        })
+        } as any)
         .select()
         .single();
       
