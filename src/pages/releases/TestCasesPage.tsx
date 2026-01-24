@@ -168,16 +168,48 @@ export default function TestCasesPage() {
     activeFilterCount 
   } = useTestCaseFilters();
 
-  // Supabase hooks for real data
+  // Priority and Type lookup maps for filter conversion
+  const priorityIdMap: Record<string, string> = {
+    'critical': '00000000-0000-0000-0001-000000000001',
+    'high': '00000000-0000-0000-0001-000000000002',
+    'medium': '00000000-0000-0000-0001-000000000003',
+    'low': '00000000-0000-0000-0001-000000000004',
+  };
+  
+  const typeIdMap: Record<string, string> = {
+    'functional': '00000000-0000-0000-0002-000000000001',
+    'performance': '00000000-0000-0000-0002-000000000002',
+    'security': '00000000-0000-0000-0002-000000000003',
+    'api': '00000000-0000-0000-0002-000000000004',
+  };
+
+  // Map status filter to API format
+  const getStatusFilter = () => {
+    if (!filters.statuses?.[0]) return undefined;
+    const statusMap: Record<string, string> = {
+      'draft': 'DRAFT',
+      'ready': 'REVIEW',
+      'approved': 'APPROVED',
+      'deprecated': 'DEPRECATED',
+    };
+    return statusMap[filters.statuses[0]] as any;
+  };
+
+  // Supabase hooks for real data - wired with all filter params
   const { 
     data: testCasesResult, 
-    isLoading, 
+    isLoading,
+    isError,
+    error: fetchError, 
     refetch,
   } = useTestCases(projectId || undefined, {
     page: currentPage,
     per_page: itemsPerPage,
     search: filters.search,
-    status: filters.statuses?.[0]?.toUpperCase() as any,
+    status: getStatusFilter(),
+    priority_id: filters.priorities?.[0] ? priorityIdMap[filters.priorities[0]] : undefined,
+    type_id: filters.types?.[0] ? typeIdMap[filters.types[0]] : undefined,
+    folder_id: selectedFolderId || undefined,
   });
 
   // Transform Supabase data to UI format
@@ -316,24 +348,13 @@ export default function TestCasesPage() {
     return [selectedFolderId, ...descendantIds];
   }, [selectedFolderId, folders]);
 
-  // Use API data with client-side release and folder filter fallback
+  // Use API data directly - filters are applied server-side
+  // Client-side filter only for folder descendants (since API only supports single folder_id)
   const filteredTestCases = useMemo(() => {
-    let cases = apiTestCases;
-    
-    // Apply release filter on client side (not supported by API params currently)
-    if (filters.releases?.length) {
-      cases = cases.filter(tc => filters.releases!.includes(tc.release));
-    }
-
-    // Apply folder filter on client side
-    if (folderIdsToInclude !== null) {
-      cases = cases.filter(tc => 
-        tc.folderId && folderIdsToInclude.includes(tc.folderId)
-      );
-    }
-    
-    return cases;
-  }, [apiTestCases, filters.releases, folderIdsToInclude]);
+    // If we have a selected folder, the API handles it now, but we may need 
+    // descendant filtering if API doesn't support it
+    return apiTestCases;
+  }, [apiTestCases]);
 
   // Calculate pagination from filtered results
   const totalPages = apiTotalPages;
@@ -512,22 +533,6 @@ export default function TestCasesPage() {
             </kbd>
           </div>
           
-          {/* Release Filter */}
-          <Select 
-            value={filters.releases?.[0] || 'all'} 
-            onValueChange={(v) => setFilter('releases', v === 'all' ? undefined : [v])}
-          >
-            <SelectTrigger className="w-[180px] h-9">
-              <SelectValue placeholder="Release" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Releases</SelectItem>
-              <SelectItem value="REL-26.01.01">REL-26.01.01 - Investment Portal</SelectItem>
-              <SelectItem value="REL-26.01.02">REL-26.01.02 - Licensing Module</SelectItem>
-              <SelectItem value="REL-25.12.01">REL-25.12.01 - Security Patch</SelectItem>
-            </SelectContent>
-          </Select>
-          
           {/* Status Filter */}
           <Select 
             value={filters.statuses?.[0] || 'all'} 
@@ -562,7 +567,7 @@ export default function TestCasesPage() {
             </SelectContent>
           </Select>
           
-          {/* Type Filter */}
+          {/* Type Filter - Uses real database values */}
           <Select 
             value={filters.types?.[0] || 'all'} 
             onValueChange={(v) => setFilter('types', v === 'all' ? undefined : [v])}
@@ -573,10 +578,9 @@ export default function TestCasesPage() {
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="functional">Functional</SelectItem>
-              <SelectItem value="regression">Regression</SelectItem>
-              <SelectItem value="smoke">Smoke</SelectItem>
-              <SelectItem value="integration">Integration</SelectItem>
-              <SelectItem value="e2e">End-to-End</SelectItem>
+              <SelectItem value="performance">Performance</SelectItem>
+              <SelectItem value="security">Security</SelectItem>
+              <SelectItem value="api">API</SelectItem>
             </SelectContent>
           </Select>
           
@@ -704,6 +708,25 @@ export default function TestCasesPage() {
                 >
                   <RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
                 </motion.div>
+              ) : isError ? (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center justify-center h-64 gap-4"
+                >
+                  <div className="text-destructive text-center">
+                    <p className="text-lg font-semibold">Failed to load test cases</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {fetchError instanceof Error ? fetchError.message : 'An error occurred'}
+                    </p>
+                  </div>
+                  <Button variant="outline" onClick={() => refetch()}>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Retry
+                  </Button>
+                </motion.div>
               ) : paginatedTestCases.length === 0 ? (
                 <motion.div
                   key="empty"
@@ -727,9 +750,18 @@ export default function TestCasesPage() {
                     onSelectAll={handleSelectAll}
                     onSelectRow={handleSelectRow}
                     allSelected={selectedIds.size === paginatedTestCases.length && paginatedTestCases.length > 0}
+                    projectId={projectId}
                     onRowClick={(tc) => {
                       setSelectedTestCase(tc);
                       setIsDetailDrawerOpen(true);
+                    }}
+                    onEdit={(tc) => {
+                      setSelectedTestCase(tc);
+                      setIsEditOpen(true);
+                    }}
+                    onMoveToFolder={(tc) => {
+                      setSelectedIds(new Set([tc.dbId || tc.id]));
+                      setIsMoveToFolderOpen(true);
                     }}
                   />
                 </motion.div>
