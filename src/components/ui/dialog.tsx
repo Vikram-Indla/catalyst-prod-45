@@ -77,6 +77,11 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(dialogContentVariants({ size }), className)}
+      // Ensure proper focus management for inputs
+      onOpenAutoFocus={(e) => {
+        // Don't auto-focus the close button, let inputs be focusable
+        e.preventDefault();
+      }}
       {...props}
     >
       {children}
