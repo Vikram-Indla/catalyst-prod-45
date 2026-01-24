@@ -59,8 +59,8 @@ function isValidUUID(str: string): boolean {
 }
 
 interface TestCase {
-  id: string;       // Display key like "TES-0001"
-  dbId?: string;    // Actual database UUID
+  id: string;       // Actual database UUID
+  key?: string;     // Display key like "TES-0001"
   title: string;
   description?: string;
   preconditions?: string;
@@ -116,9 +116,9 @@ export function EditTestCaseDialog({
   const queryClient = useQueryClient();
   const updateTestCaseMutation = useUpdateTestCase();
   
-  // Resolve UUID: prefer dbId (actual UUID), fall back to id only if it's a valid UUID
-  const caseUuid = testCase?.dbId ?? (testCase?.id && isValidUUID(testCase.id) ? testCase.id : null);
-  const displayKey = testCase?.id || 'Unknown';
+  // id is now always the UUID, key is the display key
+  const caseUuid = testCase?.id || null;
+  const displayKey = testCase?.key || testCase?.id || 'Unknown';
   
   // Load real steps from DB using UUID
   const { data: dbSteps = [], isLoading: stepsLoading } = useTestCaseSteps(caseUuid);

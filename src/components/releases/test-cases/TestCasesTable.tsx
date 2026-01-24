@@ -103,7 +103,7 @@ export function TestCasesTable({
   };
 
   const handleRowAction = (action: string, tc: TestCase) => {
-    const caseId = tc.dbId || tc.id;
+    const caseId = tc.id;
     const resolvedProjectId = projectId || '';
     
     switch (action) {
@@ -257,19 +257,19 @@ export function TestCasesTable({
         <tbody className="divide-y">
           {sortedCases.map((tc) => (
             <tr
-              key={tc.dbId || tc.id}
+              key={tc.id}
               className={cn(
                 "hover:bg-muted/30 cursor-grab active:cursor-grabbing transition-colors",
-                selectedIds.has(tc.dbId || tc.id) && "bg-primary/5"
+                selectedIds.has(tc.id) && "bg-primary/5"
               )}
               draggable
               onDragStart={(e: React.DragEvent<HTMLTableRowElement>) => {
-                const testCaseDbId = tc.dbId || tc.id;
-                e.dataTransfer.setData('text/plain', testCaseDbId);
-                e.dataTransfer.setData('text', testCaseDbId);
+                const testCaseId = tc.id;
+                e.dataTransfer.setData('text/plain', testCaseId);
+                e.dataTransfer.setData('text', testCaseId);
                 e.dataTransfer.setData('application/json', JSON.stringify({
-                  id: testCaseDbId,
-                  displayId: tc.id,
+                  id: testCaseId,
+                  displayId: tc.key || tc.id,
                   title: tc.title,
                 }));
                 e.dataTransfer.effectAllowed = 'move';
@@ -282,17 +282,17 @@ export function TestCasesTable({
             >
               <td className="w-12 px-3 py-3" onClick={(e) => e.stopPropagation()}>
                 <Checkbox 
-                  checked={selectedIds.has(tc.dbId || tc.id)}
-                  onCheckedChange={(checked) => onSelectRow(tc.dbId || tc.id, !!checked)}
+                  checked={selectedIds.has(tc.id)}
+                  onCheckedChange={(checked) => onSelectRow(tc.id, !!checked)}
                 />
               </td>
               <td className="w-28 px-3 py-3">
                 <Link 
-                  to={`/releases/test-cases/${tc.dbId || tc.id}`}
+                  to={`/releases/test-cases/${tc.id}`}
                   className="text-sm font-mono text-primary font-medium hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {tc.id}
+                  {tc.key || tc.id}
                 </Link>
               </td>
               <td className="min-w-[220px] px-3 py-3">
