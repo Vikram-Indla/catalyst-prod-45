@@ -14952,9 +14952,11 @@ export type Database = {
           color: string | null
           created_at: string | null
           description: string | null
+          end_date: string | null
           id: string
           is_active: boolean | null
           name: string
+          payment_status: string | null
           project_id: string | null
           sort_order: number | null
           updated_at: string | null
@@ -14967,9 +14969,11 @@ export type Database = {
           color?: string | null
           created_at?: string | null
           description?: string | null
+          end_date?: string | null
           id?: string
           is_active?: boolean | null
           name: string
+          payment_status?: string | null
           project_id?: string | null
           sort_order?: number | null
           updated_at?: string | null
@@ -14982,9 +14986,11 @@ export type Database = {
           color?: string | null
           created_at?: string | null
           description?: string | null
+          end_date?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
+          payment_status?: string | null
           project_id?: string | null
           sort_order?: number | null
           updated_at?: string | null
