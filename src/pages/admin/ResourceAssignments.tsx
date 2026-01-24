@@ -451,13 +451,6 @@ export default function ResourceAssignmentsPage() {
     return orderedGroups;
   }, [allAssignments]);
 
-  // Focus budget input when editing
-  useEffect(() => {
-    if (editingBudgetId && budgetInputRef.current) {
-      budgetInputRef.current.focus();
-      budgetInputRef.current.select();
-    }
-  }, [editingBudgetId]);
 
   const checkLinkedRecords = async (assignmentId: string) => {
     setIsCheckingLinks(true);
@@ -637,31 +630,6 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
-  const handleBudgetDoubleClick = (assignment: ResourceAssignment) => {
-    setEditingBudgetId(assignment.id);
-    setEditingBudgetValue(assignment.budget?.toString() || '');
-  };
-
-  const handleBudgetBlur = async (assignment: ResourceAssignment) => {
-    const newBudget = editingBudgetValue.trim() ? parseFloat(editingBudgetValue) : null;
-    if (newBudget !== assignment.budget) {
-      await updateAssignment.mutateAsync({
-        id: assignment.id,
-        updates: { budget: newBudget },
-      });
-    }
-    setEditingBudgetId(null);
-    setEditingBudgetValue('');
-  };
-
-  const handleBudgetKeyDown = (e: React.KeyboardEvent, assignment: ResourceAssignment) => {
-    if (e.key === 'Enter') {
-      handleBudgetBlur(assignment);
-    } else if (e.key === 'Escape') {
-      setEditingBudgetId(null);
-      setEditingBudgetValue('');
-    }
-  };
 
   const openEdit = (assignment: ResourceAssignment) => {
     setEditingAssignment(assignment);
