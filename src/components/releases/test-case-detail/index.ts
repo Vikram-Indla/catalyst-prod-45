@@ -10,3 +10,6 @@ export { ExecutionSummaryCard } from './ExecutionSummaryCard';
 export { RequirementsCoverage } from './RequirementsCoverage';
 export { QuickActionsBar } from './QuickActionsBar';
 export { TestCaseVersionHistory } from './TestCaseVersionHistory';
+
+// Phase 5: Test Data
+export { TestCaseDataTab } from './TestCaseDataTab';
