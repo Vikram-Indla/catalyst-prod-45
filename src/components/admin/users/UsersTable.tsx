@@ -64,6 +64,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const [locationFilter, setLocationFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');
   const [assignmentFilter, setAssignmentFilter] = useState('all');
+  const [resourceTypeFilter, setResourceTypeFilter] = useState('all');
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   const [userToReject, setUserToReject] = useState<UserProfile | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
@@ -187,6 +188,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const uniqueLocations = [...new Set(users.map(u => u.location).filter(Boolean))];
   const uniqueDepartments = [...new Set(users.map(u => u.department_name).filter(Boolean))];
   const uniqueAssignments = [...new Set(users.map(u => u.assignment_name).filter(Boolean))];
+  const uniqueResourceTypes = [...new Set(users.map(u => u.resource_type).filter(Boolean))];
 
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
@@ -205,10 +207,11 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       const matchesLocation = locationFilter === 'all' || user.location === locationFilter;
       const matchesDepartment = departmentFilter === 'all' || user.department_name === departmentFilter;
       const matchesAssignment = assignmentFilter === 'all' || user.assignment_name === assignmentFilter;
+      const matchesResourceType = resourceTypeFilter === 'all' || user.resource_type === resourceTypeFilter;
       
-      return matchesSearch && matchesRole && matchesApproval && matchesVendor && matchesCountry && matchesLocation && matchesDepartment && matchesAssignment;
+      return matchesSearch && matchesRole && matchesApproval && matchesVendor && matchesCountry && matchesLocation && matchesDepartment && matchesAssignment && matchesResourceType;
     });
-  }, [users, searchTerm, roleFilter, approvalFilter, vendorFilter, countryFilter, locationFilter, departmentFilter, assignmentFilter]);
+  }, [users, searchTerm, roleFilter, approvalFilter, vendorFilter, countryFilter, locationFilter, departmentFilter, assignmentFilter, resourceTypeFilter]);
 
   // Sorted users
   const sortedUsers = useMemo(() => {
@@ -515,6 +518,17 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                 <SelectItem value="all">All Assign</SelectItem>
                 {uniqueAssignments.map(asn => (
                   <SelectItem key={asn} value={asn!}>{asn}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={resourceTypeFilter} onValueChange={setResourceTypeFilter}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Resource Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {uniqueResourceTypes.map(type => (
+                  <SelectItem key={type} value={type!}>{type}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
