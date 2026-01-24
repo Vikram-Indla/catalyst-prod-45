@@ -56,19 +56,19 @@ const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: strin
   closed: { label: 'Closed', color: 'bg-gray-500/15 text-gray-600' },
 };
 
-const ASSIGNMENT_TYPE_ORDER = ['Outsourced', 'Cosourced', 'Insourced', 'Project', 'Unspecified'];
+const ASSIGNMENT_TYPE_ORDER = ['Outsourced', 'Cosourced', 'Insourced', 'Unspecified'];
 const ASSIGNMENT_TYPE_COLORS: Record<string, string> = {
   Insourced: 'bg-blue-500/10 text-blue-700 border-blue-200',
-  Project: 'bg-purple-500/10 text-purple-700 border-purple-200',
   Outsourced: 'bg-amber-500/10 text-amber-700 border-amber-200',
   Cosourced: 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
   Unspecified: 'bg-muted text-muted-foreground border-border',
 };
 
-// Map legacy 'BAU' to 'Insourced' for display
+// Map legacy 'BAU' and 'Project' to normalized types for display
 const normalizeAssignmentType = (type: string | null | undefined): string => {
   if (!type) return 'Unspecified';
   if (type === 'BAU') return 'Insourced';
+  if (type === 'Project') return 'Outsourced';
   return type;
 };
 
@@ -96,6 +96,7 @@ interface SortableRowProps {
   onVendorChange: (assignment: ResourceAssignment, value: string) => void;
   onAssignmentTypeChange: (assignment: ResourceAssignment, value: string) => void;
   onPaymentStatusChange: (assignment: ResourceAssignment, value: string) => void;
+  onStartDateChange: (assignment: ResourceAssignment, value: string) => void;
   onEndDateChange: (assignment: ResourceAssignment, value: string) => void;
   onBudgetDoubleClick: (assignment: ResourceAssignment) => void;
   onBudgetBlur: (assignment: ResourceAssignment) => void;
@@ -118,6 +119,7 @@ function SortableRow({
   onVendorChange,
   onAssignmentTypeChange,
   onPaymentStatusChange,
+  onStartDateChange,
   onEndDateChange,
   onBudgetDoubleClick,
   onBudgetBlur,
@@ -151,6 +153,11 @@ function SortableRow({
     >
       <td className="px-4 py-3 text-muted-foreground cursor-grab active:cursor-grabbing" {...attributes} {...listeners}>
         <GripVertical className="h-4 w-4" />
+      </td>
+      <td className="px-4 py-3">
+        <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">
+          {assignment.assignment_id || '—'}
+        </span>
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
@@ -224,6 +231,35 @@ function SortableRow({
                 variant="outline"
                 className={cn(
                   "h-8 w-[130px] justify-start text-left font-normal text-xs",
+                  !assignment.start_date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-3 w-3" />
+                {assignment.start_date ? format(parseISO(assignment.start_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-popover z-[500]" align="start">
+              <Calendar
+                mode="single"
+                selected={assignment.start_date ? parseISO(assignment.start_date) : undefined}
+                onSelect={(date) => onStartDateChange(assignment, date ? format(date, 'yyyy-MM-dd') : '')}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <span className="text-muted-foreground text-sm">—</span>
+        )}
+      </td>
+      <td className="px-4 py-3">
+        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "h-8 w-[130px] justify-start text-left font-normal text-xs",
                   !assignment.end_date && "text-muted-foreground"
                 )}
               >
@@ -275,7 +311,6 @@ function SortableRow({
           </SelectTrigger>
           <SelectContent className="bg-popover z-[400]">
             <SelectItem value="__none__">Not specified</SelectItem>
-            <SelectItem value="Project">Project</SelectItem>
             <SelectItem value="Insourced">Insourced</SelectItem>
             <SelectItem value="Outsourced">Outsourced</SelectItem>
             <SelectItem value="Cosourced">Cosourced</SelectItem>
@@ -343,6 +378,7 @@ export default function ResourceAssignmentsPage() {
     vendor_id: '',
     budget: '',
     assignment_status: 'yet_to_start' as AssignmentStatus,
+    start_date: '',
     end_date: '',
     payment_status: 'not_applicable' as PaymentStatus,
   });
@@ -475,6 +511,7 @@ export default function ResourceAssignmentsPage() {
       vendor_id: '',
       budget: '',
       assignment_status: 'yet_to_start',
+      start_date: '',
       end_date: '',
       payment_status: 'not_applicable',
     });
@@ -590,6 +627,13 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
+  const handleStartDateChange = async (assignment: ResourceAssignment, value: string) => {
+    await updateAssignment.mutateAsync({
+      id: assignment.id,
+      updates: { start_date: value || null } as any,
+    });
+  };
+
   const handleEndDateChange = async (assignment: ResourceAssignment, value: string) => {
     await updateAssignment.mutateAsync({
       id: assignment.id,
@@ -633,6 +677,7 @@ export default function ResourceAssignmentsPage() {
       vendor_id: assignment.vendor_id || '',
       budget: assignment.budget?.toString() || '',
       assignment_status: assignment.assignment_status || 'yet_to_start',
+      start_date: assignment.start_date || '',
       end_date: assignment.end_date || '',
       payment_status: assignment.payment_status || 'not_applicable',
     });
@@ -765,10 +810,12 @@ export default function ResourceAssignmentsPage() {
                     <thead className="bg-muted/20">
                       <tr>
                         <th className="w-10 px-4 py-2"></th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[60px]">AID</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Status</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Budget (SAR)</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">End Date</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Start Date</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment End Date</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Vendor</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Type</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Payment Status</th>
@@ -795,6 +842,7 @@ export default function ResourceAssignmentsPage() {
                               onVendorChange={handleVendorChange}
                               onAssignmentTypeChange={handleAssignmentTypeChange}
                               onPaymentStatusChange={handlePaymentStatusChange}
+                              onStartDateChange={handleStartDateChange}
                               onEndDateChange={handleEndDateChange}
                               onBudgetDoubleClick={handleBudgetDoubleClick}
                               onBudgetBlur={handleBudgetBlur}
@@ -856,7 +904,6 @@ export default function ResourceAssignmentsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__none__">Not specified</SelectItem>
-                  <SelectItem value="Project">Project</SelectItem>
                   <SelectItem value="Insourced">Insourced</SelectItem>
                   <SelectItem value="Outsourced">Outsourced</SelectItem>
                   <SelectItem value="Cosourced">Cosourced</SelectItem>
@@ -963,7 +1010,6 @@ export default function ResourceAssignmentsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__none__">Not specified</SelectItem>
-                  <SelectItem value="Project">Project</SelectItem>
                   <SelectItem value="Insourced">Insourced</SelectItem>
                   <SelectItem value="Outsourced">Outsourced</SelectItem>
                   <SelectItem value="Cosourced">Cosourced</SelectItem>

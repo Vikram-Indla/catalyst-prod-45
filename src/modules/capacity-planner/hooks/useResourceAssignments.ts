@@ -27,8 +27,10 @@ export interface ResourceAssignment {
   vendor_id: string | null;
   budget: number | null;
   assignment_status: AssignmentStatus | null;
+  start_date: string | null;
   end_date: string | null;
   payment_status: PaymentStatus | null;
+  assignment_id: string | null;
   project?: ProjectInfo | null;
   vendor?: VendorInfo | null;
   created_at: string;
