@@ -1,20 +1,22 @@
 /**
  * UsersManagement - Ring-fenced /admin/users page
- * Complete UI replacement with custom CSS per LOVABLE-USERS-INVASIVE-REPLACEMENT.md
+ * Complete UI replacement per LOVABLE-USERS-INVASIVE-REPLACEMENT.md spec
  * 
  * CRITICAL: This component uses ring-fenced CSS (um-* classes) that does NOT inherit
  * from Catalyst V5 design tokens. Changes here should NOT affect any other page.
  */
 
-import { useState, useMemo, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useState, useMemo, useCallback, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SuperAdminGuard } from '@/components/admin/SuperAdminGuard';
 import { useUsers, UserProfile } from '@/hooks/useUsers';
 import { UserDrawer } from './components/UserDrawer';
+import { BulkEditModal } from './components/BulkEditModal';
+import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
-import { Search, X, Download, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, X, Download, Plus, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
 
 // Constants
 const AVATAR_COLORS = ['#8b5cf6','#ec4899','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#6366f1','#14b8a6','#ef4444'];
@@ -67,6 +69,81 @@ const StatCard = ({ label, value, dotClass, active, onClick }: StatCardProps) =>
   </div>
 );
 
+// Inline Editable Cell Component
+interface InlineEditCellProps {
+  value: string;
+  field: string;
+  userId: string;
+  type: 'text' | 'select';
+  options?: string[];
+  onSave: (userId: string, field: string, value: string) => void;
+}
+
+const InlineEditCell = ({
+  value, field, userId, type, options = [], onSave
+}: InlineEditCellProps) => {
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState(value);
+  const inputRef = useRef<HTMLInputElement | HTMLSelectElement>(null);
+
+  const handleSave = () => {
+    if (editValue !== value) {
+      onSave(userId, field, editValue);
+    }
+    setEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSave();
+    if (e.key === 'Escape') {
+      setEditValue(value);
+      setEditing(false);
+    }
+  };
+
+  if (editing) {
+    return type === 'select' ? (
+      <select
+        ref={inputRef as React.RefObject<HTMLSelectElement>}
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        className="um-inline-select"
+        autoFocus
+      >
+        {options.map(opt => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
+    ) : (
+      <input
+        ref={inputRef as React.RefObject<HTMLInputElement>}
+        type="text"
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        className="um-inline-input"
+        autoFocus
+      />
+    );
+  }
+
+  return (
+    <span
+      className="um-inline-editable"
+      onDoubleClick={() => {
+        setEditValue(value);
+        setEditing(true);
+      }}
+      title="Double-click to edit"
+    >
+      {value || '—'}
+    </span>
+  );
+};
+
 export default function UsersManagement() {
   const queryClient = useQueryClient();
   const { data: users = [], isLoading } = useUsers();
@@ -80,7 +157,69 @@ export default function UsersManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
   const pageSize = 50;
+
+  // Fetch reference data for bulk edit
+  const { data: departments = [] } = useQuery({
+    queryKey: ['capacity-departments'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('capacity_departments')
+        .select('id, name, department_id')
+        .or('is_active.is.null,is_active.eq.true')
+        .order('sort_order');
+      return data || [];
+    },
+  });
+
+  const { data: assignments = [] } = useQuery({
+    queryKey: ['resource-assignments'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('resource_assignments')
+        .select('id, name, assignment_id')
+        .or('is_active.is.null,is_active.eq.true')
+        .order('sort_order');
+      return data || [];
+    },
+  });
+
+  const { data: vendors = [] } = useQuery({
+    queryKey: ['resource-vendors'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('resource_vendors')
+        .select('id, name, vendor_code')
+        .or('is_active.is.null,is_active.eq.true')
+        .order('sort_order');
+      return data || [];
+    },
+  });
+
+  const { data: countries = [] } = useQuery({
+    queryKey: ['resource-countries'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('resource_countries')
+        .select('id, name, code')
+        .or('is_active.is.null,is_active.eq.true')
+        .order('sort_order');
+      return data || [];
+    },
+  });
+
+  const { data: locations = [] } = useQuery({
+    queryKey: ['resource-locations'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('resource_locations')
+        .select('id, name')
+        .or('is_active.is.null,is_active.eq.true')
+        .order('sort_order');
+      return data || [];
+    },
+  });
 
   // Unique filter options from data
   const uniqueDepartments = useMemo(() => 
@@ -103,18 +242,14 @@ export default function UsersManagement() {
   // Filtered data
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
-      // Type filter
       if (typeFilter !== 'all') {
         const userType = u.resource_type?.toLowerCase();
         if (typeFilter === 'variable') {
           if (userType !== 'variable' && userType !== 'core') return false;
         } else if (userType !== typeFilter.toLowerCase()) return false;
       }
-      // Search
       if (searchQuery && !u.full_name?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-      // Department filter
       if (deptFilter && u.department_name !== deptFilter) return false;
-      // Vendor filter
       if (vendorFilter && u.vendor !== vendorFilter) return false;
       return true;
     });
@@ -145,15 +280,22 @@ export default function UsersManagement() {
   };
 
   const handleExport = () => {
-    const exportData = filteredUsers.map((u) => ({
+    const dataToExport = selectedIds.size > 0 
+      ? users.filter(u => selectedIds.has(u.id))
+      : filteredUsers;
+    
+    const exportData = dataToExport.map((u) => ({
       RID: u.rid || '',
       Name: u.full_name || '',
       Email: u.email || '',
       'Job Role': u.job_role || '',
+      DID: u.did || '',
       Department: u.department_name || '',
+      AID: u.aid || '',
       Assignment: u.assignment_name || '',
       'Contract Start': u.contract_start_date ? format(new Date(u.contract_start_date), 'dd MMM yyyy') : '',
       'Contract End': u.contract_end_date ? format(new Date(u.contract_end_date), 'dd MMM yyyy') : '',
+      VID: u.vid || '',
       Vendor: u.vendor || '',
       Type: u.resource_type || '',
       Country: u.country || '',
@@ -163,8 +305,11 @@ export default function UsersManagement() {
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Users');
-    XLSX.writeFile(wb, 'users-export.xlsx');
-    toast.success('Exported to Excel');
+    const filename = selectedIds.size > 0 
+      ? `users-selected-${new Date().toISOString().split('T')[0]}.xlsx`
+      : 'users-export.xlsx';
+    XLSX.writeFile(wb, filename);
+    toast.success(`Exported ${dataToExport.length} users`);
   };
 
   const clearFilters = () => {
@@ -197,6 +342,77 @@ export default function UsersManagement() {
   };
 
   const allSelected = filteredUsers.length > 0 && filteredUsers.every(u => selectedIds.has(u.id));
+
+  // Inline edit mutation
+  const inlineUpdateMutation = useMutation({
+    mutationFn: async ({ id, field, value }: { id: string; field: string; value: string }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ [field]: value, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      toast.success('Updated');
+    },
+    onError: (err: any) => {
+      toast.error(err.message || 'Failed to update');
+    }
+  });
+
+  const handleInlineSave = (userId: string, field: string, value: string) => {
+    inlineUpdateMutation.mutate({ id: userId, field, value });
+  };
+
+  // Bulk update mutation
+  const bulkUpdateMutation = useMutation({
+    mutationFn: async ({ ids, updates }: { ids: string[]; updates: Record<string, string> }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .in('id', ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      toast.success(`Updated ${selectedIds.size} users`);
+      setSelectedIds(new Set());
+      setBulkModalOpen(false);
+    },
+    onError: (err: any) => {
+      toast.error(err.message || 'Failed to update');
+    }
+  });
+
+  const handleBulkApply = (updates: Record<string, string>) => {
+    if (selectedIds.size === 0) return;
+    bulkUpdateMutation.mutate({ ids: Array.from(selectedIds), updates });
+  };
+
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .in('id', ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      toast.success(`Deleted ${selectedIds.size} users`);
+      setSelectedIds(new Set());
+    },
+    onError: (err: any) => {
+      toast.error(err.message || 'Failed to delete');
+    }
+  });
+
+  const handleBulkDelete = () => {
+    if (!confirm(`Delete ${selectedIds.size} users? This cannot be undone.`)) return;
+    bulkDeleteMutation.mutate(Array.from(selectedIds));
+  };
 
   // Get type badge class
   const getTypeBadgeClass = (type: string | null) => {
@@ -340,13 +556,21 @@ export default function UsersManagement() {
           {/* Bulk Action Bar */}
           {selectedIds.size > 0 && (
             <div className="um-bulk-bar visible">
-              <span>{selectedIds.size} selected</span>
-              <button className="um-bulk-btn" onClick={handleExport}>
-                <Download size={12} /> Export Selected
-              </button>
+              <strong>{selectedIds.size} selected</strong>
               <button className="um-bulk-btn" onClick={() => setSelectedIds(new Set())}>
                 <X size={12} /> Clear
               </button>
+              <div className="um-bulk-bar-actions">
+                <button className="um-bulk-btn" onClick={() => setBulkModalOpen(true)}>
+                  <Edit3 size={12} /> Bulk Edit
+                </button>
+                <button className="um-bulk-btn" onClick={handleExport}>
+                  <Download size={12} /> Export Selected
+                </button>
+                <button className="um-bulk-btn danger" onClick={handleBulkDelete}>
+                  <Trash2 size={12} /> Delete
+                </button>
+              </div>
             </div>
           )}
 
@@ -454,7 +678,15 @@ export default function UsersManagement() {
                         </div>
                       </div>
                     </td>
-                    <td>{user.job_role || '—'}</td>
+                    <td>
+                      <InlineEditCell
+                        value={user.job_role || ''}
+                        field="job_role"
+                        userId={user.id}
+                        type="text"
+                        onSave={handleInlineSave}
+                      />
+                    </td>
                     <td>
                       {user.did ? (
                         <span className="um-id-badge">{user.did}</span>
@@ -528,8 +760,20 @@ export default function UsersManagement() {
           onClose={closeDrawer}
           onSuccess={() => {
             closeDrawer();
-            // Query invalidation happens inside the drawer
           }}
+        />
+
+        {/* Bulk Edit Modal */}
+        <BulkEditModal
+          isOpen={bulkModalOpen}
+          selectedCount={selectedIds.size}
+          onClose={() => setBulkModalOpen(false)}
+          onApply={handleBulkApply}
+          departments={departments}
+          assignments={assignments}
+          vendors={vendors}
+          countries={countries}
+          locations={locations}
         />
       </div>
     </SuperAdminGuard>
@@ -750,6 +994,14 @@ const ringFencedCSS = `
 .users-module .um-bulk-bar.visible {
   display: flex;
 }
+.users-module .um-bulk-bar strong {
+  font-weight: 600;
+}
+.users-module .um-bulk-bar-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
 .users-module .um-bulk-btn {
   display: inline-flex;
   align-items: center;
@@ -763,9 +1015,14 @@ const ringFencedCSS = `
   border-radius: 6px;
   color: white;
   cursor: pointer;
+  transition: all 0.15s;
 }
 .users-module .um-bulk-btn:hover {
   background: rgba(255,255,255,0.25);
+}
+.users-module .um-bulk-btn.danger {
+  background: var(--um-danger);
+  border-color: var(--um-danger);
 }
 
 /* Toolbar */
@@ -1070,5 +1327,27 @@ const ringFencedCSS = `
   padding: 40px 20px;
   color: var(--um-text-muted);
   font-size: 14px;
+}
+
+/* Inline Edit */
+.users-module .um-inline-editable {
+  cursor: pointer;
+  padding: 3px 6px;
+  margin: -3px -6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.users-module .um-inline-editable:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+.users-module .um-inline-input,
+.users-module .um-inline-select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 2px solid var(--um-primary);
+  border-radius: 6px;
+  outline: none;
+  background: white;
 }
 `;
