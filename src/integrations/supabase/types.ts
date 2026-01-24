@@ -14943,39 +14943,56 @@ export type Database = {
       }
       resource_assignments: {
         Row: {
+          assignment_status: string | null
           assignment_type: string | null
+          budget: number | null
           color: string | null
           created_at: string | null
           description: string | null
           id: string
           is_active: boolean | null
           name: string
+          project_id: string | null
           sort_order: number | null
           updated_at: string | null
         }
         Insert: {
+          assignment_status?: string | null
           assignment_type?: string | null
+          budget?: number | null
           color?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
           name: string
+          project_id?: string | null
           sort_order?: number | null
           updated_at?: string | null
         }
         Update: {
+          assignment_status?: string | null
           assignment_type?: string | null
+          budget?: number | null
           color?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
+          project_id?: string | null
           sort_order?: number | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "resource_assignments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resource_cost_history: {
         Row: {
