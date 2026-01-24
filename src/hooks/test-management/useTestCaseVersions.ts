@@ -108,10 +108,13 @@ export function useTestCaseVersionsCount(testCaseId: string | undefined) {
         .eq('test_case_id', testCaseId);
 
       if (error) {
-        console.error('Error counting versions:', error);
+        // Don't log if it's just empty/permissions - return 0
+        if (error.message) {
+          console.error('Error counting versions:', error);
+        }
         return 0;
       }
-      return count || 0;
+      return count ?? 0;
     },
     enabled: !!testCaseId,
   });
