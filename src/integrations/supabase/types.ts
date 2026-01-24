@@ -23916,6 +23916,7 @@ export type Database = {
           preconditions_html: string | null
           priority_id: string | null
           project_id: string
+          release_id: string | null
           release_version_id: string | null
           status: Database["public"]["Enums"]["tm_case_status"] | null
           test_format: string | null
@@ -23954,6 +23955,7 @@ export type Database = {
           preconditions_html?: string | null
           priority_id?: string | null
           project_id: string
+          release_id?: string | null
           release_version_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
           test_format?: string | null
@@ -23992,6 +23994,7 @@ export type Database = {
           preconditions_html?: string | null
           priority_id?: string | null
           project_id?: string
+          release_id?: string | null
           release_version_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
           test_format?: string | null
@@ -24112,6 +24115,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_traceability_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_cases_release_version_id_fkey"

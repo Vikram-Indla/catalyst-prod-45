@@ -40,7 +40,7 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
           priority:tm_case_priorities(*),
           type:tm_case_types(*),
           folder:tm_folders(id, name, path),
-          release:release_versions(id, name, version),
+          release:releases!tm_test_cases_release_id_fkey(id, name, version, status),
           created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url),
           assigned_user:profiles!tm_test_cases_assigned_to_fkey(id, full_name, avatar_url)
         `, { count: 'exact' })
@@ -187,7 +187,7 @@ export function useTestCase(caseId: string | undefined) {
           priority:tm_case_priorities(*),
           type:tm_case_types(*),
           folder:tm_folders(id, name, path),
-          release:release_versions(id, name, version),
+          release:releases!tm_test_cases_release_id_fkey(id, name, version, status),
           created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url),
           assigned_user:profiles!tm_test_cases_assigned_to_fkey(id, full_name, avatar_url)
         `)
