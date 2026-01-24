@@ -180,11 +180,12 @@ export function StepRunner({
       <div className="flex-1 overflow-auto p-6">
         {currentStep && (
           <div className="max-w-4xl mx-auto space-y-6">
-            {/* Step Display */}
+            {/* Step Display - Phase 5: Pass data row snapshot for variable substitution */}
             <StepDisplay
               step={currentStep}
               stepNumber={navigation.currentStepIndex + 1}
               totalSteps={navigation.totalSteps}
+              dataRowSnapshot={run?.test_data_row_snapshot as Record<string, any> | null}
             />
 
             {/* Result Recording & Evidence - Module 3A-3 */}
