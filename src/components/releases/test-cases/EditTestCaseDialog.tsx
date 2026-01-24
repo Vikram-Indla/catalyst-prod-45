@@ -561,24 +561,26 @@ export function EditTestCaseDialog({
           </div>
         </Tabs>
 
-        <DialogFooter className="px-6 py-4 border-t flex-shrink-0 flex flex-row items-center justify-end gap-3">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="min-w-[80px]">
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={updateTestCaseMutation.isPending} className="min-w-[120px]">
-            {updateTestCaseMutation.isPending ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        </DialogFooter>
+        <div className="px-6 py-4 border-t border-border/60 dark:border-white/[0.035] bg-muted/30 dark:bg-white/[0.02] flex-shrink-0">
+          <div className="flex flex-row items-center justify-end gap-3">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="whitespace-nowrap">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={updateTestCaseMutation.isPending} className="whitespace-nowrap">
+              {updateTestCaseMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
