@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Plus, Download, Search, LayoutGrid, List, Calendar, 
+  Plus, Download, Search, LayoutGrid, List, 
   Layers, Loader2, FileText, FileSpreadsheet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,23 +22,38 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { CycleCard } from '@/components/releases/test-cycles/CycleCard';
-import { CycleStatsBar } from '@/components/releases/test-cycles/CycleStatsBar';
+import { CycleCardEnhanced } from '@/components/releases/test-cycles/CycleCardEnhanced';
+import { CycleKPICards } from '@/components/releases/test-cycles/CycleKPICards';
 import { CycleTableView } from '@/components/releases/test-cycles/CycleTableView';
-import { CycleCalendarView } from '@/components/releases/test-cycles/CycleCalendarView';
-import { CreateCycleModal, CreateCycleData } from '@/components/releases/test-cycles/CreateCycleModal';
-import { EditTestCycleDialog } from '@/components/releases/test-cycles/EditTestCycleDialog';
+import { CreateCycleModalEnhanced, CreateCycleFormData } from '@/components/releases/test-cycles/CreateCycleModalEnhanced';
 import { 
-  releaseOptions, 
-  statusOptions, 
-  environmentOptions,
-  TestCycle 
-} from '@/data/testCyclesData';
-import { useTestCycles, useCreateCycle, useDeleteCycle, useCloneCycle, useProjects } from '@/hooks/test-management';
-import { tmToUICycles } from '@/lib/adapters/testCycleAdapter';
+  useTestCyclesEnhanced, 
+  useCycleKPIs, 
+  useCreateCycleEnhanced,
+  useDeleteCycleEnhanced,
+  useCloneCycleEnhanced,
+  useProjects,
+  useReleases,
+  CycleWithDetails,
+} from '@/hooks/test-management';
 import { exportTestCycles } from '@/utils/exportTestCycles';
 
-type ViewMode = 'card' | 'list' | 'calendar';
+type ViewMode = 'card' | 'list';
+
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All Status' },
+  { value: 'planned', label: 'Planned' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'completed', label: 'Completed' },
+];
+
+const ENVIRONMENT_OPTIONS = [
+  { value: 'all', label: 'All Environments' },
+  { value: 'dev', label: 'Development' },
+  { value: 'staging', label: 'Staging' },
+  { value: 'uat', label: 'UAT' },
+  { value: 'prod', label: 'Production' },
+];
 
 export default function TestCyclesPage() {
   const navigate = useNavigate();
@@ -47,72 +62,42 @@ export default function TestCyclesPage() {
   const { data: projects } = useProjects();
   const projectId = projects?.[0]?.id;
   
-  // Fetch real cycles from Supabase
-  const { data: tmCycles, isLoading } = useTestCycles(projectId);
-  
-  // Convert to UI format
-  const cycles: TestCycle[] = useMemo(() => {
-    return tmCycles ? tmToUICycles(tmCycles) : [];
-  }, [tmCycles]);
-  
-  // Mutations
-  const createCycleMutation = useCreateCycle();
-  const deleteCycleMutation = useDeleteCycle();
-  const cloneCycleMutation = useCloneCycle();
-  
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [releaseFilter, setReleaseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [envFilter, setEnvFilter] = useState('all');
-  
-  // View
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   
-  // Modal
+  // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingCycle, setEditingCycle] = useState<TestCycle | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   
-  // Filtered cycles
-  const filteredCycles = useMemo(() => {
-    return cycles.filter(cycle => {
-      if (searchQuery && !cycle.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-          !cycle.id.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-      if (releaseFilter !== 'all' && cycle.releaseId !== releaseFilter) return false;
-      if (statusFilter !== 'all' && cycle.status !== statusFilter) return false;
-      if (envFilter !== 'all' && cycle.environment !== envFilter) return false;
-      return true;
-    });
-  }, [cycles, searchQuery, releaseFilter, statusFilter, envFilter]);
+  // Fetch releases for filter dropdown
+  const { data: releases } = useReleases();
   
-  // Grouped by status (for card view)
+  // Fetch cycles with enhanced data
+  const { data: cycles, isLoading } = useTestCyclesEnhanced(projectId, {
+    search: searchQuery || undefined,
+    releaseId: releaseFilter !== 'all' ? releaseFilter : undefined,
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    environment: envFilter !== 'all' ? envFilter : undefined,
+  });
+  
+  // Compute KPIs
+  const kpis = useCycleKPIs(cycles);
+  
+  // Mutations
+  const createCycleMutation = useCreateCycleEnhanced();
+  const deleteCycleMutation = useDeleteCycleEnhanced();
+  const cloneCycleMutation = useCloneCycleEnhanced();
+  
+  // Group cycles by status
   const groupedCycles = useMemo(() => ({
-    in_progress: filteredCycles.filter(c => c.status === 'in_progress'),
-    planned: filteredCycles.filter(c => c.status === 'planned'),
-    completed: filteredCycles.filter(c => c.status === 'completed'),
-    aborted: filteredCycles.filter(c => c.status === 'aborted')
-  }), [filteredCycles]);
-
-  // Stats
-  const stats = useMemo(() => {
-    const inProgress = cycles.filter(c => c.status === 'in_progress').length;
-    const completed = cycles.filter(c => c.status === 'completed').length;
-    
-    const totalPassed = cycles.reduce((acc, c) => acc + c.passedTests, 0);
-    const totalFailed = cycles.reduce((acc, c) => acc + c.failedTests, 0);
-    const passRate = totalPassed + totalFailed > 0 
-      ? Math.round((totalPassed / (totalPassed + totalFailed)) * 100) 
-      : 0;
-    
-    return {
-      total: cycles.length,
-      inProgress,
-      completed,
-      passRate,
-      avgDuration: '4.2 hrs'
-    };
-  }, [cycles]);
+    in_progress: (cycles || []).filter(c => c.status === 'in_progress'),
+    planned: (cycles || []).filter(c => c.status === 'planned'),
+    completed: (cycles || []).filter(c => c.status === 'completed'),
+  }), [cycles]);
   
   // Clear filters
   const clearFilters = () => {
@@ -123,7 +108,7 @@ export default function TestCyclesPage() {
   };
   
   // Handlers
-  const handleCreateCycle = (data: CreateCycleData) => {
+  const handleCreateCycle = (data: CreateCycleFormData) => {
     if (!projectId) {
       toast.error('No project selected');
       return;
@@ -133,10 +118,12 @@ export default function TestCyclesPage() {
       {
         project_id: projectId,
         name: data.name,
-        description: '',
+        description: data.description,
+        release_id: data.release_id,
         environment: data.environment,
-        planned_start_date: data.startDate,
-        planned_end_date: data.endDate,
+        assigned_to: data.assigned_to,
+        planned_start: data.planned_start,
+        planned_end: data.planned_end,
       },
       {
         onSuccess: () => {
@@ -146,41 +133,34 @@ export default function TestCyclesPage() {
     );
   };
   
-  const handleEditCycle = (cycle: TestCycle) => {
-    setEditingCycle(cycle);
+  const handleEditCycle = (cycle: CycleWithDetails) => {
+    navigate(`/releases/test-cycles/${cycle.id}`);
   };
   
   const handleDeleteCycle = (cycleId: string) => {
-    if (!projectId) return;
-    const cycle = cycles.find(c => c.id === cycleId);
-    const originalId = cycle?._originalId || cycleId;
-    deleteCycleMutation.mutate({ id: originalId, project_id: projectId });
+    deleteCycleMutation.mutate(cycleId);
   };
   
-  const handleDuplicateCycle = (cycle: TestCycle) => {
+  const handleDuplicateCycle = (cycle: CycleWithDetails) => {
     if (!projectId) return;
-    const originalId = cycle._originalId || cycle.id;
-    cloneCycleMutation.mutate({ id: originalId, project_id: projectId });
-  };
-
-  const handleCycleClick = (cycle: TestCycle) => {
-    const originalId = cycle._originalId || cycle.id;
-    navigate(`/releases/test-cycles/${originalId}`);
+    cloneCycleMutation.mutate({ cycleId: cycle.id, projectId });
   };
 
   const handleExport = async (format: 'csv' | 'xlsx') => {
     setIsExporting(true);
     try {
-      const exportData = filteredCycles.map(c => ({
-        id: c.id,
+      const exportData = (cycles || []).map(c => ({
+        id: c.key,
         name: c.name,
         status: c.status,
-        progress: c.progress,
-        passed: (c as any).passed ?? 0,
-        failed: (c as any).failed ?? 0,
-        blocked: (c as any).blocked ?? 0,
-        startDate: c.startDate,
-        endDate: c.endDate,
+        progress: c.total_cases > 0 
+          ? Math.round(((c.passed_count + c.failed_count + c.blocked_count) / c.total_cases) * 100) 
+          : 0,
+        passed: c.passed_count,
+        failed: c.failed_count,
+        blocked: c.blocked_count,
+        startDate: c.planned_start,
+        endDate: c.planned_end,
         environment: c.environment,
       }));
       await exportTestCycles(exportData, format);
@@ -192,302 +172,264 @@ export default function TestCyclesPage() {
     }
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  const hasFilters = searchQuery || releaseFilter !== 'all' || statusFilter !== 'all' || envFilter !== 'all';
 
   return (
     <div className="p-6">
-      {/* Breadcrumb & Page Header */}
+      {/* Breadcrumb & Header */}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500 uppercase tracking-wide">RELEASES</span>
-            <span className="text-gray-400">/</span>
-            <span className="font-semibold text-gray-900">Test Cycles</span>
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground uppercase tracking-wide">RELEASES</span>
+          <span className="text-muted-foreground">/</span>
+          <span className="font-semibold text-foreground">Test Cycles</span>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" disabled={isExporting}>
+                {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-background">
+              <DropdownMenuItem onClick={() => handleExport('csv')}>
+                <FileText className="w-4 h-4 mr-2" />
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('xlsx')}>
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                Export as Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button variant="default" size="sm" onClick={() => setIsCreateModalOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Cycle
+          </Button>
+        </div>
+      </div>
+      
+      {/* KPI Cards */}
+      <CycleKPICards kpis={kpis} isLoading={isLoading} />
+      
+      {/* Filters Bar */}
+      <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg mb-4">
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search cycles..." 
+              className="pl-10 w-64"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          {/* Release Filter */}
+          <Select value={releaseFilter} onValueChange={setReleaseFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="All Releases" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Releases</SelectItem>
+              {releases?.map(release => (
+                <SelectItem key={release.id} value={release.id}>
+                  {release.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          {/* Status Filter */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map(option => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          {/* Environment Filter */}
+          <Select value={envFilter} onValueChange={setEnvFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="All Environments" />
+            </SelectTrigger>
+            <SelectContent>
+              {ENVIRONMENT_OPTIONS.map(option => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          {hasFilters && (
+            <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={clearFilters}>
+              Clear filters
+            </Button>
+          )}
+        </div>
+        
+        {/* View Toggle */}
+        <div className="flex items-center bg-muted rounded-lg p-1">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={cn(viewMode === 'card' && "bg-background shadow-sm")}
+            onClick={() => setViewMode('card')}
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className={cn(viewMode === 'list' && "bg-background shadow-sm")}
+            onClick={() => setViewMode('list')}
+          >
+            <List className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+      
+      {/* Content */}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : (cycles?.length || 0) === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+            <Layers className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground mb-1">No test cycles found</h3>
+          <p className="text-muted-foreground mb-4 max-w-sm">
+            {hasFilters
+              ? "No cycles match your filters. Try adjusting your search criteria."
+              : "Get started by creating your first test cycle."}
+          </p>
+          <div className="flex items-center gap-3">
+            {hasFilters && (
+              <Button variant="outline" onClick={clearFilters}>
+                Clear Filters
+              </Button>
+            )}
+            <Button variant="default" onClick={() => setIsCreateModalOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Cycle
+            </Button>
           </div>
         </div>
-            
-            <div className="flex items-center gap-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" disabled={isExporting}>
-                    {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
-                    Export
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white">
-                  <DropdownMenuItem onClick={() => handleExport('csv')}>
-                    <FileText className="w-4 h-4 mr-2" />
-                    Export as CSV
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport('xlsx')}>
-                    <FileSpreadsheet className="w-4 h-4 mr-2" />
-                    Export as Excel
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button variant="default" size="sm" onClick={() => setIsCreateModalOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Create Cycle
-              </Button>
-            </div>
-          </div>
-          
-          {/* Stats Bar */}
-          <CycleStatsBar 
-            totalCycles={stats.total}
-            inProgressCount={stats.inProgress}
-            completedCount={stats.completed}
-            passRate={stats.passRate}
-            avgDuration={stats.avgDuration}
-          />
-          
-          {/* Filters Bar */}
-          <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg mb-4">
-            {/* Left: Filters */}
-            <div className="flex items-center gap-3">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input 
-                  placeholder="Search cycles..." 
-                  className="pl-10 w-64"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+      ) : viewMode === 'card' ? (
+        <div className="space-y-8">
+          {/* In Progress Section */}
+          {groupedCycles.in_progress.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                <h2 className="font-semibold text-foreground">In Progress</h2>
+                <Badge variant="secondary">{groupedCycles.in_progress.length}</Badge>
               </div>
-              
-              {/* Release Filter */}
-              <Select value={releaseFilter} onValueChange={setReleaseFilter}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="All Releases" />
-                </SelectTrigger>
-                <SelectContent>
-                  {releaseOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-36">
-                  <SelectValue placeholder="All Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {statusOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              {/* Environment Filter */}
-              <Select value={envFilter} onValueChange={setEnvFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="All Environments" />
-                </SelectTrigger>
-                <SelectContent>
-                  {environmentOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              {(searchQuery || releaseFilter !== 'all' || statusFilter !== 'all' || envFilter !== 'all') && (
-                <Button variant="ghost" size="sm" className="text-gray-500" onClick={clearFilters}>
-                  Clear filters
-                </Button>
-              )}
-            </div>
-            
-            {/* Right: View Toggle */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className={cn(viewMode === 'card' && "bg-white shadow-sm")}
-                  onClick={() => setViewMode('card')}
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className={cn(viewMode === 'list' && "bg-white shadow-sm")}
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className={cn(viewMode === 'calendar' && "bg-white shadow-sm")}
-                  onClick={() => setViewMode('calendar')}
-                >
-                  <Calendar className="w-4 h-4" />
-                </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {groupedCycles.in_progress.map(cycle => (
+                  <CycleCardEnhanced 
+                    key={cycle.id} 
+                    cycle={cycle} 
+                    onEdit={handleEditCycle}
+                    onDuplicate={handleDuplicateCycle}
+                    onDelete={handleDeleteCycle}
+                  />
+                ))}
               </div>
             </div>
-          </div>
-          
-          {/* Content */}
-          {filteredCycles.length === 0 ? (
-            /* Empty State */
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <Layers className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">No test cycles found</h3>
-              <p className="text-gray-500 mb-4 max-w-sm">
-                {searchQuery || releaseFilter !== 'all' || statusFilter !== 'all' || envFilter !== 'all'
-                  ? "No cycles match your filters. Try adjusting your search criteria."
-                  : "Get started by creating your first test cycle."}
-              </p>
-              <div className="flex items-center gap-3">
-                {(searchQuery || releaseFilter !== 'all' || statusFilter !== 'all' || envFilter !== 'all') && (
-                  <Button variant="outline" onClick={clearFilters}>
-                    Clear Filters
-                  </Button>
-                )}
-                <Button variant="default" onClick={() => setIsCreateModalOpen(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Cycle
-                </Button>
-              </div>
-            </div>
-          ) : viewMode === 'card' ? (
-            /* Card View */
-            <div className="space-y-8">
-              {/* In Progress Section */}
-              {groupedCycles.in_progress.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                    <h2 className="font-semibold text-gray-900">In Progress</h2>
-                    <Badge variant="secondary">{groupedCycles.in_progress.length}</Badge>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {groupedCycles.in_progress.map(cycle => (
-                      <CycleCard 
-                        key={cycle.id} 
-                        cycle={cycle} 
-                        onEdit={handleEditCycle}
-                        onDuplicate={handleDuplicateCycle}
-                        onDelete={handleDeleteCycle}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Planned Section */}
-              {groupedCycles.planned.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-                    <h2 className="font-semibold text-gray-900">Planned</h2>
-                    <Badge variant="secondary">{groupedCycles.planned.length}</Badge>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {groupedCycles.planned.map(cycle => (
-                      <CycleCard 
-                        key={cycle.id} 
-                        cycle={cycle}
-                        onEdit={handleEditCycle}
-                        onDuplicate={handleDuplicateCycle}
-                        onDelete={handleDeleteCycle}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Completed Section */}
-              {groupedCycles.completed.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <h2 className="font-semibold text-gray-900">Completed</h2>
-                    <Badge variant="secondary">{groupedCycles.completed.length}</Badge>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {groupedCycles.completed.map(cycle => (
-                      <CycleCard 
-                        key={cycle.id} 
-                        cycle={cycle}
-                        onEdit={handleEditCycle}
-                        onDuplicate={handleDuplicateCycle}
-                        onDelete={handleDeleteCycle}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Aborted Section */}
-              {groupedCycles.aborted.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                    <h2 className="font-semibold text-gray-900">Aborted</h2>
-                    <Badge variant="secondary">{groupedCycles.aborted.length}</Badge>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {groupedCycles.aborted.map(cycle => (
-                      <CycleCard 
-                        key={cycle.id} 
-                        cycle={cycle}
-                        onEdit={handleEditCycle}
-                        onDuplicate={handleDuplicateCycle}
-                        onDelete={handleDeleteCycle}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : viewMode === 'list' ? (
-            /* List View */
-            <CycleTableView 
-              cycles={filteredCycles}
-              onEdit={handleEditCycle}
-              onDuplicate={handleDuplicateCycle}
-              onDelete={handleDeleteCycle}
-            />
-          ) : (
-            /* Calendar View */
-            <CycleCalendarView 
-              cycles={filteredCycles}
-              onCycleClick={handleCycleClick}
-            />
           )}
+          
+          {/* Planned Section */}
+          {groupedCycles.planned.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2 h-2 rounded-full bg-muted-foreground"></div>
+                <h2 className="font-semibold text-foreground">Planned</h2>
+                <Badge variant="secondary">{groupedCycles.planned.length}</Badge>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {groupedCycles.planned.map(cycle => (
+                  <CycleCardEnhanced 
+                    key={cycle.id} 
+                    cycle={cycle}
+                    onEdit={handleEditCycle}
+                    onDuplicate={handleDuplicateCycle}
+                    onDelete={handleDeleteCycle}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Completed Section */}
+          {groupedCycles.completed.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <h2 className="font-semibold text-foreground">Completed</h2>
+                <Badge variant="secondary">{groupedCycles.completed.length}</Badge>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {groupedCycles.completed.map(cycle => (
+                  <CycleCardEnhanced 
+                    key={cycle.id} 
+                    cycle={cycle}
+                    onEdit={handleEditCycle}
+                    onDuplicate={handleDuplicateCycle}
+                    onDelete={handleDeleteCycle}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <CycleTableView 
+          cycles={(cycles || []).map(c => ({
+            id: c.key,
+            name: c.name,
+            releaseId: c.release?.id || '',
+            releaseName: c.release?.name || '',
+            environment: c.environment as any,
+            status: c.status as any,
+            progress: c.total_cases > 0 
+              ? Math.round(((c.passed_count + c.failed_count + c.blocked_count) / c.total_cases) * 100) 
+              : 0,
+            totalTests: c.total_cases,
+            passedTests: c.passed_count,
+            failedTests: c.failed_count,
+            skippedTests: c.skipped_count,
+            pendingTests: c.not_run_count,
+            duration: '-',
+            assignee: {
+              name: c.assignee?.full_name || 'Unassigned',
+              initials: c.assignee?.full_name?.split(' ').map(p => p[0]).join('').slice(0, 2) || 'UA',
+              color: 'blue',
+            },
+            createdAt: c.created_at,
+            updatedAt: c.updated_at,
+            _originalId: c.id,
+          }))}
+        />
+      )}
       
-      {/* Create Cycle Modal */}
-      <CreateCycleModal 
+      {/* Create Modal */}
+      <CreateCycleModalEnhanced
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
         onCreateCycle={handleCreateCycle}
-      />
-      
-      {/* Edit Cycle Dialog */}
-      <EditTestCycleDialog
-        open={!!editingCycle}
-        cycle={editingCycle}
-        onOpenChange={(open) => !open && setEditingCycle(null)}
-        onSuccess={() => setEditingCycle(null)}
+        isCreating={createCycleMutation.isPending}
       />
     </div>
   );

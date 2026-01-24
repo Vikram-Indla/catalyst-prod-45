@@ -24151,11 +24151,13 @@ export type Database = {
         Row: {
           actual_end: string | null
           actual_start: string | null
+          assigned_to: string | null
           blocked_count: number | null
           created_at: string | null
           created_by: string | null
           cycle_key: string
           description: string | null
+          environment: string | null
           environment_id: string | null
           failed_count: number | null
           id: string
@@ -24175,11 +24177,13 @@ export type Database = {
         Insert: {
           actual_end?: string | null
           actual_start?: string | null
+          assigned_to?: string | null
           blocked_count?: number | null
           created_at?: string | null
           created_by?: string | null
           cycle_key: string
           description?: string | null
+          environment?: string | null
           environment_id?: string | null
           failed_count?: number | null
           id?: string
@@ -24199,11 +24203,13 @@ export type Database = {
         Update: {
           actual_end?: string | null
           actual_start?: string | null
+          assigned_to?: string | null
           blocked_count?: number | null
           created_at?: string | null
           created_by?: string | null
           cycle_key?: string
           description?: string | null
+          environment?: string | null
           environment_id?: string | null
           failed_count?: number | null
           id?: string
@@ -24221,6 +24227,27 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tm_test_cycles_created_by_fkey"
             columns: ["created_by"]
