@@ -38,6 +38,32 @@ export {
   type BulkCaseStatus,
 } from './useTestCases';
 
+// Test Steps
+export {
+  useAddTestStep,
+  useUpdateTestStep,
+  useDeleteTestStep,
+  useReorderTestSteps,
+  useDuplicateTestStep,
+} from './useTestSteps';
+
+// Test Case Comments
+export {
+  useTestCaseComments,
+  useTestCaseCommentsCount,
+  useAddTestCaseComment,
+  useDeleteTestCaseComment,
+} from './useTestCaseComments';
+
+// Test Case Tags/Labels
+export {
+  useTestCaseLabels,
+  useAvailableLabels,
+  useAddTestCaseLabel,
+  useRemoveTestCaseLabel,
+  useCreateLabel as useCreateTestCaseLabel,
+} from './useTestCaseTags';
+
 // Test Cycles
 export {
   useTestCycles,

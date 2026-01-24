@@ -2,7 +2,7 @@
  * Test Case Properties Panel Component — Fully wired to DB with correct query invalidation
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Package, 
@@ -33,11 +33,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTestCaseLabels, useAddTestCaseLabel, useRemoveTestCaseLabel, useCreateLabel } from '@/hooks/test-management/useTestCaseTags';
 import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
 
 // Priority ID mapping from tm_case_priorities table
@@ -101,7 +107,6 @@ function getInitials(name: string): string {
 export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelProps) {
   const queryClient = useQueryClient();
   const [editingField, setEditingField] = useState<string | null>(null);
-  const [tags, setTags] = useState<string[]>(testCase.labels?.map(l => l.name) || []);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState('');
   
@@ -109,6 +114,33 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isUpdatingPriority, setIsUpdatingPriority] = useState(false);
   const [isUpdatingType, setIsUpdatingType] = useState(false);
+  const [isUpdatingAssignee, setIsUpdatingAssignee] = useState(false);
+
+  // Tags from DB
+  const { data: dbLabels = [] } = useTestCaseLabels(testCase.id);
+  const addLabelMutation = useAddTestCaseLabel();
+  const removeLabelMutation = useRemoveTestCaseLabel();
+  const createLabelMutation = useCreateLabel();
+
+  // Team members for assignee picker
+  const [teamMembers, setTeamMembers] = useState<Array<{ id: string; full_name: string; avatar_url?: string }>>([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
+
+  // Fetch team members when assignee editing starts
+  useEffect(() => {
+    if (editingField === 'assignee' && teamMembers.length === 0) {
+      setIsLoadingMembers(true);
+      supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .order('full_name')
+        .limit(50)
+        .then(({ data }) => {
+          setTeamMembers(data || []);
+          setIsLoadingMembers(false);
+        });
+    }
+  }, [editingField, teamMembers.length]);
 
   // Derived values from DB data
   const statusKey = testCase.status || 'DRAFT';
@@ -242,23 +274,53 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
     }
   };
 
-  const handleAssigneeChange = (value: string) => {
+  const handleAssigneeChange = async (userId: string) => {
+    setIsUpdatingAssignee(true);
     setEditingField(null);
-    toast.info('Assignee picker not implemented yet');
-  };
 
-  const handleAddTag = () => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags([...tags, newTag.trim()]);
-      setNewTag('');
-      setIsAddingTag(false);
-      toast.info('Tag management not persisted to DB yet');
+    try {
+      const { error } = await supabase
+        .from('tm_test_cases')
+        .update({ assigned_to: userId })
+        .eq('id', testCase.id);
+
+      if (error) throw error;
+
+      await invalidateQueries();
+      toast.success('Assignee updated');
+    } catch (error) {
+      console.error('Failed to update assignee:', error);
+      toast.error('Failed to update assignee');
+    } finally {
+      setIsUpdatingAssignee(false);
     }
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
-    toast.info('Tag management not persisted to DB yet');
+  const handleAddTag = async () => {
+    if (!newTag.trim() || !testCase.project_id) return;
+    
+    try {
+      await createLabelMutation.mutateAsync({
+        projectId: testCase.project_id,
+        name: newTag.trim(),
+        testCaseId: testCase.id,
+      });
+      setNewTag('');
+      setIsAddingTag(false);
+    } catch (error) {
+      toast.error('Failed to add tag');
+    }
+  };
+
+  const handleRemoveTag = async (labelId: string) => {
+    try {
+      await removeLabelMutation.mutateAsync({
+        testCaseId: testCase.id,
+        labelId,
+      });
+    } catch (error) {
+      toast.error('Failed to remove tag');
+    }
   };
 
   return (
@@ -394,18 +456,42 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             <User className="w-4 h-4" />
             <span>Assignee</span>
           </div>
-          <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('assignee')}>
-            <div className="flex items-center gap-2">
-              <Avatar className="h-5 w-5">
-                {assigneeAvatar && <AvatarImage src={assigneeAvatar} alt={assigneeName} />}
-                <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
-                  {getInitials(assigneeName)}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm">{assigneeName}</span>
+          {isUpdatingAssignee ? (
+            <div className="flex items-center gap-1">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Updating...</span>
             </div>
-            <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
+          ) : editingField === 'assignee' ? (
+            <Select value={testCase.assigned_user?.id || ''} onValueChange={handleAssigneeChange}>
+              <SelectTrigger className="w-40 h-7">
+                <SelectValue placeholder="Select..." />
+              </SelectTrigger>
+              <SelectContent>
+                {isLoadingMembers ? (
+                  <div className="p-2 text-center text-sm text-muted-foreground">Loading...</div>
+                ) : (
+                  teamMembers.map((member) => (
+                    <SelectItem key={member.id} value={member.id}>
+                      {member.full_name || 'Unknown'}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('assignee')}>
+              <div className="flex items-center gap-2">
+                <Avatar className="h-5 w-5">
+                  {assigneeAvatar && <AvatarImage src={assigneeAvatar} alt={assigneeName} />}
+                  <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                    {getInitials(assigneeName)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm">{assigneeName}</span>
+              </div>
+              <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          )}
         </div>
 
         {/* Estimated Time */}
@@ -433,12 +519,12 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             Tags
           </label>
           <div className="flex flex-wrap gap-1">
-            {tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs group/tag">
-                {tag}
+            {dbLabels.map((label) => (
+              <Badge key={label.id} variant="outline" className="text-xs group/tag">
+                {label.name}
                 <X 
                   className="w-3 h-3 ml-1 opacity-0 group-hover/tag:opacity-100 cursor-pointer transition-opacity" 
-                  onClick={() => handleRemoveTag(tag)}
+                  onClick={() => handleRemoveTag(label.id)}
                 />
               </Badge>
             ))}
@@ -459,7 +545,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
                   autoFocus
                   placeholder="Tag name"
                 />
-                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handleAddTag}>
+                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handleAddTag} disabled={createLabelMutation.isPending}>
                   <Check className="w-3 h-3" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => { setIsAddingTag(false); setNewTag(''); }}>

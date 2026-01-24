@@ -92,3 +92,98 @@ export function useDeleteTestStep() {
     },
   });
 }
+
+/**
+ * Reorder steps - updates step_number for all affected steps
+ */
+export function useReorderTestSteps() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: { test_case_id: string; stepIds: string[] }) => {
+      // Update each step's step_number based on position in array
+      const updates = input.stepIds.map((id, index) => 
+        supabase
+          .from('tm_test_steps')
+          .update({ step_number: index + 1 })
+          .eq('id', id)
+      );
+
+      const results = await Promise.all(updates);
+      
+      // Check for errors
+      const errors = results.filter(r => r.error);
+      if (errors.length > 0) {
+        throw new Error(errors[0].error?.message || 'Failed to reorder steps');
+      }
+
+      return input;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-case', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.test_case_id] });
+      catalystToast.success('Steps reordered');
+    },
+    onError: (error: Error) => {
+      catalystToast.error('Failed to reorder steps', error.message);
+    },
+  });
+}
+
+/**
+ * Duplicate a step - creates a copy with incremented step_number
+ */
+export function useDuplicateTestStep() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: { stepId: string; test_case_id: string }) => {
+      // First, get the step to duplicate
+      const { data: originalStep, error: fetchError } = await supabase
+        .from('tm_test_steps')
+        .select('*')
+        .eq('id', input.stepId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Get all steps to find the max step_number
+      const { data: allSteps, error: stepsError } = await supabase
+        .from('tm_test_steps')
+        .select('step_number')
+        .eq('test_case_id', input.test_case_id)
+        .order('step_number', { ascending: false })
+        .limit(1);
+
+      if (stepsError) throw stepsError;
+
+      const maxStepNumber = allSteps?.[0]?.step_number || 0;
+
+      // Insert the duplicate
+      const { data: newStep, error: insertError } = await supabase
+        .from('tm_test_steps')
+        .insert({
+          test_case_id: input.test_case_id,
+          step_number: maxStepNumber + 1,
+          action: originalStep.action,
+          expected_result: originalStep.expected_result,
+          test_data: originalStep.test_data,
+          notes: originalStep.notes,
+          is_optional: originalStep.is_optional,
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+      return { ...newStep, test_case_id: input.test_case_id };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-case', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.test_case_id] });
+      catalystToast.success('Step duplicated');
+    },
+    onError: (error: Error) => {
+      catalystToast.error('Failed to duplicate step', error.message);
+    },
+  });
+}
