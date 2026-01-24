@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus } from '@/modules/capacity-planner/hooks/useResourceAssignments';
+import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus, type PaymentStatus } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, DollarSign } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, Calendar, DollarSign } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -25,6 +25,13 @@ const STATUS_CONFIG: Record<AssignmentStatus, { label: string; color: string }> 
   on_hold: { label: 'On Hold', color: 'bg-amber-500/15 text-amber-600' },
   in_progress: { label: 'In Progress', color: 'bg-blue-500/15 text-blue-600' },
   completed: { label: 'Completed', color: 'bg-emerald-500/15 text-emerald-600' },
+};
+
+const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string }> = {
+  not_applicable: { label: 'N/A', color: 'bg-muted text-muted-foreground' },
+  unpaid: { label: 'Unpaid', color: 'bg-red-500/15 text-red-600' },
+  paid: { label: 'Paid', color: 'bg-emerald-500/15 text-emerald-600' },
+  closed: { label: 'Closed', color: 'bg-gray-500/15 text-gray-600' },
 };
 
 interface LinkedRecord {
@@ -50,7 +57,9 @@ export default function ResourceAssignmentsPage() {
     project_id: '',
     vendor_id: '',
     budget: '',
-    assignment_status: 'yet_to_start' as AssignmentStatus
+    assignment_status: 'yet_to_start' as AssignmentStatus,
+    end_date: '',
+    payment_status: 'not_applicable' as PaymentStatus,
   });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [assignmentToDelete, setAssignmentToDelete] = useState<ResourceAssignment | null>(null);
@@ -151,7 +160,9 @@ export default function ResourceAssignmentsPage() {
       project_id: '',
       vendor_id: '',
       budget: '',
-      assignment_status: 'yet_to_start'
+      assignment_status: 'yet_to_start',
+      end_date: '',
+      payment_status: 'not_applicable',
     });
   };
 
@@ -230,12 +241,20 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
-  // Auto-save assignment type when changed
+  // Auto-save assignment type when changed - also update payment_status if not outsourced/cosourced
   const handleAssignmentTypeChange = async (assignment: ResourceAssignment, value: string) => {
     const newValue = value === '__none__' ? null : value;
+    const isPaymentApplicable = newValue === 'Outsourced' || newValue === 'Cosourced';
+    
+    // If not outsourced/cosourced, reset payment status to not_applicable
+    const updates: any = { assignment_type: newValue };
+    if (!isPaymentApplicable && assignment.payment_status !== 'not_applicable') {
+      updates.payment_status = 'not_applicable';
+    }
+    
     await updateAssignment.mutateAsync({
       id: assignment.id,
-      updates: { assignment_type: newValue },
+      updates,
     });
   };
 
@@ -253,6 +272,22 @@ export default function ResourceAssignmentsPage() {
     await updateAssignment.mutateAsync({
       id: assignment.id,
       updates: { vendor_id: newValue } as any,
+    });
+  };
+
+  // Auto-save payment status when changed
+  const handlePaymentStatusChange = async (assignment: ResourceAssignment, value: string) => {
+    await updateAssignment.mutateAsync({
+      id: assignment.id,
+      updates: { payment_status: value as PaymentStatus } as any,
+    });
+  };
+
+  // Auto-save end date when changed
+  const handleEndDateChange = async (assignment: ResourceAssignment, value: string) => {
+    await updateAssignment.mutateAsync({
+      id: assignment.id,
+      updates: { end_date: value || null } as any,
     });
   };
 
@@ -292,7 +327,9 @@ export default function ResourceAssignmentsPage() {
       project_id: assignment.project_id || '',
       vendor_id: assignment.vendor_id || '',
       budget: assignment.budget?.toString() || '',
-      assignment_status: assignment.assignment_status || 'yet_to_start'
+      assignment_status: assignment.assignment_status || 'yet_to_start',
+      end_date: assignment.end_date || '',
+      payment_status: assignment.payment_status || 'not_applicable',
     });
   };
 
@@ -329,14 +366,16 @@ export default function ResourceAssignmentsPage() {
       {/* Assignments List */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
         <table className="w-full">
-          <thead className="bg-muted/30">
+        <thead className="bg-muted/30">
             <tr>
               <th className="w-10 px-4 py-3"></th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[140px]">Status</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Budget</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[140px]">Vendor</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[150px]">Assignment Type</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Status</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Budget (SAR)</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">End Date</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Vendor</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Type</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Payment</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
             </tr>
@@ -402,9 +441,9 @@ export default function ResourceAssignmentsPage() {
                       onDoubleClick={() => handleBudgetDoubleClick(assignment)}
                       title="Double-click to edit"
                     >
-                      {assignment.budget ? (
+                      {assignment.budget !== null && assignment.budget !== undefined ? (
                         <>
-                          <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">﷼</span>
                           <span className="text-sm">{assignment.budget.toLocaleString()}</span>
                         </>
                       ) : (
@@ -413,12 +452,22 @@ export default function ResourceAssignmentsPage() {
                     </div>
                   )}
                 </td>
+                {/* End Date */}
+                <td className="px-4 py-3">
+                  <Input
+                    type="date"
+                    value={assignment.end_date || ''}
+                    onChange={(e) => handleEndDateChange(assignment, e.target.value)}
+                    className="h-8 w-[100px] text-xs"
+                  />
+                </td>
+                {/* Vendor */}
                 <td className="px-4 py-3">
                   <Select
                     value={assignment.vendor_id || '__none__'}
                     onValueChange={(value) => handleVendorChange(assignment, value)}
                   >
-                    <SelectTrigger className="h-8 w-[130px] bg-background text-xs">
+                    <SelectTrigger className="h-8 w-[110px] bg-background text-xs">
                       <SelectValue placeholder="Select vendor" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-[400]">
@@ -429,12 +478,13 @@ export default function ResourceAssignmentsPage() {
                     </SelectContent>
                   </Select>
                 </td>
+                {/* Assignment Type */}
                 <td className="px-4 py-3">
                   <Select
                     value={assignment.assignment_type || '__none__'}
                     onValueChange={(value) => handleAssignmentTypeChange(assignment, value)}
                   >
-                    <SelectTrigger className="h-8 w-[140px] bg-background text-xs">
+                    <SelectTrigger className="h-8 w-[120px] bg-background text-xs">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-[400]">
@@ -445,6 +495,28 @@ export default function ResourceAssignmentsPage() {
                       <SelectItem value="Cosourced">Cosourced</SelectItem>
                     </SelectContent>
                   </Select>
+                </td>
+                {/* Payment Status - only editable for Outsourced/Cosourced */}
+                <td className="px-4 py-3">
+                  {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
+                    <Select
+                      value={assignment.payment_status || 'unpaid'}
+                      onValueChange={(value) => handlePaymentStatusChange(assignment, value)}
+                    >
+                      <SelectTrigger className="h-8 w-[100px] bg-background text-xs">
+                        <Badge variant="secondary" className={`${PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].color} text-xs`}>
+                          {PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].label}
+                        </Badge>
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover z-[400]">
+                        <SelectItem value="unpaid">Unpaid</SelectItem>
+                        <SelectItem value="paid">Paid</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">N/A</Badge>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-center">
                   <Switch
