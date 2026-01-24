@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon, Download } from 'lucide-react';
+import { exportAssignmentsToExcel } from '@/components/admin/assignments/exportAssignmentsToExcel';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format, parseISO } from 'date-fns';
@@ -764,13 +765,30 @@ export default function ResourceAssignmentsPage() {
             Configure assignment values for capacity planning resources.
           </p>
         </div>
-        <Button 
-          className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
-          onClick={() => setCreateModalOpen(true)}
-        >
-          <Plus className="h-4 w-4" />
-          Add Assignment
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline"
+            className="gap-2"
+            onClick={() => {
+              try {
+                exportAssignmentsToExcel(allAssignments);
+                toast.success('Excel file downloaded');
+              } catch (error) {
+                toast.error('No data to export');
+              }
+            }}
+          >
+            <Download className="h-4 w-4" />
+            Download Excel
+          </Button>
+          <Button 
+            className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+            onClick={() => setCreateModalOpen(true)}
+          >
+            <Plus className="h-4 w-4" />
+            Add Assignment
+          </Button>
+        </div>
       </div>
 
       {/* Grouped Assignments List */}

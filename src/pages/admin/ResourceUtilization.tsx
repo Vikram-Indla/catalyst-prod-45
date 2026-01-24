@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { 
   useResourceUtilization, 
   useBulkSaveAllocations, 
@@ -23,8 +24,10 @@ import {
   Calendar,
   Lock,
   Plus,
-  X
+  X,
+  Download
 } from 'lucide-react';
+import { exportUtilizationToExcel } from '@/components/admin/utilization/exportUtilizationToExcel';
 import {
   Table,
   TableBody,
@@ -335,6 +338,21 @@ export default function ResourceUtilization() {
               ))}
             </SelectContent>
           </Select>
+          <Button 
+            variant="outline"
+            className="gap-2"
+            onClick={() => {
+              try {
+                exportUtilizationToExcel(resources, selectedYear);
+                toast.success('Excel file downloaded');
+              } catch (error) {
+                toast.error('No data to export');
+              }
+            }}
+          >
+            <Download className="h-4 w-4" />
+            Download Excel
+          </Button>
           <Button 
             onClick={handleSaveAll} 
             disabled={!hasPendingChanges || bulkSave.isPending}
