@@ -47,6 +47,7 @@ const STATUS_CONFIG: Record<AssignmentStatus, { label: string; color: string }> 
 const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string }> = {
   not_applicable: { label: 'N/A', color: 'bg-muted text-muted-foreground' },
   unpaid: { label: 'Unpaid', color: 'bg-red-500/15 text-red-600' },
+  on_track: { label: 'On Track', color: 'bg-blue-500/15 text-blue-600' },
   paid: { label: 'Paid', color: 'bg-emerald-500/15 text-emerald-600' },
   closed: { label: 'Closed', color: 'bg-gray-500/15 text-gray-600' },
 };
@@ -201,12 +202,16 @@ function SortableRow({
         )}
       </td>
       <td className="px-4 py-3">
-        <Input
-          type="date"
-          value={assignment.end_date || ''}
-          onChange={(e) => onEndDateChange(assignment, e.target.value)}
-          className="h-8 w-[100px] text-xs"
-        />
+        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
+          <Input
+            type="date"
+            value={assignment.end_date || ''}
+            onChange={(e) => onEndDateChange(assignment, e.target.value)}
+            className="h-8 w-[100px] text-xs"
+          />
+        ) : (
+          <span className="text-muted-foreground text-sm">—</span>
+        )}
       </td>
       <td className="px-4 py-3">
         <Select
@@ -254,6 +259,7 @@ function SortableRow({
             </SelectTrigger>
             <SelectContent className="bg-popover z-[400]">
               <SelectItem value="unpaid">Unpaid</SelectItem>
+              <SelectItem value="on_track">On Track</SelectItem>
               <SelectItem value="paid">Paid</SelectItem>
               <SelectItem value="closed">Closed</SelectItem>
             </SelectContent>
@@ -729,7 +735,7 @@ export default function ResourceAssignmentsPage() {
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">End Date</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Vendor</th>
                         <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Type</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Payment</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Payment Status</th>
                         <th className="text-center px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
                         <th className="text-center px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
                       </tr>
