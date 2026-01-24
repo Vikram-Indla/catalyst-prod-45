@@ -1379,3 +1379,76 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ================================================================
+   V8 HOTFIX — Badge Colors & Text Contrast Enforcement
+   Added: January 2026
+   Priority: HIGH — Ensures WCAG AA compliance
+   ================================================================ */
+
+/* Fixed Badge — AMBER (not red) */
+.ct-badge.fixed,
+.users-module .ct-badge.fixed,
+[class*="badge"][class*="fixed"] {
+  background: rgba(217, 119, 6, 0.08) !important;
+  color: #b45309 !important;
+  border: none !important;
+}
+.ct-badge.fixed .ct-badge-dot,
+[class*="badge"][class*="fixed"] .ct-badge-dot {
+  background: #d97706 !important;
+}
+
+/* Freelance Badge — VIOLET (not red) */
+.ct-badge.freelance,
+.users-module .ct-badge.freelance,
+[class*="badge"][class*="freelance"] {
+  background: rgba(139, 92, 246, 0.08) !important;
+  color: #8b5cf6 !important;
+  border: none !important;
+}
+.ct-badge.freelance .ct-badge-dot,
+[class*="badge"][class*="freelance"] .ct-badge-dot {
+  background: #8b5cf6 !important;
+}
+
+/* Variable Badge — BLUE */
+.ct-badge.variable,
+.users-module .ct-badge.variable {
+  background: rgba(37, 99, 235, 0.08) !important;
+  color: #2563eb !important;
+}
+.ct-badge.variable .ct-badge-dot {
+  background: #2563eb !important;
+}
+
+/* Permanent Badge — TEAL */
+.ct-badge.permanent,
+.users-module .ct-badge.permanent {
+  background: rgba(13, 148, 136, 0.08) !important;
+  color: #0d9488 !important;
+}
+.ct-badge.permanent .ct-badge-dot {
+  background: #0d9488 !important;
+}
+
+/* Table Headers — WCAG AA Compliant (4.7:1 contrast) */
+.users-module th,
+.users-module thead th,
+.ct-table th {
+  color: #64748b !important;
+}
+
+/* Stat Card Dots — V8 Color Enforcement */
+.ct-stat-dot.fixed {
+  background: #d97706 !important;
+}
+.ct-stat-dot.freelance {
+  background: #8b5cf6 !important;
+}
+.ct-stat-dot.variable {
+  background: #2563eb !important;
+}
+.ct-stat-dot.permanent {
+  background: #0d9488 !important;
+}
