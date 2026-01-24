@@ -135,18 +135,34 @@ export function useSaveTestData() {
         throw new Error('Test case ID is required');
       }
       
+      // Filter out empty headers and get the final valid headers list
+      const validHeaders = parameterHeaders.filter(h => h.trim() !== '');
+      
+      if (validHeaders.length === 0 && rows.length === 0) {
+        // Nothing to save - return success with 0 counts
+        return { success: true, parameters_saved: 0, rows_saved: 0 };
+      }
+      
       // Transform headers to parameters array
-      const parameters = parameterHeaders.map((name, index) => ({
+      const parameters = validHeaders.map((name, index) => ({
         parameter_name: name,
         parameter_type: 'text', // Default type for now
         column_order: index,
       }));
       
       // Transform rows to row_data array
-      const rowsData = rows.map((row, index) => ({
-        row_data: row.values,
-        row_order: index,
-      }));
+      // CRITICAL: Rebuild row_data to only include valid headers (prevents key desync)
+      const rowsData = rows.map((row, index) => {
+        // Only keep values for headers that exist in the final validHeaders list
+        const normalizedRowData: Record<string, string> = {};
+        for (const header of validHeaders) {
+          normalizedRowData[header] = row.values[header] ?? '';
+        }
+        return {
+          row_data: normalizedRowData,
+          row_order: index,
+        };
+      });
       
       // Call atomic RPC function
       const { data, error } = await supabase.rpc('save_test_data', {
@@ -194,9 +210,17 @@ export function hasTestDataToSave(
   parameterHeaders: string[], 
   parameters: Array<{ id: string; values: Record<string, string> }>
 ): boolean {
-  // Has data if there are custom headers (not just defaults) OR rows
-  const hasCustomHeaders = parameterHeaders.some(h => h.trim() !== '');
-  const hasRows = parameters.length > 0;
+  // Filter to only non-empty headers
+  const validHeaders = parameterHeaders.filter(h => h.trim() !== '');
   
-  return hasCustomHeaders || hasRows;
+  // Has data if there are valid headers AND at least one row with non-empty values
+  if (validHeaders.length === 0) return false;
+  if (parameters.length === 0) return false;
+  
+  // Check if any row has any non-empty cell value
+  const hasAnyData = parameters.some(row => 
+    validHeaders.some(header => (row.values[header] ?? '').trim() !== '')
+  );
+  
+  return hasAnyData;
 }

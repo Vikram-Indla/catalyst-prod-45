@@ -356,27 +356,19 @@ export function CreateTestCaseDialogV2({
       });
       
       // Persist test data if there is any (MUST succeed before showing success)
-      if (hasTestDataToSave(formData.parameterHeaders, formData.parameters)) {
-        try {
-          const testDataResult = await saveTestDataMutation.mutateAsync({
-            testCaseId: result.id,
-            parameterHeaders: formData.parameterHeaders.filter(h => h.trim() !== ''),
-            rows: formData.parameters,
-          });
-          console.log('[CreateTestCaseDialog] Test data saved:', testDataResult);
-        } catch (testDataError) {
-          // Test data save failed - show error and keep modal open
-          const errorMessage = testDataError instanceof Error ? testDataError.message : 'Failed to save test data';
-          toast.error('Test case created, but test data failed to save', { 
-            description: `${errorMessage}. Please try saving the data again from the test case detail page.` 
-          });
-          console.error('[CreateTestCaseDialog] Test data save failed:', testDataError);
-          // Still close modal since test case was created - data can be re-added
-          // But inform user clearly about the partial success
-        }
+      const hasTestData = hasTestDataToSave(formData.parameterHeaders, formData.parameters);
+      if (hasTestData) {
+        // Test data exists - saving it is REQUIRED for success
+        const testDataResult = await saveTestDataMutation.mutateAsync({
+          testCaseId: result.id,
+          parameterHeaders: formData.parameterHeaders, // Hook will filter empty headers
+          rows: formData.parameters,
+        });
+        console.log('[CreateTestCaseDialog] Test data saved:', testDataResult);
+        // If we reach here, test data was saved successfully
       }
       
-      // Invalidate repository data to refresh folder tree counts
+      // ONLY invalidate and show success AFTER both test case + test data are confirmed saved
       invalidateRepositoryData(projectId);
       
       // Show success toast with REAL case_key from database
