@@ -1,10 +1,11 @@
 // Currency configuration for Saudi Arabia
 export const CURRENCY_CODE = 'SAR';
-export const CURRENCY_SYMBOL = 'SAR';
+export const CURRENCY_SYMBOL = 'ریال';
 export const CURRENCY_LOCALE = 'en-SA';
 
 /**
- * Format a number as currency (SAR)
+ * Format a number as currency (SAR) with Arabic Riyal symbol
+ * Format: ریال 205,329.51
  */
 export function formatCurrency(value: number | null | undefined): string {
   if (value === null || value === undefined) {
