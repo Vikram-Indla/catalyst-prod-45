@@ -15,8 +15,14 @@ export interface ResourceUtilizationItem {
   resource_name: string;
   assignment_id: string | null;
   assignment_name: string | null;
-  role_name: string | null;
+  aid: string | null; // Assignment code (A01, A02...)
+  department_id: string | null;
   department_name: string | null;
+  did: string | null; // Department code (D01, D02...)
+  vendor_id: string | null;
+  vendor_name: string | null;
+  vid: string | null; // Vendor code (V01, V02...)
+  role_name: string | null;
   is_active: boolean;
   contract_end_date: string | null;
   monthly_allocations: MonthlyAllocation[];
@@ -65,47 +71,60 @@ export function useResourceUtilization(year: number = new Date().getFullYear()) 
   return useQuery({
     queryKey: ['resource-utilization', year],
     queryFn: async () => {
-      // Fetch resources with their assignments (including rid)
-      const { data: resources, error: resourcesError } = await supabase
-        .from('resource_inventory')
-        .select('id, rid, name, assignment_id, default_capacity_percent, role_name, department_name, is_active, contract_end_date')
-        .eq('is_active', true)
-        .order('rid', { ascending: true, nullsFirst: false });
-
-      if (resourcesError) throw resourcesError;
-
-      // Fetch assignments for mapping
-      const { data: assignments, error: assignmentsError } = await supabase
-        .from('resource_assignments')
-        .select('id, name');
-
-      if (assignmentsError) throw assignmentsError;
-
-      const assignmentMap = new Map(assignments?.map(a => [a.id, a.name]) || []);
-
-      // Fetch all allocations for the year
       const yearStart = `${year}-01-01`;
       const yearEnd = `${year}-12-31`;
-      
-      const { data: allocations, error: allocationsError } = await supabase
-        .from('resource_allocations')
-        .select('id, resource_id, assignment_id, allocation_percent, start_date, end_date, status')
-        .gte('start_date', yearStart)
-        .lte('end_date', yearEnd)
-        .eq('status', 'committed');
 
+      // Parallel fetch all data for speed
+      const [
+        { data: resources, error: resourcesError },
+        { data: assignments, error: assignmentsError },
+        { data: departments, error: departmentsError },
+        { data: vendors, error: vendorsError },
+        { data: allocations, error: allocationsError },
+      ] = await Promise.all([
+        supabase
+          .from('resource_inventory')
+          .select('id, rid, name, assignment_id, department_id, vendor_id, default_capacity_percent, role_name, department_name, is_active, contract_end_date')
+          .eq('is_active', true)
+          .order('rid', { ascending: true, nullsFirst: false }),
+        supabase
+          .from('resource_assignments')
+          .select('id, name, assignment_id'),
+        supabase
+          .from('capacity_departments')
+          .select('id, name, department_id'),
+        supabase
+          .from('resource_vendors')
+          .select('id, name, vendor_code'),
+        supabase
+          .from('resource_allocations')
+          .select('id, resource_id, assignment_id, allocation_percent, start_date, end_date, status')
+          .gte('start_date', yearStart)
+          .lte('end_date', yearEnd)
+          .eq('status', 'committed'),
+      ]);
+
+      if (resourcesError) throw resourcesError;
+      if (assignmentsError) throw assignmentsError;
+      if (departmentsError) throw departmentsError;
+      if (vendorsError) throw vendorsError;
       if (allocationsError) throw allocationsError;
 
-      // Create a map of allocations by resource_id + assignment_id + month
+      // Build lookup maps for codes
+      const assignmentMap = new Map(assignments?.map(a => [a.id, { name: a.name, code: a.assignment_id }]) || []);
+      const departmentMap = new Map(departments?.map(d => [d.id, { name: d.name, code: d.department_id }]) || []);
+      const vendorMap = new Map(vendors?.map(v => [v.id, { name: v.name, code: v.vendor_code }]) || []);
+
+      // Create allocation map by resource_id + assignment_id + month
       const allocationMap = new Map<string, { id: string; percent: number }>();
       (allocations || []).forEach((alloc) => {
         const startDate = new Date(alloc.start_date);
-        const month = startDate.getMonth() + 1; // 1-12
+        const month = startDate.getMonth() + 1;
         const key = `${alloc.resource_id}:${alloc.assignment_id}:${month}`;
         allocationMap.set(key, { id: alloc.id, percent: alloc.allocation_percent });
       });
 
-      // Map resources to utilization format with monthly data
+      // Map resources to utilization format
       return (resources || []).map(resource => {
         const monthly_allocations: MonthlyAllocation[] = MONTHS.map(m => {
           const key = `${resource.id}:${resource.assignment_id}:${m.num}`;
@@ -120,14 +139,24 @@ export function useResourceUtilization(year: number = new Date().getFullYear()) 
           };
         });
 
+        const assignmentData = resource.assignment_id ? assignmentMap.get(resource.assignment_id) : null;
+        const departmentData = resource.department_id ? departmentMap.get(resource.department_id) : null;
+        const vendorData = resource.vendor_id ? vendorMap.get(resource.vendor_id) : null;
+
         return {
           id: resource.id,
           rid: resource.rid,
           resource_name: resource.name,
           assignment_id: resource.assignment_id,
-          assignment_name: resource.assignment_id ? assignmentMap.get(resource.assignment_id) || null : null,
+          assignment_name: assignmentData?.name || null,
+          aid: assignmentData?.code || null,
+          department_id: resource.department_id,
+          department_name: departmentData?.name || resource.department_name || null,
+          did: departmentData?.code || null,
+          vendor_id: resource.vendor_id,
+          vendor_name: vendorData?.name || null,
+          vid: vendorData?.code || null,
           role_name: resource.role_name,
-          department_name: resource.department_name,
           is_active: resource.is_active,
           contract_end_date: resource.contract_end_date,
           monthly_allocations,
