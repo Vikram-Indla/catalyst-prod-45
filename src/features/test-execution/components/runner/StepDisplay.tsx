@@ -1,21 +1,27 @@
 /**
  * Step Display Component - Shows current step action and expected result
+ * Phase 5: Supports variable substitution with highlighted placeholders
  */
 import React from 'react';
 import { cn } from '@/lib/utils';
 import type { ExecutionStep } from '../../types/step-execution';
+import { SubstitutedText } from '@/components/test-management/SubstitutedText';
 
 interface StepDisplayProps {
   step: ExecutionStep;
   stepNumber: number;
   totalSteps: number;
+  dataRowSnapshot?: Record<string, any> | null;
 }
 
 export const StepDisplay: React.FC<StepDisplayProps> = React.memo(({
   step,
   stepNumber,
   totalSteps,
+  dataRowSnapshot,
 }) => {
+  const hasSubstitutions = !!dataRowSnapshot && Object.keys(dataRowSnapshot).length > 0;
+  
   return (
     <div className="space-y-6">
       {/* Step Header */}
@@ -44,7 +50,16 @@ export const StepDisplay: React.FC<StepDisplayProps> = React.memo(({
           Action
         </h3>
         <div className="p-4 bg-muted/50 rounded-lg border">
-          <p className="text-base leading-relaxed">{step.action}</p>
+          {hasSubstitutions ? (
+            <SubstitutedText
+              template={step.action}
+              data={dataRowSnapshot}
+              className="text-base leading-relaxed"
+              highlightSubstitutions
+            />
+          ) : (
+            <p className="text-base leading-relaxed">{step.action}</p>
+          )}
         </div>
       </div>
 
@@ -54,7 +69,16 @@ export const StepDisplay: React.FC<StepDisplayProps> = React.memo(({
           Expected Result
         </h3>
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <p className="text-base leading-relaxed">{step.expected_result}</p>
+          {hasSubstitutions ? (
+            <SubstitutedText
+              template={step.expected_result}
+              data={dataRowSnapshot}
+              className="text-base leading-relaxed"
+              highlightSubstitutions
+            />
+          ) : (
+            <p className="text-base leading-relaxed">{step.expected_result}</p>
+          )}
         </div>
       </div>
 

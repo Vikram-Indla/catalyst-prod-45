@@ -136,6 +136,14 @@ export {
   type CreateRunWithDataRowsResult,
 } from './useCreateRunWithDataRows';
 
+// Data Row Results Aggregation
+export {
+  useDataRowResults,
+  type DataRowLatestResult,
+  type DataRowResultsSummary,
+  type RowResultStatus,
+} from './useDataRowResults';
+
 // Defects
 export {
   useDefects,
