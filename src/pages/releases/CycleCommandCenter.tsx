@@ -62,15 +62,15 @@ export default function CycleCommandCenter() {
   });
 
   const handlePauseCycle = () => {
-    pauseCycle.mutate();
+    if (cycle?.status) pauseCycle.mutate(cycle.status as any);
   };
 
   const handleResumeCycle = () => {
-    resumeCycle.mutate();
+    if (cycle?.status) resumeCycle.mutate(cycle.status as any);
   };
 
   const handleCompleteCycle = () => {
-    completeCycle.mutate();
+    if (cycle?.status) completeCycle.mutate(cycle.status as any);
   };
 
   const handleExport = async (format: 'csv' | 'xlsx') => {

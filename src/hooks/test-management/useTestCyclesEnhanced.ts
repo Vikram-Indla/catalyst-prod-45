@@ -1,14 +1,22 @@
 // ============================================================================
 // HOOK: useTestCyclesEnhanced
 // Enhanced cycle fetching with release + assignee joins
+// Extended Lifecycle: draft → planned → active → paused → completed → archived
 // ============================================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { 
+  type CycleStatus,
+  isInProgressStatus,
+  includeInPassRate,
+  includeInAvgDuration,
+  includeInTotalCycles,
+} from '@/features/test-cycles/types/cycle-config';
 
-// Cycle status type
-export type CycleStatus = 'planned' | 'in_progress' | 'completed' | 'archived';
+// Re-export for backwards compatibility
+export type { CycleStatus } from '@/features/test-cycles/types/cycle-config';
 
 // Full cycle entity with joins
 export interface CycleWithDetails {
@@ -188,6 +196,16 @@ export function useTestCyclesEnhanced(projectId: string | undefined, filters?: C
 // Compute KPIs from cycles
 // ============================================================================
 
+/**
+ * Compute KPIs from cycles with proper lifecycle awareness
+ * 
+ * KPI Rules:
+ * - Total Cycles: all except archived
+ * - In Progress: active + paused + in_progress
+ * - Completed: completed (time-filtered)
+ * - Pass Rate: calculated only for active, in_progress, and completed
+ * - Avg Duration: calculated only for completed
+ */
 export function useCycleKPIs(cycles: CycleWithDetails[] | undefined): CycleKPIs {
   if (!cycles || cycles.length === 0) {
     return {
@@ -199,8 +217,11 @@ export function useCycleKPIs(cycles: CycleWithDetails[] | undefined): CycleKPIs 
     };
   }
 
-  const totalCycles = cycles.length;
-  const inProgressCount = cycles.filter(c => c.status === 'in_progress').length;
+  // Total cycles: exclude archived
+  const totalCycles = cycles.filter(c => includeInTotalCycles(c.status)).length;
+  
+  // In progress: active + paused + in_progress
+  const inProgressCount = cycles.filter(c => isInProgressStatus(c.status)).length;
 
   // Completed this month
   const now = new Date();
@@ -212,14 +233,19 @@ export function useCycleKPIs(cycles: CycleWithDetails[] | undefined): CycleKPIs 
     return endDate >= startOfMonth;
   }).length;
 
-  // Pass rate across all cycles
-  const totalPassed = cycles.reduce((sum, c) => sum + c.passed_count, 0);
-  const totalExecuted = cycles.reduce((sum, c) => sum + c.passed_count + c.failed_count + c.blocked_count, 0);
+  // Pass rate: only for cycles that should be included (active, in_progress, completed)
+  const eligibleForPassRate = cycles.filter(c => includeInPassRate(c.status));
+  const totalPassed = eligibleForPassRate.reduce((sum, c) => sum + c.passed_count, 0);
+  const totalExecuted = eligibleForPassRate.reduce((sum, c) => 
+    sum + c.passed_count + c.failed_count + c.blocked_count, 0
+  );
   const passRate = totalExecuted > 0 ? Math.round((totalPassed / totalExecuted) * 100) : 0;
 
-  // Avg duration (for cycles with actual_start and actual_end)
-  const completedCycles = cycles.filter(c => c.actual_start && c.actual_end);
-  let avgDurationHours = 4.2; // Default
+  // Avg duration: only for completed cycles
+  const completedCycles = cycles.filter(c => 
+    includeInAvgDuration(c.status) && c.actual_start && c.actual_end
+  );
+  let avgDurationHours = 0;
   if (completedCycles.length > 0) {
     const totalHours = completedCycles.reduce((sum, c) => {
       const start = new Date(c.actual_start!);
@@ -252,6 +278,7 @@ export function useCreateCycleEnhanced() {
 
       const cycleKey = await generateCycleKey(input.project_id);
 
+      // New cycles default to 'draft' status
       const { data, error } = await supabase
         .from('tm_test_cycles')
         .insert({
@@ -259,7 +286,7 @@ export function useCreateCycleEnhanced() {
           cycle_key: cycleKey,
           name: input.name,
           description: input.description || null,
-          status: 'planned',
+          status: 'draft' as any, // Default to draft per lifecycle spec
           environment: input.environment || 'staging',
           release_id: input.release_id || null,
           assigned_to: input.assigned_to || null,

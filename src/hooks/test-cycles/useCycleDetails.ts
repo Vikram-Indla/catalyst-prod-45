@@ -1,9 +1,11 @@
 /**
  * Hook for fetching cycle details with calculated stats - WIRED TO SUPABASE
+ * Extended Lifecycle: draft → planned → active → paused → completed → archived
  */
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { CycleStatus } from '@/features/test-cycles/types/cycle-config';
 
 export interface CycleStats {
   total: number;
@@ -24,7 +26,7 @@ export interface TestCycle {
   releaseId: string | null;
   releaseName: string | null;
   releaseVersion: string | null;
-  status: 'planned' | 'in_progress' | 'paused' | 'completed';
+  status: CycleStatus;
   startDate: string | null;
   endDate: string | null;
   environment: string | null;
@@ -36,12 +38,12 @@ export interface TestCycle {
 }
 
 // Map DB status to UI status - keep as-is from database
-function mapStatus(dbStatus: string | null): TestCycle['status'] {
-  const validStatuses: TestCycle['status'][] = ['planned', 'in_progress', 'paused', 'completed'];
-  if (dbStatus && validStatuses.includes(dbStatus as TestCycle['status'])) {
-    return dbStatus as TestCycle['status'];
+function mapStatus(dbStatus: string | null): CycleStatus {
+  const validStatuses: CycleStatus[] = ['draft', 'planned', 'active', 'paused', 'in_progress', 'completed', 'archived'];
+  if (dbStatus && validStatuses.includes(dbStatus as CycleStatus)) {
+    return dbStatus as CycleStatus;
   }
-  return 'planned';
+  return 'draft'; // Default to draft for new/unknown statuses
 }
 
 export function useCycleDetails(cycleId: string) {

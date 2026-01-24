@@ -29429,7 +29429,14 @@ export type Database = {
         | "assign"
         | "clone"
       tm_case_status: "draft" | "ready" | "approved" | "deprecated"
-      tm_cycle_status: "planned" | "in_progress" | "completed" | "archived"
+      tm_cycle_status:
+        | "planned"
+        | "in_progress"
+        | "completed"
+        | "archived"
+        | "draft"
+        | "active"
+        | "paused"
       tm_defect_severity: "critical" | "major" | "minor" | "trivial"
       tm_defect_status:
         | "open"
@@ -30066,7 +30073,15 @@ export const Constants = {
         "clone",
       ],
       tm_case_status: ["draft", "ready", "approved", "deprecated"],
-      tm_cycle_status: ["planned", "in_progress", "completed", "archived"],
+      tm_cycle_status: [
+        "planned",
+        "in_progress",
+        "completed",
+        "archived",
+        "draft",
+        "active",
+        "paused",
+      ],
       tm_defect_severity: ["critical", "major", "minor", "trivial"],
       tm_defect_status: [
         "open",
