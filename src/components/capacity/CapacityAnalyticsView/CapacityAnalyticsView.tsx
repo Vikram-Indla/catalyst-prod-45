@@ -17,12 +17,14 @@ interface CapacityAnalyticsViewProps {
   departmentFilter?: string;
   onDepartmentChange?: (dept: string) => void;
   onResourceClick?: (resourceId: string) => void;
+  searchQuery?: string;
 }
 
 export function CapacityAnalyticsView({ 
   departmentFilter = 'all',
   onDepartmentChange,
   onResourceClick,
+  searchQuery = '',
 }: CapacityAnalyticsViewProps) {
   const [viewScope, setViewScope] = useState<ViewScope>('q1');
   const year = 2026;
@@ -67,13 +69,28 @@ export function CapacityAnalyticsView({
     return tabs;
   }, [rows]);
 
-  // Filter rows by active tab
+  // Filter rows by active tab and search query
   const filteredRows = useMemo(() => {
-    if (departmentFilter === 'all') return rows;
-    return rows.filter(r => 
-      r.resource.department?.name?.toLowerCase() === departmentFilter.toLowerCase()
-    );
-  }, [rows, departmentFilter]);
+    let result = rows;
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(r => 
+        r.resource.name?.toLowerCase().includes(query) ||
+        r.resource.role_name?.toLowerCase().includes(query)
+      );
+    }
+    
+    // Filter by department
+    if (departmentFilter !== 'all') {
+      result = result.filter(r => 
+        r.resource.department?.name?.toLowerCase() === departmentFilter.toLowerCase()
+      );
+    }
+    
+    return result;
+  }, [rows, departmentFilter, searchQuery]);
 
   // Group rows by department
   const groupedRows = useMemo(() => {
