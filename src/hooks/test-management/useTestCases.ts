@@ -40,6 +40,7 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
           priority:tm_case_priorities(*),
           type:tm_case_types(*),
           folder:tm_folders(id, name, path),
+          release:release_versions(id, name, version),
           created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url),
           assigned_user:profiles!tm_test_cases_assigned_to_fkey(id, full_name, avatar_url)
         `, { count: 'exact' })
@@ -103,6 +104,47 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         throw error;
       }
 
+      // Fetch steps counts for all cases in batch
+      const caseIds = (data || []).map(c => c.id);
+      let stepsCounts: Record<string, number> = {};
+      
+      if (caseIds.length > 0) {
+        const { data: stepsData } = await supabase
+          .from('tm_test_steps')
+          .select('test_case_id')
+          .in('test_case_id', caseIds);
+        
+        // Count steps per case
+        if (stepsData) {
+          stepsData.forEach(step => {
+            stepsCounts[step.test_case_id] = (stepsCounts[step.test_case_id] || 0) + 1;
+          });
+        }
+      }
+
+      // Fetch last execution status for all cases in batch
+      let lastExecutions: Record<string, { status: string; executed_at: string | null }> = {};
+      
+      if (caseIds.length > 0) {
+        const { data: execData } = await supabase
+          .from('test_cycle_executions')
+          .select('case_id, status, executed_at')
+          .in('case_id', caseIds)
+          .order('executed_at', { ascending: false });
+        
+        // Get latest execution per case
+        if (execData) {
+          execData.forEach(exec => {
+            if (!lastExecutions[exec.case_id]) {
+              lastExecutions[exec.case_id] = {
+                status: exec.status || 'not_run',
+                executed_at: exec.executed_at,
+              };
+            }
+          });
+        }
+      }
+
       const cases = (data || []).map(c => ({
         ...c,
         key: c.case_key,
@@ -113,6 +155,9 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         is_ai_generated: c.is_ai_generated || false,
         created_by_profile: c.created_by_profile,
         assigned_user: (c as any).assigned_user || null,
+        release: (c as any).release || null,
+        steps_count: stepsCounts[c.id] || 0,
+        last_execution: lastExecutions[c.id] || null,
       })) as unknown as TMTestCase[];
 
       return { cases, total: count || 0 };

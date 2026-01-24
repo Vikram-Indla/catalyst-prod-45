@@ -65,6 +65,15 @@ function formatUpdated(updatedAt?: string | null): string {
   }
 }
 
+// Map last execution status to UI format
+function mapLastRun(lastExecution: { status: string; executed_at: string | null } | null): 'passed' | 'failed' | 'not_run' {
+  if (!lastExecution) return 'not_run';
+  const status = lastExecution.status?.toLowerCase();
+  if (status === 'passed' || status === 'pass') return 'passed';
+  if (status === 'failed' || status === 'fail') return 'failed';
+  return 'not_run';
+}
+
 /**
  * Convert a single TMTestCase to UI TestCase format
  */
@@ -76,17 +85,26 @@ export function tmToUITestCase(tc: TMTestCase): TestCase {
   // Extract folder information from the joined relation
   const folder = (tc as any).folder as { id: string; name: string; path?: string } | null;
   
+  // Extract release information from the joined relation
+  const release = (tc as any).release as { id: string; name: string; version?: string } | null;
+  
+  // Steps count from aggregated query (not from steps array which may not be loaded)
+  const stepsCount = (tc as any).steps_count ?? (tc.steps?.length || 0);
+  
+  // Last execution from aggregated query
+  const lastExecution = (tc as any).last_execution as { status: string; executed_at: string | null } | null;
+  
   return {
     id: tc.key || tc.id,
     dbId: tc.id, // Preserve the actual database UUID for operations
     title: tc.title,
-    // Note: release field removed - no real data exists in tm_test_cases
-    release: '', // Empty - will be hidden in UI
+    // Release from FK join - show version if available, else name, else "Unassigned"
+    release: release ? (release.version || release.name) : 'Unassigned',
     type: mapType(tc.type),
     priority: mapPriority(tc.priority),
     status: mapStatus(tc.status),
-    steps: tc.steps?.length || 0,
-    lastRun: 'not_run', // Derived from execution data - shows "Not Run" when no executions exist
+    steps: stepsCount,
+    lastRun: mapLastRun(lastExecution),
     assignee: {
       name: assignee?.full_name || 'Unassigned',
       avatar: getInitials(assignee?.full_name),
