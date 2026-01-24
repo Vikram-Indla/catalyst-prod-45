@@ -17,18 +17,10 @@ interface CycleHeaderProps {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string; pulse?: boolean }> = {
-  draft: { bg: '#f1f5f9', text: '#475569', label: 'Draft' },
-  active: { bg: CATALYST_V5.primaryLight, text: CATALYST_V5.primary, label: 'Active', pulse: true },
+  planned: { bg: '#f1f5f9', text: '#475569', label: 'Planned' },
+  in_progress: { bg: CATALYST_V5.primaryLight, text: CATALYST_V5.primary, label: 'In Progress', pulse: true },
   paused: { bg: CATALYST_V5.warningLight, text: CATALYST_V5.warning, label: 'Paused' },
   completed: { bg: CATALYST_V5.tealLight, text: CATALYST_V5.teal, label: 'Completed' },
-};
-
-const CYCLE_TYPE_LABELS: Record<string, string> = {
-  regression: 'Regression',
-  smoke: 'Smoke',
-  integration: 'Integration',
-  uat: 'UAT',
-  sanity: 'Sanity',
 };
 
 export function CycleHeader({ cycle, stats, isLoading }: CycleHeaderProps) {
@@ -128,10 +120,6 @@ export function CycleHeader({ cycle, stats, isLoading }: CycleHeaderProps) {
                 />
               )}
               {status.label}
-            </Badge>
-
-            <Badge variant="outline" className="text-xs">
-              {CYCLE_TYPE_LABELS[cycle.cycleType] || cycle.cycleType}
             </Badge>
           </div>
 

@@ -172,7 +172,7 @@ export default function CycleCommandCenter() {
             <Plus className="h-4 w-4 mr-2" />
             Add Tests
           </Button>
-          {(cycle?.status === 'active' || cycle?.status === 'in_progress') && (
+          {(cycle?.status === 'in_progress') && (
             <>
               <Button variant="outline" size="sm" onClick={handlePauseCycle} disabled={isPausing}>
                 <Pause className="h-4 w-4 mr-2" />
