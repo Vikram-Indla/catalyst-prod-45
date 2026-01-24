@@ -126,8 +126,8 @@ export function EditTestCycleDialog({
           name: data.name,
           description: data.description || null,
           status: data.status as any,
-          planned_start_date: data.planned_start_date || null,
-          planned_end_date: data.planned_end_date || null,
+          planned_start: data.planned_start_date || null,
+          planned_end: data.planned_end_date || null,
           environment: data.environment || null,
           updated_at: new Date().toISOString(),
         })
