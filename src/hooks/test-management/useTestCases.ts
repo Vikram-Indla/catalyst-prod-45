@@ -528,6 +528,15 @@ export function useUpdateTestCase() {
 }
 
 /**
+ * Step input for draft saving
+ */
+export interface DraftStepInput {
+  action: string;
+  expected_result: string;
+  test_data?: string;
+}
+
+/**
  * Draft input for saving partial test cases
  */
 export interface DraftCaseInput {
@@ -544,10 +553,13 @@ export interface DraftCaseInput {
   assigned_to?: string;
   release_id?: string;
   tags?: string[];
+  /** Steps to persist with the draft */
+  steps?: DraftStepInput[];
 }
 
 /**
  * Upsert a test case draft - inserts if no draft_id, updates if exists.
+ * Also persists steps to tm_test_steps.
  * Does NOT require folder_id or steps. Title defaults to 'Untitled draft'.
  */
 export function useUpsertTestCaseDraft() {
@@ -583,6 +595,9 @@ export function useUpsertTestCaseDraft() {
       const priority_id = input.priority ? priorityIdMap[input.priority] : undefined;
       const case_type_id = input.type ? typeIdMap[input.type] : undefined;
 
+      let caseId: string;
+      let caseKey: string;
+
       if (input.draft_id) {
         // UPDATE existing draft
         const { data: updated, error: updateError } = await supabase
@@ -603,16 +618,17 @@ export function useUpsertTestCaseDraft() {
           .single();
 
         if (updateError) throw updateError;
-        return { id: updated.id, case_key: updated.case_key };
+        caseId = updated.id;
+        caseKey = updated.case_key;
       } else {
         // INSERT new draft
-        const caseKey = await generateCaseKey(input.project_id, input.folder_id);
+        const generatedKey = await generateCaseKey(input.project_id, input.folder_id);
 
         const { data: inserted, error: insertError } = await supabase
           .from('tm_test_cases')
           .insert({
             project_id: input.project_id,
-            case_key: caseKey,
+            case_key: generatedKey,
             title,
             description: input.description || null,
             preconditions: input.preconditions || null,
@@ -628,12 +644,50 @@ export function useUpsertTestCaseDraft() {
           .single();
 
         if (insertError) throw insertError;
-        return { id: inserted.id, case_key: inserted.case_key };
+        caseId = inserted.id;
+        caseKey = inserted.case_key;
       }
+
+      // Persist steps: delete existing and insert new ones
+      if (input.steps && input.steps.length > 0) {
+        // Delete existing steps for this case
+        await supabase
+          .from('tm_test_steps')
+          .delete()
+          .eq('test_case_id', caseId);
+
+        // Insert new steps
+        const stepsToInsert = input.steps.map((step, index) => ({
+          test_case_id: caseId,
+          step_number: index + 1,
+          action: step.action,
+          expected_result: step.expected_result,
+          test_data: step.test_data || null,
+        }));
+
+        const { error: stepsError } = await supabase
+          .from('tm_test_steps')
+          .insert(stepsToInsert);
+
+        if (stepsError) {
+          console.error('Failed to save steps:', stepsError);
+          // Don't throw - the case was saved, just steps failed
+        }
+      } else if (input.draft_id) {
+        // If updating and no steps provided, delete existing steps
+        await supabase
+          .from('tm_test_steps')
+          .delete()
+          .eq('test_case_id', caseId);
+      }
+
+      return { id: caseId, case_key: caseKey };
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case', result.id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-steps', result.id] });
       catalystToast.success('Draft saved');
     },
     onError: (error: Error) => {
