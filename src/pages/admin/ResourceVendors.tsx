@@ -18,7 +18,7 @@ export default function ResourceVendorsPage() {
   const { allVendors, isLoadingAll, createVendor, updateVendor, deleteVendor } = useResourceVendors();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState<ResourceVendor | null>(null);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ name: '' });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [vendorToDelete, setVendorToDelete] = useState<ResourceVendor | null>(null);
   const [linkedRecords, setLinkedRecords] = useState<LinkedRecord[]>([]);
@@ -48,7 +48,7 @@ export default function ResourceVendorsPage() {
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
     await createVendor.mutateAsync(formData);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: '' });
     setCreateModalOpen(false);
   };
 
@@ -59,7 +59,7 @@ export default function ResourceVendorsPage() {
       updates: formData,
     });
     setEditingVendor(null);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: '' });
   };
 
   const handleDeleteClick = async (vendor: ResourceVendor) => {
@@ -94,8 +94,7 @@ export default function ResourceVendorsPage() {
   };
 
   const openEdit = (vendor: ResourceVendor) => {
-    setEditingVendor(vendor);
-    setFormData({ name: vendor.name, description: vendor.description || '' });
+    setFormData({ name: vendor.name });
   };
 
   if (isLoadingAll) {
@@ -134,7 +133,6 @@ export default function ResourceVendorsPage() {
               <th className="w-10 px-4 py-3"></th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[80px]">V-ID</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Description</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
             </tr>
@@ -158,9 +156,6 @@ export default function ResourceVendorsPage() {
                     </div>
                     <span className="text-sm font-medium text-foreground">{vendor.name}</span>
                   </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">
-                  {vendor.description || '—'}
                 </td>
                 <td className="px-4 py-3 text-center">
                   <Switch
@@ -188,7 +183,7 @@ export default function ResourceVendorsPage() {
             ))}
             {allVendors.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                   No vendors configured. Click "Add Vendor" to create one.
                 </td>
               </tr>
@@ -210,14 +205,6 @@ export default function ResourceVendorsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g., Thiqah"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                value={formData.description}
-                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                placeholder="Brief description..."
               />
             </div>
           </div>
@@ -247,14 +234,6 @@ export default function ResourceVendorsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g., Thiqah"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                value={formData.description}
-                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                placeholder="Brief description..."
               />
             </div>
           </div>

@@ -7,6 +7,7 @@ export interface ResourceCountry {
   id: string;
   name: string;
   code: string | null;
+  country_id: string | null;  // C01, C02 format
   flag_svg: string | null;
   is_active: boolean;
   sort_order: number;

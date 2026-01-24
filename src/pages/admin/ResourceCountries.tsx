@@ -150,6 +150,7 @@ export default function ResourceCountriesPage() {
           <thead className="bg-muted/30">
             <tr>
               <th className="w-10 px-4 py-3"></th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[80px]">CID</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Flag</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Code</th>
@@ -165,6 +166,9 @@ export default function ResourceCountriesPage() {
               >
                 <td className="px-4 py-3 text-muted-foreground">
                   <GripVertical className="h-4 w-4" />
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-sm font-mono font-medium text-primary">{country.country_id || '—'}</span>
                 </td>
                 <td className="px-4 py-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center overflow-hidden">
@@ -213,7 +217,7 @@ export default function ResourceCountriesPage() {
             ))}
             {allCountries.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                   No countries configured. Click "Add Country" to create one.
                 </td>
               </tr>
