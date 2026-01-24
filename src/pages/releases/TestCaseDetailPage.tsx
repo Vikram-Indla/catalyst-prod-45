@@ -25,6 +25,7 @@ import {
   GitCommit,
   Loader2,
   AlertTriangle,
+  Grid3X3,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -43,12 +44,14 @@ import { TestCasePropertiesPanel } from '@/components/releases/test-case-detail/
 import { RequirementsCoverage } from '@/components/releases/test-case-detail/RequirementsCoverage';
 import { TestCaseVersionHistory } from '@/components/releases/test-case-detail/TestCaseVersionHistory';
 import { VersionHistoryPanel } from '@/components/releases/test-case-detail/VersionHistoryPanel';
+import { TestCaseDataTab } from '@/components/releases/test-case-detail/TestCaseDataTab';
 import { useTestCase, useCloneTestCase, useTestCaseSteps } from '@/hooks/test-management/useTestCases';
 import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
 import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCaseExecutionHistory';
 import { useTestCaseCommentsCount } from '@/hooks/test-management/useTestCaseComments';
 import { useTestCaseVersionsCount } from '@/hooks/test-management/useTestCaseVersions';
 import { useTestCaseAuditLogCount } from '@/hooks/test-management/useTestCaseAuditLog';
+import { useTestDataRows } from '@/hooks/test-management/useTestData';
 import { isValidUUID } from '@/lib/utils/assertUuid';
 import { cn } from '@/lib/utils';
 
@@ -74,6 +77,7 @@ export default function TestCaseDetailPage() {
   const { data: commentsCount = 0 } = useTestCaseCommentsCount(isValidId ? id : undefined);
   const { data: versionsCount = 0 } = useTestCaseVersionsCount(isValidId ? id : undefined);
   const { data: changesCount = 0 } = useTestCaseAuditLogCount(isValidId ? id : undefined);
+  const { data: testDataRows = [] } = useTestDataRows(isValidId ? id : undefined);
   
   // Clone mutation
   const cloneMutation = useCloneTestCase();
@@ -312,6 +316,16 @@ export default function TestCaseDetailPage() {
                     </span>
                   </TabsTrigger>
                   <TabsTrigger 
+                    value="data" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
+                  >
+                    <Grid3X3 className="w-4 h-4 mr-2" />
+                    Data
+                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
+                      {testDataRows.length}
+                    </span>
+                  </TabsTrigger>
+                  <TabsTrigger 
                     value="runs" 
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-4 py-3 data-[state=active]:shadow-none"
                   >
@@ -377,6 +391,10 @@ export default function TestCaseDetailPage() {
                     testCaseTitle={testCase.title}
                     testCaseType={testCase.type?.name?.toLowerCase()}
                   />
+                </TabsContent>
+
+                <TabsContent value="data" className="mt-6">
+                  <TestCaseDataTab testCaseId={testCase.id} />
                 </TabsContent>
 
                 <TabsContent value="runs" className="mt-6">
