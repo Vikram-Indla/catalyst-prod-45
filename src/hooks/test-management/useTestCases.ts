@@ -527,6 +527,121 @@ export function useUpdateTestCase() {
   });
 }
 
+/**
+ * Draft input for saving partial test cases
+ */
+export interface DraftCaseInput {
+  project_id: string;
+  /** Existing draft ID for updates, null for new drafts */
+  draft_id?: string | null;
+  title?: string;
+  description?: string;
+  preconditions?: string;
+  postconditions?: string;
+  folder_id?: string | null;
+  priority?: string;
+  type?: string;
+  assigned_to?: string;
+  release_id?: string;
+  tags?: string[];
+}
+
+/**
+ * Upsert a test case draft - inserts if no draft_id, updates if exists.
+ * Does NOT require folder_id or steps. Title defaults to 'Untitled draft'.
+ */
+export function useUpsertTestCaseDraft() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: DraftCaseInput): Promise<{ id: string; case_key: string }> => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const title = input.title?.trim() || 'Untitled draft';
+
+      // Map UI priority (P1, P2, P3, P4) to priority_id
+      const priorityIdMap: Record<string, string> = {
+        'P1': '00000000-0000-0000-0001-000000000001',
+        'P2': '00000000-0000-0000-0001-000000000002',
+        'P3': '00000000-0000-0000-0001-000000000003',
+        'P4': '00000000-0000-0000-0001-000000000004',
+      };
+
+      // Map UI type to case_type_id
+      const typeIdMap: Record<string, string> = {
+        'functional': '00000000-0000-0000-0002-000000000001',
+        'regression': '00000000-0000-0000-0002-000000000002',
+        'smoke': '00000000-0000-0000-0002-000000000003',
+        'integration': '00000000-0000-0000-0002-000000000004',
+        'e2e': '00000000-0000-0000-0002-000000000005',
+        'performance': '00000000-0000-0000-0002-000000000006',
+        'security': '00000000-0000-0000-0002-000000000007',
+        'usability': '00000000-0000-0000-0002-000000000008',
+      };
+
+      const priority_id = input.priority ? priorityIdMap[input.priority] : undefined;
+      const case_type_id = input.type ? typeIdMap[input.type] : undefined;
+
+      if (input.draft_id) {
+        // UPDATE existing draft
+        const { data: updated, error: updateError } = await supabase
+          .from('tm_test_cases')
+          .update({
+            title,
+            description: input.description || null,
+            preconditions: input.preconditions || null,
+            folder_id: input.folder_id || null,
+            priority_id: priority_id || null,
+            case_type_id: case_type_id || null,
+            assigned_to: input.assigned_to || null,
+            release_id: input.release_id || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', input.draft_id)
+          .select('id, case_key')
+          .single();
+
+        if (updateError) throw updateError;
+        return { id: updated.id, case_key: updated.case_key };
+      } else {
+        // INSERT new draft
+        const caseKey = await generateCaseKey(input.project_id, input.folder_id);
+
+        const { data: inserted, error: insertError } = await supabase
+          .from('tm_test_cases')
+          .insert({
+            project_id: input.project_id,
+            case_key: caseKey,
+            title,
+            description: input.description || null,
+            preconditions: input.preconditions || null,
+            status: 'draft',
+            folder_id: input.folder_id || null,
+            priority_id: priority_id || '00000000-0000-0000-0001-000000000003', // Default: Medium
+            case_type_id: case_type_id || '00000000-0000-0000-0002-000000000001', // Default: Functional
+            version: 1,
+            created_by: user.id,
+            assigned_to: input.assigned_to || user.id,
+          })
+          .select('id, case_key')
+          .single();
+
+        if (insertError) throw insertError;
+        return { id: inserted.id, case_key: inserted.case_key };
+      }
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
+      catalystToast.success('Draft saved');
+    },
+    onError: (error: Error) => {
+      catalystToast.error('Failed to save draft', error.message);
+    },
+  });
+}
+
 export function useDeleteTestCase() {
   const queryClient = useQueryClient();
 
