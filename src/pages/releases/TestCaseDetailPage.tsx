@@ -42,7 +42,6 @@ import { TestCasePropertiesPanel } from '@/components/releases/test-case-detail/
 import { RequirementsCoverage } from '@/components/releases/test-case-detail/RequirementsCoverage';
 import { TestCaseVersionHistory } from '@/components/releases/test-case-detail/TestCaseVersionHistory';
 import { VersionHistoryPanel } from '@/components/releases/test-case-detail/VersionHistoryPanel';
-import { QuickActionsBar } from '@/components/releases/test-case-detail/QuickActionsBar';
 import { useTestCase, useCloneTestCase, useTestCaseSteps } from '@/hooks/test-management/useTestCases';
 import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
 import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCaseExecutionHistory';
@@ -399,13 +398,6 @@ export default function TestCaseDetailPage() {
           </motion.div>
         </div>
       </div>
-
-      {/* Quick Actions Bar */}
-      <QuickActionsBar 
-        testCaseId={testCase.key || testCase.id} 
-        onExecute={handleExecute}
-        onDuplicate={handleDuplicate}
-      />
 
       {/* Version History Panel */}
       <VersionHistoryPanel
