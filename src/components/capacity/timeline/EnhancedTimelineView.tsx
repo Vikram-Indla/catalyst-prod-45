@@ -33,6 +33,7 @@ interface ResourceMetric {
   allocation?: number;
   contractEndDate?: string | null;
   assignmentName?: string;
+  country_flag_svg?: string | null;
 }
 
 interface TimelinePeriod {
@@ -69,9 +70,10 @@ const RESOURCE_COLUMN_WIDTH = 220;
 interface AvatarProps {
   initials: string;
   contractEndDate?: string | null;
+  flagSvg?: string | null;
 }
 
-function ResourceAvatar({ initials, contractEndDate }: AvatarProps) {
+function ResourceAvatar({ initials, contractEndDate, flagSvg }: AvatarProps) {
   const contractInfo = getContractStatus(contractEndDate);
   
   const ringClass = cn(styles.avatarRing, {
@@ -87,6 +89,13 @@ function ResourceAvatar({ initials, contractEndDate }: AvatarProps) {
         {initials}
       </div>
       <div className={ringClass} />
+      {flagSvg && (
+        <img 
+          src={flagSvg} 
+          alt="" 
+          className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm z-10"
+        />
+      )}
     </div>
   );
 }
@@ -410,6 +419,7 @@ export function EnhancedTimelineView({
                         <ResourceAvatar
                           initials={getInitials(resource.name)}
                           contractEndDate={resource.contractEndDate}
+                          flagSvg={resource.country_flag_svg}
                         />
                         <div className={styles.resourceInfo}>
                           <div className={styles.textResourceName}>{resource.name}</div>

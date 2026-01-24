@@ -3064,11 +3064,20 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
       >
         {/* Resource Info */}
         <div className="px-4 py-3 flex items-center gap-3 border-r border-border">
-          <div 
-            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-            style={{ backgroundColor: theme.accent }}
-          >
-            {initials}
+          <div className="relative shrink-0">
+            <div 
+              className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white"
+              style={{ backgroundColor: theme.accent }}
+            >
+              {initials}
+            </div>
+            {resource.country_flag_svg && (
+              <img 
+                src={resource.country_flag_svg} 
+                alt={resource.country || ''} 
+                className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm"
+              />
+            )}
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>

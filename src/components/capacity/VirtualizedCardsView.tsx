@@ -18,6 +18,7 @@ interface ResourceMetric {
   allocation?: number;
   assignmentName?: string;
   avatarUrl?: string;
+  country_flag_svg?: string | null;
 }
 
 interface VirtualizedCardsViewProps {
@@ -161,12 +162,21 @@ function VirtualizedCard({
       )}
 
       <div className="flex items-center gap-2.5 mb-2">
-        <div 
-          className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-          style={{ backgroundColor: isOverAllocated ? CATALYST_V5.error.hex : theme.accent }}
-          onClick={(e) => { e.stopPropagation(); onClick?.(); }}
-        >
-          {initials}
+        <div className="relative shrink-0">
+          <div 
+            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white"
+            style={{ backgroundColor: isOverAllocated ? CATALYST_V5.error.hex : theme.accent }}
+            onClick={(e) => { e.stopPropagation(); onClick?.(); }}
+          >
+            {initials}
+          </div>
+          {resource.country_flag_svg && (
+            <img 
+              src={resource.country_flag_svg} 
+              alt="" 
+              className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm"
+            />
+          )}
         </div>
 
         <div className="flex-1 min-w-0">
