@@ -13,9 +13,9 @@ export interface CycleTestCase {
   description: string | null;
   status: 'not_started' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
   priority: 'critical' | 'high' | 'medium' | 'low';
-  assigneeId: string | null;
-  assigneeName: string | null;
-  assigneeAvatar: string | null;
+  // Canonical assignee fields (matching TMCycleScope/TMDefect pattern)
+  assigned_to: string | null;
+  assignee: { id: string; full_name: string; avatar_url?: string } | null;
   dueDate: string | null;
   executedAt: string | null;
   executedBy: string | null;
@@ -136,6 +136,7 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
       let testCases: CycleTestCase[] = (scopeData || []).map((scope: any) => {
         const testCase = scope.test_case;
         const run = runResults[scope.id];
+        const assigneeProfile = scope.assignee;
         
         return {
           id: scope.id,
@@ -145,9 +146,13 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
           description: testCase?.description || null,
           status: mapExecutionStatus(scope.current_status),
           priority: mapPriority(testCase?.priority?.name),
-          assigneeId: scope.assigned_to,
-          assigneeName: scope.assignee?.full_name || null,
-          assigneeAvatar: scope.assignee?.avatar_url || null,
+          // Canonical assignee fields (matching TMCycleScope/TMDefect pattern)
+          assigned_to: scope.assigned_to,
+          assignee: assigneeProfile ? {
+            id: assigneeProfile.id,
+            full_name: assigneeProfile.full_name || 'Unknown',
+            avatar_url: assigneeProfile.avatar_url,
+          } : null,
           dueDate: null, // No due_date column
           executedAt: run?.completed_at || null,
           executedBy: run?.executed_by || null,

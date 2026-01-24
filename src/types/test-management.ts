@@ -169,6 +169,10 @@ export interface TMTestCase {
   created_at: string;
   updated_at: string;
   is_ai_generated?: boolean;
+  // Canonical assignee fields (matching TMCycleScope/TMDefect pattern)
+  assigned_to: string | null;
+  assignee?: { id: string; full_name: string; avatar_url?: string };
+  // Joined relations
   priority?: TMCasePriority;
   type?: TMCaseType;
   folder?: TMFolder;

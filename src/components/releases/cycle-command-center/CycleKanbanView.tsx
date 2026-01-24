@@ -84,15 +84,15 @@ export function CycleKanbanView({ cycleId, testCases, isLoading }: CycleKanbanVi
                     {testCase.title}
                   </p>
                   <div className="flex items-center justify-between">
-                    {testCase.assigneeName ? (
+                    {testCase.assignee ? (
                       <div className="flex items-center gap-1.5">
                         <div 
                           className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-medium"
                           style={{ color: CATALYST_V5.primary }}
                         >
-                          {testCase.assigneeName.split(' ').map(n => n[0]).join('')}
+                          {testCase.assignee.full_name.split(' ').map(n => n[0]).join('')}
                         </div>
-                        <span className="text-xs text-muted-foreground">{testCase.assigneeName}</span>
+                        <span className="text-xs text-muted-foreground">{testCase.assignee.full_name}</span>
                       </div>
                     ) : (
                       <span className="text-xs text-muted-foreground">Unassigned</span>
