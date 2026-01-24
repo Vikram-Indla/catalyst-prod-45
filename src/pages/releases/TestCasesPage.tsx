@@ -1014,7 +1014,8 @@ export default function TestCasesPage() {
       {/* Test Case Detail Drawer */}
       <TestCaseDetailDrawer
         testCase={selectedTestCase ? {
-          id: selectedTestCase.id,
+          id: selectedTestCase.id,  // UUID for DB operations
+          key: selectedTestCase.key || selectedTestCase.id,  // Display key for UI
           title: selectedTestCase.title,
           description: selectedTestCase.description,
           preconditions: selectedTestCase.preconditions,
@@ -1024,7 +1025,7 @@ export default function TestCasesPage() {
           tags: selectedTestCase.tags,
           lastRunStatus: selectedTestCase.lastRun as any,
           automationStatus: selectedTestCase.automationStatus || 'manual',
-          createdBy: selectedTestCase.createdBy || selectedTestCase.assignee.name,
+          createdBy: selectedTestCase.createdBy,
           createdAt: selectedTestCase.createdAt,
           updatedAt: selectedTestCase.updatedAt,
           project_id: projectId,
@@ -1045,7 +1046,8 @@ export default function TestCasesPage() {
       {/* Execute Test Case Dialog */}
       <ExecuteTestCaseDialog
         testCase={selectedTestCase ? {
-          id: selectedTestCase.id,
+          id: selectedTestCase.id,  // UUID for DB operations
+          key: selectedTestCase.key || selectedTestCase.id,  // Display key for UI
           title: selectedTestCase.title,
           description: selectedTestCase.description,
           status: selectedTestCase.status,
