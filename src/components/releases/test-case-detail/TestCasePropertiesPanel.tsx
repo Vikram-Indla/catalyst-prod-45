@@ -20,6 +20,7 @@ import {
   ArrowDown,
   X,
   Check,
+  Loader2,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,7 +36,17 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
+
+// Priority ID mapping from tm_case_priorities table
+const PRIORITY_ID_MAP: Record<string, string> = {
+  'Critical': '00000000-0000-0000-0001-000000000001',
+  'High': '00000000-0000-0000-0001-000000000002',
+  'Medium': '00000000-0000-0000-0001-000000000003',
+  'Low': '00000000-0000-0000-0001-000000000004',
+};
 
 interface TestCasePropertiesPanelProps {
   testCase: TestCaseDetailData;
@@ -75,10 +86,12 @@ function getInitials(name: string): string {
 }
 
 export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelProps) {
+  const queryClient = useQueryClient();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>(testCase.labels?.map(l => l.name) || []);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState('');
+  const [isUpdatingPriority, setIsUpdatingPriority] = useState(false);
 
   // Derived values from DB data
   const statusKey = testCase.status || 'DRAFT';
@@ -125,9 +138,38 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
     toast.info('Status update not implemented yet');
   };
 
-  const handlePriorityChange = (value: string) => {
+  const handlePriorityChange = async (value: string) => {
+    const previousPriority = priorityName;
+    const priorityId = PRIORITY_ID_MAP[value];
+    
+    if (!priorityId) {
+      toast.error('Invalid priority value');
+      return;
+    }
+
+    setIsUpdatingPriority(true);
     setEditingField(null);
-    toast.info('Priority update not implemented yet');
+
+    try {
+      const { error } = await supabase
+        .from('tm_test_cases')
+        .update({ priority_id: priorityId })
+        .eq('id', testCase.id);
+
+      if (error) throw error;
+
+      // Invalidate queries to refetch updated data
+      queryClient.invalidateQueries({ queryKey: ['testCase', testCase.id] });
+      queryClient.invalidateQueries({ queryKey: ['testCases'] });
+      
+      toast.success(`Priority updated to ${value}`);
+    } catch (error) {
+      console.error('Failed to update priority:', error);
+      toast.error('Failed to update priority');
+      // UI will revert on refetch
+    } finally {
+      setIsUpdatingPriority(false);
+    }
   };
 
   const handleTypeChange = (value: string) => {
@@ -215,7 +257,12 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             <Flag className="w-4 h-4" />
             <span>Priority</span>
           </div>
-          {editingField === 'priority' ? (
+        {isUpdatingPriority ? (
+            <div className="flex items-center gap-1">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Updating...</span>
+            </div>
+          ) : editingField === 'priority' ? (
             <Select value={priorityName} onValueChange={handlePriorityChange}>
               <SelectTrigger className="w-32 h-7">
                 <SelectValue />
