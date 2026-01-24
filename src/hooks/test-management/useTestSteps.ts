@@ -1,9 +1,11 @@
 /**
  * Hook for managing test steps
+ * Auto-versions on step changes
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { createVersionSnapshot } from './useAutoVersioning';
 
 interface AddStepInput {
   test_case_id: string;
@@ -33,9 +35,13 @@ export function useAddTestStep() {
       if (error) throw error;
       return data;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
+      // Create version snapshot
+      await createVersionSnapshot({ testCaseId: variables.test_case_id, changeSummary: `Added step ${variables.step_number}` });
       queryClient.invalidateQueries({ queryKey: ['tm-case', variables.test_case_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', variables.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', variables.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', variables.test_case_id] });
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to add step', error.message);
@@ -59,9 +65,13 @@ export function useUpdateTestStep() {
       if (error) throw error;
       return { ...data, test_case_id };
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // Create version snapshot
+      await createVersionSnapshot({ testCaseId: data.test_case_id, changeSummary: 'Step updated' });
       queryClient.invalidateQueries({ queryKey: ['tm-case', data.test_case_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', data.test_case_id] });
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to update step', error.message);
@@ -82,9 +92,13 @@ export function useDeleteTestStep() {
       if (error) throw error;
       return input;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // Create version snapshot
+      await createVersionSnapshot({ testCaseId: data.test_case_id, changeSummary: 'Step deleted' });
       queryClient.invalidateQueries({ queryKey: ['tm-case', data.test_case_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', data.test_case_id] });
       catalystToast.success('Step deleted');
     },
     onError: (error: Error) => {
@@ -119,9 +133,13 @@ export function useReorderTestSteps() {
 
       return input;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // Create version snapshot
+      await createVersionSnapshot({ testCaseId: data.test_case_id, changeSummary: 'Steps reordered' });
       queryClient.invalidateQueries({ queryKey: ['tm-case', data.test_case_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', data.test_case_id] });
       catalystToast.success('Steps reordered');
     },
     onError: (error: Error) => {
@@ -177,9 +195,13 @@ export function useDuplicateTestStep() {
       if (insertError) throw insertError;
       return { ...newStep, test_case_id: input.test_case_id };
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // Create version snapshot
+      await createVersionSnapshot({ testCaseId: data.test_case_id, changeSummary: 'Step duplicated' });
       queryClient.invalidateQueries({ queryKey: ['tm-case', data.test_case_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', data.test_case_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', data.test_case_id] });
       catalystToast.success('Step duplicated');
     },
     onError: (error: Error) => {

@@ -1,5 +1,6 @@
 /**
  * Test Case Properties Panel Component — Fully wired to DB with correct query invalidation
+ * Auto-versions on every property change
  */
 
 import { useState, useEffect } from 'react';
@@ -44,6 +45,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTestCaseLabels, useAddTestCaseLabel, useRemoveTestCaseLabel, useCreateLabel } from '@/hooks/test-management/useTestCaseTags';
+import { useAutoVersioning } from '@/hooks/test-management/useAutoVersioning';
 import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
 
 // Priority ID mapping from tm_case_priorities table
@@ -106,6 +108,7 @@ function getInitials(name: string): string {
 
 export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelProps) {
   const queryClient = useQueryClient();
+  const { createVersion } = useAutoVersioning();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState('');
@@ -206,6 +209,9 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
       if (error) throw error;
 
+      // Create version snapshot after successful update
+      await createVersion({ testCaseId: testCase.id, changeSummary: `Status changed to ${statusConfig[value]?.label || value}` });
+
       await invalidateQueries();
       toast.success(`Status updated to ${statusConfig[value]?.label || value}`);
     } catch (error) {
@@ -234,6 +240,9 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
         .eq('id', testCase.id);
 
       if (error) throw error;
+
+      // Create version snapshot after successful update
+      await createVersion({ testCaseId: testCase.id, changeSummary: `Priority changed to ${value}` });
 
       await invalidateQueries();
       toast.success(`Priority updated to ${value}`);
@@ -264,6 +273,9 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
       if (error) throw error;
 
+      // Create version snapshot after successful update
+      await createVersion({ testCaseId: testCase.id, changeSummary: `Type changed to ${value}` });
+
       await invalidateQueries();
       toast.success(`Type updated to ${value}`);
     } catch (error) {
@@ -285,6 +297,10 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
         .eq('id', testCase.id);
 
       if (error) throw error;
+
+      // Create version snapshot after successful update
+      const selectedMember = teamMembers.find(m => m.id === userId);
+      await createVersion({ testCaseId: testCase.id, changeSummary: `Assignee changed to ${selectedMember?.full_name || 'user'}` });
 
       await invalidateQueries();
       toast.success('Assignee updated');
