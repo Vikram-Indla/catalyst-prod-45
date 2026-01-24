@@ -65,6 +65,9 @@ export {
   type TestCaseVersionSnapshot,
 } from './useTestCaseVersions';
 
+// Auto-Versioning
+export { useAutoVersioning, createVersionSnapshot } from './useAutoVersioning';
+
 // Test Case Tags/Labels
 export {
   useTestCaseLabels,

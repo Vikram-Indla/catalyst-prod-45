@@ -1,6 +1,7 @@
 /**
  * Test Case Header Component
  * Displays title, status, meta information — wired to real DB data with title persistence
+ * Auto-versions on title change
  */
 
 import { useState, useEffect } from 'react';
@@ -14,6 +15,7 @@ import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useAutoVersioning } from '@/hooks/test-management/useAutoVersioning';
 import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
 
 interface TestCaseHeaderProps {
@@ -57,6 +59,7 @@ function getInitials(name: string): string {
 
 export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
   const queryClient = useQueryClient();
+  const { createVersion } = useAutoVersioning();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(testCase.title);
   const [isSavingTitle, setIsSavingTitle] = useState(false);
@@ -77,6 +80,10 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
         .update({ title: title.trim() })
         .eq('id', testCase.id);
       if (error) throw error;
+      
+      // Create version snapshot after successful update
+      await createVersion({ testCaseId: testCase.id, changeSummary: `Title changed to "${title.trim()}"` });
+      
       await queryClient.invalidateQueries({ queryKey: ['tm-case', testCase.id] });
       await queryClient.invalidateQueries({ queryKey: ['tm-cases'] });
       toast.success('Title updated');
