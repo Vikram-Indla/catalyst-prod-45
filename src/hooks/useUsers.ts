@@ -32,8 +32,11 @@ export interface UserProfile {
   country_flag_svg_url: string | null;
   location: string | null;
   // Additional capacity planning fields from resource_inventory
+  department_id: string | null;  // UUID FK to capacity_departments
   department_name: string | null;
+  assignment_id: string | null;  // UUID FK to resource_assignments
   assignment_name: string | null;
+  vendor_id: string | null;  // UUID FK to resource_vendors
   job_role: string | null;  // Job title/role from resource_inventory (e.g. ".NET Developer")
   resource_type: string | null;  // Fixed, Core, or Freelance
   ctc: number | null;  // Cost to Company in SAR
@@ -197,7 +200,10 @@ export function useUsers() {
           contract_end_date: inventory?.contract_end_date || profile.contract_end_date || null,
           vendor_name: inventory?.resolved_vendor_name || inventory?.vendor_name || profile.vendor || null,
           vendor: inventory?.resolved_vendor_name || profile.vendor || null,
+          vendor_id: inventory?.vendor_id || null,
+          department_id: inventory?.department_id || null,
           department_name: inventory?.department_name || null,
+          assignment_id: inventory?.assignment_id || null,
           assignment_name: inventory?.assignment_name || null,
           job_role: inventory?.role_name || null,
           country: inventory?.resolved_country?.name || profile.country || null,
@@ -238,8 +244,11 @@ export function useUsers() {
             country_code: resolvedCountry?.code || null,
             country_flag_svg_url: null,
             location: r.location_id ? locationMap.get(r.location_id) || null : null,
+            department_id: r.department_id || null,
             department_name: r.department_id ? departmentMap.get(r.department_id) || null : null,
+            assignment_id: r.assignment_id || null,
             assignment_name: r.assignment_id ? assignmentMap.get(r.assignment_id) || null : null,
+            vendor_id: r.vendor_id || null,
             job_role: r.role_name || null,
             resource_type: r.resource_type || null,
             ctc: r.ctc ?? null,

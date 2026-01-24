@@ -890,13 +890,13 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                     </td>
                     <td className="py-2 px-3">
                       <span className="text-xs font-mono text-primary">
-                        {departments.find(d => d.name === user.department_name)?.department_id || '—'}
+                        {departments.find(d => d.id === user.department_id)?.department_id || '—'}
                       </span>
                     </td>
                     <td className="py-2 px-3">
                       <UserInlineCell
                         type="select"
-                        value={departments.find(d => d.name === user.department_name)?.id || null}
+                        value={user.department_id || null}
                         displayValue={user.department_name ? (
                           <Badge variant="outline" className="text-xs">{user.department_name}</Badge>
                         ) : undefined}
@@ -915,13 +915,13 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                     </td>
                     <td className="py-2 px-3">
                       <span className="text-xs font-mono text-primary">
-                        {assignments.find(a => a.name === user.assignment_name)?.assignment_id || '—'}
+                        {assignments.find(a => a.id === user.assignment_id)?.assignment_id || '—'}
                       </span>
                     </td>
                     <td className="py-2 px-3">
                       <UserInlineCell
                         type="select"
-                        value={assignments.find(a => a.name === user.assignment_name)?.id || null}
+                        value={user.assignment_id || null}
                         displayValue={user.assignment_name || undefined}
                         options={assignmentOptions}
                         placeholder="-"
@@ -972,13 +972,13 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                     </td>
                     <td className="py-2 px-3">
                       <span className="text-xs font-mono text-primary">
-                        {vendors.find(v => v.name === user.vendor)?.vendor_code || '—'}
+                        {vendors.find(v => v.id === user.vendor_id)?.vendor_code || '—'}
                       </span>
                     </td>
                     <td className="py-2 px-3">
                       <UserInlineCell
                         type="select"
-                        value={vendors.find(v => v.name === user.vendor)?.id || null}
+                        value={user.vendor_id || null}
                         displayValue={user.vendor || undefined}
                         options={vendorOptions}
                         placeholder="-"
