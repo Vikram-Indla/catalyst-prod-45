@@ -1,6 +1,7 @@
 /**
  * Test Case Steps Component — Fully wired to DB
  * All CRUD operations persist to tm_test_steps
+ * AI Generate Steps enabled via edge function
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -24,6 +25,14 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -37,6 +46,7 @@ import {
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   useAddTestStep, 
   useUpdateTestStep, 
@@ -57,6 +67,8 @@ interface TestStep {
 interface TestCaseStepsProps {
   testCaseId: string;
   steps: TMCaseStep[];
+  testCaseTitle?: string;
+  testCaseType?: string;
 }
 
 // Convert DB step format to UI format
@@ -70,18 +82,29 @@ function mapDbStepsToUi(dbSteps: TMCaseStep[]): TestStep[] {
   }));
 }
 
-export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps) {
+export function TestCaseSteps({ testCaseId, steps: dbSteps, testCaseTitle, testCaseType }: TestCaseStepsProps) {
   const [steps, setSteps] = useState<TestStep[]>(mapDbStepsToUi(dbSteps));
   const [showAddForm, setShowAddForm] = useState(false);
   const [newStep, setNewStep] = useState({ action: '', expectedResult: '' });
   const [isGenerating, setIsGenerating] = useState(false);
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [editingStep, setEditingStep] = useState({ action: '', expectedResult: '' });
+  
+  // AI Generate dialog state
+  const [showAIDialog, setShowAIDialog] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
 
   // Sync local state when DB data changes
   useEffect(() => {
     setSteps(mapDbStepsToUi(dbSteps));
   }, [dbSteps]);
+
+  // Pre-populate AI prompt with test case info
+  useEffect(() => {
+    if (testCaseTitle && showAIDialog) {
+      setAiPrompt(testCaseTitle);
+    }
+  }, [testCaseTitle, showAIDialog]);
 
   // Mutations
   const addStepMutation = useAddTestStep();
@@ -110,12 +133,90 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
   };
 
   const handleAIGenerate = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Please describe what you want to test');
+      return;
+    }
+
     setIsGenerating(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setIsGenerating(false);
-    toast.info('AI step generation not enabled yet', {
-      description: 'This feature will be available in a future release.',
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-generate-test-cases', {
+        body: {
+          prompt: aiPrompt,
+          projectName: 'Test Project',
+          testType: testCaseType || 'functional',
+          includeEdgeCases: true,
+          includeNegativeTests: false,
+          includePerformance: false,
+          includeSecurity: false,
+        },
+      });
+
+      if (error) {
+        // Handle rate limiting and payment errors
+        if (error.message?.includes('429') || error.message?.includes('rate')) {
+          toast.error('Rate limit exceeded', { description: 'Please try again in a moment.' });
+          return;
+        }
+        if (error.message?.includes('402') || error.message?.includes('payment')) {
+          toast.error('AI credits exhausted', { description: 'Please add credits to continue using AI features.' });
+          return;
+        }
+        throw new Error(error.message);
+      }
+      
+      if (data?.error) {
+        if (data.error.includes('429') || data.error.includes('rate')) {
+          toast.error('Rate limit exceeded', { description: 'Please try again in a moment.' });
+          return;
+        }
+        if (data.error.includes('402') || data.error.includes('payment')) {
+          toast.error('AI credits exhausted', { description: 'Please add credits to continue using AI features.' });
+          return;
+        }
+        throw new Error(data.error);
+      }
+
+      // Extract steps from the first generated test case
+      const generatedTestCase = data?.data?.testCases?.[0];
+      const generatedSteps = generatedTestCase?.steps || [];
+
+      if (generatedSteps.length === 0) {
+        toast.error('No steps were generated. Try a more detailed description.');
+        return;
+      }
+
+      // Insert each generated step into the database
+      let insertedCount = 0;
+      for (let i = 0; i < generatedSteps.length; i++) {
+        const step = generatedSteps[i];
+        try {
+          await addStepMutation.mutateAsync({
+            test_case_id: testCaseId,
+            step_number: steps.length + i + 1,
+            action: step.action || '',
+            expected_result: step.expectedResult || '',
+            test_data: step.testData || undefined,
+          });
+          insertedCount++;
+        } catch (err) {
+          console.error('Failed to insert step:', err);
+        }
+      }
+
+      if (insertedCount > 0) {
+        toast.success(`AI generated ${insertedCount} test steps`);
+        setShowAIDialog(false);
+        setAiPrompt('');
+      } else {
+        toast.error('Failed to save generated steps');
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to generate steps';
+      toast.error(message);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleDeleteStep = async (stepId: string) => {
@@ -223,30 +324,25 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
         </div>
 
         <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-8"
-                onClick={handleAIGenerate}
-                disabled={isGenerating}
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
-                    AI Generate Steps
-                  </>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>AI step generation not enabled yet</TooltipContent>
-          </Tooltip>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8"
+            onClick={() => setShowAIDialog(true)}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
+                AI Generate Steps
+              </>
+            )}
+          </Button>
           <Button size="sm" className="h-8" onClick={() => setShowAddForm(true)}>
             <Plus className="w-3.5 h-3.5 mr-1.5" />
             Add Step
@@ -258,10 +354,16 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
       {steps.length === 0 && !showAddForm && (
         <div className="text-center py-12 border border-dashed border-border rounded-lg bg-muted/30">
           <p className="text-muted-foreground mb-4">No test steps defined yet</p>
-          <Button size="sm" onClick={() => setShowAddForm(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add First Step
-          </Button>
+          <div className="flex items-center justify-center gap-3">
+            <Button variant="outline" size="sm" onClick={() => setShowAIDialog(true)}>
+              <Sparkles className="w-4 h-4 mr-2 text-purple-600" />
+              AI Generate Steps
+            </Button>
+            <Button size="sm" onClick={() => setShowAddForm(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add First Step
+            </Button>
+          </div>
         </div>
       )}
 
@@ -380,6 +482,68 @@ export function TestCaseSteps({ testCaseId, steps: dbSteps }: TestCaseStepsProps
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* AI Generate Dialog */}
+      <Dialog open={showAIDialog} onOpenChange={setShowAIDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              AI Generate Test Steps
+            </DialogTitle>
+            <DialogDescription>
+              Describe what you want to test and AI will generate detailed test steps.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                What do you want to test?
+              </label>
+              <Textarea
+                placeholder="e.g., User login with valid credentials, password reset flow, form validation..."
+                className="min-h-[120px]"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Be specific about the functionality, user actions, and expected behaviors.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowAIDialog(false);
+                setAiPrompt('');
+              }}
+              disabled={isGenerating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAIGenerate}
+              disabled={!aiPrompt.trim() || isGenerating}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Steps
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -498,14 +662,14 @@ function StepCard({
 
           {/* Attachments */}
           {step.attachments && step.attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-1">
+            <div className="flex items-center gap-2 flex-wrap">
               {step.attachments.map((att) => (
                 <div
                   key={att.id}
-                  className="flex items-center gap-1.5 px-2 py-1 bg-muted rounded text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-2 py-1 bg-muted rounded text-xs"
                 >
                   <Paperclip className="w-3 h-3" />
-                  {att.name}
+                  <span>{att.name}</span>
                 </div>
               ))}
             </div>
@@ -513,7 +677,7 @@ function StepCard({
         </div>
       )}
 
-      {/* Actions */}
+      {/* Actions Menu */}
       {!isEditing && (
         <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
           <DropdownMenu>
@@ -531,6 +695,7 @@ function StepCard({
                 <Copy className="w-4 h-4 mr-2" />
                 Duplicate
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={onMoveUp} disabled={isFirst}>
                 <ArrowUp className="w-4 h-4 mr-2" />
                 Move Up
@@ -540,7 +705,11 @@ function StepCard({
                 Move Down
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={onDelete} disabled={isDeleting}>
+              <DropdownMenuItem 
+                onClick={onDelete} 
+                className="text-destructive focus:text-destructive"
+                disabled={isDeleting}
+              >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete
               </DropdownMenuItem>

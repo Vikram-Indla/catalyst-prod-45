@@ -361,6 +361,8 @@ export default function TestCaseDetailPage() {
                   <TestCaseSteps 
                     testCaseId={testCase.id}
                     steps={steps}
+                    testCaseTitle={testCase.title}
+                    testCaseType={testCase.type?.name?.toLowerCase()}
                   />
                 </TabsContent>
 
