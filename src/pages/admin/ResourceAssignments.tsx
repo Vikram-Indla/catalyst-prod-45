@@ -65,6 +65,13 @@ const ASSIGNMENT_TYPE_COLORS: Record<string, string> = {
   Unspecified: 'bg-muted text-muted-foreground border-border',
 };
 
+// Map legacy 'BAU' to 'Insourced' for display
+const normalizeAssignmentType = (type: string | null | undefined): string => {
+  if (!type) return 'Unspecified';
+  if (type === 'BAU') return 'Insourced';
+  return type;
+};
+
 interface LinkedRecord {
   resource_name: string;
   table_source: 'allocation' | 'inventory';
@@ -260,7 +267,7 @@ function SortableRow({
       </td>
       <td className="px-4 py-3">
         <Select
-          value={assignment.assignment_type || '__none__'}
+          value={normalizeAssignmentType(assignment.assignment_type) === 'Unspecified' ? '__none__' : normalizeAssignmentType(assignment.assignment_type)}
           onValueChange={(value) => onAssignmentTypeChange(assignment, value)}
         >
           <SelectTrigger className="h-8 w-[120px] bg-background text-xs">
@@ -384,12 +391,12 @@ export default function ResourceAssignmentsPage() {
     },
   });
 
-  // Group assignments by type
+  // Group assignments by type (normalize BAU -> Insourced)
   const groupedAssignments = useMemo(() => {
     const groups: Record<string, ResourceAssignment[]> = {};
     
     allAssignments.forEach((assignment) => {
-      const type = assignment.assignment_type || 'Unspecified';
+      const type = normalizeAssignmentType(assignment.assignment_type);
       if (!groups[type]) {
         groups[type] = [];
       }
