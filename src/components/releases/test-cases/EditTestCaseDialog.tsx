@@ -295,7 +295,7 @@ export function EditTestCaseDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0 flex flex-col overflow-hidden">
+      <DialogContent className="max-w-3xl max-h-[85vh] p-0 flex flex-col gap-0">
         <DialogHeader className="px-6 py-4 border-b flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
@@ -308,7 +308,7 @@ export function EditTestCaseDialog({
           </div>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
           <div className="px-6 pt-4 flex-shrink-0">
             <TabsList className="grid grid-cols-2 w-64">
               <TabsTrigger value="details">Details</TabsTrigger>
@@ -318,16 +318,23 @@ export function EditTestCaseDialog({
             </TabsList>
           </div>
 
-          {/* Scrollable content area with proper overflow */}
-          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto px-6 py-4">
             <TabsContent value="details" className="mt-0 space-y-6">
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="edit-title">Title *</Label>
                 <Input
-                  id="title"
+                  id="edit-title"
+                  name="edit-title"
+                  autoComplete="off"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    console.log('[EditDialog] Title onChange:', e.target.value);
+                    setTitle(e.target.value);
+                  }}
+                  onFocus={() => console.log('[EditDialog] Title focused')}
+                  onKeyDown={(e) => console.log('[EditDialog] Title keydown:', e.key)}
                   placeholder="Enter test case title"
                 />
               </div>
