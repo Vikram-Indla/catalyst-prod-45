@@ -31,27 +31,73 @@ export function useResourceAssignments() {
   const { data: assignments = [], isLoading } = useQuery({
     queryKey: ['resource-assignments'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch assignments without project join first (avoids RLS recursion issue)
+      const { data, error } = await (supabase as any)
         .from('resource_assignments')
-        .select('*, project:projects(id, name, status)')
+        .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      return data as ResourceAssignment[];
+      
+      // Fetch project data separately if there are project_ids
+      const projectIds = (data || []).map((a: any) => a.project_id).filter(Boolean);
+      let projectsMap: Record<string, ProjectInfo> = {};
+      
+      if (projectIds.length > 0) {
+        const { data: projects } = await (supabase as any)
+          .from('projects')
+          .select('id, name, status')
+          .in('id', projectIds);
+        
+        if (projects) {
+          projects.forEach((p: ProjectInfo) => {
+            projectsMap[p.id] = p;
+          });
+        }
+      }
+      
+      // Map assignments with project data
+      return (data || []).map((a: any) => ({
+        ...a,
+        project: a.project_id ? projectsMap[a.project_id] || null : null,
+      })) as ResourceAssignment[];
     },
   });
 
   const { data: allAssignments = [], isLoading: isLoadingAll } = useQuery({
     queryKey: ['resource-assignments-all'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch assignments without project join first (avoids RLS recursion issue)
+      const { data, error } = await (supabase as any)
         .from('resource_assignments')
-        .select('*, project:projects(id, name, status)')
+        .select('*')
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      return data as ResourceAssignment[];
+      
+      // Fetch project data separately if there are project_ids
+      const projectIds = (data || []).map((a: any) => a.project_id).filter(Boolean);
+      let projectsMap: Record<string, ProjectInfo> = {};
+      
+      if (projectIds.length > 0) {
+        const { data: projects } = await (supabase as any)
+          .from('projects')
+          .select('id, name, status')
+          .in('id', projectIds);
+        
+        if (projects) {
+          projects.forEach((p: ProjectInfo) => {
+            projectsMap[p.id] = p;
+          });
+        }
+      }
+      
+      // Map assignments with project data
+      return (data || []).map((a: any) => ({
+        ...a,
+        project: a.project_id ? projectsMap[a.project_id] || null : null,
+      })) as ResourceAssignment[];
     },
   });
 
