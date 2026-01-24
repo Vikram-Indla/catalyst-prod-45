@@ -1020,10 +1020,11 @@ export default function TestCasesPage() {
           createdBy: selectedTestCase.createdBy || selectedTestCase.assignee.name,
           createdAt: selectedTestCase.createdAt,
           updatedAt: selectedTestCase.updatedAt,
-          steps: selectedTestCase.testSteps,
+          project_id: projectId,
         } : null}
         open={isDetailDrawerOpen}
         onOpenChange={setIsDetailDrawerOpen}
+        projectId={projectId}
         onEdit={() => {
           setIsDetailDrawerOpen(false);
           setIsEditOpen(true);
@@ -1061,6 +1062,7 @@ export default function TestCasesPage() {
         testCase={selectedTestCase}
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
+        projectId={projectId}
         onSuccess={() => {
           refetch();
           setSelectedTestCase(null);

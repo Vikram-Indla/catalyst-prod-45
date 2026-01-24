@@ -366,7 +366,7 @@ export default function TestCaseDetailPage() {
                 </TabsContent>
 
                 <TabsContent value="links" className="mt-6">
-                  <TestCaseLinksAttachments />
+                  <TestCaseLinksAttachments testCaseId={id || ''} />
                 </TabsContent>
 
                 <TabsContent value="comments" className="mt-6">
