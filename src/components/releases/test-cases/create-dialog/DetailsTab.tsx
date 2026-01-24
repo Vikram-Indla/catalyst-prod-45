@@ -14,15 +14,27 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { Folder, Loader2 } from 'lucide-react';
 import { TestCaseFormData, PRIORITY_CONFIG, TYPE_OPTIONS, PriorityLevel, TestCaseType } from './types';
+
+/** Folder option from tm_folders */
+export interface FolderOption {
+  id: string;
+  name: string;
+  path?: string;
+}
 
 interface DetailsTabProps {
   data: TestCaseFormData;
   onChange: (updates: Partial<TestCaseFormData>) => void;
   errors: Record<string, string>;
+  /** Folders from tm_folders table */
+  folders: FolderOption[];
+  /** Loading state for folders */
+  foldersLoading?: boolean;
 }
 
-export function DetailsTab({ data, onChange, errors }: DetailsTabProps) {
+export function DetailsTab({ data, onChange, errors, folders, foldersLoading }: DetailsTabProps) {
   const titleLength = data.title.length;
   const descriptionLength = data.description.length;
 
@@ -37,6 +49,9 @@ export function DetailsTab({ data, onChange, errors }: DetailsTabProps) {
     if (descriptionLength > 1400) return 'text-amber-500';
     return 'text-muted-foreground';
   };
+
+  // Get current folder name for display
+  const currentFolderName = folders.find(f => f.id === data.folderId)?.name;
 
   return (
     <div className="space-y-6 py-4">
@@ -175,7 +190,7 @@ export function DetailsTab({ data, onChange, errors }: DetailsTabProps) {
 
         {/* Folder & Assignee Row */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Folder */}
+          {/* Folder - Dynamic from DB */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">
               Folder <span className="text-destructive">*</span>
@@ -183,19 +198,43 @@ export function DetailsTab({ data, onChange, errors }: DetailsTabProps) {
             <Select
               value={data.folderId}
               onValueChange={(value) => onChange({ folderId: value })}
+              disabled={foldersLoading}
             >
               <SelectTrigger className={cn(
                 data.folderId && "border-teal-500",
                 errors.folderId && "border-destructive"
               )}>
-                <SelectValue placeholder="Select folder..." />
+                {foldersLoading ? (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Loading folders...</span>
+                  </div>
+                ) : (
+                  <SelectValue placeholder="Select folder...">
+                    {currentFolderName && (
+                      <div className="flex items-center gap-2">
+                        <Folder className="w-4 h-4 text-muted-foreground" />
+                        <span>{currentFolderName}</span>
+                      </div>
+                    )}
+                  </SelectValue>
+                )}
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="authentication">Authentication</SelectItem>
-                <SelectItem value="payments">Payments</SelectItem>
-                <SelectItem value="api-tests">API Tests</SelectItem>
-                <SelectItem value="user-management">User Management</SelectItem>
-                <SelectItem value="core-features">Core Features</SelectItem>
+                {folders.length === 0 && !foldersLoading ? (
+                  <div className="px-2 py-4 text-center text-sm text-muted-foreground">
+                    No folders found. Create a folder first.
+                  </div>
+                ) : (
+                  folders.map((folder) => (
+                    <SelectItem key={folder.id} value={folder.id}>
+                      <div className="flex items-center gap-2">
+                        <Folder className="w-4 h-4 text-muted-foreground" />
+                        <span>{folder.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
             {errors.folderId && (
