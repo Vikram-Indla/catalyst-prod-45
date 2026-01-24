@@ -1,8 +1,16 @@
+/**
+ * Enterprise-grade Multi-Tab Excel Export
+ * Exports data from 3 admin pages into separate sheets:
+ * - Sheet 1: Resources (from /admin/users)
+ * - Sheet 2: Utilization (from /admin/resource-utilization)
+ * - Sheet 3: Assignments (from /admin/resource-assignments)
+ */
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 
-interface UserProfile {
+// Minimal interface for export - matches columns shown on /admin/users
+interface ExportUserData {
   id: string;
   rid: string | null;
   full_name: string | null;
@@ -14,34 +22,11 @@ interface UserProfile {
   contract_start_date: string | null;
   contract_end_date: string | null;
   vendor_id: string | null;
-  vendor_name: string | null;
+  vendor: string | null;
   resource_type: string | null;
-  country_id: string | null;
-  country_name: string | null;
-  location_id: string | null;
-  location_name: string | null;
-  cost_to_company: number | null;
-}
-
-interface ResourceUtilizationRow {
-  rid: string;
-  resource_name: string;
-  assignment_name: string;
-  contract_end_date: string;
-  [key: string]: string | number;
-}
-
-interface ResourceAssignmentRow {
-  aid: string;
-  name: string;
-  type: string;
-  status: string;
-  budget: number | string;
-  start_date: string;
-  end_date: string;
-  vendor: string;
-  payment_status: string;
-  active: string;
+  country: string | null;
+  location: string | null;
+  ctc: number | null;
 }
 
 const MONTHS = [
@@ -73,7 +58,7 @@ function formatStatus(status: string | null): string {
 }
 
 export async function exportUsersMultiTab(
-  users: UserProfile[],
+  users: ExportUserData[],
   departments: Array<{ id: string; department_id: string | null }>,
   assignments: Array<{ id: string; assignment_id: string | null }>,
   vendors: Array<{ id: string; vendor_code: string | null }>
@@ -82,6 +67,7 @@ export async function exportUsersMultiTab(
   const today = format(new Date(), 'yyyy-MM-dd');
 
   // ==================== SHEET 1: RESOURCES ====================
+  // Matches /admin/users table columns exactly (NO Email IDs)
   const userHeaders = ['RID', 'Name', 'Job Role', 'DID', 'Department', 'AID', 'Assignment', 
     'Contract Start', 'Contract End', 'VID', 'Vendor', 'Resource Type', 'Country', 'Location', 'CTC (SAR)'];
   
@@ -96,11 +82,11 @@ export async function exportUsersMultiTab(
     formatDate(u.contract_start_date),
     formatDate(u.contract_end_date),
     vendors.find(v => v.id === u.vendor_id)?.vendor_code || '—',
-    u.vendor_name || '—',
+    u.vendor || '—',
     u.resource_type || '—',
-    u.country_name || '—',
-    u.location_name || '—',
-    u.cost_to_company ?? '—',
+    u.country || '—',
+    u.location || '—',
+    u.ctc ?? '—',
   ]);
 
   const usersSheet = XLSX.utils.aoa_to_sheet([userHeaders, ...userData]);
@@ -113,6 +99,7 @@ export async function exportUsersMultiTab(
   XLSX.utils.book_append_sheet(workbook, usersSheet, 'Resources');
 
   // ==================== SHEET 2: UTILIZATION ====================
+  // Matches /admin/resource-utilization table columns exactly
   const currentYear = new Date().getFullYear();
   const yearStart = `${currentYear}-01-01`;
   const yearEnd = `${currentYear}-12-31`;
@@ -120,7 +107,7 @@ export async function exportUsersMultiTab(
   const utilizationHeaders = ['RID', 'Resource Name', 'Assignment', 'Contract End', 
     ...MONTHS.map(m => m.name), 'Avg'];
 
-  // Fetch utilization data
+  // Fetch utilization data from resource_inventory (same as useResourceUtilization)
   const { data: inventory } = await supabase
     .from('resource_inventory')
     .select('id, rid, name, assignment_id, contract_end_date, default_capacity_percent')
@@ -139,39 +126,30 @@ export async function exportUsersMultiTab(
     .select('id, name')
     .or('is_active.is.null,is_active.eq.true');
 
-  const assignmentMap = new Map((assignmentList || []).map(a => [a.id, a.name]));
+  const assignmentNameMap = new Map((assignmentList || []).map(a => [a.id, a.name]));
   
-  // Build allocation map: resource_id -> month -> allocation_percent
-  const allocationMap = new Map<string, Map<number, number>>();
+  // Build allocation map: resource_id:assignment_id:month -> allocation_percent
+  const allocationMap = new Map<string, number>();
   
   (allocations || []).forEach(a => {
-    if (!a.start_date || !a.end_date) return;
+    if (!a.start_date) return;
     const startDate = new Date(a.start_date);
-    const endDate = new Date(a.end_date);
-    
-    // For each month, check if allocation covers it
-    for (const m of MONTHS) {
-      const monthStart = new Date(currentYear, m.num - 1, 1);
-      const monthEnd = new Date(currentYear, m.num, 0);
-      
-      if (startDate <= monthEnd && endDate >= monthStart) {
-        const key = `${a.resource_id}:${a.assignment_id || 'null'}`;
-        if (!allocationMap.has(key)) allocationMap.set(key, new Map());
-        allocationMap.get(key)!.set(m.num, a.allocation_percent);
-      }
-    }
+    const month = startDate.getMonth() + 1;
+    const key = `${a.resource_id}:${a.assignment_id}:${month}`;
+    allocationMap.set(key, a.allocation_percent);
   });
 
   const utilizationData = (inventory || []).map(r => {
-    const key = `${r.id}:${r.assignment_id || 'null'}`;
-    const monthlyAllocs = allocationMap.get(key) || new Map();
-    const monthValues = MONTHS.map(m => monthlyAllocs.get(m.num) ?? r.default_capacity_percent ?? 100);
+    const monthValues = MONTHS.map(m => {
+      const key = `${r.id}:${r.assignment_id}:${m.num}`;
+      return allocationMap.get(key) ?? r.default_capacity_percent ?? 100;
+    });
     const avg = Math.round(monthValues.reduce((a, b) => a + b, 0) / 12);
     
     return [
       r.rid || '—',
       r.name,
-      r.assignment_id ? (assignmentMap.get(r.assignment_id) || '—') : '—',
+      r.assignment_id ? (assignmentNameMap.get(r.assignment_id) || '—') : '—',
       formatDate(r.contract_end_date),
       ...monthValues,
       avg
@@ -187,16 +165,17 @@ export async function exportUsersMultiTab(
   XLSX.utils.book_append_sheet(workbook, utilizationSheet, 'Utilization');
 
   // ==================== SHEET 3: ASSIGNMENTS ====================
+  // Matches /admin/resource-assignments table columns exactly
   const assignmentHeaders = ['AID', 'Assignment Name', 'Type', 'Status', 'Budget (SAR)', 
     'Start Date', 'End Date', 'Vendor', 'Payment Status', 'Active'];
 
   const { data: assignmentsData } = await supabase
     .from('resource_assignments')
-    .select(`*, resource_vendors(name)`)
-    .order('assignment_type', { ascending: true });
+    .select('*')
+    .order('sort_order', { ascending: true });
 
   const { data: vendorList } = await supabase.from('resource_vendors').select('id, name');
-  const vendorMap = new Map((vendorList || []).map(v => [v.id, v.name]));
+  const vendorNameMap = new Map((vendorList || []).map(v => [v.id, v.name]));
 
   const assignmentRows = (assignmentsData || []).map(a => [
     a.assignment_id || '—',
@@ -206,7 +185,7 @@ export async function exportUsersMultiTab(
     a.budget ?? '—',
     formatDate(a.start_date),
     formatDate(a.end_date),
-    a.vendor_id ? (vendorMap.get(a.vendor_id) || '—') : '—',
+    a.vendor_id ? (vendorNameMap.get(a.vendor_id) || '—') : '—',
     formatStatus(a.payment_status),
     a.is_active ? 'Yes' : 'No'
   ]);
