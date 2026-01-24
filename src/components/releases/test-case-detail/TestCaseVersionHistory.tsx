@@ -1,80 +1,107 @@
 /**
- * Test Case Version History Component — Shows version changes
+ * Test Case Version History Component — Shows version changes from DB
  */
 
 import { motion } from 'framer-motion';
 import { 
   GitCommit, 
   Clock, 
-  User, 
-  Eye, 
   RotateCcw,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { useParams } from 'react-router-dom';
+import { useTestCaseVersions, useRestoreTestCaseVersion, type TestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
+import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
-interface VersionEntry {
-  version: number;
-  timestamp: string;
-  author: {
-    name: string;
-    avatar: string;
-    color: string;
-  };
-  changes: string[];
-  isCurrent?: boolean;
+function getInitials(name: string | null | undefined): string {
+  if (!name) return 'U';
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function formatTimestamp(dateStr: string): string {
+  try {
+    return formatDistanceToNow(new Date(dateStr), { addSuffix: true });
+  } catch {
+    return 'Unknown';
+  }
+}
+
+function getVersionChanges(version: TestCaseVersion): string[] {
+  const changes: string[] = [];
+  if (version.change_summary) {
+    changes.push(version.change_summary);
+  } else {
+    changes.push(`Version ${version.version_number} snapshot`);
+  }
+  if (version.snapshot?.steps) {
+    changes.push(`${version.snapshot.steps.length} steps`);
+  }
+  return changes;
 }
 
 interface TestCaseVersionHistoryProps {
-  versions?: VersionEntry[];
+  testCaseId?: string;
+  currentVersion?: number;
 }
 
-const defaultVersions: VersionEntry[] = [
-  {
-    version: 3,
-    timestamp: '2 hours ago',
-    author: { name: 'Vikram S.', avatar: 'VS', color: 'blue' },
-    changes: ['Updated expected result for step 4', 'Added loading spinner verification'],
-    isCurrent: true,
-  },
-  {
-    version: 2,
-    timestamp: '1 day ago',
-    author: { name: 'Ahmed A.', avatar: 'AA', color: 'green' },
-    changes: ['Added step 8 for console error check', 'Updated preconditions'],
-  },
-  {
-    version: 1,
-    timestamp: '1 week ago',
-    author: { name: 'Vikram S.', avatar: 'VS', color: 'blue' },
-    changes: ['Initial version created'],
-  },
-];
+export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVersion = 1 }: TestCaseVersionHistoryProps) {
+  const { id: routeId } = useParams<{ id: string }>();
+  const testCaseId = propTestCaseId || routeId;
+  
+  const { data: versions = [], isLoading } = useTestCaseVersions(testCaseId);
+  const restoreMutation = useRestoreTestCaseVersion();
 
-const avatarColors: Record<string, string> = {
-  blue: 'bg-blue-100 text-blue-700',
-  green: 'bg-green-100 text-green-700',
-  purple: 'bg-purple-100 text-purple-700',
-  orange: 'bg-orange-100 text-orange-700',
-};
-
-export function TestCaseVersionHistory({ versions = defaultVersions }: TestCaseVersionHistoryProps) {
-  const handleViewVersion = (version: number) => {
-    toast.info(`Viewing version ${version}...`);
+  const handleRestoreVersion = async (versionNumber: number) => {
+    if (!testCaseId) return;
+    await restoreMutation.mutateAsync({
+      testCaseId,
+      versionNumber,
+    });
   };
 
-  const handleRestoreVersion = (version: number) => {
-    toast.success(`Restored to version ${version}`);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (versions.length === 0) {
+    return (
+      <div className="text-center py-12 border border-dashed border-border rounded-lg bg-muted/30">
+        <GitCommit className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+        <p className="text-muted-foreground mb-2">No version history yet</p>
+        <p className="text-sm text-muted-foreground">Version snapshots are created automatically when changes are saved.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -85,7 +112,7 @@ export function TestCaseVersionHistory({ versions = defaultVersions }: TestCaseV
           <h4 className="font-medium text-foreground">Version History</h4>
         </div>
         <Badge variant="outline" className="text-xs">
-          {versions.length} versions
+          {versions.length} version{versions.length !== 1 ? 's' : ''}
         </Badge>
       </div>
 
@@ -95,90 +122,109 @@ export function TestCaseVersionHistory({ versions = defaultVersions }: TestCaseV
         <div className="absolute left-[18px] top-6 bottom-6 w-0.5 bg-border" />
 
         <div className="space-y-4">
-          {versions.map((entry, index) => (
-            <motion.div
-              key={entry.version}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className={cn(
-                "relative flex gap-4 p-3 rounded-lg transition-colors",
-                entry.isCurrent ? 'bg-primary/5 border border-primary/20' : 'hover:bg-muted/50'
-              )}
-            >
-              {/* Version marker */}
-              <div className={cn(
-                "relative z-10 flex items-center justify-center w-9 h-9 rounded-full border-2 flex-shrink-0",
-                entry.isCurrent 
-                  ? 'bg-primary border-primary text-primary-foreground' 
-                  : 'bg-background border-border text-muted-foreground'
-              )}>
-                <span className="text-xs font-semibold">v{entry.version}</span>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <Avatar className="h-5 w-5">
-                    <AvatarFallback className={cn('text-[10px]', avatarColors[entry.author.color])}>
-                      {entry.author.avatar}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium">{entry.author.name}</span>
-                  <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {entry.timestamp}
-                  </span>
-                  {entry.isCurrent && (
-                    <Badge className="text-[10px] px-1.5 py-0 bg-primary/10 text-primary border-0">
-                      Current
-                    </Badge>
-                  )}
+          {versions.map((version, index) => {
+            const isCurrent = version.version_number === currentVersion;
+            const changes = getVersionChanges(version);
+            const authorName = version.changed_by_profile?.full_name || 'Unknown User';
+            
+            return (
+              <motion.div
+                key={version.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className={cn(
+                  "relative flex gap-4 p-3 rounded-lg transition-colors",
+                  isCurrent ? 'bg-primary/5 border border-primary/20' : 'hover:bg-muted/50'
+                )}
+              >
+                {/* Version marker */}
+                <div className={cn(
+                  "relative z-10 flex items-center justify-center w-9 h-9 rounded-full border-2 flex-shrink-0",
+                  isCurrent 
+                    ? 'bg-primary border-primary text-primary-foreground' 
+                    : 'bg-background border-border text-muted-foreground'
+                )}>
+                  <span className="text-xs font-semibold">v{version.version_number}</span>
                 </div>
 
-                <ul className="text-sm text-muted-foreground space-y-0.5">
-                  {entry.changes.map((change, i) => (
-                    <li key={i} className="flex items-start gap-1.5">
-                      <ChevronRight className="w-3 h-3 mt-1 flex-shrink-0" />
-                      {change}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <Avatar className="h-5 w-5">
+                      {version.changed_by_profile?.avatar_url && (
+                        <AvatarImage src={version.changed_by_profile.avatar_url} alt={authorName} />
+                      )}
+                      <AvatarFallback className="text-[10px] bg-blue-100 text-blue-700">
+                        {getInitials(authorName)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium">{authorName}</span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {formatTimestamp(version.created_at)}
+                    </span>
+                    {isCurrent && (
+                      <Badge className="text-[10px] px-1.5 py-0 bg-primary/10 text-primary border-0">
+                        Current
+                      </Badge>
+                    )}
+                  </div>
 
-              {/* Actions */}
-              {!entry.isCurrent && (
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-7 w-7"
-                        onClick={() => handleViewVersion(entry.version)}
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>View this version</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-7 w-7"
-                        onClick={() => handleRestoreVersion(entry.version)}
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Restore this version</TooltipContent>
-                  </Tooltip>
+                  <ul className="text-sm text-muted-foreground space-y-0.5">
+                    {changes.map((change, i) => (
+                      <li key={i} className="flex items-start gap-1.5">
+                        <ChevronRight className="w-3 h-3 mt-1 flex-shrink-0" />
+                        {change}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-            </motion.div>
-          ))}
+
+                {/* Restore Action */}
+                {!isCurrent && (
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <AlertDialog>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <AlertDialogTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-7 w-7"
+                              disabled={restoreMutation.isPending}
+                            >
+                              {restoreMutation.isPending ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : (
+                                <RotateCcw className="w-3.5 h-3.5" />
+                              )}
+                            </Button>
+                          </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Restore this version</TooltipContent>
+                      </Tooltip>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Restore Version {version.version_number}?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will replace the current test case content with the content from version {version.version_number}. 
+                            The current state will be preserved as a new version before restoring.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleRestoreVersion(version.version_number)}>
+                            Restore
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </div>

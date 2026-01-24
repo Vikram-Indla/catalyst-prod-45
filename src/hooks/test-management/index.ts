@@ -55,6 +55,16 @@ export {
   useDeleteTestCaseComment,
 } from './useTestCaseComments';
 
+// Test Case Versions
+export {
+  useTestCaseVersions,
+  useTestCaseVersionsCount,
+  useCreateTestCaseVersion,
+  useRestoreTestCaseVersion,
+  type TestCaseVersion,
+  type TestCaseVersionSnapshot,
+} from './useTestCaseVersions';
+
 // Test Case Tags/Labels
 export {
   useTestCaseLabels,
