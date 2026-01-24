@@ -2,6 +2,7 @@
  * Module 3A-2: Step Runner Container
  * Main orchestrating component for step-by-step test execution
  * Enhanced with Module 3A-3: Result Recording & Evidence
+ * Phase 3: Data-Driven Test Execution support
  */
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +20,7 @@ import { StepNotes } from './StepNotes';
 import { CompletionDialog } from './CompletionDialog';
 import { ExitDialog } from './ExitDialog';
 import { ResultRecorder } from '../evidence';
+import { TestDataPanel } from '@/components/test-management/TestDataPanel';
 import type { StepResult, ExecutionResult } from '../../types/step-execution';
 
 interface StepRunnerProps {
@@ -153,6 +155,17 @@ export function StepRunner({
           onStepClick={navigation.goToStep}
         />
       </div>
+
+      {/* Test Data Panel - Phase 3 DDT Support */}
+      {run?.test_data_row_snapshot && (
+        <div className="px-4 py-3 border-b border-border">
+          <TestDataPanel
+            rowSnapshot={run.test_data_row_snapshot as Record<string, string>}
+            rowNumber={run.test_data_row_number}
+            className="max-w-4xl mx-auto"
+          />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-6">

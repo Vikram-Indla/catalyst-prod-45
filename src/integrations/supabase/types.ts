@@ -24544,6 +24544,9 @@ export type Database = {
           run_number: number | null
           started_at: string | null
           status: Database["public"]["Enums"]["tm_execution_status"] | null
+          test_data_row_id: string | null
+          test_data_row_number: number | null
+          test_data_row_snapshot: Json | null
           updated_at: string | null
         }
         Insert: {
@@ -24559,6 +24562,9 @@ export type Database = {
           run_number?: number | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
+          test_data_row_id?: string | null
+          test_data_row_number?: number | null
+          test_data_row_snapshot?: Json | null
           updated_at?: string | null
         }
         Update: {
@@ -24574,6 +24580,9 @@ export type Database = {
           run_number?: number | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
+          test_data_row_id?: string | null
+          test_data_row_number?: number | null
+          test_data_row_snapshot?: Json | null
           updated_at?: string | null
         }
         Relationships: [
@@ -24617,6 +24626,13 @@ export type Database = {
             columns: ["executed_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_runs_test_data_row_id_fkey"
+            columns: ["test_data_row_id"]
+            isOneToOne: false
+            referencedRelation: "test_data_rows"
             referencedColumns: ["id"]
           },
         ]

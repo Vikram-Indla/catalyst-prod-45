@@ -127,6 +127,15 @@ export {
   useMyWork,
 } from './useTestRuns';
 
+// Data-Driven Test Execution (DDT)
+export {
+  useCreateRunWithDataRows,
+  useTestDataRowsForExecution,
+  type DataRowSelection,
+  type CreateRunWithDataRowsInput,
+  type CreateRunWithDataRowsResult,
+} from './useCreateRunWithDataRows';
+
 // Defects
 export {
   useDefects,
