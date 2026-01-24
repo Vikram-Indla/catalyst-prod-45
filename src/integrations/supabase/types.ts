@@ -19295,6 +19295,7 @@ export type Database = {
       }
       test_data_parameters: {
         Row: {
+          column_order: number
           created_at: string | null
           id: string
           parameter_name: string
@@ -19303,6 +19304,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          column_order?: number
           created_at?: string | null
           id?: string
           parameter_name: string
@@ -19311,6 +19313,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          column_order?: number
           created_at?: string | null
           id?: string
           parameter_name?: string
@@ -19325,6 +19328,7 @@ export type Database = {
           created_at: string | null
           id: string
           row_data: Json
+          row_order: number
           test_case_id: string
           updated_at: string | null
         }
@@ -19332,6 +19336,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           row_data: Json
+          row_order?: number
           test_case_id: string
           updated_at?: string | null
         }
@@ -19339,6 +19344,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           row_data?: Json
+          row_order?: number
           test_case_id?: string
           updated_at?: string | null
         }
@@ -28278,6 +28284,10 @@ export type Database = {
           p_notes?: string
           p_step_id: string
         }
+        Returns: Json
+      }
+      save_test_data: {
+        Args: { p_parameters: Json; p_rows: Json; p_test_case_id: string }
         Returns: Json
       }
       search_evidence_by_ocr: {
