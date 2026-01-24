@@ -28,7 +28,7 @@ export default function ResourceCountriesPage() {
   const { allCountries, isLoadingAll, createCountry, updateCountry, deleteCountry } = useResourceCountries();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingCountry, setEditingCountry] = useState<ResourceCountry | null>(null);
-  const [formData, setFormData] = useState({ name: '', code: '' });
+  const [formData, setFormData] = useState({ name: '', code: '', flag_svg: '' });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [countryToDelete, setCountryToDelete] = useState<ResourceCountry | null>(null);
   const [linkedRecords, setLinkedRecords] = useState<LinkedRecord[]>([]);
@@ -57,8 +57,12 @@ export default function ResourceCountriesPage() {
 
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
-    await createCountry.mutateAsync(formData);
-    setFormData({ name: '', code: '' });
+    await createCountry.mutateAsync({
+      name: formData.name,
+      code: formData.code || undefined,
+      flag_svg: formData.flag_svg || undefined,
+    });
+    setFormData({ name: '', code: '', flag_svg: '' });
     setCreateModalOpen(false);
   };
 
@@ -66,10 +70,14 @@ export default function ResourceCountriesPage() {
     if (!editingCountry || !formData.name.trim()) return;
     await updateCountry.mutateAsync({
       id: editingCountry.id,
-      updates: formData,
+      updates: {
+        name: formData.name,
+        code: formData.code || null,
+        flag_svg: formData.flag_svg || null,
+      },
     });
     setEditingCountry(null);
-    setFormData({ name: '', code: '' });
+    setFormData({ name: '', code: '', flag_svg: '' });
   };
 
   const handleDeleteClick = async (country: ResourceCountry) => {
@@ -105,7 +113,7 @@ export default function ResourceCountriesPage() {
 
   const openEdit = (country: ResourceCountry) => {
     setEditingCountry(country);
-    setFormData({ name: country.name, code: country.code || '' });
+    setFormData({ name: country.name, code: country.code || '', flag_svg: country.flag_svg || '' });
   };
 
   if (isLoadingAll) {
@@ -142,6 +150,7 @@ export default function ResourceCountriesPage() {
           <thead className="bg-muted/30">
             <tr>
               <th className="w-10 px-4 py-3"></th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Flag</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Code</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
@@ -158,14 +167,24 @@ export default function ResourceCountriesPage() {
                   <GripVertical className="h-4 w-4" />
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-xl">
-                      {getFlagEmoji(country.code) || <Globe className="h-4 w-4 text-blue-500" />}
-                    </div>
-                    <span className="text-sm font-medium text-foreground">{country.name}</span>
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center overflow-hidden">
+                    {country.flag_svg ? (
+                      <img 
+                        src={country.flag_svg} 
+                        alt={`${country.name} flag`} 
+                        className="w-6 h-4 object-cover rounded-sm"
+                      />
+                    ) : getFlagEmoji(country.code) ? (
+                      <span className="text-xl">{getFlagEmoji(country.code)}</span>
+                    ) : (
+                      <Globe className="h-4 w-4 text-blue-500" />
+                    )}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">
+                <td className="px-4 py-3">
+                  <span className="text-sm font-medium text-foreground">{country.name}</span>
+                </td>
+                <td className="px-4 py-3 text-sm font-mono text-muted-foreground">
                   {country.code || '—'}
                 </td>
                 <td className="px-4 py-3 text-center">
@@ -194,7 +213,7 @@ export default function ResourceCountriesPage() {
             ))}
             {allCountries.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                   No countries configured. Click "Add Country" to create one.
                 </td>
               </tr>
@@ -225,6 +244,25 @@ export default function ResourceCountriesPage() {
                 onChange={(e) => setFormData(f => ({ ...f, code: e.target.value }))}
                 placeholder="e.g., SA"
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Flag SVG URL</Label>
+              <Input
+                value={formData.flag_svg}
+                onChange={(e) => setFormData(f => ({ ...f, flag_svg: e.target.value }))}
+                placeholder="e.g., https://flagcdn.com/sa.svg"
+              />
+              {formData.flag_svg && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Preview:</span>
+                  <img 
+                    src={formData.flag_svg} 
+                    alt="Flag preview" 
+                    className="h-5 w-8 object-cover rounded-sm border"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter>
@@ -262,6 +300,25 @@ export default function ResourceCountriesPage() {
                 onChange={(e) => setFormData(f => ({ ...f, code: e.target.value }))}
                 placeholder="e.g., SA"
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Flag SVG URL</Label>
+              <Input
+                value={formData.flag_svg}
+                onChange={(e) => setFormData(f => ({ ...f, flag_svg: e.target.value }))}
+                placeholder="e.g., https://flagcdn.com/sa.svg"
+              />
+              {formData.flag_svg && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Preview:</span>
+                  <img 
+                    src={formData.flag_svg} 
+                    alt="Flag preview" 
+                    className="h-5 w-8 object-cover rounded-sm border"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter>
