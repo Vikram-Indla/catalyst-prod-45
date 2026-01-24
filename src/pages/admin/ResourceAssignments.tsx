@@ -67,11 +67,10 @@ const ASSIGNMENT_TYPE_COLORS: Record<string, string> = {
   Unspecified: 'bg-muted text-muted-foreground border-border',
 };
 
-// Map legacy 'BAU' and 'Project' to normalized types for display
+// Normalize assignment types - BAU is permanently replaced by Insourced
 const normalizeAssignmentType = (type: string | null | undefined): string => {
   if (!type) return 'Unspecified';
-  if (type === 'BAU') return 'Insourced';
-  if (type === 'Project') return 'Outsourced';
+  if (type === 'BAU') return 'Insourced'; // Legacy mapping
   return type;
 };
 
@@ -204,7 +203,7 @@ function SortableRow({
       </td>
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
       <td className="px-4 py-3">
-        {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
+        {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

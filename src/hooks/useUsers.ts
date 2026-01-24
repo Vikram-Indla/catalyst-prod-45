@@ -38,7 +38,7 @@ export interface UserProfile {
   assignment_name: string | null;
   vendor_id: string | null;  // UUID FK to resource_vendors
   job_role: string | null;  // Job title/role from resource_inventory (e.g. ".NET Developer")
-  resource_type: string | null;  // Fixed, Core, or Freelance
+  resource_type: string | null;  // Fixed, Variable, or Freelance
   ctc: number | null;  // Cost to Company in SAR
 }
 

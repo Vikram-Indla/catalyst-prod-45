@@ -70,8 +70,7 @@ function formatPaymentStatus(status: string | null): string {
 
 function normalizeAssignmentType(type: string | null | undefined): string {
   if (!type) return 'Unspecified';
-  if (type === 'BAU') return 'Insourced';
-  if (type === 'Project') return 'Outsourced';
+  if (type === 'BAU') return 'Insourced'; // Legacy mapping
   return type;
 }
 
