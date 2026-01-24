@@ -14,7 +14,7 @@ export interface VendorInfo {
 }
 
 export type AssignmentStatus = 'yet_to_start' | 'on_hold' | 'in_progress' | 'completed';
-export type PaymentStatus = 'not_applicable' | 'unpaid' | 'paid' | 'closed';
+export type PaymentStatus = 'not_applicable' | 'unpaid' | 'on_track' | 'paid' | 'closed';
 
 export interface ResourceAssignment {
   id: string;
