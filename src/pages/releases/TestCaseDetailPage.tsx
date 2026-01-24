@@ -41,17 +41,20 @@ import { TestCaseComments } from '@/components/releases/test-case-detail/TestCas
 import { TestCasePropertiesPanel } from '@/components/releases/test-case-detail/TestCasePropertiesPanel';
 import { RequirementsCoverage } from '@/components/releases/test-case-detail/RequirementsCoverage';
 import { TestCaseVersionHistory } from '@/components/releases/test-case-detail/TestCaseVersionHistory';
+import { VersionHistoryPanel } from '@/components/releases/test-case-detail/VersionHistoryPanel';
 import { QuickActionsBar } from '@/components/releases/test-case-detail/QuickActionsBar';
 import { useTestCase, useCloneTestCase, useTestCaseSteps } from '@/hooks/test-management/useTestCases';
 import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
 import { useTestCaseExecutionHistory, ExecutionHistoryRecord } from '@/hooks/test-management/useTestCaseExecutionHistory';
 import { useTestCaseCommentsCount } from '@/hooks/test-management/useTestCaseComments';
+import { useTestCaseVersionsCount } from '@/hooks/test-management/useTestCaseVersions';
 import { cn } from '@/lib/utils';
 
 export default function TestCaseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isVersionPanelOpen, setIsVersionPanelOpen] = useState(false);
   
   // Persist active tab in URL
   const activeTab = searchParams.get('tab') || 'steps';
@@ -64,6 +67,7 @@ export default function TestCaseDetailPage() {
   const { data: stepsData } = useTestCaseSteps(id);
   const { data: executionHistory = [] } = useTestCaseExecutionHistory(id);
   const { data: commentsCount = 0 } = useTestCaseCommentsCount(id);
+  const { data: versionsCount = 0 } = useTestCaseVersionsCount(id);
   
   // Clone mutation
   const cloneMutation = useCloneTestCase();
@@ -101,9 +105,7 @@ export default function TestCaseDetailPage() {
   }, [testCase, cloneMutation, navigate]);
 
   const handleVersionHistory = useCallback(() => {
-    toast.info('Version history not implemented yet', {
-      description: 'This feature will be available in a future release.',
-    });
+    setIsVersionPanelOpen(true);
   }, []);
 
   // Loading state
@@ -237,20 +239,20 @@ export default function TestCaseDetailPage() {
             )}
             Duplicate
           </Button>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-8"
-                onClick={handleVersionHistory}
-              >
-                <History className="w-3.5 h-3.5 mr-1.5" />
-                Version History
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Version history not implemented yet</TooltipContent>
-          </Tooltip>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8"
+            onClick={handleVersionHistory}
+          >
+            <History className="w-3.5 h-3.5 mr-1.5" />
+            Version History
+            {versionsCount > 0 && (
+              <span className="ml-1.5 text-xs bg-muted px-1.5 py-0.5 rounded-full">
+                {versionsCount}
+              </span>
+            )}
+          </Button>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
@@ -343,7 +345,7 @@ export default function TestCaseDetailPage() {
                     <GitCommit className="w-4 h-4 mr-2" />
                     Versions
                     <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
-                      {testCase.version || 1}
+                      {versionsCount > 0 ? versionsCount : testCase.version || 1}
                     </span>
                   </TabsTrigger>
                 </TabsList>
@@ -372,7 +374,7 @@ export default function TestCaseDetailPage() {
                 </TabsContent>
 
                 <TabsContent value="versions" className="mt-6">
-                  <TestCaseVersionHistory versions={[]} />
+                  <TestCaseVersionHistory testCaseId={testCase.id} currentVersion={testCase.version || 1} />
                 </TabsContent>
               </Tabs>
             </motion.div>
@@ -395,6 +397,14 @@ export default function TestCaseDetailPage() {
         testCaseId={testCase.key || testCase.id} 
         onExecute={handleExecute}
         onDuplicate={handleDuplicate}
+      />
+
+      {/* Version History Panel */}
+      <VersionHistoryPanel
+        isOpen={isVersionPanelOpen}
+        onClose={() => setIsVersionPanelOpen(false)}
+        testCaseId={testCase.id}
+        currentVersion={testCase.version || 1}
       />
     </motion.div>
   );
