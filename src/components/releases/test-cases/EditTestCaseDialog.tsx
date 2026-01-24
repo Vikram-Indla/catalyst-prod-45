@@ -547,11 +547,11 @@ export function EditTestCaseDialog({
           </div>
         </Tabs>
 
-        <DialogFooter className="px-6 py-4 border-t flex-shrink-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="px-6 py-4 border-t flex-shrink-0 flex flex-row items-center justify-end gap-3">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="min-w-[80px]">
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={updateTestCaseMutation.isPending}>
+          <Button onClick={handleSave} disabled={updateTestCaseMutation.isPending} className="min-w-[120px]">
             {updateTestCaseMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
