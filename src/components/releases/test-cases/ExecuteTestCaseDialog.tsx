@@ -47,6 +47,8 @@ interface TestStep {
   testData?: string;
 }
 
+import type { TestCaseType } from '@/types/test-cases';
+
 interface TestCase {
   id: string;       // UUID for DB operations
   key?: string;     // Display key like "INV-0001"
@@ -54,7 +56,7 @@ interface TestCase {
   description?: string;
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
   priority: 'critical' | 'high' | 'medium' | 'low';
-  type: 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e';
+  type: TestCaseType;
   steps?: TestStep[];
   preconditions?: string;
 }

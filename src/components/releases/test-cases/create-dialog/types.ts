@@ -3,6 +3,8 @@
  * 9.8 GOD-TIER Specification
  */
 
+import type { TestCaseType } from '@/types/test-cases';
+
 export interface TestCaseStep {
   id: string;
   order: number;
@@ -38,15 +40,8 @@ export interface TestCaseAttachment {
 export type StepMode = 'classic' | 'bdd';
 export type ReviewStatus = 'draft' | 'review' | 'approved';
 export type PriorityLevel = 'P1' | 'P2' | 'P3' | 'P4';
-export type TestCaseType = 
-  | 'functional' 
-  | 'regression' 
-  | 'smoke' 
-  | 'integration' 
-  | 'e2e' 
-  | 'performance' 
-  | 'security' 
-  | 'usability';
+// Re-export canonical TestCaseType from central types
+export type { TestCaseType } from '@/types/test-cases';
 
 export interface TestCaseFormData {
   // Tab 1: Details

@@ -22,7 +22,15 @@ export interface TestCaseAssignee {
   color: 'blue' | 'teal' | 'gray';
 }
 
-export type TestCaseType = 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e';
+export type TestCaseType = 
+  | 'functional' 
+  | 'regression' 
+  | 'smoke' 
+  | 'integration' 
+  | 'e2e' 
+  | 'performance' 
+  | 'security' 
+  | 'usability';
 export type TestCasePriority = 'critical' | 'high' | 'medium' | 'low';
 export type TestCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
 export type TestCaseLastRun = 'passed' | 'failed' | 'not_run';

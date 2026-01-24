@@ -54,6 +54,7 @@ interface TestStep {
 }
 
 // Local TestCase interface for this dialog
+import type { TestCaseType } from '@/types/test-cases';
 
 interface TestCase {
   id: string;       // Actual database UUID
@@ -63,7 +64,7 @@ interface TestCase {
   preconditions?: string;
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
   priority: 'critical' | 'high' | 'medium' | 'low';
-  type: 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e';
+  type: TestCaseType;
   tags?: string[];
   priority_id?: string;
   type_id?: string;

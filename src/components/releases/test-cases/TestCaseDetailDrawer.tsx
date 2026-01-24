@@ -66,6 +66,8 @@ import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCase
 import { useCaseRequirements, REQUIREMENT_TYPE_LABELS } from '@/hooks/test-cases/useRequirementLinks';
 import { useQueryClient } from '@tanstack/react-query';
 
+import type { TestCaseType } from '@/types/test-cases';
+
 interface TestCase {
   id: string;       // Actual database UUID
   key?: string;     // Display key like "TES-0001"
@@ -73,7 +75,7 @@ interface TestCase {
   description?: string;
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
   priority: 'critical' | 'high' | 'medium' | 'low';
-  type: 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e';
+  type: TestCaseType;
   preconditions?: string;
   postconditions?: string;
   tags?: string[];
