@@ -7,6 +7,7 @@ export interface ResourceVendor {
   id: string;
   name: string;
   description: string | null;
+  vendor_code: string | null;
   is_active: boolean;
   sort_order: number;
   created_at: string | null;

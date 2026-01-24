@@ -168,6 +168,7 @@ export default function Departments() {
                 <thead className="bg-muted/50">
                   <tr>
                     <th className="text-left p-3 text-sm font-medium w-10"></th>
+                    <th className="text-left p-3 text-sm font-medium w-[80px]">D-ID</th>
                     <th className="text-left p-3 text-sm font-medium">Department Name</th>
                     <th className="text-left p-3 text-sm font-medium">Status</th>
                     <th className="text-right p-3 text-sm font-medium">Actions</th>
@@ -176,13 +177,13 @@ export default function Departments() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={4} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-3 text-center text-muted-foreground">
                         Loading...
                       </td>
                     </tr>
                   ) : filteredDepartments.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-3 text-center text-muted-foreground">
                         No departments found
                       </td>
                     </tr>
@@ -191,6 +192,9 @@ export default function Departments() {
                       <tr key={dept.id} className="border-t hover:bg-muted/50">
                         <td className="p-3">
                           <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                        </td>
+                        <td className="p-3">
+                          <span className="text-sm font-mono font-medium text-primary">{dept.department_code || '—'}</span>
                         </td>
                         <td className="p-3 text-sm font-medium">{dept.name}</td>
                         <td className="p-3 text-sm">

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 export interface Department {
   id: string;
   name: string;
+  department_code: string | null;
   is_active: boolean;
   sort_order: number;
 }
