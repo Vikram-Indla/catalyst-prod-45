@@ -495,10 +495,7 @@ export default function ResourceUtilization() {
                 <TableRow>
                   <TableHead className="sticky left-0 bg-background z-10 min-w-[70px]">RID</TableHead>
                   <TableHead className="sticky left-[70px] bg-background z-10 min-w-[200px]">Resource</TableHead>
-                  <TableHead className="min-w-[50px]">DID</TableHead>
-                  <TableHead className="min-w-[50px]">AID</TableHead>
                   <TableHead className="sticky left-[270px] bg-background z-10 min-w-[150px]">Assignment</TableHead>
-                  <TableHead className="min-w-[50px]">VID</TableHead>
                   <TableHead className="min-w-[100px]">Contract End</TableHead>
                   <TableHead className="min-w-[50px] text-center">Add</TableHead>
                   {MONTHS.map(m => (
@@ -509,7 +506,7 @@ export default function ResourceUtilization() {
               <TableBody>
                 {filteredResources.length === 0 && newRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={20} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={17} className="text-center py-8 text-muted-foreground">
                       No resources found matching your criteria
                     </TableCell>
                   </TableRow>
@@ -528,12 +525,6 @@ export default function ResourceUtilization() {
                             <TableCell className="sticky left-[70px] bg-background font-medium">
                               {resource.resource_name}
                             </TableCell>
-                            <TableCell>
-                              <span className="text-xs font-mono text-primary">{resource.did || '—'}</span>
-                            </TableCell>
-                            <TableCell>
-                              <span className="text-xs font-mono text-primary">{resource.aid || '—'}</span>
-                            </TableCell>
                             <TableCell className="sticky left-[270px] bg-background">
                               {resource.assignment_name ? (
                                 <Badge variant="outline" className="font-normal">
@@ -542,9 +533,6 @@ export default function ResourceUtilization() {
                               ) : (
                                 <span className="text-muted-foreground italic text-sm">Unassigned</span>
                               )}
-                            </TableCell>
-                            <TableCell>
-                              <span className="text-xs font-mono text-primary">{resource.vid || '—'}</span>
                             </TableCell>
                             <TableCell>
                               {resource.contract_end_date ? (
