@@ -88,26 +88,15 @@ export function useUsers() {
       if (profilesError) throw profilesError;
 
       // Fetch ALL resource_inventory records (including those without profile_id)
-      const { data: resourceInventory } = await (supabase as any)
+      const { data: resourceInventory, error: inventoryError } = await supabase
         .from('resource_inventory')
-        .select(`
-          id,
-          rid,
-          profile_id, 
-          name,
-          contract_start_date, 
-          contract_end_date, 
-          vendor_name,
-          role_name,
-          assignment_id,
-          department_id,
-          department_name,
-          vendor_id,
-          country_id,
-          location_id,
-          resource_type,
-          ctc
-        `);
+        .select('id, rid, profile_id, name, contract_start_date, contract_end_date, vendor_name, role_name, assignment_id, department_id, department_name, vendor_id, country_id, location_id, resource_type, ctc');
+      
+      if (inventoryError) {
+        console.error('Error fetching resource_inventory:', inventoryError);
+      }
+      
+      console.log('Resource inventory sample:', resourceInventory?.slice(0, 3));
       
       // Fetch reference tables for lookups
       const [
