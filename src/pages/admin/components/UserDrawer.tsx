@@ -1,6 +1,6 @@
 /**
  * UserDrawer - Ring-fenced drawer for Add/Edit User
- * Used exclusively by UsersManagement.tsx
+ * Per LOVABLE-USERS-INVASIVE-REPLACEMENT spec
  */
 
 import { useState, useEffect, useMemo } from 'react';
@@ -110,14 +110,11 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
     queryKey: ['user-inventory', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      
-      // Try profile_id first, then id directly
       const { data } = await supabase
         .from('resource_inventory')
         .select('*')
         .or(`profile_id.eq.${user.id},id.eq.${user.id}`)
         .maybeSingle();
-      
       return data;
     },
     enabled: !!user?.id,
@@ -126,7 +123,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
   // Initialize form when user changes
   useEffect(() => {
     if (user) {
-      // Get current department, vendor, assignment IDs
       const dept = departments.find(d => d.name === user.department_name);
       const assign = assignments.find(a => a.name === user.assignment_name);
       const vendor = vendors.find(v => v.name === user.vendor);
@@ -147,7 +143,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
         location_id: location?.id || userInventory?.location_id || '',
       });
     } else {
-      // Reset for new user
       setFormData({
         full_name: '',
         email: '',
@@ -176,7 +171,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
   const selectedLocation = useMemo(() => 
     locations.find(l => l.id === formData.location_id), [locations, formData.location_id]);
 
-  // Handle form change
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -191,7 +185,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
     setIsSaving(true);
     try {
       if (isEditMode && user) {
-        // Check if profile exists
         const { data: profileRow } = await supabase
           .from('profiles')
           .select('id')
@@ -199,7 +192,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
           .maybeSingle();
 
         if (profileRow?.id) {
-          // Update profile
           const { error: profileError } = await supabase
             .from('profiles')
             .update({
@@ -220,7 +212,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
           if (profileError) throw profileError;
         }
 
-        // Update or create resource_inventory record
         const { data: inventoryRecord } = await supabase
           .from('resource_inventory')
           .select('id')
@@ -250,7 +241,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
             .eq('id', inventoryRecord.id);
           if (invError) throw invError;
         } else if (profileRow?.id) {
-          // Create new inventory record for profile user
           const { error: insertError } = await supabase
             .from('resource_inventory')
             .insert({ ...inventoryPayload, profile_id: user.id, is_active: true });
@@ -259,7 +249,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
 
         toast.success('User updated successfully');
       } else {
-        // Create new resource_inventory record (no profile)
         const { data: allInventory } = await supabase
           .from('resource_inventory')
           .select('rid')
@@ -292,7 +281,6 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
         toast.success('User created successfully');
       }
 
-      // Invalidate queries
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
       onSuccess();
     } catch (error: any) {
@@ -309,10 +297,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
 
     setIsDeleting(true);
     try {
-      // Delete from profiles if exists
       await supabase.from('profiles').delete().eq('id', user.id);
-      
-      // Delete from resource_inventory
       await supabase.from('resource_inventory').delete().or(`profile_id.eq.${user.id},id.eq.${user.id}`);
 
       toast.success('User deleted');
@@ -538,7 +523,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
   );
 }
 
-// Drawer-specific CSS (still ring-fenced under .users-module)
+// Drawer-specific CSS (ring-fenced)
 const drawerCSS = `
 /* Drawer Overlay */
 .um-drawer-overlay {
