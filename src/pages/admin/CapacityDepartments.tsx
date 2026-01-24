@@ -5,10 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Pencil, Trash2, GripVertical, AlertTriangle } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, AlertTriangle, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
 interface LinkedResource {
   id: string;
@@ -19,7 +20,7 @@ export default function CapacityDepartmentsPage() {
   const { departments, isLoading, createDepartment, updateDepartment, deleteDepartment } = useCapacityDepartments();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<CapacityDepartment | null>(null);
-  const [formData, setFormData] = useState({ name: '', description: '', color: '#0d9488' });
+  const [formData, setFormData] = useState({ name: '', color: '#0d9488' });
   
   // Delete modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -29,8 +30,8 @@ export default function CapacityDepartmentsPage() {
 
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
-    await createDepartment.mutateAsync(formData);
-    setFormData({ name: '', description: '', color: '#0d9488' });
+    await createDepartment.mutateAsync({ name: formData.name, color: formData.color });
+    setFormData({ name: '', color: '#0d9488' });
     setCreateModalOpen(false);
   };
 
@@ -38,10 +39,15 @@ export default function CapacityDepartmentsPage() {
     if (!editingDepartment || !formData.name.trim()) return;
     await updateDepartment.mutateAsync({
       id: editingDepartment.id,
-      updates: formData,
+      updates: { name: formData.name, color: formData.color },
     });
     setEditingDepartment(null);
-    setFormData({ name: '', description: '', color: '#0d9488' });
+    setFormData({ name: '', color: '#0d9488' });
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`Copied ${text} to clipboard`);
   };
 
   const checkLinkedRecords = async (departmentId: string) => {
@@ -82,7 +88,7 @@ export default function CapacityDepartmentsPage() {
 
   const openEdit = (dept: CapacityDepartment) => {
     setEditingDepartment(dept);
-    setFormData({ name: dept.name, description: dept.description || '', color: dept.color });
+    setFormData({ name: dept.name, color: dept.color });
   };
 
   if (isLoading) {
@@ -116,71 +122,86 @@ export default function CapacityDepartmentsPage() {
       </div>
 
       {/* Departments List */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-muted/30">
-            <tr>
-              <th className="w-10 px-4 py-3"></th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Description</th>
-              <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Color</th>
-              <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {departments.map((dept) => (
-              <tr key={dept.id} className="border-t border-border hover:bg-muted/20">
-                <td className="px-4 py-3 text-muted-foreground">
-                  <GripVertical className="h-4 w-4" />
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: dept.color }}
-                    />
-                    <span className="text-sm font-medium text-foreground">{dept.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">
-                  {dept.description || '—'}
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <span 
-                    className="inline-block px-2 py-1 rounded text-xs font-mono"
-                    style={{ backgroundColor: `${dept.color}20`, color: dept.color }}
-                  >
-                    {dept.color}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-center gap-1">
-                    <button
-                      onClick={() => openEdit(dept)}
-                      className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(dept)}
-                      className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {departments.length === 0 && (
+      <TooltipProvider>
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-muted/30">
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                  No departments configured. Click "Add Department" to create one.
-                </td>
+                <th className="w-10 px-4 py-3"></th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-24">DID</th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
+                <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Color</th>
+                <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {departments.map((dept) => (
+                <tr key={dept.id} className="border-t border-border hover:bg-muted/20">
+                  <td className="px-4 py-3 text-muted-foreground">
+                    <GripVertical className="h-4 w-4" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-mono font-medium text-primary">{dept.department_id}</span>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => copyToClipboard(dept.department_id)}
+                            className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Copy DID</TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: dept.color }}
+                      />
+                      <span className="text-sm font-medium text-foreground">{dept.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span 
+                      className="inline-block px-2 py-1 rounded text-xs font-mono"
+                      style={{ backgroundColor: `${dept.color}20`, color: dept.color }}
+                    >
+                      {dept.color}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        onClick={() => openEdit(dept)}
+                        className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(dept)}
+                        className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {departments.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                    No departments configured. Click "Add Department" to create one.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </TooltipProvider>
 
       {/* Create Modal */}
       <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
@@ -195,14 +216,6 @@ export default function CapacityDepartmentsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g., Engineering"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                value={formData.description}
-                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                placeholder="Brief description..."
               />
             </div>
             <div className="space-y-2">
@@ -248,14 +261,6 @@ export default function CapacityDepartmentsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g., Engineering"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                value={formData.description}
-                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                placeholder="Brief description..."
               />
             </div>
             <div className="space-y-2">
