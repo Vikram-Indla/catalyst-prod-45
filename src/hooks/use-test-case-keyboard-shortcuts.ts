@@ -52,13 +52,32 @@ export function useTestCaseKeyboardShortcuts({
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (!enabled) return;
 
+    // CRITICAL: Check if ANY dialog/modal is open - if so, DO NOT intercept any keys
+    const hasOpenDialog = document.querySelector('[role="dialog"]') !== null;
+    const hasOpenSheet = document.querySelector('[data-state="open"][role="dialog"]') !== null;
+    const hasOpenPopover = document.querySelector('[data-radix-popper-content-wrapper]') !== null;
+    
+    if (hasOpenDialog || hasOpenSheet || hasOpenPopover) {
+      // Let dialogs handle their own keyboard events completely
+      return;
+    }
+
     // Don't trigger shortcuts when typing in inputs
     const target = event.target as HTMLElement;
     const isInput = target.tagName === 'INPUT' || 
                     target.tagName === 'TEXTAREA' || 
-                    target.isContentEditable;
+                    target.isContentEditable ||
+                    target.closest('[role="dialog"]') !== null;
 
-    // Escape always works
+    // If in input context, only allow Escape
+    if (isInput) {
+      if (event.key === 'Escape' && onEscape) {
+        onEscape();
+      }
+      return;
+    }
+
+    // Escape for clearing selection (not in dialogs)
     if (event.key === 'Escape' && onEscape) {
       event.preventDefault();
       onEscape();
