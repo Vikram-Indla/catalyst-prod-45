@@ -421,6 +421,15 @@ export default function TestCyclesPage() {
             updatedAt: c.updated_at,
             _originalId: c.id,
           }))}
+          onEdit={(cycle) => navigate(`/releases/test-cycles/${cycle._originalId || cycle.id}`)}
+          onDuplicate={(cycle) => {
+            if (!projectId) return;
+            cloneCycleMutation.mutate({ cycleId: cycle._originalId || cycle.id, projectId });
+          }}
+          onDelete={(cycleId) => {
+            const cycle = cycles?.find(c => c.key === cycleId);
+            if (cycle) deleteCycleMutation.mutate(cycle.id);
+          }}
         />
       )}
       
