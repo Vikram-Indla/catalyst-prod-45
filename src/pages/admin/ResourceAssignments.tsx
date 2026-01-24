@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus, type PaymentStatus } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, Calendar, DollarSign } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -19,6 +19,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const STATUS_CONFIG: Record<AssignmentStatus, { label: string; color: string }> = {
   yet_to_start: { label: 'Yet to Start', color: 'bg-muted text-muted-foreground' },
@@ -34,6 +51,15 @@ const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: strin
   closed: { label: 'Closed', color: 'bg-gray-500/15 text-gray-600' },
 };
 
+const ASSIGNMENT_TYPE_ORDER = ['BAU', 'Project', 'Outsourced', 'Cosourced', 'Unspecified'];
+const ASSIGNMENT_TYPE_COLORS: Record<string, string> = {
+  BAU: 'bg-blue-500/10 text-blue-700 border-blue-200',
+  Project: 'bg-purple-500/10 text-purple-700 border-purple-200',
+  Outsourced: 'bg-amber-500/10 text-amber-700 border-amber-200',
+  Cosourced: 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
+  Unspecified: 'bg-muted text-muted-foreground border-border',
+};
+
 interface LinkedRecord {
   resource_name: string;
   table_source: 'allocation' | 'inventory';
@@ -43,6 +69,223 @@ interface Vendor {
   id: string;
   name: string;
   is_active: boolean;
+}
+
+// Sortable Row Component
+interface SortableRowProps {
+  assignment: ResourceAssignment;
+  status: AssignmentStatus;
+  statusConfig: { label: string; color: string };
+  vendors: Vendor[];
+  editingBudgetId: string | null;
+  editingBudgetValue: string;
+  budgetInputRef: React.RefObject<HTMLInputElement>;
+  onStatusChange: (assignment: ResourceAssignment, value: string) => void;
+  onVendorChange: (assignment: ResourceAssignment, value: string) => void;
+  onAssignmentTypeChange: (assignment: ResourceAssignment, value: string) => void;
+  onPaymentStatusChange: (assignment: ResourceAssignment, value: string) => void;
+  onEndDateChange: (assignment: ResourceAssignment, value: string) => void;
+  onBudgetDoubleClick: (assignment: ResourceAssignment) => void;
+  onBudgetBlur: (assignment: ResourceAssignment) => void;
+  onBudgetKeyDown: (e: React.KeyboardEvent, assignment: ResourceAssignment) => void;
+  onBudgetValueChange: (value: string) => void;
+  onToggleActive: (assignment: ResourceAssignment) => void;
+  onEdit: (assignment: ResourceAssignment) => void;
+  onDelete: (assignment: ResourceAssignment) => void;
+}
+
+function SortableRow({
+  assignment,
+  status,
+  statusConfig,
+  vendors,
+  editingBudgetId,
+  editingBudgetValue,
+  budgetInputRef,
+  onStatusChange,
+  onVendorChange,
+  onAssignmentTypeChange,
+  onPaymentStatusChange,
+  onEndDateChange,
+  onBudgetDoubleClick,
+  onBudgetBlur,
+  onBudgetKeyDown,
+  onBudgetValueChange,
+  onToggleActive,
+  onEdit,
+  onDelete,
+}: SortableRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: assignment.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 100 : 'auto',
+  };
+
+  return (
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className={`border-t border-border hover:bg-muted/20 ${!assignment.is_active ? 'opacity-50' : ''} ${isDragging ? 'bg-muted/40' : ''}`}
+    >
+      <td className="px-4 py-3 text-muted-foreground cursor-grab active:cursor-grabbing" {...attributes} {...listeners}>
+        <GripVertical className="h-4 w-4" />
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Briefcase className="h-4 w-4 text-primary" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-foreground">{assignment.name}</span>
+            {assignment.project?.name && (
+              <span className="text-xs text-muted-foreground">{assignment.project.name}</span>
+            )}
+          </div>
+        </div>
+      </td>
+      <td className="px-4 py-3">
+        <Select
+          value={status}
+          onValueChange={(value) => onStatusChange(assignment, value)}
+        >
+          <SelectTrigger className="h-8 w-[130px] bg-background text-xs">
+            <Badge variant="secondary" className={`${statusConfig.color} text-xs`}>
+              {statusConfig.label}
+            </Badge>
+          </SelectTrigger>
+          <SelectContent className="bg-popover z-[400]">
+            <SelectItem value="yet_to_start">Yet to Start</SelectItem>
+            <SelectItem value="on_hold">On Hold</SelectItem>
+            <SelectItem value="in_progress">In Progress</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
+      </td>
+      <td className="px-4 py-3">
+        {editingBudgetId === assignment.id ? (
+          <Input
+            ref={budgetInputRef}
+            type="number"
+            value={editingBudgetValue}
+            onChange={(e) => onBudgetValueChange(e.target.value)}
+            onBlur={() => onBudgetBlur(assignment)}
+            onKeyDown={(e) => onBudgetKeyDown(e, assignment)}
+            className="h-8 w-[100px] text-sm"
+            placeholder="0"
+          />
+        ) : (
+          <div
+            className="flex items-center gap-1 cursor-text px-2 py-1 -mx-2 rounded hover:bg-muted min-w-[80px]"
+            onDoubleClick={() => onBudgetDoubleClick(assignment)}
+            title="Double-click to edit"
+          >
+            {assignment.budget !== null && assignment.budget !== undefined ? (
+              <>
+                <span className="text-xs text-muted-foreground">﷼</span>
+                <span className="text-sm">{assignment.budget.toLocaleString()}</span>
+              </>
+            ) : (
+              <span className="text-muted-foreground text-sm">—</span>
+            )}
+          </div>
+        )}
+      </td>
+      <td className="px-4 py-3">
+        <Input
+          type="date"
+          value={assignment.end_date || ''}
+          onChange={(e) => onEndDateChange(assignment, e.target.value)}
+          className="h-8 w-[100px] text-xs"
+        />
+      </td>
+      <td className="px-4 py-3">
+        <Select
+          value={assignment.vendor_id || '__none__'}
+          onValueChange={(value) => onVendorChange(assignment, value)}
+        >
+          <SelectTrigger className="h-8 w-[110px] bg-background text-xs">
+            <SelectValue placeholder="Select vendor" />
+          </SelectTrigger>
+          <SelectContent className="bg-popover z-[400]">
+            <SelectItem value="__none__">Not specified</SelectItem>
+            {vendors.map((v) => (
+              <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </td>
+      <td className="px-4 py-3">
+        <Select
+          value={assignment.assignment_type || '__none__'}
+          onValueChange={(value) => onAssignmentTypeChange(assignment, value)}
+        >
+          <SelectTrigger className="h-8 w-[120px] bg-background text-xs">
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent className="bg-popover z-[400]">
+            <SelectItem value="__none__">Not specified</SelectItem>
+            <SelectItem value="Project">Project</SelectItem>
+            <SelectItem value="BAU">BAU</SelectItem>
+            <SelectItem value="Outsourced">Outsourced</SelectItem>
+            <SelectItem value="Cosourced">Cosourced</SelectItem>
+          </SelectContent>
+        </Select>
+      </td>
+      <td className="px-4 py-3">
+        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
+          <Select
+            value={assignment.payment_status || 'unpaid'}
+            onValueChange={(value) => onPaymentStatusChange(assignment, value)}
+          >
+            <SelectTrigger className="h-8 w-[100px] bg-background text-xs">
+              <Badge variant="secondary" className={`${PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].color} text-xs`}>
+                {PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].label}
+              </Badge>
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-[400]">
+              <SelectItem value="unpaid">Unpaid</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+        ) : (
+          <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">N/A</Badge>
+        )}
+      </td>
+      <td className="px-4 py-3 text-center">
+        <Switch
+          checked={assignment.is_active}
+          onCheckedChange={() => onToggleActive(assignment)}
+        />
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex items-center justify-center gap-1">
+          <button
+            onClick={() => onEdit(assignment)}
+            className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => onDelete(assignment)}
+            className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-[#dc2626]/10 hover:text-[#dc2626] transition-colors"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
 }
 
 export default function ResourceAssignmentsPage() {
@@ -66,11 +309,18 @@ export default function ResourceAssignmentsPage() {
   const [linkedRecords, setLinkedRecords] = useState<LinkedRecord[]>([]);
   const [isCheckingLinks, setIsCheckingLinks] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
   // Budget inline edit state
   const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null);
   const [editingBudgetValue, setEditingBudgetValue] = useState('');
   const budgetInputRef = useRef<HTMLInputElement>(null);
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   // Fetch projects for dropdown
   const { data: projects = [] } = useQuery({
@@ -99,6 +349,34 @@ export default function ResourceAssignmentsPage() {
     },
   });
 
+  // Group assignments by type
+  const groupedAssignments = useMemo(() => {
+    const groups: Record<string, ResourceAssignment[]> = {};
+    
+    allAssignments.forEach((assignment) => {
+      const type = assignment.assignment_type || 'Unspecified';
+      if (!groups[type]) {
+        groups[type] = [];
+      }
+      groups[type].push(assignment);
+    });
+
+    // Sort each group by sort_order
+    Object.keys(groups).forEach((key) => {
+      groups[key].sort((a, b) => a.sort_order - b.sort_order);
+    });
+
+    // Return in defined order
+    const orderedGroups: { type: string; items: ResourceAssignment[] }[] = [];
+    ASSIGNMENT_TYPE_ORDER.forEach((type) => {
+      if (groups[type] && groups[type].length > 0) {
+        orderedGroups.push({ type, items: groups[type] });
+      }
+    });
+
+    return orderedGroups;
+  }, [allAssignments]);
+
   // Focus budget input when editing
   useEffect(() => {
     if (editingBudgetId && budgetInputRef.current) {
@@ -111,13 +389,9 @@ export default function ResourceAssignmentsPage() {
     setIsCheckingLinks(true);
     const records: LinkedRecord[] = [];
 
-    // Check resource_allocations
     const { data: allocations } = await supabase
       .from('resource_allocations')
-      .select(`
-        id,
-        resource_inventory!inner(name)
-      `)
+      .select(`id, resource_inventory!inner(name)`)
       .eq('assignment_id', assignmentId);
 
     if (allocations && allocations.length > 0) {
@@ -129,7 +403,6 @@ export default function ResourceAssignmentsPage() {
       });
     }
 
-    // Check resource_inventory
     const { data: inventory } = await supabase
       .from('resource_inventory')
       .select('id, name')
@@ -137,7 +410,6 @@ export default function ResourceAssignmentsPage() {
 
     if (inventory && inventory.length > 0) {
       inventory.forEach((inv: any) => {
-        // Don't add duplicates
         if (!records.find(r => r.resource_name === inv.name && r.table_source === 'inventory')) {
           records.push({
             resource_name: inv.name || 'Unknown Resource',
@@ -206,7 +478,6 @@ export default function ResourceAssignmentsPage() {
     
     setIsDeleting(true);
     
-    // Double-check there are no linked records
     const records = await checkLinkedRecords(assignmentToDelete.id);
     if (records.length > 0) {
       setLinkedRecords(records);
@@ -214,7 +485,6 @@ export default function ResourceAssignmentsPage() {
       return;
     }
 
-    // Actually delete (hard delete)
     const { error } = await supabase
       .from('resource_assignments')
       .delete()
@@ -241,12 +511,10 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
-  // Auto-save assignment type when changed - also update payment_status if not outsourced/cosourced
   const handleAssignmentTypeChange = async (assignment: ResourceAssignment, value: string) => {
     const newValue = value === '__none__' ? null : value;
     const isPaymentApplicable = newValue === 'Outsourced' || newValue === 'Cosourced';
     
-    // If not outsourced/cosourced, reset payment status to not_applicable
     const updates: any = { assignment_type: newValue };
     if (!isPaymentApplicable && assignment.payment_status !== 'not_applicable') {
       updates.payment_status = 'not_applicable';
@@ -258,7 +526,6 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
-  // Auto-save status when changed
   const handleStatusChange = async (assignment: ResourceAssignment, value: string) => {
     await updateAssignment.mutateAsync({
       id: assignment.id,
@@ -266,7 +533,6 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
-  // Auto-save vendor when changed
   const handleVendorChange = async (assignment: ResourceAssignment, value: string) => {
     const newValue = value === '__none__' ? null : value;
     await updateAssignment.mutateAsync({
@@ -275,7 +541,6 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
-  // Auto-save payment status when changed
   const handlePaymentStatusChange = async (assignment: ResourceAssignment, value: string) => {
     await updateAssignment.mutateAsync({
       id: assignment.id,
@@ -283,7 +548,6 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
-  // Auto-save end date when changed
   const handleEndDateChange = async (assignment: ResourceAssignment, value: string) => {
     await updateAssignment.mutateAsync({
       id: assignment.id,
@@ -291,7 +555,6 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
-  // Inline budget editing handlers
   const handleBudgetDoubleClick = (assignment: ResourceAssignment) => {
     setEditingBudgetId(assignment.id);
     setEditingBudgetValue(assignment.budget?.toString() || '');
@@ -333,6 +596,66 @@ export default function ResourceAssignmentsPage() {
     });
   };
 
+  const toggleGroup = (type: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) {
+        next.delete(type);
+      } else {
+        next.add(type);
+      }
+      return next;
+    });
+  };
+
+  // Handle drag end - reorder within group
+  const handleDragEnd = async (event: DragEndEvent, groupType: string) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const group = groupedAssignments.find((g) => g.type === groupType);
+    if (!group) return;
+
+    const oldIndex = group.items.findIndex((item) => item.id === active.id);
+    const newIndex = group.items.findIndex((item) => item.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reorderedItems = arrayMove(group.items, oldIndex, newIndex);
+
+    // Update sort_order for all items in the reordered group
+    const updates = reorderedItems.map((item, index) => ({
+      id: item.id,
+      sort_order: index + 1,
+    }));
+
+    // Optimistically update UI via React Query cache
+    queryClient.setQueryData(['resource-assignments-all'], (old: ResourceAssignment[] | undefined) => {
+      if (!old) return old;
+      return old.map((assignment) => {
+        const update = updates.find((u) => u.id === assignment.id);
+        if (update) {
+          return { ...assignment, sort_order: update.sort_order };
+        }
+        return assignment;
+      });
+    });
+
+    // Persist to database
+    try {
+      for (const update of updates) {
+        await supabase
+          .from('resource_assignments')
+          .update({ sort_order: update.sort_order, updated_at: new Date().toISOString() })
+          .eq('id', update.id);
+      }
+    } catch (error) {
+      console.error('Failed to persist sort order:', error);
+      toast.error('Failed to save order');
+      queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
+    }
+  };
+
   if (isLoadingAll) {
     return (
       <div className="p-6">
@@ -363,195 +686,98 @@ export default function ResourceAssignmentsPage() {
         </Button>
       </div>
 
-      {/* Assignments List */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <table className="w-full">
-        <thead className="bg-muted/30">
-            <tr>
-              <th className="w-10 px-4 py-3"></th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Status</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Budget (SAR)</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">End Date</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Vendor</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Type</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Payment</th>
-              <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
-              <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allAssignments.map((assignment) => {
-              const status = assignment.assignment_status || 'yet_to_start';
-              const statusConfig = STATUS_CONFIG[status];
-              return (
-              <tr 
-                key={assignment.id} 
-                className={`border-t border-border hover:bg-muted/20 ${!assignment.is_active ? 'opacity-50' : ''}`}
+      {/* Grouped Assignments List */}
+      <div className="space-y-4">
+        {groupedAssignments.map((group) => {
+          const isCollapsed = collapsedGroups.has(group.type);
+          const typeColor = ASSIGNMENT_TYPE_COLORS[group.type] || ASSIGNMENT_TYPE_COLORS.Unspecified;
+
+          return (
+            <div key={group.type} className="bg-card border border-border rounded-xl overflow-hidden">
+              {/* Group Header */}
+              <button
+                onClick={() => toggleGroup(group.type)}
+                className="w-full flex items-center gap-3 px-4 py-3 bg-muted/30 hover:bg-muted/50 transition-colors"
               >
-                <td className="px-4 py-3 text-muted-foreground">
-                  <GripVertical className="h-4 w-4" />
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Briefcase className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-foreground">{assignment.name}</span>
-                      {assignment.project?.name && (
-                        <span className="text-xs text-muted-foreground">{assignment.project.name}</span>
-                      )}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <Select
-                    value={status}
-                    onValueChange={(value) => handleStatusChange(assignment, value)}
-                  >
-                    <SelectTrigger className="h-8 w-[130px] bg-background text-xs">
-                      <Badge variant="secondary" className={`${statusConfig.color} text-xs`}>
-                        {statusConfig.label}
-                      </Badge>
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover z-[400]">
-                      <SelectItem value="yet_to_start">Yet to Start</SelectItem>
-                      <SelectItem value="on_hold">On Hold</SelectItem>
-                      <SelectItem value="in_progress">In Progress</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </td>
-                <td className="px-4 py-3">
-                  {editingBudgetId === assignment.id ? (
-                    <Input
-                      ref={budgetInputRef}
-                      type="number"
-                      value={editingBudgetValue}
-                      onChange={(e) => setEditingBudgetValue(e.target.value)}
-                      onBlur={() => handleBudgetBlur(assignment)}
-                      onKeyDown={(e) => handleBudgetKeyDown(e, assignment)}
-                      className="h-8 w-[100px] text-sm"
-                      placeholder="0"
-                    />
-                  ) : (
-                    <div
-                      className="flex items-center gap-1 cursor-text px-2 py-1 -mx-2 rounded hover:bg-muted min-w-[80px]"
-                      onDoubleClick={() => handleBudgetDoubleClick(assignment)}
-                      title="Double-click to edit"
-                    >
-                      {assignment.budget !== null && assignment.budget !== undefined ? (
-                        <>
-                          <span className="text-xs text-muted-foreground">﷼</span>
-                          <span className="text-sm">{assignment.budget.toLocaleString()}</span>
-                        </>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
-                    </div>
-                  )}
-                </td>
-                {/* End Date */}
-                <td className="px-4 py-3">
-                  <Input
-                    type="date"
-                    value={assignment.end_date || ''}
-                    onChange={(e) => handleEndDateChange(assignment, e.target.value)}
-                    className="h-8 w-[100px] text-xs"
-                  />
-                </td>
-                {/* Vendor */}
-                <td className="px-4 py-3">
-                  <Select
-                    value={assignment.vendor_id || '__none__'}
-                    onValueChange={(value) => handleVendorChange(assignment, value)}
-                  >
-                    <SelectTrigger className="h-8 w-[110px] bg-background text-xs">
-                      <SelectValue placeholder="Select vendor" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover z-[400]">
-                      <SelectItem value="__none__">Not specified</SelectItem>
-                      {vendors.map((v) => (
-                        <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </td>
-                {/* Assignment Type */}
-                <td className="px-4 py-3">
-                  <Select
-                    value={assignment.assignment_type || '__none__'}
-                    onValueChange={(value) => handleAssignmentTypeChange(assignment, value)}
-                  >
-                    <SelectTrigger className="h-8 w-[120px] bg-background text-xs">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover z-[400]">
-                      <SelectItem value="__none__">Not specified</SelectItem>
-                      <SelectItem value="Project">Project</SelectItem>
-                      <SelectItem value="BAU">BAU</SelectItem>
-                      <SelectItem value="Outsourced">Outsourced</SelectItem>
-                      <SelectItem value="Cosourced">Cosourced</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </td>
-                {/* Payment Status - only editable for Outsourced/Cosourced */}
-                <td className="px-4 py-3">
-                  {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-                    <Select
-                      value={assignment.payment_status || 'unpaid'}
-                      onValueChange={(value) => handlePaymentStatusChange(assignment, value)}
-                    >
-                      <SelectTrigger className="h-8 w-[100px] bg-background text-xs">
-                        <Badge variant="secondary" className={`${PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].color} text-xs`}>
-                          {PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].label}
-                        </Badge>
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover z-[400]">
-                        <SelectItem value="unpaid">Unpaid</SelectItem>
-                        <SelectItem value="paid">Paid</SelectItem>
-                        <SelectItem value="closed">Closed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">N/A</Badge>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <Switch
-                    checked={assignment.is_active}
-                    onCheckedChange={() => handleToggleActive(assignment)}
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-center gap-1">
-                    <button
-                      onClick={() => openEdit(assignment)}
-                      className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(assignment)}
-                      className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-[#dc2626]/10 hover:text-[#dc2626] transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              );
-            })}
-            {allAssignments.length === 0 && (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
-                  No assignments configured. Click "Add Assignment" to create one.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                {isCollapsed ? (
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                )}
+                <Badge variant="outline" className={`${typeColor} text-xs font-medium`}>
+                  {group.type}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  {group.items.length} assignment{group.items.length !== 1 ? 's' : ''}
+                </span>
+              </button>
+
+              {/* Group Content */}
+              {!isCollapsed && (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={(e) => handleDragEnd(e, group.type)}
+                >
+                  <table className="w-full">
+                    <thead className="bg-muted/20">
+                      <tr>
+                        <th className="w-10 px-4 py-2"></th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Status</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Budget (SAR)</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">End Date</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Vendor</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Type</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Payment</th>
+                        <th className="text-center px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
+                        <th className="text-center px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <SortableContext items={group.items.map((a) => a.id)} strategy={verticalListSortingStrategy}>
+                        {group.items.map((assignment) => {
+                          const status = assignment.assignment_status || 'yet_to_start';
+                          const statusConfig = STATUS_CONFIG[status];
+                          return (
+                            <SortableRow
+                              key={assignment.id}
+                              assignment={assignment}
+                              status={status}
+                              statusConfig={statusConfig}
+                              vendors={vendors}
+                              editingBudgetId={editingBudgetId}
+                              editingBudgetValue={editingBudgetValue}
+                              budgetInputRef={budgetInputRef}
+                              onStatusChange={handleStatusChange}
+                              onVendorChange={handleVendorChange}
+                              onAssignmentTypeChange={handleAssignmentTypeChange}
+                              onPaymentStatusChange={handlePaymentStatusChange}
+                              onEndDateChange={handleEndDateChange}
+                              onBudgetDoubleClick={handleBudgetDoubleClick}
+                              onBudgetBlur={handleBudgetBlur}
+                              onBudgetKeyDown={handleBudgetKeyDown}
+                              onBudgetValueChange={setEditingBudgetValue}
+                              onToggleActive={handleToggleActive}
+                              onEdit={openEdit}
+                              onDelete={handleDeleteClick}
+                            />
+                          );
+                        })}
+                      </SortableContext>
+                    </tbody>
+                  </table>
+                </DndContext>
+              )}
+            </div>
+          );
+        })}
+
+        {groupedAssignments.length === 0 && (
+          <div className="bg-card border border-border rounded-xl px-4 py-8 text-center text-muted-foreground">
+            No assignments configured. Click "Add Assignment" to create one.
+          </div>
+        )}
       </div>
 
       {/* Create Modal */}
