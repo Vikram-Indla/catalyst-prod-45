@@ -1,6 +1,7 @@
 /**
  * TestDataPanel — Displays current test data values during execution
  * Shows the snapshot of row data stored at execution start
+ * Renders in column order (from parameters) for consistency with Data tab
  */
 
 import { useMemo } from 'react';
@@ -17,6 +18,8 @@ interface TestDataPanelProps {
   rowSnapshot: Record<string, string> | null;
   rowNumber?: number | null;
   totalRows?: number;
+  /** Column order from test_data_parameters for consistent display */
+  columnOrder?: string[];
   className?: string;
 }
 
@@ -24,12 +27,32 @@ export function TestDataPanel({
   rowSnapshot,
   rowNumber,
   totalRows,
+  columnOrder = [],
   className,
 }: TestDataPanelProps) {
+  // Build ordered entries: first by columnOrder, then any extras alphabetically
   const entries = useMemo(() => {
     if (!rowSnapshot) return [];
-    return Object.entries(rowSnapshot).sort(([a], [b]) => a.localeCompare(b));
-  }, [rowSnapshot]);
+    
+    const snapshotKeys = new Set(Object.keys(rowSnapshot));
+    const orderedEntries: [string, string][] = [];
+    
+    // Add keys in columnOrder first
+    for (const key of columnOrder) {
+      if (snapshotKeys.has(key)) {
+        orderedEntries.push([key, String(rowSnapshot[key] ?? '')]);
+        snapshotKeys.delete(key);
+      }
+    }
+    
+    // Add remaining keys alphabetically
+    const remaining = Array.from(snapshotKeys).sort((a, b) => a.localeCompare(b));
+    for (const key of remaining) {
+      orderedEntries.push([key, String(rowSnapshot[key] ?? '')]);
+    }
+    
+    return orderedEntries;
+  }, [rowSnapshot, columnOrder]);
 
   // Don't render if no data
   if (!rowSnapshot || entries.length === 0) {
@@ -97,14 +120,20 @@ export function TestDataPanel({
 export function TestDataPanelCompact({
   rowSnapshot,
   rowNumber,
+  columnOrder = [],
   className,
 }: Omit<TestDataPanelProps, 'totalRows'>) {
   if (!rowSnapshot || Object.keys(rowSnapshot).length === 0) {
     return null;
   }
 
-  const entries = Object.entries(rowSnapshot).slice(0, 4);
-  const remaining = Object.keys(rowSnapshot).length - 4;
+  // Build ordered entries with columnOrder priority
+  const allKeys = columnOrder.length > 0 
+    ? [...columnOrder.filter(k => k in rowSnapshot), ...Object.keys(rowSnapshot).filter(k => !columnOrder.includes(k)).sort()]
+    : Object.keys(rowSnapshot).sort();
+  
+  const entries = allKeys.slice(0, 4).map(key => [key, String(rowSnapshot[key] ?? '')] as const);
+  const remaining = allKeys.length - 4;
 
   return (
     <div className={cn("flex items-center gap-2 flex-wrap", className)}>

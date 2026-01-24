@@ -4,7 +4,7 @@
  * Enhanced with Module 3A-3: Result Recording & Evidence
  * Phase 3: Data-Driven Test Execution support
  */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useTestExecution } from '../../hooks/useTestExecution';
@@ -50,6 +50,14 @@ export function StepRunner({
   const navigation = useStepNavigationV2(steps.length);
   const { recordResult, completeExecution, isRecording, isCompleting } = useStepResultMutation(runId, testCaseId);
   const timer = useExecutionTimer();
+
+  // Column order for TestDataPanel display - extract from snapshot keys if present
+  // This ensures consistent ordering based on parameter column_order
+  const columnOrder = useMemo(() => {
+    if (!run?.test_data_row_snapshot) return [];
+    // Snapshot keys are ordered by parameter column_order when created
+    return Object.keys(run.test_data_row_snapshot);
+  }, [run?.test_data_row_snapshot]);
 
   const currentStep = steps[navigation.currentStepIndex];
   const isLastStep = navigation.isLastStep;
@@ -162,6 +170,7 @@ export function StepRunner({
           <TestDataPanel
             rowSnapshot={run.test_data_row_snapshot as Record<string, string>}
             rowNumber={run.test_data_row_number}
+            columnOrder={columnOrder}
             className="max-w-4xl mx-auto"
           />
         </div>
