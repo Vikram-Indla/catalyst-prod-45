@@ -194,6 +194,11 @@ export function TestCasesTable({
                 <SortIcon field="title" currentField={sortField} direction={sortDir} />
               </button>
             </th>
+            <th className="w-32 px-3 py-3 text-left">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Release
+              </span>
+            </th>
             <th className="w-40 px-3 py-3 text-left">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Folder
@@ -301,6 +306,14 @@ export function TestCasesTable({
                     {tc.title}
                   </TooltipContent>
                 </Tooltip>
+              </td>
+              <td className="w-32 px-3 py-3">
+                <span className={cn(
+                  "text-sm truncate block max-w-[120px]",
+                  tc.release === 'Unassigned' ? "text-muted-foreground italic" : "text-foreground"
+                )}>
+                  {tc.release}
+                </span>
               </td>
               <td className="w-40 px-3 py-3">
                 {tc.folderPath ? (
