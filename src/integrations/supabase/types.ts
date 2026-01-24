@@ -1581,6 +1581,7 @@ export type Database = {
       departments: {
         Row: {
           created_at: string | null
+          department_code: string | null
           id: string
           is_active: boolean | null
           name: string
@@ -1589,6 +1590,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          department_code?: string | null
           id?: string
           is_active?: boolean | null
           name: string
@@ -1597,6 +1599,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          department_code?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
@@ -15240,6 +15243,7 @@ export type Database = {
           name: string
           sort_order: number
           updated_at: string | null
+          vendor_code: string | null
         }
         Insert: {
           created_at?: string | null
@@ -15249,6 +15253,7 @@ export type Database = {
           name: string
           sort_order?: number
           updated_at?: string | null
+          vendor_code?: string | null
         }
         Update: {
           created_at?: string | null
@@ -15258,6 +15263,7 @@ export type Database = {
           name?: string
           sort_order?: number
           updated_at?: string | null
+          vendor_code?: string | null
         }
         Relationships: []
       }

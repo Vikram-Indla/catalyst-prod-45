@@ -132,6 +132,7 @@ export default function ResourceVendorsPage() {
           <thead className="bg-muted/30">
             <tr>
               <th className="w-10 px-4 py-3"></th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[80px]">V-ID</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Description</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
@@ -146,6 +147,9 @@ export default function ResourceVendorsPage() {
               >
                 <td className="px-4 py-3 text-muted-foreground">
                   <GripVertical className="h-4 w-4" />
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-sm font-mono font-medium text-primary">{vendor.vendor_code || '—'}</span>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
@@ -184,7 +188,7 @@ export default function ResourceVendorsPage() {
             ))}
             {allVendors.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                   No vendors configured. Click "Add Vendor" to create one.
                 </td>
               </tr>
