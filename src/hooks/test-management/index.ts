@@ -97,6 +97,22 @@ export {
   useStartCycle,
 } from './useTestCycles';
 
+// Test Cycles Enhanced (with joins)
+export {
+  useTestCyclesEnhanced,
+  useCycleKPIs,
+  useCreateCycleEnhanced,
+  useDeleteCycleEnhanced,
+  useCloneCycleEnhanced,
+  type CycleWithDetails,
+  type CycleKPIs,
+  type CycleFilterParams,
+  type CreateCycleInput,
+} from './useTestCyclesEnhanced';
+
+// Releases
+export { useReleases, type ReleaseOption } from './useReleases';
+
 // Test Runs & Execution
 export {
   useTestRuns,
