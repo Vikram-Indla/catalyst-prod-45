@@ -421,6 +421,8 @@ export function useUpdateTestCase() {
         .eq('id', id)
         .maybeSingle();
 
+      const newVersion = (current?.version || 0) + 1;
+
       const dbUpdates: Record<string, unknown> = {};
       if (updates.title) dbUpdates.title = updates.title;
       if (updates.objective !== undefined) dbUpdates.description = updates.objective;
@@ -429,7 +431,7 @@ export function useUpdateTestCase() {
       if (updates.folder_id !== undefined) dbUpdates.folder_id = updates.folder_id;
       if (updates.priority_id !== undefined) dbUpdates.priority_id = updates.priority_id;
       if (updates.type_id !== undefined) dbUpdates.case_type_id = updates.type_id;
-      dbUpdates.version = (current?.version || 0) + 1;
+      dbUpdates.version = newVersion;
 
       const { data: testCase, error: caseError } = await supabase
         .from('tm_test_cases')
@@ -469,6 +471,40 @@ export function useUpdateTestCase() {
         }
       }
 
+      // Fetch current steps for version snapshot
+      const { data: savedSteps } = await supabase
+        .from('tm_test_steps')
+        .select('step_number, action, expected_result, test_data')
+        .eq('test_case_id', id)
+        .order('step_number', { ascending: true });
+
+      // Create version snapshot in tm_test_case_versions
+      const snapshot = {
+        title: testCase.title,
+        description: testCase.description,
+        preconditions: testCase.preconditions,
+        status: testCase.status,
+        priority_id: testCase.priority_id,
+        case_type_id: testCase.case_type_id,
+        folder_id: testCase.folder_id,
+        steps: (savedSteps || []).map(s => ({
+          step_number: s.step_number,
+          action: s.action,
+          expected_result: s.expected_result || '',
+          test_data: s.test_data,
+        })),
+      };
+
+      await (supabase as any)
+        .from('tm_test_case_versions')
+        .insert({
+          test_case_id: id,
+          version_number: newVersion,
+          snapshot,
+          change_summary: 'Updated via edit dialog',
+          changed_by: user.id,
+        });
+
       return {
         ...testCase,
         key: testCase.case_key,
@@ -481,6 +517,8 @@ export function useUpdateTestCase() {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case', data.id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-case-versions-count', data.id] });
       catalystToast.success('Test case updated');
     },
     onError: (error: Error) => {

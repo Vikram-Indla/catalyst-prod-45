@@ -345,7 +345,7 @@ export default function TestCaseDetailPage() {
                     <GitCommit className="w-4 h-4 mr-2" />
                     Versions
                     <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded-full">
-                      {versionsCount > 0 ? versionsCount : testCase.version || 1}
+                      {versionsCount}
                     </span>
                   </TabsTrigger>
                 </TabsList>
