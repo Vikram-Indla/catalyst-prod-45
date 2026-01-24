@@ -46,6 +46,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTestCaseLabels, useAddTestCaseLabel, useRemoveTestCaseLabel, useCreateLabel } from '@/hooks/test-management/useTestCaseTags';
 import { useAutoVersioning } from '@/hooks/test-management/useAutoVersioning';
+import { useSelectableReleases, useUpdateTestCaseRelease } from '@/hooks/test-management/useTestCaseRelease';
 import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
 
 // Priority ID mapping from tm_case_priorities table
@@ -118,12 +119,17 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
   const [isUpdatingPriority, setIsUpdatingPriority] = useState(false);
   const [isUpdatingType, setIsUpdatingType] = useState(false);
   const [isUpdatingAssignee, setIsUpdatingAssignee] = useState(false);
+  const [isUpdatingRelease, setIsUpdatingRelease] = useState(false);
 
   // Tags from DB
   const { data: dbLabels = [] } = useTestCaseLabels(testCase.id);
   const addLabelMutation = useAddTestCaseLabel();
   const removeLabelMutation = useRemoveTestCaseLabel();
   const createLabelMutation = useCreateLabel();
+
+  // Releases
+  const { data: selectableReleases = [] } = useSelectableReleases();
+  const updateReleaseMutation = useUpdateTestCaseRelease();
 
   // Team members for assignee picker
   const [teamMembers, setTeamMembers] = useState<Array<{ id: string; full_name: string; avatar_url?: string }>>([]);
@@ -344,20 +350,82 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
       <h3 className="font-semibold text-foreground mb-4">Properties</h3>
 
       <div className="space-y-4">
-        {/* Release */}
-        <PropertyField
-          label="Release"
-          icon={Package}
-          value={
-            testCase.release?.id ? (
-              <Link to={`/releases/all/${testCase.release.id}`} className="text-primary hover:underline">
-                {releaseLabel}
-              </Link>
-            ) : (
-              <span className="text-muted-foreground">{releaseLabel}</span>
-            )
-          }
-        />
+        {/* Release - Editable */}
+        <div className="flex items-center justify-between group">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Package className="w-4 h-4" />
+            <span>Release</span>
+          </div>
+          {isUpdatingRelease ? (
+            <div className="flex items-center gap-1">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Updating...</span>
+            </div>
+          ) : editingField === 'release' ? (
+            <Select
+              value={testCase.release?.id || 'unassigned'}
+              onValueChange={async (value) => {
+                setIsUpdatingRelease(true);
+                setEditingField(null);
+                try {
+                  await updateReleaseMutation.mutateAsync({
+                    testCaseId: testCase.id,
+                    projectId: testCase.project_id,
+                    releaseId: value === 'unassigned' ? null : value,
+                  });
+                  await createVersion({ 
+                    testCaseId: testCase.id, 
+                    changeSummary: value === 'unassigned' ? 'Release cleared' : `Release changed` 
+                  });
+                  await invalidateQueries();
+                } catch (error) {
+                  console.error('Failed to update release:', error);
+                } finally {
+                  setIsUpdatingRelease(false);
+                }
+              }}
+            >
+              <SelectTrigger className="w-44 h-7">
+                <SelectValue placeholder="Select release..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned">
+                  <span className="text-muted-foreground">Unassigned</span>
+                </SelectItem>
+                {selectableReleases.map((release) => (
+                  <SelectItem key={release.id} value={release.id}>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{release.version || release.name}</span>
+                      {release.status && (
+                        <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
+                          {release.status}
+                        </Badge>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div 
+              className="flex items-center gap-1 cursor-pointer" 
+              onClick={() => setEditingField('release')}
+            >
+              {testCase.release?.id ? (
+                <Link 
+                  to={`/releases/all/${testCase.release.id}`} 
+                  className="text-sm text-primary hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {releaseLabel}
+                </Link>
+              ) : (
+                <span className="text-sm text-muted-foreground">{releaseLabel}</span>
+              )}
+              <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          )}
+        </div>
 
         {/* Folder */}
         <PropertyField
