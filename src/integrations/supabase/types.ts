@@ -14946,6 +14946,7 @@ export type Database = {
       }
       resource_assignments: {
         Row: {
+          assignment_id: string | null
           assignment_status: string | null
           assignment_type: string | null
           budget: number | null
@@ -14959,10 +14960,12 @@ export type Database = {
           payment_status: string | null
           project_id: string | null
           sort_order: number | null
+          start_date: string | null
           updated_at: string | null
           vendor_id: string | null
         }
         Insert: {
+          assignment_id?: string | null
           assignment_status?: string | null
           assignment_type?: string | null
           budget?: number | null
@@ -14976,10 +14979,12 @@ export type Database = {
           payment_status?: string | null
           project_id?: string | null
           sort_order?: number | null
+          start_date?: string | null
           updated_at?: string | null
           vendor_id?: string | null
         }
         Update: {
+          assignment_id?: string | null
           assignment_status?: string | null
           assignment_type?: string | null
           budget?: number | null
@@ -14993,6 +14998,7 @@ export type Database = {
           payment_status?: string | null
           project_id?: string | null
           sort_order?: number | null
+          start_date?: string | null
           updated_at?: string | null
           vendor_id?: string | null
         }
