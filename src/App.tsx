@@ -156,7 +156,7 @@ import EstimationSettings from "./pages/admin/EstimationSettings";
 import GeneralSettings from "./pages/admin/GeneralSettings";
 import SecuritySettings from "./pages/admin/SecuritySettings";
 import Announcements from "./pages/admin/Announcements";
-import Users from "./pages/admin/Users";
+import UsersManagement from "./pages/admin/UsersManagement";
 import RolesPermissions from "./pages/admin/RolesPermissions";
 import ThemeGroups from "./pages/admin/ThemeGroups";
 import Programs from "./pages/admin/Programs";
@@ -882,7 +882,7 @@ const App = () => (
                 <Route path="general-config" element={<GeneralConfig />} />
                 <Route path="security-settings" element={<SecuritySettings />} />
                 <Route path="announcements" element={<Announcements />} />
-                <Route path="users" element={<Users />} />
+                <Route path="users" element={<UsersManagement />} />
                 <Route path="roles-permissions" element={<RolesPermissions />} />
                 <Route path="theme-groups" element={<ThemeGroups />} />
                 <Route path="programs" element={<Programs />} />
