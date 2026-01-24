@@ -76,9 +76,9 @@ export function CreateCycleModalEnhanced({
     onCreateCycle({
       name: name.trim(),
       description: description.trim() || undefined,
-      release_id: releaseId || undefined,
+      release_id: releaseId && releaseId !== 'none' ? releaseId : undefined,
       environment,
-      assigned_to: assignedTo || undefined,
+      assigned_to: assignedTo && assignedTo !== 'none' ? assignedTo : undefined,
       planned_start: startDate || undefined,
       planned_end: endDate || undefined,
     });
@@ -130,8 +130,8 @@ export function CreateCycleModalEnhanced({
                 <SelectValue placeholder={releasesLoading ? 'Loading...' : 'Select release'} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No release</SelectItem>
-                {releases?.map(release => (
+                <SelectItem value="none">No release</SelectItem>
+                {releases?.filter(r => r.id).map(release => (
                   <SelectItem key={release.id} value={release.id}>
                     {release.name}
                   </SelectItem>
@@ -167,8 +167,8 @@ export function CreateCycleModalEnhanced({
                 <SelectValue placeholder={membersLoading ? 'Loading...' : 'Select assignee'} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Unassigned</SelectItem>
-                {teamMembers?.map(member => (
+                <SelectItem value="none">Unassigned</SelectItem>
+                {teamMembers?.filter(m => m.id).map(member => (
                   <SelectItem key={member.id} value={member.id}>
                     {member.full_name || 'Unknown'}
                   </SelectItem>
