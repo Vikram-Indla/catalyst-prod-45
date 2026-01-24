@@ -16,7 +16,9 @@ import {
   UserCog,
   Check,
   Loader2,
-  ChevronDown
+  ChevronDown,
+  Trash2,
+  Download
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,11 +34,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useBulkEditUsers, BulkEditableField } from '@/hooks/useBulkEditUsers';
+import { UserProfile } from '@/hooks/useUsers';
 
 interface BulkEditCommandBarProps {
   selectedIds: Set<string>;
@@ -48,6 +61,9 @@ interface BulkEditCommandBarProps {
     departments: Array<{ id: string; name: string }>;
     assignments: Array<{ id: string; name: string }>;
   };
+  users?: UserProfile[];
+  onBulkDelete?: (userIds: string[]) => void;
+  onBulkExport?: (userIds: string[]) => void;
 }
 
 interface FieldConfig {
@@ -62,10 +78,14 @@ export function BulkEditCommandBar({
   selectedIds,
   onClearSelection,
   referenceData,
+  users,
+  onBulkDelete,
+  onBulkExport,
 }: BulkEditCommandBarProps) {
   const [pendingUpdates, setPendingUpdates] = useState<Partial<Record<BulkEditableField, string | null>>>({});
   const [displayUpdates, setDisplayUpdates] = useState<Partial<Record<string, string | null>>>({});
   const [openField, setOpenField] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const bulkEdit = useBulkEditUsers(referenceData);
 
@@ -342,20 +362,76 @@ export function BulkEditCommandBar({
               )}
             </Button>
 
+            {/* Export Selected */}
+            {onBulkExport && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1.5 text-xs"
+                onClick={() => onBulkExport(Array.from(selectedIds))}
+              >
+                <Download className="h-3.5 w-3.5" />
+                Export
+              </Button>
+            )}
+
+            {/* Delete Selected */}
+            {onBulkDelete && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => setShowDeleteDialog(true)}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete
+              </Button>
+            )}
+
+            <Separator orientation="vertical" className="h-6" />
+
+            {/* Clear button with text label */}
             <Button
               variant="ghost"
-              size="icon"
-              className="h-8 w-8"
+              size="sm"
+              className="h-8 gap-1.5 text-xs text-muted-foreground"
               onClick={() => {
                 handleClear();
                 onClearSelection();
               }}
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
+              Clear
             </Button>
           </div>
         </div>
       </motion.div>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Selected Users</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete <strong>{selectedCount}</strong> selected user(s)? 
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                onBulkDelete?.(Array.from(selectedIds));
+                setShowDeleteDialog(false);
+                onClearSelection();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Users
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AnimatePresence>
   );
 }

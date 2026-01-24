@@ -41,6 +41,7 @@ import { ResetPasswordDialog } from './ResetPasswordDialog';
 import { BulkEditCommandBar } from './BulkEditCommandBar';
 import { EditUserDrawer } from './EditUserDrawer';
 import { UserInlineCell } from './UserInlineCell';
+import { UsersPagination } from './UsersPagination';
 import { exportUsersMultiTab } from './exportUsersMultiTab';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
 import { useUserInlineEdit } from '@/hooks/useUserInlineEdit';
@@ -78,6 +79,10 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   // Default sort: RID ascending
   const [sortColumn, setSortColumn] = useState<SortColumn | null>('rid');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 20;
 
   const deleteUser = useDeleteUser();
   const approveUser = useApproveUser();
@@ -293,6 +298,17 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
       return sortDirection === 'asc' ? comparison : -comparison;
     });
   }, [filteredUsers, sortColumn, sortDirection]);
+
+  // Paginated users
+  const paginatedUsers = useMemo(() => {
+    const start = currentPage * pageSize;
+    return sortedUsers.slice(start, start + pageSize);
+  }, [sortedUsers, currentPage, pageSize]);
+
+  // Reset to first page when filters change
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   // Sort handler
   const handleSort = useCallback((column: SortColumn) => {
@@ -873,7 +889,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                 </tr>
               </thead>
               <tbody>
-                {sortedUsers.map((user) => (
+                {paginatedUsers.map((user) => (
                   <tr
                     key={user.id} 
                     className={cn(
@@ -1204,10 +1220,13 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
           </p>
         )}
 
-        {/* Footer */}
-        <div className="flex items-center justify-between mt-4 text-xs text-muted-foreground">
-          <span>Showing {filteredUsers.length} of {users.length} users</span>
-        </div>
+        {/* Pagination */}
+        <UsersPagination
+          page={currentPage}
+          pageSize={pageSize}
+          total={sortedUsers.length}
+          onPageChange={handlePageChange}
+        />
       </CardContent>
 
       {/* Delete User Confirmation Dialog */}
@@ -1274,6 +1293,25 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
         selectedIds={selectedIds}
         onClearSelection={handleClearSelection}
         referenceData={referenceData}
+        users={filteredUsers}
+        onBulkDelete={(ids) => ids.forEach(id => deleteUser.mutate(id))}
+        onBulkExport={async (ids) => {
+          const selectedUsers = filteredUsers.filter(u => ids.includes(u.id));
+          const exportUsers = selectedUsers.map(u => ({
+            id: u.id, rid: u.rid, full_name: u.full_name, job_role: u.job_role,
+            department_id: u.department_id, department_name: u.department_name,
+            assignment_id: u.assignment_id, assignment_name: u.assignment_name,
+            contract_start_date: u.contract_start_date, contract_end_date: u.contract_end_date,
+            vendor_id: u.vendor_id, vendor: u.vendor, resource_type: u.resource_type,
+            country: u.country, location: u.location, ctc: u.ctc,
+          }));
+          await exportUsersMultiTab(
+            exportUsers,
+            departments.map(d => ({ id: d.id, department_id: d.department_id ?? null })),
+            assignments.map(a => ({ id: a.id, assignment_id: a.assignment_id ?? null })),
+            vendors.map(v => ({ id: v.id, vendor_code: v.vendor_code ?? null }))
+          );
+        }}
       />
     </Card>
   );
