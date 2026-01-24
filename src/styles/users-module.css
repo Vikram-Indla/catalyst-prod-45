@@ -297,7 +297,6 @@
   cursor: pointer;
   transition: var(--ct-transition-normal);
   position: relative;
-  overflow: hidden;
 }
 
 .ct-stat-card::before {
@@ -330,11 +329,13 @@
   align-items: center;
   gap: var(--ct-space-2);
   margin-bottom: var(--ct-space-2);
+  overflow: visible;
 }
 
 .ct-stat-dot {
   width: 10px;
   height: 10px;
+  min-width: 10px;
   border-radius: var(--ct-radius-full);
   flex-shrink: 0;
 }
@@ -351,6 +352,8 @@
   color: var(--ct-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 .ct-stat-value {
