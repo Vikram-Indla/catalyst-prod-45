@@ -1,9 +1,10 @@
 /**
  * TestCaseDetailDrawer — Inline drawer for viewing test case details
+ * FULLY WIRED: No mock data, all DB-backed
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Sheet,
   SheetContent,
@@ -21,7 +22,6 @@ import {
   Play,
   History,
   Link2,
-  MessageSquare,
   FileText,
   Clock,
   User,
@@ -33,6 +33,8 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
+  Loader2,
+  Trash2,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -41,19 +43,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { StatusBadge, PriorityBadge, TypeBadge } from './badges';
 import { ExecutionStatusBadge } from './badges/ExecutionStatusBadge';
 import { AutomationBadge } from './badges/AutomationBadge';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-interface TestStep {
-  id: string;
-  step: number;
-  action: string;
-  expectedResult: string;
-  testData?: string;
-}
+// Real hooks
+import { useTestCaseSteps, useCloneTestCase, useDeleteTestCase } from '@/hooks/test-management/useTestCases';
+import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCaseExecutionHistory';
+import { useCaseRequirements, REQUIREMENT_TYPE_LABELS } from '@/hooks/test-cases/useRequirementLinks';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface TestCase {
   id: string;
@@ -62,7 +72,6 @@ interface TestCase {
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
   priority: 'critical' | 'high' | 'medium' | 'low';
   type: 'functional' | 'regression' | 'smoke' | 'integration' | 'e2e';
-  steps?: TestStep[];
   preconditions?: string;
   postconditions?: string;
   tags?: string[];
@@ -71,8 +80,7 @@ interface TestCase {
   updatedAt?: string;
   lastRunStatus?: 'passed' | 'failed' | 'blocked' | 'not_run';
   automationStatus?: 'automated' | 'manual' | 'in_progress';
-  linkedItems?: { type: string; id: string; title: string }[];
-  executionHistory?: { date: string; status: string; executor: string; duration: string }[];
+  project_id?: string;
 }
 
 interface TestCaseDetailDrawerProps {
@@ -81,6 +89,7 @@ interface TestCaseDetailDrawerProps {
   onOpenChange: (open: boolean) => void;
   onEdit?: () => void;
   onExecute?: () => void;
+  projectId?: string;
 }
 
 export function TestCaseDetailDrawer({
@@ -89,8 +98,19 @@ export function TestCaseDetailDrawer({
   onOpenChange,
   onEdit,
   onExecute,
+  projectId,
 }: TestCaseDetailDrawerProps) {
   const [activeTab, setActiveTab] = useState('details');
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
+  const queryClient = useQueryClient();
+  const cloneMutation = useCloneTestCase();
+  const deleteMutation = useDeleteTestCase();
+
+  // Real DB hooks
+  const { data: steps = [], isLoading: stepsLoading } = useTestCaseSteps(testCase?.id);
+  const { data: executionHistory = [], isLoading: historyLoading } = useTestCaseExecutionHistory(testCase?.id);
+  const { data: requirementLinks = [], isLoading: linksLoading } = useCaseRequirements(testCase?.id || null);
 
   if (!testCase) return null;
 
@@ -99,283 +119,401 @@ export function TestCaseDetailDrawer({
     toast.success('Test case ID copied');
   };
 
-  // Use real steps if provided, otherwise fallback to mock
-  const displaySteps: TestStep[] = testCase.steps && testCase.steps.length > 0 
-    ? testCase.steps 
-    : [
-        { id: '1', step: 1, action: 'Navigate to login page', expectedResult: 'Login page is displayed' },
-        { id: '2', step: 2, action: 'Enter valid credentials', expectedResult: 'Credentials are accepted' },
-        { id: '3', step: 3, action: 'Click Sign In button', expectedResult: 'User is redirected to dashboard' },
-        { id: '4', step: 4, action: 'Verify user profile is visible', expectedResult: 'User name and avatar are displayed' },
-      ];
+  const handleDuplicate = () => {
+    const resolvedProjectId = projectId || testCase.project_id;
+    if (!resolvedProjectId) {
+      toast.error('Cannot duplicate: project ID not available');
+      return;
+    }
+    
+    cloneMutation.mutate(
+      { id: testCase.id, project_id: resolvedProjectId },
+      {
+        onSuccess: () => {
+          toast.success('Test case duplicated');
+          queryClient.invalidateQueries({ queryKey: ['tm-cases', resolvedProjectId] });
+        },
+        onError: (error) => {
+          toast.error(`Failed to duplicate: ${error.message}`);
+        },
+      }
+    );
+  };
 
-  const mockHistory = testCase.executionHistory || [
-    { date: '2026-01-12 14:30', status: 'passed', executor: 'Sarah Chen', duration: '2m 45s' },
-    { date: '2026-01-10 09:15', status: 'failed', executor: 'Mike Johnson', duration: '3m 12s' },
-    { date: '2026-01-08 16:00', status: 'passed', executor: 'Sarah Chen', duration: '2m 30s' },
-    { date: '2026-01-05 11:45', status: 'blocked', executor: 'Alex Rivera', duration: '0m 45s' },
-  ];
+  const handleDelete = () => {
+    const resolvedProjectId = projectId || testCase.project_id;
+    if (!resolvedProjectId) {
+      toast.error('Cannot delete: project ID not available');
+      return;
+    }
+    
+    deleteMutation.mutate(
+      { id: testCase.id, project_id: resolvedProjectId },
+      {
+        onSuccess: () => {
+          toast.success('Test case deleted');
+          setIsDeleteDialogOpen(false);
+          onOpenChange(false); // Close drawer after delete
+          queryClient.invalidateQueries({ queryKey: ['tm-cases', resolvedProjectId] });
+        },
+        onError: (error) => {
+          toast.error(`Failed to delete: ${error.message}`);
+        },
+      }
+    );
+  };
 
-  const mockLinkedItems = testCase.linkedItems || [
-    { type: 'Story', id: 'STR-123', title: 'User authentication flow' },
-    { type: 'Bug', id: 'BUG-456', title: 'Login fails on Safari' },
-    { type: 'Requirement', id: 'REQ-789', title: 'OAuth 2.0 compliance' },
-  ];
+  const handleOpenInNewTab = () => {
+    // Navigate to full detail page
+    window.open(`/releases/test-cases/${testCase.id}`, '_blank');
+  };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-xl p-0 flex flex-col">
-        {/* Header */}
-        <SheetHeader className="px-6 py-4 border-b bg-muted/30">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <button 
-                  onClick={handleCopyId}
-                  className="text-sm font-mono text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {testCase.id}
-                </button>
-                <Copy className="w-3 h-3 text-muted-foreground" />
-              </div>
-              <SheetTitle className="text-lg font-semibold line-clamp-2">
-                {testCase.title}
-              </SheetTitle>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={onEdit}>
-                <Edit className="w-3.5 h-3.5 mr-1.5" />
-                Edit
-              </Button>
-              <Button size="sm" onClick={onExecute}>
-                <Play className="w-3.5 h-3.5 mr-1.5" />
-                Execute
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Duplicate
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Open in new tab
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-destructive">
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-          
-          {/* Status Badges */}
-          <div className="flex flex-wrap items-center gap-2 mt-3">
-            <StatusBadge status={testCase.status} size="sm" />
-            <PriorityBadge priority={testCase.priority} size="sm" />
-            <TypeBadge type={testCase.type} size="sm" />
-            {testCase.automationStatus && (
-              <AutomationBadge status={testCase.automationStatus} size="sm" />
-            )}
-            {testCase.lastRunStatus && (
-              <ExecutionStatusBadge status={testCase.lastRunStatus} size="sm" />
-            )}
-          </div>
-        </SheetHeader>
-        
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="mx-6 mt-4 grid grid-cols-4 w-auto">
-            <TabsTrigger value="details" className="text-xs">
-              <FileText className="w-3.5 h-3.5 mr-1.5" />
-              Details
-            </TabsTrigger>
-            <TabsTrigger value="steps" className="text-xs">
-              <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-              Steps
-            </TabsTrigger>
-            <TabsTrigger value="history" className="text-xs">
-              <History className="w-3.5 h-3.5 mr-1.5" />
-              History
-            </TabsTrigger>
-            <TabsTrigger value="links" className="text-xs">
-              <Link2 className="w-3.5 h-3.5 mr-1.5" />
-              Links
-            </TabsTrigger>
-          </TabsList>
-          
-          <ScrollArea className="flex-1 px-6 py-4">
-            {/* Details Tab */}
-            <TabsContent value="details" className="mt-0 space-y-6">
-              {/* Description */}
-              <div>
-                <h4 className="text-sm font-medium mb-2 text-muted-foreground">Description</h4>
-                <p className="text-sm">
-                  {testCase.description || 'No description provided.'}
-                </p>
-              </div>
-              
-              {/* Preconditions */}
-              <div>
-                <h4 className="text-sm font-medium mb-2 text-muted-foreground">Preconditions</h4>
-                <p className="text-sm bg-muted/50 p-3 rounded-lg">
-                  {testCase.preconditions || 'User must be on the application homepage. Browser cookies should be cleared.'}
-                </p>
-              </div>
-              
-              {/* Tags */}
-              <div>
-                <h4 className="text-sm font-medium mb-2 text-muted-foreground flex items-center gap-2">
-                  <Tag className="w-4 h-4" />
-                  Tags
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {(testCase.tags || ['authentication', 'login', 'security', 'smoke-test']).map(tag => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              
-              <Separator />
-              
-              {/* Metadata */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    Created by
-                  </span>
-                  <span className="font-medium">{testCase.createdBy || 'Sarah Chen'}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    Created
-                  </span>
-                  <span className="font-medium">{testCase.createdAt || 'Jan 5, 2026'}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    Last updated
-                  </span>
-                  <span className="font-medium">{testCase.updatedAt || 'Jan 12, 2026'}</span>
-                </div>
-              </div>
-            </TabsContent>
-            
-            {/* Steps Tab */}
-            <TabsContent value="steps" className="mt-0">
-              <div className="space-y-3">
-                {displaySteps.map((step, index) => (
-                  <motion.div
-                    key={step.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="p-4 rounded-lg border bg-card"
+    <>
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent className="w-full sm:max-w-xl p-0 flex flex-col">
+          {/* Header */}
+          <SheetHeader className="px-6 py-4 border-b bg-muted/30">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <button 
+                    onClick={handleCopyId}
+                    className="text-sm font-mono text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center">
-                        {step.step}
-                      </div>
-                      <div className="flex-1 min-w-0 space-y-2">
-                        <div>
-                          <span className="text-xs text-muted-foreground font-medium uppercase">Action</span>
-                          <p className="text-sm mt-0.5">{step.action}</p>
-                        </div>
-                        <div>
-                          <span className="text-xs text-muted-foreground font-medium uppercase">Expected Result</span>
-                          <p className="text-sm mt-0.5 text-muted-foreground">{step.expectedResult}</p>
-                        </div>
-                        {step.testData && (
-                          <div>
-                            <span className="text-xs text-muted-foreground font-medium uppercase">Test Data</span>
-                            <p className="text-sm mt-0.5 text-muted-foreground font-mono bg-muted/50 p-2 rounded">{step.testData}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    {testCase.id}
+                  </button>
+                  <Copy className="w-3 h-3 text-muted-foreground" />
+                </div>
+                <SheetTitle className="text-lg font-semibold line-clamp-2">
+                  {testCase.title}
+                </SheetTitle>
               </div>
-            </TabsContent>
-            
-            {/* History Tab */}
-            <TabsContent value="history" className="mt-0">
-              <div className="space-y-3">
-                {mockHistory.map((run, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="flex items-center justify-between p-3 rounded-lg border bg-card"
-                  >
-                    <div className="flex items-center gap-3">
-                      {run.status === 'passed' ? (
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      ) : run.status === 'failed' ? (
-                        <XCircle className="w-5 h-5 text-red-500" />
+              
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={onEdit}>
+                  <Edit className="w-3.5 h-3.5 mr-1.5" />
+                  Edit
+                </Button>
+                <Button size="sm" onClick={onExecute}>
+                  <Play className="w-3.5 h-3.5 mr-1.5" />
+                  Execute
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem 
+                      onClick={handleDuplicate}
+                      disabled={cloneMutation.isPending}
+                    >
+                      {cloneMutation.isPending ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       ) : (
-                        <AlertTriangle className="w-5 h-5 text-orange-500" />
+                        <Copy className="w-4 h-4 mr-2" />
                       )}
-                      <div>
-                        <p className="text-sm font-medium capitalize">{run.status}</p>
-                        <p className="text-xs text-muted-foreground">{run.date}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm">{run.executor}</p>
-                      <p className="text-xs text-muted-foreground">{run.duration}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                      Duplicate
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleOpenInNewTab}>
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Open in new tab
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="text-destructive"
+                      onClick={() => setIsDeleteDialogOpen(true)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-            </TabsContent>
+            </div>
             
-            {/* Links Tab */}
-            <TabsContent value="links" className="mt-0">
-              <div className="space-y-3">
-                {mockLinkedItems.map((item, index) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Badge variant="outline" className="text-xs">
-                        {item.type}
-                      </Badge>
-                      <div>
-                        <p className="text-sm font-medium">{item.id}</p>
-                        <p className="text-xs text-muted-foreground">{item.title}</p>
-                      </div>
-                    </div>
-                    <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                  </motion.div>
-                ))}
+            {/* Status Badges */}
+            <div className="flex flex-wrap items-center gap-2 mt-3">
+              <StatusBadge status={testCase.status} size="sm" />
+              <PriorityBadge priority={testCase.priority} size="sm" />
+              <TypeBadge type={testCase.type} size="sm" />
+              {testCase.automationStatus && (
+                <AutomationBadge status={testCase.automationStatus} size="sm" />
+              )}
+              {testCase.lastRunStatus && (
+                <ExecutionStatusBadge status={testCase.lastRunStatus} size="sm" />
+              )}
+            </div>
+          </SheetHeader>
+          
+          {/* Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+            <TabsList className="mx-6 mt-4 grid grid-cols-4 w-auto">
+              <TabsTrigger value="details" className="text-xs">
+                <FileText className="w-3.5 h-3.5 mr-1.5" />
+                Details
+              </TabsTrigger>
+              <TabsTrigger value="steps" className="text-xs">
+                <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                Steps ({steps.length})
+              </TabsTrigger>
+              <TabsTrigger value="history" className="text-xs">
+                <History className="w-3.5 h-3.5 mr-1.5" />
+                History
+              </TabsTrigger>
+              <TabsTrigger value="links" className="text-xs">
+                <Link2 className="w-3.5 h-3.5 mr-1.5" />
+                Links
+              </TabsTrigger>
+            </TabsList>
+            
+            <ScrollArea className="flex-1 px-6 py-4">
+              {/* Details Tab */}
+              <TabsContent value="details" className="mt-0 space-y-6">
+                {/* Description */}
+                <div>
+                  <h4 className="text-sm font-medium mb-2 text-muted-foreground">Description</h4>
+                  <p className="text-sm">
+                    {testCase.description || <span className="text-muted-foreground italic">No description provided.</span>}
+                  </p>
+                </div>
                 
-                <Button variant="outline" className="w-full mt-4">
+                {/* Preconditions */}
+                <div>
+                  <h4 className="text-sm font-medium mb-2 text-muted-foreground">Preconditions</h4>
+                  <p className="text-sm bg-muted/50 p-3 rounded-lg">
+                    {testCase.preconditions || <span className="text-muted-foreground italic">No preconditions specified.</span>}
+                  </p>
+                </div>
+                
+                {/* Tags */}
+                <div>
+                  <h4 className="text-sm font-medium mb-2 text-muted-foreground flex items-center gap-2">
+                    <Tag className="w-4 h-4" />
+                    Tags
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {testCase.tags && testCase.tags.length > 0 ? (
+                      testCase.tags.map(tag => (
+                        <Badge key={tag} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-sm text-muted-foreground italic">No tags</span>
+                    )}
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                {/* Metadata */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      Created by
+                    </span>
+                    <span className="font-medium">{testCase.createdBy || <span className="text-muted-foreground italic">Unknown</span>}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Created
+                    </span>
+                    <span className="font-medium">{testCase.createdAt || <span className="text-muted-foreground italic">—</span>}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      Last updated
+                    </span>
+                    <span className="font-medium">{testCase.updatedAt || <span className="text-muted-foreground italic">—</span>}</span>
+                  </div>
+                </div>
+              </TabsContent>
+              
+              {/* Steps Tab - REAL DATA */}
+              <TabsContent value="steps" className="mt-0">
+                {stepsLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : steps.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CheckCircle2 className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
+                    <p className="text-sm text-muted-foreground">No steps yet</p>
+                    <p className="text-xs text-muted-foreground mt-1">Click Edit to add test steps</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {steps.map((step, index) => (
+                      <motion.div
+                        key={step.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="p-4 rounded-lg border bg-card"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center">
+                            {step.step_number}
+                          </div>
+                          <div className="flex-1 min-w-0 space-y-2">
+                            <div>
+                              <span className="text-xs text-muted-foreground font-medium uppercase">Action</span>
+                              <p className="text-sm mt-0.5">{step.action}</p>
+                            </div>
+                            <div>
+                              <span className="text-xs text-muted-foreground font-medium uppercase">Expected Result</span>
+                              <p className="text-sm mt-0.5 text-muted-foreground">{step.expected_result}</p>
+                            </div>
+                            {step.test_data && (
+                              <div>
+                                <span className="text-xs text-muted-foreground font-medium uppercase">Test Data</span>
+                                <p className="text-sm mt-0.5 text-muted-foreground font-mono bg-muted/50 p-2 rounded">{step.test_data}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+              
+              {/* History Tab - REAL DATA */}
+              <TabsContent value="history" className="mt-0">
+                {historyLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : executionHistory.length === 0 ? (
+                  <div className="text-center py-12">
+                    <History className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
+                    <p className="text-sm text-muted-foreground">No executions yet</p>
+                    <p className="text-xs text-muted-foreground mt-1">Run this test case in a cycle to see history</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {executionHistory.map((run, index) => (
+                      <motion.div
+                        key={run.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex items-center justify-between p-3 rounded-lg border bg-card"
+                      >
+                        <div className="flex items-center gap-3">
+                          {run.status === 'passed' ? (
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                          ) : run.status === 'failed' ? (
+                            <XCircle className="w-5 h-5 text-red-500" />
+                          ) : (
+                            <AlertTriangle className="w-5 h-5 text-orange-500" />
+                          )}
+                          <div>
+                            <p className="text-sm font-medium capitalize">{run.status.replace('_', ' ')}</p>
+                            <p className="text-xs text-muted-foreground">{run.cycleName}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm">{run.executor}</p>
+                          <p className="text-xs text-muted-foreground">{run.timestamp}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+              
+              {/* Links Tab - REAL DATA */}
+              <TabsContent value="links" className="mt-0">
+                {linksLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : requirementLinks.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Link2 className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
+                    <p className="text-sm text-muted-foreground">No linked items</p>
+                    <p className="text-xs text-muted-foreground mt-1">Use the full detail view to link requirements</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {requirementLinks.map((link, index) => (
+                      <motion.div
+                        key={link.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="text-xs">
+                            {REQUIREMENT_TYPE_LABELS[link.requirement_type] || link.requirement_type}
+                          </Badge>
+                          <div>
+                            <p className="text-sm font-medium">
+                              {link.external_key || link.requirement_id || '—'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {link.external_title || link.requirement_title || 'Untitled'}
+                            </p>
+                          </div>
+                        </div>
+                        <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4"
+                  onClick={() => {
+                    toast.info('Use the full detail view to link work items');
+                  }}
+                >
                   <Link2 className="w-4 h-4 mr-2" />
                   Link Work Item
                 </Button>
-              </div>
-            </TabsContent>
-          </ScrollArea>
-        </Tabs>
-      </SheetContent>
-    </Sheet>
+              </TabsContent>
+            </ScrollArea>
+          </Tabs>
+        </SheetContent>
+      </Sheet>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Test Case</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{testCase.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
