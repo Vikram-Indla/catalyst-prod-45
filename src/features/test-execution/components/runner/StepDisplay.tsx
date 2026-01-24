@@ -1,6 +1,7 @@
 /**
  * Step Display Component - Shows current step action and expected result
  * Phase 5: Supports variable substitution with highlighted placeholders
+ * FIXED: Null-safe template handling
  */
 import React from 'react';
 import { cn } from '@/lib/utils';
@@ -20,7 +21,10 @@ export const StepDisplay: React.FC<StepDisplayProps> = React.memo(({
   totalSteps,
   dataRowSnapshot,
 }) => {
-  const hasSubstitutions = !!dataRowSnapshot && Object.keys(dataRowSnapshot).length > 0;
+  // Only use substitution if we have a valid snapshot with data
+  const snapshot = dataRowSnapshot && Object.keys(dataRowSnapshot).length > 0 
+    ? dataRowSnapshot 
+    : null;
   
   return (
     <div className="space-y-6">
@@ -50,16 +54,12 @@ export const StepDisplay: React.FC<StepDisplayProps> = React.memo(({
           Action
         </h3>
         <div className="p-4 bg-muted/50 rounded-lg border">
-          {hasSubstitutions ? (
-            <SubstitutedText
-              template={step.action}
-              data={dataRowSnapshot}
-              className="text-base leading-relaxed"
-              highlightSubstitutions
-            />
-          ) : (
-            <p className="text-base leading-relaxed">{step.action}</p>
-          )}
+          <SubstitutedText
+            template={step.action || ''}
+            data={snapshot}
+            className="text-base leading-relaxed text-foreground"
+            highlightSubstitutions={!!snapshot}
+          />
         </div>
       </div>
 
@@ -69,16 +69,12 @@ export const StepDisplay: React.FC<StepDisplayProps> = React.memo(({
           Expected Result
         </h3>
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          {hasSubstitutions ? (
-            <SubstitutedText
-              template={step.expected_result}
-              data={dataRowSnapshot}
-              className="text-base leading-relaxed"
-              highlightSubstitutions
-            />
-          ) : (
-            <p className="text-base leading-relaxed">{step.expected_result}</p>
-          )}
+          <SubstitutedText
+            template={step.expected_result || ''}
+            data={snapshot}
+            className="text-base leading-relaxed"
+            highlightSubstitutions={!!snapshot}
+          />
         </div>
       </div>
 
