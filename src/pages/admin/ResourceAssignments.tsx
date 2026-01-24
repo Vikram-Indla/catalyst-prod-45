@@ -173,32 +173,36 @@ function SortableRow({
         </Select>
       </td>
       <td className="px-4 py-3">
-        {editingBudgetId === assignment.id ? (
-          <Input
-            ref={budgetInputRef}
-            type="number"
-            value={editingBudgetValue}
-            onChange={(e) => onBudgetValueChange(e.target.value)}
-            onBlur={() => onBudgetBlur(assignment)}
-            onKeyDown={(e) => onBudgetKeyDown(e, assignment)}
-            className="h-8 w-[100px] text-sm"
-            placeholder="0"
-          />
+        {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
+          editingBudgetId === assignment.id ? (
+            <Input
+              ref={budgetInputRef}
+              type="number"
+              value={editingBudgetValue}
+              onChange={(e) => onBudgetValueChange(e.target.value)}
+              onBlur={() => onBudgetBlur(assignment)}
+              onKeyDown={(e) => onBudgetKeyDown(e, assignment)}
+              className="h-8 w-[100px] text-sm"
+              placeholder="0"
+            />
+          ) : (
+            <div
+              className="flex items-center gap-1 cursor-text px-2 py-1 -mx-2 rounded hover:bg-muted min-w-[80px]"
+              onDoubleClick={() => onBudgetDoubleClick(assignment)}
+              title="Double-click to edit"
+            >
+              {assignment.budget !== null && assignment.budget !== undefined ? (
+                <>
+                  <span className="text-xs text-muted-foreground">﷼</span>
+                  <span className="text-sm">{assignment.budget.toLocaleString()}</span>
+                </>
+              ) : (
+                <span className="text-muted-foreground text-sm">—</span>
+              )}
+            </div>
+          )
         ) : (
-          <div
-            className="flex items-center gap-1 cursor-text px-2 py-1 -mx-2 rounded hover:bg-muted min-w-[80px]"
-            onDoubleClick={() => onBudgetDoubleClick(assignment)}
-            title="Double-click to edit"
-          >
-            {assignment.budget !== null && assignment.budget !== undefined ? (
-              <>
-                <span className="text-xs text-muted-foreground">﷼</span>
-                <span className="text-sm">{assignment.budget.toLocaleString()}</span>
-              </>
-            ) : (
-              <span className="text-muted-foreground text-sm">—</span>
-            )}
-          </div>
+          <span className="text-muted-foreground text-sm">—</span>
         )}
       </td>
       <td className="px-4 py-3">
@@ -265,7 +269,7 @@ function SortableRow({
             </SelectContent>
           </Select>
         ) : (
-          <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">N/A</Badge>
+          <span className="text-muted-foreground text-sm">—</span>
         )}
       </td>
       <td className="px-4 py-3 text-center">
