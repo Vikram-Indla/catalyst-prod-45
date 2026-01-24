@@ -87,7 +87,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
 
   // Fetch reference data for inline editing dropdowns
   const { data: vendors = [] } = useQuery({
-    queryKey: ['resource-vendors'],
+    // Use a distinct key to avoid cache collisions with other screens that fetch vendors without vendor_code
+    queryKey: ['resource-vendors', 'with-code'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_vendors')
@@ -129,7 +130,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   });
 
   const { data: departments = [] } = useQuery({
-    queryKey: ['capacity-departments'],
+    // Use a distinct key to avoid cache collisions with other screens that fetch departments without department_id
+    queryKey: ['capacity-departments', 'with-code'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('capacity_departments')
@@ -143,7 +145,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   });
 
   const { data: assignments = [] } = useQuery({
-    queryKey: ['resource-assignments'],
+    // Use a distinct key to avoid cache collisions with other screens that fetch assignments without assignment_id
+    queryKey: ['resource-assignments', 'with-code'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_assignments')
