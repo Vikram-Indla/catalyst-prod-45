@@ -309,7 +309,8 @@ export default function ResourceAssignmentsPage() {
                       <SelectItem value="__none__">Not specified</SelectItem>
                       <SelectItem value="Project">Project</SelectItem>
                       <SelectItem value="BAU">BAU</SelectItem>
-                      <SelectItem value="Outsources">Outsources</SelectItem>
+                      <SelectItem value="Outsourced">Outsourced</SelectItem>
+                      <SelectItem value="Cosourced">Cosourced</SelectItem>
                     </SelectContent>
                   </Select>
                 </td>
@@ -385,7 +386,8 @@ export default function ResourceAssignmentsPage() {
                   <SelectItem value="__none__">Not specified</SelectItem>
                   <SelectItem value="Project">Project</SelectItem>
                   <SelectItem value="BAU">BAU</SelectItem>
-                  <SelectItem value="Outsources">Outsources</SelectItem>
+                  <SelectItem value="Outsourced">Outsourced</SelectItem>
+                  <SelectItem value="Cosourced">Cosourced</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -474,7 +476,8 @@ export default function ResourceAssignmentsPage() {
                   <SelectItem value="__none__">Not specified</SelectItem>
                   <SelectItem value="Project">Project</SelectItem>
                   <SelectItem value="BAU">BAU</SelectItem>
-                  <SelectItem value="Outsources">Outsources</SelectItem>
+                  <SelectItem value="Outsourced">Outsourced</SelectItem>
+                  <SelectItem value="Cosourced">Cosourced</SelectItem>
                 </SelectContent>
               </Select>
             </div>
