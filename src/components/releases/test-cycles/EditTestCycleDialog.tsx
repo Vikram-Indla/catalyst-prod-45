@@ -1,10 +1,10 @@
 /**
  * Edit Test Cycle Dialog
- * Dialog for editing test cycle details
+ * Dialog for editing test cycle details with lifecycle-aware status transitions
  */
 
-import { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -26,6 +26,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -34,9 +35,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import {
+  type CycleStatus,
+  CYCLE_STATUS_CONFIG,
+  ALL_CYCLE_STATUSES,
+  getAllowedNextStatuses,
+  isValidStatusTransition,
+  getStatusEditability,
+  getTransitionErrorMessage,
+} from '@/features/test-cycles/types/cycle-config';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -49,19 +60,10 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const STATUS_OPTIONS = [
-  { value: 'draft', label: 'Draft' },
-  { value: 'planned', label: 'Planned' },
-  { value: 'in_progress', label: 'In Progress' },
-  { value: 'active', label: 'Active' },
-  { value: 'paused', label: 'Paused' },
-  { value: 'completed', label: 'Completed' },
-];
-
 const ENVIRONMENT_OPTIONS = [
   { value: 'development', label: 'Development' },
   { value: 'staging', label: 'Staging' },
-  { value: 'uat', label: 'UAT' },
+  { value: 'UAT', label: 'UAT' },
   { value: 'production', label: 'Production' },
 ];
 
@@ -102,6 +104,27 @@ export function EditTestCycleDialog({
     },
   });
 
+  // Current status for determining available transitions
+  const currentStatus = (cycle?.status || 'draft') as CycleStatus;
+  
+  // Get editability rules based on status
+  const editability = useMemo(() => getStatusEditability(currentStatus), [currentStatus]);
+  
+  // Get allowed status transitions (including current status)
+  const availableStatuses = useMemo(() => {
+    const allowed = getAllowedNextStatuses(currentStatus);
+    // Always include current status as an option
+    if (!allowed.includes(currentStatus)) {
+      return [currentStatus, ...allowed];
+    }
+    return [currentStatus, ...allowed.filter(s => s !== currentStatus)];
+  }, [currentStatus]);
+
+  // Watch the selected status to show transition warnings
+  const watchedStatus = form.watch('status') as CycleStatus;
+  const isStatusChanging = watchedStatus !== currentStatus;
+  const isValidTransition = isStatusChanging ? isValidStatusTransition(currentStatus, watchedStatus) : true;
+
   // Reset form when cycle changes
   useEffect(() => {
     if (cycle) {
@@ -119,18 +142,52 @@ export function EditTestCycleDialog({
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
       if (!cycle) throw new Error('No cycle selected');
-      
+
+      // Validate status transition if status is changing
+      const newStatus = data.status as CycleStatus;
+      if (newStatus !== currentStatus) {
+        if (!isValidStatusTransition(currentStatus, newStatus)) {
+          throw new Error(getTransitionErrorMessage(currentStatus, newStatus));
+        }
+      }
+
+      const updatePayload: Record<string, any> = {
+        updated_at: new Date().toISOString(),
+      };
+
+      // Only include editable fields based on current status
+      if (editability.editableFields.includes('name') || !editability.lockedFields.includes('name')) {
+        updatePayload.name = data.name;
+      }
+      if (editability.editableFields.includes('description') || !editability.lockedFields.includes('description')) {
+        updatePayload.description = data.description || null;
+      }
+      if (editability.editableFields.includes('environment') || !editability.lockedFields.includes('environment')) {
+        updatePayload.environment = data.environment || null;
+      }
+      if (editability.editableFields.includes('planned_start') || !editability.lockedFields.includes('planned_start')) {
+        updatePayload.planned_start = data.planned_start_date || null;
+      }
+      if (editability.editableFields.includes('planned_end') || !editability.lockedFields.includes('planned_end')) {
+        updatePayload.planned_end = data.planned_end_date || null;
+      }
+
+      // Handle status change
+      if (newStatus !== currentStatus) {
+        updatePayload.status = newStatus;
+        
+        // Auto-set timestamps on certain transitions
+        if (newStatus === 'active' && (currentStatus === 'planned' || currentStatus === 'draft')) {
+          updatePayload.actual_start = new Date().toISOString();
+        }
+        if (newStatus === 'completed') {
+          updatePayload.actual_end = new Date().toISOString();
+        }
+      }
+
       const { error } = await supabase
         .from('tm_test_cycles')
-        .update({
-          name: data.name,
-          description: data.description || null,
-          status: data.status as any,
-          planned_start: data.planned_start_date || null,
-          planned_end: data.planned_end_date || null,
-          environment: data.environment || null,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq('id', cycle.id);
 
       if (error) throw error;
@@ -138,6 +195,8 @@ export function EditTestCycleDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-cycles'] });
       queryClient.invalidateQueries({ queryKey: ['cycle-details'] });
+      queryClient.invalidateQueries({ queryKey: ['tm-cycles-enhanced'] });
+      queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
       toast.success('Test cycle updated successfully');
       onOpenChange(false);
       onSuccess?.();
@@ -151,15 +210,38 @@ export function EditTestCycleDialog({
     mutation.mutate(data);
   };
 
+  // Check if form is read-only
+  const isReadOnly = !editability.isEditable;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Edit Test Cycle</DialogTitle>
           <DialogDescription>
-            Update the test cycle details below.
+            {isReadOnly 
+              ? 'This cycle is read-only. Archived and completed cycles cannot be modified.'
+              : 'Update the test cycle details below.'}
           </DialogDescription>
         </DialogHeader>
+
+        {/* Editability warning */}
+        {editability.reason && !isReadOnly && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{editability.reason}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Invalid transition warning */}
+        {isStatusChanging && !isValidTransition && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {getTransitionErrorMessage(currentStatus, watchedStatus)}
+            </AlertDescription>
+          </Alert>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -170,7 +252,11 @@ export function EditTestCycleDialog({
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g., Sprint 24 Regression" />
+                    <Input 
+                      {...field} 
+                      placeholder="e.g., Sprint 24 Regression" 
+                      disabled={isReadOnly || editability.lockedFields.includes('name')}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -188,6 +274,7 @@ export function EditTestCycleDialog({
                       {...field} 
                       placeholder="Describe the purpose of this test cycle..."
                       rows={3}
+                      disabled={isReadOnly || editability.lockedFields.includes('description')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -202,20 +289,38 @@ export function EditTestCycleDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      value={field.value}
+                      disabled={isReadOnly}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                        {STATUS_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
+                        {availableStatuses.map((status) => {
+                          const config = CYCLE_STATUS_CONFIG[status];
+                          return (
+                            <SelectItem key={status} value={status}>
+                              <span className="flex items-center gap-2">
+                                <span 
+                                  className="w-2 h-2 rounded-full" 
+                                  style={{ backgroundColor: config.color }}
+                                />
+                                {config.label}
+                              </span>
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
+                    {isStatusChanging && isValidTransition && (
+                      <FormDescription className="text-amber-600">
+                        Status will change from {CYCLE_STATUS_CONFIG[currentStatus].label} to {CYCLE_STATUS_CONFIG[watchedStatus].label}
+                      </FormDescription>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -227,7 +332,11 @@ export function EditTestCycleDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Environment</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      value={field.value}
+                      disabled={isReadOnly || editability.lockedFields.includes('environment')}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select environment" />
@@ -255,7 +364,11 @@ export function EditTestCycleDialog({
                   <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                      <Input {...field} type="date" />
+                      <Input 
+                        {...field} 
+                        type="date" 
+                        disabled={isReadOnly || editability.lockedFields.includes('planned_start')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -269,7 +382,11 @@ export function EditTestCycleDialog({
                   <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                      <Input {...field} type="date" />
+                      <Input 
+                        {...field} 
+                        type="date" 
+                        disabled={isReadOnly || editability.lockedFields.includes('planned_end')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -284,18 +401,23 @@ export function EditTestCycleDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={mutation.isPending}
               >
-                Cancel
+                {isReadOnly ? 'Close' : 'Cancel'}
               </Button>
-              <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  'Save Changes'
-                )}
-              </Button>
+              {!isReadOnly && (
+                <Button 
+                  type="submit" 
+                  disabled={mutation.isPending || (isStatusChanging && !isValidTransition)}
+                >
+                  {mutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Changes'
+                  )}
+                </Button>
+              )}
             </DialogFooter>
           </form>
         </Form>
