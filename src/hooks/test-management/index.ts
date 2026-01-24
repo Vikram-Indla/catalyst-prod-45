@@ -28,6 +28,7 @@ export {
   useTestCaseSteps,
   useCreateTestCase,
   useUpdateTestCase,
+  useUpsertTestCaseDraft,
   useDeleteTestCase,
   useCloneTestCase,
   useMoveTestCase,
@@ -36,6 +37,7 @@ export {
   useAddTestCasesToCycle,
   useBulkUpdateTestCases,
   type BulkCaseStatus,
+  type DraftCaseInput,
 } from './useTestCases';
 
 // Test Steps

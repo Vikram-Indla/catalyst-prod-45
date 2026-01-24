@@ -41,6 +41,7 @@ import { AttachmentsTab } from './AttachmentsTab';
 import { AdditionalTab } from './AdditionalTab';
 import { TestCaseFormData, defaultFormData, TabInfo } from './types';
 import { useFolders } from '@/hooks/test-management/useFolders';
+import { useUpsertTestCaseDraft } from '@/hooks/test-management';
 
 // Import prefill type for template support
 import type { PrefilledTestCase } from '../utils';
@@ -86,7 +87,14 @@ export function CreateTestCaseDialogV2({
   const [showTemplates, setShowTemplates] = useState(false);
   const [showAIGenerate, setShowAIGenerate] = useState(false);
   
-  // Generate consistent TC number when dialog opens
+  // Draft ID for upsert (null = new, string = update existing)
+  const [draftId, setDraftId] = useState<string | null>(null);
+  const [draftCaseKey, setDraftCaseKey] = useState<string | null>(null);
+  
+  // Draft mutation
+  const upsertDraftMutation = useUpsertTestCaseDraft();
+  
+  // Generate consistent TC number when dialog opens (shown until draft is saved)
   const [tcNumber] = useState(() => `TC-${String(Math.floor(Math.random() * 900) + 100)}`);
 
   // Fetch folders from tm_folders table
@@ -150,6 +158,8 @@ export function CreateTestCaseDialogV2({
       setFormData(defaultFormData);
       setActiveTab('details');
       setErrors({});
+      setDraftId(null);
+      setDraftCaseKey(null);
     }
   }, [open]);
 
@@ -211,10 +221,35 @@ export function CreateTestCaseDialogV2({
   };
 
   const handleSaveDraft = async () => {
+    if (!projectId) {
+      toast.error('No project selected');
+      return;
+    }
+    
     setIsSavingDraft(true);
-    await new Promise((r) => setTimeout(r, 500));
-    setIsSavingDraft(false);
-    toast.success('Draft saved');
+    try {
+      const result = await upsertDraftMutation.mutateAsync({
+        project_id: projectId,
+        draft_id: draftId,
+        title: formData.title || undefined, // Let hook handle default
+        description: formData.description || undefined,
+        preconditions: formData.preconditions || undefined,
+        folder_id: formData.folderId || undefined,
+        priority: formData.priority || undefined,
+        type: formData.type || undefined,
+        assigned_to: formData.assigneeId || undefined,
+        release_id: formData.releaseId || undefined,
+        tags: formData.tags.length > 0 ? formData.tags : undefined,
+      });
+      
+      // Store the draft ID for subsequent updates
+      setDraftId(result.id);
+      setDraftCaseKey(result.case_key);
+    } catch (error) {
+      // Error toast handled by mutation
+    } finally {
+      setIsSavingDraft(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -262,7 +297,9 @@ export function CreateTestCaseDialogV2({
             </div>
             <div>
               <h2 className="text-lg font-semibold">Create Test Case</h2>
-              <p className="text-xs text-muted-foreground">{tcNumber} • New Test Case</p>
+              <p className="text-xs text-muted-foreground">
+                {draftCaseKey || tcNumber} • {draftId ? 'Draft' : 'New Test Case'}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-1">
@@ -360,10 +397,12 @@ export function CreateTestCaseDialogV2({
               <Checkbox id="createAnother" checked={createAnother} onCheckedChange={(c) => setCreateAnother(!!c)} />
               <Label htmlFor="createAnother" className="text-sm cursor-pointer">Create another</Label>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-              Draft saved
-            </div>
+            {draftId && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                Draft saved
+              </div>
+            )}
             <Badge variant={completedCount === totalRequired ? "default" : "secondary"} className={cn(completedCount === totalRequired ? "bg-teal-100 text-teal-700" : "")}>
               {completedCount === totalRequired ? <><Check className="w-3 h-3 mr-1" /> All good</> : `${totalRequired - completedCount} issues`}
             </Badge>
