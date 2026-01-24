@@ -1,16 +1,17 @@
-import { useState } from 'react';
-import { useResourceAssignments, type ResourceAssignment } from '@/modules/capacity-planner/hooks/useResourceAssignments';
+import { useState, useEffect } from 'react';
+import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, DollarSign } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { LicenseAllocationSection } from '@/modules/budget';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -18,6 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
+const STATUS_CONFIG: Record<AssignmentStatus, { label: string; color: string }> = {
+  yet_to_start: { label: 'Yet to Start', color: 'bg-muted text-muted-foreground' },
+  on_hold: { label: 'On Hold', color: 'bg-amber-500/15 text-amber-600' },
+  in_progress: { label: 'In Progress', color: 'bg-blue-500/15 text-blue-600' },
+  completed: { label: 'Completed', color: 'bg-emerald-500/15 text-emerald-600' },
+};
 
 interface LinkedRecord {
   resource_name: string;
@@ -29,12 +37,32 @@ export default function ResourceAssignmentsPage() {
   const { allAssignments, isLoadingAll, createAssignment, updateAssignment } = useResourceAssignments();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<ResourceAssignment | null>(null);
-  const [formData, setFormData] = useState({ name: '', description: '', assignment_type: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    description: '', 
+    assignment_type: '',
+    project_id: '',
+    budget: '',
+    assignment_status: 'yet_to_start' as AssignmentStatus
+  });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [assignmentToDelete, setAssignmentToDelete] = useState<ResourceAssignment | null>(null);
   const [linkedRecords, setLinkedRecords] = useState<LinkedRecord[]>([]);
   const [isCheckingLinks, setIsCheckingLinks] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Fetch projects for dropdown
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects-list'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name')
+        .order('name', { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const checkLinkedRecords = async (assignmentId: string) => {
     setIsCheckingLinks(true);
@@ -81,6 +109,17 @@ export default function ResourceAssignmentsPage() {
     return records;
   };
 
+  const resetFormData = () => {
+    setFormData({ 
+      name: '', 
+      description: '', 
+      assignment_type: '',
+      project_id: '',
+      budget: '',
+      assignment_status: 'yet_to_start'
+    });
+  };
+
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
     await createAssignment.mutateAsync({
@@ -88,7 +127,7 @@ export default function ResourceAssignmentsPage() {
       description: formData.description,
       assignment_type: formData.assignment_type || null,
     });
-    setFormData({ name: '', description: '', assignment_type: '' });
+    resetFormData();
     setCreateModalOpen(false);
   };
 
@@ -100,10 +139,13 @@ export default function ResourceAssignmentsPage() {
         name: formData.name,
         description: formData.description,
         assignment_type: formData.assignment_type || null,
-      },
+        project_id: formData.project_id || null,
+        budget: formData.budget ? parseFloat(formData.budget) : null,
+        assignment_status: formData.assignment_status || 'yet_to_start',
+      } as any,
     });
     setEditingAssignment(null);
-    setFormData({ name: '', description: '', assignment_type: '' });
+    resetFormData();
   };
 
   const handleDeleteClick = async (assignment: ResourceAssignment) => {
@@ -163,7 +205,14 @@ export default function ResourceAssignmentsPage() {
 
   const openEdit = (assignment: ResourceAssignment) => {
     setEditingAssignment(assignment);
-    setFormData({ name: assignment.name, description: assignment.description || '', assignment_type: assignment.assignment_type || '' });
+    setFormData({ 
+      name: assignment.name, 
+      description: assignment.description || '', 
+      assignment_type: assignment.assignment_type || '',
+      project_id: assignment.project_id || '',
+      budget: assignment.budget?.toString() || '',
+      assignment_status: assignment.assignment_status || 'yet_to_start'
+    });
   };
 
   if (isLoadingAll) {
@@ -203,14 +252,18 @@ export default function ResourceAssignmentsPage() {
             <tr>
               <th className="w-10 px-4 py-3"></th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Description</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Status</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Budget</th>
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-[160px]">Assignment Type</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
               <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {allAssignments.map((assignment) => (
+            {allAssignments.map((assignment) => {
+              const status = assignment.assignment_status || 'yet_to_start';
+              const statusConfig = STATUS_CONFIG[status];
+              return (
               <tr 
                 key={assignment.id} 
                 className={`border-t border-border hover:bg-muted/20 ${!assignment.is_active ? 'opacity-50' : ''}`}
@@ -220,14 +273,29 @@ export default function ResourceAssignmentsPage() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[rgba(37,99,235,0.1)] flex items-center justify-center">
-                      <Briefcase className="h-4 w-4 text-[#2563eb]" />
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Briefcase className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm font-medium text-foreground">{assignment.name}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-foreground">{assignment.name}</span>
+                      {assignment.project?.name && (
+                        <span className="text-xs text-muted-foreground">{assignment.project.name}</span>
+                      )}
+                    </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">
-                  {assignment.description || '—'}
+                <td className="px-4 py-3">
+                  <Badge variant="secondary" className={`${statusConfig.color} text-xs`}>
+                    {statusConfig.label}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3 text-sm text-foreground">
+                  {assignment.budget ? (
+                    <div className="flex items-center gap-1">
+                      <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span>{assignment.budget.toLocaleString()}</span>
+                    </div>
+                  ) : '—'}
                 </td>
                 <td className="px-4 py-3">
                   <Select
@@ -268,10 +336,11 @@ export default function ResourceAssignmentsPage() {
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
             {allAssignments.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                   No assignments configured. Click "Add Assignment" to create one.
                 </td>
               </tr>
@@ -350,11 +419,46 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Description</Label>
+              <Label>Project</Label>
+              <Select
+                value={formData.project_id || '__none__'}
+                onValueChange={(value) => setFormData(f => ({ ...f, project_id: value === '__none__' ? '' : value }))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select project" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">No project</SelectItem>
+                  {projects.map((p: any) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Assignment Status</Label>
+              <Select
+                value={formData.assignment_status}
+                onValueChange={(value) => setFormData(f => ({ ...f, assignment_status: value as AssignmentStatus }))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yet_to_start">Yet to Start</SelectItem>
+                  <SelectItem value="on_hold">On Hold</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Budget</Label>
               <Input
-                value={formData.description}
-                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
-                placeholder="Brief description..."
+                type="number"
+                value={formData.budget}
+                onChange={(e) => setFormData(f => ({ ...f, budget: e.target.value }))}
+                placeholder="e.g., 50000"
               />
             </div>
             <div className="space-y-2">

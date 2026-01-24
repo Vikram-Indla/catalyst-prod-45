@@ -2,6 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+export interface ProjectInfo {
+  id: string;
+  name: string;
+  status: string | null;
+}
+
+export type AssignmentStatus = 'yet_to_start' | 'on_hold' | 'in_progress' | 'completed';
+
 export interface ResourceAssignment {
   id: string;
   name: string;
@@ -9,6 +17,10 @@ export interface ResourceAssignment {
   is_active: boolean;
   sort_order: number;
   assignment_type: string | null;
+  project_id: string | null;
+  budget: number | null;
+  assignment_status: AssignmentStatus | null;
+  project?: ProjectInfo | null;
   created_at: string;
   updated_at: string;
 }
@@ -21,7 +33,7 @@ export function useResourceAssignments() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_assignments')
-        .select('*')
+        .select('*, project:projects(id, name, status)')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
@@ -35,7 +47,7 @@ export function useResourceAssignments() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_assignments')
-        .select('*')
+        .select('*, project:projects(id, name, status)')
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
