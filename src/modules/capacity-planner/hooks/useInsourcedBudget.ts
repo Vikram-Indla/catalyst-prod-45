@@ -27,9 +27,9 @@ export function useAssignmentBudgets(assignmentIds: string[]) {
       if (!assignmentIds.length) return {};
 
       // Fetch all resources linked to these assignments with their CTC and resource_id
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('resource_inventory')
-        .select('id, resource_id, name, CTC, contract_end_date, assignment_id')
+        .select('id, resource_id, name, ctc, contract_end_date, assignment_id')
         .in('assignment_id', assignmentIds);
 
       if (error) throw error;
@@ -49,12 +49,12 @@ export function useAssignmentBudgets(assignmentIds: string[]) {
       (data || []).forEach((resource: any) => {
         const assignmentId = resource.assignment_id;
         if (assignmentId && budgetMap[assignmentId]) {
-          const ctc = parseFloat(resource.CTC) || 0;
+          const ctc = parseFloat(resource.ctc) || 0;
           budgetMap[assignmentId].linkedResources.push({
             id: resource.id,
             resourceId: resource.resource_id || '—',
             name: resource.name,
-            ctc: resource.CTC ? parseFloat(resource.CTC) : null,
+            ctc: resource.ctc ? parseFloat(resource.ctc) : null,
             contract_end_date: resource.contract_end_date,
           });
           budgetMap[assignmentId].totalBudget += ctc;
