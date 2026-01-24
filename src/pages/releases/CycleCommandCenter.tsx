@@ -255,6 +255,7 @@ export default function CycleCommandCenter() {
         cycleId={cycleId || ''}
         cycleName={cycle?.name || 'Test Cycle'}
         cycleEndDate={cycle?.endDate}
+        projectId={cycle?.projectId}
         isOpen={isAddTestsOpen}
         onClose={() => setIsAddTestsOpen(false)}
         onSuccess={(count) => {

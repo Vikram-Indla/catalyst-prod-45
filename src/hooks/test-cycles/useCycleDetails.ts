@@ -20,6 +20,7 @@ export interface CycleStats {
 
 export interface TestCycle {
   id: string;
+  projectId: string;
   name: string;
   cycleKey: string;
   description: string | null;
@@ -89,6 +90,7 @@ export function useCycleDetails(cycleId: string) {
 
       const cycle: TestCycle = {
         id: cycleData.id,
+        projectId: cycleData.project_id,
         name: cycleData.name,
         cycleKey: cycleData.cycle_key,
         description: cycleData.description,
