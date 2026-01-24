@@ -77,7 +77,7 @@ import { BulkTagsDialog } from '@/components/releases/test-cases/BulkTagsDialog'
 import { ExecuteTestCaseDialog } from '@/components/releases/test-cases/ExecuteTestCaseDialog';
 import { TestFolderSidebar } from '@/components/releases/test-cases/TestFolderSidebar';
 import { MoveToFolderDialog } from '@/components/releases/test-cases/MoveToFolderDialog';
-import { TestCase } from '@/data/testCasesData';
+import { TestCase } from '@/types/test-cases';
 import { 
   useTestCases, 
   useBulkDeleteTestCases, 

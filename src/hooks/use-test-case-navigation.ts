@@ -1,22 +1,33 @@
 /**
  * useTestCaseNavigation — Navigate between test cases with keyboard
+ * REFACTORED: No longer uses mock data, relies on passed-in test case IDs
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { testCasesData } from '@/data/testCasesData';
 
 interface UseTestCaseNavigationOptions {
   currentId: string;
+  /** Array of test case IDs for navigation (from real data) */
+  testCaseIds?: string[];
   enabled?: boolean;
 }
 
-export function useTestCaseNavigation({ currentId, enabled = true }: UseTestCaseNavigationOptions) {
+export function useTestCaseNavigation({ 
+  currentId, 
+  testCaseIds = [],
+  enabled = true 
+}: UseTestCaseNavigationOptions) {
   const navigate = useNavigate();
 
-  const currentIndex = testCasesData.findIndex(tc => tc.id === currentId);
-  const prevId = currentIndex > 0 ? testCasesData[currentIndex - 1].id : null;
-  const nextId = currentIndex < testCasesData.length - 1 ? testCasesData[currentIndex + 1].id : null;
+  const { currentIndex, prevId, nextId } = useMemo(() => {
+    const index = testCaseIds.findIndex(id => id === currentId);
+    return {
+      currentIndex: index,
+      prevId: index > 0 ? testCaseIds[index - 1] : null,
+      nextId: index < testCaseIds.length - 1 ? testCaseIds[index + 1] : null,
+    };
+  }, [currentId, testCaseIds]);
 
   const goToPrev = useCallback(() => {
     if (prevId) {
@@ -66,7 +77,7 @@ export function useTestCaseNavigation({ currentId, enabled = true }: UseTestCase
 
   return {
     currentIndex,
-    totalCount: testCasesData.length,
+    totalCount: testCaseIds.length,
     prevId,
     nextId,
     goToPrev,

@@ -13,7 +13,17 @@ import {
   BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ExecutionHistoryItem } from '@/data/testCaseDetailData';
+
+/** Execution history item shape for UI display */
+export interface ExecutionHistoryItem {
+  id: number | string;
+  cycleId: string;
+  cycleName: string;
+  status: 'passed' | 'failed' | 'blocked' | 'not_run';
+  executor: string;
+  duration: string;
+  timestamp: string;
+}
 
 interface ExecutionSummaryCardProps {
   history: ExecutionHistoryItem[];

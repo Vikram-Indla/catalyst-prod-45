@@ -23,8 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { ExecutionSummaryCard } from './ExecutionSummaryCard';
-import type { ExecutionHistoryItem } from '@/data/testCaseDetailData';
+import { ExecutionSummaryCard, type ExecutionHistoryItem } from './ExecutionSummaryCard';
 
 interface TestCaseExecutionHistoryProps {
   history: ExecutionHistoryItem[];

@@ -8,7 +8,7 @@
  */
 
 import type { TMTestCase } from '@/types/test-management';
-import type { TestCase } from '@/data/testCasesData';
+import type { TestCase } from '@/types/test-cases';
 import { formatDistanceToNow, format } from 'date-fns';
 
 // Helper to get avatar color based on user ID hash - Catalyst V5 (Blue, Teal, Gray only)

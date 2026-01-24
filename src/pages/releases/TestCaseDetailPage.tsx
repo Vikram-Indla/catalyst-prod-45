@@ -45,9 +45,10 @@ import { VersionHistoryPanel } from '@/components/releases/test-case-detail/Vers
 import { QuickActionsBar } from '@/components/releases/test-case-detail/QuickActionsBar';
 import { useTestCase, useCloneTestCase, useTestCaseSteps } from '@/hooks/test-management/useTestCases';
 import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
-import { useTestCaseExecutionHistory, ExecutionHistoryRecord } from '@/hooks/test-management/useTestCaseExecutionHistory';
+import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCaseExecutionHistory';
 import { useTestCaseCommentsCount } from '@/hooks/test-management/useTestCaseComments';
 import { useTestCaseVersionsCount } from '@/hooks/test-management/useTestCaseVersions';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 import { cn } from '@/lib/utils';
 
 export default function TestCaseDetailPage() {
@@ -56,23 +57,26 @@ export default function TestCaseDetailPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isVersionPanelOpen, setIsVersionPanelOpen] = useState(false);
   
+  // Validate UUID - redirect to list if invalid (display key passed instead of UUID)
+  const isValidId = id ? isValidUUID(id) : false;
+  
   // Persist active tab in URL
   const activeTab = searchParams.get('tab') || 'steps';
   const setActiveTab = (tab: string) => {
     setSearchParams({ tab }, { replace: true });
   };
   
-  // Real data from DB
-  const { data: testCase, isLoading, isError, refetch } = useTestCase(id);
-  const { data: stepsData } = useTestCaseSteps(id);
-  const { data: executionHistory = [] } = useTestCaseExecutionHistory(id);
-  const { data: commentsCount = 0 } = useTestCaseCommentsCount(id);
-  const { data: versionsCount = 0 } = useTestCaseVersionsCount(id);
+  // Real data from DB (only query if valid UUID)
+  const { data: testCase, isLoading, isError, refetch } = useTestCase(isValidId ? id : undefined);
+  const { data: stepsData } = useTestCaseSteps(isValidId ? id : undefined);
+  const { data: executionHistory = [] } = useTestCaseExecutionHistory(isValidId ? id : undefined);
+  const { data: commentsCount = 0 } = useTestCaseCommentsCount(isValidId ? id : undefined);
+  const { data: versionsCount = 0 } = useTestCaseVersionsCount(isValidId ? id : undefined);
   
   // Clone mutation
   const cloneMutation = useCloneTestCase();
   
-  // Keyboard navigation between test cases
+  // Keyboard navigation between test cases (navigation disabled when no IDs available)
   const { 
     currentIndex, 
     totalCount, 
@@ -80,7 +84,11 @@ export default function TestCaseDetailPage() {
     hasNext, 
     goToPrev, 
     goToNext 
-  } = useTestCaseNavigation({ currentId: id || '' });
+  } = useTestCaseNavigation({ 
+    currentId: id || '', 
+    testCaseIds: [], // Navigation IDs not available on detail page - could be passed via state
+    enabled: isValidId
+  });
 
   // Quick action handlers
   const handleExecute = useCallback(() => {
