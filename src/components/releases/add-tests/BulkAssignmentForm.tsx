@@ -128,8 +128,8 @@ export function BulkAssignmentForm({
           Assign To
         </Label>
         <Select 
-          value={assigneeId || ''} 
-          onValueChange={(v) => onAssigneeChange(v || null)}
+          value={assigneeId || '__none__'} 
+          onValueChange={(v) => onAssigneeChange(v === '__none__' ? null : v)}
           disabled={useSmartAssignment}
         >
           <SelectTrigger 
@@ -143,7 +143,7 @@ export function BulkAssignmentForm({
             <SelectValue placeholder="Leave unassigned" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Leave unassigned</SelectItem>
+            <SelectItem value="__none__">Leave unassigned</SelectItem>
             {TEAM_MEMBERS.map(member => (
               <SelectItem key={member.id} value={member.id}>
                 <div className="flex items-center gap-2">
@@ -170,8 +170,8 @@ export function BulkAssignmentForm({
           Override Priority
         </Label>
         <Select 
-          value={priority || ''} 
-          onValueChange={(v) => onPriorityChange(v || null)}
+          value={priority || '__none__'} 
+          onValueChange={(v) => onPriorityChange(v === '__none__' ? null : v)}
         >
           <SelectTrigger 
             className="h-9"
@@ -183,7 +183,7 @@ export function BulkAssignmentForm({
             <SelectValue placeholder="Keep original" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Keep Original</SelectItem>
+            <SelectItem value="__none__">Keep Original</SelectItem>
             <SelectItem value="critical">Critical</SelectItem>
             <SelectItem value="high">High</SelectItem>
             <SelectItem value="medium">Medium</SelectItem>

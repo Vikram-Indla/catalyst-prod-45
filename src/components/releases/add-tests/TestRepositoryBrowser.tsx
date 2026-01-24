@@ -142,8 +142,8 @@ export function TestRepositoryBrowser({
       <div className="p-4 border-b space-y-3" style={{ borderColor: CATALYST_V5.slate[200] }}>
         <div className="flex flex-wrap gap-2">
           <Select 
-            value={filters.module || ''} 
-            onValueChange={(v) => onModuleChange(v || null)}
+            value={filters.module || '__all__'} 
+            onValueChange={(v) => onModuleChange(v === '__all__' ? null : v)}
           >
             <SelectTrigger 
               className="w-[140px] h-8 text-xs"
@@ -152,7 +152,7 @@ export function TestRepositoryBrowser({
               <SelectValue placeholder="Module" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Modules</SelectItem>
+              <SelectItem value="__all__">All Modules</SelectItem>
               {modules.map(m => (
                 <SelectItem key={m} value={m}>{m}</SelectItem>
               ))}
@@ -160,8 +160,8 @@ export function TestRepositoryBrowser({
           </Select>
 
           <Select 
-            value={filters.testType || ''} 
-            onValueChange={(v) => onTestTypeChange(v || null)}
+            value={filters.testType || '__all__'} 
+            onValueChange={(v) => onTestTypeChange(v === '__all__' ? null : v)}
           >
             <SelectTrigger 
               className="w-[120px] h-8 text-xs"
@@ -170,7 +170,7 @@ export function TestRepositoryBrowser({
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Types</SelectItem>
+              <SelectItem value="__all__">All Types</SelectItem>
               <SelectItem value="functional">Functional</SelectItem>
               <SelectItem value="integration">Integration</SelectItem>
               <SelectItem value="e2e">E2E</SelectItem>
@@ -179,8 +179,8 @@ export function TestRepositoryBrowser({
           </Select>
 
           <Select 
-            value={filters.priority || ''} 
-            onValueChange={(v) => onPriorityChange(v || null)}
+            value={filters.priority || '__all__'} 
+            onValueChange={(v) => onPriorityChange(v === '__all__' ? null : v)}
           >
             <SelectTrigger 
               className="w-[110px] h-8 text-xs"
@@ -189,7 +189,7 @@ export function TestRepositoryBrowser({
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Priorities</SelectItem>
+              <SelectItem value="__all__">All Priorities</SelectItem>
               <SelectItem value="critical">Critical</SelectItem>
               <SelectItem value="high">High</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
@@ -198,8 +198,8 @@ export function TestRepositoryBrowser({
           </Select>
 
           <Select 
-            value={filters.automationStatus || ''} 
-            onValueChange={(v) => onAutomationStatusChange(v || null)}
+            value={filters.automationStatus || '__all__'} 
+            onValueChange={(v) => onAutomationStatusChange(v === '__all__' ? null : v)}
           >
             <SelectTrigger 
               className="w-[130px] h-8 text-xs"
@@ -208,7 +208,7 @@ export function TestRepositoryBrowser({
               <SelectValue placeholder="Automation" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All</SelectItem>
+              <SelectItem value="__all__">All</SelectItem>
               <SelectItem value="automated">Automated</SelectItem>
               <SelectItem value="manual">Manual</SelectItem>
               <SelectItem value="partial">Partial</SelectItem>
