@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { getEstimatedDurationDisplay } from '@/utils/test-case-duration';
 import { Link } from 'react-router-dom';
 import { 
   Package, 
@@ -182,13 +183,8 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
   const assigneeName = testCase.assigned_user?.full_name || 'Unassigned';
   const assigneeAvatar = testCase.assigned_user?.avatar_url;
 
-  // Estimated duration
-  const estimatedMinutes = testCase.estimated_duration_minutes;
-  const estimatedTime = estimatedMinutes 
-    ? `${estimatedMinutes} minutes`
-    : testCase.steps?.length 
-      ? `${Math.ceil((testCase.steps.length * 30) / 60)} minutes`
-      : '—';
+  // Estimated duration - use unified utility
+  const estimatedTime = getEstimatedDurationDisplay(testCase);
 
   // Created / Updated
   const createdByName = testCase.created_by_profile?.full_name || 'Unknown';

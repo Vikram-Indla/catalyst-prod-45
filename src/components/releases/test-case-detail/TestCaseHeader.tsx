@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAutoVersioning } from '@/hooks/test-management/useAutoVersioning';
+import { getEstimatedDurationDisplay } from '@/utils/test-case-duration';
 import type { TestCaseDetailData } from '@/hooks/test-management/useTestCases';
 
 interface TestCaseHeaderProps {
@@ -113,8 +114,7 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
   const type = typeConfig[typeName] || typeConfig['Functional'];
   const assigneeName = testCase.assigned_user?.full_name || 'Unassigned';
   const assigneeAvatar = testCase.assigned_user?.avatar_url;
-  const estimatedMinutes = testCase.estimated_duration_minutes;
-  const estimatedTime = estimatedMinutes ? `${estimatedMinutes} min` : testCase.steps?.length ? `${Math.ceil((testCase.steps.length * 30) / 60)} min` : '—';
+  const estimatedTime = getEstimatedDurationDisplay(testCase);
   const createdAt = testCase.created_at ? format(new Date(testCase.created_at), 'MMM d, yyyy') : '—';
 
   return (
