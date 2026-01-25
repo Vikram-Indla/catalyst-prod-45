@@ -14,6 +14,7 @@ import {
   ScopeFilters 
 } from '@/types/test-management';
 import { toast } from 'sonner';
+import { auditCycleCreate, auditCycleUpdate, auditCycleDelete } from '@/lib/tmAuditLogger';
 
 // Status mapping (DB uses lowercase)
 const cycleStatusToDb = (status: string): 'planned' | 'in_progress' | 'completed' | 'archived' => {
@@ -230,6 +231,13 @@ export function useCreateCycle() {
       return mapDbRowToTMCycle(data);
     },
     onSuccess: (data) => {
+      // Log audit entry for cycle creation
+      auditCycleCreate(data.project_id, data.id, {
+        name: data.name,
+        cycle_key: data.key,
+        status: data.status,
+      });
+      
       queryClient.invalidateQueries({ queryKey: ['tm-cycles', data.project_id] });
       toast.success('Test cycle created');
     },
@@ -310,6 +318,9 @@ export function useDeleteCycle() {
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
+      // Log audit entry for cycle deletion
+      auditCycleDelete(variables.project_id, variables.id);
+      
       queryClient.invalidateQueries({ queryKey: ['tm-cycles', variables.project_id] });
       toast.success('Cycle deleted');
     },

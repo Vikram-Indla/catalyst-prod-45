@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TMTestCase, TMCaseStep, CaseFilters, CreateCaseInput, UpdateCaseInput } from '@/types/test-management';
 import { catalystToast } from '@/lib/catalystToast';
+import { auditTestCaseCreate, auditTestCaseUpdate, auditTestCaseDelete } from '@/lib/tmAuditLogger';
 
 type DbCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
 // CaseStatus for bulk operations uses DB-level values
@@ -393,6 +394,13 @@ export function useCreateTestCase(options?: { silent?: boolean }) {
       } as unknown as TMTestCase;
     },
     onSuccess: (data) => {
+      // Log audit entry for test case creation
+      auditTestCaseCreate(data.project_id, data.id, {
+        title: data.title,
+        case_key: data.key,
+        status: data.status,
+      });
+      
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', data.project_id] });
       // Invalidate repository tree to update folder counts in UI
@@ -712,6 +720,9 @@ export function useDeleteTestCase() {
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
+      // Log audit entry for test case deletion
+      auditTestCaseDelete(variables.project_id, variables.id);
+      
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
       catalystToast.success('Test case deleted');
