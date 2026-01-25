@@ -1492,11 +1492,11 @@
   color: var(--ct-primary, #2563eb);
 }
 
-/* Widget Grid */
+/* Widget Grid - 6 columns for 5 departments + licenses */
 .ct-runrate-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--ct-space-4, 16px);
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--ct-space-3, 12px);
 }
 
 /* Individual Widget Card */
