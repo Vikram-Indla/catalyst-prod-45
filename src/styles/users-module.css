@@ -1621,6 +1621,9 @@
   font-size: var(--ct-text-sm, 12px);
   font-weight: 700;
   color: var(--ct-text-primary, #0f172a);
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
 }
 
 /* Missing CTC Warning */
@@ -1788,6 +1791,9 @@
   font-size: var(--ct-text-sm, 12px);
   font-weight: 700;
   color: var(--ct-text-primary, #0f172a);
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
 }
 
 .ct-licenses-loading {
