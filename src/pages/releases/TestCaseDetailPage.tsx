@@ -52,6 +52,8 @@ import { useTestCaseCommentsCount } from '@/hooks/test-management/useTestCaseCom
 import { useTestCaseVersionsCount } from '@/hooks/test-management/useTestCaseVersions';
 import { useTestCaseAuditLogCount } from '@/hooks/test-management/useTestCaseAuditLog';
 import { useTestDataRows } from '@/hooks/test-management/useTestData';
+import { useCyclesForTestCase } from '@/hooks/test-cycles/useCyclesForTestCase';
+import { SelectCycleToRunDialog } from '@/components/releases/test-case-detail/SelectCycleToRunDialog';
 import { isValidUUID } from '@/lib/utils/assertUuid';
 import { cn } from '@/lib/utils';
 
@@ -60,6 +62,7 @@ export default function TestCaseDetailPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isVersionPanelOpen, setIsVersionPanelOpen] = useState(false);
+  const [isSelectCycleDialogOpen, setIsSelectCycleDialogOpen] = useState(false);
   
   // Validate UUID - redirect to list if invalid (display key passed instead of UUID)
   const isValidId = id ? isValidUUID(id) : false;
@@ -79,6 +82,9 @@ export default function TestCaseDetailPage() {
   const { data: changesCount = 0 } = useTestCaseAuditLogCount(isValidId ? id : undefined);
   const { data: testDataRows = [] } = useTestDataRows(isValidId ? id : undefined);
   
+  // Fetch cycles that contain this test case (for "Run in cycle" functionality)
+  const { data: cyclesForCase = [] } = useCyclesForTestCase(isValidId ? id : undefined);
+  
   // Clone mutation
   const cloneMutation = useCloneTestCase();
   
@@ -96,12 +102,28 @@ export default function TestCaseDetailPage() {
     enabled: isValidId
   });
 
-  // Quick action handlers
+  // Handle Run Test / Run in Cycle action
   const handleExecute = useCallback(() => {
-    toast.info('Execution module not enabled yet', {
-      description: 'This feature will be available in a future release.',
-    });
-  }, []);
+    if (cyclesForCase.length === 0) {
+      toast.warning('Test case not in any cycle', {
+        description: 'Add this test case to a cycle first to execute it.',
+      });
+      return;
+    }
+    
+    if (cyclesForCase.length === 1) {
+      // Only one cycle - navigate directly to execution
+      const cycle = cyclesForCase[0];
+      navigate(`/releases/execution/${cycle.cycleId}/${testCase?.key || id}`);
+    } else {
+      // Multiple cycles - show selection dialog
+      setIsSelectCycleDialogOpen(true);
+    }
+  }, [cyclesForCase, navigate, testCase?.key, id]);
+
+  const handleSelectCycleForExecution = useCallback((cycle: { cycleId: string }) => {
+    navigate(`/releases/execution/${cycle.cycleId}/${testCase?.key || id}`);
+  }, [navigate, testCase?.key, id]);
 
   const handleDuplicate = useCallback(async () => {
     if (!testCase || !testCase.project_id) return;
@@ -275,10 +297,16 @@ export default function TestCaseDetailPage() {
                 onClick={handleExecute}
               >
                 <Play className="w-3.5 h-3.5 mr-1.5" />
-                Run Test
+                {cyclesForCase.length > 0 ? 'Run in Cycle' : 'Run Test'}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Execution module not enabled yet</TooltipContent>
+            <TooltipContent>
+              {cyclesForCase.length === 0 
+                ? 'Add to a cycle to execute'
+                : cyclesForCase.length === 1
+                  ? `Execute in ${cyclesForCase[0].cycleKey}`
+                  : `Execute in one of ${cyclesForCase.length} cycles`}
+            </TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -442,6 +470,14 @@ export default function TestCaseDetailPage() {
         onClose={() => setIsVersionPanelOpen(false)}
         testCaseId={testCase.id}
         currentVersion={testCase.version || 1}
+      />
+
+      {/* Select Cycle Dialog (when test case is in multiple cycles) */}
+      <SelectCycleToRunDialog
+        open={isSelectCycleDialogOpen}
+        onOpenChange={setIsSelectCycleDialogOpen}
+        cycles={cyclesForCase}
+        onSelectCycle={handleSelectCycleForExecution}
       />
     </motion.div>
   );
