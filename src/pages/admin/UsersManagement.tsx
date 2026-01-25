@@ -494,6 +494,7 @@ export default function UsersManagement() {
                   <th style={{ width: 60 }}>VID</th>
                   <th style={{ width: 100 }}>VENDOR</th>
                   <th style={{ width: 110 }}>TYPE</th>
+                  <th style={{ width: 120, textAlign: 'right' }}>CTC</th>
                   <th style={{ width: 110 }}>COUNTRY</th>
                   <th style={{ width: 90 }}>LOCATION</th>
                 </tr>
@@ -546,13 +547,16 @@ export default function UsersManagement() {
                     <td><IdBadge value={user.vid} /></td>
                     <td>{user.vendor || '—'}</td>
                     <td><TypeBadge type={user.resource_type} /></td>
+                    <td style={{ textAlign: 'right' }}>
+                      {user.ctc ? `ریال ${user.ctc.toLocaleString()}` : '—'}
+                    </td>
                     <td>{user.country || '—'}</td>
                     <td><LocationBadge location={user.location} /></td>
                   </tr>
                 ))}
                 {paginatedUsers.length === 0 && (
                   <tr>
-                    <td colSpan={15} className="ct-empty-state">
+                    <td colSpan={16} className="ct-empty-state">
                       No users found matching your criteria
                     </td>
                   </tr>
