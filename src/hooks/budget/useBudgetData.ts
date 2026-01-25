@@ -89,6 +89,15 @@ export function getPeriodMultiplier(period: BudgetPeriod): number {
   }
 }
 
+// Get period end date for budget calculations
+export function getPeriodEndDate(period: BudgetPeriod): Date {
+  switch (period) {
+    case 'Q1': return new Date('2026-03-31');
+    case 'H1': return new Date('2026-06-30');
+    case 'full_year': return new Date('2026-12-31');
+  }
+}
+
 function parseDate(s: string | null): Date | null {
   return s ? new Date(s) : null;
 }
@@ -98,25 +107,36 @@ function monthsBetween(s: Date | null, e: Date | null): number {
   return Math.max(0, (e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
 }
 
+// Calculate months for a resource within a specific period
+function calculateMonthsInPeriod(contractEnd: Date | null, periodEnd: Date): number {
+  if (!contractEnd) return 0;
+  // Use the earlier of contract end or period end
+  const effectiveEnd = contractEnd < periodEnd ? contractEnd : periodEnd;
+  return monthsBetween(YEAR_START, effectiveEnd);
+}
+
 export function calculateResourceBudget(
   resource: BudgetResource,
-  assignment: BudgetAssignment | undefined
+  assignment: BudgetAssignment | undefined,
+  period: BudgetPeriod = 'H1'
 ): ResourceBudget {
   const contractEnd = parseDate(resource.contractEnd);
   const assignmentEnd = assignment ? parseDate(assignment.endDate) : null;
+  const periodEnd = getPeriodEndDate(period);
   
   // Consumed YTD (January 2026 = 1 month)
   const consumedYTD = resource.ctc * MONTHS_YTD;
   
-  // Required to Contract End (from Jan 1, 2026)
-  const monthsToContract = contractEnd ? Math.max(0, monthsBetween(YEAR_START, contractEnd)) : 0;
+  // Required within period (from Jan 1, 2026 to period end or contract end, whichever is earlier)
+  const monthsToContract = contractEnd ? calculateMonthsInPeriod(contractEnd, periodEnd) : 0;
   const reqToContract = resource.ctc * monthsToContract;
   
-  // Required to Assignment End (if extends beyond contract)
+  // Required to Assignment End (if extends beyond contract within period)
   let reqToAssignment = reqToContract;
   let assignmentExtends = false;
   if (assignmentEnd && contractEnd && assignmentEnd > contractEnd) {
-    const monthsToAssignment = Math.max(0, monthsBetween(YEAR_START, assignmentEnd));
+    const effectiveAssignmentEnd = assignmentEnd < periodEnd ? assignmentEnd : periodEnd;
+    const monthsToAssignment = Math.max(0, monthsBetween(YEAR_START, effectiveAssignmentEnd));
     reqToAssignment = resource.ctc * monthsToAssignment;
     assignmentExtends = true;
   }
@@ -286,7 +306,7 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
         if (r.resourceType === 'Fixed') return; // Fixed resources are cosourced
         
         const assignment = assignments.find(a => a.aid === r.aid);
-        const budget = calculateResourceBudget(r, assignment);
+        const budget = calculateResourceBudget(r, assignment, period);
         
         const dept = r.department;
         if (budgets[dept]) {
@@ -320,11 +340,11 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
       const enrichedAssignments = assignments.map(a => {
         if (a.type === 'Insourced') {
           const res = resources.filter(r => r.aid === a.aid && r.resourceType !== 'Fixed');
-          const budget = res.reduce((sum, r) => {
-            const assignment = assignments.find(asn => asn.aid === r.aid);
-            return sum + calculateResourceBudget(r, assignment).reqToContract;
+          const budgetVal = res.reduce((sum, r) => {
+            const asn = assignments.find(x => x.aid === r.aid);
+            return sum + calculateResourceBudget(r, asn, period).reqToContract;
           }, 0);
-          return { ...a, budget, resourceCount: res.length };
+          return { ...a, budget: budgetVal, resourceCount: res.length };
         }
         return { ...a, resourceCount: resources.filter(r => r.aid === a.aid).length };
       });
@@ -350,12 +370,18 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
   });
 }
 
-export function formatCurrency(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
-  if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
-  return n.toString();
+export function formatCurrency(n: number, includeSAR: boolean = false): string {
+  const prefix = includeSAR ? 'ج.س ' : '';
+  if (n >= 1000000) return prefix + (n / 1000000).toFixed(2) + 'M';
+  if (n >= 1000) return prefix + (n / 1000).toFixed(0) + 'K';
+  return prefix + n.toString();
 }
 
-export function formatFull(n: number): string {
-  return n.toLocaleString();
+export function formatFull(n: number, includeSAR: boolean = false): string {
+  const formatted = n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  return includeSAR ? `ج.س ${formatted}` : formatted;
+}
+
+export function formatSAR(n: number): string {
+  return `ج.س ${n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }

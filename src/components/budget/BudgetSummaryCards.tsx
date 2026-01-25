@@ -4,7 +4,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import { formatCurrency } from '@/hooks/budget/useBudgetData';
+import { formatCurrency, formatSAR } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment, DepartmentBudget, BudgetLicense } from '@/hooks/budget/useBudgetData';
 
 interface BudgetSummaryCardsProps {

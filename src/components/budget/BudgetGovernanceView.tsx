@@ -39,7 +39,7 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
   const execModalOpen = externalOpen !== undefined ? externalOpen : internalOpen;
   const handleClose = onExecModalClose || (() => setInternalOpen(false));
 
-  // Derive departments dynamically from budget data
+  // Derive departments dynamically from budget data + External for outsourced
   const departments = useMemo(() => {
     if (!data?.departments) return [{ id: 'all', name: 'All Departments' }];
     
@@ -52,6 +52,8 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
         });
       }
     });
+    // Add External department for Outsourced assignments
+    deptList.push({ id: 'External', name: 'External' });
     return deptList;
   }, [data?.departments]);
 
@@ -94,6 +96,8 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
     if (!data?.assignments) return [];
     
     if (currentDept === 'all') return [...data.assignments];
+    // External shows outsourced assignments only
+    if (currentDept === 'External') return data.assignments.filter(a => a.type === 'Outsourced');
     return data.assignments.filter(a => 
       a.department === currentDept || 
       (a.type === 'Cosourced' && a.department === currentDept)
@@ -108,8 +112,21 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
   // Current department budget
   const currentBudget = useMemo(() => {
     if (!data?.departments) return null;
+    // External department shows outsourced total
+    if (currentDept === 'External') {
+      const outsourcedTotal = data.assignments.filter(a => a.type === 'Outsourced').reduce((s, a) => s + a.budget, 0);
+      return {
+        insourced: 0,
+        cosourced: 0,
+        outsourced: outsourcedTotal,
+        licenses: 0,
+        total: outsourcedTotal,
+        resources: 0,
+        dataIssues: 0
+      };
+    }
     return data.departments[currentDept] || data.departments.all;
-  }, [data?.departments, currentDept]);
+  }, [data?.departments, data?.assignments, currentDept]);
 
   if (error) {
     return (

@@ -1,13 +1,15 @@
 /**
  * Budget Executive Summary Modal
+ * With PDF Export capability
  */
 
 import { useState, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { formatCurrency, formatFull } from '@/hooks/budget/useBudgetData';
-import type { BudgetAssignment, DepartmentBudget } from '@/hooks/budget/useBudgetData';
+import { formatCurrency, formatFull, formatSAR } from '@/hooks/budget/useBudgetData';
+import type { BudgetAssignment, DepartmentBudget, BudgetPeriod } from '@/hooks/budget/useBudgetData';
+import { exportElementToPdf } from '@/utils/exports';
 
 interface BudgetExecutiveModalProps {
   open: boolean;
@@ -19,18 +21,26 @@ interface BudgetExecutiveModalProps {
     licenseBudget?: number;
     licenseCount?: number;
     monthlyLicenseCost?: number;
+    period?: BudgetPeriod;
   } | undefined;
   onNavigateDept?: (direction: 'next' | 'prev') => void;
   currentDept?: string;
   onDeptChange?: (dept: string) => void;
 }
 
-// Departments will be derived dynamically from data
+const PERIOD_LABELS: Record<BudgetPeriod, string> = {
+  'Q1': 'Q1 2026',
+  'H1': 'H1 2026',
+  'full_year': 'Full Year 2026'
+};
+
+const EXEC_CONTENT_ID = 'budget-executive-content';
 
 export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, currentDept: externalDept, onDeptChange }: BudgetExecutiveModalProps) {
   const [currentSlide, setCurrentSlide] = useState(1);
   const [execDept, setExecDept] = useState(externalDept || 'all');
   const [execTypeFilter, setExecTypeFilter] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Sync with external dept if provided
   useEffect(() => {
@@ -42,7 +52,26 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
     onDeptChange?.(dept);
   };
 
+  const handleExportPdf = async () => {
+    if (!data) return;
+    setIsExporting(true);
+    try {
+      const periodLabel = PERIOD_LABELS[data.period || 'H1'];
+      await exportElementToPdf(EXEC_CONTENT_ID, {
+        filename: `budget-executive-summary-${periodLabel.replace(' ', '-').toLowerCase()}`,
+        title: `Executive Budget Summary - ${periodLabel}`,
+        orientation: 'landscape'
+      });
+    } catch (err) {
+      console.error('PDF export failed:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   if (!open || !data) return null;
+
+  const periodLabel = PERIOD_LABELS[data.period || 'H1'];
 
   // Derive departments dynamically from actual data
   const departments = [
@@ -72,17 +101,33 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
       <div className="modal" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header">
-          <h2>Executive Budget Summary — <span className="text-[var(--budget-text-muted)]">H1 2026</span></h2>
-          <button 
-            className="w-8 h-8 rounded-lg bg-[var(--budget-bg)] flex items-center justify-center hover:bg-[var(--budget-border)]"
-            onClick={onClose}
-          >
-            <X className="w-4 h-4 text-[var(--budget-text-muted)]" />
-          </button>
+          <h2>Executive Budget Summary — <span className="text-[var(--budget-text-muted)]">{periodLabel}</span></h2>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportPdf}
+              disabled={isExporting}
+              className="gap-1.5"
+            >
+              {isExporting ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <FileText className="w-4 h-4" />
+              )}
+              Export PDF
+            </Button>
+            <button 
+              className="w-8 h-8 rounded-lg bg-[var(--budget-bg)] flex items-center justify-center hover:bg-[var(--budget-border)]"
+              onClick={onClose}
+            >
+              <X className="w-4 h-4 text-[var(--budget-text-muted)]" />
+            </button>
+          </div>
         </div>
 
         {/* Body */}
-        <div className="modal-body">
+        <div className="modal-body" id={EXEC_CONTENT_ID}>
           {/* Department Selector - Dynamic from DB */}
           <div className="flex gap-2 mb-6 flex-wrap">
             {departments.map(d => (
@@ -106,14 +151,14 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
             <div>
               <h3 className="text-[22px] font-bold mb-2">Portfolio Budget Overview</h3>
               <p className="text-[13px] text-[var(--budget-text-muted)] mb-6">
-                Total budget requirement — {execDept === 'all' ? 'All Departments' : execDept}
+                Total budget requirement — {execDept === 'all' ? 'All Departments' : execDept} • {periodLabel}
               </p>
 
               {/* Unpaid Alert - Show for all or when outsourced unpaid exists */}
               {unpaidAssignments.length > 0 && execDept === 'all' && (
                 <div className="exec-alert">
                   <div className="exec-alert-title">
-                    ⚠️ CRITICAL: SAR {formatFull(unpaidTotal)} Unpaid — Completed Outsourced
+                    ⚠️ CRITICAL: {formatSAR(unpaidTotal)} Unpaid — Completed Outsourced
                   </div>
                   <div className="exec-alert-items">
                     {unpaidAssignments.map(a => (
@@ -122,7 +167,7 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
                           <div className="text-[13px] font-semibold">{a.name}</div>
                           <div className="text-[11px] text-[var(--budget-text-muted)]">Vendor: {a.vendor}</div>
                         </div>
-                        <div className="exec-alert-item-amount">{formatFull(a.budget)}</div>
+                        <div className="exec-alert-item-amount">{formatSAR(a.budget)}</div>
                       </div>
                     ))}
                   </div>
@@ -171,9 +216,9 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
                         <span>{a.vendor} — {a.name}</span>
                         <span style={{ 
                           fontFamily: 'var(--budget-font-mono)',
-                          color: a.paymentStatus === 'Unpaid' ? 'var(--budget-danger)' : 'inherit'
+                          color: a.paymentStatus?.toLowerCase() === 'unpaid' ? 'var(--budget-danger)' : 'inherit'
                         }}>
-                          {formatCurrency(a.budget)}{a.paymentStatus === 'Unpaid' ? ' ⚠️' : ''}
+                          {formatCurrency(a.budget)}{a.paymentStatus?.toLowerCase() === 'unpaid' ? ' ⚠️' : ''}
                         </span>
                       </div>
                     ))}
@@ -188,7 +233,7 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
             <div>
               <h3 className="text-[22px] font-bold mb-2">Department Budget Breakdown</h3>
               <p className="text-[13px] text-[var(--budget-text-muted)] mb-6">
-                Comparative view across all departments
+                Comparative view across all departments • {periodLabel}
               </p>
 
               <div className="space-y-3">
@@ -235,7 +280,7 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
             <div>
               <h3 className="text-[22px] font-bold mb-2">Budget Forecast</h3>
               <p className="text-[13px] text-[var(--budget-text-muted)] mb-6">
-                Projected spending for H1 2026
+                Projected spending for {periodLabel}
               </p>
 
               <div className="grid grid-cols-3 gap-4 mb-6">
@@ -252,7 +297,7 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
                   </div>
                 </div>
                 <div className="bg-[var(--budget-bg)] rounded-xl p-5 text-center">
-                  <div className="text-[12px] text-[var(--budget-text-muted)] mb-2">Total 2026 Commitment</div>
+                  <div className="text-[12px] text-[var(--budget-text-muted)] mb-2">Total {periodLabel} Commitment</div>
                   <div className="text-[28px] font-bold font-mono">
                     {formatCurrency(budget.total)}
                   </div>
@@ -272,7 +317,7 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
               <div className="bg-[var(--budget-bg)] rounded-xl p-5 mb-4">
                 <h4 className="text-[14px] font-semibold mb-3">🔴 Immediate Actions</h4>
                 <ul className="space-y-2 text-[13px] text-[var(--budget-text-secondary)] pl-5 list-disc">
-                  <li><strong>Process vendor payments:</strong> SAR {formatFull(unpaidTotal)} outstanding to {unpaidAssignments.map(a => a.vendor).join(' and ')} for completed projects</li>
+                  <li><strong>Process vendor payments:</strong> {formatSAR(unpaidTotal)} outstanding to {unpaidAssignments.map(a => a.vendor).join(' and ')} for completed projects</li>
                   <li><strong>Complete CTC data entry:</strong> {data.dataQualityIssues.length} resources missing salary data</li>
                 </ul>
               </div>

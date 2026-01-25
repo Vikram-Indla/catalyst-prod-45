@@ -1,12 +1,12 @@
 /**
  * Budget Ledger Table Component
- * AUDIT FIX V2: Text formatting, proper contrast
+ * AUDIT FIX V2: Text formatting, proper contrast, SAR currency
  */
 
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatFull } from '@/hooks/budget/useBudgetData';
+import { formatFull, formatSAR } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment } from '@/hooks/budget/useBudgetData';
 
 interface BudgetLedgerTableProps {
