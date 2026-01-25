@@ -235,7 +235,7 @@ export function SleekCapacityHeader({
     },
     { 
       id: 'budget', 
-      label: 'Budgets', 
+      label: 'Budget', 
       icon: Wallet,
       isActive: primaryView === 'budget',
       onClick: () => {
@@ -249,18 +249,27 @@ export function SleekCapacityHeader({
   return (
     <div className="bg-card border-b border-border">
       {/* ROW 1: Breadcrumb + Live Status + Actions */}
-      <div className="flex items-center justify-between px-5 h-12 border-b border-border/40">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between px-5 h-14 border-b border-border/40">
+        <div className="flex flex-col gap-0.5">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground dark:text-[var(--text-secondary)]">Enterprise</span>
-            <span className="text-muted-foreground dark:text-[var(--muted-foreground)]">/</span>
-            <span className="text-sm font-semibold text-foreground dark:text-[var(--text-primary)]">Capacity</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">Enterprise / Capacity</span>
+            {primaryView === 'budget' && (
+              <>
+                <span className="text-xs text-muted-foreground dark:text-[var(--muted-foreground)]">•</span>
+                <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">Budget</span>
+              </>
+            )}
           </div>
           
-          <div className="w-px h-4 bg-border" />
-          
-          {/* Live Status */}
+          {/* Title - changes based on view */}
+          <h1 className="text-xl font-semibold text-foreground dark:text-[var(--text-primary)] tracking-tight">
+            {primaryView === 'budget' ? 'Budget Governance' : 'Capacity Planner'}
+          </h1>
+        </div>
+        
+        {/* Live Status - moved to separate container */}
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <div className="relative flex items-center justify-center">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -268,50 +277,49 @@ export function SleekCapacityHeader({
             </div>
             <span className="font-medium text-emerald-600 dark:text-emerald-400">Live</span>
             <span className="text-muted-foreground dark:text-[var(--muted-foreground)]">•</span>
-            <Clock className="w-3 h-3" />
-            <span>{timeAgo} ago</span>
+            <span>Updated {timeAgo} ago</span>
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-2">
           <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={onRefresh}
-            disabled={isRefreshing}
-            className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
-            title="Hard refresh data"
-          >
-            <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", isRefreshing && "animate-spin")} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
-          </Button>
-          <Button 
-            variant="ghost" 
+            variant="outline" 
             size="sm"
             onClick={onExport}
-            className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
+            className="h-9 px-4 text-sm gap-1.5 border-border"
           >
-            <Download className="h-3.5 w-3.5 mr-1.5" />
+            <Download className="h-4 w-4" />
             Export
           </Button>
           <Button 
-            onClick={onPresentationMode}
-            variant="ghost" 
+            variant="outline" 
             size="sm"
-            className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className="h-9 px-4 text-sm gap-1.5 border-border"
           >
-            <Presentation className="h-3.5 w-3.5 mr-1.5" />
+            <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+          </Button>
+          <Button 
+            onClick={onPresentationMode}
+            size="sm"
+            className="h-9 px-5 text-sm gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
+          >
+            <Presentation className="h-4 w-4" />
             Present
           </Button>
-          <Button
-            onClick={onAddResource}
-            size="sm"
-            className="h-8 px-4 text-xs bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
-          >
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            Book Resource
-          </Button>
+          {primaryView !== 'budget' && (
+            <Button
+              onClick={onAddResource}
+              size="sm"
+              className="h-9 px-4 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
+            >
+              <Plus className="h-4 w-4" />
+              Book Resource
+            </Button>
+          )}
         </div>
       </div>
 
@@ -328,24 +336,27 @@ export function SleekCapacityHeader({
           />
         </div>
 
-        {/* Hero Tab Strip - High contrast for both light and dark */}
-        <div className="relative flex items-center bg-muted/80 dark:bg-[var(--surface-3)] rounded-2xl p-1.5 gap-1 shadow-inner border border-border dark:border-[var(--border-default)]">
+        {/* Hero Tab Strip - V8 Design with blue active state */}
+        <div className="relative flex items-center bg-muted/60 dark:bg-[var(--surface-3)] rounded-xl p-1 gap-0.5 border border-border/50 dark:border-[var(--border-default)]">
           {viewTabs.map((tab) => {
             const Icon = tab.icon;
+            const isBudgetActive = tab.id === 'budget' && tab.isActive;
             return (
               <button
                 key={tab.id}
                 onClick={tab.onClick}
                 className={cn(
-                  'relative flex items-center gap-2.5 px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200',
+                  'relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
                   tab.isActive 
-                    ? 'bg-card dark:bg-[var(--surface-elevated)] text-emerald-600 dark:text-emerald-300 shadow-md border border-border dark:border-[var(--border-default)]'
+                    ? isBudgetActive
+                      ? 'bg-[#0ea5e9] text-white shadow-sm'
+                      : 'bg-card dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] shadow-sm border border-border/50 dark:border-[var(--border-default)]'
                     : 'text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)] hover:bg-card/50 dark:hover:bg-[var(--surface-2)]'
                 )}
               >
                 <Icon className={cn(
                   "w-4 h-4",
-                  tab.isActive ? "text-emerald-600 dark:text-emerald-300" : ""
+                  tab.isActive && isBudgetActive ? "text-white" : tab.isActive ? "text-foreground" : ""
                 )} />
                 <span>{tab.label}</span>
               </button>
@@ -353,8 +364,20 @@ export function SleekCapacityHeader({
           })}
         </div>
 
-        {/* Spacer */}
-        <div className="w-56" />
+        {/* Period Toggles */}
+        <div className="flex items-center gap-1 bg-muted/60 dark:bg-[var(--surface-3)] rounded-lg p-1 border border-border/50">
+          {['Q1', 'H1', 'Full'].map((period) => (
+            <button
+              key={period}
+              className={cn(
+                'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
+                'text-muted-foreground hover:text-foreground hover:bg-card/50'
+              )}
+            >
+              {period}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ROW 3: Stats + Filters (resources/allocations/gantt) - hidden for contracts, projects, budget, and analytics view */}
