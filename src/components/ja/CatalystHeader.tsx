@@ -48,7 +48,10 @@ export function CatalystHeader() {
   const location = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const { isAdmin, canAccessEnterprise, isProductOwnerOnly } = useUserRole();
+  const { isAdmin, isSuperAdmin, isProgramManager, canAccessEnterprise, isProductOwnerOnly } = useUserRole();
+  
+  // Settings access: admin, super_admin, or program_manager (management)
+  const canAccessSettings = isAdmin || isSuperAdmin || isProgramManager;
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
   const { workspaceType } = useCatalystContext();
   const singleItemNav = useSingleItemNavigation();
@@ -533,7 +536,7 @@ export function CatalystHeader() {
             </Tooltip>
 
             {/* Settings - 32x32 icon button - Only visible to Admin */}
-            {isAdmin && (
+            {canAccessSettings && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
@@ -630,7 +633,7 @@ export function CatalystHeader() {
                   <Bell className="mr-2 h-4 w-4" />
                   <span>Notification Settings</span>
                 </DropdownMenuItem>
-                {isAdmin && (
+                {canAccessSettings && (
                   <DropdownMenuItem 
                     onClick={() => navigate('/admin/activity')} 
                     className="cursor-pointer"
