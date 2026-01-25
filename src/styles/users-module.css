@@ -346,7 +346,7 @@
 .ct-stat-dot.all { background: var(--ct-text-tertiary); }
 .ct-stat-dot.variable { background: var(--ct-primary); }
 .ct-stat-dot.permanent { background: var(--ct-teal); }
-.ct-stat-dot.fixed { background: var(--ct-warning); }
+.ct-stat-dot.type-fixed { background: var(--ct-warning); }
 .ct-stat-dot.freelance { background: var(--ct-violet); }
 
 .ct-stat-label {
