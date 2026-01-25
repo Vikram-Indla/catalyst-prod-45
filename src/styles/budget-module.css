@@ -1,118 +1,150 @@
 /**
- * Budget Governance Module - V8 Design Tokens
+ * Budget Governance Module - V8 Design System
  * Route: /enterprise/capacity-planner/budget
+ * Version: 8.0 - Production Ready
  * 
- * AUDIT FIX V2 - Comprehensive contrast & visual improvements:
- * - WCAG AA compliant text contrast (min 4.5:1 for body, 3:1 for large)
- * - Visible 4px colored top borders on summary cards
- * - Proper card shadows and depth
- * - Saturated accent colors (no pastels)
- * - Readable muted text (min #64748b)
+ * DESIGN TOKENS FROM SPECIFICATION:
+ * - Primary: #2563eb (buttons, active states)
+ * - Insourced: #2563eb, Cosourced: #7c3aed, Outsourced: #0d9488
+ * - Text: #0f172a primary, #334155 secondary, #64748b muted
+ * - 5px solid top borders on cards, 36px/800 JetBrains Mono values
  */
 
 .budget-module {
-  /* Primary Colors - SATURATED */
+  /* ============================================
+     V8 PRIMARY COLORS
+     ============================================ */
   --budget-primary: #2563eb;
-  --budget-primary-hover: #1d4ed8;
-  --budget-primary-light: rgba(37, 99, 235, 0.1);
-  --budget-primary-border: rgba(37, 99, 235, 0.25);
+  --budget-primary-dark: #1d4ed8;
+  --budget-primary-light: #dbeafe;
+  --budget-primary-bg: #eff6ff;
 
-  /* Budget Type Colors - FULLY SATURATED (no pastels) */
+  /* ============================================
+     V8 BUDGET TYPE COLORS
+     ============================================ */
   --budget-insourced: #2563eb;
-  --budget-insourced-light: rgba(37, 99, 235, 0.12);
-  --budget-cosourced: #8b5cf6;
-  --budget-cosourced-light: rgba(139, 92, 246, 0.12);
+  --budget-insourced-dark: #1d4ed8;
+  --budget-insourced-light: #dbeafe;
+  
+  --budget-cosourced: #7c3aed;
+  --budget-cosourced-dark: #6d28d9;
+  --budget-cosourced-light: #ede9fe;
+  
   --budget-outsourced: #0d9488;
-  --budget-outsourced-light: rgba(13, 148, 136, 0.12);
+  --budget-outsourced-dark: #0f766e;
+  --budget-outsourced-light: #ccfbf1;
 
-  /* Semantic Colors */
+  /* ============================================
+     V8 SEMANTIC COLORS
+     ============================================ */
   --budget-success: #059669;
-  --budget-success-light: rgba(5, 150, 105, 0.12);
+  --budget-success-light: #d1fae5;
   --budget-warning: #d97706;
-  --budget-warning-light: rgba(217, 119, 6, 0.12);
+  --budget-warning-light: #fef3c7;
   --budget-danger: #dc2626;
-  --budget-danger-light: rgba(220, 38, 38, 0.12);
+  --budget-danger-light: #fee2e2;
 
-  /* Neutrals - PROPERLY CONTRASTED */
-  --budget-bg: #f8fafc;
+  /* ============================================
+     V8 NEUTRALS (WCAG AA COMPLIANT)
+     ============================================ */
+  --budget-bg-page: #f1f5f9;
+  --budget-bg-surface: #ffffff;
+  --budget-text-primary: #0f172a;
+  --budget-text-secondary: #334155;
+  --budget-text-muted: #64748b;
+  --budget-border: #e2e8f0;
+  --budget-border-strong: #cbd5e1;
+
+  /* Legacy aliases for compatibility */
+  --budget-bg: #f1f5f9;
   --budget-surface: #ffffff;
   --budget-text: #0f172a;
-  --budget-text-secondary: #475569;       /* 4.5:1 on white */
-  --budget-text-muted: #64748b;           /* Minimum readable (3.8:1 on white) */
-  --budget-text-subtle: #94a3b8;          /* Only for decorative text */
-  --budget-border: #cbd5e1;               /* Visible border */
   --budget-border-light: #e2e8f0;
 
-  /* Shadows */
-  --budget-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --budget-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --budget-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  /* ============================================
+     V8 SHADOWS
+     ============================================ */
+  --budget-shadow-sm: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1);
+  --budget-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --budget-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
 
-  /* Fonts */
-  --budget-font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --budget-font-mono: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+  /* ============================================
+     V8 TYPOGRAPHY
+     ============================================ */
+  --budget-font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --budget-font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+  /* ============================================
+     V8 BORDER RADIUS
+     ============================================ */
+  --budget-radius-xs: 4px;
+  --budget-radius-sm: 6px;
+  --budget-radius-md: 8px;
+  --budget-radius-lg: 10px;
+  --budget-radius-xl: 12px;
 }
 
-/* Department Filter Tabs */
+/* ============================================
+   DEPARTMENT FILTER TABS
+   V8 Spec: 11px/600 name, 18px/800 Mono amount
+   ============================================ */
 .budget-module .dept-filter {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .budget-module .dept-label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--budget-text-secondary);
+  letter-spacing: 0.04em;
+  color: var(--budget-text-muted);
   margin-bottom: 10px;
 }
 
 .budget-module .dept-tabs {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .budget-module .dept-tab {
-  padding: 14px 20px;
-  background: var(--budget-surface);
+  flex: 1;
+  max-width: 140px;
+  padding: 12px 14px;
+  background: var(--budget-bg-surface);
   border: 2px solid var(--budget-border);
-  border-radius: 10px;
+  border-radius: var(--budget-radius-md);
   cursor: pointer;
-  transition: all 0.15s;
-  min-width: 130px;
+  transition: all 0.15s ease;
   text-align: center;
-  box-shadow: var(--budget-shadow-sm);
 }
 
 .budget-module .dept-tab:hover {
   border-color: var(--budget-primary);
-  box-shadow: var(--budget-shadow-md);
 }
 
 .budget-module .dept-tab.active {
   border-color: var(--budget-primary);
-  border-width: 2px;
-  background: var(--budget-primary-light);
-  box-shadow: var(--budget-shadow-md);
+  background: var(--budget-primary-bg);
 }
 
 .budget-module .dept-tab-name {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--budget-text-secondary);
+  color: var(--budget-text-muted);
   margin-bottom: 4px;
 }
 
 .budget-module .dept-tab.active .dept-tab-name {
   color: var(--budget-primary);
-  font-weight: 700;
 }
 
+/* V8: Department amount uses JetBrains Mono 800 */
 .budget-module .dept-tab-amount {
+  font-family: var(--budget-font-mono);
   font-size: 18px;
-  font-weight: 700;
-  color: var(--budget-text);
+  font-weight: 800;
+  color: var(--budget-text-primary);
 }
 
 .budget-module .dept-tab.active .dept-tab-amount {
@@ -120,39 +152,45 @@
 }
 
 .budget-module .dept-tab-count {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 400;
   color: var(--budget-text-muted);
   margin-top: 2px;
 }
 
-/* Summary Cards */
+.budget-module .dept-tab-count .warning {
+  color: var(--budget-warning);
+}
+
+/* ============================================
+   SUMMARY CARDS
+   V8 Spec: 5px top border, 36px/800 Mono value
+   ============================================ */
 .budget-module .summary-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .budget-module .summary-card {
-  background: var(--budget-surface);
+  background: var(--budget-bg-surface);
   border: 1px solid var(--budget-border);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: var(--budget-radius-lg);
+  padding: 16px 18px;
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
-  /* QA Audit P1: Enhanced shadow for depth */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition: all 0.15s ease;
+  box-shadow: var(--budget-shadow-sm);
 }
 
 .budget-module .summary-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+  box-shadow: var(--budget-shadow-md);
 }
 
-/* CRITICAL: 5px colored top border - FULLY OPAQUE (QA Audit P0) */
+/* V8 CRITICAL: 5px solid top border - full opacity */
 .budget-module .summary-card::before {
   content: '';
   position: absolute;
@@ -160,7 +198,6 @@
   left: 0;
   right: 0;
   height: 5px;
-  opacity: 1;
 }
 
 .budget-module .summary-card.insourced::before { background: var(--budget-insourced); }
@@ -179,14 +216,14 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--budget-text-secondary);
+  color: var(--budget-text-muted);
 }
 
 .budget-module .summary-badge {
   font-size: 10px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: var(--budget-radius-xs);
 }
 
 .budget-module .summary-badge.insourced { 
@@ -202,12 +239,13 @@
   color: var(--budget-outsourced); 
 }
 
-/* CRITICAL: Bold values with FULL saturation colors (QA Audit P1 - 40px, weight 800, JetBrains Mono) */
+/* V8 CRITICAL: Card value - 36px/800 JetBrains Mono */
 .budget-module .summary-value {
   font-family: var(--budget-font-mono);
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 800;
   line-height: 1;
+  letter-spacing: -0.02em;
   margin-bottom: 6px;
 }
 
@@ -215,35 +253,36 @@
 .budget-module .summary-value.cosourced { color: var(--budget-cosourced); }
 .budget-module .summary-value.outsourced { color: var(--budget-outsourced); }
 
-/* FIXED: Readable subtitle text - minimum 4.5:1 contrast */
 .budget-module .summary-sub {
   font-size: 12px;
-  font-weight: 500;
-  color: var(--budget-text-muted);
+  font-weight: 400;
+  color: var(--budget-text-secondary);
   margin-bottom: 12px;
 }
 
-/* FIXED: Readable detail text */
 .budget-module .summary-detail {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--budget-text-secondary);
   padding-top: 12px;
-  border-top: 1px solid var(--budget-border-light);
+  border-top: 1px solid var(--budget-border);
 }
 
 .budget-module .summary-detail strong {
-  font-weight: 700;
-  color: var(--budget-text);
+  font-weight: 600;
+  color: var(--budget-text-primary);
 }
 
-/* Info Box */
+/* ============================================
+   INFO BOX
+   V8 Spec: Primary bg, 12px text, bold keywords
+   ============================================ */
 .budget-module .info-box {
-  background: var(--budget-primary-light);
-  border: 1px solid var(--budget-primary-border);
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 24px;
+  background: var(--budget-primary-bg);
+  border: 1px solid var(--budget-primary-light);
+  border-radius: var(--budget-radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -251,37 +290,39 @@
 
 .budget-module .info-box-text {
   font-size: 12px;
-  font-weight: 500;
   color: var(--budget-text-secondary);
 }
 
 .budget-module .info-box-text strong {
-  font-weight: 700;
+  font-weight: 600;
   color: var(--budget-primary);
 }
 
-/* Table Card */
+/* ============================================
+   TABLE CARD
+   V8 Spec: Dense 12px/14px cells, 10px headers
+   ============================================ */
 .budget-module .table-card {
-  background: var(--budget-surface);
+  background: var(--budget-bg-surface);
   border: 1px solid var(--budget-border);
-  border-radius: 12px;
+  border-radius: var(--budget-radius-lg);
   overflow: hidden;
-  margin-bottom: 24px;
-  box-shadow: var(--budget-shadow-md);
+  margin-bottom: 16px;
+  box-shadow: var(--budget-shadow-sm);
 }
 
 .budget-module .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--budget-border);
 }
 
 .budget-module .table-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--budget-text);
+  color: var(--budget-text-primary);
 }
 
 .budget-module .table-title span {
@@ -295,17 +336,18 @@
 }
 
 .budget-module thead {
-  background: var(--budget-bg);
+  background: var(--budget-bg-page);
 }
 
+/* V8: Table headers 10px/700 uppercase */
 .budget-module th {
   text-align: left;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--budget-text-secondary);
-  padding: 12px 16px;
+  letter-spacing: 0.04em;
+  color: var(--budget-text-muted);
+  padding: 10px 14px;
   border-bottom: 1px solid var(--budget-border);
   white-space: nowrap;
 }
@@ -313,24 +355,31 @@
 .budget-module th.right { text-align: right; }
 .budget-module th.center { text-align: center; }
 
+/* V8: Table cells 12px/14px padding */
 .budget-module td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--budget-border-light);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--budget-border);
   vertical-align: middle;
   font-size: 13px;
-  color: var(--budget-text);
+  color: var(--budget-text-primary);
 }
 
 .budget-module td.right { text-align: right; }
 .budget-module td.center { text-align: center; }
 
 .budget-module tbody tr {
-  transition: background 0.1s;
+  transition: background 0.1s ease;
   cursor: pointer;
 }
 
-.budget-module tbody tr:hover { background: rgba(37, 99, 235, 0.04); }
-.budget-module tbody tr:last-child td { border-bottom: none; }
+/* V8: Row hover with primary-bg */
+.budget-module tbody tr:hover { 
+  background: var(--budget-primary-bg); 
+}
+
+.budget-module tbody tr:last-child td { 
+  border-bottom: none; 
+}
 
 /* Assignment Cell */
 .budget-module .assignment-cell {
@@ -340,9 +389,9 @@
 }
 
 .budget-module .assignment-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--budget-radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -352,30 +401,34 @@
   flex-shrink: 0;
 }
 
-.budget-module .assignment-icon.insourced { background: linear-gradient(135deg, var(--budget-insourced), #3b82f6); }
-.budget-module .assignment-icon.cosourced { background: linear-gradient(135deg, var(--budget-cosourced), #a78bfa); }
-.budget-module .assignment-icon.outsourced { background: linear-gradient(135deg, var(--budget-outsourced), #14b8a6); }
+.budget-module .assignment-icon.insourced { background: var(--budget-insourced); }
+.budget-module .assignment-icon.cosourced { background: var(--budget-cosourced); }
+.budget-module .assignment-icon.outsourced { background: var(--budget-outsourced); }
 
 .budget-module .assignment-info h4 {
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 2px;
-  color: var(--budget-text);
+  color: var(--budget-text-primary);
 }
 
-/* FIXED: Department subtext readable */
 .budget-module .assignment-info span {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--budget-text-muted);
 }
+
+/* ============================================
+   BADGES
+   V8 Spec: 4px/8px padding, 10px/600 font
+   ============================================ */
 
 /* Type Badge */
 .budget-module .type-badge {
   display: inline-block;
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: var(--budget-radius-xs);
+  font-size: 10px;
   font-weight: 600;
 }
 
@@ -392,20 +445,20 @@
   color: var(--budget-outsourced); 
 }
 
-/* Status Badge - PROPER COLORS */
+/* Status Badge */
 .budget-module .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: var(--budget-radius-xs);
+  font-size: 10px;
   font-weight: 600;
 }
 
 .budget-module .status-badge.in-progress { 
-  background: var(--budget-primary-light); 
-  color: var(--budget-primary); 
+  background: var(--budget-insourced-light); 
+  color: var(--budget-insourced); 
 }
 .budget-module .status-badge.completed { 
   background: var(--budget-success-light); 
@@ -416,26 +469,25 @@
   color: var(--budget-warning); 
 }
 
-/* Payment Badge - PROPER VISIBILITY */
+/* Payment Badge */
 .budget-module .payment-badge {
   display: inline-flex;
   align-items: center;
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: var(--budget-radius-xs);
+  font-size: 10px;
   font-weight: 600;
 }
 
 .budget-module .payment-badge.na { 
-  background: var(--budget-bg); 
+  background: var(--budget-bg-page); 
   color: var(--budget-text-muted); 
-  border: 1px solid var(--budget-border);
 }
 .budget-module .payment-badge.on-track { 
   background: var(--budget-success-light); 
   color: var(--budget-success); 
 }
-/* FIXED: Unpaid uses SOLID danger background */
+/* V8: Unpaid uses SOLID danger background, white text */
 .budget-module .payment-badge.unpaid { 
   background: var(--budget-danger); 
   color: white; 
@@ -454,13 +506,16 @@
 .budget-module .cost-cell.outsourced { color: var(--budget-outsourced); }
 .budget-module .cost-cell.muted { color: var(--budget-text-muted); }
 
-/* Table Footer */
+/* ============================================
+   TABLE FOOTER
+   V8 Spec: 9px label, 15px/700 Mono value
+   ============================================ */
 .budget-module .table-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background: var(--budget-bg);
+  padding: 12px 16px;
+  background: var(--budget-bg-page);
   border-top: 1px solid var(--budget-border);
 }
 
@@ -475,30 +530,35 @@
   gap: 32px;
 }
 
-.budget-module .footer-total { text-align: right; }
+.budget-module .footer-total { 
+  text-align: right; 
+}
 
 .budget-module .footer-total-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--budget-text-secondary);
+  color: var(--budget-text-muted);
   margin-bottom: 2px;
 }
 
 .budget-module .footer-total-value {
-  font-size: 16px;
-  font-weight: 700;
   font-family: var(--budget-font-mono);
+  font-size: 15px;
+  font-weight: 700;
 }
 
-/* Data Quality Panel */
+/* ============================================
+   DATA QUALITY PANEL
+   V8 Spec: Warning bg, 2px border, 13px title
+   ============================================ */
 .budget-module .quality-panel {
   background: var(--budget-warning-light);
-  border: 1px solid rgba(217, 119, 6, 0.3);
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 24px;
+  border: 2px solid #fbbf24;
+  border-radius: var(--budget-radius-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
 }
 
 .budget-module .quality-header {
@@ -523,12 +583,14 @@
   color: #92400e;
   cursor: pointer;
   text-decoration: underline;
+  background: none;
+  border: none;
 }
 
 .budget-module .quality-items {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 6px 24px;
 }
 
 .budget-module .quality-item {
@@ -536,55 +598,60 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   color: #78350f;
 }
 
-/* Executive Modal */
+/* ============================================
+   EXECUTIVE MODAL
+   V8 Spec: 12px radius, proper header/footer
+   ============================================ */
 .budget-module .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 300;
+  padding: 24px;
 }
 
 .budget-module .modal {
-  background: var(--budget-surface);
-  border-radius: 16px;
-  width: 95%;
-  max-width: 1200px;
-  max-height: 90vh;
+  background: var(--budget-bg-surface);
+  border-radius: var(--budget-radius-xl);
+  width: 100%;
+  max-width: 900px;
+  max-height: calc(80vh);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--budget-shadow-lg);
 }
 
 .budget-module .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--budget-border);
 }
 
 .budget-module .modal-header h2 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: var(--budget-text);
+  color: var(--budget-text-primary);
 }
 
 .budget-module .modal-body {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 20px;
+  max-height: calc(80vh - 130px);
 }
 
 .budget-module .modal-footer {
-  padding: 16px 24px;
+  padding: 16px 20px;
   border-top: 1px solid var(--budget-border);
   display: flex;
   justify-content: space-between;
@@ -600,16 +667,15 @@
 .budget-module .slide-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
-  background: var(--budget-border);
+  border-radius: 4px;
+  background: var(--budget-border-strong);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .budget-module .slide-dot.active {
   background: var(--budget-primary);
   width: 24px;
-  border-radius: 4px;
 }
 
 /* Executive Summary Grid */
@@ -621,19 +687,18 @@
 }
 
 .budget-module .exec-summary-item {
-  background: var(--budget-bg);
-  border-radius: 12px;
-  padding: 24px;
+  background: var(--budget-bg-page);
+  border-radius: var(--budget-radius-lg);
+  padding: 20px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
   border: 2px solid transparent;
   position: relative;
   overflow: hidden;
   box-shadow: var(--budget-shadow-sm);
 }
 
-/* FIXED: 4px colored top border on exec items */
 .budget-module .exec-summary-item::before {
   content: '';
   position: absolute;
@@ -654,7 +719,7 @@
 
 .budget-module .exec-summary-item.active {
   border-color: var(--budget-primary);
-  background: var(--budget-primary-light);
+  background: var(--budget-primary-bg);
 }
 
 .budget-module .exec-summary-item h3 {
@@ -666,16 +731,17 @@
   margin-bottom: 8px;
 }
 
+/* V8: Exec modal values 36px/800 Mono */
 .budget-module .exec-summary-item .value {
+  font-family: var(--budget-font-mono);
   font-size: 36px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .budget-module .exec-summary-item.insourced .value { color: var(--budget-insourced); }
 .budget-module .exec-summary-item.cosourced .value { color: var(--budget-cosourced); }
 .budget-module .exec-summary-item.outsourced .value { color: var(--budget-outsourced); }
 
-/* FIXED: Exec summary subtitle readable */
 .budget-module .exec-summary-item .subtitle {
   font-size: 12px;
   font-weight: 500;
@@ -687,7 +753,7 @@
 .budget-module .exec-alert {
   background: var(--budget-danger-light);
   border: 1px solid #fecaca;
-  border-radius: 12px;
+  border-radius: var(--budget-radius-xl);
   padding: 16px 20px;
   margin-bottom: 24px;
 }
@@ -707,7 +773,7 @@
 
 .budget-module .exec-alert-item {
   background: white;
-  border-radius: 8px;
+  border-radius: var(--budget-radius-md);
   padding: 12px;
   display: flex;
   justify-content: space-between;
@@ -717,14 +783,14 @@
 .budget-module .exec-alert-item-name {
   font-size: 13px;
   font-weight: 500;
-  color: var(--budget-text);
+  color: var(--budget-text-primary);
 }
 
 .budget-module .exec-alert-item-amount {
+  font-family: var(--budget-font-mono);
   font-size: 16px;
   font-weight: 700;
   color: var(--budget-danger);
-  font-family: var(--budget-font-mono);
 }
 
 /* Vendor Cell */
@@ -737,9 +803,9 @@
 .budget-module .vendor-logo {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
-  background: var(--budget-bg);
-  border: 1px solid var(--budget-border-light);
+  border-radius: var(--budget-radius-sm);
+  background: var(--budget-bg-page);
+  border: 1px solid var(--budget-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -751,37 +817,38 @@
 .budget-module .vendor-name {
   font-size: 13px;
   font-weight: 500;
-  color: var(--budget-text);
+  color: var(--budget-text-primary);
 }
 
-/* ==========================================================
-   QA AUDIT P0: EXECUTIVE SUMMARY BUTTON - Dark gradient with glow
-   ========================================================== */
+/* ============================================
+   EXECUTIVE SUMMARY BUTTON
+   V8 Spec: Dark gradient, glow, hover lift
+   ============================================ */
 .budget-module .exec-summary-btn {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border: none;
-  border-radius: 10px;
+  border-radius: var(--budget-radius-md);
   color: white;
   font-family: var(--budget-font-ui);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.3);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+  transition: all 0.15s ease;
 }
 
 .budget-module .exec-summary-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
 }
 
 .budget-module .exec-summary-btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.3);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
 }
 
 .budget-module .exec-summary-btn svg {
@@ -789,9 +856,33 @@
   height: 18px;
 }
 
-/* ==========================================================
-   QA AUDIT P2: DEPARTMENT TAB BORDERS - Increase to 2px
-   ========================================================== */
-.budget-module .dept-tab {
-  border-width: 2px;
+/* ============================================
+   LIVE BADGE ANIMATION
+   ============================================ */
+@keyframes budget-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+.budget-module .live-dot {
+  animation: budget-pulse 2s infinite;
+}
+
+/* ============================================
+   FOCUS STATES (Accessibility)
+   ============================================ */
+.budget-module button:focus-visible,
+.budget-module .dept-tab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .budget-module * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
