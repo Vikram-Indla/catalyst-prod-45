@@ -81,49 +81,37 @@ export default function BudgetGovernancePage() {
     <PageChrome>
       <div className="budget-module min-h-screen bg-[var(--budget-bg)]">
         <div className="p-6 lg:px-8">
-          {/* Breadcrumb */}
-          <div className="text-[11px] text-[var(--budget-text-muted)] mb-2">
-            Enterprise / Capacity <span className="text-[var(--budget-primary)]">• Budget</span>
-          </div>
-
-          {/* Page Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-[22px] font-bold text-[var(--budget-text)]">Budget Governance</h1>
-              <div className="flex items-center gap-3 mt-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[11px] font-medium text-green-600">Live</span>
+          {/* Row 1: Title + Live Badge | Executive Summary */}
+          <header className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-4">
+              {/* Title Block */}
+              <div>
+                <div className="text-xs font-medium text-slate-500 mb-1">
+                  Enterprise / Capacity <span className="text-blue-600">• Budget</span>
                 </div>
-                <span className="text-[11px] text-[var(--budget-text-muted)]">Updated 5 minutes ago</span>
+                <h1 className="text-2xl font-bold text-slate-900">Budget Governance</h1>
+              </div>
+              
+              {/* Live Badge - Inline with title */}
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-200">
+                <span className="relative flex items-center justify-center">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                </span>
+                <span className="text-xs font-semibold text-emerald-700">Live</span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setExecModalOpen(true)}
-                className="gap-1.5"
-              >
-                <BarChart3 className="w-4 h-4" />
-                Executive Summary
-              </Button>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Download className="w-4 h-4" />
-                Export
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="gap-1.5"
-              >
-                <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
-                Refresh
-              </Button>
-            </div>
-          </div>
+            
+            {/* Executive Summary - Primary CTA Only */}
+            <Button 
+              onClick={() => setExecModalOpen(true)}
+              size="sm"
+              className="h-10 px-6 text-sm gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md font-semibold"
+            >
+              <BarChart3 className="w-4 h-4" />
+              Executive Summary
+            </Button>
+          </header>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">

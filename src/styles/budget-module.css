@@ -86,117 +86,138 @@
 }
 
 /* ============================================
-   PERIOD TOGGLE
+   PERIOD TOGGLE - DYNAMITE V2 (HIGH VISIBILITY)
    V8 Spec: Q1/H1/Full Year toggle buttons
    ============================================ */
 .budget-module .period-toggle {
-  display: flex;
-  background: var(--budget-bg-page);
-  border: 1px solid var(--budget-border);
-  border-radius: var(--budget-radius-md);
-  padding: 4px;
-  gap: 2px;
+  display: inline-flex;
+  align-items: center;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 6px;
+  gap: 4px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
 }
 
 .budget-module .period-btn {
-  padding: 8px 16px;
-  font-size: 12px;
+  padding: 10px 20px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--budget-text-muted);
+  color: #475569;
   background: transparent;
   border: none;
-  border-radius: var(--budget-radius-sm);
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .budget-module .period-btn:hover {
-  color: var(--budget-text-primary);
-  background: var(--budget-bg-surface);
+  color: #1e293b;
+  background: rgba(255,255,255,0.6);
 }
 
 .budget-module .period-btn.active {
-  color: var(--budget-primary);
-  background: var(--budget-bg-surface);
-  box-shadow: var(--budget-shadow-sm);
+  color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  border: 1px solid #e2e8f0;
 }
 
 /* ============================================
-   DEPARTMENT FILTER TABS
+   DEPARTMENT FILTER TABS - DYNAMITE V2 (FULL WIDTH)
    V8 Spec: 11px/600 name, 18px/800 Mono amount
    ============================================ */
 .budget-module .dept-filter {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .budget-module .dept-label {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--budget-text-muted);
-  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+  color: #475569;
+  margin-bottom: 12px;
 }
 
 .budget-module .dept-tabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 1400px) {
+  .budget-module .dept-tabs {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .budget-module .dept-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .budget-module .dept-tab {
-  flex: 1;
-  max-width: 140px;
-  padding: 12px 14px;
-  background: var(--budget-bg-surface);
-  border: 2px solid var(--budget-border);
-  border-radius: var(--budget-radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: center;
 }
 
 .budget-module .dept-tab:hover {
-  border-color: var(--budget-primary);
+  border-color: #93c5fd;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
 }
 
 .budget-module .dept-tab.active {
-  border-color: var(--budget-primary);
-  background: var(--budget-primary-bg);
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
 .budget-module .dept-tab-name {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--budget-text-muted);
-  margin-bottom: 4px;
+  color: #64748b;
+  margin-bottom: 6px;
 }
 
 .budget-module .dept-tab.active .dept-tab-name {
-  color: var(--budget-primary);
+  color: #1d4ed8;
 }
 
 /* V8: Department amount uses JetBrains Mono 800 */
 .budget-module .dept-tab-amount {
   font-family: var(--budget-font-mono);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
-  color: var(--budget-text-primary);
+  color: #0f172a;
 }
 
 .budget-module .dept-tab.active .dept-tab-amount {
-  color: var(--budget-primary);
+  color: #2563eb;
 }
 
 .budget-module .dept-tab-count {
   font-size: 10px;
-  font-weight: 400;
-  color: var(--budget-text-muted);
-  margin-top: 2px;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 4px;
 }
 
 .budget-module .dept-tab-count .warning {
-  color: var(--budget-warning);
+  color: #d97706;
+  font-weight: 600;
 }
 
 /* ============================================

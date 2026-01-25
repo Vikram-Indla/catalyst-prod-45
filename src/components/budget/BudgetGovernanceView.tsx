@@ -208,8 +208,8 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
   return (
     <div className="budget-module min-h-[calc(100vh-200px)]">
       <div className="px-6 lg:px-8 pt-4 pb-4">
-        {/* Period Toggle + Actions */}
-        <div className="flex items-center justify-between mb-4">
+        {/* Period Toggle + Showing Label (NO REFRESH/EXPORT - moved to Ledger) */}
+        <div className="flex items-center justify-between mb-5">
           <div className="period-toggle">
             {PERIODS.map(p => (
               <button
@@ -221,34 +221,14 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-[var(--budget-text-muted)]">
-              Showing: <strong className="text-[var(--budget-text-primary)]">
-                {period === 'Q1' ? 'Jan–Mar 2026' : period === 'H1' ? 'Jan–Jun 2026' : 'Full Year 2026'}
-              </strong>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleExport}
-                disabled={!data}
-                className="gap-1.5"
-              >
-                <Download className="w-4 h-4" />
-                Export
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="gap-1.5"
-              >
-                <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
-                Refresh
-              </Button>
-            </div>
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+            <span className="text-slate-500">Showing:</span>
+            <span className="font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
+              📅 {period === 'Q1' ? 'Q1 2026' : period === 'H1' ? 'H1 2026' : 'Full Year 2026'}
+              <span className="text-slate-500 font-normal ml-1">
+                ({period === 'Q1' ? 'Jan–Mar' : period === 'H1' ? 'Jan–Jun' : 'Jan–Dec'})
+              </span>
+            </span>
           </div>
         </div>
 
