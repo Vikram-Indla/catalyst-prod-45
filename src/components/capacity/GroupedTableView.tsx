@@ -171,16 +171,16 @@ export function GroupedTableView({
       
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-muted/50 dark:bg-[var(--surface-2)] sticky top-0 z-10">
+        <table className="w-full ct-table">
+          <thead className="bg-[var(--ct-bg)] sticky top-0 z-10">
             <tr>
-              <th className="w-10 border-r border-border dark:border-[var(--border-subtle)]"></th>
-              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Name</th>
-              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Role</th>
-              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Allocation</th>
-              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 w-56 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Timeline</th>
-              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Status</th>
-              <th className="w-20 border-b border-border dark:border-[var(--border-default)]"></th>
+              <th className="w-10 border-r border-[var(--ct-border)]"></th>
+              <th className="text-left text-[10px] font-semibold text-[var(--ct-text-muted)] uppercase tracking-[0.05em] px-4 py-3 border-r border-[var(--ct-border)] border-b border-[var(--ct-border)]">Name</th>
+              <th className="text-left text-[10px] font-semibold text-[var(--ct-text-muted)] uppercase tracking-[0.05em] px-4 py-3 border-r border-[var(--ct-border)] border-b border-[var(--ct-border)]">Role</th>
+              <th className="text-left text-[10px] font-semibold text-[var(--ct-text-muted)] uppercase tracking-[0.05em] px-4 py-3 border-r border-[var(--ct-border)] border-b border-[var(--ct-border)]">Allocation</th>
+              <th className="text-left text-[10px] font-semibold text-[var(--ct-text-muted)] uppercase tracking-[0.05em] px-4 py-3 w-56 border-r border-[var(--ct-border)] border-b border-[var(--ct-border)]">Timeline</th>
+              <th className="text-left text-[10px] font-semibold text-[var(--ct-text-muted)] uppercase tracking-[0.05em] px-4 py-3 border-r border-[var(--ct-border)] border-b border-[var(--ct-border)]">Status</th>
+              <th className="w-20 border-b border-[var(--ct-border)]"></th>
             </tr>
           </thead>
           <tbody>

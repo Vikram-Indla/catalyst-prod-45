@@ -1,0 +1,592 @@
+/* ================================================================
+   CATALYST V8 DESIGN SYSTEM — Capacity Planner Module
+   Route: /enterprise/capacity-planner (+ all sub-views)
+   Version: 8.0.0
+   Last Updated: January 2026
+   
+   RINGFENCED: Only applies to capacity module components
+   ================================================================ */
+
+/* ═══════════════════════════════════════════════════════════════
+   1. V8 COLOR TOKENS
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Primary */
+  --ct-primary: #2563eb;
+  --ct-primary-hover: #1d4ed8;
+  --ct-primary-light: rgba(37, 99, 235, 0.08);
+  --ct-primary-border: rgba(37, 99, 235, 0.2);
+
+  /* Budget/Resource Type Colors */
+  --ct-insourced: #2563eb;
+  --ct-insourced-light: rgba(37, 99, 235, 0.08);
+  --ct-cosourced: #8b5cf6;
+  --ct-cosourced-light: rgba(139, 92, 246, 0.08);
+  --ct-outsourced: #0d9488;
+  --ct-outsourced-light: rgba(13, 148, 136, 0.08);
+
+  /* Resource Type Badge Colors */
+  --ct-fixed: #d97706;
+  --ct-fixed-light: rgba(217, 119, 6, 0.08);
+  --ct-variable: #2563eb;
+  --ct-variable-light: rgba(37, 99, 235, 0.08);
+  --ct-freelance: #8b5cf6;
+  --ct-freelance-light: rgba(139, 92, 246, 0.08);
+  --ct-permanent: #0d9488;
+  --ct-permanent-light: rgba(13, 148, 136, 0.08);
+
+  /* Semantic Colors */
+  --ct-teal: #0d9488;
+  --ct-teal-hover: #0f766e;
+  --ct-teal-light: rgba(13, 148, 136, 0.08);
+  --ct-violet: #8b5cf6;
+  --ct-violet-hover: #7c3aed;
+  --ct-violet-light: rgba(139, 92, 246, 0.08);
+  --ct-success: #10b981;
+  --ct-success-light: rgba(16, 185, 129, 0.08);
+  --ct-warning: #d97706;
+  --ct-warning-light: rgba(217, 119, 6, 0.08);
+  --ct-danger: #ef4444;
+  --ct-danger-light: rgba(239, 68, 68, 0.08);
+
+  /* Neutral Colors */
+  --ct-bg: #f8fafc;
+  --ct-surface: #ffffff;
+  --ct-surface-hover: #f1f5f9;
+  --ct-text: #0f172a;
+  --ct-text-secondary: #475569;
+  --ct-text-muted: #64748b; /* WCAG AA compliant (4.7:1 contrast) */
+  --ct-border: #e2e8f0;
+  --ct-border-light: #f1f5f9;
+
+  /* Typography */
+  --ct-font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ct-font-mono: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+
+  /* Shadows */
+  --ct-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --ct-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --ct-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --ct-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Radii */
+  --ct-radius-sm: 6px;
+  --ct-radius-md: 8px;
+  --ct-radius-lg: 12px;
+  --ct-radius-xl: 16px;
+}
+
+/* Dark mode overrides */
+.dark {
+  --ct-bg: #0f172a;
+  --ct-surface: #1e293b;
+  --ct-surface-hover: #334155;
+  --ct-text: #f8fafc;
+  --ct-text-secondary: #cbd5e1;
+  --ct-text-muted: #94a3b8;
+  --ct-border: #334155;
+  --ct-border-light: #1e293b;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. V8 STAT CARDS
+   ═══════════════════════════════════════════════════════════════ */
+
+.ct-stat-card {
+  background: var(--ct-surface);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg);
+  padding: 20px 24px;
+  transition: all 0.2s ease;
+}
+
+.ct-stat-card:hover {
+  border-color: var(--ct-primary-border);
+  box-shadow: var(--ct-shadow-md);
+}
+
+.ct-stat-card.active {
+  border-color: var(--ct-primary);
+  background: var(--ct-primary-light);
+}
+
+.ct-stat-card-label {
+  font-family: var(--ct-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ct-text-muted);
+  margin-bottom: 8px;
+}
+
+.ct-stat-card-value {
+  font-family: var(--ct-font-ui);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ct-stat-card-value.insourced { color: var(--ct-insourced); }
+.ct-stat-card-value.cosourced { color: var(--ct-cosourced); }
+.ct-stat-card-value.outsourced { color: var(--ct-outsourced); }
+.ct-stat-card-value.success { color: var(--ct-success); }
+.ct-stat-card-value.warning { color: var(--ct-warning); }
+.ct-stat-card-value.danger { color: var(--ct-danger); }
+.ct-stat-card-value.teal { color: var(--ct-teal); }
+
+/* ═══════════════════════════════════════════════════════════════
+   3. V8 BADGE SYSTEM
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module .ct-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-family: var(--ct-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.capacity-module .ct-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Fixed — Amber */
+.capacity-module .ct-badge.fixed,
+.capacity-module [data-resource-type="fixed"] .ct-badge {
+  background: var(--ct-fixed-light) !important;
+  color: #b45309 !important;
+}
+.capacity-module .ct-badge.fixed .ct-badge-dot {
+  background: var(--ct-fixed) !important;
+}
+
+/* Variable — Blue */
+.capacity-module .ct-badge.variable,
+.capacity-module [data-resource-type="variable"] .ct-badge {
+  background: var(--ct-variable-light) !important;
+  color: var(--ct-variable) !important;
+}
+.capacity-module .ct-badge.variable .ct-badge-dot {
+  background: var(--ct-variable) !important;
+}
+
+/* Freelance — Violet */
+.capacity-module .ct-badge.freelance,
+.capacity-module [data-resource-type="freelance"] .ct-badge {
+  background: var(--ct-freelance-light) !important;
+  color: var(--ct-freelance) !important;
+}
+.capacity-module .ct-badge.freelance .ct-badge-dot {
+  background: var(--ct-freelance) !important;
+}
+
+/* Permanent — Teal */
+.capacity-module .ct-badge.permanent,
+.capacity-module [data-resource-type="permanent"] .ct-badge {
+  background: var(--ct-permanent-light) !important;
+  color: var(--ct-permanent) !important;
+}
+.capacity-module .ct-badge.permanent .ct-badge-dot {
+  background: var(--ct-permanent) !important;
+}
+
+/* Insourced — Blue */
+.capacity-module .ct-badge.insourced {
+  background: var(--ct-insourced-light) !important;
+  color: var(--ct-insourced) !important;
+}
+.capacity-module .ct-badge.insourced .ct-badge-dot {
+  background: var(--ct-insourced) !important;
+}
+
+/* Cosourced — Violet */
+.capacity-module .ct-badge.cosourced {
+  background: var(--ct-cosourced-light) !important;
+  color: var(--ct-cosourced) !important;
+}
+.capacity-module .ct-badge.cosourced .ct-badge-dot {
+  background: var(--ct-cosourced) !important;
+}
+
+/* Outsourced — Teal */
+.capacity-module .ct-badge.outsourced {
+  background: var(--ct-outsourced-light) !important;
+  color: var(--ct-outsourced) !important;
+}
+.capacity-module .ct-badge.outsourced .ct-badge-dot {
+  background: var(--ct-outsourced) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. V8 TABLE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module .ct-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ct-font-ui);
+}
+
+.capacity-module .ct-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--ct-bg);
+}
+
+.capacity-module .ct-table th {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ct-text-muted) !important;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--ct-border);
+  white-space: nowrap;
+}
+
+.capacity-module .ct-table td {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ct-text);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ct-border-light);
+  vertical-align: middle;
+}
+
+.capacity-module .ct-table tbody tr:hover {
+  background: var(--ct-surface-hover);
+}
+
+/* Monospace cells for RID, dates, costs */
+.capacity-module .ct-table td.mono,
+.capacity-module .ct-table .ct-mono {
+  font-family: var(--ct-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Right-aligned cells */
+.capacity-module .ct-table th.right,
+.capacity-module .ct-table td.right {
+  text-align: right;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. V8 MODAL & DRAWER STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module .ct-modal-content {
+  background: var(--ct-surface);
+  border-radius: var(--ct-radius-xl);
+  border: 1px solid var(--ct-border);
+  box-shadow: var(--ct-shadow-xl);
+  overflow: hidden;
+}
+
+.capacity-module .ct-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--ct-border);
+  background: var(--ct-surface);
+}
+
+.capacity-module .ct-modal-title {
+  font-family: var(--ct-font-ui);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ct-text);
+}
+
+.capacity-module .ct-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.capacity-module .ct-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  height: 72px;
+  padding: 0 24px;
+  border-top: 1px solid var(--ct-border);
+  background: var(--ct-bg);
+}
+
+.capacity-module .ct-drawer {
+  background: var(--ct-surface);
+  border-left: 1px solid var(--ct-border);
+  box-shadow: var(--ct-shadow-xl);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   6. V8 BUTTON STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module .ct-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  background: var(--ct-primary);
+  color: white;
+  font-family: var(--ct-font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--ct-radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.capacity-module .ct-btn-primary:hover {
+  background: var(--ct-primary-hover);
+}
+
+.capacity-module .ct-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  background: transparent;
+  color: var(--ct-text-secondary);
+  font-family: var(--ct-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--ct-radius-md);
+  border: 1px solid var(--ct-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.capacity-module .ct-btn-secondary:hover {
+  background: var(--ct-surface-hover);
+  border-color: var(--ct-text-muted);
+}
+
+.capacity-module .ct-btn-teal {
+  background: var(--ct-teal);
+}
+
+.capacity-module .ct-btn-teal:hover {
+  background: var(--ct-teal-hover);
+}
+
+.capacity-module .ct-btn-sm {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. V8 HEADER TAB STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module .ct-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: var(--ct-font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ct-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--ct-radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.capacity-module .ct-tab:hover {
+  color: var(--ct-text);
+  background: var(--ct-surface-hover);
+}
+
+.capacity-module .ct-tab.active {
+  color: var(--ct-primary);
+  background: var(--ct-surface);
+  box-shadow: var(--ct-shadow-sm);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. V8 STATUS COLORS (Allocation/Utilization)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Available — Teal */
+.capacity-module .status-available {
+  color: var(--ct-teal);
+  background: var(--ct-teal-light);
+}
+
+/* Optimal — Blue */
+.capacity-module .status-optimal {
+  color: var(--ct-primary);
+  background: var(--ct-primary-light);
+}
+
+/* Over-allocated — Amber/Warning */
+.capacity-module .status-over {
+  color: var(--ct-warning);
+  background: var(--ct-warning-light);
+}
+
+/* Critical — Red */
+.capacity-module .status-critical {
+  color: var(--ct-danger);
+  background: var(--ct-danger-light);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9. V8 HEATMAP CELL COLORS
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module .heatmap-cell {
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.capacity-module .heatmap-cell.available {
+  background: var(--ct-teal-light);
+  border: 1px solid var(--ct-teal);
+}
+
+.capacity-module .heatmap-cell.optimal {
+  background: var(--ct-primary-light);
+  border: 1px solid var(--ct-primary);
+}
+
+.capacity-module .heatmap-cell.warning {
+  background: var(--ct-warning-light);
+  border: 1px solid var(--ct-warning);
+}
+
+.capacity-module .heatmap-cell.critical {
+  background: var(--ct-danger-light);
+  border: 1px solid var(--ct-danger);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   10. V8 CONTRACT RING STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module .contract-ring-healthy {
+  --ring-color: var(--ct-teal);
+}
+
+.capacity-module .contract-ring-warning {
+  --ring-color: var(--ct-warning);
+}
+
+.capacity-module .contract-ring-critical {
+  --ring-color: var(--ct-danger);
+  animation: pulse 2s infinite;
+}
+
+.capacity-module .contract-ring-expired {
+  --ring-color: var(--ct-text-muted);
+}
+
+.capacity-module .contract-ring-permanent {
+  --ring-color: var(--ct-text-muted);
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   11. V8 DROPDOWN OVERRIDES (z-index & backgrounds)
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module [data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}
+
+.capacity-module [role="listbox"],
+.capacity-module [role="menu"] {
+  background: var(--ct-surface) !important;
+  border: 1px solid var(--ct-border) !important;
+  border-radius: var(--ct-radius-md) !important;
+  box-shadow: var(--ct-shadow-lg) !important;
+}
+
+.dark .capacity-module [role="listbox"],
+.dark .capacity-module [role="menu"] {
+  background: var(--ct-surface) !important;
+  border-color: var(--ct-border) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   12. V8 UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+.capacity-module .ct-font-mono {
+  font-family: var(--ct-font-mono);
+}
+
+.capacity-module .ct-text-primary {
+  color: var(--ct-text);
+}
+
+.capacity-module .ct-text-secondary {
+  color: var(--ct-text-secondary);
+}
+
+.capacity-module .ct-text-muted {
+  color: var(--ct-text-muted);
+}
+
+.capacity-module .ct-bg-surface {
+  background: var(--ct-surface);
+}
+
+.capacity-module .ct-bg-muted {
+  background: var(--ct-bg);
+}
+
+.capacity-module .ct-border {
+  border-color: var(--ct-border);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   13. BANNED COLORS ENFORCEMENT (Golden Hour Removal)
+   These selectors catch any legacy Golden Hour colors and override
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Override any remnant Golden Hour colors */
+.capacity-module [style*="#C69C6D"],
+.capacity-module [style*="#c69c6d"] {
+  color: var(--ct-warning) !important;
+}
+
+.capacity-module [style*="#5C7C5C"],
+.capacity-module [style*="#5c7c5c"] {
+  color: var(--ct-teal) !important;
+}
+
+.capacity-module [style*="#8B7355"],
+.capacity-module [style*="#8b7355"] {
+  color: var(--ct-warning) !important;
+}
+
+.capacity-module [style*="#D4B896"],
+.capacity-module [style*="#d4b896"] {
+  color: var(--ct-text-secondary) !important;
+}

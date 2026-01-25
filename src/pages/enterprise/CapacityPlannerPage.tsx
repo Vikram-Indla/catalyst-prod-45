@@ -746,7 +746,7 @@ export default function CapacityPlannerPage() {
 
   return (
     <PageChrome hideHeader>
-      <div className="flex flex-col h-full bg-[hsl(var(--background))] relative">
+      <div className="capacity-module flex flex-col h-full bg-[hsl(var(--background))] relative">
         {/* Header - Enterprise Grade */}
         <SleekCapacityHeader
           summary={{

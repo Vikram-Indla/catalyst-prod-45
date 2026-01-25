@@ -1,9 +1,9 @@
 /**
- * Capacity Summary Cards - 5 metric cards
- * Following specification exactly with Golden Hour colors
+ * Capacity Summary Cards - V8 Design System
+ * 5 metric cards with CATALYST V8 tokens
  */
 
-import { Users, AlertTriangle, CheckCircle, CircleDot, Square } from 'lucide-react';
+import { Users, AlertTriangle, CheckCircle, CircleDot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CapacitySummaryCardsProps {
@@ -21,41 +21,42 @@ export function CapacitySummaryCards({
   overallocated,
   humanResources
 }: CapacitySummaryCardsProps) {
+  // V8 Color System - Uses CSS variables defined in capacity-module.css
   const cards = [
     { 
       label: 'Team Members', 
       value: totalMembers, 
       icon: Users, 
-      iconBg: 'bg-[#c8ccd0]/10', 
-      iconColor: 'text-[#c8ccd0]', // Grey
+      colorClass: 'text-[var(--ct-text-secondary)]',
+      bgClass: 'bg-[var(--ct-text-muted)]/10',
     },
     { 
       label: 'Underallocated', 
       value: underallocated, 
       icon: AlertTriangle, 
-      iconBg: 'bg-[#f59e0b]/10', 
-      iconColor: 'text-[#f59e0b]', // Amber
+      colorClass: 'text-[var(--ct-warning)]',
+      bgClass: 'bg-[var(--ct-warning-light)]',
     },
     { 
       label: 'Fully Allocated', 
       value: fullyAllocated, 
       icon: CheckCircle, 
-      iconBg: 'bg-[var(--status-success)]/10', 
-      iconColor: 'text-[var(--status-success)]', // Olive
+      colorClass: 'text-[var(--ct-teal)]',
+      bgClass: 'bg-[var(--ct-teal-light)]',
     },
     { 
       label: 'Overallocated', 
       value: overallocated, 
       icon: CircleDot, 
-      iconBg: 'bg-[var(--status-info)]/10', 
-      iconColor: 'text-[var(--status-info)]', // Gold
+      colorClass: 'text-[var(--ct-danger)]',
+      bgClass: 'bg-[var(--ct-danger-light)]',
     },
     { 
       label: 'Human Resources', 
       value: humanResources, 
       icon: Users, 
-      iconBg: 'bg-[#3b82f6]/10', 
-      iconColor: 'text-[#3b82f6]', // Blue
+      colorClass: 'text-[var(--ct-primary)]',
+      bgClass: 'bg-[var(--ct-primary-light)]',
     },
   ];
 
@@ -64,17 +65,21 @@ export function CapacitySummaryCards({
       {cards.map((card) => (
         <div 
           key={card.label}
-          className="bg-card dark:bg-[var(--surface-0)] border border-border dark:border-[var(--border-subtle)] rounded-md p-3 flex items-center gap-2"
+          className={cn(
+            "ct-stat-card flex items-center gap-3",
+            "bg-[var(--ct-surface)] border border-[var(--ct-border)] rounded-[var(--ct-radius-lg)] p-4",
+            "hover:shadow-[var(--ct-shadow-md)] transition-all duration-200"
+          )}
         >
           <div className={cn(
-            "w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0",
-            card.iconBg
+            "w-10 h-10 rounded-[var(--ct-radius-md)] flex items-center justify-center flex-shrink-0",
+            card.bgClass
           )}>
-            <card.icon className={cn("h-4 w-4", card.iconColor)} />
+            <card.icon className={cn("h-5 w-5", card.colorClass)} />
           </div>
           <div className="flex-1 min-w-0">
-            <span className="text-lg font-semibold text-foreground dark:text-[var(--text-primary)]">{card.value}</span>
-            <p className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">{card.label}</p>
+            <span className={cn("text-xl font-bold", card.colorClass)}>{card.value}</span>
+            <p className="text-xs text-[var(--ct-text-muted)] font-medium uppercase tracking-wide">{card.label}</p>
           </div>
         </div>
       ))}
