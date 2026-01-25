@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from 'react';
-import { Users } from 'lucide-react';
+import { Users, AlertTriangle } from 'lucide-react';
 import { UserProfile } from '@/hooks/useUsers';
 
 interface DepartmentRunRatesProps {
@@ -26,10 +26,13 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick 
         return deptMatch && typeMatch;
       });
       
+      const missingCtcCount = variableUsers.filter(u => !u.ctc || u.ctc === 0).length;
+      
       return {
         department: dept,
         monthlyRunRate: variableUsers.reduce((sum, u) => sum + (u.ctc || 0), 0),
-        headcount: variableUsers.length
+        headcount: variableUsers.length,
+        missingCtcCount
       };
     });
   }, [users]);
@@ -55,7 +58,7 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick 
       </div>
       
       <div className="ct-runrate-grid">
-        {runRates.map(({ department, monthlyRunRate, headcount }) => (
+        {runRates.map(({ department, monthlyRunRate, headcount, missingCtcCount }) => (
           <div 
             key={department} 
             className={`ct-runrate-card ${activeDepartment === department ? 'active' : ''}`}
@@ -73,8 +76,17 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick 
               <Users size={14} />
               {headcount} Variable {headcount === 1 ? 'resource' : 'resources'}
             </div>
-            <div className="ct-runrate-yearly">
-              Yearly: ریال {formatCurrency(monthlyRunRate * 12)}
+            <div className="ct-runrate-footer">
+              <div className="ct-runrate-yearly">
+                <span className="ct-runrate-yearly-label">Yearly</span>
+                <span className="ct-runrate-yearly-value">ریال {formatCurrency(monthlyRunRate * 12)}</span>
+              </div>
+              {missingCtcCount > 0 && (
+                <div className="ct-runrate-missing">
+                  <AlertTriangle size={12} />
+                  {missingCtcCount} missing CTC
+                </div>
+              )}
             </div>
           </div>
         ))}
