@@ -60,6 +60,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     contract_start_date: '',
     contract_end_date: '',
     resource_type: '',
+    ctc: '',
   });
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
   const [selectedJobRole, setSelectedJobRole] = useState<string>('');
@@ -255,6 +256,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
           ? `${currentYear}-12-31` 
           : (user.contract_end_date ? format(new Date(user.contract_end_date), 'yyyy-MM-dd') : ''),
         resource_type: user.resource_type || '',
+        ctc: user.ctc !== null && user.ctc !== undefined ? String(user.ctc) : '',
       };
       
       const newRoleIds = user.roles.map(r => r.role_id);
@@ -339,6 +341,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             contract_end_date: formData.contract_end_date || null,
             department_id: selectedDepartment?.id || null,
             resource_type: formData.resource_type || null,
+            ctc: formData.ctc ? parseFloat(formData.ctc) : null,
             updated_at: new Date().toISOString(),
           })
           .eq('id', user.id)
@@ -376,6 +379,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                 contract_start_date: formData.contract_start_date || null,
                 contract_end_date: formData.contract_end_date || null,
                 resource_type: formData.resource_type || null,
+                ctc: formData.ctc ? parseFloat(formData.ctc) : null,
                 updated_at: new Date().toISOString(),
               })
               .eq('id', inventoryRecord.id)
@@ -402,6 +406,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             resource_type: formData.resource_type || null,
+            ctc: formData.ctc ? parseFloat(formData.ctc) : null,
             is_active: true,
           });
 
@@ -446,6 +451,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             resource_type: formData.resource_type || null,
+            ctc: formData.ctc ? parseFloat(formData.ctc) : null,
             updated_at: new Date().toISOString(),
           })
           .eq('id', user.id)
@@ -847,6 +853,21 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                     type="date"
                     value={formData.contract_end_date}
                     onChange={(e) => setFormData(prev => ({ ...prev, contract_end_date: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="ctc">CTC (Cost to Company)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">ریال</span>
+                  <Input
+                    id="ctc"
+                    type="number"
+                    placeholder="Enter CTC amount"
+                    value={formData.ctc}
+                    onChange={(e) => setFormData(prev => ({ ...prev, ctc: e.target.value }))}
+                    className="pl-12"
                   />
                 </div>
               </div>
