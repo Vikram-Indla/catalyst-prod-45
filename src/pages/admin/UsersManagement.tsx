@@ -471,7 +471,7 @@ export default function UsersManagement() {
                 value={typeFilter}
                 options={['Variable', 'Permanent', 'Fixed', 'Freelance']}
                 onChange={(v) => handleFilterChange(setTypeFilter, v.toLowerCase() || 'all')}
-                allLabel="All Types"
+                allLabel="Resource Type"
               />
             </div>
             <button className="ct-btn" onClick={clearFilters}>
