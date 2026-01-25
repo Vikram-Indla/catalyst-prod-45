@@ -25,12 +25,14 @@ interface BudgetGovernanceViewProps {
 const PERIODS: { value: BudgetPeriod; label: string }[] = [
   { value: 'Q1', label: 'Q1' },
   { value: 'H1', label: 'H1' },
-  { value: 'full_year', label: 'Full Year' },
+  { value: 'Full', label: 'Full Year' },
 ];
 
 export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalClose }: BudgetGovernanceViewProps = {}) {
   const [period, setPeriod] = useState<BudgetPeriod>('H1');
-  const { data, isLoading, error, refetch } = useBudgetData(period);
+  const budgetResult = useBudgetData(period);
+  const { data, isLoading, error } = budgetResult;
+  const refetch = budgetResult.refetch;
   const [currentDept, setCurrentDept] = useState('all');
   const [internalOpen, setInternalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -155,11 +157,11 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
               </button>
             ))}
           </div>
-          <div className="text-sm text-[var(--budget-text-muted)]">
-            Showing: <strong className="text-[var(--budget-text-primary)]">
-              {period === 'Q1' ? 'Jan–Mar 2026' : period === 'H1' ? 'Jan–Jun 2026' : 'Full Year 2026'}
-            </strong>
-          </div>
+            <div className="text-sm text-[var(--budget-text-muted)]">
+              Showing: <strong className="text-[var(--budget-text-primary)]">
+                {period === 'Q1' ? 'Jan–Mar 2026' : period === 'H1' ? 'Jan–Jun 2026' : 'Full Year 2026'}
+              </strong>
+            </div>
         </div>
 
         {isLoading ? (
