@@ -31,7 +31,7 @@ interface BudgetExecutiveModalProps {
 const PERIOD_LABELS: Record<BudgetPeriod, string> = {
   'Q1': 'Q1 2026',
   'H1': 'H1 2026',
-  'full_year': 'Full Year 2026'
+  'Full': 'Full Year 2026'
 };
 
 const EXEC_CONTENT_ID = 'budget-executive-content';

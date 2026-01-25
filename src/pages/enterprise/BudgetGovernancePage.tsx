@@ -8,7 +8,7 @@ import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
 import { Info, Download, RefreshCw, BarChart3, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useBudgetData, formatCurrency, formatFull, calculateResourceBudget } from '@/hooks/budget/useBudgetData';
+import { useBudgetData, formatCurrency, formatFull } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment, BudgetResource, DepartmentBudget } from '@/hooks/budget/useBudgetData';
 import '@/styles/budget-module.css';
 
@@ -30,7 +30,7 @@ const DEPARTMENTS = [
 ];
 
 export default function BudgetGovernancePage() {
-  const { data, isLoading, error, refetch } = useBudgetData();
+  const { data, isLoading, error, refetch } = useBudgetData('H1');
   const [currentDept, setCurrentDept] = useState('all');
   const [execModalOpen, setExecModalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
