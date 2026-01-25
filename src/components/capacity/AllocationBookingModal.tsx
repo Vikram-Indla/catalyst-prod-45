@@ -76,17 +76,75 @@ export function AllocationBookingModal({
   const timelineEnd = addMonths(timelineStart, 6);
   const months = eachMonthOfInterval({ start: timelineStart, end: addMonths(timelineStart, 5) });
 
+  // Merge consecutive monthly records with same assignment_id into single allocations
+  function mergeConsecutiveAllocations(allocs: typeof existingAllocations) {
+    if (allocs.length === 0) return [];
+    
+    // Sort by assignment_id then by start_date
+    const sorted = [...allocs].sort((a, b) => {
+      if (a.assignment_id !== b.assignment_id) {
+        return (a.assignment_id || '').localeCompare(b.assignment_id || '');
+      }
+      return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+    });
+    
+    const merged: AllocationBookingInput[] = [];
+    let current: AllocationBookingInput | null = null;
+    
+    for (const alloc of sorted) {
+      if (!current) {
+        current = {
+          id: alloc.id,
+          assignment_id: alloc.assignment_id || '',
+          assignment_name: alloc.assignment_name || '',
+          allocation_percent: alloc.allocation_percent,
+          start_date: alloc.start_date,
+          end_date: alloc.end_date || '',
+        };
+        continue;
+      }
+      
+      // Check if this allocation should be merged with current
+      // Same assignment_id and same allocation_percent and dates are consecutive/overlapping
+      const currentEnd = current.end_date ? new Date(current.end_date) : null;
+      const allocStart = new Date(alloc.start_date);
+      
+      const isSameAssignment = current.assignment_id === alloc.assignment_id;
+      const isSamePercent = current.allocation_percent === alloc.allocation_percent;
+      // Consider consecutive if gap is <= 1 day (handles month boundaries)
+      const isConsecutive = currentEnd && (allocStart.getTime() - currentEnd.getTime()) <= 24 * 60 * 60 * 1000;
+      
+      if (isSameAssignment && isSamePercent && isConsecutive) {
+        // Extend current allocation's end date
+        current.end_date = alloc.end_date || current.end_date;
+      } else {
+        // Push current and start new
+        merged.push(current);
+        current = {
+          id: alloc.id,
+          assignment_id: alloc.assignment_id || '',
+          assignment_name: alloc.assignment_name || '',
+          allocation_percent: alloc.allocation_percent,
+          start_date: alloc.start_date,
+          end_date: alloc.end_date || '',
+        };
+      }
+    }
+    
+    // Don't forget the last one
+    if (current) {
+      merged.push(current);
+    }
+    
+    return merged;
+  }
+
   // Initialize from existing allocations and department
   useEffect(() => {
     if (resource && existingAllocations.length > 0) {
-      setAllocations(existingAllocations.map(a => ({
-        id: a.id,
-        assignment_id: a.assignment_id || '',
-        assignment_name: a.assignment_name || '',
-        allocation_percent: a.allocation_percent,
-        start_date: a.start_date,
-        end_date: a.end_date || '',
-      })));
+      // Merge consecutive monthly records into single allocations
+      const mergedAllocations = mergeConsecutiveAllocations(existingAllocations);
+      setAllocations(mergedAllocations);
     } else {
       setAllocations([]);
     }
