@@ -68,7 +68,7 @@ export function BudgetSummaryCards({
         <div 
           className={cn(
             "summary-card insourced cursor-pointer transition-all",
-            activePanel === 'insourced' && "ring-2 ring-[var(--budget-insourced)]"
+            activePanel === 'insourced' && "active ring-2 ring-[var(--budget-insourced)]"
           )}
           onClick={() => togglePanel('insourced')}
         >
@@ -91,7 +91,7 @@ export function BudgetSummaryCards({
         <div 
           className={cn(
             "summary-card cosourced cursor-pointer transition-all",
-            activePanel === 'cosourced' && "ring-2 ring-[var(--budget-cosourced)]"
+            activePanel === 'cosourced' && "active ring-2 ring-[var(--budget-cosourced)]"
           )}
           onClick={() => togglePanel('cosourced')}
         >
@@ -118,7 +118,7 @@ export function BudgetSummaryCards({
         <div 
           className={cn(
             "summary-card outsourced cursor-pointer transition-all",
-            activePanel === 'outsourced' && "ring-2 ring-[var(--budget-outsourced)]"
+            activePanel === 'outsourced' && "active ring-2 ring-[var(--budget-outsourced)]"
           )}
           onClick={() => togglePanel('outsourced')}
         >
@@ -148,7 +148,7 @@ export function BudgetSummaryCards({
         <div 
           className={cn(
             "summary-card licenses cursor-pointer transition-all",
-            activePanel === 'licenses' && "ring-2 ring-[var(--budget-licenses)]"
+            activePanel === 'licenses' && "active ring-2 ring-[var(--budget-warning)]"
           )}
           onClick={() => togglePanel('licenses')}
         >
@@ -157,7 +157,7 @@ export function BudgetSummaryCards({
             <div className="flex items-center gap-2">
               <span className="summary-badge licenses">{licenseCount} Active</span>
               {activePanel === 'licenses' ? 
-                <ChevronUp className="w-4 h-4 text-[var(--budget-licenses)]" /> : 
+                <ChevronUp className="w-4 h-4 text-[var(--budget-warning)]" /> : 
                 <ChevronDown className="w-4 h-4 text-[var(--budget-text-muted)]" />
               }
             </div>
