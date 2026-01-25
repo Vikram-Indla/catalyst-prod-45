@@ -62,6 +62,7 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
     queryKey: ['cycle-test-cases', cycleId, filters],
     queryFn: async (): Promise<CycleTestCase[]> => {
       // Build query for cycle scope with test case details
+      // Now includes priority and due_date from tm_cycle_scope
       let scopeQuery = supabase
         .from('tm_cycle_scope')
         .select(`
@@ -69,6 +70,8 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
           test_case_id,
           current_status,
           assigned_to,
+          priority,
+          due_date,
           sort_order,
           test_case:tm_test_cases(
             id,
@@ -138,6 +141,11 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
         const run = runResults[scope.id];
         const assigneeProfile = scope.assignee;
         
+        // Use cycle-scope priority if set, otherwise fall back to test case priority
+        const scopePriority = scope.priority;
+        const tcPriority = testCase?.priority?.name;
+        const effectivePriority = scopePriority || tcPriority;
+        
         return {
           id: scope.id,
           testCaseId: scope.test_case_id,
@@ -145,7 +153,7 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
           title: testCase?.title || 'Unknown Test Case',
           description: testCase?.description || null,
           status: mapExecutionStatus(scope.current_status),
-          priority: mapPriority(testCase?.priority?.name),
+          priority: mapPriority(effectivePriority),
           // Canonical assignee fields (matching TMCycleScope/TMDefect pattern)
           assigned_to: scope.assigned_to,
           assignee: assigneeProfile ? {
@@ -153,7 +161,7 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
             full_name: assigneeProfile.full_name || 'Unknown',
             avatar_url: assigneeProfile.avatar_url,
           } : null,
-          dueDate: null, // No due_date column
+          dueDate: scope.due_date || null,  // Now reading from tm_cycle_scope.due_date
           executedAt: run?.completed_at || null,
           executedBy: run?.executed_by || null,
           executionTime: run?.duration_seconds ? Math.ceil(run.duration_seconds / 60) : null,

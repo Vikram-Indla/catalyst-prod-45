@@ -21691,9 +21691,12 @@ export type Database = {
             | Database["public"]["Enums"]["tm_execution_status"]
             | null
           cycle_id: string
+          due_date: string | null
           id: string
+          priority: string | null
           sort_order: number | null
           test_case_id: string
+          updated_at: string | null
         }
         Insert: {
           added_at?: string | null
@@ -21702,9 +21705,12 @@ export type Database = {
             | Database["public"]["Enums"]["tm_execution_status"]
             | null
           cycle_id: string
+          due_date?: string | null
           id?: string
+          priority?: string | null
           sort_order?: number | null
           test_case_id: string
+          updated_at?: string | null
         }
         Update: {
           added_at?: string | null
@@ -21713,9 +21719,12 @@ export type Database = {
             | Database["public"]["Enums"]["tm_execution_status"]
             | null
           cycle_id?: string
+          due_date?: string | null
           id?: string
+          priority?: string | null
           sort_order?: number | null
           test_case_id?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
