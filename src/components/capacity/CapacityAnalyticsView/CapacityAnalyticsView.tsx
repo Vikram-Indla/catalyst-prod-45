@@ -46,11 +46,11 @@ export function CapacityAnalyticsView({
   // Calculate run rates by department
   const runRates = useMemo(() => {
     return DEPARTMENT_ORDER.map(dept => {
-      // Filter Variable resources (including legacy 'Core' type)
+      // Filter Variable/Freelance resources (insourced)
       const variableResources = runRateResources.filter(r => {
         const deptMatch = r.department_name === dept;
         const typeMatch = r.resource_type?.toLowerCase() === 'variable' || 
-                         r.resource_type?.toLowerCase() === 'core';
+                         r.resource_type?.toLowerCase() === 'freelance';
         return deptMatch && typeMatch;
       });
       
