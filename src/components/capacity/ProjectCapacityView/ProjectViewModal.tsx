@@ -14,9 +14,10 @@ interface ProjectViewModalProps {
   onClose: () => void;
   utilization: ProjectUtilization | null;
   periodRange: PeriodRange;
+  onResourceClick?: (resourceId: string) => void;
 }
 
-export function ProjectViewModal({ open, onClose, utilization, periodRange }: ProjectViewModalProps) {
+export function ProjectViewModal({ open, onClose, utilization, periodRange, onResourceClick }: ProjectViewModalProps) {
   if (!utilization) return null;
 
   const { project, totalCommitted, totalForecast, totalFTE, requiredFTE, resources, deptBreakdown, status } = utilization;
@@ -138,9 +139,10 @@ export function ProjectViewModal({ open, onClose, utilization, periodRange }: Pr
                   .toUpperCase();
 
                 return (
-                  <div
+                  <button
                     key={resource.resource_id}
-                    className="flex items-center gap-3 p-2.5 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex items-center gap-3 p-2.5 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors w-full text-left cursor-pointer"
+                    onClick={() => onResourceClick?.(resource.resource_id)}
                   >
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary">
                       {initials}
@@ -165,7 +167,7 @@ export function ProjectViewModal({ open, onClose, utilization, periodRange }: Pr
                         </span>
                       )}
                     </div>
-                  </div>
+                  </button>
                 );
               })}
               

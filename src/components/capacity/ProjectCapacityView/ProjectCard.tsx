@@ -12,9 +12,10 @@ import { getStaffingStatusConfig, formatFTE, getProjectColor } from './utils';
 interface ProjectCardProps {
   utilization: ProjectUtilization;
   onViewDetails: () => void;
+  onResourceClick?: (resourceId: string) => void;
 }
 
-export function ProjectCard({ utilization, onViewDetails }: ProjectCardProps) {
+export function ProjectCard({ utilization, onViewDetails, onResourceClick }: ProjectCardProps) {
   const { project, totalCommitted, totalForecast, totalFTE, requiredFTE, resources, status } = utilization;
   const statusConfig = getStaffingStatusConfig(status);
   const projectColor = getProjectColor(project.name, project.color);
@@ -122,13 +123,17 @@ export function ProjectCard({ utilization, onViewDetails }: ProjectCardProps) {
                 .toUpperCase();
               
               return (
-                <div
+                <button
                   key={resource.resource_id}
-                  className="w-6 h-6 rounded-full bg-primary/10 border-2 border-card flex items-center justify-center text-[9px] font-semibold text-primary"
+                  className="w-6 h-6 rounded-full bg-primary/10 border-2 border-card flex items-center justify-center text-[9px] font-semibold text-primary hover:bg-primary/20 hover:scale-110 transition-all cursor-pointer"
                   title={resource.resource_name}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onResourceClick?.(resource.resource_id);
+                  }}
                 >
                   {initials}
-                </div>
+                </button>
               );
             })}
             {resources.length > 5 && (
