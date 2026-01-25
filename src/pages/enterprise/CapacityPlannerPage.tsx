@@ -950,13 +950,37 @@ export default function CapacityPlannerPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
+                  className="flex-1 min-h-0 flex flex-col"
                 >
-                  <CapacityAnalyticsView 
-                    departmentFilter={departmentFilter}
-                    onDepartmentChange={setDepartmentFilter}
-                    onResourceClick={(id) => handleOpenAllocationModal(id)}
-                    searchQuery={searchQuery}
-                    hideWidgets={true}
+                  <EnhancedTimelineView 
+                    resources={allGanttResources.map(r => ({
+                      id: r.id,
+                      name: r.name,
+                      role: r.role,
+                      department: r.department,
+                      allocation: r.allocation,
+                      contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+                      assignmentName: r.assignmentName,
+                    }))} 
+                    allocations={allocations}
+                    year={2026}
+                    onEditResource={(id) => handleOpenAllocationModal(id)}
+                    groupBy={groupBy}
+                    groupedByAssignment={Object.fromEntries(
+                      Object.entries(groupedByAssignment).map(([key, resources]) => [
+                        key,
+                        resources.map(r => ({
+                          id: r.id,
+                          name: r.name,
+                          role: r.role,
+                          department: r.department,
+                          allocation: r.allocation,
+                          contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+                          assignmentName: r.assignmentName,
+                        }))
+                      ])
+                    )}
+                    className="flex-1"
                   />
                 </motion.div>
               )}
@@ -1030,12 +1054,7 @@ export default function CapacityPlannerPage() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <CapacityAnalyticsView 
-                departmentFilter={departmentFilter}
-                onDepartmentChange={setDepartmentFilter}
-                searchQuery={searchQuery}
-                onResourceClick={(id) => setResource360Id(id)}
-              />
+              <ContractHorizonView />
             </motion.div>
           )}
 
