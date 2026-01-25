@@ -582,20 +582,22 @@ export function AllocationBookingModal({
                   </div>
                 )}
                 
-                {/* Allocation Bars */}
+                {/* Allocation Bars - Clickable to edit */}
                 <div className="absolute inset-0 pt-2 space-y-2">
                   {allocationBars.map((bar, i) => {
                     if (!bar) return null;
                     return (
                       <div
                         key={i}
-                        className="absolute h-7 rounded flex items-center px-2 text-xs font-medium text-white overflow-hidden"
+                        className="absolute h-7 rounded flex items-center px-2 text-xs font-medium text-white overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:-translate-y-0.5 hover:ring-2 hover:ring-white/50"
                         style={{
                           left: `${bar.left}%`,
                           width: `${bar.width}%`,
                           top: i * 32,
                           backgroundColor: bar.color
                         }}
+                        onClick={() => setEditingIndex(bar.idx)}
+                        title="Click to edit this allocation"
                       >
                         <span className="truncate">
                           {bar.alloc.assignment_name} ({bar.alloc.allocation_percent}%)
