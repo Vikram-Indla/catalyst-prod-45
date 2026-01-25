@@ -192,7 +192,8 @@ export function useResourceAllocations() {
       resourceId: string;
       allocations: AllocationBookingInput[];
     }) => {
-      const inventoryId = await ensureInventoryId(resourceId);
+     console.log('[saveAllocations] Starting save with allocations:', newAllocations);
+     const inventoryId = await ensureInventoryId(resourceId);
 
       // Get existing allocations for this resource to determine what to delete
       const { data: existingAllocations, error: fetchError } = await supabase
@@ -210,12 +211,15 @@ export function useResourceAllocations() {
       for (const alloc of newAllocations) {
         if (alloc.id) retainedIds.add(alloc.id);
         if (alloc.originalIds) {
+         console.log(`[saveAllocations] Found originalIds for ${alloc.assignment_name}:`, alloc.originalIds);
           alloc.originalIds.forEach(id => retainedIds.add(id));
         }
       }
+     console.log('[saveAllocations] Retained IDs:', Array.from(retainedIds));
 
       // Find allocations that were deleted (exist in DB but not retained)
       const idsToDelete = [...existingIds].filter(id => !retainedIds.has(id));
+     console.log('[saveAllocations] IDs to delete:', idsToDelete);
 
       // Delete removed allocations
       if (idsToDelete.length > 0) {
