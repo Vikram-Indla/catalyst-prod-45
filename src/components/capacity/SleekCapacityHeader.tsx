@@ -249,22 +249,28 @@ export function SleekCapacityHeader({
 
   const activeTabIndex = viewTabs.findIndex(t => t.isActive);
 
+  // Get current tab name for breadcrumb
+  const getActiveTabName = () => {
+    if (primaryView === 'budget') return 'Budget';
+    if (primaryView === 'contracts') return 'Contracts';
+    if (primaryView === 'projects') return 'Projects';
+    if (resourceView === 'heatmap') return 'Utilization';
+    if (resourceView === 'timeline') return 'Gantt';
+    return 'Resources';
+  };
+
   return (
     <div className="bg-card border-b border-border">
-      {/* ROW 1: Title + Live Badge (inline) | Actions (NO REFRESH/EXPORT for Budget) */}
+      {/* ROW 1: Title + Live Badge (inline) | Primary CTA only */}
       <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
         {/* Left: Title + Live Badge Inline */}
         <div className="flex items-center gap-4">
           <div className="flex flex-col gap-0.5">
-            {/* Breadcrumb */}
+            {/* Breadcrumb - Shows active tab */}
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-medium text-slate-500">Enterprise / Capacity</span>
-              {primaryView === 'budget' && (
-                <>
-                  <span className="text-xs text-slate-400">•</span>
-                  <span className="text-xs font-medium text-slate-500">Budget</span>
-                </>
-              )}
+              <span className="text-xs text-slate-400">•</span>
+              <span className="text-xs font-medium text-slate-500">{getActiveTabName()}</span>
             </div>
             
             {/* Title */}
@@ -283,49 +289,8 @@ export function SleekCapacityHeader({
           </div>
         </div>
 
-        {/* Right: Actions - Simplified for Budget view */}
+        {/* Right: Primary CTA only (Budget has Executive Summary, others have none) */}
         <div className="flex items-center gap-3">
-          {/* Export/Refresh - Only for non-budget views */}
-          {primaryView !== 'budget' && (
-            <>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={onExport}
-                className="h-9 px-4 text-sm gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50"
-              >
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={onRefresh}
-                disabled={isRefreshing}
-                className="h-9 px-4 text-sm gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50"
-              >
-                <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
-                {isRefreshing ? 'Refreshing...' : 'Refresh'}
-              </Button>
-              <Button 
-                onClick={onPresentationMode}
-                size="sm"
-                className="h-9 px-5 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm font-semibold"
-              >
-                <Presentation className="h-4 w-4" />
-                Present
-              </Button>
-              <Button
-                onClick={onAddResource}
-                size="sm"
-                className="h-9 px-4 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
-              >
-                <Plus className="h-4 w-4" />
-                Book Resource
-              </Button>
-            </>
-          )}
-          
           {/* Executive Summary - Budget view only, PRIMARY CTA */}
           {primaryView === 'budget' && onExecutiveSummary && (
             <Button 
@@ -340,7 +305,7 @@ export function SleekCapacityHeader({
         </div>
       </div>
 
-      {/* ROW 2: Search + Hero Tabs - DYNAMITE V2 (HIGH VISIBILITY) */}
+      {/* ROW 2: Search + Hero Tabs (No Q1/H1/Full toggle) */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
         {/* Search */}
         <div className="relative">
@@ -353,7 +318,7 @@ export function SleekCapacityHeader({
           />
         </div>
 
-        {/* Hero Tab Strip - DYNAMITE V2 HIGH VISIBILITY */}
+        {/* Hero Tab Strip - Right Aligned */}
         <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
           {viewTabs.map((tab) => {
             const Icon = tab.icon;
@@ -374,23 +339,6 @@ export function SleekCapacityHeader({
             );
           })}
         </nav>
-
-        {/* Period Toggle - Hidden in header, shown in Budget view body */}
-        {primaryView !== 'budget' && (
-          <div className="inline-flex items-center bg-slate-100 rounded-xl p-1.5 border border-slate-200">
-            {['Q1', 'H1', 'Full'].map((period) => (
-              <button
-                key={period}
-                className={cn(
-                  'px-4 py-2 text-sm font-semibold rounded-lg transition-all',
-                  'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                )}
-              >
-                {period}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* ROW 3: Stats + Filters (resources/allocations/gantt) - hidden for contracts, projects, budget, and analytics view */}
