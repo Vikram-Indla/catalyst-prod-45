@@ -3,7 +3,7 @@
  * Displays monthly run rate (sum of CTC) for Variable resources by department
  */
 
-import { useMemo } from 'react';
+import { useMemo, ReactNode } from 'react';
 import { Users, AlertTriangle } from 'lucide-react';
 import { UserProfile } from '@/hooks/useUsers';
 
@@ -11,11 +11,12 @@ interface DepartmentRunRatesProps {
   users: UserProfile[];
   activeDepartment?: string;
   onDepartmentClick?: (department: string) => void;
+  licenseWidget?: ReactNode;
 }
 
 const DEPARTMENTS = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
 
-export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick }: DepartmentRunRatesProps) {
+export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick, licenseWidget }: DepartmentRunRatesProps) {
   const runRates = useMemo(() => {
     return DEPARTMENTS.map(dept => {
       // Filter Variable resources (including legacy 'Core' type)
@@ -90,6 +91,7 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick 
             </div>
           </div>
         ))}
+        {licenseWidget}
       </div>
     </section>
   );

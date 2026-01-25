@@ -1659,32 +1659,18 @@
 }
 
 /* ================================================================
-   RUN RATE ROW LAYOUT
-   ================================================================ */
-.ct-runrate-row {
-  display: flex;
-  gap: var(--ct-space-5, 20px);
-  margin-bottom: var(--ct-space-7, 32px);
-}
-
-.ct-runrate-row .ct-runrate-section {
-  flex: 1;
-  margin-bottom: 0;
-}
-
-/* ================================================================
-   LICENSES RUN RATE WIDGET
+   LICENSES RUN RATE WIDGET (Inline with grid cards)
    ================================================================ */
 .ct-licenses-widget {
   background: var(--ct-bg-surface, #ffffff);
   border: 1px solid var(--ct-border, #e2e8f0);
   border-radius: var(--ct-radius-xl, 12px);
   padding: var(--ct-space-5, 20px);
-  min-width: 260px;
-  max-width: 280px;
   position: relative;
   overflow: hidden;
   transition: var(--ct-transition-normal, 0.2s ease);
+  display: flex;
+  flex-direction: column;
 }
 
 .ct-licenses-widget::before {
@@ -1712,18 +1698,23 @@
   display: flex;
   align-items: center;
   gap: var(--ct-space-3, 12px);
-  margin-bottom: var(--ct-space-3, 12px);
+  margin-bottom: var(--ct-space-2, 8px);
 }
 
 .ct-licenses-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(13, 148, 136, 0.1);
   border-radius: var(--ct-radius-md, 6px);
   color: var(--ct-success, #0d9488);
+}
+
+.ct-licenses-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .ct-licenses-title {
@@ -1751,7 +1742,7 @@
   color: var(--ct-text-primary, #0f172a);
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  margin-bottom: var(--ct-space-3, 12px);
+  margin-bottom: var(--ct-space-2, 8px);
   display: flex;
   align-items: baseline;
   gap: 4px;
@@ -1770,6 +1761,7 @@
 }
 
 .ct-licenses-footer {
+  margin-top: auto;
   padding-top: var(--ct-space-3, 12px);
   border-top: 1px solid var(--ct-border, #e2e8f0);
 }
@@ -1805,14 +1797,4 @@
   height: 100px;
   color: var(--ct-text-muted, #64748b);
   font-size: var(--ct-text-sm, 12px);
-}
-
-@media (max-width: 1280px) {
-  .ct-runrate-row {
-    flex-direction: column;
-  }
-  
-  .ct-licenses-widget {
-    max-width: none;
-  }
 }

@@ -420,28 +420,23 @@ export default function UsersManagement() {
           />
         </div>
 
-        {/* Run Rate Widgets Row */}
-        <div className="ct-runrate-row">
-          {/* Department Run Rates */}
-          <DepartmentRunRates 
-            users={users} 
-            activeDepartment={typeFilter === 'variable' ? deptFilter : undefined}
-            onDepartmentClick={(dept) => {
-              // Toggle: if already selected, clear both filters
-              if (deptFilter === dept && typeFilter === 'variable') {
-                handleFilterChange(setDeptFilter, '');
-                handleFilterChange(setTypeFilter, 'all');
-              } else {
-                // Set department + Variable type filter
-                handleFilterChange(setDeptFilter, dept);
-                handleFilterChange(setTypeFilter, 'variable');
-              }
-            }}
-          />
-          
-          {/* Licenses Widget */}
-          <LicensesRunRateWidget />
-        </div>
+        {/* Run Rate Widgets */}
+        <DepartmentRunRates 
+          users={users} 
+          activeDepartment={typeFilter === 'variable' ? deptFilter : undefined}
+          onDepartmentClick={(dept) => {
+            // Toggle: if already selected, clear both filters
+            if (deptFilter === dept && typeFilter === 'variable') {
+              handleFilterChange(setDeptFilter, '');
+              handleFilterChange(setTypeFilter, 'all');
+            } else {
+              // Set department + Variable type filter
+              handleFilterChange(setDeptFilter, dept);
+              handleFilterChange(setTypeFilter, 'variable');
+            }
+          }}
+          licenseWidget={<LicensesRunRateWidget />}
+        />
 
         {/* Table Container */}
         <div className="ct-table-container">
