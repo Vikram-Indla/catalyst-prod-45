@@ -83,15 +83,13 @@ export function BudgetGovernanceView() {
       <div className="px-6 lg:px-8 py-4">
         {/* Action Toolbar - Executive Summary only */}
         <div className="flex items-center justify-end mb-4">
-          <Button 
-            variant="outline" 
-            size="sm"
+          <button 
             onClick={() => setExecModalOpen(true)}
-            className="gap-1.5"
+            className="exec-summary-btn"
           >
-            <BarChart3 className="w-4 h-4" />
+            <BarChart3 className="w-[18px] h-[18px]" />
             Executive Summary
-          </Button>
+          </button>
         </div>
 
         {isLoading ? (
