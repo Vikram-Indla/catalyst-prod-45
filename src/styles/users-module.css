@@ -1455,3 +1455,143 @@
 .ct-stat-dot.permanent {
   background: #0d9488 !important;
 }
+
+/* ================================================================
+   DEPARTMENT RUN RATE WIDGETS — V8 Design System
+   ================================================================ */
+
+/* Section Container */
+.ct-runrate-section {
+  margin-bottom: var(--ct-space-7, 32px);
+}
+
+.ct-runrate-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ct-space-4, 16px);
+}
+
+.ct-runrate-title {
+  font-size: var(--ct-text-xs, 11px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ct-text-muted, #64748b);
+}
+
+.ct-runrate-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--ct-primary-light, rgba(37, 99, 235, 0.08));
+  border-radius: var(--ct-radius-md, 6px);
+  font-size: var(--ct-text-xs, 11px);
+  font-weight: 600;
+  color: var(--ct-primary, #2563eb);
+}
+
+/* Widget Grid */
+.ct-runrate-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--ct-space-4, 16px);
+}
+
+/* Individual Widget Card */
+.ct-runrate-card {
+  background: var(--ct-bg-surface, #ffffff);
+  border: 1px solid var(--ct-border, #e2e8f0);
+  border-radius: var(--ct-radius-xl, 12px);
+  padding: var(--ct-space-5, 20px);
+  transition: var(--ct-transition-normal, 0.2s ease);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Left accent bar */
+.ct-runrate-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--ct-primary, #2563eb);
+  opacity: 0.5;
+}
+
+.ct-runrate-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ct-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+  border-color: var(--ct-primary, #2563eb);
+}
+
+.ct-runrate-card:hover::before {
+  opacity: 1;
+}
+
+/* Department Label */
+.ct-runrate-dept {
+  font-size: var(--ct-text-xs, 11px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ct-text-muted, #64748b);
+  margin-bottom: var(--ct-space-2, 8px);
+}
+
+/* Run Rate Value */
+.ct-runrate-value {
+  font-size: var(--ct-text-3xl, 24px);
+  font-weight: 700;
+  color: var(--ct-text-primary, #0f172a);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--ct-space-2, 8px);
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.ct-runrate-currency {
+  font-size: var(--ct-text-sm, 12px);
+  font-weight: 600;
+  color: var(--ct-text-tertiary, #475569);
+}
+
+/* Headcount */
+.ct-runrate-headcount {
+  font-size: var(--ct-text-sm, 12px);
+  font-weight: 500;
+  color: var(--ct-text-tertiary, #475569);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ct-runrate-headcount svg {
+  width: 14px;
+  height: 14px;
+  color: var(--ct-text-muted, #64748b);
+}
+
+/* Responsive */
+@media (max-width: 1280px) {
+  .ct-runrate-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .ct-runrate-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .ct-runrate-grid {
+    grid-template-columns: 1fr;
+  }
+}
