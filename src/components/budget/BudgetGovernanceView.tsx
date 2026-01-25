@@ -76,32 +76,6 @@ export function BudgetGovernanceView() {
   return (
     <div className="budget-module min-h-[calc(100vh-200px)]">
       <div className="px-6 lg:px-8 py-4">
-        {/* Action Toolbar */}
-        <div className="flex items-center justify-end gap-2 mb-4">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setExecModalOpen(true)}
-            className="gap-1.5"
-          >
-            <BarChart3 className="w-4 h-4" />
-            Executive Summary
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1.5">
-            <Download className="w-4 h-4" />
-            Export
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="gap-1.5"
-          >
-            <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
-          </Button>
-        </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
