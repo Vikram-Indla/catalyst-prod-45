@@ -3,11 +3,11 @@
  * V8 Design System compliant
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, RefreshCw, BarChart3, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useBudgetData } from '@/hooks/budget/useBudgetData';
+import { useBudgetData, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
 import '@/styles/budget-module.css';
 
 import { BudgetDepartmentTabs } from '@/components/budget/BudgetDepartmentTabs';
@@ -22,8 +22,15 @@ interface BudgetGovernanceViewProps {
   onExecModalClose?: () => void;
 }
 
+const PERIODS: { value: BudgetPeriod; label: string }[] = [
+  { value: 'Q1', label: 'Q1' },
+  { value: 'H1', label: 'H1' },
+  { value: 'full_year', label: 'Full Year' },
+];
+
 export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalClose }: BudgetGovernanceViewProps = {}) {
-  const { data, isLoading, error, refetch } = useBudgetData();
+  const [period, setPeriod] = useState<BudgetPeriod>('H1');
+  const { data, isLoading, error, refetch } = useBudgetData(period);
   const [currentDept, setCurrentDept] = useState('all');
   const [internalOpen, setInternalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -47,6 +54,34 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
     });
     return deptList;
   }, [data?.departments]);
+
+  // Keyboard navigation for department tabs in modal
+  const navigateDept = useCallback((direction: 'next' | 'prev') => {
+    const currentIdx = departments.findIndex(d => d.id === currentDept);
+    if (direction === 'next' && currentIdx < departments.length - 1) {
+      setCurrentDept(departments[currentIdx + 1].id);
+    } else if (direction === 'prev' && currentIdx > 0) {
+      setCurrentDept(departments[currentIdx - 1].id);
+    }
+  }, [currentDept, departments]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (execModalOpen) {
+        if (e.key === 'Escape') {
+          handleClose();
+        } else if (e.key === 'ArrowRight') {
+          navigateDept('next');
+        } else if (e.key === 'ArrowLeft') {
+          navigateDept('prev');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [execModalOpen, handleClose, navigateDept]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -90,7 +125,25 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
   return (
     <div className="budget-module min-h-[calc(100vh-200px)]">
       <div className="px-6 lg:px-8 pt-4 pb-4">
-        {/* No toolbar here - Executive Summary is now in the header */}
+        {/* Period Toggle */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="period-toggle">
+            {PERIODS.map(p => (
+              <button
+                key={p.value}
+                className={cn('period-btn', period === p.value && 'active')}
+                onClick={() => setPeriod(p.value)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <div className="text-sm text-[var(--budget-text-muted)]">
+            Showing: <strong className="text-[var(--budget-text-primary)]">
+              {period === 'Q1' ? 'Jan–Mar 2026' : period === 'H1' ? 'Jan–Jun 2026' : 'Full Year 2026'}
+            </strong>
+          </div>
+        </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
@@ -110,6 +163,9 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
               budget={currentBudget}
               assignments={data?.assignments || []}
               currentDept={currentDept}
+              licenses={data?.licenses || []}
+              licenseCount={data?.licenseCount || 0}
+              monthlyLicenseCost={data?.monthlyLicenseCost || 0}
             />
 
             {/* Info Box */}
@@ -134,6 +190,9 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
         open={execModalOpen}
         onClose={handleClose}
         data={data}
+        onNavigateDept={navigateDept}
+        currentDept={currentDept}
+        onDeptChange={setCurrentDept}
       />
     </div>
   );

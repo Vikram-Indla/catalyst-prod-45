@@ -85,6 +85,42 @@
 }
 
 /* ============================================
+   PERIOD TOGGLE
+   V8 Spec: Q1/H1/Full Year toggle buttons
+   ============================================ */
+.budget-module .period-toggle {
+  display: flex;
+  background: var(--budget-bg-page);
+  border: 1px solid var(--budget-border);
+  border-radius: var(--budget-radius-md);
+  padding: 4px;
+  gap: 2px;
+}
+
+.budget-module .period-btn {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--budget-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--budget-radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.budget-module .period-btn:hover {
+  color: var(--budget-text-primary);
+  background: var(--budget-bg-surface);
+}
+
+.budget-module .period-btn.active {
+  color: white;
+  background: var(--budget-primary);
+  box-shadow: var(--budget-shadow-sm);
+}
+
+/* ============================================
    DEPARTMENT FILTER TABS
    V8 Spec: 11px/600 name, 18px/800 Mono amount
    ============================================ */
@@ -173,6 +209,24 @@
   margin-bottom: 16px;
 }
 
+/* V8: 4-column grid for summary cards with licenses */
+.budget-module .summary-row.four-cols {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .budget-module .summary-row.four-cols {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .budget-module .summary-row,
+  .budget-module .summary-row.four-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
 .budget-module .summary-card {
   background: var(--budget-bg-surface);
   border: 1px solid var(--budget-border);
@@ -203,6 +257,7 @@
 .budget-module .summary-card.insourced::before { background: var(--budget-insourced); }
 .budget-module .summary-card.cosourced::before { background: var(--budget-cosourced); }
 .budget-module .summary-card.outsourced::before { background: var(--budget-outsourced); }
+.budget-module .summary-card.licenses::before { background: var(--budget-warning); }
 
 .budget-module .summary-header {
   display: flex;
@@ -238,6 +293,10 @@
   background: var(--budget-outsourced-light); 
   color: var(--budget-outsourced); 
 }
+.budget-module .summary-badge.licenses { 
+  background: var(--budget-warning-light); 
+  color: var(--budget-warning); 
+}
 
 /* V8 CRITICAL: Card value - 36px/800 JetBrains Mono */
 .budget-module .summary-value {
@@ -252,6 +311,7 @@
 .budget-module .summary-value.insourced { color: var(--budget-insourced); }
 .budget-module .summary-value.cosourced { color: var(--budget-cosourced); }
 .budget-module .summary-value.outsourced { color: var(--budget-outsourced); }
+.budget-module .summary-value.licenses { color: var(--budget-warning); }
 
 .budget-module .summary-sub {
   font-size: 12px;

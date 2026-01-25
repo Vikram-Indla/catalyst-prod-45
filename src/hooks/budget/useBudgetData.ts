@@ -57,14 +57,37 @@ export interface DepartmentBudget {
   insourced: number;
   cosourced: number;
   outsourced: number;
+  licenses: number;
   total: number;
   resources: number;
   dataIssues: number;
 }
 
+export interface BudgetLicense {
+  id: string;
+  name: string;
+  annualCost: number;
+  monthlyCost: number;
+  licenseType: string;
+  userCount: number | null;
+  renewalDate: string | null;
+  startDate: string | null;
+}
+
+export type BudgetPeriod = 'Q1' | 'H1' | 'full_year';
+
 const YEAR_START = new Date('2026-01-01');
-const TODAY = new Date('2026-01-24');
+const TODAY = new Date('2026-01-25');
 const MONTHS_YTD = 1; // January 2026
+
+// Period multipliers for budget calculation
+export function getPeriodMultiplier(period: BudgetPeriod): number {
+  switch (period) {
+    case 'Q1': return 3;
+    case 'H1': return 6;
+    case 'full_year': return 12;
+  }
+}
 
 function parseDate(s: string | null): Date | null {
   return s ? new Date(s) : null;
@@ -115,9 +138,9 @@ export function calculateResourceBudget(
   };
 }
 
-export function useBudgetData() {
+export function useBudgetData(period: BudgetPeriod = 'H1') {
   return useQuery({
-    queryKey: ['budget-governance-data'],
+    queryKey: ['budget-governance-data', period],
     queryFn: async () => {
       // Fetch assignments
       const { data: assignmentsData, error: assignmentsError } = await (supabase as any)
@@ -139,7 +162,31 @@ export function useBudgetData() {
         .eq('is_active', true)
         .order('sort_order');
 
+      // Fetch software licenses
+      const { data: licensesData, error: licensesError } = await (supabase as any)
+        .from('software_licenses')
+        .select('*')
+        .eq('is_active', true)
+        .order('annual_cost', { ascending: false });
+
       if (assignmentsError) throw assignmentsError;
+      if (licensesError) throw licensesError;
+
+      // Transform licenses
+      const licenses: BudgetLicense[] = (licensesData || []).map((l: any) => ({
+        id: l.id,
+        name: l.name,
+        annualCost: l.annual_cost || 0,
+        monthlyCost: (l.annual_cost || 0) / 12,
+        licenseType: l.license_type || 'annual',
+        userCount: l.user_count,
+        renewalDate: l.renewal_date,
+        startDate: l.start_date
+      }));
+
+      // Calculate license budget based on period
+      const periodMultiplier = getPeriodMultiplier(period);
+      const licenseBudget = licenses.reduce((sum, l) => sum + (l.annualCost / 12) * periodMultiplier, 0);
 
       // Fetch departments from capacity_departments
       const { data: deptData, error: deptError } = await (supabase as any)
@@ -227,9 +274,11 @@ export function useBudgetData() {
       const budgets: Record<string, DepartmentBudget> = {};
       
       // Initialize 'all' and each actual department
-      budgets.all = { insourced: 0, cosourced: 0, outsourced: 0, total: 0, resources: 0, dataIssues: 0 };
+      budgets.all = { insourced: 0, cosourced: 0, outsourced: 0, licenses: licenseBudget, total: 0, resources: 0, dataIssues: 0 };
       departmentNames.forEach(d => {
-        budgets[d] = { insourced: 0, cosourced: 0, outsourced: 0, total: 0, resources: 0, dataIssues: 0 };
+        // Apportion licenses evenly across departments
+        const deptLicenseBudget = licenseBudget / departmentNames.length;
+        budgets[d] = { insourced: 0, cosourced: 0, outsourced: 0, licenses: deptLicenseBudget, total: 0, resources: 0, dataIssues: 0 };
       });
 
       // Calculate insourced from resources (exclude Fixed)
@@ -262,9 +311,9 @@ export function useBudgetData() {
         }
       });
 
-      // Calculate totals
+      // Calculate totals (including licenses)
       Object.keys(budgets).forEach(k => {
-        budgets[k].total = budgets[k].insourced + budgets[k].cosourced + budgets[k].outsourced;
+        budgets[k].total = budgets[k].insourced + budgets[k].cosourced + budgets[k].outsourced + budgets[k].licenses;
       });
 
       // Enrich assignments with computed budgets and resource counts
@@ -288,8 +337,13 @@ export function useBudgetData() {
       return {
         assignments: enrichedAssignments,
         resources,
+        licenses,
         departments: budgets,
-        dataQualityIssues
+        dataQualityIssues,
+        period,
+        licenseBudget,
+        licenseCount: licenses.length,
+        monthlyLicenseCost: licenses.reduce((sum, l) => sum + l.monthlyCost, 0)
       };
     },
     staleTime: 1000 * 60 * 5 // 5 minutes
