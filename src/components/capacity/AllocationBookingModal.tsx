@@ -77,6 +77,7 @@ export function AllocationBookingModal({
   const months = eachMonthOfInterval({ start: timelineStart, end: addMonths(timelineStart, 5) });
 
   // Merge consecutive monthly records with same assignment_id into single allocations
+  // Tracks all original IDs to properly sync with DB on save
   function mergeConsecutiveAllocations(allocs: typeof existingAllocations) {
     if (allocs.length === 0) return [];
     
@@ -90,17 +91,20 @@ export function AllocationBookingModal({
     
     const merged: AllocationBookingInput[] = [];
     let current: AllocationBookingInput | null = null;
+    let currentOriginalIds: string[] = [];
     
     for (const alloc of sorted) {
       if (!current) {
         current = {
           id: alloc.id,
+          originalIds: [alloc.id],
           assignment_id: alloc.assignment_id || '',
           assignment_name: alloc.assignment_name || '',
           allocation_percent: alloc.allocation_percent,
           start_date: alloc.start_date,
           end_date: alloc.end_date || '',
         };
+        currentOriginalIds = [alloc.id];
         continue;
       }
       
@@ -115,19 +119,23 @@ export function AllocationBookingModal({
       const isConsecutive = currentEnd && (allocStart.getTime() - currentEnd.getTime()) <= 24 * 60 * 60 * 1000;
       
       if (isSameAssignment && isSamePercent && isConsecutive) {
-        // Extend current allocation's end date
+        // Extend current allocation's end date and track the merged ID
         current.end_date = alloc.end_date || current.end_date;
+        currentOriginalIds.push(alloc.id);
+        current.originalIds = [...currentOriginalIds];
       } else {
         // Push current and start new
         merged.push(current);
         current = {
           id: alloc.id,
+          originalIds: [alloc.id],
           assignment_id: alloc.assignment_id || '',
           assignment_name: alloc.assignment_name || '',
           allocation_percent: alloc.allocation_percent,
           start_date: alloc.start_date,
           end_date: alloc.end_date || '',
         };
+        currentOriginalIds = [alloc.id];
       }
     }
     

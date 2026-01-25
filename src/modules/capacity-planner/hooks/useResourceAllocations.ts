@@ -183,6 +183,7 @@ export function useResourceAllocations() {
   }
 
   // Save multiple allocations (upsert) - NEW for time-boxed booking
+  // Handles merged allocations by tracking all original IDs
   const saveAllocations = useMutation({
     mutationFn: async ({
       resourceId,
@@ -202,10 +203,19 @@ export function useResourceAllocations() {
       if (fetchError) throw fetchError;
 
       const existingIds = new Set((existingAllocations || []).map(a => a.id));
-      const newIds = new Set(newAllocations.filter(a => a.id).map(a => a.id));
+      
+      // Collect ALL original IDs that are still represented in newAllocations
+      // This includes both the primary id and any originalIds from merged records
+      const retainedIds = new Set<string>();
+      for (const alloc of newAllocations) {
+        if (alloc.id) retainedIds.add(alloc.id);
+        if (alloc.originalIds) {
+          alloc.originalIds.forEach(id => retainedIds.add(id));
+        }
+      }
 
-      // Find allocations that were deleted (exist in DB but not in new array)
-      const idsToDelete = [...existingIds].filter(id => !newIds.has(id));
+      // Find allocations that were deleted (exist in DB but not retained)
+      const idsToDelete = [...existingIds].filter(id => !retainedIds.has(id));
 
       // Delete removed allocations
       if (idsToDelete.length > 0) {
@@ -217,10 +227,38 @@ export function useResourceAllocations() {
         if (deleteError) throw deleteError;
       }
 
-      // Process each allocation (update existing or insert new)
+      // Process each allocation
       for (const alloc of newAllocations) {
-        if (alloc.id) {
-          // Update existing
+        // If this is a merged allocation with multiple original IDs,
+        // we need to delete all but the first one and update the first
+        if (alloc.originalIds && alloc.originalIds.length > 1) {
+          const [keepId, ...deleteIds] = alloc.originalIds;
+          
+          // Delete the extra records that were merged
+          if (deleteIds.length > 0) {
+            const { error: deleteError } = await supabase
+              .from('resource_allocations')
+              .delete()
+              .in('id', deleteIds);
+
+            if (deleteError) throw deleteError;
+          }
+          
+          // Update the kept record with the merged data
+          const { error } = await supabase
+            .from('resource_allocations')
+            .update({
+              assignment_id: alloc.assignment_id,
+              allocation_percent: alloc.allocation_percent,
+              start_date: alloc.start_date,
+              end_date: alloc.end_date,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', keepId);
+
+          if (error) throw error;
+        } else if (alloc.id) {
+          // Single existing record - just update
           const { error } = await supabase
             .from('resource_allocations')
             .update({
