@@ -113,6 +113,7 @@ export function useCreateLicense() {
           annual_cost: data.annual_cost,
           start_date: data.start_date,
           renewal_date: data.renewal_date,
+          department_id: data.department_id,
           is_active: true,
         })
         .select()
