@@ -50,6 +50,7 @@ export interface BudgetLicense {
   userCount: number | null;
   startDate: string | null;
   renewalDate: string | null;
+  departmentName: string | null;
 }
 
 export interface BudgetSummary {
