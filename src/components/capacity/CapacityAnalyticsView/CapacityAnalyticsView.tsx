@@ -46,20 +46,27 @@ export function CapacityAnalyticsView({
   // Calculate run rates by department
   const runRates = useMemo(() => {
     return DEPARTMENT_ORDER.map(dept => {
-      // Filter Variable/Freelance resources (insourced)
+      // Filter Variable resources
       const variableResources = runRateResources.filter(r => {
         const deptMatch = r.department_name === dept;
-        const typeMatch = r.resource_type?.toLowerCase() === 'variable' || 
-                         r.resource_type?.toLowerCase() === 'freelance';
-        return deptMatch && typeMatch;
+        return deptMatch && r.resource_type?.toLowerCase() === 'variable';
       });
       
-      const missingCtcCount = variableResources.filter(r => !r.ctc || r.ctc === 0).length;
+      // Filter Freelance resources
+      const freelanceResources = runRateResources.filter(r => {
+        const deptMatch = r.department_name === dept;
+        return deptMatch && r.resource_type?.toLowerCase() === 'freelance';
+      });
+      
+      const allInsourced = [...variableResources, ...freelanceResources];
+      const missingCtcCount = allInsourced.filter(r => !r.ctc || r.ctc === 0).length;
       
       return {
         department: dept,
-        monthlyRunRate: variableResources.reduce((sum, r) => sum + (r.ctc || 0), 0),
-        headcount: variableResources.length,
+        monthlyRunRate: allInsourced.reduce((sum, r) => sum + (r.ctc || 0), 0),
+        variableCount: variableResources.length,
+        freelanceCount: freelanceResources.length,
+        totalCount: allInsourced.length,
         missingCtcCount
       };
     });
@@ -161,12 +168,12 @@ export function CapacityAnalyticsView({
           <span className="ct-runrate-title">Department Monthly Run Rates</span>
           <span className="ct-runrate-badge">
             <Users size={12} />
-            Variable Only
+            Insourced
           </span>
         </div>
         
         <div className="ct-runrate-grid">
-          {runRates.map(({ department, monthlyRunRate, headcount, missingCtcCount }) => (
+          {runRates.map(({ department, monthlyRunRate, variableCount, freelanceCount, totalCount, missingCtcCount }) => (
             <div 
               key={department} 
               className={`ct-runrate-card ${departmentFilter.toLowerCase() === department.toLowerCase() ? 'active' : ''}`}
@@ -182,7 +189,10 @@ export function CapacityAnalyticsView({
               </div>
               <div className="ct-runrate-headcount">
                 <Users size={14} />
-                {headcount} Variable {headcount === 1 ? 'resource' : 'resources'}
+                <span>{totalCount} resources</span>
+                <span className="ct-runrate-split">
+                  ({variableCount} Variable{freelanceCount > 0 ? ` • ${freelanceCount} Freelance` : ''})
+                </span>
               </div>
               <div className="ct-runrate-footer">
                 <div className="ct-runrate-yearly">

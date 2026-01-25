@@ -1,6 +1,6 @@
 /**
  * DepartmentRunRates - V8 Design System
- * Displays monthly run rate (sum of CTC) for Variable resources by department
+ * Displays monthly run rate (sum of CTC) for Variable + Freelance resources by department
  */
 
 import { useMemo, ReactNode } from 'react';
@@ -19,20 +19,27 @@ const DEPARTMENTS = ['Delivery', 'Product', 'Operations', 'Technical Support', '
 export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick, licenseWidget }: DepartmentRunRatesProps) {
   const runRates = useMemo(() => {
     return DEPARTMENTS.map(dept => {
-      // Filter Variable/Freelance resources (insourced)
+      // Filter Variable resources
       const variableUsers = users.filter(u => {
         const deptMatch = u.department_name === dept;
-        const typeMatch = u.resource_type?.toLowerCase() === 'variable' || 
-                         u.resource_type?.toLowerCase() === 'freelance';
-        return deptMatch && typeMatch;
+        return deptMatch && u.resource_type?.toLowerCase() === 'variable';
       });
       
-      const missingCtcCount = variableUsers.filter(u => !u.ctc || u.ctc === 0).length;
+      // Filter Freelance resources
+      const freelanceUsers = users.filter(u => {
+        const deptMatch = u.department_name === dept;
+        return deptMatch && u.resource_type?.toLowerCase() === 'freelance';
+      });
+      
+      const allInsourced = [...variableUsers, ...freelanceUsers];
+      const missingCtcCount = allInsourced.filter(u => !u.ctc || u.ctc === 0).length;
       
       return {
         department: dept,
-        monthlyRunRate: variableUsers.reduce((sum, u) => sum + (u.ctc || 0), 0),
-        headcount: variableUsers.length,
+        monthlyRunRate: allInsourced.reduce((sum, u) => sum + (u.ctc || 0), 0),
+        variableCount: variableUsers.length,
+        freelanceCount: freelanceUsers.length,
+        totalCount: allInsourced.length,
         missingCtcCount
       };
     });
@@ -54,12 +61,12 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick,
         <span className="ct-runrate-title">Department Monthly Run Rates</span>
         <span className="ct-runrate-badge">
           <Users size={12} />
-          Variable Only
+          Insourced
         </span>
       </div>
       
       <div className="ct-runrate-grid">
-        {runRates.map(({ department, monthlyRunRate, headcount, missingCtcCount }) => (
+        {runRates.map(({ department, monthlyRunRate, variableCount, freelanceCount, totalCount, missingCtcCount }) => (
           <div 
             key={department} 
             className={`ct-runrate-card ${activeDepartment === department ? 'active' : ''}`}
@@ -75,7 +82,10 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick,
             </div>
             <div className="ct-runrate-headcount">
               <Users size={14} />
-              {headcount} Variable {headcount === 1 ? 'resource' : 'resources'}
+              <span>{totalCount} resources</span>
+              <span className="ct-runrate-split">
+                ({variableCount} Variable{freelanceCount > 0 ? ` • ${freelanceCount} Freelance` : ''})
+              </span>
             </div>
             <div className="ct-runrate-footer">
               <div className="ct-runrate-yearly">
