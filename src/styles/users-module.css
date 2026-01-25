@@ -327,9 +327,10 @@
 .ct-stat-header {
   display: flex;
   align-items: center;
-  gap: var(--ct-space-2);
+  gap: var(--ct-space-3);
   margin-bottom: var(--ct-space-2);
   overflow: visible;
+  position: relative;
 }
 
 .ct-stat-dot {
@@ -338,6 +339,8 @@
   min-width: 10px;
   border-radius: var(--ct-radius-full);
   flex-shrink: 0;
+  position: relative;
+  z-index: 0;
 }
 
 .ct-stat-dot.all { background: var(--ct-text-tertiary); }
