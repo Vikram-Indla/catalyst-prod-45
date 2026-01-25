@@ -24,25 +24,26 @@
      ============================================ */
   --budget-insourced: #2563eb;
   --budget-insourced-dark: #1d4ed8;
-  --budget-insourced-light: #dbeafe;
+  --budget-insourced-light: rgba(37, 99, 235, 0.08); /* per A1.3 */
   
   --budget-cosourced: #7c3aed;
   --budget-cosourced-dark: #6d28d9;
-  --budget-cosourced-light: #ede9fe;
+  --budget-cosourced-light: rgba(124, 58, 237, 0.1); /* per A1.7 */
   
   --budget-outsourced: #0d9488;
   --budget-outsourced-dark: #0f766e;
-  --budget-outsourced-light: #ccfbf1;
+  --budget-outsourced-light: rgba(13, 148, 136, 0.1); /* per A1.5 */
 
   /* ============================================
      V8 SEMANTIC COLORS
      ============================================ */
-  --budget-success: #059669;
-  --budget-success-light: #d1fae5;
+  --budget-success: #10b981; /* per A1.12: #10b981 green */
+  --budget-success-light: rgba(16, 185, 129, 0.1); /* per A1.13 */
   --budget-warning: #d97706;
-  --budget-warning-light: #fef3c7;
-  --budget-danger: #dc2626;
-  --budget-danger-light: #fee2e2;
+  --budget-warning-light: rgba(217, 119, 6, 0.1); /* per A1.9 */
+  --budget-danger: #ef4444; /* per A1.10: #ef4444 */
+  --budget-danger-light: rgba(239, 68, 68, 0.1); /* per A1.11 */
+  --budget-licenses: #d97706; /* Licenses use warning/amber color */
 
   /* ============================================
      V8 NEUTRALS (WCAG AA COMPLIANT)
@@ -115,8 +116,8 @@
 }
 
 .budget-module .period-btn.active {
-  color: white;
-  background: var(--budget-primary);
+  color: var(--budget-primary);
+  background: var(--budget-bg-surface);
   box-shadow: var(--budget-shadow-sm);
 }
 
@@ -230,8 +231,8 @@
 .budget-module .summary-card {
   background: var(--budget-bg-surface);
   border: 1px solid var(--budget-border);
-  border-radius: var(--budget-radius-lg);
-  padding: 16px 18px;
+  border-radius: var(--budget-radius-xl); /* 12px per spec */
+  padding: 20px;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -254,10 +255,33 @@
   height: 5px;
 }
 
+/* D2.3: 4px left accent bar when active */
+.budget-module .summary-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
 .budget-module .summary-card.insourced::before { background: var(--budget-insourced); }
 .budget-module .summary-card.cosourced::before { background: var(--budget-cosourced); }
 .budget-module .summary-card.outsourced::before { background: var(--budget-outsourced); }
 .budget-module .summary-card.licenses::before { background: var(--budget-warning); }
+
+.budget-module .summary-card.insourced::after { background: var(--budget-insourced); }
+.budget-module .summary-card.cosourced::after { background: var(--budget-cosourced); }
+.budget-module .summary-card.outsourced::after { background: var(--budget-outsourced); }
+.budget-module .summary-card.licenses::after { background: var(--budget-warning); }
+
+/* Active state shows left bar */
+.budget-module .summary-card.active::after,
+.budget-module .summary-card:focus::after {
+  opacity: 1;
+}
 
 .budget-module .summary-header {
   display: flex;
@@ -268,9 +292,9 @@
 
 .budget-module .summary-title {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.5px; /* per B2.9 spec */
   color: var(--budget-text-muted);
 }
 
@@ -298,11 +322,11 @@
   color: var(--budget-warning); 
 }
 
-/* V8 CRITICAL: Card value - 36px/800 JetBrains Mono */
+/* V8 CRITICAL: Card value - 28px/700 JetBrains Mono (per audit spec) */
 .budget-module .summary-value {
   font-family: var(--budget-font-mono);
-  font-size: 36px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
   margin-bottom: 6px;
@@ -483,10 +507,10 @@
    V8 Spec: 4px/8px padding, 10px/600 font
    ============================================ */
 
-/* Type Badge */
+/* Type Badge - per spec C2.3: 4px 10px */
 .budget-module .type-badge {
   display: inline-block;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: var(--budget-radius-xs);
   font-size: 10px;
   font-weight: 600;
@@ -505,52 +529,57 @@
   color: var(--budget-outsourced); 
 }
 
-/* Status Badge */
+/* Status Badge - per spec C2.3: 3px 8px */
 .budget-module .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px;
+  padding: 3px 8px;
   border-radius: var(--budget-radius-xs);
   font-size: 10px;
   font-weight: 600;
 }
 
 .budget-module .status-badge.in-progress { 
-  background: var(--budget-insourced-light); 
-  color: var(--budget-insourced); 
+  background: #dcfce7; /* emerald-100 per G2.1 spec */
+  color: #15803d; /* emerald-700 */
 }
 .budget-module .status-badge.completed { 
-  background: var(--budget-success-light); 
-  color: var(--budget-success); 
+  background: #f1f5f9; /* slate-100 per G2.2 spec */
+  color: #475569; /* slate-600 */
 }
 .budget-module .status-badge.on-hold { 
-  background: var(--budget-warning-light); 
-  color: var(--budget-warning); 
+  background: #fef3c7; /* amber-100 per G2.3 spec */
+  color: #b45309; /* amber-700 */
+}
+.budget-module .status-badge.yet-to-start,
+.budget-module .status-badge.not-started { 
+  background: #dbeafe; /* blue-100 per G2.4 spec */
+  color: #1d4ed8; /* blue-700 */
 }
 
-/* Payment Badge */
+/* Payment Badge - per spec C2.3: 3px 8px */
 .budget-module .payment-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 8px;
+  padding: 3px 8px;
   border-radius: var(--budget-radius-xs);
   font-size: 10px;
   font-weight: 600;
 }
 
 .budget-module .payment-badge.na { 
-  background: var(--budget-bg-page); 
-  color: var(--budget-text-muted); 
+  background: #f1f5f9; /* slate-100 per G3.3 */
+  color: #64748b; /* slate-500 */
 }
 .budget-module .payment-badge.on-track { 
-  background: var(--budget-success-light); 
-  color: var(--budget-success); 
+  background: #dcfce7; /* emerald-100 per G3.1 */
+  color: #15803d; /* emerald-700 */
 }
-/* V8: Unpaid uses SOLID danger background, white text */
+/* G3.2: Unpaid uses red background */
 .budget-module .payment-badge.unpaid { 
-  background: var(--budget-danger); 
-  color: white; 
+  background: #fee2e2; /* red-100 per G3.2 */
+  color: #b91c1c; /* red-700 */
   font-weight: 700;
 }
 
@@ -670,6 +699,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px); /* per spec I1.2 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -679,9 +709,9 @@
 
 .budget-module .modal {
   background: var(--budget-bg-surface);
-  border-radius: var(--budget-radius-xl);
+  border-radius: 16px; /* per spec I1.5 */
   width: 100%;
-  max-width: 900px;
+  max-width: 960px; /* per spec I1.4 */
   max-height: calc(80vh);
   overflow: hidden;
   display: flex;
@@ -791,11 +821,11 @@
   margin-bottom: 8px;
 }
 
-/* V8: Exec modal values 36px/800 Mono */
+/* V8: Exec modal values - 28px/700 Mono per audit spec D3 */
 .budget-module .exec-summary-item .value {
   font-family: var(--budget-font-mono);
-  font-size: 36px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 700;
 }
 
 .budget-module .exec-summary-item.insourced .value { color: var(--budget-insourced); }
@@ -882,23 +912,29 @@
 
 /* ============================================
    EXECUTIVE SUMMARY BUTTON
-   V8 Spec: Dark gradient, glow, hover lift
+   H1 Spec: Blue bg, white text - per audit
    ============================================ */
 .budget-module .exec-summary-btn {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 16px;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  padding: 8px 14px; /* per C2.4 spec */
+  background: var(--budget-primary); /* per H1.1: Blue bg */
   border: none;
   border-radius: var(--budget-radius-md);
   color: white;
   font-family: var(--budget-font-ui);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+  box-shadow: var(--budget-shadow-sm);
   transition: all 0.15s ease;
+}
+
+.budget-module .exec-summary-btn:hover {
+  background: var(--budget-primary-dark); /* per H1.2: #1d4ed8 */
+  transform: translateY(-1px);
+  box-shadow: var(--budget-shadow-md);
 }
 
 .budget-module .exec-summary-btn:hover {
@@ -908,7 +944,7 @@
 
 .budget-module .exec-summary-btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+  box-shadow: var(--budget-shadow-sm);
 }
 
 .budget-module .exec-summary-btn svg {
