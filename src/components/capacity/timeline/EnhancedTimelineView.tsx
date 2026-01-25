@@ -268,15 +268,26 @@ export function EnhancedTimelineView({
   const timelineStartDate = months[0]?.start || new Date(year, 0, 1);
   const timelineEndDate = months[months.length - 1]?.end || new Date(year, 11, 31);
 
-  // Build allocation map by resource
+  // Build allocation map by resource - index by BOTH profile_id and resource_id
+  // This ensures matching works regardless of which ID the resource list uses
   const allocationsByResource = useMemo(() => {
     const map = new Map<string, ResourceAllocation[]>();
     allocations.forEach((a) => {
-      const key = a.profile_id || a.resource_id;
-      if (!map.has(key)) {
-        map.set(key, []);
+      // Add under profile_id if available
+      if (a.profile_id) {
+        if (!map.has(a.profile_id)) {
+          map.set(a.profile_id, []);
+        }
+        map.get(a.profile_id)!.push(a);
       }
-      map.get(key)!.push(a);
+      // Also add under resource_id (always present)
+      if (a.resource_id && a.resource_id !== a.profile_id) {
+        if (!map.has(a.resource_id)) {
+          map.set(a.resource_id, []);
+        }
+        map.get(a.resource_id)!.push(a);
+      }
+      // Fallback: if neither profile_id nor resource_id, skip
     });
     return map;
   }, [allocations]);
