@@ -429,10 +429,32 @@ export default function CapacityPlannerPage() {
     currentAllocationByResourceId,
   ]);
 
-  // Filtered resources excluding expired contracts - used for Allocations, Gantt, Projects tabs
+  // Filtered resources excluding expired contracts - used for Allocations, Projects tabs
   const activeResources = useMemo(() => {
     return filteredResources.filter(r => !isContractExpired(r));
   }, [filteredResources]);
+
+  // All plannable resources for Gantt - NO status/filter restrictions, only role exclusion
+  const allGanttResources = useMemo(() => {
+    return metrics.resources.filter((r) => {
+      // Exclude only management and admin roles - they are overheads, not capacity planned
+      const roleLower = r.role?.toLowerCase() || '';
+      const isManagement = roleLower.includes('management');
+      const isSuperAdmin =
+        roleLower.includes('super admin') ||
+        roleLower.includes('superadmin') ||
+        roleLower === 'admin';
+      if (isManagement || isSuperAdmin) return false;
+      
+      // Apply only search filter for Gantt (no status or department filters)
+      const matchesSearch = searchQuery 
+        ? r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          r.role?.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
+      
+      return matchesSearch;
+    });
+  }, [metrics.resources, searchQuery]);
 
   // Get unique departments for filter dropdown
   const uniqueDepartments = useMemo(() => {
@@ -1667,7 +1689,7 @@ export default function CapacityPlannerPage() {
               {primaryView === 'resources' && resourceView === 'timeline' && (
                 <div className="flex-1 min-h-0 flex flex-col">
                   <EnhancedTimelineView 
-                    resources={activeResources.map(r => ({
+                    resources={allGanttResources.map(r => ({
                       id: r.id,
                       name: r.name,
                       role: r.role,
