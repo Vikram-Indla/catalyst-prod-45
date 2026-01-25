@@ -98,7 +98,9 @@ export const getTypeBadgeClass = (type: string | null): string => {
   const t = type.toLowerCase();
   if (t === 'variable' || t === 'core') return 'variable';
   if (t === 'permanent') return 'permanent';
-  if (t === 'fixed') return 'fixed';
+  // IMPORTANT: avoid Tailwind's `fixed` utility class (position: fixed)
+  // which breaks table layout when used as a badge variant.
+  if (t === 'fixed') return 'type-fixed';
   if (t === 'freelance') return 'freelance';
   return '';
 };

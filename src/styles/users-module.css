@@ -845,11 +845,11 @@
 }
 .ct-badge.permanent .ct-badge-dot { background: var(--ct-teal); }
 
-.ct-badge.fixed {
+.ct-badge.type-fixed {
   background: var(--ct-warning-light);
   color: var(--ct-warning-dark);
 }
-.ct-badge.fixed .ct-badge-dot { background: var(--ct-warning); }
+.ct-badge.type-fixed .ct-badge-dot { background: var(--ct-warning); }
 
 .ct-badge.freelance {
   background: var(--ct-violet-light);
