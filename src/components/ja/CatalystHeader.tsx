@@ -561,7 +561,7 @@ export function CatalystHeader() {
                       e.currentTarget.style.background = 'transparent'; 
                       e.currentTarget.style.color = 'var(--icon-default)';
                     }}
-                    onClick={() => navigate('/admin/activity')}
+                    onClick={() => navigate('/admin/users')}
                     title="Settings"
                   >
                     <Settings style={{ width: '20px', height: '20px' }} />
@@ -635,7 +635,7 @@ export function CatalystHeader() {
                 </DropdownMenuItem>
                 {canAccessSettings && (
                   <DropdownMenuItem 
-                    onClick={() => navigate('/admin/activity')} 
+                    onClick={() => navigate('/admin/users')} 
                     className="cursor-pointer"
                   >
                     <Settings className="mr-2 h-4 w-4" />
