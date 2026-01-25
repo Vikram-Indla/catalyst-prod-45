@@ -45,14 +45,16 @@ import { RequirementsCoverage } from '@/components/releases/test-case-detail/Req
 import { TestCaseVersionHistory } from '@/components/releases/test-case-detail/TestCaseVersionHistory';
 import { VersionHistoryPanel } from '@/components/releases/test-case-detail/VersionHistoryPanel';
 import { TestCaseDataTab } from '@/components/releases/test-case-detail/TestCaseDataTab';
+import { DataRowSelectionModal } from '@/components/test-management/DataRowSelectionModal';
 import { useTestCase, useCloneTestCase, useTestCaseSteps } from '@/hooks/test-management/useTestCases';
 import { useTestCaseNavigation } from '@/hooks/use-test-case-navigation';
 import { useTestCaseExecutionHistory } from '@/hooks/test-management/useTestCaseExecutionHistory';
 import { useTestCaseCommentsCount } from '@/hooks/test-management/useTestCaseComments';
 import { useTestCaseVersionsCount } from '@/hooks/test-management/useTestCaseVersions';
 import { useTestCaseAuditLogCount } from '@/hooks/test-management/useTestCaseAuditLog';
-import { useTestDataRows } from '@/hooks/test-management/useTestData';
-import { useCyclesForTestCase } from '@/hooks/test-cycles/useCyclesForTestCase';
+import { useTestDataRows, useTestDataParameters } from '@/hooks/test-management/useTestData';
+import { useCyclesForTestCase, type CycleForTestCase } from '@/hooks/test-cycles/useCyclesForTestCase';
+import { useCreateRunWithDataRows, useTestDataRowsForExecution, type DataRowSelection } from '@/hooks/test-management/useCreateRunWithDataRows';
 import { SelectCycleToRunDialog } from '@/components/releases/test-case-detail/SelectCycleToRunDialog';
 import { isValidUUID } from '@/lib/utils/assertUuid';
 import { cn } from '@/lib/utils';
@@ -63,6 +65,11 @@ export default function TestCaseDetailPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isVersionPanelOpen, setIsVersionPanelOpen] = useState(false);
   const [isSelectCycleDialogOpen, setIsSelectCycleDialogOpen] = useState(false);
+  
+  // DDT (Data-Driven Testing) execution state
+  const [isDataRowModalOpen, setIsDataRowModalOpen] = useState(false);
+  const [dataRowsForExecution, setDataRowsForExecution] = useState<DataRowSelection[]>([]);
+  const [selectedCycleForExecution, setSelectedCycleForExecution] = useState<CycleForTestCase | null>(null);
   
   // Validate UUID - redirect to list if invalid (display key passed instead of UUID)
   const isValidId = id ? isValidUUID(id) : false;
@@ -81,12 +88,17 @@ export default function TestCaseDetailPage() {
   const { data: versionsCount = 0 } = useTestCaseVersionsCount(isValidId ? id : undefined);
   const { data: changesCount = 0 } = useTestCaseAuditLogCount(isValidId ? id : undefined);
   const { data: testDataRows = [] } = useTestDataRows(isValidId ? id : undefined);
+  const { data: parameters = [] } = useTestDataParameters(isValidId ? id : undefined);
   
   // Fetch cycles that contain this test case (for "Run in cycle" functionality)
   const { data: cyclesForCase = [] } = useCyclesForTestCase(isValidId ? id : undefined);
   
   // Clone mutation
   const cloneMutation = useCloneTestCase();
+  
+  // DDT execution hooks
+  const { fetchRows } = useTestDataRowsForExecution(isValidId ? id : undefined);
+  const createRunMutation = useCreateRunWithDataRows();
   
   // Keyboard navigation between test cases (navigation disabled when no IDs available)
   const { 
@@ -102,8 +114,35 @@ export default function TestCaseDetailPage() {
     enabled: isValidId
   });
 
-  // Handle Run Test / Run in Cycle action
-  const handleExecute = useCallback(() => {
+  /**
+   * Starts actual execution: creates run(s) in DB, then navigates to StepRunner
+   */
+  const startExecution = useCallback(async (cycle: CycleForTestCase, selectedRows: DataRowSelection[]) => {
+    if (!id) return;
+    
+    try {
+      const result = await createRunMutation.mutateAsync({
+        cycle_id: cycle.cycleId,
+        scope_id: cycle.scopeId,
+        case_id: id,
+        selected_rows: selectedRows,
+      });
+
+      // Navigate to the working execution route with the actual runId
+      navigate(`/releases/execute/${cycle.cycleId}/${result.first_run_id}`);
+    } catch (error) {
+      console.error('Failed to start execution:', error);
+      toast.error('Failed to start execution');
+    }
+  }, [id, createRunMutation, navigate]);
+
+  /**
+   * Handle "Run in cycle" button click:
+   * 1. If no cycles, show warning
+   * 2. If one cycle, check for DDT rows and proceed
+   * 3. If multiple cycles, show selection dialog first
+   */
+  const handleExecute = useCallback(async () => {
     if (cyclesForCase.length === 0) {
       toast.warning('Test case not in any cycle', {
         description: 'Add this test case to a cycle first to execute it.',
@@ -112,18 +151,53 @@ export default function TestCaseDetailPage() {
     }
     
     if (cyclesForCase.length === 1) {
-      // Only one cycle - navigate directly to execution
+      // Only one cycle - check for DDT rows
       const cycle = cyclesForCase[0];
-      navigate(`/releases/execution/${cycle.cycleId}/${testCase?.key || id}`);
+      await handleCycleSelected(cycle);
     } else {
       // Multiple cycles - show selection dialog
       setIsSelectCycleDialogOpen(true);
     }
-  }, [cyclesForCase, navigate, testCase?.key, id]);
+  }, [cyclesForCase]);
 
-  const handleSelectCycleForExecution = useCallback((cycle: { cycleId: string }) => {
-    navigate(`/releases/execution/${cycle.cycleId}/${testCase?.key || id}`);
-  }, [navigate, testCase?.key, id]);
+  /**
+   * After cycle is selected (either auto or via dialog), check for DDT rows
+   */
+  const handleCycleSelected = useCallback(async (cycle: CycleForTestCase) => {
+    setSelectedCycleForExecution(cycle);
+    setIsSelectCycleDialogOpen(false);
+    
+    try {
+      const rows = await fetchRows();
+      
+      if (rows.length === 0) {
+        // No data rows - start single execution immediately
+        await startExecution(cycle, []);
+      } else {
+        // Has data rows - show selection modal
+        setDataRowsForExecution(rows);
+        setIsDataRowModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error fetching data rows:', error);
+      // Fallback: start single execution
+      await startExecution(cycle, []);
+    }
+  }, [fetchRows, startExecution]);
+
+  /**
+   * Handle data row selection confirmation
+   */
+  const handleDataRowsConfirmed = useCallback(async (selectedRows: DataRowSelection[]) => {
+    if (!selectedCycleForExecution) return;
+    
+    setIsDataRowModalOpen(false);
+    await startExecution(selectedCycleForExecution, selectedRows);
+  }, [selectedCycleForExecution, startExecution]);
+
+  const handleSelectCycleForExecution = useCallback((cycle: CycleForTestCase) => {
+    handleCycleSelected(cycle);
+  }, [handleCycleSelected]);
 
   const handleDuplicate = useCallback(async () => {
     if (!testCase || !testCase.project_id) return;
@@ -478,6 +552,17 @@ export default function TestCaseDetailPage() {
         onOpenChange={setIsSelectCycleDialogOpen}
         cycles={cyclesForCase}
         onSelectCycle={handleSelectCycleForExecution}
+      />
+
+      {/* Data Row Selection Modal (DDT execution) */}
+      <DataRowSelectionModal
+        open={isDataRowModalOpen}
+        onOpenChange={setIsDataRowModalOpen}
+        rows={dataRowsForExecution}
+        columnOrder={parameters.map(p => p.parameter_name)}
+        testCaseTitle={testCase?.title || 'Test Case'}
+        isLoading={createRunMutation.isPending}
+        onConfirm={handleDataRowsConfirmed}
       />
     </motion.div>
   );
