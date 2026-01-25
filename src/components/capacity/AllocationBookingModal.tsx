@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { format, addMonths, startOfMonth, eachMonthOfInterval, differenceInDays, isWithinInterval, parseISO } from 'date-fns';
+import { format, addMonths, startOfMonth, endOfMonth, eachMonthOfInterval, differenceInDays, isWithinInterval, parseISO, startOfDay, endOfDay } from 'date-fns';
 import { 
   getAssignmentTheme, 
   getAllocationStatusTheme, 
@@ -237,30 +237,33 @@ export function AllocationBookingModal({
     setNewAllocation(updated);
   }
 
-  // Calculate monthly totals - group by assignment_id to avoid double-counting monthly records
-  // Calculate monthly totals - properly check date overlaps
+  // Calculate monthly totals - properly check date overlaps with visible months
   const monthlyTotals = useMemo(() => {
+    console.log('[monthlyTotals] Calculating for allocations:', allocations.length, allocations);
+    
     return months.map(month => {
-      const monthStart = month;
-      const monthEnd = addMonths(month, 1);
+      const monthStart = startOfMonth(month);
+      const monthEnd = endOfMonth(month);
       
       // Group allocations by assignment_id and take max percentage per assignment
       const assignmentMaxPercent = new Map<string, number>();
       
       allocations.forEach(alloc => {
         if (!alloc.start_date) return;
-        const allocStart = parseISO(alloc.start_date);
+        
+        const allocStart = startOfDay(parseISO(alloc.start_date));
         // For end date, use a far future date if not set (ongoing allocation)
-        const allocEnd = alloc.end_date ? parseISO(alloc.end_date) : new Date('2099-12-31');
+        const allocEnd = alloc.end_date 
+          ? endOfDay(parseISO(alloc.end_date)) 
+          : new Date('2099-12-31');
         
         // Check if allocation overlaps with this month
-        // Overlap: allocation starts before month ends AND allocation ends on or after month starts
-        const overlaps = allocStart < monthEnd && allocEnd >= monthStart;
+        // Overlap: allocation starts on or before month ends AND allocation ends on or after month starts
+        const overlaps = allocStart <= monthEnd && allocEnd >= monthStart;
         
         if (overlaps) {
           const assignmentKey = alloc.assignment_id || alloc.id || `idx-${allocations.indexOf(alloc)}`;
           const currentMax = assignmentMaxPercent.get(assignmentKey) || 0;
-          // Take the max percentage for this assignment in this month
           assignmentMaxPercent.set(assignmentKey, Math.max(currentMax, alloc.allocation_percent));
         }
       });
