@@ -6,7 +6,7 @@
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Users, AlertTriangle } from 'lucide-react';
+import { AlertCircle, Users, AlertTriangle, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAnalyticsData } from './useAnalyticsData';
 import { useRunRateData } from './useRunRateData';
@@ -14,6 +14,10 @@ import { AnalyticsDepartmentTabs } from './AnalyticsDepartmentTabs';
 import { AnalyticsResourceRow, DepartmentGroupHeader } from './AnalyticsResourceRow';
 import { MONTH_LABELS, type ViewScope, type CapacityRow } from './types';
 import { LicensesRunRateWidget } from '@/components/users/LicensesRunRateWidget';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+
+type CategoryFilter = 'insourced' | 'cosourced' | 'outsourced' | 'licenses' | null;
 
 interface CapacityAnalyticsViewProps {
   departmentFilter?: string;
@@ -29,6 +33,7 @@ export function CapacityAnalyticsView({
   searchQuery = '',
 }: CapacityAnalyticsViewProps) {
   const [viewScope, setViewScope] = useState<ViewScope>('q1');
+  const [activeCategory, setActiveCategory] = useState<CategoryFilter>('insourced');
   const year = 2026;
 
   const { rows, months, isLoading, isError, error } = useAnalyticsData({
@@ -40,19 +45,67 @@ export function CapacityAnalyticsView({
   // Fetch run rate data for department widgets
   const { data: runRateResources = [] } = useRunRateData();
 
-  // Define the desired department order - Delivery before Product
+  // Fetch assignments for category totals
+  const { data: assignments = [] } = useQuery({
+    queryKey: ['capacity-assignments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_assignments')
+        .select('id, name, assignment_type, budget, resource_vendors(name)')
+        .eq('is_active', true);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch licenses for totals
+  const { data: licenses = [] } = useQuery({
+    queryKey: ['capacity-licenses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('software_licenses')
+        .select('id, annual_cost');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Define the desired department order
   const DEPARTMENT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
+
+  // Calculate category totals
+  const categoryTotals = useMemo(() => {
+    const insourcedResources = runRateResources.filter(r => 
+      r.resource_type?.toLowerCase() === 'variable' || r.resource_type?.toLowerCase() === 'freelance'
+    );
+    const insourcedTotal = insourcedResources.reduce((sum, r) => sum + (r.ctc || 0), 0);
+    const insourcedCount = insourcedResources.length;
+    const missingCtc = insourcedResources.filter(r => !r.ctc || r.ctc === 0).length;
+
+    const cosourcedAssignments = assignments.filter(a => a.assignment_type?.toLowerCase().includes('cosourced'));
+    const cosourcedTotal = cosourcedAssignments.reduce((sum, a) => sum + (a.budget || 0), 0);
+
+    const outsourcedAssignments = assignments.filter(a => a.assignment_type?.toLowerCase().includes('outsourced'));
+    const outsourcedTotal = outsourcedAssignments.reduce((sum, a) => sum + (a.budget || 0), 0);
+
+    const licensesTotal = licenses.reduce((sum, l) => sum + (l.annual_cost || 0), 0);
+
+    return {
+      insourced: { total: insourcedTotal, count: insourcedCount, missing: missingCtc },
+      cosourced: { total: cosourcedTotal, count: cosourcedAssignments.length },
+      outsourced: { total: outsourcedTotal, count: outsourcedAssignments.length, assignments: outsourcedAssignments },
+      licenses: { total: licensesTotal, count: licenses.length, monthly: licensesTotal / 12 },
+    };
+  }, [runRateResources, assignments, licenses]);
 
   // Calculate run rates by department
   const runRates = useMemo(() => {
     return DEPARTMENT_ORDER.map(dept => {
-      // Filter Variable resources
       const variableResources = runRateResources.filter(r => {
         const deptMatch = r.department_name === dept;
         return deptMatch && r.resource_type?.toLowerCase() === 'variable';
       });
       
-      // Filter Freelance resources
       const freelanceResources = runRateResources.filter(r => {
         const deptMatch = r.department_name === dept;
         return deptMatch && r.resource_type?.toLowerCase() === 'freelance';
@@ -74,7 +127,7 @@ export function CapacityAnalyticsView({
 
   const formatCurrency = (value: number): string => {
     if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`;
+      return `${(value / 1000000).toFixed(2)}M`;
     }
     if (value >= 1000) {
       return `${Math.round(value / 1000).toLocaleString()}K`;
@@ -93,9 +146,8 @@ export function CapacityAnalyticsView({
       total++;
     });
 
-    const tabs = [{ id: 'all', name: 'All', count: total }];
+    const tabs = [{ id: 'all', name: 'All Departments', count: total }];
     
-    // Add departments in the specified order
     DEPARTMENT_ORDER.forEach(deptName => {
       const count = deptCounts.get(deptName);
       if (count !== undefined) {
@@ -103,7 +155,6 @@ export function CapacityAnalyticsView({
       }
     });
 
-    // Add any remaining departments not in the specified order
     deptCounts.forEach((count, name) => {
       if (!DEPARTMENT_ORDER.includes(name)) {
         tabs.push({ id: name.toLowerCase(), name, count });
@@ -117,7 +168,6 @@ export function CapacityAnalyticsView({
   const filteredRows = useMemo(() => {
     let result = rows;
     
-    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       result = result.filter(r => 
@@ -126,7 +176,6 @@ export function CapacityAnalyticsView({
       );
     }
     
-    // Filter by department
     if (departmentFilter !== 'all') {
       result = result.filter(r => 
         r.resource.department?.name?.toLowerCase() === departmentFilter.toLowerCase()
@@ -146,7 +195,6 @@ export function CapacityAnalyticsView({
       groups.get(dept)!.push(row);
     });
 
-    // Sort groups by department name
     return Array.from(groups.entries()).sort((a, b) => a[0].localeCompare(b[0]));
   }, [filteredRows]);
 
@@ -162,57 +210,150 @@ export function CapacityAnalyticsView({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Department Run Rate Widgets */}
-      <section className="ct-runrate-section mb-6">
-        <div className="ct-runrate-header">
-          <span className="ct-runrate-title">Department Monthly Run Rates</span>
-          <span className="ct-runrate-badge">
-            <Users size={12} />
-            Insourced
-          </span>
+      {/* TOP ROW: Category Widgets (Insourced, Cosourced, Outsourced, Licenses) */}
+      <section className="ct-category-section mb-4">
+        <div className="ct-category-grid">
+          {/* Insourced Card */}
+          <div 
+            className={cn("ct-category-card insourced", activeCategory === 'insourced' && "active")}
+            onClick={() => setActiveCategory(activeCategory === 'insourced' ? null : 'insourced')}
+            role="button"
+            tabIndex={0}
+          >
+            <div className="ct-category-header">
+              <span className="ct-category-title">INSOURCED</span>
+              <span className="ct-category-badge blue">{categoryTotals.insourced.count} Resources</span>
+              <ChevronDown size={16} className={cn("transition-transform", activeCategory === 'insourced' && "rotate-180")} />
+            </div>
+            <div className="ct-category-value blue">{formatCurrency(categoryTotals.insourced.total)}</div>
+            <div className="ct-category-sub">SAR • CTC × Duration to Contract End</div>
+            <div className="ct-category-detail">Variable & Freelance contracts • {categoryTotals.insourced.count} resources</div>
+          </div>
+
+          {/* Cosourced Card */}
+          <div 
+            className={cn("ct-category-card cosourced", activeCategory === 'cosourced' && "active")}
+            onClick={() => setActiveCategory(activeCategory === 'cosourced' ? null : 'cosourced')}
+            role="button"
+            tabIndex={0}
+          >
+            <div className="ct-category-header">
+              <span className="ct-category-title">COSOURCED</span>
+              <span className="ct-category-badge violet">{categoryTotals.cosourced.count} Assignment{categoryTotals.cosourced.count !== 1 ? 's' : ''}</span>
+              <ChevronDown size={16} />
+            </div>
+            <div className="ct-category-value violet">{formatCurrency(categoryTotals.cosourced.total)}</div>
+            <div className="ct-category-sub">SAR • Fixed Vendor Budget</div>
+          </div>
+
+          {/* Outsourced Card */}
+          <div 
+            className={cn("ct-category-card outsourced", activeCategory === 'outsourced' && "active")}
+            onClick={() => setActiveCategory(activeCategory === 'outsourced' ? null : 'outsourced')}
+            role="button"
+            tabIndex={0}
+          >
+            <div className="ct-category-header">
+              <span className="ct-category-title">OUTSOURCED</span>
+              <span className="ct-category-badge teal">{categoryTotals.outsourced.count} Assignments</span>
+              <ChevronDown size={16} />
+            </div>
+            <div className="ct-category-value teal">{formatCurrency(categoryTotals.outsourced.total)}</div>
+            <div className="ct-category-sub">SAR • Fixed Contract</div>
+          </div>
+
+          {/* Licenses Card */}
+          <div 
+            className={cn("ct-category-card licenses", activeCategory === 'licenses' && "active")}
+            onClick={() => setActiveCategory(activeCategory === 'licenses' ? null : 'licenses')}
+            role="button"
+            tabIndex={0}
+          >
+            <div className="ct-category-header">
+              <span className="ct-category-title">LICENSES</span>
+              <span className="ct-category-badge orange">{categoryTotals.licenses.count} Active</span>
+              <ChevronDown size={16} />
+            </div>
+            <div className="ct-category-value orange">{formatCurrency(categoryTotals.licenses.monthly)}</div>
+            <div className="ct-category-sub">SAR • Software Subscriptions</div>
+            <div className="ct-category-detail">Monthly: {formatCurrency(categoryTotals.licenses.monthly)}</div>
+          </div>
         </div>
-        
-        <div className="ct-runrate-grid">
-          {runRates.map(({ department, monthlyRunRate, variableCount, freelanceCount, totalCount, missingCtcCount }) => (
+      </section>
+
+      {/* BOTTOM ROW: Department Widgets - Only visible when Insourced is active */}
+      {activeCategory === 'insourced' && (
+        <section className="ct-runrate-section mb-6">
+          <div className="ct-runrate-header">
+            <span className="ct-runrate-title">Filter by Department</span>
+            <span className="ct-runrate-badge">
+              <Users size={12} />
+              Insourced
+            </span>
+          </div>
+          
+          <div className="ct-runrate-grid">
+            {/* All Departments Card */}
             <div 
-              key={department} 
-              className={`ct-runrate-card ${departmentFilter.toLowerCase() === department.toLowerCase() ? 'active' : ''}`}
-              onClick={() => onDepartmentChange?.(department.toLowerCase())}
+              className={cn("ct-runrate-card", departmentFilter === 'all' && "active")}
+              onClick={() => onDepartmentChange?.('all')}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && onDepartmentChange?.(department.toLowerCase())}
             >
-              <div className="ct-runrate-dept">{department}</div>
+              <div className="ct-runrate-dept">All Departments</div>
               <div className="ct-runrate-value">
-                <span className="ct-runrate-currency">ریال</span>
-                <span>{formatCurrency(monthlyRunRate)}</span>
+                <span>{formatCurrency(categoryTotals.insourced.total)}</span>
               </div>
               <div className="ct-runrate-headcount">
                 <Users size={14} />
-                <span>{totalCount} resources</span>
-                <span className="ct-runrate-split">
-                  ({variableCount} Variable{freelanceCount > 0 ? ` • ${freelanceCount} Freelance` : ''})
-                </span>
-              </div>
-              <div className="ct-runrate-footer">
-                <div className="ct-runrate-yearly">
-                  <span className="ct-runrate-yearly-label">Yearly</span>
-                  <span className="ct-runrate-yearly-value">
-                    <span className="ct-runrate-currency">ریال</span> {formatCurrency(monthlyRunRate * 12)}
-                  </span>
-                </div>
-                {missingCtcCount > 0 && (
-                  <div className="ct-runrate-missing">
+                <span>{categoryTotals.insourced.count} resources</span>
+                {categoryTotals.insourced.missing > 0 && (
+                  <span className="ct-runrate-missing inline-flex">
                     <AlertTriangle size={12} />
-                    {missingCtcCount} missing CTC
-                  </div>
+                    {categoryTotals.insourced.missing}
+                  </span>
                 )}
               </div>
             </div>
-          ))}
-          <LicensesRunRateWidget />
-        </div>
-      </section>
+
+            {runRates.map(({ department, monthlyRunRate, totalCount, missingCtcCount }) => (
+              <div 
+                key={department} 
+                className={cn("ct-runrate-card", departmentFilter.toLowerCase() === department.toLowerCase() && "active")}
+                onClick={() => onDepartmentChange?.(department.toLowerCase())}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="ct-runrate-dept">{department}</div>
+                <div className="ct-runrate-value">
+                  <span>{formatCurrency(monthlyRunRate)}</span>
+                </div>
+                <div className="ct-runrate-headcount">
+                  <Users size={14} />
+                  <span>{totalCount} resources</span>
+                  {missingCtcCount > 0 && (
+                    <span className="ct-runrate-missing inline-flex">
+                      <AlertTriangle size={12} />
+                      {missingCtcCount}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* External Card */}
+            <div className="ct-runrate-card external">
+              <div className="ct-runrate-dept">External</div>
+              <div className="ct-runrate-value">
+                <span>{formatCurrency(categoryTotals.outsourced.total)}</span>
+              </div>
+              <div className="ct-runrate-headcount">
+                <span>Outsourced vendors</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Analytics Table */}
       <div className="flex flex-col flex-1 bg-card rounded-lg border border-border overflow-hidden">
