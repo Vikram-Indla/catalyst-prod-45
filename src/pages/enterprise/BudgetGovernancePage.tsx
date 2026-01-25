@@ -144,6 +144,9 @@ export default function BudgetGovernancePage() {
                 budget={currentBudget}
                 assignments={data?.assignments || []}
                 currentDept={currentDept}
+                licenses={data?.licenses || []}
+                licenseCount={data?.licenseCount || 0}
+                monthlyLicenseCost={data?.monthlyLicenseCost || 0}
               />
 
               {/* Info Box */}

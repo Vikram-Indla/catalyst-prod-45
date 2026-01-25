@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatFull, formatSAR } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment, DepartmentBudget, BudgetPeriod } from '@/hooks/budget/useBudgetData';
-import { exportElementToPdf } from '@/utils/exports';
+import { exportElementToPdf } from '@/utils/exports/exportToPdf';
 
 interface BudgetExecutiveModalProps {
   open: boolean;
