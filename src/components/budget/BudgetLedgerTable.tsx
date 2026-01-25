@@ -175,13 +175,20 @@ export function BudgetLedgerTable({
             const isExpanded = expandedRows.has(a.id);
             const assignmentResources = getAssignmentResources(a.aid);
             const hasResources = assignmentResources.length > 0 && a.type !== 'Outsourced';
+            const totalCTC = assignmentResources.reduce((sum, r) => sum + (r.ctc || 0), 0);
 
             return (
               <Fragment key={a.id}>
+                {/* Main Assignment Row */}
                 <tr 
                   className={cn(
-                    hasResources && 'cursor-pointer hover:bg-[var(--budget-bg)]',
-                    isExpanded && 'bg-[var(--budget-primary-light)]'
+                    'transition-all duration-150',
+                    hasResources && 'cursor-pointer',
+                    isExpanded 
+                      ? 'bg-blue-50 border-l-4 border-l-blue-600' 
+                      : hasResources 
+                        ? 'hover:bg-slate-50 border-l-4 border-l-transparent'
+                        : 'border-l-4 border-l-transparent'
                   )}
                   onClick={() => hasResources && toggleRow(a.id)}
                 >
@@ -189,8 +196,8 @@ export function BudgetLedgerTable({
                     {hasResources && (
                       <ChevronRight 
                         className={cn(
-                          "w-4 h-4 text-[var(--budget-text-muted)] transition-transform",
-                          isExpanded && "rotate-90 text-[var(--budget-primary)]"
+                          "w-4 h-4 flex-shrink-0 transition-transform duration-200",
+                          isExpanded ? "rotate-90 text-blue-600" : "text-slate-400"
                         )} 
                       />
                     )}
@@ -246,48 +253,85 @@ export function BudgetLedgerTable({
                 
                 {/* Expanded Resources Row */}
                 {isExpanded && assignmentResources.length > 0 && (
-                  <tr className="expanded-row">
-                    <td colSpan={8} className="p-0">
-                      <div className="expanded-content">
-                        <div className="text-[11px] font-semibold text-[var(--budget-text-muted)] uppercase tracking-wide mb-3">
-                          Resources ({assignmentResources.length})
+                  <tr className="bg-slate-50">
+                    <td colSpan={8} className="p-0 border-b border-slate-200">
+                      <div className="ml-14 mr-4 my-4">
+                        {/* Resources Header */}
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                            Resources ({assignmentResources.length})
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            Total Monthly CTC: 
+                            <span className="font-mono font-semibold text-slate-700 ml-1">
+                              {isHidden ? '••••••' : `${totalCTC.toLocaleString()} SAR`}
+                            </span>
+                          </span>
                         </div>
-                        <table className="expanded-table">
-                          <thead>
-                            <tr>
-                              <th>RID</th>
-                              <th>Name</th>
-                              <th>Role</th>
-                              <th>Type</th>
-                              <th>Vendor</th>
-                              <th className="right">Monthly CTC</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {assignmentResources.map(r => (
-                              <tr key={r.id}>
-                                <td className="font-mono text-[var(--budget-text-muted)]">{r.rid}</td>
-                                <td className="font-medium">{r.name}</td>
-                                <td className="text-[var(--budget-text-secondary)]">{r.role || '—'}</td>
-                                <td>
-                                  <span className="inline-block px-2 py-0.5 bg-[var(--budget-bg)] rounded text-[11px]">
-                                    {r.resourceType}
-                                  </span>
-                                </td>
-                                <td className="text-[var(--budget-text-secondary)]">{r.vendorName || '—'}</td>
-                                <td className="right font-mono">
-                                  {isHidden ? '••••••' : (
-                                    r.ctc ? (
-                                      <span>{formatFull(r.ctc)}</span>
-                                    ) : (
-                                      <span className="text-[var(--budget-danger)]">Missing</span>
-                                    )
-                                  )}
-                                </td>
+                        
+                        {/* Resources Table Container */}
+                        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                          <table className="w-full">
+                            <thead>
+                              <tr className="bg-slate-50 border-b border-slate-200">
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider w-16">RID</th>
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Name</th>
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Role</th>
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider w-24">Type</th>
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider w-28">Vendor</th>
+                                <th className="px-4 py-2.5 text-right text-[10px] font-semibold text-slate-500 uppercase tracking-wider w-32">Monthly CTC</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                              {assignmentResources.map((r, idx) => (
+                                <tr 
+                                  key={r.id} 
+                                  className={cn(
+                                    'hover:bg-blue-50/50 transition-colors',
+                                    idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'
+                                  )}
+                                >
+                                  <td className="px-4 py-3">
+                                    <span className="font-mono text-xs text-slate-500">{r.rid || '—'}</span>
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    <span className="font-medium text-sm text-slate-800">{r.name}</span>
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    <span className="text-sm text-slate-600">{r.role || '—'}</span>
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    <span className={cn(
+                                      'inline-flex px-2 py-0.5 rounded text-[10px] font-medium',
+                                      r.resourceType === 'Variable' ? 'bg-blue-50 text-blue-700' :
+                                      r.resourceType === 'Fixed' ? 'bg-emerald-50 text-emerald-700' :
+                                      r.resourceType === 'Freelance' ? 'bg-amber-50 text-amber-700' :
+                                      'bg-slate-100 text-slate-600'
+                                    )}>
+                                      {r.resourceType}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    <span className="text-sm text-slate-600">{r.vendorName || '—'}</span>
+                                  </td>
+                                  <td className="px-4 py-3 text-right">
+                                    {isHidden ? (
+                                      <span className="font-mono text-sm text-slate-400">••••••</span>
+                                    ) : r.ctc ? (
+                                      <span className="font-mono text-sm font-semibold text-slate-800">
+                                        {r.ctc.toLocaleString()}
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex px-2 py-0.5 rounded bg-red-50 text-red-600 text-[10px] font-semibold">
+                                        Missing
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </td>
                   </tr>
