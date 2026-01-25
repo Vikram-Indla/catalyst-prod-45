@@ -314,11 +314,10 @@ export default function CapacityPlannerPage() {
   const availableUsers = useMemo(() => {
     return resources.filter(r => {
       if (assignedUserIds.has(r.id)) return false;
-      // Exclude management and admin roles - they are overheads, not capacity planned
+      // Only exclude Management roles - they are overheads, not capacity planned
       const roleLower = r.role?.toLowerCase() || '';
       const isManagement = roleLower.includes('management');
-      const isSuperAdmin = roleLower.includes('super admin') || roleLower.includes('superadmin') || roleLower === 'admin';
-      if (isManagement || isSuperAdmin) return false;
+      if (isManagement) return false;
       return true;
     });
   }, [resources, assignedUserIds]);
@@ -377,14 +376,10 @@ export default function CapacityPlannerPage() {
     today.setHours(0, 0, 0, 0);
     
     return metrics.resources.filter((r) => {
-      // Exclude management and admin roles - they are overheads, not capacity planned
+      // Only exclude Management roles - they are overheads, not capacity planned
       const roleLower = r.role?.toLowerCase() || '';
       const isManagement = roleLower.includes('management');
-      const isSuperAdmin =
-        roleLower.includes('super admin') ||
-        roleLower.includes('superadmin') ||
-        roleLower === 'admin';
-      if (isManagement || isSuperAdmin) return false;
+      if (isManagement) return false;
 
       // Check if contract is expired
       const hasExpiredContract = r.contract_end_date && new Date(r.contract_end_date) < today;
@@ -434,19 +429,15 @@ export default function CapacityPlannerPage() {
     return filteredResources.filter(r => !isContractExpired(r));
   }, [filteredResources]);
 
-  // All plannable resources for Gantt - NO status/filter restrictions, only role exclusion
+  // All plannable resources for all tabs - Only exclude Management roles
   const allGanttResources = useMemo(() => {
     return metrics.resources.filter((r) => {
-      // Exclude only management and admin roles - they are overheads, not capacity planned
+      // Only exclude Management roles - they are overheads, not capacity planned
       const roleLower = r.role?.toLowerCase() || '';
       const isManagement = roleLower.includes('management');
-      const isSuperAdmin =
-        roleLower.includes('super admin') ||
-        roleLower.includes('superadmin') ||
-        roleLower === 'admin';
-      if (isManagement || isSuperAdmin) return false;
+      if (isManagement) return false;
       
-      // Apply only search filter for Gantt (no status or department filters)
+      // Apply only search filter (no status or department filters)
       const matchesSearch = searchQuery 
         ? r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           r.role?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -630,14 +621,10 @@ export default function CapacityPlannerPage() {
     // Filter only by search and department, NOT by activeFilter (status)
     // Also exclude expired contracts from summary counts
     const baseResources = metrics.resources.filter((r) => {
-      // Exclude management and admin roles
+      // Only exclude Management roles - they are overheads, not capacity planned
       const roleLower = r.role?.toLowerCase() || '';
       const isManagement = roleLower.includes('management');
-      const isSuperAdmin =
-        roleLower.includes('super admin') ||
-        roleLower.includes('superadmin') ||
-        roleLower === 'admin';
-      if (isManagement || isSuperAdmin) return false;
+      if (isManagement) return false;
 
       // Exclude expired contracts from summary counts
       if (r.contract_end_date) {

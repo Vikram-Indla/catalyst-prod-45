@@ -140,17 +140,16 @@ export function useCapacityHeatmapData(monthCount = 12) {
 
       // === STEP 7: Map resource_inventory to HeatmapResource format ===
       const resources: HeatmapResource[] = (resourceInventory || [])
-        .filter((ri) => {
+      .filter((ri) => {
           // Get role from profile's product roles if linked
           const profile = ri.profile_id ? profileMap.get(ri.profile_id) : profileByName.get(ri.name?.toLowerCase());
           const roleName = profile ? (userRoleMap.get(profile.id) || ri.role_name || 'No role') : (ri.role_name || 'No role');
           const roleLower = roleName.toLowerCase();
           
-          // Exclude management and admin roles (same as CapacityPlannerPage line 200-204)
+          // Only exclude Management roles (not Admin roles)
           const isManagement = roleLower.includes('management');
-          const isSuperAdmin = roleLower.includes('super admin') || roleLower.includes('superadmin') || roleLower === 'admin';
           
-          return !isManagement && !isSuperAdmin;
+          return !isManagement;
         })
         .map((ri) => {
           // Get linked profile for enrichment
