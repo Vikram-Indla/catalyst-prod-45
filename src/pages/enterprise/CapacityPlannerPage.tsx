@@ -129,6 +129,9 @@ export default function CapacityPlannerPage() {
   
   // Presentation mode from URL or store
   const [presentationMode, setPresentationModeLocal] = useState(false);
+  
+  // Budget Executive Summary modal state (lifted from BudgetGovernanceView)
+  const [budgetExecModalOpen, setBudgetExecModalOpen] = useState(false);
 
   // Sync local state changes to store
   const setPrimaryView = useCallback((view: PrimaryView) => {
@@ -800,6 +803,7 @@ export default function CapacityPlannerPage() {
           onProjectPeriodNavigate={handleProjectPeriodNavigate}
           onRefresh={handleRetry}
           isRefreshing={isRetrying || isFetching}
+          onExecutiveSummary={() => setBudgetExecModalOpen(true)}
         />
 
         {/* Main Content */}
@@ -1030,7 +1034,10 @@ export default function CapacityPlannerPage() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <BudgetGovernanceView />
+              <BudgetGovernanceView 
+                execModalOpen={budgetExecModalOpen} 
+                onExecModalClose={() => setBudgetExecModalOpen(false)} 
+              />
             </motion.div>
           )}
         </div>

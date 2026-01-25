@@ -73,6 +73,8 @@ interface SleekCapacityHeaderProps {
   // Hard refresh
   onRefresh?: () => void;
   isRefreshing?: boolean;
+  // Budget Executive Summary
+  onExecutiveSummary?: () => void;
 }
 
 // Dynamic Track Filter Component
@@ -163,6 +165,7 @@ export function SleekCapacityHeader({
   onProjectPeriodNavigate,
   onRefresh,
   isRefreshing = false,
+  onExecutiveSummary,
 }: SleekCapacityHeaderProps) {
   const [lastRefresh] = useState(() => new Date());
   const [timeAgo, setTimeAgo] = useState('just now');
@@ -305,11 +308,24 @@ export function SleekCapacityHeader({
           <Button 
             onClick={onPresentationMode}
             size="sm"
-            className="h-9 px-5 text-sm gap-1.5 bg-teal-500 hover:bg-teal-600 text-white shadow-sm"
+            className="h-9 px-5 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
           >
             <Presentation className="h-4 w-4" />
             Present
           </Button>
+          {primaryView === 'budget' && onExecutiveSummary && (
+            <button 
+              onClick={onExecutiveSummary}
+              className="exec-summary-btn h-9 inline-flex items-center gap-2 px-4 text-sm font-bold text-white rounded-lg shadow-md transition-all"
+              style={{ 
+                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                boxShadow: '0 4px 12px rgba(15, 23, 42, 0.25)'
+              }}
+            >
+              <BarChart3 className="w-4 h-4" />
+              Executive Summary
+            </button>
+          )}
           {primaryView !== 'budget' && (
             <Button
               onClick={onAddResource}

@@ -17,11 +17,20 @@ import { BudgetLedgerTable } from '@/components/budget/BudgetLedgerTable';
 import { BudgetQualityPanel } from '@/components/budget/BudgetQualityPanel';
 import { BudgetExecutiveModal } from '@/components/budget/BudgetExecutiveModal';
 
-export function BudgetGovernanceView() {
+interface BudgetGovernanceViewProps {
+  execModalOpen?: boolean;
+  onExecModalClose?: () => void;
+}
+
+export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalClose }: BudgetGovernanceViewProps = {}) {
   const { data, isLoading, error, refetch } = useBudgetData();
   const [currentDept, setCurrentDept] = useState('all');
-  const [execModalOpen, setExecModalOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // Use external control if provided, otherwise use internal state
+  const execModalOpen = externalOpen !== undefined ? externalOpen : internalOpen;
+  const handleClose = onExecModalClose || (() => setInternalOpen(false));
 
   // Derive departments dynamically from budget data
   const departments = useMemo(() => {
@@ -80,17 +89,8 @@ export function BudgetGovernanceView() {
 
   return (
     <div className="budget-module min-h-[calc(100vh-200px)]">
-      <div className="px-6 lg:px-8 py-4">
-        {/* Action Toolbar - Executive Summary only */}
-        <div className="flex items-center justify-end mb-4">
-          <button 
-            onClick={() => setExecModalOpen(true)}
-            className="exec-summary-btn"
-          >
-            <BarChart3 className="w-[18px] h-[18px]" />
-            Executive Summary
-          </button>
-        </div>
+      <div className="px-6 lg:px-8 pt-4 pb-4">
+        {/* No toolbar here - Executive Summary is now in the header */}
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
@@ -132,7 +132,7 @@ export function BudgetGovernanceView() {
       {/* Executive Summary Modal */}
       <BudgetExecutiveModal
         open={execModalOpen}
-        onClose={() => setExecModalOpen(false)}
+        onClose={handleClose}
         data={data}
       />
     </div>
