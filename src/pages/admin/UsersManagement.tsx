@@ -467,6 +467,12 @@ export default function UsersManagement() {
                 onChange={(v) => handleFilterChange(setVendorFilter, v)}
                 allLabel="All Vendors"
               />
+              <Dropdown
+                value={typeFilter}
+                options={['Variable', 'Permanent', 'Fixed', 'Freelance']}
+                onChange={(v) => handleFilterChange(setTypeFilter, v.toLowerCase() || 'all')}
+                allLabel="All Types"
+              />
             </div>
             <button className="ct-btn" onClick={clearFilters}>
               <X size={14} />
