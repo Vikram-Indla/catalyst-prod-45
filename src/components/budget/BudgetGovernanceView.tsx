@@ -74,50 +74,11 @@ export function BudgetGovernanceView() {
   }
 
   return (
-    <div className="budget-module min-h-[calc(100vh-200px)] bg-[var(--budget-bg)]">
-      <div className="p-6 lg:px-8">
-        {/* Page Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-[22px] font-bold text-[var(--budget-text)]">Budget Governance</h1>
-            <div className="flex items-center gap-3 mt-1">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[11px] font-medium text-green-600">Live</span>
-              </div>
-              <span className="text-[11px] text-[var(--budget-text-muted)]">Updated 5 minutes ago</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setExecModalOpen(true)}
-              className="gap-1.5"
-            >
-              <BarChart3 className="w-4 h-4" />
-              Executive Summary
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Download className="w-4 h-4" />
-              Export
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="gap-1.5"
-            >
-              <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
-              Refresh
-            </Button>
-          </div>
-        </div>
-
+    <div className="budget-module min-h-[calc(100vh-200px)]">
+      <div className="px-6 lg:px-8 py-4">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-[var(--budget-primary)] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <>
