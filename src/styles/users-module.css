@@ -1526,9 +1526,21 @@
   transform: translateY(-2px);
   box-shadow: var(--ct-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
   border-color: var(--ct-primary, #2563eb);
+  cursor: pointer;
 }
 
 .ct-runrate-card:hover::before {
+  opacity: 1;
+}
+
+/* Active state when filtering */
+.ct-runrate-card.active {
+  border-color: var(--ct-primary, #2563eb);
+  background: rgba(37, 99, 235, 0.04);
+  box-shadow: var(--ct-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+}
+
+.ct-runrate-card.active::before {
   opacity: 1;
 }
 
