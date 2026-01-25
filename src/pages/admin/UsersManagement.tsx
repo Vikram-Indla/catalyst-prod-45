@@ -482,9 +482,9 @@ export default function UsersManagement() {
                 allLabel="All Vendors"
               />
               <Dropdown
-                value={typeFilter}
+                value={typeFilter === 'all' ? '' : typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)}
                 options={['Variable', 'Permanent', 'Fixed', 'Freelance']}
-                onChange={(v) => handleFilterChange(setTypeFilter, v.toLowerCase() || 'all')}
+                onChange={(v) => handleFilterChange(setTypeFilter, v ? v.toLowerCase() : 'all')}
                 allLabel="Resource Type"
               />
             </div>
