@@ -139,7 +139,7 @@ export default function BudgetGovernancePage() {
                 onSelect={setCurrentDept}
               />
 
-              {/* Summary Cards */}
+              {/* Summary Cards with expandable panels */}
               <BudgetSummaryCards
                 budget={currentBudget}
                 assignments={data?.assignments || []}
@@ -147,15 +147,18 @@ export default function BudgetGovernancePage() {
                 licenses={data?.licenses || []}
                 licenseCount={data?.licenseCount || 0}
                 monthlyLicenseCost={data?.monthlyLicenseCost || 0}
+                resources={data?.resources || []}
+                period={data?.period || 'H1'}
               />
 
               {/* Info Box */}
               <BudgetInfoBox />
 
-              {/* Assignment Ledger Table */}
+              {/* Assignment Ledger Table with expandable rows */}
               <BudgetLedgerTable
                 assignments={sortedAssignments}
                 currentDept={currentDept}
+                resources={data?.resources || []}
               />
 
               {/* Data Quality Panel */}

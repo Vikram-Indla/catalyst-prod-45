@@ -946,3 +946,145 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================
+   EXPANDED PANELS (Summary Card Breakdowns)
+   ============================================ */
+.budget-module .expanded-panel {
+  background: var(--budget-bg-surface);
+  border: 1px solid var(--budget-border);
+  border-radius: var(--budget-radius-lg);
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: var(--budget-shadow-md);
+}
+
+.budget-module .expanded-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--budget-bg-page);
+  border-bottom: 1px solid var(--budget-border);
+}
+
+.budget-module .expanded-panel-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--budget-text-primary);
+}
+
+.budget-module .expanded-panel-body {
+  padding: 16px 18px;
+}
+
+.budget-module .expanded-panel-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.budget-module .expanded-panel-table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--budget-text-muted);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--budget-border);
+}
+
+.budget-module .expanded-panel-table th.center { text-align: center; }
+.budget-module .expanded-panel-table th.right { text-align: right; }
+
+.budget-module .expanded-panel-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--budget-border-light);
+  font-size: 13px;
+  color: var(--budget-text-primary);
+}
+
+.budget-module .expanded-panel-table td.center { text-align: center; }
+.budget-module .expanded-panel-table td.right { text-align: right; }
+
+.budget-module .expanded-panel-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.budget-module .expanded-panel-table tbody tr:hover {
+  background: var(--budget-primary-bg);
+}
+
+/* ============================================
+   EXPANDED ROWS (Ledger Table Resource Details)
+   ============================================ */
+.budget-module .expanded-row td {
+  padding: 0 !important;
+  background: var(--budget-bg-page);
+}
+
+.budget-module .expanded-content {
+  padding: 16px 20px 16px 64px;
+  border-top: 1px solid var(--budget-border);
+}
+
+.budget-module .expanded-table {
+  width: 100%;
+  background: var(--budget-bg-surface);
+  border: 1px solid var(--budget-border);
+  border-radius: var(--budget-radius-md);
+  overflow: hidden;
+}
+
+.budget-module .expanded-table th {
+  text-align: left;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--budget-text-muted);
+  padding: 8px 12px;
+  background: var(--budget-bg-page);
+  border-bottom: 1px solid var(--budget-border);
+}
+
+.budget-module .expanded-table th.right { text-align: right; }
+
+.budget-module .expanded-table td {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--budget-text-primary);
+  border-bottom: 1px solid var(--budget-border-light);
+}
+
+.budget-module .expanded-table td.right { text-align: right; }
+
+.budget-module .expanded-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.budget-module .expanded-table tbody tr:hover {
+  background: var(--budget-primary-bg);
+}
+
+/* Licenses badge color */
+.budget-module .summary-card.licenses .summary-badge {
+  background: var(--budget-warning-light);
+  color: var(--budget-warning);
+}
+
+/* Animated reveal */
+.budget-module .animate-in {
+  animation: slideInFromTop 0.2s ease-out;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
