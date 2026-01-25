@@ -224,8 +224,7 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
       // Only Variable and Freelance resource types contribute to insourced
       const isInsourcedResource = 
         r.resourceType?.toLowerCase() === 'variable' || 
-        r.resourceType?.toLowerCase() === 'freelance' ||
-        r.resourceType?.toLowerCase() === 'core'; // legacy value
+        r.resourceType?.toLowerCase() === 'freelance';
       
       if (isInsourcedResource) {
         const ctcBudget = (r.ctc || 0) * months;

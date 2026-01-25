@@ -19,11 +19,11 @@ const DEPARTMENTS = ['Delivery', 'Product', 'Operations', 'Technical Support', '
 export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick, licenseWidget }: DepartmentRunRatesProps) {
   const runRates = useMemo(() => {
     return DEPARTMENTS.map(dept => {
-      // Filter Variable resources (including legacy 'Core' type)
+      // Filter Variable/Freelance resources (insourced)
       const variableUsers = users.filter(u => {
         const deptMatch = u.department_name === dept;
         const typeMatch = u.resource_type?.toLowerCase() === 'variable' || 
-                         u.resource_type?.toLowerCase() === 'core';
+                         u.resource_type?.toLowerCase() === 'freelance';
         return deptMatch && typeMatch;
       });
       
