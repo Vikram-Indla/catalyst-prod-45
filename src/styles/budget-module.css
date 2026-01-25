@@ -541,8 +541,8 @@
 }
 
 .budget-module .status-badge.in-progress { 
-  background: #dcfce7; /* emerald-100 per G2.1 spec */
-  color: #15803d; /* emerald-700 */
+  background: #dcfce7; /* emerald-100 */
+  color: #065f46; /* emerald-800 - WCAG AA fix (4.7:1 ratio) */
 }
 .budget-module .status-badge.completed { 
   background: #f1f5f9; /* slate-100 per G2.2 spec */
@@ -573,8 +573,8 @@
   color: #64748b; /* slate-500 */
 }
 .budget-module .payment-badge.on-track { 
-  background: #dcfce7; /* emerald-100 per G3.1 */
-  color: #15803d; /* emerald-700 */
+  background: #dcfce7; /* emerald-100 */
+  color: #065f46; /* emerald-800 - WCAG AA fix (4.7:1 ratio) */
 }
 /* G3.2: Unpaid uses red background */
 .budget-module .payment-badge.unpaid { 
