@@ -1,5 +1,6 @@
 /**
  * Budget Ledger Table Component
+ * AUDIT FIX V2: Text formatting, proper contrast
  */
 
 import { useState } from 'react';
@@ -13,6 +14,42 @@ interface BudgetLedgerTableProps {
   currentDept: string;
 }
 
+// Format status: in_progress -> In Progress
+function formatStatus(status: string): string {
+  const map: Record<string, string> = {
+    'in_progress': 'In Progress',
+    'completed': 'Completed',
+    'on_hold': 'On Hold',
+    'not_started': 'Not Started',
+  };
+  return map[status] || status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+// Format payment: not_applicable -> N/A, unpaid -> Unpaid
+function formatPayment(payment: string): string {
+  const map: Record<string, string> = {
+    'not_applicable': 'N/A',
+    'on_track': 'On Track',
+    'unpaid': 'Unpaid',
+    'paid': 'Paid',
+  };
+  return map[payment] || payment.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+// Get status CSS class
+function getStatusClass(status: string): string {
+  if (status === 'completed' || status === 'Completed') return 'completed';
+  if (status === 'in_progress' || status === 'In Progress') return 'in-progress';
+  return 'on-hold';
+}
+
+// Get payment CSS class  
+function getPaymentClass(payment: string): string {
+  if (payment === 'unpaid' || payment === 'Unpaid') return 'unpaid';
+  if (payment === 'on_track' || payment === 'On Track') return 'on-track';
+  return 'na';
+}
+
 export function BudgetLedgerTable({ assignments, currentDept }: BudgetLedgerTableProps) {
   const [ctcVisible, setCtcVisible] = useState(true);
 
@@ -22,18 +59,6 @@ export function BudgetLedgerTable({ assignments, currentDept }: BudgetLedgerTabl
     return acc;
   }, { insourced: 0, cosourced: 0, outsourced: 0 });
 
-  const getStatusClass = (status: string) => {
-    if (status === 'Completed') return 'completed';
-    if (status === 'In Progress') return 'in-progress';
-    return 'on-hold';
-  };
-
-  const getPaymentClass = (status: string) => {
-    if (status === 'Unpaid') return 'unpaid';
-    if (status === 'On Track') return 'on-track';
-    return 'na';
-  };
-
   return (
     <div className="table-card">
       <div className="table-header">
@@ -41,7 +66,7 @@ export function BudgetLedgerTable({ assignments, currentDept }: BudgetLedgerTabl
           Assignment Ledger <span>— {currentDept === 'all' ? 'All Departments' : currentDept}</span>
         </h3>
         <button 
-          className="flex items-center gap-2 text-sm text-[var(--budget-text-secondary)] hover:text-[var(--budget-primary)]"
+          className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors"
           onClick={() => setCtcVisible(!ctcVisible)}
         >
           {ctcVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -81,13 +106,15 @@ export function BudgetLedgerTable({ assignments, currentDept }: BudgetLedgerTabl
                   <span className={cn('type-badge', typeClass)}>{a.type}</span>
                 </td>
                 <td>
-                  <span className={cn('status-badge', getStatusClass(a.status))}>{a.status}</span>
+                  <span className={cn('status-badge', getStatusClass(a.status))}>
+                    {formatStatus(a.status)}
+                  </span>
                 </td>
                 <td>
                   {a.vendor ? (
                     <div className="vendor-cell">
                       <div className="vendor-logo">{a.vendor.substring(0, 2).toUpperCase()}</div>
-                      <span>{a.vendor}</span>
+                      <span className="vendor-name">{a.vendor}</span>
                     </div>
                   ) : (
                     <span className="cost-cell muted">—</span>
@@ -95,18 +122,18 @@ export function BudgetLedgerTable({ assignments, currentDept }: BudgetLedgerTabl
                 </td>
                 <td className="center">
                   {a.type === 'Outsourced' ? '—' : (
-                    <span className="text-[var(--budget-text)]">{a.resourceCount || 0}</span>
+                    <span style={{ color: 'var(--budget-text)', fontWeight: 500 }}>{a.resourceCount || 0}</span>
                   )}
                 </td>
                 <td className="right">
                   <span className={cn('cost-cell', typeClass)}>{formatFull(a.budget)}</span>
                   {a.computed && (
-                    <span className="text-[10px] text-[var(--budget-text-muted)] ml-1">ƒ</span>
+                    <span className="text-[10px] font-medium ml-1" style={{ color: 'var(--budget-text-muted)' }}>ƒ</span>
                   )}
                 </td>
                 <td className="center">
                   <span className={cn('payment-badge', getPaymentClass(a.paymentStatus))}>
-                    {a.paymentStatus}
+                    {formatPayment(a.paymentStatus)}
                   </span>
                 </td>
               </tr>
