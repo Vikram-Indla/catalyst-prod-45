@@ -25,7 +25,8 @@ import {
   DateCell,
   StatCard,
   Dropdown,
-  InlineEditCell
+  InlineEditCell,
+  DepartmentRunRates
 } from '@/components/users';
 
 // V8 Styles
@@ -417,6 +418,9 @@ export default function UsersManagement() {
             onClick={() => handleFilterChange(setTypeFilter, typeFilter === 'freelance' ? 'all' : 'freelance')}
           />
         </div>
+
+        {/* Department Run Rates */}
+        <DepartmentRunRates users={users} />
 
         {/* Table Container */}
         <div className="ct-table-container">
