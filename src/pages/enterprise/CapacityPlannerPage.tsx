@@ -54,7 +54,7 @@ import { SleekCapacityHeader, PrimaryView, ResourceViewMode, ProjectViewMode } f
 import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
 import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
 import { CapacityHeatmap } from '@/components/capacity-heatmap';
-import { CapacityAnalyticsView } from '@/components/capacity/CapacityAnalyticsView';
+import { CapacityAnalyticsView, AnalyticsDepartmentTabs } from '@/components/capacity/CapacityAnalyticsView';
 
 import { ProjectCapacityView } from '@/components/capacity/ProjectCapacityView';
 import { getPeriodRange, navigatePeriod } from '@/components/capacity/ProjectCapacityView/utils';
@@ -453,6 +453,50 @@ export default function CapacityPlannerPage() {
     return Array.from(depts).sort();
   }, [metrics.resources]);
 
+  // Department tabs for Resources/Gantt views (same as Utilization tab)
+  const DEPARTMENT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
+  
+  const resourceDepartmentTabs = useMemo(() => {
+    // Get plannable resources (exclude Management roles only)
+    const plannableResources = metrics.resources.filter(r => {
+      const roleLower = r.role?.toLowerCase() || '';
+      return !roleLower.includes('management');
+    });
+    
+    const deptCounts = new Map<string, number>();
+    let total = 0;
+    
+    plannableResources.forEach(r => {
+      const dept = r.department || 'Other';
+      deptCounts.set(dept, (deptCounts.get(dept) || 0) + 1);
+      total++;
+    });
+
+    const tabs = [{ id: 'all', name: 'All Departments', count: total }];
+    
+    DEPARTMENT_ORDER.forEach(deptName => {
+      const count = deptCounts.get(deptName);
+      if (count !== undefined) {
+        tabs.push({ id: deptName.toLowerCase(), name: deptName, count });
+      }
+    });
+
+    // Add any other departments not in the predefined order
+    deptCounts.forEach((count, name) => {
+      if (!DEPARTMENT_ORDER.includes(name) && name !== 'Other') {
+        tabs.push({ id: name.toLowerCase(), name, count });
+      }
+    });
+
+    // Add 'Other' at the end if it exists
+    const otherCount = deptCounts.get('Other');
+    if (otherCount !== undefined) {
+      tabs.push({ id: 'other', name: 'Other', count: otherCount });
+    }
+
+    return tabs;
+  }, [metrics.resources]);
+
   // Group resources by assignment type - using resource_allocations table for multi-assignment support
   // Uses activeResources (excludes expired contracts) for Allocations/Gantt views
   // FIXED: Only use CURRENT MONTH allocations to avoid duplicate grouping
@@ -820,6 +864,16 @@ export default function CapacityPlannerPage() {
 
           {/* Resources Primary View */}
           {primaryView === 'resources' && (
+            <div className="flex flex-col gap-4">
+              {/* Department Filter Tabs - Only for cards, table, and timeline views (not heatmap which has its own) */}
+              {resourceView !== 'heatmap' && (
+                <AnalyticsDepartmentTabs
+                  tabs={resourceDepartmentTabs}
+                  activeTab={departmentFilter}
+                  onTabChange={setDepartmentFilter}
+                />
+              )}
+              
             <AnimatePresence mode="wait">
               {/* Empty State - show based on view type: table uses filteredResources, others use activeResources */}
               {((resourceView === 'table' && filteredResources.length === 0) || 
@@ -981,6 +1035,7 @@ export default function CapacityPlannerPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+            </div>
           )}
 
           {/* Projects Primary View - Catalyst View 2 */}
