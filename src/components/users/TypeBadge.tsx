@@ -27,11 +27,6 @@ const normalizeType = (type: string | null): string | null => {
 };
 
 export const TypeBadge: React.FC<TypeBadgeProps> = ({ type }) => {
-  // Debug: log raw type values to identify data issues
-  if (type && (type.includes(' ') || type.includes(','))) {
-    console.warn('[TypeBadge] Multi-value type detected:', type);
-  }
-  
   const normalizedType = normalizeType(type);
   
   if (!normalizedType) return <span>—</span>;
