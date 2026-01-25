@@ -305,7 +305,7 @@ export function SleekCapacityHeader({
           <Button 
             onClick={onPresentationMode}
             size="sm"
-            className="h-9 px-5 text-sm gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"
+            className="h-9 px-5 text-sm gap-1.5 bg-teal-500 hover:bg-teal-600 text-white shadow-sm"
           >
             <Presentation className="h-4 w-4" />
             Present
@@ -349,7 +349,7 @@ export function SleekCapacityHeader({
                   'relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
                   tab.isActive 
                     ? isBudgetActive
-                      ? 'bg-[#0ea5e9] text-white shadow-sm'
+                      ? 'bg-[#2563eb] text-white shadow-sm'
                       : 'bg-card dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] shadow-sm border border-border/50 dark:border-[var(--border-default)]'
                     : 'text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)] hover:bg-card/50 dark:hover:bg-[var(--surface-2)]'
                 )}
