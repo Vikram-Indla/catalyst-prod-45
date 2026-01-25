@@ -215,38 +215,19 @@ export default function CycleCommandCenter() {
         )}
         
         {activeTab === 'kanban' && (
-          <CycleKanbanView 
-            cycleId={cycleId || ''}
-            testCases={testCases}
-            isLoading={testCasesLoading}
-          />
+          <CycleKanbanView cycleId={cycleId || ''} />
         )}
         
         {activeTab === 'table' && (
-          <CycleTableView 
-            cycleId={cycleId || ''}
-            testCases={testCases}
-            isLoading={testCasesLoading}
-            statusFilter={statusFilter}
-            onStatusFilter={handleStatusFilter}
-          />
+          <CycleTableView cycleId={cycleId || ''} />
         )}
         
         {activeTab === 'calendar' && (
-          <CycleCalendarView 
-            cycle={cycle}
-            testCases={testCases}
-            isLoading={isLoading || testCasesLoading}
-          />
+          <CycleCalendarView cycleId={cycleId || ''} />
         )}
         
         {activeTab === 'reports' && (
-          <CycleReportsView 
-            cycleId={cycleId || ''}
-            cycle={cycle}
-            stats={stats}
-            isLoading={isLoading}
-          />
+          <CycleReportsView cycleId={cycleId || ''} />
         )}
       </div>
 

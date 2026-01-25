@@ -1,24 +1,42 @@
 /**
  * Reports View - Enhanced analytics dashboard with charts
  * Module 4A-4: Plan/Cycle Analytics
+ * 
+ * DATA SOURCE: useCycleExecutionItems (shared hook)
+ * Derives stats from tm_cycle_scope (source of truth)
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
-import { TrendingUp, BarChart3, Bug, Users } from 'lucide-react';
-import type { TestCycle, CycleStats } from '@/hooks/test-cycles/useCycleDetails';
+import { BarChart3 } from 'lucide-react';
+import { useCycleExecutionItems } from '@/hooks/test-cycles/useCycleExecutionItems';
 import { QualityTrendChart, DefectTrendChart, TesterPerformanceTable, VelocityChart } from './analytics';
 
 interface CycleReportsViewProps {
   cycleId: string;
-  cycle: TestCycle | undefined;
-  stats: CycleStats | undefined;
-  isLoading: boolean;
 }
 
-export function CycleReportsView({ cycleId, cycle, stats, isLoading }: CycleReportsViewProps) {
-  if (!stats) return null;
+export function CycleReportsView({ cycleId }: CycleReportsViewProps) {
+  // Use shared execution hook - single source of truth
+  const { summary, isLoading } = useCycleExecutionItems(cycleId);
+  
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => (
+            <Card key={i}><CardContent className="pt-6 h-24 animate-pulse bg-muted" /></Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate derived metrics
+  const executed = summary.passed + summary.failed + summary.blocked + summary.skipped;
+  const executionRate = summary.total > 0 ? Math.round((executed / summary.total) * 100) : 0;
+  const passRateDisplay = summary.passRate !== null ? summary.passRate : 0;
 
   return (
     <div className="space-y-6">
@@ -27,9 +45,14 @@ export function CycleReportsView({ cycleId, cycle, stats, isLoading }: CycleRepo
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground mb-1">Pass Rate</p>
-            <p className="text-3xl font-bold" style={{ color: CATALYST_V5.teal }}>{stats.passRate}%</p>
+            <p className="text-3xl font-bold" style={{ color: CATALYST_V5.teal }}>
+              {summary.passRate !== null ? `${summary.passRate}%` : '-%'}
+            </p>
             <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${stats.passRate}%`, backgroundColor: CATALYST_V5.teal }} />
+              <div 
+                className="h-full rounded-full" 
+                style={{ width: `${passRateDisplay}%`, backgroundColor: CATALYST_V5.teal }} 
+              />
             </div>
           </CardContent>
         </Card>
@@ -37,9 +60,12 @@ export function CycleReportsView({ cycleId, cycle, stats, isLoading }: CycleRepo
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground mb-1">Execution Rate</p>
-            <p className="text-3xl font-bold" style={{ color: CATALYST_V5.primary }}>{stats.executionRate}%</p>
+            <p className="text-3xl font-bold" style={{ color: CATALYST_V5.primary }}>{executionRate}%</p>
             <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${stats.executionRate}%`, backgroundColor: CATALYST_V5.primary }} />
+              <div 
+                className="h-full rounded-full" 
+                style={{ width: `${executionRate}%`, backgroundColor: CATALYST_V5.primary }} 
+              />
             </div>
           </CardContent>
         </Card>
@@ -47,7 +73,7 @@ export function CycleReportsView({ cycleId, cycle, stats, isLoading }: CycleRepo
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground mb-1">Failed Tests</p>
-            <p className="text-3xl font-bold" style={{ color: CATALYST_V5.danger }}>{stats.failed}</p>
+            <p className="text-3xl font-bold" style={{ color: CATALYST_V5.danger }}>{summary.failed}</p>
             <p className="text-xs text-muted-foreground mt-1">Defects to investigate</p>
           </CardContent>
         </Card>
@@ -55,7 +81,7 @@ export function CycleReportsView({ cycleId, cycle, stats, isLoading }: CycleRepo
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground mb-1">Blocked</p>
-            <p className="text-3xl font-bold" style={{ color: CATALYST_V5.warning }}>{stats.blocked}</p>
+            <p className="text-3xl font-bold" style={{ color: CATALYST_V5.warning }}>{summary.blocked}</p>
             <p className="text-xs text-muted-foreground mt-1">Require attention</p>
           </CardContent>
         </Card>
@@ -85,15 +111,15 @@ export function CycleReportsView({ cycleId, cycle, stats, isLoading }: CycleRepo
           <div className="grid grid-cols-3 gap-8">
             <div>
               <p className="text-sm text-muted-foreground">Total Tests</p>
-              <p className="text-2xl font-bold">{stats.total}</p>
+              <p className="text-2xl font-bold">{summary.total}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Executed</p>
-              <p className="text-2xl font-bold">{stats.passed + stats.failed + stats.blocked}</p>
+              <p className="text-2xl font-bold">{executed}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Remaining</p>
-              <p className="text-2xl font-bold">{stats.notStarted + stats.inProgress}</p>
+              <p className="text-2xl font-bold">{summary.notRun + summary.inProgress}</p>
             </div>
           </div>
         </CardContent>

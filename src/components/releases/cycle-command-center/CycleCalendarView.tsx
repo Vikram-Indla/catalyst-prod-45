@@ -1,6 +1,8 @@
 /**
- * Calendar View - Month calendar with test counts - WIRED TO SUPABASE
- * Shows tests by due_date and execution activity
+ * Calendar View - Month calendar with test counts
+ * 
+ * DATA SOURCE: useCycleExecutionItems (shared hook)
+ * Shows tests by due_date and execution activity from tm_cycle_scope
  */
 
 import React, { useMemo } from 'react';
@@ -8,13 +10,16 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
-import type { TestCycle } from '@/hooks/test-cycles/useCycleDetails';
-import type { CycleTestCase } from '@/hooks/test-cycles/useCycleTestCases';
+import { 
+  useCycleExecutionItems, 
+  groupByDate,
+  type CycleExecutionItem,
+  type UIStatus,
+} from '@/hooks/test-cycles/useCycleExecutionItems';
+import { useCycleDetails } from '@/hooks/test-cycles/useCycleDetails';
 
 interface CycleCalendarViewProps {
-  cycle: TestCycle | undefined;
-  testCases: CycleTestCase[];
-  isLoading: boolean;
+  cycleId: string;
 }
 
 interface DayStats {
@@ -26,10 +31,48 @@ interface DayStats {
   notStarted: number;
 }
 
-export function CycleCalendarView({ cycle, testCases, isLoading }: CycleCalendarViewProps) {
+function calculateDayStats(items: CycleExecutionItem[]): DayStats {
+  const stats: DayStats = {
+    total: items.length,
+    passed: 0,
+    failed: 0,
+    blocked: 0,
+    inProgress: 0,
+    notStarted: 0,
+  };
+  
+  items.forEach(item => {
+    switch (item.status) {
+      case 'passed':
+        stats.passed++;
+        break;
+      case 'failed':
+        stats.failed++;
+        break;
+      case 'blocked':
+        stats.blocked++;
+        break;
+      case 'in_progress':
+        stats.inProgress++;
+        break;
+      case 'not_started':
+      default:
+        stats.notStarted++;
+        break;
+    }
+  });
+  
+  return stats;
+}
+
+export function CycleCalendarView({ cycleId }: CycleCalendarViewProps) {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = React.useState(today.getMonth());
   const [currentYear, setCurrentYear] = React.useState(today.getFullYear());
+
+  // Use shared execution hook - single source of truth
+  const { items, isLoading } = useCycleExecutionItems(cycleId);
+  const { cycle } = useCycleDetails(cycleId);
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
@@ -38,76 +81,11 @@ export function CycleCalendarView({ cycle, testCases, isLoading }: CycleCalendar
   const cycleStart = cycle?.startDate ? new Date(cycle.startDate) : null;
   const cycleEnd = cycle?.endDate ? new Date(cycle.endDate) : null;
 
-  // Aggregate test cases by due date
-  const testsByDate = useMemo(() => {
-    const map: Record<string, DayStats> = {};
-    
-    testCases.forEach(tc => {
-      if (!tc.dueDate) return;
-      
-      const dateKey = new Date(tc.dueDate).toISOString().split('T')[0];
-      
-      if (!map[dateKey]) {
-        map[dateKey] = { total: 0, passed: 0, failed: 0, blocked: 0, inProgress: 0, notStarted: 0 };
-      }
-      
-      map[dateKey].total++;
-      
-      switch (tc.status) {
-        case 'passed':
-          map[dateKey].passed++;
-          break;
-        case 'failed':
-          map[dateKey].failed++;
-          break;
-        case 'blocked':
-          map[dateKey].blocked++;
-          break;
-        case 'in_progress':
-          map[dateKey].inProgress++;
-          break;
-        case 'not_started':
-        default:
-          map[dateKey].notStarted++;
-          break;
-      }
-    });
-    
-    return map;
-  }, [testCases]);
-
-  // Also aggregate by execution date (executedAt)
-  const executionsByDate = useMemo(() => {
-    const map: Record<string, DayStats> = {};
-    
-    testCases.forEach(tc => {
-      if (!tc.executedAt) return;
-      
-      const dateKey = new Date(tc.executedAt).toISOString().split('T')[0];
-      
-      if (!map[dateKey]) {
-        map[dateKey] = { total: 0, passed: 0, failed: 0, blocked: 0, inProgress: 0, notStarted: 0 };
-      }
-      
-      map[dateKey].total++;
-      
-      switch (tc.status) {
-        case 'passed':
-          map[dateKey].passed++;
-          break;
-        case 'failed':
-          map[dateKey].failed++;
-          break;
-        case 'blocked':
-          map[dateKey].blocked++;
-          break;
-        default:
-          break;
-      }
-    });
-    
-    return map;
-  }, [testCases]);
+  // Group items by due date
+  const itemsByDueDate = useMemo(() => groupByDate(items, 'dueDate'), [items]);
+  
+  // Group items by execution date
+  const itemsByExecDate = useMemo(() => groupByDate(items, 'executedAt'), [items]);
 
   const isInCycleRange = (day: number) => {
     if (!cycleStart || !cycleEnd) return false;
@@ -132,6 +110,21 @@ export function CycleCalendarView({ cycle, testCases, isLoading }: CycleCalendar
   const getDateKey = (day: number) => {
     return new Date(currentYear, currentMonth, day).toISOString().split('T')[0];
   };
+
+  if (isLoading) {
+    return (
+      <Card className="p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-48" />
+          <div className="grid grid-cols-7 gap-1">
+            {Array.from({ length: 35 }).map((_, i) => (
+              <div key={i} className="h-24 bg-muted rounded" />
+            ))}
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-6">
@@ -164,8 +157,12 @@ export function CycleCalendarView({ cycle, testCases, isLoading }: CycleCalendar
           const inRange = isInCycleRange(day);
           const isTodayDate = isToday(day);
           const dateKey = getDateKey(day);
-          const dueStats = testsByDate[dateKey];
-          const execStats = executionsByDate[dateKey];
+          
+          const dueItems = itemsByDueDate[dateKey] || [];
+          const execItems = itemsByExecDate[dateKey] || [];
+          
+          const dueStats = dueItems.length > 0 ? calculateDayStats(dueItems) : null;
+          const execStats = execItems.length > 0 ? calculateDayStats(execItems) : null;
           
           return (
             <div 
