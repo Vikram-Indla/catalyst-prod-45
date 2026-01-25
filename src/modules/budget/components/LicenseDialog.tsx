@@ -45,6 +45,8 @@ import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapa
 import { formatSAR } from '../hooks/useResourceCost';
 import type { SoftwareLicenseWithAllocation, LicenseType } from '../types';
 
+const NO_DEPARTMENT_VALUE = '__none__';
+
 const licenseSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   license_type: z.enum(['annual', 'monthly']),
@@ -163,9 +165,11 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Department</FormLabel>
-                  <Select 
-                    value={field.value || ''} 
-                    onValueChange={(value) => field.onChange(value || null)}
+                  <Select
+                    value={field.value ?? NO_DEPARTMENT_VALUE}
+                    onValueChange={(value) =>
+                      field.onChange(value === NO_DEPARTMENT_VALUE ? null : value)
+                    }
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -173,7 +177,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">No department</SelectItem>
+                      <SelectItem value={NO_DEPARTMENT_VALUE}>No department</SelectItem>
                       {departments.map((dept) => (
                         <SelectItem key={dept.id} value={dept.id}>
                           {dept.name}
