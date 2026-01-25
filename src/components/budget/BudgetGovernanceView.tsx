@@ -1,13 +1,14 @@
 /**
  * Budget Governance View - Embedded view for Capacity Planner tab
- * V8 Design System compliant
+ * STAGE 3: Full functionality wiring - refresh, export, period toggle, department filter
  */
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, RefreshCw, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBudgetData, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
+import { toast } from 'sonner';
 import '@/styles/budget-module.css';
 
 import { BudgetDepartmentTabs } from '@/components/budget/BudgetDepartmentTabs';
@@ -36,6 +37,7 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
   const [currentDept, setCurrentDept] = useState('all');
   const [internalOpen, setInternalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hideCTC, setHideCTC] = useState(false);
   
   // Use external control if provided, otherwise use internal state
   const execModalOpen = externalOpen !== undefined ? externalOpen : internalOpen;
@@ -59,7 +61,7 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
     return deptList;
   }, [data?.departments]);
 
-  // Keyboard navigation for department tabs in modal
+  // Keyboard navigation for department tabs
   const navigateDept = useCallback((direction: 'next' | 'prev') => {
     const currentIdx = departments.findIndex(d => d.id === currentDept);
     if (direction === 'next' && currentIdx < departments.length - 1) {
@@ -87,10 +89,72 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [execModalOpen, handleClose, navigateDept]);
 
+  // Refresh handler
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await refetch();
-    setIsRefreshing(false);
+    try {
+      await refetch();
+      toast.success('Budget data refreshed');
+    } catch (err) {
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  // Export full budget to CSV
+  const handleExport = () => {
+    if (!data) return;
+
+    const headers = ['Category', 'Name', 'Type', 'Status', 'Department', 'Vendor', 'Resources', 'Budget (SAR)', 'Payment'];
+    const rows: (string | number)[][] = [];
+
+    // Add assignments
+    data.assignments.forEach(a => {
+      rows.push([
+        'Assignment',
+        a.name,
+        a.type,
+        a.status,
+        a.department,
+        a.vendor || '—',
+        a.type === 'Outsourced' ? '—' : (a.resourceCount || 0),
+        a.budget,
+        a.paymentStatus
+      ]);
+    });
+
+    // Add licenses
+    data.licenses.forEach(l => {
+      rows.push([
+        'License',
+        l.name,
+        l.licenseType,
+        'Active',
+        '—',
+        '—',
+        l.userCount || '—',
+        l.annualCost,
+        '—'
+      ]);
+    });
+
+    const csv = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `budget-governance-${period.toLowerCase()}-2026.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast.success('Budget data exported to CSV');
   };
 
   // Filter assignments by department
@@ -144,7 +208,7 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
   return (
     <div className="budget-module min-h-[calc(100vh-200px)]">
       <div className="px-6 lg:px-8 pt-4 pb-4">
-        {/* Period Toggle */}
+        {/* Period Toggle + Actions */}
         <div className="flex items-center justify-between mb-4">
           <div className="period-toggle">
             {PERIODS.map(p => (
@@ -157,11 +221,35 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
               </button>
             ))}
           </div>
+          <div className="flex items-center gap-4">
             <div className="text-sm text-[var(--budget-text-muted)]">
               Showing: <strong className="text-[var(--budget-text-primary)]">
                 {period === 'Q1' ? 'Jan–Mar 2026' : period === 'H1' ? 'Jan–Jun 2026' : 'Full Year 2026'}
               </strong>
             </div>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleExport}
+                disabled={!data}
+                className="gap-1.5"
+              >
+                <Download className="w-4 h-4" />
+                Export
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="gap-1.5"
+              >
+                <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
+                Refresh
+              </Button>
+            </div>
+          </div>
         </div>
 
         {isLoading ? (
@@ -177,7 +265,7 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
               budgets={data?.departments || {}}
               onSelect={setCurrentDept}
             />
-            {/* Summary Cards */}
+            {/* Summary Cards with expandable panels */}
             <BudgetSummaryCards
               budget={currentBudget}
               assignments={data?.assignments || []}
@@ -185,15 +273,20 @@ export function BudgetGovernanceView({ execModalOpen: externalOpen, onExecModalC
               licenses={data?.licenses || []}
               licenseCount={data?.licenseCount || 0}
               monthlyLicenseCost={data?.monthlyLicenseCost || 0}
+              resources={data?.resources || []}
+              period={period}
             />
 
             {/* Info Box */}
             <BudgetInfoBox />
 
-            {/* Assignment Ledger Table */}
+            {/* Assignment Ledger Table with expandable rows */}
             <BudgetLedgerTable
               assignments={sortedAssignments}
               currentDept={currentDept}
+              resources={data?.resources || []}
+              hideCTC={hideCTC}
+              onHideCTCChange={setHideCTC}
             />
 
             {/* Data Quality Panel */}
