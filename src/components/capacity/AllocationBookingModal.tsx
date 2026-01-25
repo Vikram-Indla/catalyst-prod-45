@@ -103,6 +103,7 @@ export function AllocationBookingModal({
           allocation_percent: alloc.allocation_percent,
           start_date: alloc.start_date,
           end_date: alloc.end_date || '',
+         status: alloc.status,
         };
         currentOriginalIds = [alloc.id];
         continue;
@@ -123,6 +124,10 @@ export function AllocationBookingModal({
         current.end_date = alloc.end_date || current.end_date;
         currentOriginalIds.push(alloc.id);
         current.originalIds = [...currentOriginalIds];
+       // Take the most "committed" status (committed > forecast)
+       if (current.status === 'forecast' && alloc.status === 'committed') {
+         current.status = 'committed';
+       }
       } else {
         // Push current and start new
         merged.push(current);
@@ -134,6 +139,7 @@ export function AllocationBookingModal({
           allocation_percent: alloc.allocation_percent,
           start_date: alloc.start_date,
           end_date: alloc.end_date || '',
+         status: alloc.status,
         };
         currentOriginalIds = [alloc.id];
       }
@@ -176,6 +182,7 @@ export function AllocationBookingModal({
       allocation_percent: 50,
       start_date: format(today, 'yyyy-MM-dd'),
       end_date: format(threeMonths, 'yyyy-MM-dd'),
+     status: 'forecast',
     };
   }
 
