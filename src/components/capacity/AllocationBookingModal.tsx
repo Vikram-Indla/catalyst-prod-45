@@ -169,13 +169,15 @@ export function AllocationBookingModal({
     setNewAllocation(updated);
   }
 
-  // Calculate monthly totals
+  // Calculate monthly totals - group by assignment_id to avoid double-counting monthly records
   const monthlyTotals = useMemo(() => {
     return months.map(month => {
       const monthStart = month;
       const monthEnd = addMonths(month, 1);
       
-      let total = 0;
+      // Group allocations by assignment_id and take max percentage per assignment
+      const assignmentMaxPercent = new Map<string, number>();
+      
       allocations.forEach(alloc => {
         if (!alloc.start_date) return;
         const allocStart = parseISO(alloc.start_date);
@@ -183,8 +185,17 @@ export function AllocationBookingModal({
         
         // Check if allocation overlaps with this month
         if (allocStart < monthEnd && allocEnd > monthStart) {
-          total += alloc.allocation_percent;
+          const assignmentKey = alloc.assignment_id || alloc.id || 'unknown';
+          const currentMax = assignmentMaxPercent.get(assignmentKey) || 0;
+          // Take the max percentage for this assignment in this month
+          assignmentMaxPercent.set(assignmentKey, Math.max(currentMax, alloc.allocation_percent));
         }
+      });
+      
+      // Sum max percentages across all distinct assignments
+      let total = 0;
+      assignmentMaxPercent.forEach(percent => {
+        total += percent;
       });
       
       return { month, total };
