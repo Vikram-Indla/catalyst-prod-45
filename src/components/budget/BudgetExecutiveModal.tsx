@@ -19,13 +19,7 @@ interface BudgetExecutiveModalProps {
   } | undefined;
 }
 
-const DEPARTMENTS = [
-  { id: 'all', name: 'All Departments' },
-  { id: 'Delivery', name: 'Delivery' },
-  { id: 'External', name: 'External' },
-  { id: 'Product', name: 'Product' },
-  { id: 'Operations', name: 'Operations' }
-];
+// Departments will be derived dynamically from data
 
 export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveModalProps) {
   const [currentSlide, setCurrentSlide] = useState(1);
@@ -33,6 +27,17 @@ export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveMod
   const [execTypeFilter, setExecTypeFilter] = useState<string | null>(null);
 
   if (!open || !data) return null;
+
+  // Derive departments dynamically from actual data
+  const departments = [
+    { id: 'all', name: 'All Departments' },
+    ...Object.keys(data.departments)
+      .filter(k => k !== 'all')
+      .map(k => ({ 
+        id: k, 
+        name: k === 'Technical Support' ? 'Tech Support' : k 
+      }))
+  ];
 
   const budget = data.departments[execDept] || data.departments.all;
   const unpaidAssignments = data.assignments.filter(a => a.paymentStatus === 'Unpaid');
@@ -59,9 +64,9 @@ export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveMod
 
         {/* Body */}
         <div className="modal-body">
-          {/* Department Selector */}
+          {/* Department Selector - Dynamic from DB */}
           <div className="flex gap-2 mb-6 flex-wrap">
-            {DEPARTMENTS.map(d => (
+            {departments.map(d => (
               <button
                 key={d.id}
                 className={cn(
@@ -85,8 +90,8 @@ export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveMod
                 Total budget requirement — {execDept === 'all' ? 'All Departments' : execDept}
               </p>
 
-              {/* Unpaid Alert */}
-              {unpaidAssignments.length > 0 && (execDept === 'all' || execDept === 'External') && (
+              {/* Unpaid Alert - Show for all or when outsourced unpaid exists */}
+              {unpaidAssignments.length > 0 && execDept === 'all' && (
                 <div className="exec-alert">
                   <div className="exec-alert-title">
                     ⚠️ CRITICAL: SAR {formatFull(unpaidTotal)} Unpaid — Completed Outsourced
@@ -168,10 +173,10 @@ export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveMod
               </p>
 
               <div className="space-y-3">
-                {DEPARTMENTS.filter(d => d.id !== 'all').map(d => {
+                {departments.filter(d => d.id !== 'all').map(d => {
                   const b = data.departments[d.id];
                   if (!b) return null;
-                  const maxTotal = Math.max(...DEPARTMENTS.filter(x => x.id !== 'all').map(x => data.departments[x.id]?.total || 0));
+                  const maxTotal = Math.max(...departments.filter(x => x.id !== 'all').map(x => data.departments[x.id]?.total || 0));
                   const barWidth = maxTotal > 0 ? (b.total / maxTotal * 100) : 0;
                   const pI = b.total > 0 ? (b.insourced / b.total * 100) : 0;
                   const pC = b.total > 0 ? (b.cosourced / b.total * 100) : 0;
@@ -186,7 +191,7 @@ export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveMod
                       >
                         {pI > 0 && <div style={{ width: `${pI}%`, background: 'var(--budget-insourced)' }} />}
                         {pC > 0 && <div style={{ width: `${pC}%`, background: 'var(--budget-cosourced)' }} />}
-                        {pO > 0 && <div style={{ width: `${pO}%`, background: d.id === 'External' ? 'var(--budget-danger)' : 'var(--budget-outsourced)' }} />}
+                        {pO > 0 && <div style={{ width: `${pO}%`, background: 'var(--budget-outsourced)' }} />}
                       </div>
                       <span className="w-[90px] text-right font-bold font-mono text-[14px]">{formatCurrency(b.total)}</span>
                       <span className="w-[80px] text-right text-[12px] text-[var(--budget-text-muted)]">
