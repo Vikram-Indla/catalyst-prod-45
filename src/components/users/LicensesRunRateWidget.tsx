@@ -53,14 +53,16 @@ export function LicensesRunRateWidget() {
       
       <div className="ct-licenses-value">
         <span className="ct-licenses-currency">ریال</span>
-        {formatCurrency(monthlyRunRate)}
+        <span>{formatCurrency(monthlyRunRate)}</span>
         <span className="ct-licenses-period">/mo</span>
       </div>
 
       <div className="ct-licenses-footer">
         <div className="ct-licenses-yearly">
           <span className="ct-licenses-yearly-label">Yearly</span>
-          <span className="ct-licenses-yearly-value">ریال {formatCurrency(totalAnnualCost)}</span>
+          <span className="ct-licenses-yearly-value">
+            <span className="ct-licenses-currency">ریال</span> {formatCurrency(totalAnnualCost)}
+          </span>
         </div>
         {nextRenewal && (
           <div className="ct-licenses-renewal">

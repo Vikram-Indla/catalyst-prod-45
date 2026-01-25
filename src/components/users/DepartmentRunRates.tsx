@@ -71,7 +71,7 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick,
             <div className="ct-runrate-dept">{department}</div>
             <div className="ct-runrate-value">
               <span className="ct-runrate-currency">ریال</span>
-              {formatCurrency(monthlyRunRate)}
+              <span>{formatCurrency(monthlyRunRate)}</span>
             </div>
             <div className="ct-runrate-headcount">
               <Users size={14} />
@@ -80,7 +80,9 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick,
             <div className="ct-runrate-footer">
               <div className="ct-runrate-yearly">
                 <span className="ct-runrate-yearly-label">Yearly</span>
-                <span className="ct-runrate-yearly-value">ریال {formatCurrency(monthlyRunRate * 12)}</span>
+                <span className="ct-runrate-yearly-value">
+                  <span className="ct-runrate-currency">ریال</span> {formatCurrency(monthlyRunRate * 12)}
+                </span>
               </div>
               {missingCtcCount > 0 && (
                 <div className="ct-runrate-missing">
