@@ -1657,3 +1657,162 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ================================================================
+   RUN RATE ROW LAYOUT
+   ================================================================ */
+.ct-runrate-row {
+  display: flex;
+  gap: var(--ct-space-5, 20px);
+  margin-bottom: var(--ct-space-7, 32px);
+}
+
+.ct-runrate-row .ct-runrate-section {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* ================================================================
+   LICENSES RUN RATE WIDGET
+   ================================================================ */
+.ct-licenses-widget {
+  background: var(--ct-bg-surface, #ffffff);
+  border: 1px solid var(--ct-border, #e2e8f0);
+  border-radius: var(--ct-radius-xl, 12px);
+  padding: var(--ct-space-5, 20px);
+  min-width: 260px;
+  max-width: 280px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--ct-transition-normal, 0.2s ease);
+}
+
+.ct-licenses-widget::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--ct-success, #0d9488);
+  opacity: 0.7;
+}
+
+.ct-licenses-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ct-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+  border-color: var(--ct-success, #0d9488);
+}
+
+.ct-licenses-widget:hover::before {
+  opacity: 1;
+}
+
+.ct-licenses-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ct-space-3, 12px);
+  margin-bottom: var(--ct-space-3, 12px);
+}
+
+.ct-licenses-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 148, 136, 0.1);
+  border-radius: var(--ct-radius-md, 6px);
+  color: var(--ct-success, #0d9488);
+}
+
+.ct-licenses-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.ct-licenses-label {
+  font-size: var(--ct-text-xs, 11px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ct-text-muted, #64748b);
+}
+
+.ct-licenses-count {
+  font-size: var(--ct-text-sm, 12px);
+  font-weight: 500;
+  color: var(--ct-text-tertiary, #475569);
+}
+
+.ct-licenses-value {
+  font-size: var(--ct-text-3xl, 24px);
+  font-weight: 700;
+  color: var(--ct-text-primary, #0f172a);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--ct-space-3, 12px);
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.ct-licenses-currency {
+  font-size: var(--ct-text-sm, 12px);
+  font-weight: 600;
+  color: var(--ct-text-tertiary, #475569);
+}
+
+.ct-licenses-period {
+  font-size: var(--ct-text-sm, 12px);
+  font-weight: 500;
+  color: var(--ct-text-muted, #64748b);
+}
+
+.ct-licenses-footer {
+  padding-top: var(--ct-space-3, 12px);
+  border-top: 1px solid var(--ct-border, #e2e8f0);
+}
+
+.ct-licenses-yearly {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: rgba(13, 148, 136, 0.06);
+  border-radius: var(--ct-radius-md, 6px);
+  font-variant-numeric: tabular-nums;
+}
+
+.ct-licenses-yearly-label {
+  font-size: var(--ct-text-xs, 11px);
+  font-weight: 600;
+  color: var(--ct-success, #0d9488);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ct-licenses-yearly-value {
+  font-size: var(--ct-text-sm, 12px);
+  font-weight: 700;
+  color: var(--ct-text-primary, #0f172a);
+}
+
+.ct-licenses-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  color: var(--ct-text-muted, #64748b);
+  font-size: var(--ct-text-sm, 12px);
+}
+
+@media (max-width: 1280px) {
+  .ct-runrate-row {
+    flex-direction: column;
+  }
+  
+  .ct-licenses-widget {
+    max-width: none;
+  }
+}

@@ -7,3 +7,4 @@ export { StatCard } from './StatCard';
 export { Dropdown } from './Dropdown';
 export { InlineEditCell } from './InlineEditCell';
 export { DepartmentRunRates } from './DepartmentRunRates';
+export { LicensesRunRateWidget } from './LicensesRunRateWidget';
