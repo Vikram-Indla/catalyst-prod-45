@@ -95,7 +95,7 @@ export function useAssignmentTable(cycleId: string) {
     queryFn: async () => {
       try {
         // Fetch cycle scope with test case and assignee details
-        const { data: cycleScope, error } = await supabase
+        const { data: cycleScope, error } = await (supabase as any)
           .from('tm_cycle_scope')
           .select(`
             id,
@@ -103,6 +103,8 @@ export function useAssignmentTable(cycleId: string) {
             test_case_id,
             assigned_to,
             current_status,
+            priority,
+            due_date,
             sort_order,
             added_at,
             tm_test_cases!inner(
@@ -110,7 +112,6 @@ export function useAssignmentTable(cycleId: string) {
               case_key,
               title,
               priority_id,
-              test_type,
               estimated_time,
               automation_status,
               folder_id,
@@ -127,13 +128,11 @@ export function useAssignmentTable(cycleId: string) {
 
         if (error) {
           console.error('Error fetching cycle scope:', error);
-          return generateMockAssignments(cycleId);
+          throw error;
         }
 
         if (!cycleScope || cycleScope.length === 0) {
-          // No data yet, return mock for demo
-          console.log('No cycle scope data found, using mock');
-          return generateMockAssignments(cycleId);
+          return [];
         }
 
         // Get priority mappings
@@ -189,15 +188,15 @@ export function useAssignmentTable(cycleId: string) {
             assigneeId: scope.assigned_to || null,
             assigneeName: profile?.full_name || null,
             assigneeAvatar: profile?.avatar_url || null,
-            priority,
-            dueDate: null, // Not stored in current schema
+            priority: scope.priority || priority, // Use cycle-scope priority if set
+            dueDate: scope.due_date || null, // Now from tm_cycle_scope
             module: folder?.name || 'General',
-            testType,
+            testType: 'functional',
             estimatedDurationMinutes: testCase?.estimated_time || 30,
-            executionTimeMinutes: null, // Would come from test runs
-            executedAt: null, // Would come from test runs
+            executionTimeMinutes: null,
+            executedAt: null,
             automationStatus,
-            defectCount: 0, // Would need to join with defects
+            defectCount: 0,
             createdAt: scope.added_at || new Date().toISOString(),
           };
         });
@@ -326,7 +325,7 @@ export function useAssignmentTable(cycleId: string) {
   const filterOptions = useMemo(() => {
     if (!rawData) return { modules: [], assignees: [], statuses: [], priorities: [], types: [] };
     
-    const modules = [...new Set(rawData.map(d => d.module))].sort();
+    const modules = [...new Set(rawData.map(d => d.module))].filter(Boolean).sort() as string[];
     const assigneeMap = new Map<string, string>();
     rawData.forEach(d => {
       if (d.assigneeId && d.assigneeName) {
