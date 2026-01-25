@@ -75,6 +75,8 @@ interface SleekCapacityHeaderProps {
   isRefreshing?: boolean;
   // Budget Executive Summary
   onExecutiveSummary?: () => void;
+  // Book Assignment CTA
+  onBookAssignment?: () => void;
 }
 
 // Dynamic Track Filter Component
@@ -166,6 +168,7 @@ export function SleekCapacityHeader({
   onRefresh,
   isRefreshing = false,
   onExecutiveSummary,
+  onBookAssignment,
 }: SleekCapacityHeaderProps) {
   const [lastRefresh] = useState(() => new Date());
   const [timeAgo, setTimeAgo] = useState('just now');
@@ -189,17 +192,6 @@ export function SleekCapacityHeader({
       onClick: () => {
         onPrimaryViewChange?.('resources');
         onResourceViewChange?.('heatmap');
-        onViewModeChange?.('table');
-      }
-    },
-    { 
-      id: 'resources', 
-      label: 'Resources', 
-      icon: Table2,
-      isActive: primaryView === 'resources' && resourceView === 'table',
-      onClick: () => {
-        onPrimaryViewChange?.('resources');
-        onResourceViewChange?.('table');
         onViewModeChange?.('table');
       }
     },
@@ -289,8 +281,19 @@ export function SleekCapacityHeader({
           </div>
         </div>
 
-        {/* Right: Primary CTA only (Budget has Executive Summary, others have none) */}
+        {/* Right: Primary CTAs */}
         <div className="flex items-center gap-3">
+          {/* Book Assignment - Available on resource views */}
+          {primaryView !== 'budget' && onBookAssignment && (
+            <Button 
+              onClick={onBookAssignment}
+              size="sm"
+              className="h-10 px-6 text-sm gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md font-semibold"
+            >
+              <Plus className="w-4 h-4" />
+              Book Assignment
+            </Button>
+          )}
           {/* Executive Summary - Budget view only, PRIMARY CTA */}
           {primaryView === 'budget' && onExecutiveSummary && (
             <Button 
