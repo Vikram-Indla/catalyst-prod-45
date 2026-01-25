@@ -152,7 +152,6 @@ export function AllocationBookingModal({
     if (resource && existingAllocations.length > 0) {
       // Merge consecutive monthly records into single allocations
       const mergedAllocations = mergeConsecutiveAllocations(existingAllocations);
-     console.log('[AllocationBookingModal] Merged allocations:', mergedAllocations);
       setAllocations(mergedAllocations);
     } else {
       setAllocations([]);
