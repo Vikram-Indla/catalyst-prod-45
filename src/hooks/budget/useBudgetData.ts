@@ -216,20 +216,28 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
       };
     });
 
-    // Calculate insourced from resources
+    // Calculate insourced from Variable/Freelance resources only
     resources.forEach(r => {
       const dept = r.department;
       if (!departments[dept]) return;
       
-      const ctcBudget = (r.ctc || 0) * months;
+      // Only Variable and Freelance resource types contribute to insourced
+      const isInsourcedResource = 
+        r.resourceType?.toLowerCase() === 'variable' || 
+        r.resourceType?.toLowerCase() === 'freelance' ||
+        r.resourceType?.toLowerCase() === 'core'; // legacy value
       
-      departments[dept].insourced += ctcBudget;
-      departments[dept].resources++;
-      if (!r.ctc || r.ctc === 0) departments[dept].dataIssues++;
-      
-      departments.all.insourced += ctcBudget;
-      departments.all.resources++;
-      if (!r.ctc || r.ctc === 0) departments.all.dataIssues++;
+      if (isInsourcedResource) {
+        const ctcBudget = (r.ctc || 0) * months;
+        
+        departments[dept].insourced += ctcBudget;
+        departments[dept].resources++;
+        if (!r.ctc || r.ctc === 0) departments[dept].dataIssues++;
+        
+        departments.all.insourced += ctcBudget;
+        departments.all.resources++;
+        if (!r.ctc || r.ctc === 0) departments.all.dataIssues++;
+      }
     });
 
     // Add cosourced and outsourced from assignments
