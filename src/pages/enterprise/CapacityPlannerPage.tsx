@@ -1439,23 +1439,16 @@ export default function CapacityPlannerPage() {
                     const userById = new Map<string, ResourceMetric>(resources.map((r) => [r.id, r] as [string, ResourceMetric]));
                     const userId = selectedUserId;
 
-                    // Create assignment for the user
-                    const { error: assignmentError } = await (supabase as any).from('assignments').insert({
-                      user_id: userId,
-                      project_id: null,
-                      allocation_percentage: 0,
-                      start_date: startDate,
-                      status: 'active',
-                      work_item_type: 'project',
-                    });
-                    if (assignmentError) throw assignmentError;
-
-                    // Update department
-                    const { error: profileError } = await supabase
-                      .from('profiles')
-                      .update({ department_id: selectedDepartmentId })
-                      .eq('id', userId);
-                    if (profileError) throw profileError;
+                    // Update department in profiles if provided
+                    if (selectedDepartmentId) {
+                      const { error: profileError } = await supabase
+                        .from('profiles')
+                        .update({ department_id: selectedDepartmentId })
+                        .eq('id', userId);
+                      if (profileError) {
+                        console.warn('Could not update profile department:', profileError);
+                      }
+                    }
 
                     // Create resource_inventory entry and allocations
                     const name = userById.get(userId)?.name;
