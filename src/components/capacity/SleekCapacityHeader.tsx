@@ -251,110 +251,110 @@ export function SleekCapacityHeader({
 
   return (
     <div className="bg-card border-b border-border">
-      {/* ROW 1: Breadcrumb + Live Status + Actions */}
-      <div className="flex items-center justify-between px-5 h-14 border-b border-border/40">
-        <div className="flex flex-col gap-0.5">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">Enterprise / Capacity</span>
-            {primaryView === 'budget' && (
-              <>
-                <span className="text-xs text-muted-foreground dark:text-[var(--muted-foreground)]">•</span>
-                <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">Budget</span>
-              </>
-            )}
+      {/* ROW 1: Title + Live Badge (inline) | Actions (NO REFRESH/EXPORT for Budget) */}
+      <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
+        {/* Left: Title + Live Badge Inline */}
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col gap-0.5">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-medium text-slate-500">Enterprise / Capacity</span>
+              {primaryView === 'budget' && (
+                <>
+                  <span className="text-xs text-slate-400">•</span>
+                  <span className="text-xs font-medium text-slate-500">Budget</span>
+                </>
+              )}
+            </div>
+            
+            {/* Title */}
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
+              {primaryView === 'budget' ? 'Budget Governance' : 'Capacity Planner'}
+            </h1>
           </div>
           
-          {/* Title - changes based on view */}
-          <h1 className="text-xl font-semibold text-foreground dark:text-[var(--text-primary)] tracking-tight">
-            {primaryView === 'budget' ? 'Budget Governance' : 'Capacity Planner'}
-          </h1>
-        </div>
-        
-        {/* Live Status - moved to separate container */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <div className="relative flex items-center justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span className="absolute w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-            </div>
-            <span className="font-medium text-emerald-600 dark:text-emerald-400">Live</span>
-            <span className="text-muted-foreground dark:text-[var(--muted-foreground)]">•</span>
-            <span>Updated {timeAgo} ago</span>
+          {/* Live Badge - Inline with title */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-200">
+            <span className="relative flex items-center justify-center">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            </span>
+            <span className="text-xs font-semibold text-emerald-700">Live</span>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onExport}
-            className="h-9 px-4 text-sm gap-1.5 border-border"
-          >
-            <Download className="h-4 w-4" />
-            Export
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onRefresh}
-            disabled={isRefreshing}
-            className="h-9 px-4 text-sm gap-1.5 border-border"
-          >
-            <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
-          </Button>
-          {/* Present button - hidden on Budget view */}
+        {/* Right: Actions - Simplified for Budget view */}
+        <div className="flex items-center gap-3">
+          {/* Export/Refresh - Only for non-budget views */}
           {primaryView !== 'budget' && (
-            <Button 
-              onClick={onPresentationMode}
-              size="sm"
-              className="h-9 px-5 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
-            >
-              <Presentation className="h-4 w-4" />
-              Present
-            </Button>
+            <>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={onExport}
+                className="h-9 px-4 text-sm gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50"
+              >
+                <Download className="h-4 w-4" />
+                Export
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={onRefresh}
+                disabled={isRefreshing}
+                className="h-9 px-4 text-sm gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50"
+              >
+                <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+              </Button>
+              <Button 
+                onClick={onPresentationMode}
+                size="sm"
+                className="h-9 px-5 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm font-semibold"
+              >
+                <Presentation className="h-4 w-4" />
+                Present
+              </Button>
+              <Button
+                onClick={onAddResource}
+                size="sm"
+                className="h-9 px-4 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
+              >
+                <Plus className="h-4 w-4" />
+                Book Resource
+              </Button>
+            </>
           )}
-          {/* Executive Summary - Budget view only, in Catalyst blue */}
+          
+          {/* Executive Summary - Budget view only, PRIMARY CTA */}
           {primaryView === 'budget' && onExecutiveSummary && (
             <Button 
               onClick={onExecutiveSummary}
               size="sm"
-              className="h-9 px-5 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm font-semibold"
+              className="h-10 px-6 text-sm gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md font-semibold"
             >
               <BarChart3 className="w-4 h-4" />
               Executive Summary
             </Button>
           )}
-          {primaryView !== 'budget' && (
-            <Button
-              onClick={onAddResource}
-              size="sm"
-              className="h-9 px-4 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
-            >
-              <Plus className="h-4 w-4" />
-              Book Resource
-            </Button>
-          )}
         </div>
       </div>
 
-      {/* ROW 2: Search + Hero Tabs (full width for tabs) */}
+      {/* ROW 2: Search + Hero Tabs - DYNAMITE V2 (HIGH VISIBILITY) */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={primaryView === 'projects' ? "Search projects..." : "Search resources..."}
-            className="w-56 h-10 pl-10 pr-3 text-sm bg-muted/50 border-transparent rounded-xl focus:bg-background focus:border-primary/30 focus:ring-2 focus:ring-primary/10 transition-all"
+            className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
           />
         </div>
 
-        {/* Hero Tab Strip - V8 Design with blue active state for ALL tabs */}
-        <div className="relative flex items-center bg-muted/60 dark:bg-[var(--surface-3)] rounded-xl p-1 gap-0.5 border border-border/50 dark:border-[var(--border-default)]">
+        {/* Hero Tab Strip - DYNAMITE V2 HIGH VISIBILITY */}
+        <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
           {viewTabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -362,36 +362,35 @@ export function SleekCapacityHeader({
                 key={tab.id}
                 onClick={tab.onClick}
                 className={cn(
-                  'relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+                  'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
                   tab.isActive 
-                    ? 'bg-[#2563eb] text-white shadow-sm'
-                    : 'text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)] hover:bg-card/50 dark:hover:bg-[var(--surface-2)]'
+                    ? 'bg-[#2563eb] text-white shadow-md'
+                    : 'text-slate-700 hover:bg-white hover:shadow-sm hover:text-slate-900'
                 )}
               >
-                <Icon className={cn(
-                  "w-4 h-4",
-                  tab.isActive ? "text-white" : ""
-                )} />
+                <Icon className="w-4 h-4" />
                 <span>{tab.label}</span>
               </button>
             );
           })}
-        </div>
+        </nav>
 
-        {/* Period Toggles */}
-        <div className="flex items-center gap-1 bg-muted/60 dark:bg-[var(--surface-3)] rounded-lg p-1 border border-border/50">
-          {['Q1', 'H1', 'Full'].map((period) => (
-            <button
-              key={period}
-              className={cn(
-                'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-                'text-muted-foreground hover:text-foreground hover:bg-card/50'
-              )}
-            >
-              {period}
-            </button>
-          ))}
-        </div>
+        {/* Period Toggle - Hidden in header, shown in Budget view body */}
+        {primaryView !== 'budget' && (
+          <div className="inline-flex items-center bg-slate-100 rounded-xl p-1.5 border border-slate-200">
+            {['Q1', 'H1', 'Full'].map((period) => (
+              <button
+                key={period}
+                className={cn(
+                  'px-4 py-2 text-sm font-semibold rounded-lg transition-all',
+                  'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                )}
+              >
+                {period}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ROW 3: Stats + Filters (resources/allocations/gantt) - hidden for contracts, projects, budget, and analytics view */}
