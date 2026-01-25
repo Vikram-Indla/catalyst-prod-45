@@ -35,6 +35,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
     vendor_id: '',
     country_id: '',
     location_id: '',
+    ctc: '',
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -141,6 +142,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
         vendor_id: vendor?.id || userInventory?.vendor_id || '',
         country_id: country?.id || userInventory?.country_id || '',
         location_id: location?.id || userInventory?.location_id || '',
+        ctc: user.ctc !== null && user.ctc !== undefined ? String(user.ctc) : '',
       });
     } else {
       setFormData({
@@ -155,6 +157,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
         vendor_id: '',
         country_id: '',
         location_id: '',
+        ctc: '',
       });
     }
   }, [user, userInventory, departments, assignments, vendors, countries, locations]);
@@ -205,6 +208,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
               contract_end_date: formData.contract_end_date || null,
               resource_type: formData.resource_type || null,
               department_id: formData.department_id || null,
+              ctc: formData.ctc ? parseFloat(formData.ctc) : null,
               updated_at: new Date().toISOString(),
             })
             .eq('id', user.id);
@@ -231,6 +235,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
           contract_start_date: formData.contract_start_date || null,
           contract_end_date: formData.contract_end_date || null,
           resource_type: formData.resource_type || null,
+          ctc: formData.ctc ? parseFloat(formData.ctc) : null,
           updated_at: new Date().toISOString(),
         };
 
@@ -456,6 +461,28 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
                   value={selectedVendor?.vendor_code || '—'} 
                   disabled 
                 />
+              </div>
+            </div>
+            <div className="um-form-row">
+              <div className="um-form-group" style={{ flex: 1 }}>
+                <label>CTC (Cost to Company)</label>
+                <div style={{ position: 'relative' }}>
+                  <span style={{ 
+                    position: 'absolute', 
+                    left: '12px', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    color: 'var(--ct-text-muted)',
+                    fontSize: '13px'
+                  }}>ریال</span>
+                  <input
+                    type="number"
+                    placeholder="Enter CTC amount"
+                    value={formData.ctc}
+                    onChange={(e) => handleChange('ctc', e.target.value)}
+                    style={{ paddingLeft: '48px' }}
+                  />
+                </div>
               </div>
             </div>
           </div>
