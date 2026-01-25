@@ -579,6 +579,13 @@ export type Database = {
             referencedColumns: ["context_id"]
           },
           {
+            foreignKeyName: "daily_execution_stats_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "daily_execution_stats_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -21430,6 +21437,13 @@ export type Database = {
             referencedColumns: ["context_id"]
           },
           {
+            foreignKeyName: "tm_cycle_assignments_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tm_cycle_assignments_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -21532,6 +21546,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_my_work"
             referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_execution_audit_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_cycle_execution_audit_scope_id_fkey"
@@ -21653,6 +21674,13 @@ export type Database = {
             referencedRelation: "v_tm_my_work"
             referencedColumns: ["context_id"]
           },
+          {
+            foreignKeyName: "tm_cycle_milestones_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
         ]
       }
       tm_cycle_scope: {
@@ -21738,6 +21766,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_my_work"
             referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_cycle_scope_test_case_id_fkey"
@@ -22559,6 +22594,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_my_work"
             referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
@@ -25993,6 +26035,13 @@ export type Database = {
             referencedColumns: ["context_id"]
           },
           {
+            foreignKeyName: "user_test_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_test_scope_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
@@ -27592,6 +27641,101 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_traceability_summary"
             referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      v_tm_test_cycle_list_metrics: {
+        Row: {
+          actual_end: string | null
+          actual_start: string | null
+          assigned_to: string | null
+          avg_duration_seconds: number | null
+          created_at: string | null
+          created_by: string | null
+          cycle_key: string | null
+          description: string | null
+          environment: string | null
+          id: string | null
+          name: string | null
+          pass_rate_pct: number | null
+          planned_end: string | null
+          planned_start: string | null
+          progress_pct: number | null
+          project_id: string | null
+          release_id: string | null
+          runs_blocked: number | null
+          runs_failed: number | null
+          runs_passed: number | null
+          runs_skipped: number | null
+          runs_total: number | null
+          status: Database["public"]["Enums"]["tm_cycle_status"] | null
+          tests_count: number | null
+          updated_at: string | null
+          updated_at_effective: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
           },
         ]
       }

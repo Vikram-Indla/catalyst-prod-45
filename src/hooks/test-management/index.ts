@@ -110,6 +110,16 @@ export {
   type CreateCycleInput,
 } from './useTestCyclesEnhanced';
 
+// Test Cycle List (authoritative metrics from view)
+export {
+  useTestCycleList,
+  useTestCycleListSummary,
+  cycleListKeys,
+  type CycleListRow,
+  type CycleListFilters,
+  type CycleListSummary,
+} from '../test-cycles/useTestCycleList';
+
 // Releases
 export { useReleases, type ReleaseOption } from './useReleases';
 

@@ -28,15 +28,17 @@ import { CycleTableView } from '@/components/releases/test-cycles/CycleTableView
 import { CreateCycleModalEnhanced, CreateCycleFormData } from '@/components/releases/test-cycles/CreateCycleModalEnhanced';
 import { EditTestCycleDialog } from '@/components/releases/test-cycles/EditTestCycleDialog';
 import { 
-  useTestCyclesEnhanced, 
-  useCycleKPIs, 
+  useTestCycleList,
+  useTestCycleListSummary,
+  cycleListKeys,
   useCreateCycleEnhanced,
   useDeleteCycleEnhanced,
   useCloneCycleEnhanced,
   useProjects,
   useReleases,
-  CycleWithDetails,
+  type CycleListRow,
 } from '@/hooks/test-management';
+import { useQueryClient } from '@tanstack/react-query';
 import { exportTestCycles } from '@/utils/exportTestCycles';
 
 type ViewMode = 'card' | 'list';
@@ -58,6 +60,7 @@ const ENVIRONMENT_OPTIONS = [
 
 export default function TestCyclesPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   
   // Get current project
   const { data: projects } = useProjects();
@@ -68,37 +71,45 @@ export default function TestCyclesPage() {
   const [releaseFilter, setReleaseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [envFilter, setEnvFilter] = useState('all');
-  const [viewMode, setViewMode] = useState<ViewMode>('card');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedCycleForEdit, setSelectedCycleForEdit] = useState<CycleWithDetails | null>(null);
+  const [selectedCycleForEdit, setSelectedCycleForEdit] = useState<CycleListRow | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   
-  // Fetch releases for filter dropdown
-  const { data: releases } = useReleases();
-  
-  // Fetch cycles with enhanced data
-  const { data: cycles, isLoading } = useTestCyclesEnhanced(projectId, {
+  // Build filters object
+  const filters = useMemo(() => ({
     search: searchQuery || undefined,
     releaseId: releaseFilter !== 'all' ? releaseFilter : undefined,
     status: statusFilter !== 'all' ? statusFilter : undefined,
     environment: envFilter !== 'all' ? envFilter : undefined,
-  });
+  }), [searchQuery, releaseFilter, statusFilter, envFilter]);
   
-  // Compute KPIs
-  const kpis = useCycleKPIs(cycles);
+  // Fetch releases for filter dropdown
+  const { data: releases } = useReleases();
   
-  // Mutations
+  // Fetch cycles with authoritative metrics from view
+  const { data: cycles, isLoading } = useTestCycleList(projectId, filters);
+  
+  // Fetch summary KPIs (respects same filters)
+  const { data: summary } = useTestCycleListSummary(projectId, filters);
+  
+  // Mutations with proper cache invalidation
   const createCycleMutation = useCreateCycleEnhanced();
   const deleteCycleMutation = useDeleteCycleEnhanced();
   const cloneCycleMutation = useCloneCycleEnhanced();
   
-  // Group cycles by status
+  // Invalidate list and summary on mutations
+  const invalidateCycles = () => {
+    queryClient.invalidateQueries({ queryKey: cycleListKeys.all });
+  };
+  
+  // Group cycles by status for card view
   const groupedCycles = useMemo(() => ({
-    in_progress: (cycles || []).filter(c => c.status === 'in_progress'),
-    planned: (cycles || []).filter(c => c.status === 'planned'),
+    in_progress: (cycles || []).filter(c => c.status === 'in_progress' || c.status === 'active'),
+    planned: (cycles || []).filter(c => c.status === 'planned' || c.status === 'draft'),
     completed: (cycles || []).filter(c => c.status === 'completed'),
   }), [cycles]);
   
@@ -131,40 +142,43 @@ export default function TestCyclesPage() {
       {
         onSuccess: () => {
           setIsCreateModalOpen(false);
+          invalidateCycles();
         },
       }
     );
   };
   
-  const handleEditCycle = (cycle: CycleWithDetails) => {
+  const handleEditCycle = (cycle: CycleListRow) => {
     setSelectedCycleForEdit(cycle);
     setIsEditModalOpen(true);
   };
   
   const handleDeleteCycle = (cycleId: string) => {
-    deleteCycleMutation.mutate(cycleId);
+    deleteCycleMutation.mutate(cycleId, {
+      onSuccess: () => invalidateCycles(),
+    });
   };
   
-  const handleDuplicateCycle = (cycle: CycleWithDetails) => {
+  const handleDuplicateCycle = (cycle: CycleListRow) => {
     if (!projectId) return;
-    cloneCycleMutation.mutate({ cycleId: cycle.id, projectId });
+    cloneCycleMutation.mutate({ cycleId: cycle.id, projectId }, {
+      onSuccess: () => invalidateCycles(),
+    });
   };
 
   const handleExport = async (format: 'csv' | 'xlsx') => {
     setIsExporting(true);
     try {
       const exportData = (cycles || []).map(c => ({
-        id: c.key,
+        id: c.cycleKey,
         name: c.name,
         status: c.status,
-        progress: c.total_cases > 0 
-          ? Math.round(((c.passed_count + c.failed_count + c.blocked_count) / c.total_cases) * 100) 
-          : 0,
-        passed: c.passed_count,
-        failed: c.failed_count,
-        blocked: c.blocked_count,
-        startDate: c.planned_start,
-        endDate: c.planned_end,
+        progress: c.progressPct,
+        passed: c.runsPassed,
+        failed: c.runsFailed,
+        blocked: c.runsBlocked,
+        startDate: c.plannedStart,
+        endDate: c.plannedEnd,
         environment: c.environment,
       }));
       await exportTestCycles(exportData, format);
@@ -177,6 +191,21 @@ export default function TestCyclesPage() {
   };
 
   const hasFilters = searchQuery || releaseFilter !== 'all' || statusFilter !== 'all' || envFilter !== 'all';
+
+  // Format time ago for display
+  const formatTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
 
   return (
     <div className="p-6">
@@ -214,8 +243,17 @@ export default function TestCyclesPage() {
         </div>
       </div>
       
-      {/* KPI Cards */}
-      <CycleKPICards kpis={kpis} isLoading={isLoading} />
+      {/* KPI Cards - wired to summary hook */}
+      <CycleKPICards 
+        kpis={{
+          totalCycles: summary?.totalCycles ?? 0,
+          inProgressCount: summary?.inProgressCount ?? 0,
+          completedCount: summary?.completedThisMonth ?? 0,
+          passRate: summary?.overallPassRate ?? 0,
+          avgDurationHours: summary?.avgDurationHours ?? 0,
+        }} 
+        isLoading={isLoading} 
+      />
       
       {/* Filters Bar */}
       <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg mb-4">
@@ -344,10 +382,34 @@ export default function TestCyclesPage() {
                 {groupedCycles.in_progress.map(cycle => (
                   <CycleCardEnhanced 
                     key={cycle.id} 
-                    cycle={cycle} 
-                    onEdit={handleEditCycle}
-                    onDuplicate={handleDuplicateCycle}
-                    onDelete={handleDeleteCycle}
+                    cycle={{
+                      id: cycle.id,
+                      key: cycle.cycleKey,
+                      name: cycle.name,
+                      description: cycle.description,
+                      status: cycle.status,
+                      environment: cycle.environment || 'staging',
+                      release_id: cycle.releaseId,
+                      release: cycle.releaseName ? { id: cycle.releaseId!, name: cycle.releaseName } : null,
+                      assigned_to: cycle.assignedTo,
+                      assignee: cycle.assigneeName ? { id: cycle.assignedTo!, full_name: cycle.assigneeName, avatar_url: null } : null,
+                      planned_start: cycle.plannedStart,
+                      planned_end: cycle.plannedEnd,
+                      actual_start: cycle.actualStart,
+                      actual_end: cycle.actualEnd,
+                      total_cases: cycle.testsCount,
+                      passed_count: cycle.runsPassed,
+                      failed_count: cycle.runsFailed,
+                      blocked_count: cycle.runsBlocked,
+                      skipped_count: 0,
+                      not_run_count: cycle.testsCount - cycle.runsPassed - cycle.runsFailed - cycle.runsBlocked,
+                      created_at: cycle.createdAt,
+                      updated_at: cycle.updatedAt,
+                      created_by: null,
+                    }}
+                    onEdit={() => handleEditCycle(cycle)}
+                    onDuplicate={() => handleDuplicateCycle(cycle)}
+                    onDelete={() => handleDeleteCycle(cycle.id)}
                   />
                 ))}
               </div>
@@ -366,10 +428,34 @@ export default function TestCyclesPage() {
                 {groupedCycles.planned.map(cycle => (
                   <CycleCardEnhanced 
                     key={cycle.id} 
-                    cycle={cycle}
-                    onEdit={handleEditCycle}
-                    onDuplicate={handleDuplicateCycle}
-                    onDelete={handleDeleteCycle}
+                    cycle={{
+                      id: cycle.id,
+                      key: cycle.cycleKey,
+                      name: cycle.name,
+                      description: cycle.description,
+                      status: cycle.status,
+                      environment: cycle.environment || 'staging',
+                      release_id: cycle.releaseId,
+                      release: cycle.releaseName ? { id: cycle.releaseId!, name: cycle.releaseName } : null,
+                      assigned_to: cycle.assignedTo,
+                      assignee: cycle.assigneeName ? { id: cycle.assignedTo!, full_name: cycle.assigneeName, avatar_url: null } : null,
+                      planned_start: cycle.plannedStart,
+                      planned_end: cycle.plannedEnd,
+                      actual_start: cycle.actualStart,
+                      actual_end: cycle.actualEnd,
+                      total_cases: cycle.testsCount,
+                      passed_count: cycle.runsPassed,
+                      failed_count: cycle.runsFailed,
+                      blocked_count: cycle.runsBlocked,
+                      skipped_count: 0,
+                      not_run_count: cycle.testsCount - cycle.runsPassed - cycle.runsFailed - cycle.runsBlocked,
+                      created_at: cycle.createdAt,
+                      updated_at: cycle.updatedAt,
+                      created_by: null,
+                    }}
+                    onEdit={() => handleEditCycle(cycle)}
+                    onDuplicate={() => handleDuplicateCycle(cycle)}
+                    onDelete={() => handleDeleteCycle(cycle.id)}
                   />
                 ))}
               </div>
@@ -388,10 +474,34 @@ export default function TestCyclesPage() {
                 {groupedCycles.completed.map(cycle => (
                   <CycleCardEnhanced 
                     key={cycle.id} 
-                    cycle={cycle}
-                    onEdit={handleEditCycle}
-                    onDuplicate={handleDuplicateCycle}
-                    onDelete={handleDeleteCycle}
+                    cycle={{
+                      id: cycle.id,
+                      key: cycle.cycleKey,
+                      name: cycle.name,
+                      description: cycle.description,
+                      status: cycle.status,
+                      environment: cycle.environment || 'staging',
+                      release_id: cycle.releaseId,
+                      release: cycle.releaseName ? { id: cycle.releaseId!, name: cycle.releaseName } : null,
+                      assigned_to: cycle.assignedTo,
+                      assignee: cycle.assigneeName ? { id: cycle.assignedTo!, full_name: cycle.assigneeName, avatar_url: null } : null,
+                      planned_start: cycle.plannedStart,
+                      planned_end: cycle.plannedEnd,
+                      actual_start: cycle.actualStart,
+                      actual_end: cycle.actualEnd,
+                      total_cases: cycle.testsCount,
+                      passed_count: cycle.runsPassed,
+                      failed_count: cycle.runsFailed,
+                      blocked_count: cycle.runsBlocked,
+                      skipped_count: 0,
+                      not_run_count: cycle.testsCount - cycle.runsPassed - cycle.runsFailed - cycle.runsBlocked,
+                      created_at: cycle.createdAt,
+                      updated_at: cycle.updatedAt,
+                      created_by: null,
+                    }}
+                    onEdit={() => handleEditCycle(cycle)}
+                    onDuplicate={() => handleDuplicateCycle(cycle)}
+                    onDelete={() => handleDeleteCycle(cycle.id)}
                   />
                 ))}
               </div>
@@ -401,38 +511,43 @@ export default function TestCyclesPage() {
       ) : (
         <CycleTableView 
           cycles={(cycles || []).map(c => ({
-            id: c.key,
+            id: c.cycleKey,
             name: c.name,
-            releaseId: c.release?.id || '',
-            releaseName: c.release?.name || '',
-            environment: c.environment as any,
+            releaseId: c.releaseId || '',
+            releaseName: c.releaseName || '',
+            environment: (c.environment || 'staging') as any,
             status: c.status as any,
-            progress: c.total_cases > 0 
-              ? Math.round(((c.passed_count + c.failed_count + c.blocked_count) / c.total_cases) * 100) 
-              : 0,
-            totalTests: c.total_cases,
-            passedTests: c.passed_count,
-            failedTests: c.failed_count,
-            skippedTests: c.skipped_count,
-            pendingTests: c.not_run_count,
+            progress: c.progressPct,
+            totalTests: c.testsCount,
+            passedTests: c.runsPassed,
+            failedTests: c.runsFailed,
+            skippedTests: 0,
+            pendingTests: c.testsCount - c.runsPassed - c.runsFailed - c.runsBlocked,
+            passRate: c.passRatePct,
             duration: '-',
             assignee: {
-              name: c.assignee?.full_name || 'Unassigned',
-              initials: c.assignee?.full_name?.split(' ').map(p => p[0]).join('').slice(0, 2) || 'UA',
+              name: c.assigneeName || 'Unassigned',
+              initials: c.assigneeInitials,
               color: 'blue',
             },
-            createdAt: c.created_at,
-            updatedAt: c.updated_at,
+            createdAt: c.createdAt,
+            updatedAt: c.updatedAtEffective,
             _originalId: c.id,
           }))}
           onEdit={(cycle) => navigate(`/releases/test-cycles/${cycle._originalId || cycle.id}`)}
           onDuplicate={(cycle) => {
             if (!projectId) return;
-            cloneCycleMutation.mutate({ cycleId: cycle._originalId || cycle.id, projectId });
+            cloneCycleMutation.mutate({ cycleId: cycle._originalId || cycle.id, projectId }, {
+              onSuccess: () => invalidateCycles(),
+            });
           }}
           onDelete={(cycleId) => {
-            const cycle = cycles?.find(c => c.key === cycleId);
-            if (cycle) deleteCycleMutation.mutate(cycle.id);
+            const cycle = cycles?.find(c => c.cycleKey === cycleId);
+            if (cycle) {
+              deleteCycleMutation.mutate(cycle.id, {
+                onSuccess: () => invalidateCycles(),
+              });
+            }
           }}
         />
       )}
@@ -454,11 +569,14 @@ export default function TestCyclesPage() {
           name: selectedCycleForEdit.name,
           description: selectedCycleForEdit.description,
           status: selectedCycleForEdit.status,
-          startDate: selectedCycleForEdit.planned_start,
-          endDate: selectedCycleForEdit.planned_end,
+          startDate: selectedCycleForEdit.plannedStart,
+          endDate: selectedCycleForEdit.plannedEnd,
           environment: selectedCycleForEdit.environment,
         } : null}
-        onSuccess={() => setSelectedCycleForEdit(null)}
+        onSuccess={() => {
+          setSelectedCycleForEdit(null);
+          invalidateCycles();
+        }}
       />
     </div>
   );
