@@ -490,6 +490,7 @@ export function useAddCasesToScope() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', variables.cycle_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.cycle_id] });
+      queryClient.invalidateQueries({ queryKey: ['cycle-details', variables.cycle_id] });
       toast.success(`Added ${variables.case_ids.length} case(s) to cycle`);
     },
     onError: (error: Error) => {
@@ -520,6 +521,7 @@ export function useRemoveFromScope() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycle-scope', variables.cycle_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.cycle_id] });
+      queryClient.invalidateQueries({ queryKey: ['cycle-details', variables.cycle_id] });
       toast.success('Removed from cycle');
     },
     onError: (error: Error) => {
