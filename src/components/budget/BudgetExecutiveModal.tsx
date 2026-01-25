@@ -2,7 +2,7 @@
  * Budget Executive Summary Modal
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -16,15 +16,31 @@ interface BudgetExecutiveModalProps {
     assignments: BudgetAssignment[];
     departments: Record<string, DepartmentBudget>;
     dataQualityIssues: { name: string; department: string; issue: string }[];
+    licenseBudget?: number;
+    licenseCount?: number;
+    monthlyLicenseCost?: number;
   } | undefined;
+  onNavigateDept?: (direction: 'next' | 'prev') => void;
+  currentDept?: string;
+  onDeptChange?: (dept: string) => void;
 }
 
 // Departments will be derived dynamically from data
 
-export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveModalProps) {
+export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, currentDept: externalDept, onDeptChange }: BudgetExecutiveModalProps) {
   const [currentSlide, setCurrentSlide] = useState(1);
-  const [execDept, setExecDept] = useState('all');
+  const [execDept, setExecDept] = useState(externalDept || 'all');
   const [execTypeFilter, setExecTypeFilter] = useState<string | null>(null);
+
+  // Sync with external dept if provided
+  useEffect(() => {
+    if (externalDept) setExecDept(externalDept);
+  }, [externalDept]);
+
+  const handleDeptChange = (dept: string) => {
+    setExecDept(dept);
+    onDeptChange?.(dept);
+  };
 
   if (!open || !data) return null;
 
@@ -78,7 +94,7 @@ export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveMod
                     ? "bg-[var(--budget-primary)] border-[var(--budget-primary)] text-white"
                     : "bg-[var(--budget-bg)] border-[var(--budget-border)] text-[var(--budget-text-secondary)] hover:border-[var(--budget-primary)]"
                 )}
-                onClick={() => setExecDept(d.id)}
+                onClick={() => handleDeptChange(d.id)}
               >
                 {d.name}
               </button>

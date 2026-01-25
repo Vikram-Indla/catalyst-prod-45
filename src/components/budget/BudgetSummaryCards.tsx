@@ -1,18 +1,29 @@
 /**
  * Budget Summary Cards Component
+ * V8 Spec: 4-card grid (Insourced, Cosourced, Outsourced, Licenses)
  */
 
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/hooks/budget/useBudgetData';
-import type { BudgetAssignment, DepartmentBudget } from '@/hooks/budget/useBudgetData';
+import type { BudgetAssignment, DepartmentBudget, BudgetLicense } from '@/hooks/budget/useBudgetData';
 
 interface BudgetSummaryCardsProps {
   budget: DepartmentBudget | null;
   assignments: BudgetAssignment[];
   currentDept: string;
+  licenses?: BudgetLicense[];
+  licenseCount?: number;
+  monthlyLicenseCost?: number;
 }
 
-export function BudgetSummaryCards({ budget, assignments, currentDept }: BudgetSummaryCardsProps) {
+export function BudgetSummaryCards({ 
+  budget, 
+  assignments, 
+  currentDept,
+  licenses = [],
+  licenseCount = 0,
+  monthlyLicenseCost = 0
+}: BudgetSummaryCardsProps) {
   if (!budget) return null;
 
   const insourcedAssignments = assignments.filter(a => 
@@ -23,8 +34,14 @@ export function BudgetSummaryCards({ budget, assignments, currentDept }: BudgetS
   );
   const outsourcedAssignments = assignments.filter(a => a.type === 'Outsourced');
 
+  // Find next renewal
+  const upcomingRenewals = licenses
+    .filter(l => l.renewalDate)
+    .sort((a, b) => new Date(a.renewalDate!).getTime() - new Date(b.renewalDate!).getTime());
+  const nextRenewal = upcomingRenewals[0];
+
   return (
-    <div className="summary-row">
+    <div className="summary-row four-cols">
       {/* Insourced Card */}
       <div className="summary-card insourced">
         <div className="summary-header">
@@ -66,6 +83,26 @@ export function BudgetSummaryCards({ budget, assignments, currentDept }: BudgetS
               <span><strong>{a.vendor}</strong> — {a.name}</span>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Licenses Card */}
+      <div className="summary-card licenses">
+        <div className="summary-header">
+          <span className="summary-title">Licenses</span>
+          <span className="summary-badge licenses">{licenseCount} Active</span>
+        </div>
+        <div className="summary-value licenses">{formatCurrency(budget.licenses)}</div>
+        <div className="summary-sub">SAR • Software Subscriptions</div>
+        <div className="summary-detail">
+          <div className="flex items-center justify-between">
+            <span>Monthly: <strong>{formatCurrency(monthlyLicenseCost)}</strong></span>
+            {nextRenewal && (
+              <span className="text-[10px] text-[var(--budget-warning)]">
+                Next: {new Date(nextRenewal.renewalDate!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
