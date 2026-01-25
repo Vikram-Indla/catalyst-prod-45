@@ -398,10 +398,10 @@ export function AIGenerateTestCasesDialog({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex-1 flex flex-col gap-4 overflow-hidden"
+              className="flex-1 min-h-0 flex flex-col gap-4 overflow-hidden"
             >
               {/* Summary */}
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg border">
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg border shrink-0">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
                     <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -428,7 +428,7 @@ export function AIGenerateTestCasesDialog({
 
               {/* Metadata */}
               {generationResult.metadata && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 shrink-0">
                   {generationResult.metadata.coverageAreas?.map((area, i) => (
                     <Badge key={i} variant="secondary" className="text-xs">
                       {area}
@@ -438,8 +438,9 @@ export function AIGenerateTestCasesDialog({
               )}
 
               {/* Test Cases List */}
-              <ScrollArea className="flex-1 min-h-0 -mx-6 px-6">
-                <div className="space-y-2 pb-4">
+              <div className="flex-1 min-h-0 overflow-hidden -mx-6 px-6">
+                <ScrollArea className="h-full">
+                  <div className="space-y-2 pb-4">
                   {generationResult.testCases.map((tc, index) => (
                     <motion.div
                       key={index}
@@ -581,8 +582,9 @@ export function AIGenerateTestCasesDialog({
                       </AnimatePresence>
                     </motion.div>
                   ))}
-                </div>
-              </ScrollArea>
+                  </div>
+                </ScrollArea>
+              </div>
 
               {/* Actions */}
               <div className="flex justify-between items-center pt-4 border-t">
