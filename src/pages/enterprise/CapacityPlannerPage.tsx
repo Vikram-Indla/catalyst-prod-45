@@ -1029,7 +1029,12 @@ export default function CapacityPlannerPage() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <ContractHorizonView />
+              <CapacityAnalyticsView 
+                departmentFilter={departmentFilter}
+                onDepartmentChange={setDepartmentFilter}
+                searchQuery={searchQuery}
+                onResourceClick={(id) => setResource360Id(id)}
+              />
             </motion.div>
           )}
 
@@ -1749,7 +1754,12 @@ export default function CapacityPlannerPage() {
               
               {/* Contracts Primary View */}
               {primaryView === 'contracts' && (
-                <ContractHorizonView />
+                <CapacityAnalyticsView 
+                  departmentFilter={departmentFilter}
+                  onDepartmentChange={setDepartmentFilter}
+                  searchQuery={searchQuery}
+                  onResourceClick={(id) => setResource360Id(id)}
+                />
               )}
               
               {/* Budget Primary View */}
