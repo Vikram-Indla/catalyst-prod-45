@@ -92,6 +92,7 @@ export interface ResourceAllocation {
  */
 export interface AllocationBookingInput {
   id?: string;                  // undefined for new, string for edit
+  originalIds?: string[];       // All original DB IDs when merging consecutive records
   assignment_id: string;
   assignment_name: string;
   allocation_percent: number;
