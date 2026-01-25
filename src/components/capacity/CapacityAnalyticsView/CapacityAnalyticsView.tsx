@@ -25,6 +25,7 @@ interface CapacityAnalyticsViewProps {
   onDepartmentChange?: (dept: string) => void;
   onResourceClick?: (resourceId: string) => void;
   searchQuery?: string;
+  hideWidgets?: boolean;
 }
 
 export function CapacityAnalyticsView({ 
@@ -32,6 +33,7 @@ export function CapacityAnalyticsView({
   onDepartmentChange,
   onResourceClick,
   searchQuery = '',
+  hideWidgets = false,
 }: CapacityAnalyticsViewProps) {
   const [viewScope, setViewScope] = useState<ViewScope>('q1');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('insourced');
@@ -231,7 +233,8 @@ export function CapacityAnalyticsView({
 
   return (
     <div className="flex flex-col h-full">
-      {/* TOP ROW: Category Widgets (Insourced, Cosourced, Outsourced, Licenses) */}
+      {/* TOP ROW: Category Widgets (Insourced, Cosourced, Outsourced, Licenses) - Hidden in Utilization view */}
+      {!hideWidgets && (
       <section className="ct-category-section mb-4">
         <div className="ct-category-grid">
           {/* Insourced Card */}
@@ -318,9 +321,10 @@ export function CapacityAnalyticsView({
           </div>
         </div>
       </section>
+      )}
 
-      {/* Insourced Breakdown Panel */}
-      {activeCategory === 'insourced' && showBreakdown && (
+      {/* Insourced Breakdown Panel - Also hidden when hideWidgets is true */}
+      {!hideWidgets && activeCategory === 'insourced' && showBreakdown && (
         <div className="ct-breakdown-panel">
           <div className="ct-breakdown-header">
             <span className="ct-breakdown-title">Insourced Breakdown</span>
@@ -378,8 +382,8 @@ export function CapacityAnalyticsView({
         </div>
       )}
 
-      {/* BOTTOM ROW: Department Widgets - Only visible when Insourced is active */}
-      {activeCategory === 'insourced' && (
+      {/* BOTTOM ROW: Department Widgets - Only visible when Insourced is active and hideWidgets is false */}
+      {!hideWidgets && activeCategory === 'insourced' && (
         <section className="ct-runrate-section mb-6">
           <div className="ct-runrate-header">
             <span className="ct-runrate-title">Filter by Department</span>
