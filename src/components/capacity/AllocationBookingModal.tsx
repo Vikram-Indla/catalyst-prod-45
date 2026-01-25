@@ -210,6 +210,7 @@ export function AllocationBookingModal({
   function removeAllocation(index: number) {
     setAllocations(allocations.filter((_, i) => i !== index));
     if (editingIndex === index) setEditingIndex(null);
+    setHasUnsavedChanges(true);
   }
 
   function updateAllocation(index: number, field: keyof AllocationBookingInput, value: string | number) {

@@ -281,19 +281,8 @@ export function SleekCapacityHeader({
           </div>
         </div>
 
-        {/* Right: Primary CTAs */}
+        {/* Right: Primary CTA - Only Executive Summary on Budget tab */}
         <div className="flex items-center gap-3">
-          {/* Book Assignment - Available on resource views */}
-          {primaryView !== 'budget' && onBookAssignment && (
-            <Button 
-              onClick={onBookAssignment}
-              size="sm"
-              className="h-10 px-6 text-sm gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md font-semibold"
-            >
-              <Plus className="w-4 h-4" />
-              Book Assignment
-            </Button>
-          )}
           {/* Executive Summary - Budget view only, PRIMARY CTA */}
           {primaryView === 'budget' && onExecutiveSummary && (
             <Button 
