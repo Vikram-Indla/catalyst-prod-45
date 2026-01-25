@@ -1712,6 +1712,7 @@ export default function CapacityPlannerPage() {
                   periodType={projectPeriodType}
                   periodRange={projectPeriodRange}
                   searchQuery={searchQuery}
+                  onResourceClick={(id) => setResource360Id(id)}
                 />
               )}
               

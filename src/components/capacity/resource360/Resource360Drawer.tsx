@@ -54,24 +54,24 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
         aria-hidden="true"
       />
 
-      {/* Drawer Panel - V8 Styling */}
+      {/* Drawer Panel - V8 Styling with capacity-module scope */}
       <div
         className={cn(
-          "fixed top-0 right-0 h-full w-full max-w-[640px] z-[101]",
-          "bg-[var(--ct-surface)] ct-drawer",
-          "shadow-[var(--ct-shadow-xl)] flex flex-col overflow-hidden",
-          "border-l border-[var(--ct-border)]",
+          "capacity-module fixed top-0 right-0 h-full w-full max-w-[640px] z-[101]",
+          "bg-background dark:bg-slate-900",
+          "shadow-2xl flex flex-col overflow-hidden",
+          "border-l border-border",
           "animate-in slide-in-from-right duration-300"
         )}
         role="dialog"
         aria-modal="true"
       >
-        {/* Close Button - V8 */}
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-[var(--ct-radius-md)] hover:bg-[var(--ct-surface-hover)] transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-lg hover:bg-muted transition-colors"
         >
-          <X className="w-5 h-5 text-[var(--ct-text-muted)]" />
+          <X className="w-5 h-5 text-muted-foreground" />
         </button>
 
         {isLoading || !resource ? (

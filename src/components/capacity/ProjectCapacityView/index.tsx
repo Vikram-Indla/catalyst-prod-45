@@ -21,6 +21,7 @@ interface ProjectCapacityViewProps {
   periodType: PeriodType;
   periodRange: PeriodRange;
   searchQuery: string;
+  onResourceClick?: (resourceId: string) => void;
 }
 
 export function ProjectCapacityView({
@@ -29,7 +30,8 @@ export function ProjectCapacityView({
   className,
   periodType,
   periodRange,
-  searchQuery
+  searchQuery,
+  onResourceClick
 }: ProjectCapacityViewProps) {
   // State (only modal state remains local)
   const [selectedProject, setSelectedProject] = useState<ProjectUtilization | null>(null);
@@ -127,6 +129,7 @@ export function ProjectCapacityView({
                 key={utilization.project.id}
                 utilization={utilization}
                 onViewDetails={() => handleViewProject(utilization)}
+                onResourceClick={onResourceClick}
               />
             ))}
           </motion.div>
@@ -156,6 +159,7 @@ export function ProjectCapacityView({
         onClose={handleCloseModal}
         utilization={selectedProject}
         periodRange={periodRange}
+        onResourceClick={onResourceClick}
       />
     </div>
   );
