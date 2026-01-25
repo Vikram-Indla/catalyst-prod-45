@@ -846,6 +846,7 @@ export default function CapacityPlannerPage() {
           onRefresh={handleRetry}
           isRefreshing={isRetrying || isFetching}
           onExecutiveSummary={() => setBudgetExecModalOpen(true)}
+          onBookAssignment={() => setAddModalOpen(true)}
         />
 
         {/* Main Content */}
