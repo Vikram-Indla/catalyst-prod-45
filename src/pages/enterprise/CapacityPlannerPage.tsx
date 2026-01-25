@@ -854,14 +854,7 @@ export default function CapacityPlannerPage() {
           {/* Resources Primary View */}
           {primaryView === 'resources' && (
             <div className="flex flex-col gap-4">
-              {/* Department Filter Tabs - Only for cards, table, and timeline views (not heatmap which has its own) */}
-              {resourceView !== 'heatmap' && (
-                <AnalyticsDepartmentTabs
-                  tabs={resourceDepartmentTabs}
-                  activeTab={departmentFilter}
-                  onTabChange={setDepartmentFilter}
-                />
-              )}
+              {/* Department tabs are now built into CapacityAnalyticsView for all resource views */}
               
             <AnimatePresence mode="wait">
               {/* Empty State - show based on view type: table uses filteredResources, others use activeResources */}
@@ -930,8 +923,8 @@ export default function CapacityPlannerPage() {
                   />
                 </motion.div>
               )}
-              {/* Table View */}
-              {filteredResources.length > 0 && resourceView === 'table' && (
+              {/* Table View - Uses CapacityAnalyticsView with heatmap styling */}
+              {resourceView === 'table' && (
                 <motion.div
                   key={`table-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
@@ -939,34 +932,17 @@ export default function CapacityPlannerPage() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <TableView 
-                    resources={filteredResources} 
-                    projects={projects}
-                    groupBy={groupBy}
-                    groupedByAssignment={groupedByAssignment}
-                    groupedByDepartment={groupedByDepartment}
-                    allocations={allocations}
-                    onResourceClick={openResourceDrawer}
-                    onEditResource={handleOpenAllocationModal}
-                    onDeleteResource={(resource) => {
-                      setResourceToDelete(resource);
-                      setResourcesToDelete([]);
-                      setDeleteConfirmOpen(true);
-                    }}
-                    onBulkDelete={(resources) => {
-                      setResourcesToDelete(resources);
-                      setResourceToDelete(null);
-                      setDeleteConfirmOpen(true);
-                    }}
-                    onBulkEdit={(resources) => {
-                      setResourcesToBulkEdit(resources);
-                      setBulkEditOpen(true);
-                    }}
+                  <CapacityAnalyticsView 
+                    departmentFilter={departmentFilter}
+                    onDepartmentChange={setDepartmentFilter}
+                    onResourceClick={(id) => handleOpenAllocationModal(id)}
+                    searchQuery={searchQuery}
+                    hideWidgets={true}
                   />
                 </motion.div>
               )}
-              {/* Timeline View (Gantt) - uses activeResources (excludes expired contracts) */}
-              {activeResources.length > 0 && resourceView === 'timeline' && (
+              {/* Timeline View (Gantt) - Uses CapacityAnalyticsView with heatmap styling */}
+              {resourceView === 'timeline' && (
                 <motion.div
                   key={`timeline-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
@@ -974,34 +950,12 @@ export default function CapacityPlannerPage() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <EnhancedTimelineView 
-                    resources={activeResources.map(r => ({
-                      id: r.id,
-                      name: r.name,
-                      role: r.role,
-                      department: r.department,
-                      allocation: r.allocation,
-                      contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
-                      assignmentName: r.assignmentName,
-                    }))} 
-                    allocations={allocations}
-                    year={2026}
-                    onEditResource={handleOpenAllocationModal}
-                    groupBy={groupBy}
-                    groupedByAssignment={Object.fromEntries(
-                      Object.entries(groupedByAssignment).map(([key, resources]) => [
-                        key,
-                        resources.map(r => ({
-                          id: r.id,
-                          name: r.name,
-                          role: r.role,
-                          department: r.department,
-                          allocation: r.allocation,
-                          contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
-                          assignmentName: r.assignmentName,
-                        }))
-                      ])
-                    )}
+                  <CapacityAnalyticsView 
+                    departmentFilter={departmentFilter}
+                    onDepartmentChange={setDepartmentFilter}
+                    onResourceClick={(id) => handleOpenAllocationModal(id)}
+                    searchQuery={searchQuery}
+                    hideWidgets={true}
                   />
                 </motion.div>
               )}
