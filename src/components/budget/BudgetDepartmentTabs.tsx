@@ -25,21 +25,6 @@ export function BudgetDepartmentTabs({ departments, currentDept, budgets, onSele
       <div className="dept-tabs">
         {departments.map(d => {
           const budget = budgets[d.id];
-          // External department shows outsourced data from 'all'
-          if (d.id === 'External') {
-            const outsourcedTotal = budgets.all?.outsourced || 0;
-            return (
-              <button
-                key={d.id}
-                className={cn('dept-tab', currentDept === d.id && 'active')}
-                onClick={() => onSelect(d.id)}
-              >
-                <div className="dept-tab-name">{d.name}</div>
-                <div className="dept-tab-amount">{formatCurrency(outsourcedTotal)}</div>
-                <div className="dept-tab-count">Outsourced vendors</div>
-              </button>
-            );
-          }
           
           if (!budget) return null;
           

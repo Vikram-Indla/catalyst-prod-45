@@ -22,7 +22,6 @@ import { BudgetExecutiveModal } from '@/components/budget/BudgetExecutiveModal';
 const DEPARTMENTS = [
   { id: 'all', name: 'All Departments' },
   { id: 'Delivery', name: 'Delivery' },
-  { id: 'External', name: 'External' },
   { id: 'Product', name: 'Product' },
   { id: 'Operations', name: 'Operations' },
   { id: 'Technical Support', name: 'Tech Support' },
