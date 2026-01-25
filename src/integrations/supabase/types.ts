@@ -29006,6 +29006,7 @@ export type Database = {
         }
         Returns: string
       }
+      tm_is_defect_open: { Args: { p_status: string }; Returns: boolean }
       tm_link_requirement: {
         Args: {
           p_case_id: string
@@ -29035,6 +29036,10 @@ export type Database = {
           skipped_count: number
           total_cases: number
         }[]
+      }
+      tm_recalculate_release_metrics: {
+        Args: { p_release_id: string }
+        Returns: Json
       }
       tm_remove_case_from_cycle: {
         Args: { p_cycle_id: string; p_test_case_id: string }
