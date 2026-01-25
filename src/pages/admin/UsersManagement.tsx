@@ -133,7 +133,10 @@ export default function UsersManagement() {
     return users.filter((u) => {
       if (typeFilter !== 'all') {
         const userType = u.resource_type?.toLowerCase();
-        if (typeFilter === 'variable') {
+        // 'insourced' filter = Variable + Freelance (for department widgets)
+        if (typeFilter === 'insourced') {
+          if (userType !== 'variable' && userType !== 'freelance') return false;
+        } else if (typeFilter === 'variable') {
           if (userType !== 'variable' && userType !== 'core') return false;
         } else if (userType !== typeFilter.toLowerCase()) return false;
       }
@@ -423,16 +426,16 @@ export default function UsersManagement() {
         {/* Run Rate Widgets */}
         <DepartmentRunRates 
           users={users} 
-          activeDepartment={typeFilter === 'variable' ? deptFilter : undefined}
+          activeDepartment={typeFilter === 'insourced' ? deptFilter : undefined}
           onDepartmentClick={(dept) => {
             // Toggle: if already selected, clear both filters
-            if (deptFilter === dept && typeFilter === 'variable') {
+            if (deptFilter === dept && typeFilter === 'insourced') {
               handleFilterChange(setDeptFilter, '');
               handleFilterChange(setTypeFilter, 'all');
             } else {
-              // Set department + Variable type filter
+              // Set department + Insourced type filter (Variable + Freelance)
               handleFilterChange(setDeptFilter, dept);
-              handleFilterChange(setTypeFilter, 'variable');
+              handleFilterChange(setTypeFilter, 'insourced');
             }
           }}
           licenseWidget={<LicensesRunRateWidget />}
