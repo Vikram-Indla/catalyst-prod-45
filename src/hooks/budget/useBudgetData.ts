@@ -124,10 +124,10 @@ export function useBudgetData() {
         .from('resource_assignments')
         .select(`
           id,
-          aid,
+          assignment_id,
           name,
           assignment_type,
-          status,
+          assignment_status,
           budget,
           start_date,
           end_date,
@@ -166,7 +166,7 @@ export function useBudgetData() {
           ctc,
           contract_start_date,
           contract_end_date,
-          resource_assignments (id, name, aid),
+          resource_assignments (id, name, assignment_id),
           resource_vendors (id, name)
         `)
         .eq('is_active', true);
@@ -191,16 +191,16 @@ export function useBudgetData() {
       // Transform assignments
       const assignments: BudgetAssignment[] = (assignmentsData || []).map((a: any) => ({
         id: a.id,
-        aid: a.aid || `A${a.id.substring(0, 2).toUpperCase()}`,
+        aid: a.assignment_id || `A${String(a.id).substring(0, 2).toUpperCase()}`,
         name: a.name,
         type: normalizeType(a.assignment_type),
-        status: a.status || 'In Progress',
+        status: a.assignment_status || 'In Progress',
         budget: a.budget || 0,
         startDate: a.start_date,
         endDate: a.end_date,
         vendor: a.resource_vendors?.name || null,
         paymentStatus: a.payment_status || 'N/A',
-        department: deptMap.get(a.department_id) || 'Delivery',
+        department: 'Delivery', // Default, will be enriched from resources
         computed: normalizeType(a.assignment_type) === 'Insourced'
       }));
 
@@ -211,7 +211,7 @@ export function useBudgetData() {
         name: r.name,
         role: r.role_name || 'Unknown',
         department: deptMap.get(r.department_id) || 'Delivery',
-        aid: r.resource_assignments?.aid || null,
+        aid: r.resource_assignments?.assignment_id || null,
         assignmentName: r.resource_assignments?.name || null,
         vendor: r.resource_vendors?.name || null,
         resourceType: normalizeResourceType(r.resource_type),
