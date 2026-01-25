@@ -89,13 +89,13 @@ export function CompactResourceCard({
     });
   };
 
-  // Contract ring styles - Catalyst V5 compliant (Blue, Teal, Gray only)
+  // Contract ring styles - V8 compliant (Teal, Warning, Danger)
   const ringStyles = {
-    healthy: 'ring-[#0d9488] dark:ring-[#0d9488]',
-    warning: 'ring-[#6b7280] dark:ring-[#6b7280]',
-    critical: 'ring-[#2563eb] dark:ring-[#2563eb]',
-    expired: 'ring-muted-foreground/40',
-    permanent: 'ring-muted-foreground/30'
+    healthy: 'ring-[var(--ct-teal)]',
+    warning: 'ring-[var(--ct-warning)]',
+    critical: 'ring-[var(--ct-danger)]',
+    expired: 'ring-[var(--ct-text-muted)]',
+    permanent: 'ring-[var(--ct-text-muted)] opacity-50'
   };
 
   // Determine dominant signal for Zone B
@@ -130,32 +130,32 @@ export function CompactResourceCard({
 
   const dominantSignal = getDominantSignal();
 
-  // Signal styles - Catalyst V5 compliant (Blue, Teal, Gray only)
+  // Signal styles - V8 compliant
   const signalStyles = {
     danger: {
-      bg: 'bg-[#eff6ff] dark:bg-blue-900/40',
-      text: 'text-[#2563eb] dark:text-blue-300',
-      border: 'border-[#2563eb] dark:border-blue-700',
+      bg: 'bg-[var(--ct-danger-light)]',
+      text: 'text-[var(--ct-danger)]',
+      border: 'border-[var(--ct-danger)]',
     },
     warning: {
-      bg: 'bg-[#f8fafc] dark:bg-slate-900/40',
-      text: 'text-[#6b7280] dark:text-slate-300',
-      border: 'border-[#6b7280] dark:border-slate-700',
+      bg: 'bg-[var(--ct-warning-light)]',
+      text: 'text-[var(--ct-warning)]',
+      border: 'border-[var(--ct-warning)]',
     },
     success: {
-      bg: 'bg-[#f0fdfa] dark:bg-teal-900/40',
-      text: 'text-[#0d9488] dark:text-teal-300',
-      border: 'border-[#0d9488] dark:border-teal-700',
+      bg: 'bg-[var(--ct-teal-light)]',
+      text: 'text-[var(--ct-teal)]',
+      border: 'border-[var(--ct-teal)]',
     },
     info: {
-      bg: 'bg-[#eff6ff] dark:bg-blue-900/40',
-      text: 'text-[#2563eb] dark:text-blue-300',
-      border: 'border-[#2563eb] dark:border-blue-700',
+      bg: 'bg-[var(--ct-primary-light)]',
+      text: 'text-[var(--ct-primary)]',
+      border: 'border-[var(--ct-primary)]',
     },
     default: {
-      bg: 'bg-muted dark:bg-[var(--surface-3)]',
-      text: 'text-foreground dark:text-[var(--text-primary)]',
-      border: 'border-border dark:border-[var(--border-default)]',
+      bg: 'bg-[var(--ct-bg)]',
+      text: 'text-[var(--ct-text)]',
+      border: 'border-[var(--ct-border)]',
     },
   };
 
@@ -166,29 +166,28 @@ export function CompactResourceCard({
     <TooltipProvider>
       <div 
         className={cn(
-          "relative rounded-lg p-3 cursor-pointer group",
-          // Catalyst V5 surfaces and borders
-          "bg-card dark:bg-[var(--surface-0)]",
-          "border dark:border-[var(--border-default)]",
+          "relative rounded-[var(--ct-radius-lg)] p-3 cursor-pointer group",
+          // V8 surfaces and borders
+          "bg-[var(--ct-surface)]",
+          "border border-[var(--ct-border)]",
           // Micro-interactions
           "transition-all duration-200 hover:-translate-y-0.5",
           // Hover state
-          "hover:bg-muted/30 dark:hover:bg-[var(--surface-3)]",
-          "hover:border-border dark:hover:border-[var(--border-strong)]",
-          "hover:shadow-md",
-          // Risk state overrides - Catalyst V5 (using blue instead of red)
+          "hover:bg-[var(--ct-surface-hover)]",
+          "hover:border-[var(--ct-primary-border)]",
+          "hover:shadow-[var(--ct-shadow-md)]",
+          // Risk state overrides - V8
           isOverAllocated && [
-            "bg-[#eff6ff]/50 dark:bg-blue-950/30",
-            "border-[#2563eb] dark:border-blue-800",
-            "hover:shadow-blue-100/50 dark:hover:shadow-blue-900/20"
+            "bg-[var(--ct-danger-light)]",
+            "border-[var(--ct-danger)]",
           ],
           contractStatus.status === 'critical' && !isOverAllocated && [
-            "border-l-4 border-l-[#2563eb] dark:border-l-blue-600"
+            "border-l-4 border-l-[var(--ct-warning)]"
           ]
         )}
         style={{ 
           borderLeftWidth: isOverAllocated ? '4px' : undefined, 
-          borderLeftColor: isOverAllocated ? CATALYST_V5.error.hex : undefined,
+          borderLeftColor: isOverAllocated ? 'var(--ct-danger)' : undefined,
         }}
         onClick={onEdit}
       >

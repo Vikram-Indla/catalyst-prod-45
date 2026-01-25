@@ -366,30 +366,30 @@ export function AllocationBookingModal({
   return (
     <>
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 dark:bg-slate-900">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 bg-[var(--ct-surface)] border-[var(--ct-border)] rounded-[var(--ct-radius-xl)]">
+        {/* Header - V8 Modal Header */}
+        <div className="ct-modal-header flex items-center justify-between px-6 py-4 border-b border-[var(--ct-border)]">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--ct-primary)] text-white text-lg font-bold">
               {initials}
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+              <h2 className="ct-modal-title text-lg font-bold text-[var(--ct-text)]">
                 Edit Allocations: {resource.name}
               </h2>
               <div className="flex items-center gap-3 mt-1">
-                <span className="text-sm text-slate-500 dark:text-slate-400">
+                <span className="text-sm text-[var(--ct-text-secondary)]">
                   {resource.role}
                 </span>
-                <span className="text-slate-300 dark:text-slate-600">•</span>
+                <span className="text-[var(--ct-border)]">•</span>
                 {/* Department Selector - inline with role */}
                 <div className="flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                  <Building2 className="w-3.5 h-3.5 text-[var(--ct-text-muted)]" />
                   <Select value={selectedDepartmentId || 'unassigned'} onValueChange={handleDepartmentChange}>
-                    <SelectTrigger className="w-32 h-6 text-xs border-dashed bg-transparent px-2">
+                    <SelectTrigger className="w-32 h-6 text-xs border-dashed bg-transparent px-2 border-[var(--ct-border)]">
                       <SelectValue placeholder="Department" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-[var(--ct-surface)] border-[var(--ct-border)] z-[9999]">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {departments.map(dept => (
                         <SelectItem key={dept.id} value={dept.id}>
@@ -405,10 +405,10 @@ export function AllocationBookingModal({
         </div>
 
         {/* Body - Scrollable */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+        <div className="ct-modal-body flex-1 overflow-y-auto px-6 py-5 space-y-6">
           
           {/* Current Allocation Summary */}
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
+          <div className="bg-[var(--ct-bg)] rounded-[var(--ct-radius-lg)] p-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
                 Current Allocation Summary
@@ -1031,19 +1031,19 @@ export function AllocationBookingModal({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+        {/* Footer - V8 Modal Footer */}
+        <div className="ct-modal-footer flex items-center justify-between px-6 py-4 border-t border-[var(--ct-border)] bg-[var(--ct-bg)]">
           <Button
             variant="ghost"
             onClick={handleClose}
-            className="text-slate-600 dark:text-slate-300"
+            className="ct-btn-secondary text-[var(--ct-text-secondary)]"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+            className="ct-btn-primary bg-[var(--ct-primary)] hover:bg-[var(--ct-primary-hover)] text-white px-6"
           >
             {isSaving ? 'Saving...' : 'Save All Changes'}
           </Button>
