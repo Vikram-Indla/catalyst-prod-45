@@ -4,15 +4,39 @@ interface TypeBadgeProps {
   type: string | null;
 }
 
-export const TypeBadge: React.FC<TypeBadgeProps> = ({ type }) => {
-  if (!type) return <span>—</span>;
+/**
+ * Normalizes resource type to a single canonical value.
+ * Handles edge cases like combined values or legacy names.
+ */
+const normalizeType = (type: string | null): string | null => {
+  if (!type) return null;
   
-  const typeClass = getTypeBadgeClass(type);
+  // Trim and get just the first word if multiple values exist
+  const normalized = type.trim().split(/[\s,]+/)[0];
+  
+  // Map legacy values to canonical names
+  const typeMap: Record<string, string> = {
+    'core': 'Variable',
+    'variable': 'Variable',
+    'fixed': 'Fixed',
+    'permanent': 'Permanent',
+    'freelance': 'Freelance',
+  };
+  
+  return typeMap[normalized.toLowerCase()] || normalized;
+};
+
+export const TypeBadge: React.FC<TypeBadgeProps> = ({ type }) => {
+  const normalizedType = normalizeType(type);
+  
+  if (!normalizedType) return <span>—</span>;
+  
+  const typeClass = getTypeBadgeClass(normalizedType);
   
   return (
     <span className={`ct-badge ${typeClass}`}>
       <span className="ct-badge-dot" />
-      {type}
+      {normalizedType}
     </span>
   );
 };
