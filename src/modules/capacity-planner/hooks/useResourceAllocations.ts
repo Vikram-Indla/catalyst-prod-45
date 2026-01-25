@@ -264,6 +264,7 @@ export function useResourceAllocations() {
               allocation_percent: alloc.allocation_percent,
               start_date: alloc.start_date,
               end_date: alloc.end_date,
+             status: alloc.status || 'forecast',
               updated_at: new Date().toISOString(),
             })
             .eq('id', updateId);
@@ -278,6 +279,7 @@ export function useResourceAllocations() {
             allocation_percent: alloc.allocation_percent,
             start_date: alloc.start_date,
             end_date: alloc.end_date,
+           status: alloc.status || 'forecast',
           });
 
           if (error) throw error;
