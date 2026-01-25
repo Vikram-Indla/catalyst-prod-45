@@ -238,37 +238,37 @@ export function AllocationBookingModal({
   }
 
   // Calculate monthly totals - properly check date overlaps with visible months
+  // CRITICAL: Dedupe by assignment_id to avoid double-counting overlapping records
   const monthlyTotals = useMemo(() => {
-    console.log('[monthlyTotals] Calculating for allocations:', allocations.length, allocations);
-    
     return months.map(month => {
       const monthStart = startOfMonth(month);
       const monthEnd = endOfMonth(month);
       
-      // Group allocations by assignment_id and take max percentage per assignment
+      // Group allocations by assignment_id - take the MAX percentage for each assignment
+      // This prevents double-counting when forecast and committed records overlap
       const assignmentMaxPercent = new Map<string, number>();
       
       allocations.forEach(alloc => {
         if (!alloc.start_date) return;
         
         const allocStart = startOfDay(parseISO(alloc.start_date));
-        // For end date, use a far future date if not set (ongoing allocation)
         const allocEnd = alloc.end_date 
           ? endOfDay(parseISO(alloc.end_date)) 
           : new Date('2099-12-31');
         
         // Check if allocation overlaps with this month
-        // Overlap: allocation starts on or before month ends AND allocation ends on or after month starts
         const overlaps = allocStart <= monthEnd && allocEnd >= monthStart;
         
         if (overlaps) {
-          const assignmentKey = alloc.assignment_id || alloc.id || `idx-${allocations.indexOf(alloc)}`;
+          // Use assignment_id as the key to dedupe overlapping records for same assignment
+          const assignmentKey = alloc.assignment_id || alloc.id || `alloc-${allocations.indexOf(alloc)}`;
           const currentMax = assignmentMaxPercent.get(assignmentKey) || 0;
+          // Take the MAX percentage (don't sum duplicates for same assignment)
           assignmentMaxPercent.set(assignmentKey, Math.max(currentMax, alloc.allocation_percent));
         }
       });
       
-      // Sum max percentages across all distinct assignments
+      // Sum max percentages across DISTINCT assignments only
       let total = 0;
       assignmentMaxPercent.forEach(percent => {
         total += percent;
