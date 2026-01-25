@@ -989,6 +989,7 @@ export default function CapacityPlannerPage() {
                     onDepartmentChange={setDepartmentFilter}
                     onResourceClick={(id) => handleOpenAllocationModal(id)}
                     searchQuery={searchQuery}
+                    hideWidgets={true}
                   />
                 </motion.div>
               )}
@@ -1726,6 +1727,7 @@ export default function CapacityPlannerPage() {
                   departmentFilter={departmentFilter}
                   onDepartmentChange={setDepartmentFilter}
                   onResourceClick={(id) => setResource360Id(id)}
+                  hideWidgets={true}
                 />
               )}
               
