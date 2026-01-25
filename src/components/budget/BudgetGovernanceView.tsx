@@ -17,21 +17,27 @@ import { BudgetLedgerTable } from '@/components/budget/BudgetLedgerTable';
 import { BudgetQualityPanel } from '@/components/budget/BudgetQualityPanel';
 import { BudgetExecutiveModal } from '@/components/budget/BudgetExecutiveModal';
 
-const DEPARTMENTS = [
-  { id: 'all', name: 'All Departments' },
-  { id: 'Delivery', name: 'Delivery' },
-  { id: 'External', name: 'External' },
-  { id: 'Product', name: 'Product' },
-  { id: 'Operations', name: 'Operations' },
-  { id: 'Technical Support', name: 'Tech Support' },
-  { id: 'Governance', name: 'Governance' }
-];
-
 export function BudgetGovernanceView() {
   const { data, isLoading, error, refetch } = useBudgetData();
   const [currentDept, setCurrentDept] = useState('all');
   const [execModalOpen, setExecModalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Derive departments dynamically from budget data
+  const departments = useMemo(() => {
+    if (!data?.departments) return [{ id: 'all', name: 'All Departments' }];
+    
+    const deptList = [{ id: 'all', name: 'All Departments' }];
+    Object.keys(data.departments).forEach(key => {
+      if (key !== 'all') {
+        deptList.push({ 
+          id: key, 
+          name: key === 'Technical Support' ? 'Tech Support' : key 
+        });
+      }
+    });
+    return deptList;
+  }, [data?.departments]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -44,7 +50,6 @@ export function BudgetGovernanceView() {
     if (!data?.assignments) return [];
     
     if (currentDept === 'all') return [...data.assignments];
-    if (currentDept === 'External') return data.assignments.filter(a => a.type === 'Outsourced');
     return data.assignments.filter(a => 
       a.department === currentDept || 
       (a.type === 'Cosourced' && a.department === currentDept)
@@ -97,12 +102,11 @@ export function BudgetGovernanceView() {
           <>
             {/* Department Filter Tabs */}
             <BudgetDepartmentTabs
-              departments={DEPARTMENTS}
+              departments={departments}
               currentDept={currentDept}
               budgets={data?.departments || {}}
               onSelect={setCurrentDept}
             />
-
             {/* Summary Cards */}
             <BudgetSummaryCards
               budget={currentBudget}

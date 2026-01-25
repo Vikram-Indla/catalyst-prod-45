@@ -141,15 +141,17 @@ export function useBudgetData() {
 
       if (assignmentsError) throw assignmentsError;
 
-      // Fetch departments
+      // Fetch departments from capacity_departments
       const { data: deptData, error: deptError } = await (supabase as any)
         .from('capacity_departments')
         .select('id, name, department_id')
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .order('sort_order');
 
       if (deptError) throw deptError;
 
       const deptMap = new Map((deptData || []).map((d: any) => [d.id, d.name]));
+      const departmentNames = (deptData || []).map((d: any) => d.name) as string[];
 
       // Fetch resources with their CTC and department info
       const { data: resourcesData, error: resourcesError } = await (supabase as any)
@@ -160,6 +162,7 @@ export function useBudgetData() {
           name,
           role_name,
           department_id,
+          department_name,
           assignment_id,
           vendor_id,
           resource_type,
@@ -204,13 +207,13 @@ export function useBudgetData() {
         computed: normalizeType(a.assignment_type) === 'Insourced'
       }));
 
-      // Transform resources
+      // Transform resources - use department_name directly from resource_inventory
       const resources: BudgetResource[] = (resourcesData || []).map((r: any) => ({
         id: r.id,
         rid: r.rid || '',
         name: r.name,
         role: r.role_name || 'Unknown',
-        department: deptMap.get(r.department_id) || 'Delivery',
+        department: r.department_name || deptMap.get(r.department_id) || 'Delivery',
         aid: r.resource_assignments?.assignment_id || null,
         assignmentName: r.resource_assignments?.name || null,
         vendor: r.resource_vendors?.name || null,
@@ -220,11 +223,12 @@ export function useBudgetData() {
         contractEnd: r.contract_end_date
       }));
 
-      // Calculate department budgets
-      const departments = ['all', 'Delivery', 'External', 'Product', 'Operations', 'Technical Support', 'Governance'];
+      // Calculate department budgets from actual departments
       const budgets: Record<string, DepartmentBudget> = {};
       
-      departments.forEach(d => {
+      // Initialize 'all' and each actual department
+      budgets.all = { insourced: 0, cosourced: 0, outsourced: 0, total: 0, resources: 0, dataIssues: 0 };
+      departmentNames.forEach(d => {
         budgets[d] = { insourced: 0, cosourced: 0, outsourced: 0, total: 0, resources: 0, dataIssues: 0 };
       });
 
@@ -250,12 +254,10 @@ export function useBudgetData() {
       // Add cosourced and outsourced from assignments
       assignments.forEach(a => {
         if (a.type === 'Cosourced') {
-          const dept = a.department;
-          if (budgets[dept]) budgets[dept].cosourced += a.budget;
+          // Cosourced budget goes to 'all' and relevant department
           budgets.all.cosourced += a.budget;
         } else if (a.type === 'Outsourced') {
-          budgets.External = budgets.External || { insourced: 0, cosourced: 0, outsourced: 0, total: 0, resources: 0, dataIssues: 0 };
-          budgets.External.outsourced += a.budget;
+          // Outsourced budget goes to 'all' 
           budgets.all.outsourced += a.budget;
         }
       });
