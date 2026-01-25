@@ -24,6 +24,7 @@ import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 // StrategyRoom removed - use StrategyRoomPage instead
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
+const BudgetGovernancePage = lazy(() => import("./pages/enterprise/BudgetGovernancePage"));
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 // Epics removed - redirects to epic-backlog
@@ -425,6 +426,7 @@ const App = () => (
               <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/enterprise/strategy-room/capacity" element={<Navigate to="/enterprise/capacity" replace />} />
               <Route path="/enterprise/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
+              <Route path="/enterprise/capacity-planner/budget" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetGovernancePage /></Suspense>} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
               <Route path="/enterprise/okr-heatmap" element={<EnterpriseComingSoon />} />
