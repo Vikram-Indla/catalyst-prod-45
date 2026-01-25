@@ -8,7 +8,7 @@ import {
   Search, Download, Plus, Filter, ChevronDown, Clock, 
   LayoutGrid, Table2, CalendarDays, Grid3X3, 
   Presentation, Briefcase, Users, Layers, FileText, Calendar,
-  ChevronLeft, ChevronRight, BarChart3, RefreshCw
+  ChevronLeft, ChevronRight, BarChart3, RefreshCw, Wallet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +25,7 @@ import { CATALYST, getUtilizationColor } from '@/lib/catalyst-colors';
 import { formatDistanceToNow } from 'date-fns';
 import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 
-export type PrimaryView = 'resources' | 'projects' | 'contracts';
+export type PrimaryView = 'resources' | 'projects' | 'contracts' | 'budget';
 export type ResourceViewMode = 'cards' | 'table' | 'timeline' | 'heatmap';
 export type ProjectViewMode = 'cards' | 'timeline';
 
@@ -231,6 +231,15 @@ export function SleekCapacityHeader({
       isActive: primaryView === 'contracts',
       onClick: () => {
         onPrimaryViewChange?.('contracts');
+      }
+    },
+    { 
+      id: 'budget', 
+      label: 'Budgets', 
+      icon: Wallet,
+      isActive: primaryView === 'budget',
+      onClick: () => {
+        onPrimaryViewChange?.('budget');
       }
     },
   ];

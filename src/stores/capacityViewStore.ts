@@ -8,7 +8,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 // Types matching CapacityPlannerPage
-export type PrimaryView = 'resources' | 'projects' | 'contracts';
+export type PrimaryView = 'resources' | 'projects' | 'contracts' | 'budget';
 export type ResourceViewMode = 'cards' | 'table' | 'timeline' | 'heatmap';
 export type ProjectViewMode = 'cards' | 'timeline';
 export type PeriodType = 'weekly' | 'monthly' | 'quarterly';

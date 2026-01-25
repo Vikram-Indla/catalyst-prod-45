@@ -59,6 +59,7 @@ import { CapacityAnalyticsView } from '@/components/capacity/CapacityAnalyticsVi
 import { ProjectCapacityView } from '@/components/capacity/ProjectCapacityView';
 import { getPeriodRange, navigatePeriod } from '@/components/capacity/ProjectCapacityView/utils';
 import { ContractHorizonView } from '@/components/contract-horizon';
+import { BudgetGovernanceView } from '@/components/budget/BudgetGovernanceView';
 import { GroupedTableView } from '@/components/capacity/GroupedTableView';
 import { ScaleWarningBanner } from '@/components/capacity/ScaleWarningBanner';
 import { VirtualizedCardsView } from '@/components/capacity/VirtualizedCardsView';
@@ -1019,6 +1020,19 @@ export default function CapacityPlannerPage() {
               <ContractHorizonView />
             </motion.div>
           )}
+
+          {/* Budget Primary View */}
+          {primaryView === 'budget' && (
+            <motion.div
+              key="budget"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <BudgetGovernanceView />
+            </motion.div>
+          )}
         </div>
 
         {/* Resource 360° Drawer - New Implementation */}
@@ -1720,6 +1734,11 @@ export default function CapacityPlannerPage() {
               {/* Contracts Primary View */}
               {primaryView === 'contracts' && (
                 <ContractHorizonView />
+              )}
+              
+              {/* Budget Primary View */}
+              {primaryView === 'budget' && (
+                <BudgetGovernanceView />
               )}
             </div>
           </CapacityPresentationShell>
