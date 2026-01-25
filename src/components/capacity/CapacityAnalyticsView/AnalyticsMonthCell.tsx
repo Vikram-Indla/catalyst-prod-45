@@ -81,8 +81,8 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
       const width = `${(seg.percent / totalWidth) * 100}%`;
       const isForecast = seg.status === 'forecast';
       
-      // Check if this segment is the "extra" over 100%
-      const isExtraOver = idx > 0 && segments.slice(0, idx).reduce((s, x) => s + x.percent, 0) >= 100;
+      // Check if this segment is the "extra" over 100% (strictly greater than, not equal)
+      const isExtraOver = idx > 0 && segments.slice(0, idx).reduce((s, x) => s + x.percent, 0) > 100;
       
       return (
         <div
