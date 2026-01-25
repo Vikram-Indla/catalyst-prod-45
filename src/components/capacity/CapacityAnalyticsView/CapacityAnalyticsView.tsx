@@ -6,12 +6,14 @@
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Users, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAnalyticsData } from './useAnalyticsData';
+import { useRunRateData } from './useRunRateData';
 import { AnalyticsDepartmentTabs } from './AnalyticsDepartmentTabs';
 import { AnalyticsResourceRow, DepartmentGroupHeader } from './AnalyticsResourceRow';
 import { MONTH_LABELS, type ViewScope, type CapacityRow } from './types';
+import { LicensesRunRateWidget } from '@/components/users/LicensesRunRateWidget';
 
 interface CapacityAnalyticsViewProps {
   departmentFilter?: string;
@@ -35,8 +37,43 @@ export function CapacityAnalyticsView({
     year,
   });
 
+  // Fetch run rate data for department widgets
+  const { data: runRateResources = [] } = useRunRateData();
+
   // Define the desired department order - Delivery before Product
   const DEPARTMENT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
+
+  // Calculate run rates by department
+  const runRates = useMemo(() => {
+    return DEPARTMENT_ORDER.map(dept => {
+      // Filter Variable resources (including legacy 'Core' type)
+      const variableResources = runRateResources.filter(r => {
+        const deptMatch = r.department_name === dept;
+        const typeMatch = r.resource_type?.toLowerCase() === 'variable' || 
+                         r.resource_type?.toLowerCase() === 'core';
+        return deptMatch && typeMatch;
+      });
+      
+      const missingCtcCount = variableResources.filter(r => !r.ctc || r.ctc === 0).length;
+      
+      return {
+        department: dept,
+        monthlyRunRate: variableResources.reduce((sum, r) => sum + (r.ctc || 0), 0),
+        headcount: variableResources.length,
+        missingCtcCount
+      };
+    });
+  }, [runRateResources]);
+
+  const formatCurrency = (value: number): string => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    }
+    if (value >= 1000) {
+      return `${Math.round(value / 1000).toLocaleString()}K`;
+    }
+    return value.toLocaleString();
+  };
 
   // Build department tabs with counts in specified order
   const departmentTabs = useMemo(() => {
@@ -117,10 +154,61 @@ export function CapacityAnalyticsView({
   }
 
   return (
-    <div className="flex flex-col h-full bg-card rounded-lg border border-border overflow-hidden">
-      {/* Header: Department Tabs + View Scope Toggle */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-        {/* Department Tabs */}
+    <div className="flex flex-col h-full">
+      {/* Department Run Rate Widgets */}
+      <section className="ct-runrate-section mb-6">
+        <div className="ct-runrate-header">
+          <span className="ct-runrate-title">Department Monthly Run Rates</span>
+          <span className="ct-runrate-badge">
+            <Users size={12} />
+            Variable Only
+          </span>
+        </div>
+        
+        <div className="ct-runrate-grid">
+          {runRates.map(({ department, monthlyRunRate, headcount, missingCtcCount }) => (
+            <div 
+              key={department} 
+              className={`ct-runrate-card ${departmentFilter.toLowerCase() === department.toLowerCase() ? 'active' : ''}`}
+              onClick={() => onDepartmentChange?.(department.toLowerCase())}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && onDepartmentChange?.(department.toLowerCase())}
+            >
+              <div className="ct-runrate-dept">{department}</div>
+              <div className="ct-runrate-value">
+                <span className="ct-runrate-currency">ریال</span>
+                <span>{formatCurrency(monthlyRunRate)}</span>
+              </div>
+              <div className="ct-runrate-headcount">
+                <Users size={14} />
+                {headcount} Variable {headcount === 1 ? 'resource' : 'resources'}
+              </div>
+              <div className="ct-runrate-footer">
+                <div className="ct-runrate-yearly">
+                  <span className="ct-runrate-yearly-label">Yearly</span>
+                  <span className="ct-runrate-yearly-value">
+                    <span className="ct-runrate-currency">ریال</span> {formatCurrency(monthlyRunRate * 12)}
+                  </span>
+                </div>
+                {missingCtcCount > 0 && (
+                  <div className="ct-runrate-missing">
+                    <AlertTriangle size={12} />
+                    {missingCtcCount} missing CTC
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          <LicensesRunRateWidget />
+        </div>
+      </section>
+
+      {/* Analytics Table */}
+      <div className="flex flex-col flex-1 bg-card rounded-lg border border-border overflow-hidden">
+        {/* Header: Department Tabs + View Scope Toggle */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          {/* Department Tabs */}
         <AnalyticsDepartmentTabs
           tabs={departmentTabs}
           activeTab={departmentFilter}
@@ -206,6 +294,7 @@ export function CapacityAnalyticsView({
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </div>
   );
