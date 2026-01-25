@@ -4,12 +4,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { Plus, Search, Edit, Trash2, Package, AlertCircle } from 'lucide-react';
-import { format, differenceInDays } from 'date-fns';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import {
   Table,
   TableBody,
@@ -42,6 +41,7 @@ import {
   getDaysUntilRenewal,
   getRenewalStatusColor,
 } from '../hooks/useSoftwareLicenses';
+import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 import { formatSAR } from '../hooks/useResourceCost';
 import { LicenseDialog } from './LicenseDialog';
 import { LicenseGanttChart } from './LicenseGanttChart';
@@ -57,7 +57,13 @@ export function SoftwareLicensesPage() {
 
   const { data: licenses = [], isLoading } = useSoftwareLicenses();
   const { data: stats } = useLicenseStats();
+  const { departments } = useCapacityDepartments();
   const deleteLicense = useDeleteLicense();
+
+  // Create department lookup map
+  const departmentMap = useMemo(() => {
+    return new Map(departments.map(d => [d.id, d.name]));
+  }, [departments]);
 
   // Filter licenses
   const filteredLicenses = useMemo(() => {
@@ -196,7 +202,7 @@ export function SoftwareLicensesPage() {
                 <TableHead>Billing</TableHead>
                 <TableHead className="text-right">Seats</TableHead>
                 <TableHead className="text-right">Cost</TableHead>
-                <TableHead>Allocation</TableHead>
+                <TableHead>Department</TableHead>
                 <TableHead>Start Date</TableHead>
                 <TableHead>Renewal</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
@@ -205,20 +211,20 @@ export function SoftwareLicensesPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : filteredLicenses.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     No licenses found
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredLicenses.map((license) => {
                   const daysUntilRenewal = getDaysUntilRenewal(license.renewal_date);
-                  const allocationPercent = Math.min(license.total_allocated, 100);
+                  const departmentName = license.department_id ? departmentMap.get(license.department_id) : null;
                   
                   return (
                     <TableRow key={license.id}>
@@ -238,19 +244,11 @@ export function SoftwareLicensesPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress 
-                            value={allocationPercent} 
-                            className="h-2 w-16"
-                          />
-                          <span className={`text-sm font-medium tabular-nums ${
-                            license.allocation_status === 'complete' ? 'text-green-600' :
-                            license.allocation_status === 'over' ? 'text-red-600' :
-                            'text-yellow-600'
-                          }`}>
-                            {license.total_allocated}%
-                          </span>
-                        </div>
+                        {departmentName ? (
+                          <Badge variant="outline">{departmentName}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         {license.start_date ? (

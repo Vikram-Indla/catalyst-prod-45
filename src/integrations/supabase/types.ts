@@ -16396,6 +16396,7 @@ export type Database = {
           annual_cost: number
           category: string | null
           created_at: string | null
+          department_id: string | null
           id: string
           is_active: boolean | null
           license_type: string
@@ -16410,6 +16411,7 @@ export type Database = {
           annual_cost: number
           category?: string | null
           created_at?: string | null
+          department_id?: string | null
           id?: string
           is_active?: boolean | null
           license_type: string
@@ -16424,6 +16426,7 @@ export type Database = {
           annual_cost?: number
           category?: string | null
           created_at?: string | null
+          department_id?: string | null
           id?: string
           is_active?: boolean | null
           license_type?: string
@@ -16434,7 +16437,15 @@ export type Database = {
           user_count?: number | null
           vendor?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "software_licenses_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "capacity_departments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       space_activity: {
         Row: {

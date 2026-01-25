@@ -47,6 +47,7 @@ export interface SoftwareLicense {
   annual_cost: number;
   start_date: string;
   renewal_date: string | null;
+  department_id: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -111,6 +112,7 @@ export interface SoftwareLicenseFormData {
   annual_cost: number;
   start_date: string;
   renewal_date: string | null;
+  department_id: string | null;
 }
 
 // Stats

@@ -1,5 +1,5 @@
 /**
- * License Create/Edit Dialog - Simplified
+ * License Create/Edit Dialog - With Department Selection
  */
 
 import React, { useEffect } from 'react';
@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useCreateLicense, useUpdateLicense } from '../hooks/useSoftwareLicenses';
+import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 import { formatSAR } from '../hooks/useResourceCost';
 import type { SoftwareLicenseWithAllocation, LicenseType } from '../types';
 
@@ -51,6 +52,7 @@ const licenseSchema = z.object({
   annual_cost: z.number().min(0, 'Cost must be positive'),
   start_date: z.date(),
   renewal_date: z.date().nullable(),
+  department_id: z.string().nullable(),
 });
 
 type LicenseFormData = z.infer<typeof licenseSchema>;
@@ -64,6 +66,7 @@ interface LicenseDialogProps {
 export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProps) {
   const createLicense = useCreateLicense();
   const updateLicense = useUpdateLicense();
+  const { departments } = useCapacityDepartments();
   const isEditing = !!license;
 
   const form = useForm<LicenseFormData>({
@@ -75,6 +78,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
       annual_cost: 0,
       start_date: new Date(),
       renewal_date: null,
+      department_id: null,
     },
   });
 
@@ -87,6 +91,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
         annual_cost: license.annual_cost,
         start_date: license.start_date ? new Date(license.start_date) : new Date(),
         renewal_date: license.renewal_date ? new Date(license.renewal_date) : null,
+        department_id: license.department_id || null,
       });
     } else {
       form.reset({
@@ -96,6 +101,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
         annual_cost: 0,
         start_date: new Date(),
         renewal_date: null,
+        department_id: null,
       });
     }
   }, [license, form]);
@@ -114,6 +120,7 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
       annual_cost: data.annual_cost,
       start_date: format(data.start_date, 'yyyy-MM-dd'),
       renewal_date: data.renewal_date ? format(data.renewal_date, 'yyyy-MM-dd') : null,
+      department_id: data.department_id,
     };
 
     if (isEditing) {
@@ -145,6 +152,36 @@ export function LicenseDialog({ open, onOpenChange, license }: LicenseDialogProp
                   <FormControl>
                     <Input placeholder="e.g., Jira, Figma, Salesforce" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="department_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Department</FormLabel>
+                  <Select 
+                    value={field.value || ''} 
+                    onValueChange={(value) => field.onChange(value || null)}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select department (optional)" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="">No department</SelectItem>
+                      {departments.map((dept) => (
+                        <SelectItem key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>Assign this license to a specific department</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
