@@ -1054,6 +1054,28 @@
 /* ============================================
    EXPANDED ROWS (Ledger Table Resource Details)
    ============================================ */
+
+/* Parent row expansion indicator - blue left border */
+.budget-module tbody tr.expanded-parent {
+  background: #eff6ff !important; /* blue-50 */
+  border-left: 4px solid #2563eb !important;
+}
+
+.budget-module tbody tr.expanded-parent:hover {
+  background: #eff6ff !important;
+}
+
+/* Chevron rotation for expanded state */
+.budget-module .expand-chevron {
+  transition: transform 0.2s ease;
+  color: #94a3b8; /* slate-400 */
+}
+
+.budget-module .expand-chevron.expanded {
+  transform: rotate(90deg);
+  color: #2563eb; /* blue-600 */
+}
+
 .budget-module .expanded-row td {
   padding: 0 !important;
   background: var(--budget-bg-page);
@@ -1070,6 +1092,7 @@
   border: 1px solid var(--budget-border);
   border-radius: var(--budget-radius-md);
   overflow: hidden;
+  box-shadow: var(--budget-shadow-sm);
 }
 
 .budget-module .expanded-table th {
