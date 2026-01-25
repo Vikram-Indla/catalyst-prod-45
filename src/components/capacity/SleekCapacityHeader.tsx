@@ -305,26 +305,27 @@ export function SleekCapacityHeader({
             <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
             {isRefreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
-          <Button 
-            onClick={onPresentationMode}
-            size="sm"
-            className="h-9 px-5 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
-          >
-            <Presentation className="h-4 w-4" />
-            Present
-          </Button>
+          {/* Present button - hidden on Budget view */}
+          {primaryView !== 'budget' && (
+            <Button 
+              onClick={onPresentationMode}
+              size="sm"
+              className="h-9 px-5 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm"
+            >
+              <Presentation className="h-4 w-4" />
+              Present
+            </Button>
+          )}
+          {/* Executive Summary - Budget view only, in Catalyst blue */}
           {primaryView === 'budget' && onExecutiveSummary && (
-            <button 
+            <Button 
               onClick={onExecutiveSummary}
-              className="exec-summary-btn h-9 inline-flex items-center gap-2 px-4 text-sm font-bold text-white rounded-lg shadow-md transition-all"
-              style={{ 
-                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                boxShadow: '0 4px 12px rgba(15, 23, 42, 0.25)'
-              }}
+              size="sm"
+              className="h-9 px-5 text-sm gap-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-sm font-semibold"
             >
               <BarChart3 className="w-4 h-4" />
               Executive Summary
-            </button>
+            </Button>
           )}
           {primaryView !== 'budget' && (
             <Button
@@ -352,11 +353,10 @@ export function SleekCapacityHeader({
           />
         </div>
 
-        {/* Hero Tab Strip - V8 Design with blue active state */}
+        {/* Hero Tab Strip - V8 Design with blue active state for ALL tabs */}
         <div className="relative flex items-center bg-muted/60 dark:bg-[var(--surface-3)] rounded-xl p-1 gap-0.5 border border-border/50 dark:border-[var(--border-default)]">
           {viewTabs.map((tab) => {
             const Icon = tab.icon;
-            const isBudgetActive = tab.id === 'budget' && tab.isActive;
             return (
               <button
                 key={tab.id}
@@ -364,15 +364,13 @@ export function SleekCapacityHeader({
                 className={cn(
                   'relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
                   tab.isActive 
-                    ? isBudgetActive
-                      ? 'bg-[#2563eb] text-white shadow-sm'
-                      : 'bg-card dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] shadow-sm border border-border/50 dark:border-[var(--border-default)]'
+                    ? 'bg-[#2563eb] text-white shadow-sm'
                     : 'text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)] hover:bg-card/50 dark:hover:bg-[var(--surface-2)]'
                 )}
               >
                 <Icon className={cn(
                   "w-4 h-4",
-                  tab.isActive && isBudgetActive ? "text-white" : tab.isActive ? "text-foreground" : ""
+                  tab.isActive ? "text-white" : ""
                 )} />
                 <span>{tab.label}</span>
               </button>
