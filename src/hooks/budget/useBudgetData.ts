@@ -1,0 +1,305 @@
+/**
+ * Budget Governance Module - Data Hook
+ * Fetches assignments and resources for budget calculations
+ */
+
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+
+export interface BudgetAssignment {
+  id: string;
+  aid: string;
+  name: string;
+  type: 'Insourced' | 'Cosourced' | 'Outsourced';
+  status: string;
+  budget: number;
+  startDate: string | null;
+  endDate: string | null;
+  vendor: string | null;
+  paymentStatus: string;
+  department: string;
+  computed: boolean;
+  resourceCount?: number;
+}
+
+export interface BudgetResource {
+  id: string;
+  rid: string;
+  name: string;
+  role: string;
+  department: string;
+  aid: string | null;
+  assignmentName: string | null;
+  vendor: string | null;
+  resourceType: 'Fixed' | 'Variable' | 'Freelance';
+  ctc: number;
+  contractStart: string | null;
+  contractEnd: string | null;
+}
+
+export interface ResourceBudget {
+  resourceId: string;
+  name: string;
+  role: string;
+  department: string;
+  assignmentName: string | null;
+  ctc: number;
+  contractEnd: string | null;
+  assignmentEnd: string | null;
+  consumedYTD: number;
+  reqToContract: number;
+  reqToAssignment: number;
+  assignmentExtends: boolean;
+  hasIssue: boolean;
+}
+
+export interface DepartmentBudget {
+  insourced: number;
+  cosourced: number;
+  outsourced: number;
+  total: number;
+  resources: number;
+  dataIssues: number;
+}
+
+const YEAR_START = new Date('2026-01-01');
+const TODAY = new Date('2026-01-24');
+const MONTHS_YTD = 1; // January 2026
+
+function parseDate(s: string | null): Date | null {
+  return s ? new Date(s) : null;
+}
+
+function monthsBetween(s: Date | null, e: Date | null): number {
+  if (!s || !e || e <= s) return 0;
+  return Math.max(0, (e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
+}
+
+export function calculateResourceBudget(
+  resource: BudgetResource,
+  assignment: BudgetAssignment | undefined
+): ResourceBudget {
+  const contractEnd = parseDate(resource.contractEnd);
+  const assignmentEnd = assignment ? parseDate(assignment.endDate) : null;
+  
+  // Consumed YTD (January 2026 = 1 month)
+  const consumedYTD = resource.ctc * MONTHS_YTD;
+  
+  // Required to Contract End (from Jan 1, 2026)
+  const monthsToContract = contractEnd ? Math.max(0, monthsBetween(YEAR_START, contractEnd)) : 0;
+  const reqToContract = resource.ctc * monthsToContract;
+  
+  // Required to Assignment End (if extends beyond contract)
+  let reqToAssignment = reqToContract;
+  let assignmentExtends = false;
+  if (assignmentEnd && contractEnd && assignmentEnd > contractEnd) {
+    const monthsToAssignment = Math.max(0, monthsBetween(YEAR_START, assignmentEnd));
+    reqToAssignment = resource.ctc * monthsToAssignment;
+    assignmentExtends = true;
+  }
+  
+  return {
+    resourceId: resource.id,
+    name: resource.name,
+    role: resource.role,
+    department: resource.department,
+    assignmentName: resource.assignmentName,
+    ctc: resource.ctc,
+    contractEnd: resource.contractEnd,
+    assignmentEnd: assignment?.endDate || null,
+    consumedYTD: Math.round(consumedYTD),
+    reqToContract: Math.round(reqToContract),
+    reqToAssignment: Math.round(reqToAssignment),
+    assignmentExtends,
+    hasIssue: resource.ctc === 0 && (resource.resourceType === 'Variable' || resource.resourceType === 'Freelance')
+  };
+}
+
+export function useBudgetData() {
+  return useQuery({
+    queryKey: ['budget-governance-data'],
+    queryFn: async () => {
+      // Fetch assignments
+      const { data: assignmentsData, error: assignmentsError } = await (supabase as any)
+        .from('resource_assignments')
+        .select(`
+          id,
+          aid,
+          name,
+          assignment_type,
+          status,
+          budget,
+          start_date,
+          end_date,
+          vendor_id,
+          payment_status,
+          is_active,
+          resource_vendors (id, name)
+        `)
+        .eq('is_active', true)
+        .order('sort_order');
+
+      if (assignmentsError) throw assignmentsError;
+
+      // Fetch departments
+      const { data: deptData, error: deptError } = await (supabase as any)
+        .from('capacity_departments')
+        .select('id, name, department_id')
+        .eq('is_active', true);
+
+      if (deptError) throw deptError;
+
+      const deptMap = new Map((deptData || []).map((d: any) => [d.id, d.name]));
+
+      // Fetch resources with their CTC and department info
+      const { data: resourcesData, error: resourcesError } = await (supabase as any)
+        .from('resource_inventory')
+        .select(`
+          id,
+          rid,
+          name,
+          role_name,
+          department_id,
+          assignment_id,
+          vendor_id,
+          resource_type,
+          ctc,
+          contract_start_date,
+          contract_end_date,
+          resource_assignments (id, name, aid),
+          resource_vendors (id, name)
+        `)
+        .eq('is_active', true);
+
+      if (resourcesError) throw resourcesError;
+
+      // Map assignment type normalization
+      const normalizeType = (type: string): 'Insourced' | 'Cosourced' | 'Outsourced' => {
+        const lower = type?.toLowerCase() || '';
+        if (lower.includes('outsourced')) return 'Outsourced';
+        if (lower.includes('cosourced')) return 'Cosourced';
+        return 'Insourced';
+      };
+
+      const normalizeResourceType = (type: string): 'Fixed' | 'Variable' | 'Freelance' => {
+        const lower = type?.toLowerCase() || '';
+        if (lower.includes('fixed')) return 'Fixed';
+        if (lower.includes('freelance')) return 'Freelance';
+        return 'Variable';
+      };
+
+      // Transform assignments
+      const assignments: BudgetAssignment[] = (assignmentsData || []).map((a: any) => ({
+        id: a.id,
+        aid: a.aid || `A${a.id.substring(0, 2).toUpperCase()}`,
+        name: a.name,
+        type: normalizeType(a.assignment_type),
+        status: a.status || 'In Progress',
+        budget: a.budget || 0,
+        startDate: a.start_date,
+        endDate: a.end_date,
+        vendor: a.resource_vendors?.name || null,
+        paymentStatus: a.payment_status || 'N/A',
+        department: deptMap.get(a.department_id) || 'Delivery',
+        computed: normalizeType(a.assignment_type) === 'Insourced'
+      }));
+
+      // Transform resources
+      const resources: BudgetResource[] = (resourcesData || []).map((r: any) => ({
+        id: r.id,
+        rid: r.rid || '',
+        name: r.name,
+        role: r.role_name || 'Unknown',
+        department: deptMap.get(r.department_id) || 'Delivery',
+        aid: r.resource_assignments?.aid || null,
+        assignmentName: r.resource_assignments?.name || null,
+        vendor: r.resource_vendors?.name || null,
+        resourceType: normalizeResourceType(r.resource_type),
+        ctc: r.ctc || 0,
+        contractStart: r.contract_start_date,
+        contractEnd: r.contract_end_date
+      }));
+
+      // Calculate department budgets
+      const departments = ['all', 'Delivery', 'External', 'Product', 'Operations', 'Technical Support', 'Governance'];
+      const budgets: Record<string, DepartmentBudget> = {};
+      
+      departments.forEach(d => {
+        budgets[d] = { insourced: 0, cosourced: 0, outsourced: 0, total: 0, resources: 0, dataIssues: 0 };
+      });
+
+      // Calculate insourced from resources (exclude Fixed)
+      resources.forEach(r => {
+        if (r.resourceType === 'Fixed') return; // Fixed resources are cosourced
+        
+        const assignment = assignments.find(a => a.aid === r.aid);
+        const budget = calculateResourceBudget(r, assignment);
+        
+        const dept = r.department;
+        if (budgets[dept]) {
+          budgets[dept].insourced += budget.reqToContract;
+          budgets[dept].resources++;
+          if (budget.hasIssue) budgets[dept].dataIssues++;
+        }
+        
+        budgets.all.insourced += budget.reqToContract;
+        budgets.all.resources++;
+        if (budget.hasIssue) budgets.all.dataIssues++;
+      });
+
+      // Add cosourced and outsourced from assignments
+      assignments.forEach(a => {
+        if (a.type === 'Cosourced') {
+          const dept = a.department;
+          if (budgets[dept]) budgets[dept].cosourced += a.budget;
+          budgets.all.cosourced += a.budget;
+        } else if (a.type === 'Outsourced') {
+          budgets.External = budgets.External || { insourced: 0, cosourced: 0, outsourced: 0, total: 0, resources: 0, dataIssues: 0 };
+          budgets.External.outsourced += a.budget;
+          budgets.all.outsourced += a.budget;
+        }
+      });
+
+      // Calculate totals
+      Object.keys(budgets).forEach(k => {
+        budgets[k].total = budgets[k].insourced + budgets[k].cosourced + budgets[k].outsourced;
+      });
+
+      // Enrich assignments with computed budgets and resource counts
+      const enrichedAssignments = assignments.map(a => {
+        if (a.type === 'Insourced') {
+          const res = resources.filter(r => r.aid === a.aid && r.resourceType !== 'Fixed');
+          const budget = res.reduce((sum, r) => {
+            const assignment = assignments.find(asn => asn.aid === r.aid);
+            return sum + calculateResourceBudget(r, assignment).reqToContract;
+          }, 0);
+          return { ...a, budget, resourceCount: res.length };
+        }
+        return { ...a, resourceCount: resources.filter(r => r.aid === a.aid).length };
+      });
+
+      // Get data quality issues
+      const dataQualityIssues = resources
+        .filter(r => (r.resourceType === 'Variable' || r.resourceType === 'Freelance') && r.ctc === 0)
+        .map(r => ({ name: r.name, department: r.department, issue: 'Missing CTC value' }));
+
+      return {
+        assignments: enrichedAssignments,
+        resources,
+        departments: budgets,
+        dataQualityIssues
+      };
+    },
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  });
+}
+
+export function formatCurrency(n: number): string {
+  if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
+  return n.toString();
+}
+
+export function formatFull(n: number): string {
+  return n.toLocaleString();
+}
