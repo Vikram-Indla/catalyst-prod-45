@@ -40,7 +40,10 @@ export function BudgetExecutiveModal({ open, onClose, data }: BudgetExecutiveMod
   ];
 
   const budget = data.departments[execDept] || data.departments.all;
-  const unpaidAssignments = data.assignments.filter(a => a.paymentStatus === 'Unpaid');
+  // Use case-insensitive check for payment status since DB stores lowercase 'unpaid'
+  const unpaidAssignments = data.assignments.filter(a => 
+    a.paymentStatus?.toLowerCase() === 'unpaid'
+  );
   const unpaidTotal = unpaidAssignments.reduce((s, a) => s + a.budget, 0);
   const cosourcedAssignments = data.assignments.filter(a => a.type === 'Cosourced');
   const outsourcedAssignments = data.assignments.filter(a => a.type === 'Outsourced');
