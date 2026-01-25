@@ -24218,6 +24218,7 @@ export type Database = {
           environment_id: string | null
           failed_count: number | null
           id: string
+          in_progress_count: number | null
           name: string
           not_run_count: number | null
           passed_count: number | null
@@ -24244,6 +24245,7 @@ export type Database = {
           environment_id?: string | null
           failed_count?: number | null
           id?: string
+          in_progress_count?: number | null
           name: string
           not_run_count?: number | null
           passed_count?: number | null
@@ -24270,6 +24272,7 @@ export type Database = {
           environment_id?: string | null
           failed_count?: number | null
           id?: string
+          in_progress_count?: number | null
           name?: string
           not_run_count?: number | null
           passed_count?: number | null
@@ -28742,6 +28745,7 @@ export type Database = {
           updated_at: string
         }[]
       }
+      tm_get_counter_column: { Args: { p_status: string }; Returns: string }
       tm_get_cycle_activity_feed: {
         Args: { p_cycle_id: string; p_limit?: number }
         Returns: {
@@ -29018,6 +29022,19 @@ export type Database = {
       tm_next_entity_key: {
         Args: { p_prefix: string; p_project_id: string }
         Returns: string
+      }
+      tm_recalculate_cycle_counters: {
+        Args: { p_cycle_id?: string }
+        Returns: {
+          blocked_count: number
+          cycle_id: string
+          failed_count: number
+          in_progress_count: number
+          not_run_count: number
+          passed_count: number
+          skipped_count: number
+          total_cases: number
+        }[]
       }
       tm_remove_case_from_cycle: {
         Args: { p_cycle_id: string; p_test_case_id: string }
