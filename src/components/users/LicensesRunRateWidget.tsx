@@ -1,10 +1,11 @@
 /**
  * LicensesRunRateWidget - V8 Design System
- * Displays monthly and yearly software license run rates
+ * Displays monthly and yearly software license run rates with next renewal
  */
 
-import { CreditCard } from 'lucide-react';
+import { CreditCard, Calendar } from 'lucide-react';
 import { useSoftwareLicenses } from '@/modules/budget/hooks/useSoftwareLicenses';
+import { format } from 'date-fns';
 
 export function LicensesRunRateWidget() {
   const { data: licenses = [], isLoading } = useSoftwareLicenses();
@@ -12,6 +13,13 @@ export function LicensesRunRateWidget() {
   const totalAnnualCost = licenses.reduce((sum, l) => sum + (l.annual_cost || 0), 0);
   const monthlyRunRate = totalAnnualCost / 12;
   const licenseCount = licenses.length;
+
+  // Find next upcoming renewal date
+  const today = new Date();
+  const upcomingRenewals = licenses
+    .filter(l => l.renewal_date && new Date(l.renewal_date) >= today)
+    .sort((a, b) => new Date(a.renewal_date!).getTime() - new Date(b.renewal_date!).getTime());
+  const nextRenewal = upcomingRenewals[0]?.renewal_date;
 
   const formatCurrency = (value: number): string => {
     if (value >= 1000000) {
@@ -54,6 +62,12 @@ export function LicensesRunRateWidget() {
           <span className="ct-licenses-yearly-label">Yearly</span>
           <span className="ct-licenses-yearly-value">ریال {formatCurrency(totalAnnualCost)}</span>
         </div>
+        {nextRenewal && (
+          <div className="ct-licenses-renewal">
+            <Calendar size={12} />
+            <span>Next: {format(new Date(nextRenewal), 'MMM d')}</span>
+          </div>
+        )}
       </div>
     </div>
   );
