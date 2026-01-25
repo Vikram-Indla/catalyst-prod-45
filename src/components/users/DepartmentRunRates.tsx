@@ -9,11 +9,13 @@ import { UserProfile } from '@/hooks/useUsers';
 
 interface DepartmentRunRatesProps {
   users: UserProfile[];
+  activeDepartment?: string;
+  onDepartmentClick?: (department: string) => void;
 }
 
 const DEPARTMENTS = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
 
-export function DepartmentRunRates({ users }: DepartmentRunRatesProps) {
+export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick }: DepartmentRunRatesProps) {
   const runRates = useMemo(() => {
     return DEPARTMENTS.map(dept => {
       // Filter Variable resources (including legacy 'Core' type)
@@ -54,7 +56,14 @@ export function DepartmentRunRates({ users }: DepartmentRunRatesProps) {
       
       <div className="ct-runrate-grid">
         {runRates.map(({ department, monthlyRunRate, headcount }) => (
-          <div key={department} className="ct-runrate-card">
+          <div 
+            key={department} 
+            className={`ct-runrate-card ${activeDepartment === department ? 'active' : ''}`}
+            onClick={() => onDepartmentClick?.(department)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onDepartmentClick?.(department)}
+          >
             <div className="ct-runrate-dept">{department}</div>
             <div className="ct-runrate-value">
               <span className="ct-runrate-currency">ریال</span>
