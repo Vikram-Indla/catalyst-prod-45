@@ -3,7 +3,7 @@
  * Matches the reference design exactly
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { X, Plus, Trash2, Pencil, Calendar, AlertTriangle, Zap, Clock, UserMinus, Building2 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -63,6 +63,7 @@ export function AllocationBookingModal({
   const [deleteConfirmIndex, setDeleteConfirmIndex] = useState<number | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+  const allocationRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
 
   // Get profile data for contract end date validation
@@ -596,7 +597,16 @@ export function AllocationBookingModal({
                           top: i * 32,
                           backgroundColor: bar.color
                         }}
-                        onClick={() => setEditingIndex(bar.idx)}
+                        onClick={() => {
+                          setEditingIndex(bar.idx);
+                          // Scroll to the allocation edit form
+                          setTimeout(() => {
+                            allocationRefs.current[bar.idx]?.scrollIntoView({ 
+                              behavior: 'smooth', 
+                              block: 'center' 
+                            });
+                          }, 50);
+                        }}
                         title="Click to edit this allocation"
                       >
                         <span className="truncate">
@@ -641,6 +651,7 @@ export function AllocationBookingModal({
                 return (
                   <div
                     key={index}
+                    ref={(el) => { allocationRefs.current[index] = el; }}
                     className={cn(
                       "flex items-center gap-4 p-4 bg-white dark:bg-slate-800 border rounded-xl transition-all",
                       isEditing ? "border-blue-400 ring-2 ring-blue-100 dark:ring-blue-900" : "border-slate-200 dark:border-slate-700"
