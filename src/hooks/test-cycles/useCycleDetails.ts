@@ -1,6 +1,9 @@
 /**
  * Hook for fetching cycle details with calculated stats - WIRED TO SUPABASE
  * Extended Lifecycle: draft → planned → active → paused → completed → archived
+ * 
+ * IMPORTANT: Stats are derived from tm_cycle_scope (source of truth), NOT from cached counters.
+ * This ensures data integrity - the UI always reflects actual scope records.
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -70,12 +73,34 @@ export function useCycleDetails(cycleId: string) {
         throw new Error('Cycle not found');
       }
 
-      // Get assignee count from scope
-      const { count: assigneeCount } = await supabase
+      // =========================================================================
+      // DERIVE STATS FROM tm_cycle_scope (SOURCE OF TRUTH)
+      // This ensures counts always match actual scope records, not stale counters.
+      // =========================================================================
+      const { data: scopeData, error: scopeError } = await (supabase as any)
         .from('tm_cycle_scope')
-        .select('assigned_to', { count: 'exact', head: true })
-        .eq('cycle_id', cycleId)
-        .not('assigned_to', 'is', null);
+        .select('id, current_status, assigned_to')
+        .eq('cycle_id', cycleId);
+
+      if (scopeError) {
+        console.error('Error fetching scope:', scopeError);
+        throw scopeError;
+      }
+
+      const scopeRecords = (scopeData || []) as { id: string; current_status: string | null; assigned_to: string | null }[];
+
+      // Calculate stats from actual scope records
+      const total = scopeRecords.length;
+      const passed = scopeRecords.filter(s => s.current_status === 'passed').length;
+      const failed = scopeRecords.filter(s => s.current_status === 'failed').length;
+      const blocked = scopeRecords.filter(s => s.current_status === 'blocked').length;
+      const inProgress = scopeRecords.filter(s => s.current_status === 'in_progress').length;
+      const skipped = scopeRecords.filter(s => s.current_status === 'skipped').length;
+      const notStarted = scopeRecords.filter(s => !s.current_status || s.current_status === 'not_run').length;
+
+      // Get unique assignee count
+      const uniqueAssignees = new Set(scopeRecords.filter(s => s.assigned_to).map(s => s.assigned_to));
+      const assigneeCount = uniqueAssignees.size;
 
       // Calculate days remaining
       let daysRemaining: number | null = null;
@@ -103,20 +128,12 @@ export function useCycleDetails(cycleId: string) {
         environment: cycleData.tm_environments?.name || null,
         createdAt: cycleData.created_at,
         createdBy: cycleData.created_by,
-        assigneeCount: assigneeCount || 0,
+        assigneeCount,
         daysRemaining,
         isOverdue,
       };
 
-      // Calculate stats from cycle data
-      const total = cycleData.total_cases || 0;
-      const passed = cycleData.passed_count || 0;
-      const failed = cycleData.failed_count || 0;
-      const blocked = cycleData.blocked_count || 0;
-      const skipped = cycleData.skipped_count || 0;
-      const notStarted = cycleData.not_run_count || 0;
-      const inProgress = total - passed - failed - blocked - skipped - notStarted;
-
+      // Calculate derived metrics
       const executed = passed + failed + blocked;
       const executionRate = total > 0 ? Math.round((executed / total) * 100) : 0;
       const passRate = executed > 0 ? Math.round((passed / executed) * 100) : 0;
@@ -126,7 +143,7 @@ export function useCycleDetails(cycleId: string) {
         passed,
         failed,
         blocked,
-        inProgress: inProgress > 0 ? inProgress : 0,
+        inProgress,
         notStarted,
         executionRate,
         passRate,
