@@ -73,6 +73,9 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick 
               <Users size={14} />
               {headcount} Variable {headcount === 1 ? 'resource' : 'resources'}
             </div>
+            <div className="ct-runrate-yearly">
+              Yearly: ریال {formatCurrency(monthlyRunRate * 12)}
+            </div>
           </div>
         ))}
       </div>
