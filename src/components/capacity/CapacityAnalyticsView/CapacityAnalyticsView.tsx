@@ -6,16 +6,17 @@
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Users, AlertTriangle, ChevronDown } from 'lucide-react';
+import { AlertCircle, Users, AlertTriangle, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAnalyticsData } from './useAnalyticsData';
-import { useRunRateData } from './useRunRateData';
+import { useRunRateData, type RunRateResource } from './useRunRateData';
 import { AnalyticsDepartmentTabs } from './AnalyticsDepartmentTabs';
 import { AnalyticsResourceRow, DepartmentGroupHeader } from './AnalyticsResourceRow';
 import { MONTH_LABELS, type ViewScope, type CapacityRow } from './types';
 import { LicensesRunRateWidget } from '@/components/users/LicensesRunRateWidget';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { format, differenceInMonths, parseISO } from 'date-fns';
 
 type CategoryFilter = 'insourced' | 'cosourced' | 'outsourced' | 'licenses' | null;
 
@@ -34,6 +35,7 @@ export function CapacityAnalyticsView({
 }: CapacityAnalyticsViewProps) {
   const [viewScope, setViewScope] = useState<ViewScope>('q1');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('insourced');
+  const [showBreakdown, setShowBreakdown] = useState(false);
   const year = 2026;
 
   const { rows, months, isLoading, isError, error } = useAnalyticsData({
@@ -73,12 +75,40 @@ export function CapacityAnalyticsView({
   // Define the desired department order
   const DEPARTMENT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
 
-  // Calculate category totals
-  const categoryTotals = useMemo(() => {
-    const insourcedResources = runRateResources.filter(r => 
+  // Get period months for calculation
+  const periodMonths = viewScope === 'q1' ? 3 : viewScope === 'h1' ? 6 : 12;
+  const periodLabel = viewScope === 'q1' ? 'Q1' : viewScope === 'h1' ? 'H1' : 'Full Year';
+
+  // Calculate period total for a resource based on CTC and contract end date
+  const calculatePeriodTotal = (resource: RunRateResource): number => {
+    if (!resource.ctc) return 0;
+    
+    const startDate = new Date(year, 0, 1); // Jan 1, 2026
+    const periodEndDate = new Date(year, periodMonths - 1, 31); // End of period
+    
+    if (resource.contract_end_date) {
+      const contractEnd = parseISO(resource.contract_end_date);
+      // Calculate months remaining in the period
+      const effectiveEnd = contractEnd < periodEndDate ? contractEnd : periodEndDate;
+      const monthsRemaining = Math.max(0, differenceInMonths(effectiveEnd, startDate) + 1);
+      const effectiveMonths = Math.min(monthsRemaining, periodMonths);
+      return resource.ctc * effectiveMonths;
+    }
+    
+    // No contract end date - assume full period
+    return resource.ctc * periodMonths;
+  };
+
+  // Get insourced resources for breakdown
+  const insourcedResources = useMemo(() => {
+    return runRateResources.filter(r => 
       r.resource_type?.toLowerCase() === 'variable' || r.resource_type?.toLowerCase() === 'freelance'
     );
-    const insourcedTotal = insourcedResources.reduce((sum, r) => sum + (r.ctc || 0), 0);
+  }, [runRateResources]);
+
+  // Calculate category totals
+  const categoryTotals = useMemo(() => {
+    const insourcedTotal = insourcedResources.reduce((sum, r) => sum + calculatePeriodTotal(r), 0);
     const insourcedCount = insourcedResources.length;
     const missingCtc = insourcedResources.filter(r => !r.ctc || r.ctc === 0).length;
 
@@ -89,41 +119,32 @@ export function CapacityAnalyticsView({
     const outsourcedTotal = outsourcedAssignments.reduce((sum, a) => sum + (a.budget || 0), 0);
 
     const licensesTotal = licenses.reduce((sum, l) => sum + (l.annual_cost || 0), 0);
+    const licensesMonthly = licensesTotal / 12;
+    const licensesPeriodTotal = licensesMonthly * periodMonths;
 
     return {
       insourced: { total: insourcedTotal, count: insourcedCount, missing: missingCtc },
       cosourced: { total: cosourcedTotal, count: cosourcedAssignments.length },
       outsourced: { total: outsourcedTotal, count: outsourcedAssignments.length, assignments: outsourcedAssignments },
-      licenses: { total: licensesTotal, count: licenses.length, monthly: licensesTotal / 12 },
+      licenses: { total: licensesPeriodTotal, count: licenses.length, monthly: licensesMonthly },
     };
-  }, [runRateResources, assignments, licenses]);
+  }, [insourcedResources, assignments, licenses, periodMonths]);
 
-  // Calculate run rates by department
+  // Calculate run rates by department (using period totals)
   const runRates = useMemo(() => {
     return DEPARTMENT_ORDER.map(dept => {
-      const variableResources = runRateResources.filter(r => {
-        const deptMatch = r.department_name === dept;
-        return deptMatch && r.resource_type?.toLowerCase() === 'variable';
-      });
-      
-      const freelanceResources = runRateResources.filter(r => {
-        const deptMatch = r.department_name === dept;
-        return deptMatch && r.resource_type?.toLowerCase() === 'freelance';
-      });
-      
-      const allInsourced = [...variableResources, ...freelanceResources];
-      const missingCtcCount = allInsourced.filter(r => !r.ctc || r.ctc === 0).length;
+      const deptResources = insourcedResources.filter(r => r.department_name === dept);
+      const periodTotal = deptResources.reduce((sum, r) => sum + calculatePeriodTotal(r), 0);
+      const missingCtcCount = deptResources.filter(r => !r.ctc || r.ctc === 0).length;
       
       return {
         department: dept,
-        monthlyRunRate: allInsourced.reduce((sum, r) => sum + (r.ctc || 0), 0),
-        variableCount: variableResources.length,
-        freelanceCount: freelanceResources.length,
-        totalCount: allInsourced.length,
+        periodTotal,
+        totalCount: deptResources.length,
         missingCtcCount
       };
     });
-  }, [runRateResources]);
+  }, [insourcedResources, periodMonths]);
 
   const formatCurrency = (value: number): string => {
     if (value >= 1000000) {
@@ -216,14 +237,22 @@ export function CapacityAnalyticsView({
           {/* Insourced Card */}
           <div 
             className={cn("ct-category-card insourced", activeCategory === 'insourced' && "active")}
-            onClick={() => setActiveCategory(activeCategory === 'insourced' ? null : 'insourced')}
+            onClick={() => {
+              if (activeCategory === 'insourced') {
+                setActiveCategory(null);
+                setShowBreakdown(false);
+              } else {
+                setActiveCategory('insourced');
+                setShowBreakdown(true);
+              }
+            }}
             role="button"
             tabIndex={0}
           >
             <div className="ct-category-header">
               <span className="ct-category-title">INSOURCED</span>
               <span className="ct-category-badge blue">{categoryTotals.insourced.count} Resources</span>
-              <ChevronDown size={16} className={cn("transition-transform", activeCategory === 'insourced' && "rotate-180")} />
+              {activeCategory === 'insourced' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
             <div className="ct-category-value blue">{formatCurrency(categoryTotals.insourced.total)}</div>
             <div className="ct-category-sub">SAR • CTC × Duration to Contract End</div>
@@ -233,7 +262,10 @@ export function CapacityAnalyticsView({
           {/* Cosourced Card */}
           <div 
             className={cn("ct-category-card cosourced", activeCategory === 'cosourced' && "active")}
-            onClick={() => setActiveCategory(activeCategory === 'cosourced' ? null : 'cosourced')}
+            onClick={() => {
+              setActiveCategory(activeCategory === 'cosourced' ? null : 'cosourced');
+              setShowBreakdown(false);
+            }}
             role="button"
             tabIndex={0}
           >
@@ -249,7 +281,10 @@ export function CapacityAnalyticsView({
           {/* Outsourced Card */}
           <div 
             className={cn("ct-category-card outsourced", activeCategory === 'outsourced' && "active")}
-            onClick={() => setActiveCategory(activeCategory === 'outsourced' ? null : 'outsourced')}
+            onClick={() => {
+              setActiveCategory(activeCategory === 'outsourced' ? null : 'outsourced');
+              setShowBreakdown(false);
+            }}
             role="button"
             tabIndex={0}
           >
@@ -265,7 +300,10 @@ export function CapacityAnalyticsView({
           {/* Licenses Card */}
           <div 
             className={cn("ct-category-card licenses", activeCategory === 'licenses' && "active")}
-            onClick={() => setActiveCategory(activeCategory === 'licenses' ? null : 'licenses')}
+            onClick={() => {
+              setActiveCategory(activeCategory === 'licenses' ? null : 'licenses');
+              setShowBreakdown(false);
+            }}
             role="button"
             tabIndex={0}
           >
@@ -280,6 +318,65 @@ export function CapacityAnalyticsView({
           </div>
         </div>
       </section>
+
+      {/* Insourced Breakdown Panel */}
+      {activeCategory === 'insourced' && showBreakdown && (
+        <div className="ct-breakdown-panel">
+          <div className="ct-breakdown-header">
+            <span className="ct-breakdown-title">Insourced Breakdown</span>
+            <button 
+              className="ct-breakdown-close"
+              onClick={() => setShowBreakdown(false)}
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <table className="ct-breakdown-table">
+            <thead>
+              <tr>
+                <th>Resource Name</th>
+                <th>Department</th>
+                <th>Contract End Date</th>
+                <th>CTC</th>
+                <th>{periodLabel} Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {insourcedResources.map((resource) => (
+                <tr key={resource.id}>
+                  <td>{resource.name || '—'}</td>
+                  <td>{resource.department_name || '—'}</td>
+                  <td>
+                    {resource.contract_end_date 
+                      ? format(parseISO(resource.contract_end_date), 'MMM dd, yyyy')
+                      : '—'}
+                  </td>
+                  <td>
+                    {resource.ctc 
+                      ? formatCurrency(resource.ctc)
+                      : <span className="ct-ctc-missing">Missing</span>}
+                  </td>
+                  <td>{formatCurrency(calculatePeriodTotal(resource))}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="ct-breakdown-footer">
+            <div className="ct-breakdown-total">
+              <span className="ct-breakdown-total-label">Monthly CTC</span>
+              <span className="ct-breakdown-total-value">
+                {formatCurrency(insourcedResources.reduce((sum, r) => sum + (r.ctc || 0), 0))}
+              </span>
+            </div>
+            <div className="ct-breakdown-total">
+              <span className="ct-breakdown-total-label">{periodLabel} Total</span>
+              <span className="ct-breakdown-total-value">
+                {formatCurrency(categoryTotals.insourced.total)}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* BOTTOM ROW: Department Widgets - Only visible when Insourced is active */}
       {activeCategory === 'insourced' && (
@@ -316,7 +413,7 @@ export function CapacityAnalyticsView({
               </div>
             </div>
 
-            {runRates.map(({ department, monthlyRunRate, totalCount, missingCtcCount }) => (
+            {runRates.map(({ department, periodTotal, totalCount, missingCtcCount }) => (
               <div 
                 key={department} 
                 className={cn("ct-runrate-card", departmentFilter.toLowerCase() === department.toLowerCase() && "active")}
@@ -326,7 +423,7 @@ export function CapacityAnalyticsView({
               >
                 <div className="ct-runrate-dept">{department}</div>
                 <div className="ct-runrate-value">
-                  <span>{formatCurrency(monthlyRunRate)}</span>
+                  <span>{formatCurrency(periodTotal)}</span>
                 </div>
                 <div className="ct-runrate-headcount">
                   <Users size={14} />
