@@ -26,7 +26,8 @@ import {
   StatCard,
   Dropdown,
   InlineEditCell,
-  DepartmentRunRates
+  DepartmentRunRates,
+  LicensesRunRateWidget
 } from '@/components/users';
 
 // V8 Styles
@@ -419,22 +420,28 @@ export default function UsersManagement() {
           />
         </div>
 
-        {/* Department Run Rates */}
-        <DepartmentRunRates 
-          users={users} 
-          activeDepartment={typeFilter === 'variable' ? deptFilter : undefined}
-          onDepartmentClick={(dept) => {
-            // Toggle: if already selected, clear both filters
-            if (deptFilter === dept && typeFilter === 'variable') {
-              handleFilterChange(setDeptFilter, '');
-              handleFilterChange(setTypeFilter, 'all');
-            } else {
-              // Set department + Variable type filter
-              handleFilterChange(setDeptFilter, dept);
-              handleFilterChange(setTypeFilter, 'variable');
-            }
-          }}
-        />
+        {/* Run Rate Widgets Row */}
+        <div className="ct-runrate-row">
+          {/* Department Run Rates */}
+          <DepartmentRunRates 
+            users={users} 
+            activeDepartment={typeFilter === 'variable' ? deptFilter : undefined}
+            onDepartmentClick={(dept) => {
+              // Toggle: if already selected, clear both filters
+              if (deptFilter === dept && typeFilter === 'variable') {
+                handleFilterChange(setDeptFilter, '');
+                handleFilterChange(setTypeFilter, 'all');
+              } else {
+                // Set department + Variable type filter
+                handleFilterChange(setDeptFilter, dept);
+                handleFilterChange(setTypeFilter, 'variable');
+              }
+            }}
+          />
+          
+          {/* Licenses Widget */}
+          <LicensesRunRateWidget />
+        </div>
 
         {/* Table Container */}
         <div className="ct-table-container">
