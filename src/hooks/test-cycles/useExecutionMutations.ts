@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cycleExecutionKeys, type ExecutionStatus, mapUiToDbStatus, type UIStatus } from './useCycleExecutionItems';
 import { cycleListKeys } from './useTestCycleList';
+import { auditExecutionStatusChange } from '@/lib/tmAuditLogger';
 
 // Update status payload
 export interface UpdateStatusPayload {
@@ -47,6 +48,15 @@ export function useUpdateExecutionStatus(cycleId: string) {
     mutationFn: async ({ scopeId, status, createRun }: UpdateStatusPayload) => {
       const dbStatus = mapUiToDbStatus(status);
       
+      // Get current status for audit logging
+      const { data: currentScope } = await (supabase as any)
+        .from('tm_cycle_scope')
+        .select('current_status, cycle_id')
+        .eq('id', scopeId)
+        .single();
+      
+      const oldStatus = currentScope?.current_status || 'not_run';
+      
       // Update scope status
       const { error: scopeError } = await (supabase as any)
         .from('tm_cycle_scope')
@@ -72,9 +82,25 @@ export function useUpdateExecutionStatus(cycleId: string) {
           });
       }
       
-      return { scopeId, status: dbStatus };
+      return { scopeId, status: dbStatus, oldStatus, cycleId: currentScope?.cycle_id };
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      // Log audit entry for status change (get project_id from cycle)
+      if (result.cycleId && result.oldStatus !== result.status) {
+        // Note: We can't easily get project_id here, so we'll use cycleId as the project context
+        // The tm_audit_log will still capture the change correctly
+        supabase
+          .from('tm_test_cycles')
+          .select('project_id')
+          .eq('id', result.cycleId)
+          .single()
+          .then(({ data }) => {
+            if (data?.project_id) {
+              auditExecutionStatusChange(data.project_id, result.scopeId, result.oldStatus, result.status);
+            }
+          });
+      }
+      
       // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: cycleExecutionKeys.items(cycleId) });
       queryClient.invalidateQueries({ queryKey: ['cycle-details', cycleId] });
