@@ -12,13 +12,14 @@ export interface RunRateResource {
   department_name: string | null;
   resource_type: string | null;
   ctc: number | null;
+  contract_end_date: string | null;
 }
 
 export function useRunRateData() {
   return useQuery({
     queryKey: ['run-rate-resources'],
     queryFn: async () => {
-      // Fetch resources with department, resource_type, and CTC
+      // Fetch resources with department, resource_type, CTC, and contract_end_date
       const { data: resources, error } = await supabase
         .from('resource_inventory')
         .select(`
@@ -26,6 +27,7 @@ export function useRunRateData() {
           name,
           resource_type,
           ctc,
+          contract_end_date,
           department_id,
           capacity_departments!resource_inventory_department_id_fkey(id, name)
         `)
@@ -39,6 +41,7 @@ export function useRunRateData() {
         department_name: r.capacity_departments?.name || null,
         resource_type: r.resource_type,
         ctc: r.ctc ? parseFloat(r.ctc) : null,
+        contract_end_date: r.contract_end_date || null,
       })) as RunRateResource[];
     },
     staleTime: 30000,
