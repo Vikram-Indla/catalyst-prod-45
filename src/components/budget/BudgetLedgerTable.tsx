@@ -24,6 +24,7 @@ function formatStatus(status: string): string {
     'completed': 'Completed',
     'on_hold': 'On Hold',
     'not_started': 'Not Started',
+    'yet_to_start': 'Yet to Start',
   };
   return map[status] || status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
@@ -43,6 +44,8 @@ function formatPayment(payment: string): string {
 function getStatusClass(status: string): string {
   if (status === 'completed' || status === 'Completed') return 'completed';
   if (status === 'in_progress' || status === 'In Progress') return 'in-progress';
+  if (status === 'yet_to_start' || status === 'Yet to Start' || status === 'not_started') return 'yet-to-start';
+  if (status === 'on_hold' || status === 'On Hold') return 'on-hold';
   return 'on-hold';
 }
 
@@ -184,20 +187,20 @@ export function BudgetLedgerTable({
                   className={cn(
                     'transition-all duration-150',
                     hasResources && 'cursor-pointer',
-                    isExpanded 
-                      ? 'bg-blue-50 border-l-4 border-l-blue-600' 
-                      : hasResources 
-                        ? 'hover:bg-slate-50 border-l-4 border-l-transparent'
-                        : 'border-l-4 border-l-transparent'
+                    isExpanded && 'expanded-parent'
                   )}
                   onClick={() => hasResources && toggleRow(a.id)}
+                  style={isExpanded ? { 
+                    background: '#eff6ff', 
+                    boxShadow: 'inset 4px 0 0 #2563eb' 
+                  } : undefined}
                 >
                   <td className="center" style={{ width: 32 }}>
                     {hasResources && (
                       <ChevronRight 
                         className={cn(
-                          "w-4 h-4 flex-shrink-0 transition-transform duration-200",
-                          isExpanded ? "rotate-90 text-blue-600" : "text-slate-400"
+                          "w-4 h-4 flex-shrink-0 transition-transform duration-200 expand-chevron",
+                          isExpanded && "expanded"
                         )} 
                       />
                     )}
