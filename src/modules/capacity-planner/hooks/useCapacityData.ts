@@ -13,10 +13,11 @@ export function useCapacityData() {
     gcTime: 0, // Don't cache - force fresh fetch
     refetchOnMount: 'always', // Always refetch when component mounts
     queryFn: async () => {
-      // STEP 1: Fetch all resources from resource_inventory (72 records)
+      // STEP 1: Fetch all ACTIVE resources from resource_inventory
       const { data: resourceInventory, error: riError } = await supabase
         .from('resource_inventory')
         .select('*')
+        .eq('is_active', true)
         .order('name');
       if (riError) throw riError;
       
