@@ -68,12 +68,9 @@ export function useDepartmentFilter(
       ? outsourcedAssignments.reduce((sum, a) => sum + (a.budget || 0), 0)
       : 0;
 
-    // LICENSES
+    // LICENSES - Only included in "All" view, not individual departments
     const licensesMonthly = licenses.reduce((sum, l) => sum + l.monthlyCost, 0);
-    const deptCount = departments.length - 1;
-    const licensesPeriod = isAll
-      ? licensesMonthly * months
-      : Math.round((licensesMonthly * months) / deptCount);
+    const licensesPeriod = isAll ? licensesMonthly * months : 0;
 
     // Missing CTC count
     const dataIssues = deptResources.filter(r => !r.ctc || r.ctc === 0).length;
