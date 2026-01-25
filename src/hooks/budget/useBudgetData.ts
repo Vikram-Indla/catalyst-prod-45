@@ -109,13 +109,19 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
     }
   });
 
-  // Fetch licenses
+  // Fetch licenses with department info
   const licensesQuery = useQuery({
     queryKey: ['budget-licenses'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('software_licenses')
-        .select('*')
+        .select(`
+          *,
+          capacity_departments:department_id (
+            id,
+            name
+          )
+        `)
         .eq('is_active', true)
         .order('annual_cost', { ascending: false });
       
@@ -183,7 +189,7 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
       };
     });
 
-    // Transform licenses
+    // Transform licenses with department info
     const licenses: BudgetLicense[] = licensesQuery.data.map((l: any) => ({
       id: l.id,
       name: l.name,
@@ -192,24 +198,35 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
       licenseType: l.license_type || 'annual',
       userCount: l.user_count,
       startDate: l.start_date,
-      renewalDate: l.renewal_date
+      renewalDate: l.renewal_date,
+      departmentName: l.capacity_departments?.name || null
     }));
 
     // Calculate department budgets
     const deptNames = [...new Set(resources.map(r => r.department))].filter(Boolean);
     const licenseBudget = licenses.reduce((sum, l) => sum + l.monthlyCost * months, 0);
     
+    // Calculate license costs per department based on department_id linkage
+    const licenseCostByDepartment: Record<string, number> = {};
+    licenses.forEach(l => {
+      if (l.departmentName) {
+        const cost = l.monthlyCost * months;
+        licenseCostByDepartment[l.departmentName] = (licenseCostByDepartment[l.departmentName] || 0) + cost;
+      }
+    });
+    
     const departments: Record<string, DepartmentBudget> = {};
     
-    // Initialize 'all'
+    // Initialize 'all' - includes ALL license costs
     departments.all = { 
       insourced: 0, cosourced: 0, outsourced: 0, 
       licenses: licenseBudget, total: 0, resources: 0, dataIssues: 0 
     };
 
-    // Initialize each department
+    // Initialize each department with their linked license costs only
     deptNames.forEach(d => {
-      const deptLicenseBudget = licenseBudget / deptNames.length;
+      // Only include license costs if the license is explicitly linked to this department
+      const deptLicenseBudget = licenseCostByDepartment[d] || 0;
       departments[d] = { 
         insourced: 0, cosourced: 0, outsourced: 0, 
         licenses: deptLicenseBudget, total: 0, resources: 0, dataIssues: 0 
