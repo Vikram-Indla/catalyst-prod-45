@@ -362,7 +362,7 @@ export default function CapacityPlannerPage() {
     return map;
   }, [allocations]);
 
-  // Helper to check if a resource's contract has expired
+  // Helper to check if a resource's contract has expired (kept for contract status display, not for filtering)
   const isContractExpired = (resource: ResourceMetric): boolean => {
     if (!resource.contract_end_date) return false;
     const contractEnd = new Date(resource.contract_end_date);
@@ -372,21 +372,12 @@ export default function CapacityPlannerPage() {
   };
 
   const filteredResources = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
     return metrics.resources.filter((r) => {
       // Only exclude Management roles - they are overheads, not capacity planned
+      // Show ALL resources regardless of contract expiry status
       const roleLower = r.role?.toLowerCase() || '';
       const isManagement = roleLower.includes('management');
       if (isManagement) return false;
-
-      // Check if contract is expired
-      const hasExpiredContract = r.contract_end_date && new Date(r.contract_end_date) < today;
-
-      // Exclude expired contracts from default view to match baseSummary total count
-      // This ensures "Total" stat and table "requests" count are aligned
-      if (activeFilter === 'all' && hasExpiredContract) return false;
 
       const matchesSearch =
         r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -404,14 +395,14 @@ export default function CapacityPlannerPage() {
 
       let matchesFilter = true;
       if (activeFilter === 'available') {
-        // Available = 0% allocation AND not expired (matches summary count)
-        matchesFilter = currentAllocation === 0 && !hasExpiredContract;
+        // Available = 0% allocation (no contract expiry check)
+        matchesFilter = currentAllocation === 0;
       } else if (activeFilter === 'atCapacity') {
-        // At Capacity = 80-100% AND not expired
-        matchesFilter = currentAllocation > 80 && currentAllocation <= 100 && !hasExpiredContract;
+        // At Capacity = 80-100% (no contract expiry check)
+        matchesFilter = currentAllocation > 80 && currentAllocation <= 100;
       } else if (activeFilter === 'over') {
-        // Over-allocated = >100% AND not expired
-        matchesFilter = currentAllocation > 100 && !hasExpiredContract;
+        // Over-allocated = >100% (no contract expiry check)
+        matchesFilter = currentAllocation > 100;
       }
 
       return matchesSearch && matchesDepartment && matchesFilter;
@@ -424,10 +415,8 @@ export default function CapacityPlannerPage() {
     currentAllocationByResourceId,
   ]);
 
-  // Filtered resources excluding expired contracts - used for Allocations, Projects tabs
-  const activeResources = useMemo(() => {
-    return filteredResources.filter(r => !isContractExpired(r));
-  }, [filteredResources]);
+  // All resources - same as filteredResources (no longer filtering by contract expiry)
+  const activeResources = filteredResources;
 
   // All plannable resources for all tabs - Only exclude Management roles
   const allGanttResources = useMemo(() => {
