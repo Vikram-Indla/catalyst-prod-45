@@ -286,21 +286,38 @@ export default function UsersManagement() {
         }
       });
 
+      // Separate users: profile-linked (have email) vs inventory-only (no email)
+      const selectedUsers = users.filter(u => ids.includes(u.id));
+      const profileUserIds = selectedUsers.filter(u => !!u.email).map(u => u.id);
+      const inventoryOnlyIds = selectedUsers.filter(u => !u.email).map(u => u.id);
+
       // Update resource_inventory if needed
       if (Object.keys(inventoryUpdates).length > 0) {
-        const { error: invError } = await (supabase as any)
-          .from('resource_inventory')
-          .update({ ...inventoryUpdates, updated_at: new Date().toISOString() })
-          .in('profile_id', ids);
-        if (invError) throw invError;
+        // For profile-linked users, update via profile_id
+        if (profileUserIds.length > 0) {
+          const { error: invError } = await (supabase as any)
+            .from('resource_inventory')
+            .update({ ...inventoryUpdates, updated_at: new Date().toISOString() })
+            .in('profile_id', profileUserIds);
+          if (invError) throw invError;
+        }
+        
+        // For inventory-only users, update via id (resource_inventory.id)
+        if (inventoryOnlyIds.length > 0) {
+          const { error: invOnlyError } = await (supabase as any)
+            .from('resource_inventory')
+            .update({ ...inventoryUpdates, updated_at: new Date().toISOString() })
+            .in('id', inventoryOnlyIds);
+          if (invOnlyError) throw invOnlyError;
+        }
       }
 
-      // Update profiles if needed
-      if (Object.keys(profileUpdates).length > 0) {
+      // Update profiles if needed (only for profile-linked users)
+      if (Object.keys(profileUpdates).length > 0 && profileUserIds.length > 0) {
         const { error: profError } = await supabase
           .from('profiles')
           .update({ ...profileUpdates, updated_at: new Date().toISOString() })
-          .in('id', ids);
+          .in('id', profileUserIds);
         if (profError) throw profError;
       }
     },
