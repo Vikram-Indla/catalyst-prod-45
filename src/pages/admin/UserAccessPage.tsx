@@ -30,7 +30,8 @@ import {
   Mail,
   Eye,
   EyeOff,
-  UserPlus
+  UserPlus,
+  Users
 } from 'lucide-react';
 
 interface ResourceUser {
@@ -49,9 +50,11 @@ export default function UserAccessPage() {
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
   const [createAccountOpen, setCreateAccountOpen] = useState(false);
+  const [bulkCreateOpen, setBulkCreateOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number; errors: string[] } | null>(null);
 
   // Fetch resource inventory with profiles, auto-linking by RID when profile_id is null
   const { data: users = [], isLoading } = useQuery({
@@ -237,6 +240,11 @@ export default function UserAccessPage() {
     );
   }, [users, searchQuery]);
 
+  // Users without profile but with email (candidates for bulk account creation)
+  const usersNeedingAccounts = useMemo(() => {
+    return users.filter(u => !u.profile_id && u.email);
+  }, [users]);
+
   const handleChangePassword = () => {
     if (!selectedUser?.profile_id) {
       toast.error('This resource does not have an associated user account');
@@ -295,6 +303,50 @@ export default function UserAccessPage() {
     setCreateAccountOpen(true);
   };
 
+  // Bulk create accounts for all users with email but no profile
+  const handleBulkCreate = async () => {
+    if (usersNeedingAccounts.length === 0) {
+      toast.info('All users already have accounts');
+      setBulkCreateOpen(false);
+      return;
+    }
+
+    setBulkProgress({ done: 0, total: usersNeedingAccounts.length, errors: [] });
+    const errors: string[] = [];
+    let done = 0;
+
+    for (const user of usersNeedingAccounts) {
+      try {
+        const { data, error } = await supabase.functions.invoke('create-linked-account', {
+          body: { 
+            resourceInventoryId: user.id, 
+            email: user.email, 
+            fullName: user.name,
+            rid: user.rid || undefined 
+          },
+        });
+        if (error || !data?.success) {
+          errors.push(`${user.name}: ${data?.error || error?.message || 'Unknown error'}`);
+        }
+      } catch (err: any) {
+        errors.push(`${user.name}: ${err.message || 'Unknown error'}`);
+      }
+      done++;
+      setBulkProgress({ done, total: usersNeedingAccounts.length, errors: [...errors] });
+    }
+
+    setBulkProgress(null);
+    setBulkCreateOpen(false);
+
+    if (errors.length === 0) {
+      toast.success(`Successfully created ${usersNeedingAccounts.length} account(s)`);
+    } else {
+      toast.warning(`Created ${usersNeedingAccounts.length - errors.length} account(s). ${errors.length} failed.`);
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });
+  };
+
   return (
     <div className="flex-1 p-6 space-y-6">
       {/* Header */}
@@ -308,6 +360,15 @@ export default function UserAccessPage() {
             Manage application access credentials for Catalyst users
           </p>
         </div>
+        {usersNeedingAccounts.length > 0 && (
+          <Button
+            onClick={() => setBulkCreateOpen(true)}
+            className="gap-2"
+          >
+            <Users className="h-4 w-4" />
+            Create {usersNeedingAccounts.length} Account{usersNeedingAccounts.length > 1 ? 's' : ''}
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -555,6 +616,71 @@ export default function UserAccessPage() {
               disabled={createAccountMutation.isPending}
             >
               {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Create Accounts Dialog */}
+      <Dialog open={bulkCreateOpen} onOpenChange={(open) => !bulkProgress && setBulkCreateOpen(open)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-brand-primary" />
+              Bulk Create Accounts
+            </DialogTitle>
+            <DialogDescription>
+              Create login accounts for {usersNeedingAccounts.length} user{usersNeedingAccounts.length !== 1 ? 's' : ''} 
+              who have an email but no account yet.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            {bulkProgress ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Creating accounts... {bulkProgress.done} / {bulkProgress.total}
+                </p>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-brand-primary h-2 rounded-full transition-all"
+                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%` }}
+                  />
+                </div>
+                {bulkProgress.errors.length > 0 && (
+                  <div className="text-xs text-destructive max-h-24 overflow-y-auto">
+                    {bulkProgress.errors.map((err, i) => (
+                      <p key={i}>{err}</p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  Each account will be created with a temporary password (<code>password@99</code>). 
+                  Users will be required to change it on first login.
+                </p>
+                <div className="max-h-32 overflow-y-auto text-xs text-muted-foreground border rounded p-2">
+                  {usersNeedingAccounts.map(u => (
+                    <p key={u.id}>{u.name} ({u.email})</p>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setBulkCreateOpen(false)}
+              disabled={!!bulkProgress}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleBulkCreate}
+              disabled={!!bulkProgress}
+            >
+              {bulkProgress ? 'Creating...' : `Create ${usersNeedingAccounts.length} Account${usersNeedingAccounts.length !== 1 ? 's' : ''}`}
             </Button>
           </DialogFooter>
         </DialogContent>
