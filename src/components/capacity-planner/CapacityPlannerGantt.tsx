@@ -101,7 +101,7 @@ export function CapacityPlannerGantt({
   onEditResource,
   className,
 }: CapacityPlannerGanttProps) {
-  const [viewMode, setViewMode] = useState<'weeks' | 'months'>('weeks');
+  const [viewMode, setViewMode] = useState<'weeks' | 'months'>('months');
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
@@ -349,7 +349,6 @@ export function CapacityPlannerGantt({
             className="cpg-today-marker-global"
             style={{ left: RESOURCE_COLUMN_WIDTH + todayMarkerPosition }}
           >
-            <div className="cpg-today-label">TODAY</div>
             <div className="cpg-today-line" />
           </div>
         )}
