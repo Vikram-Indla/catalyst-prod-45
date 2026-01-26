@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,12 +25,6 @@ import { getActiveNavItem } from "@/lib/workspaceContext";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useTheme } from "@/hooks/useTheme";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -48,6 +42,8 @@ export function CatalystHeader() {
   const location = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
   const { isAdmin, isSuperAdmin, isProgramManager, canAccessEnterprise, isProductOwnerOnly } = useUserRole();
   
   // Settings access: admin, super_admin, or program_manager (management)
@@ -102,6 +98,31 @@ export function CatalystHeader() {
       navigate('/auth');
     }
   };
+
+  // Close avatar menu on outside click / Escape
+  useEffect(() => {
+    if (!userMenuOpen) return;
+
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (userMenuRef.current?.contains(target)) return;
+      setUserMenuOpen(false);
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setUserMenuOpen(false);
+    };
+
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [userMenuOpen]);
 
   // Handle click on disabled module
   const handleDisabledModuleClick = (label: string) => {
@@ -605,57 +626,116 @@ export function CatalystHeader() {
             <ThemeToggle />
 
             {/* User Avatar */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center",
-                    "text-primary-foreground text-[13px] font-semibold",
-                    "cursor-pointer transition-transform hover:scale-105",
-                    "bg-gradient-to-br from-primary to-primary/80",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                  )}
-                  title="Profile"
-                  aria-label="Open user menu"
-                >
-                  {user?.email?.charAt(0).toUpperCase() || 'U'}
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 z-[9999]">
-                <div className="flex flex-col space-y-1 p-2">
-                  <p className="text-sm font-medium truncate">{user?.email}</p>
-                  <p className="text-xs text-muted-foreground">User Account</p>
-                </div>
-                <DropdownMenuItem 
-                  onClick={() => navigate('/profile')} 
-                  className="cursor-pointer"
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  <span>My Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => navigate('/admin/settings/notifications')} 
-                  className="cursor-pointer"
-                >
-                  <Bell className="mr-2 h-4 w-4" />
-                  <span>Notification Settings</span>
-                </DropdownMenuItem>
-                {canAccessSettings && (
-                  <DropdownMenuItem 
-                    onClick={() => navigate('/admin/users')} 
-                    className="cursor-pointer"
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Administration</span>
-                  </DropdownMenuItem>
+            <div ref={userMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                aria-haspopup="menu"
+                aria-expanded={userMenuOpen}
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center",
+                  "text-primary-foreground text-[13px] font-semibold",
+                  "cursor-pointer transition-transform hover:scale-105",
+                  "bg-gradient-to-br from-primary to-primary/80",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 )}
-                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                title="Profile"
+              >
+                {user?.email?.charAt(0).toUpperCase() || 'U'}
+              </button>
+
+              {userMenuOpen && (
+                <div
+                  role="menu"
+                  aria-label="User menu"
+                  className={cn(
+                    "absolute right-0 top-full mt-2",
+                    "z-[9999] w-56",
+                    "rounded-md border border-border/50 bg-popover text-popover-foreground shadow-lg",
+                    "p-1"
+                  )}
+                >
+                  <div className="flex flex-col space-y-1 p-2">
+                    <p className="text-sm font-medium truncate">{user?.email}</p>
+                    <p className="text-xs text-muted-foreground">User Account</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      navigate('/profile');
+                    }}
+                    className={cn(
+                      "w-full flex items-center rounded-sm px-2 py-1.5 text-sm",
+                      "transition-colors",
+                      "hover:bg-accent hover:text-accent-foreground",
+                      "focus:outline-none focus:bg-accent focus:text-accent-foreground"
+                    )}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    <span>My Profile</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      navigate('/admin/settings/notifications');
+                    }}
+                    className={cn(
+                      "w-full flex items-center rounded-sm px-2 py-1.5 text-sm",
+                      "transition-colors",
+                      "hover:bg-accent hover:text-accent-foreground",
+                      "focus:outline-none focus:bg-accent focus:text-accent-foreground"
+                    )}
+                  >
+                    <Bell className="mr-2 h-4 w-4" />
+                    <span>Notification Settings</span>
+                  </button>
+
+                  {canAccessSettings && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        navigate('/admin/users');
+                      }}
+                      className={cn(
+                        "w-full flex items-center rounded-sm px-2 py-1.5 text-sm",
+                        "transition-colors",
+                        "hover:bg-accent hover:text-accent-foreground",
+                        "focus:outline-none focus:bg-accent focus:text-accent-foreground"
+                      )}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Administration</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      void handleSignOut();
+                    }}
+                    className={cn(
+                      "w-full flex items-center rounded-sm px-2 py-1.5 text-sm",
+                      "transition-colors",
+                      "hover:bg-accent hover:text-accent-foreground",
+                      "focus:outline-none focus:bg-accent focus:text-accent-foreground"
+                    )}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </TooltipProvider>
         </div>
       </header>
