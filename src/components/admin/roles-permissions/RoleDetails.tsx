@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,9 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Pencil } from 'lucide-react';
+import { Pencil, UserPlus } from 'lucide-react';
 import { ProductRole, useUsersWithRole, useRolePermissions, PERMISSION_GROUPS } from '@/hooks/useProductRoles';
 import { cn } from '@/lib/utils';
+import { AddUserToRoleModal } from './AddUserToRoleModal';
 
 interface RoleDetailsProps {
   role: ProductRole;
@@ -106,6 +108,7 @@ export function RoleDetails({
   onViewDetailedPermissions,
   isAdmin 
 }: RoleDetailsProps) {
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const { data: users, isLoading: usersLoading } = useUsersWithRole(role.id);
   const { data: permissions } = useRolePermissions(role.id);
 
@@ -174,8 +177,18 @@ export function RoleDetails({
 
       {/* Users with this Role */}
       <Card>
-        <CardHeader className="pb-3 border-b">
+        <CardHeader className="pb-3 border-b flex flex-row items-center justify-between">
           <h2 className="text-sm font-semibold text-foreground">Users with this role</h2>
+          {isAdmin && (
+            <Button
+              size="sm"
+              onClick={() => setIsAddUserModalOpen(true)}
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+            >
+              <UserPlus className="h-4 w-4 mr-1.5" />
+              Add User
+            </Button>
+          )}
         </CardHeader>
         <CardContent className="p-0">
           {usersLoading ? (
@@ -240,6 +253,15 @@ export function RoleDetails({
           )}
         </CardContent>
       </Card>
+
+      {/* Add User Modal */}
+      <AddUserToRoleModal
+        isOpen={isAddUserModalOpen}
+        onClose={() => setIsAddUserModalOpen(false)}
+        roleId={role.id}
+        roleName={role.name}
+        existingUserIds={(users || []).map((u) => u.user_id)}
+      />
     </div>
   );
 }
