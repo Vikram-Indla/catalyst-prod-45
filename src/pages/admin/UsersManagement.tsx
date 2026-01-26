@@ -40,6 +40,7 @@ export default function UsersManagement() {
   // State
   const [searchQuery, setSearchQuery] = useState('');
   const [deptFilter, setDeptFilter] = useState('');
+  const [assignmentFilter, setAssignmentFilter] = useState('');
   const [vendorFilter, setVendorFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -119,6 +120,10 @@ export default function UsersManagement() {
     [...new Set(users.map(u => u.vendor).filter(Boolean))].sort() as string[],
   [users]);
 
+  const uniqueAssignments = useMemo(() => 
+    [...new Set(users.map(u => u.assignment_name).filter(Boolean))].sort() as string[],
+  [users]);
+
   // Stats
   const stats = useMemo(() => ({
     total: users.length,
@@ -142,10 +147,11 @@ export default function UsersManagement() {
       }
       if (searchQuery && !u.full_name?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       if (deptFilter && u.department_name !== deptFilter) return false;
+      if (assignmentFilter && u.assignment_name !== assignmentFilter) return false;
       if (vendorFilter && u.vendor !== vendorFilter) return false;
       return true;
     });
-  }, [users, typeFilter, searchQuery, deptFilter, vendorFilter]);
+  }, [users, typeFilter, searchQuery, deptFilter, assignmentFilter, vendorFilter]);
 
   // Pagination
   const totalPages = Math.ceil(filteredUsers.length / pageSize);
@@ -207,6 +213,7 @@ export default function UsersManagement() {
   const clearFilters = () => {
     setSearchQuery('');
     setDeptFilter('');
+    setAssignmentFilter('');
     setVendorFilter('');
     setTypeFilter('all');
     setCurrentPage(1);
@@ -479,6 +486,12 @@ export default function UsersManagement() {
                 options={uniqueDepartments}
                 onChange={(v) => handleFilterChange(setDeptFilter, v)}
                 allLabel="All Departments"
+              />
+              <Dropdown
+                value={assignmentFilter}
+                options={uniqueAssignments}
+                onChange={(v) => handleFilterChange(setAssignmentFilter, v)}
+                allLabel="All Assignments"
               />
               <Dropdown
                 value={vendorFilter}
