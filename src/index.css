@@ -61,20 +61,16 @@ html:has(body[data-scroll-locked]) {
   /* Start invisible and animate in */
   opacity: 0;
   animation: radix-fade-in 0.12s ease-out 0.02s forwards;
+  /* Keep interactive by default; specific unpositioned states are disabled below */
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* Specific fix for content at origin position before positioning */
-[data-radix-popper-content-wrapper][style*="left: 0px"][style*="top: 0px"] {
+[data-radix-popper-content-wrapper][style*="left: 0px"][style*="top: 0px"]:not([style*="transform:"]) {
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
-}
-
-/* Show once positioned (not at 0,0) */
-[data-radix-popper-content-wrapper]:not([style*="left: 0px"]),
-[data-radix-popper-content-wrapper]:not([style*="top: 0px"]) {
-  visibility: visible;
-  pointer-events: auto;
 }
 
 @keyframes radix-fade-in {
