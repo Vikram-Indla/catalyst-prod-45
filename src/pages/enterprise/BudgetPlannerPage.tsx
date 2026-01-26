@@ -27,7 +27,8 @@ import { BudgetSummaryCards } from '@/components/budget/BudgetSummaryCards';
 import { BudgetInfoBox } from '@/components/budget/BudgetInfoBox';
 import { BudgetLedgerTable } from '@/components/budget/BudgetLedgerTable';
 import { BudgetQualityPanel } from '@/components/budget/BudgetQualityPanel';
-import { BudgetExecutiveSummaryView } from '@/components/budget/BudgetExecutiveSummaryView';
+import { BudgetSummaryTab } from '@/components/budget/BudgetSummaryTab';
+import { BudgetScenarioTab } from '@/components/budget/BudgetScenarioTab';
 
 type BudgetPlannerTab = 'summary' | 'budget' | 'scenario';
 
@@ -370,21 +371,15 @@ export default function BudgetPlannerPage() {
               )}
             </>
           ) : activeTab === 'summary' ? (
-            <BudgetExecutiveSummaryView 
+            <BudgetSummaryTab 
               data={data}
-              currentDept={currentDept}
-              onDeptChange={setCurrentDept}
               period={period}
             />
           ) : (
-            /* Scenario Planning Tab - Placeholder */
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <GitBranch className="w-16 h-16 text-slate-300 mb-4" />
-              <h2 className="text-xl font-semibold text-slate-700 mb-2">Scenario Planning</h2>
-              <p className="text-slate-500 max-w-md">
-                Model different budget scenarios, compare outcomes, and plan for various financial situations.
-              </p>
-            </div>
+            <BudgetScenarioTab
+              data={data}
+              period={period}
+            />
           )}
         </div>
       </div>
