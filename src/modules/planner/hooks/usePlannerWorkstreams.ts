@@ -23,30 +23,15 @@ export function usePlannerWorkstreams() {
         return [];
       }
 
-      // Fetch task counts per workstream
-      const { data: taskCounts, error: countError } = await supabase
-        .from('planner_tasks')
-        .select('workstream_id')
-        .is('deleted_at', null);
-
-      if (countError) {
-        console.error('Error fetching task counts:', countError);
-      }
-
-      // Count tasks per workstream
-      const countMap: Record<string, number> = {};
-      (taskCounts || []).forEach((t: any) => {
-        if (t.workstream_id) {
-          countMap[t.workstream_id] = (countMap[t.workstream_id] || 0) + 1;
-        }
-      });
-
+      // NOTE: Member counts will be populated once workstream_members table is added
+      // For now, return 0 to avoid showing mock/incorrect data
+      
       const workstreams: PlannerTeam[] = (workstreamsData || []).map(ws => ({
         id: ws.id,
         name: ws.name,
         shortName: ws.name.slice(0, 3).toUpperCase(),
         description: undefined,
-        memberCount: countMap[ws.id] || 0, // Shows task count, not member count
+        memberCount: 0, // No members table yet - will be wired when resources are added
         color: '#10b981', // Default green
         leadId: undefined,
       }));
