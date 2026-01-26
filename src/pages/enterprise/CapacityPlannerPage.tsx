@@ -65,6 +65,7 @@ import { VirtualizedCardsView } from '@/components/capacity/VirtualizedCardsView
 import { HierarchicalHeatmap } from '@/components/capacity/HierarchicalHeatmap';
 import { EnhancedSearch } from '@/components/capacity/EnhancedSearch';
 import { EnhancedTimelineView } from '@/components/capacity/timeline';
+import { CapacityPlannerGantt } from '@/components/capacity-planner';
 import { UndoRedoControls } from '@/components/capacity/UndoRedoControls';
 import { CapacityPlannerSkeleton } from '@/components/capacity/CapacityPlannerSkeleton';
 import { UndoRedoProvider } from '@/contexts/UndoRedoContext';
@@ -949,35 +950,20 @@ export default function CapacityPlannerPage() {
                   transition={{ duration: 0.2 }}
                   className="flex-1 min-h-0 flex flex-col"
                 >
-                  <EnhancedTimelineView 
+                  <CapacityPlannerGantt 
                     resources={allGanttResources.map(r => ({
                       id: r.id,
-                      resourceInventoryId: (r as any).resourceInventoryId,
                       name: r.name,
                       role: r.role,
                       department: r.department,
                       allocation: r.allocation,
                       contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
                       assignmentName: r.assignmentName,
+                      country_flag_svg: (r as any).country_flag_svg || null,
                     }))}
                     allocations={allocations}
                     year={2026}
                     onEditResource={(id) => handleOpenAllocationModal(id)}
-                    groupBy={groupBy}
-                    groupedByAssignment={Object.fromEntries(
-                      Object.entries(groupedByAssignment).map(([key, resources]) => [
-                        key,
-                        resources.map(r => ({
-                          id: r.id,
-                          name: r.name,
-                          role: r.role,
-                          department: r.department,
-                          allocation: r.allocation,
-                          contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
-                          assignmentName: r.assignmentName,
-                        }))
-                      ])
-                    )}
                     className="flex-1"
                   />
                 </motion.div>
@@ -1675,7 +1661,7 @@ export default function CapacityPlannerPage() {
               
               {primaryView === 'resources' && resourceView === 'timeline' && (
                 <div className="flex-1 min-h-0 flex flex-col">
-                  <EnhancedTimelineView 
+                  <CapacityPlannerGantt 
                     resources={allGanttResources.map(r => ({
                       id: r.id,
                       name: r.name,
@@ -1684,25 +1670,11 @@ export default function CapacityPlannerPage() {
                       allocation: r.allocation,
                       contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
                       assignmentName: r.assignmentName,
-                    }))} 
+                      country_flag_svg: (r as any).country_flag_svg || null,
+                    }))}
                     allocations={allocations}
                     year={2026}
-                    onEditResource={() => {}}
-                    groupBy={groupBy}
-                    groupedByAssignment={Object.fromEntries(
-                      Object.entries(groupedByAssignment).map(([key, resources]) => [
-                        key,
-                        resources.map(r => ({
-                          id: r.id,
-                          name: r.name,
-                          role: r.role,
-                          department: r.department,
-                          allocation: r.allocation,
-                          contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
-                          assignmentName: r.assignmentName,
-                        }))
-                      ])
-                    )}
+                    onEditResource={(id) => setResource360Id(id)}
                     className="flex-1"
                   />
                 </div>
