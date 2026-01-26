@@ -3,7 +3,7 @@
  * Monthly grid with department tabs, location column, grouped sections
  */
 
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Users, AlertTriangle, ChevronDown, ChevronUp, X } from 'lucide-react';
@@ -764,9 +764,9 @@ export function CapacityAnalyticsView({
                 </tr>
               ) : (
                 groupedRows.map(([deptName, deptRows]) => (
-                  <>
+                  <React.Fragment key={`dept-group-${deptName}`}>
                     {/* Department Group Header */}
-                    <DepartmentGroupHeader key={`header-${deptName}`} name={deptName} />
+                    <DepartmentGroupHeader name={deptName} />
                     {/* Department Resources */}
                     {deptRows.map((row) => (
                       <AnalyticsResourceRow 
@@ -775,7 +775,7 @@ export function CapacityAnalyticsView({
                         onResourceClick={onResourceClick}
                       />
                     ))}
-                  </>
+                  </React.Fragment>
                 ))
               )}
             </tbody>
