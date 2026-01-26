@@ -203,6 +203,7 @@ export function BudgetSummaryCards({
                   <th>Resource Name</th>
                   <th>Monthly CTC</th>
                   <th>Department</th>
+                <th>Vendor</th>
                   <th>Assignment</th>
                   <th>Contract End Date</th>
                 </tr>
@@ -217,13 +218,14 @@ export function BudgetSummaryCards({
                         : <span className="text-[var(--budget-danger)] text-xs font-semibold">Missing CTC</span>}
                     </td>
                     <td className="text-[var(--budget-text-secondary)]">{r.department || '—'}</td>
+                  <td className="text-[var(--budget-text-secondary)]">{r.vendorName || '—'}</td>
                     <td className="text-[var(--budget-text-secondary)]">{r.assignmentName || '—'}</td>
                     <td className="text-[var(--budget-text-secondary)] text-sm">{r.contractEnd || '—'}</td>
                   </tr>
                 ))}
                 {insourcedResourcesList.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="text-center text-[var(--budget-text-muted)] py-8">
+                  <td colSpan={6} className="text-center text-[var(--budget-text-muted)] py-8">
                       <div className="flex flex-col items-center gap-2">
                         <X className="w-8 h-8 opacity-20" />
                         <span>No insourced resources found</span>
@@ -314,6 +316,7 @@ export function BudgetSummaryCards({
                         <th>Resource Name</th>
                         <th>Monthly CTC</th>
                         <th>Department</th>
+                      <th>Vendor</th>
                         <th>Assignment</th>
                         <th>Contract End Date</th>
                       </tr>
@@ -328,6 +331,7 @@ export function BudgetSummaryCards({
                               : <span className="text-[var(--budget-danger)] text-xs font-semibold">Missing CTC</span>}
                           </td>
                           <td className="text-[var(--budget-text-secondary)]">{r.department || '—'}</td>
+                        <td className="text-[var(--budget-text-secondary)]">{r.vendorName || '—'}</td>
                           <td className="text-[var(--budget-text-secondary)]">{r.assignmentName || '—'}</td>
                           <td className="text-[var(--budget-text-secondary)] text-sm">{r.contractEnd || '—'}</td>
                         </tr>
