@@ -51,7 +51,7 @@ export default function UserAccessPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Fetch resource inventory with profiles
+  // Fetch resource inventory with profiles, auto-linking by RID when profile_id is null
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['user-access-resources'],
     queryFn: async () => {
@@ -63,13 +63,17 @@ export default function UserAccessPage() {
 
       if (resourceError) throw resourceError;
 
-      // Get unique profile IDs that are not null
+      // Collect unique profile_ids (for direct link) and rids (for fallback matching)
       const profileIds = (resources || [])
         .map(r => r.profile_id)
         .filter((id): id is string => id !== null);
 
-      // Fetch profiles for those IDs
-      let profilesMap: Record<string, { email: string }> = {};
+      const ridsWithoutProfile = (resources || [])
+        .filter(r => r.profile_id === null && r.rid)
+        .map(r => r.rid as string);
+
+      // Fetch profiles by ID (direct link)
+      let profilesById: Record<string, { id: string; email: string }> = {};
       if (profileIds.length > 0) {
         const { data: profiles, error: profileError } = await supabase
           .from('profiles')
@@ -78,20 +82,75 @@ export default function UserAccessPage() {
 
         if (profileError) throw profileError;
 
-        profilesMap = (profiles || []).reduce((acc, p) => {
-          acc[p.id] = { email: p.email };
+        profilesById = (profiles || []).reduce((acc, p) => {
+          acc[p.id] = { id: p.id, email: p.email };
           return acc;
-        }, {} as Record<string, { email: string }>);
+        }, {} as Record<string, { id: string; email: string }>);
       }
 
-      return (resources || []).map((item) => ({
-        id: item.id,
-        profile_id: item.profile_id,
-        name: item.name || 'Unknown',
-        email: item.profile_id ? profilesMap[item.profile_id]?.email || null : null,
-        rid: item.rid,
-        is_active: item.is_active ?? true,
-      })) as ResourceUser[];
+      // Fetch profiles by RID for auto-linking (when profile_id is null)
+      let profilesByRid: Record<string, { id: string; email: string }> = {};
+      if (ridsWithoutProfile.length > 0) {
+        const { data: ridProfiles, error: ridProfileError } = await supabase
+          .from('profiles')
+          .select('id, email, rid')
+          .in('rid', ridsWithoutProfile);
+
+        if (ridProfileError) throw ridProfileError;
+
+        profilesByRid = (ridProfiles || []).reduce((acc, p) => {
+          if (p.rid) {
+            acc[p.rid] = { id: p.id, email: p.email };
+          }
+          return acc;
+        }, {} as Record<string, { id: string; email: string }>);
+      }
+
+      // Map resources with auto-linking
+      const mappedUsers: ResourceUser[] = [];
+      const updatePromises: Promise<void>[] = [];
+
+      for (const item of resources || []) {
+        let linkedProfileId = item.profile_id;
+        let email: string | null = null;
+
+        if (item.profile_id) {
+          // Direct link exists
+          email = profilesById[item.profile_id]?.email || null;
+        } else if (item.rid && profilesByRid[item.rid]) {
+          // Auto-link by RID
+          const matchedProfile = profilesByRid[item.rid];
+          linkedProfileId = matchedProfile.id;
+          email = matchedProfile.email;
+
+          // Update resource_inventory.profile_id in the background
+          updatePromises.push(
+            (async () => {
+              const { error } = await supabase
+                .from('resource_inventory')
+                .update({ profile_id: matchedProfile.id })
+                .eq('id', item.id);
+              if (error) console.error(`Failed to auto-link RID ${item.rid}:`, error);
+            })()
+          );
+        }
+
+        mappedUsers.push({
+          id: item.id,
+          profile_id: linkedProfileId,
+          name: item.name || 'Unknown',
+          email,
+          rid: item.rid,
+          is_active: item.is_active ?? true,
+        });
+      }
+
+      // Fire-and-forget auto-link updates
+      if (updatePromises.length > 0) {
+        Promise.all(updatePromises).catch(console.error);
+      }
+
+      return mappedUsers;
     },
   });
 
