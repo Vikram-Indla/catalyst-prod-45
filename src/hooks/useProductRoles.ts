@@ -62,15 +62,16 @@ export type PermissionLevel = 'Full' | 'View only' | 'Own only' | 'None';
 
 // Default permissions for new roles
 const DEFAULT_PERMISSIONS: Record<PermissionGroup, PermissionLevel> = {
-  'Capacity Planner': 'None',
+  // Default: all roles get View access to all modules, except Budget Planner and Settings & Admin
+  'Capacity Planner': 'View only',
   'Budget Planner': 'None',
   'Industry Backlog': 'View only',
   'Work Manager': 'View only',
-  'Release Dashboard': 'None',
-  'Incident Room': 'None',
+  'Release Dashboard': 'View only',
+  'Incident Room': 'View only',
   'Dependency Board': 'View only',
   'Defects': 'View only',
-  'Test Management': 'None',
+  'Test Management': 'View only',
   'Reports & Analytics': 'View only',
   'Settings & Admin': 'None',
 };
@@ -448,16 +449,20 @@ export function useUpdateRolePermissions() {
       roleId: string; 
       permissions: Record<string, PermissionLevel>;
     }) => {
-      // Update each permission
-      const updates = Object.entries(permissions).map(([group, level]) => 
-        supabase
-          .from('product_role_permissions')
-          .update({ permission_level: level, updated_at: new Date().toISOString() })
-          .eq('role_id', roleId)
-          .eq('permission_group', group)
-      );
+      // Upsert ensures toggles work even if rows don't exist yet (e.g. after permission group migrations)
+      const now = new Date().toISOString();
+      const payload = Object.entries(permissions).map(([group, level]) => ({
+        role_id: roleId,
+        permission_group: group,
+        permission_level: level,
+        updated_at: now,
+      }));
 
-      await Promise.all(updates);
+      const { error } = await supabase
+        .from('product_role_permissions')
+        .upsert(payload, { onConflict: 'role_id,permission_group' });
+
+      if (error) throw error;
       return true;
     },
     onSuccess: () => {
