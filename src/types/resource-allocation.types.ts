@@ -97,6 +97,7 @@ export interface TimelinePeriod {
 
 export interface TimelineBar {
   allocationId: string;
+  originalIds: string[];
   assignmentId: string;
   assignmentName: string;
   assignmentColor: string;
