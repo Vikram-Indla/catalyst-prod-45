@@ -26,11 +26,12 @@ import { BudgetDepartmentTabs } from '@/components/budget/BudgetDepartmentTabs';
 import { BudgetSummaryCards } from '@/components/budget/BudgetSummaryCards';
 import { BudgetInfoBox } from '@/components/budget/BudgetInfoBox';
 import { BudgetLedgerTable } from '@/components/budget/BudgetLedgerTable';
-import { BudgetQualityPanel } from '@/components/budget/BudgetQualityPanel';
 import { BudgetSummaryTab } from '@/components/budget/BudgetSummaryTab';
 import { BudgetScenarioTab } from '@/components/budget/BudgetScenarioTab';
+import { BudgetDataQualityTab } from '@/components/budget/BudgetDataQualityTab';
+import { FileCheck } from 'lucide-react';
 
-type BudgetPlannerTab = 'summary' | 'budget' | 'scenario';
+type BudgetPlannerTab = 'summary' | 'budget' | 'scenario' | 'data-quality';
 
 const PERIODS: { value: BudgetPeriod; label: string }[] = [
   { value: 'Q1', label: 'Q1' },
@@ -193,6 +194,13 @@ export default function BudgetPlannerPage() {
       isActive: activeTab === 'scenario',
       onClick: () => setActiveTab('scenario')
     },
+    { 
+      id: 'data-quality', 
+      label: 'Data Quality', 
+      icon: FileCheck,
+      isActive: activeTab === 'data-quality',
+      onClick: () => setActiveTab('data-quality')
+    },
   ];
 
   if (error) {
@@ -214,6 +222,7 @@ export default function BudgetPlannerPage() {
       case 'summary': return 'Summary';
       case 'budget': return 'Budget';
       case 'scenario': return 'Scenario Planning';
+      case 'data-quality': return 'Data Quality';
       default: return 'Summary';
     }
   };
@@ -364,23 +373,20 @@ export default function BudgetPlannerPage() {
                 currentDept={currentDept}
                 resources={data?.resources || []}
               />
-
-              {/* Data Quality Panel */}
-              {data?.dataQualityIssues && data.dataQualityIssues.length > 0 && (
-                <BudgetQualityPanel issues={data.dataQualityIssues} />
-              )}
             </>
           ) : activeTab === 'summary' ? (
             <BudgetSummaryTab 
               data={data}
               period={period}
             />
-          ) : (
+          ) : activeTab === 'scenario' ? (
             <BudgetScenarioTab
               data={data}
               period={period}
             />
-          )}
+          ) : activeTab === 'data-quality' ? (
+            <BudgetDataQualityTab data={data} />
+          ) : null}
         </div>
       </div>
     </PageChrome>
