@@ -304,15 +304,16 @@ export function BudgetLedgerTable({
                                     <span className="text-sm text-slate-600">{r.role || '—'}</span>
                                   </td>
                                   <td className="px-4 py-3">
-                                    <span className={cn(
-                                      'inline-flex px-2 py-0.5 rounded text-[10px] font-medium',
-                                      r.resourceType === 'Variable' ? 'bg-blue-50 text-blue-700' :
-                                      r.resourceType === 'Fixed' ? 'bg-emerald-50 text-emerald-800' :
-                                      r.resourceType === 'Freelance' ? 'bg-amber-50 text-amber-800' :
-                                      'bg-slate-100 text-slate-600'
-                                    )}>
-                                      {r.resourceType}
-                                    </span>
+                            <span className="inline-flex items-center gap-2 text-sm text-slate-600">
+                              <span className={cn(
+                                "w-2 h-2 rounded-full",
+                                r.resourceType === 'Variable' ? 'bg-blue-600' :
+                                r.resourceType === 'Fixed' ? 'bg-emerald-600' :
+                                r.resourceType === 'Freelance' ? 'bg-violet-600' :
+                                'bg-slate-400'
+                              )} />
+                              {r.resourceType}
+                            </span>
                                   </td>
                                   <td className="px-4 py-3">
                                     <span className="text-sm text-slate-600">{r.vendorName || '—'}</span>
