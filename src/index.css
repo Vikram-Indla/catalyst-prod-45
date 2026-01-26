@@ -56,15 +56,36 @@ html:has(body[data-scroll-locked]) {
    Prevents flash at top-left corner before Floating UI calculates position
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* Fix: Hide portal content at 0,0 before positioning is calculated */
+/* Nuclear fix: Force hide at 0,0 position until properly positioned */
 [data-radix-popper-content-wrapper] {
+  /* Start invisible and animate in */
   opacity: 0;
-  animation: radix-fade-in 0.15s ease-out forwards;
+  animation: radix-fade-in 0.12s ease-out 0.02s forwards;
+}
+
+/* Specific fix for content at origin position before positioning */
+[data-radix-popper-content-wrapper][style*="left: 0px"][style*="top: 0px"] {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Show once positioned (not at 0,0) */
+[data-radix-popper-content-wrapper]:not([style*="left: 0px"]),
+[data-radix-popper-content-wrapper]:not([style*="top: 0px"]) {
+  visibility: visible;
+  pointer-events: auto;
 }
 
 @keyframes radix-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { 
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Fix: Hide content until Radix sets data-side attribute (indicates positioning done) */
