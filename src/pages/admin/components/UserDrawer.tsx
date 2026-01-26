@@ -132,7 +132,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
 
       setFormData({
         full_name: user.full_name || '',
-        email: user.email || '',
+        email: user.email || userInventory?.email || '',
         job_role: user.job_role || '',
         resource_type: user.resource_type || 'Variable',
         department_id: dept?.id || userInventory?.department_id || '',
@@ -224,6 +224,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
 
         const inventoryPayload = {
           name: formData.full_name || null,
+          email: formData.email.toLowerCase().trim() || null,
           vendor_id: formData.vendor_id || null,
           vendor_name: selectedVendor?.name || null,
           location_id: formData.location_id || null,
@@ -268,6 +269,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
           .insert({
             rid: newRid,
             name: formData.full_name || null,
+            email: formData.email.toLowerCase().trim() || null,
             vendor_id: formData.vendor_id || null,
             vendor_name: selectedVendor?.name || null,
             location_id: formData.location_id || null,

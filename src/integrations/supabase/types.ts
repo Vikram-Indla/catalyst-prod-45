@@ -15113,6 +15113,7 @@ export type Database = {
           default_capacity_percent: number | null
           department_id: string | null
           department_name: string | null
+          email: string | null
           id: string
           is_active: boolean | null
           location_id: string | null
@@ -15138,6 +15139,7 @@ export type Database = {
           default_capacity_percent?: number | null
           department_id?: string | null
           department_name?: string | null
+          email?: string | null
           id?: string
           is_active?: boolean | null
           location_id?: string | null
@@ -15163,6 +15165,7 @@ export type Database = {
           default_capacity_percent?: number | null
           department_id?: string | null
           department_name?: string | null
+          email?: string | null
           id?: string
           is_active?: boolean | null
           location_id?: string | null
