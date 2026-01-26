@@ -196,30 +196,47 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
                           key={group}
                           className="text-xs text-center p-1"
                         >
-                          <DropdownMenu>
+                          <DropdownMenu modal={false}>
                             <DropdownMenuTrigger 
-                              className={cn(
-                                "flex items-center justify-center gap-1 w-full px-2 py-1 rounded hover:bg-muted/50 transition-colors",
-                                colorClass,
-                                isUpdating && "opacity-50 pointer-events-none"
-                              )}
+                              asChild
                               disabled={isUpdating}
                             >
-                              {isUpdating ? (
-                                <span className="animate-pulse">...</span>
-                              ) : (
-                                <>
-                                  {displayLabel}
-                                  <ChevronDown className="h-3 w-3" />
-                                </>
-                              )}
+                              <button
+                                type="button"
+                                className={cn(
+                                  "flex items-center justify-center gap-1 w-full px-2 py-1.5 rounded",
+                                  "hover:bg-muted/60 transition-colors cursor-pointer",
+                                  "focus:outline-none focus:ring-2 focus:ring-primary/20",
+                                  colorClass,
+                                  isUpdating && "opacity-50 pointer-events-none"
+                                )}
+                              >
+                                {isUpdating ? (
+                                  <span className="animate-pulse">...</span>
+                                ) : (
+                                  <>
+                                    {displayLabel}
+                                    <ChevronDown className="h-3 w-3 opacity-60" />
+                                  </>
+                                )}
+                              </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="center" className="min-w-[80px]">
+                            <DropdownMenuContent 
+                              align="center" 
+                              side="bottom"
+                              sideOffset={4}
+                              collisionPadding={8}
+                              className="min-w-[90px] bg-popover border shadow-md z-[600]"
+                            >
                               {PERMISSION_OPTIONS.map((option) => (
                                 <DropdownMenuItem
                                   key={option.value}
                                   onClick={() => handlePermissionChange(role.id, role.code, group, option.value)}
-                                  className={cn("text-xs cursor-pointer", option.color)}
+                                  className={cn(
+                                    "text-xs cursor-pointer justify-center",
+                                    option.color,
+                                    level === option.value && "bg-muted"
+                                  )}
                                 >
                                   {option.label}
                                 </DropdownMenuItem>
