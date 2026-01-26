@@ -101,12 +101,21 @@ export function CapacityAnalyticsView({
     return resource.ctc * periodMonths;
   };
 
-  // Get insourced resources for breakdown
+  // Get insourced resources for breakdown - filtered by department when selected
   const insourcedResources = useMemo(() => {
-    return runRateResources.filter(r => 
+    let filtered = runRateResources.filter(r => 
       r.resource_type?.toLowerCase() === 'variable' || r.resource_type?.toLowerCase() === 'freelance'
     );
-  }, [runRateResources]);
+    
+    // Apply department filter when not 'all'
+    if (departmentFilter !== 'all') {
+      filtered = filtered.filter(r => 
+        r.department_name?.toLowerCase() === departmentFilter.toLowerCase()
+      );
+    }
+    
+    return filtered;
+  }, [runRateResources, departmentFilter]);
 
   // Calculate category totals
   const categoryTotals = useMemo(() => {
@@ -339,28 +348,28 @@ export function CapacityAnalyticsView({
             <thead>
               <tr>
                 <th>Resource Name</th>
+                <th>Monthly CTC</th>
                 <th>Department</th>
+                <th>Assignment</th>
                 <th>Contract End Date</th>
-                <th>CTC</th>
-                <th>{periodLabel} Total</th>
               </tr>
             </thead>
             <tbody>
               {insourcedResources.map((resource) => (
                 <tr key={resource.id}>
                   <td>{resource.name || '—'}</td>
-                  <td>{resource.department_name || '—'}</td>
-                  <td>
-                    {resource.contract_end_date 
-                      ? format(parseISO(resource.contract_end_date), 'MMM dd, yyyy')
-                      : '—'}
-                  </td>
                   <td>
                     {resource.ctc 
                       ? formatCurrency(resource.ctc)
                       : <span className="ct-ctc-missing">Missing</span>}
                   </td>
-                  <td>{formatCurrency(calculatePeriodTotal(resource))}</td>
+                  <td>{resource.department_name || '—'}</td>
+                  <td>{resource.assignment_name || '—'}</td>
+                  <td>
+                    {resource.contract_end_date 
+                      ? format(parseISO(resource.contract_end_date), 'MMM dd, yyyy')
+                      : '—'}
+                  </td>
                 </tr>
               ))}
             </tbody>
