@@ -125,12 +125,12 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
     <section id="permissions-matrix" className="scroll-mt-8">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-foreground">
-          Role Permissions Matrix (Product Module)
+          Module Access Matrix
         </h2>
         <p className="text-sm text-muted-foreground">
           {canEdit 
-            ? 'Click on any cell to change the permission level. Super Admin always has full access.'
-            : 'Overview of permissions by role. Contact an admin to make changes.'}
+            ? 'Configure which modules each role can access. Super Admin always has full access.'
+            : 'Overview of module access by role. Contact an admin to make changes.'}
         </p>
       </div>
 
@@ -151,7 +151,7 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
                   {PERMISSION_GROUPS.map((group) => (
                     <TableHead 
                       key={group} 
-                      className="text-xs font-semibold text-center min-w-[100px]"
+                      className="text-xs font-semibold text-center min-w-[110px] whitespace-nowrap"
                     >
                       {group}
                     </TableHead>
