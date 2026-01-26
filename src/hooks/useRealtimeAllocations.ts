@@ -118,11 +118,13 @@ export function useRealtimeAllocations() {
             }
           }
           
-          // Invalidate related queries for bi-directional sync
+         // Invalidate ALL allocation-related queries for complete real-time sync
+         queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline'] });
           queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
           queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
-          // Also invalidate resource-utilization for all years
           queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
+         queryClient.invalidateQueries({ queryKey: ['analytics-allocations'] });
+         queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
         }
       )
       .subscribe();
