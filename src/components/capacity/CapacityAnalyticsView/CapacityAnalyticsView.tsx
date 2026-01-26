@@ -35,7 +35,7 @@ export function CapacityAnalyticsView({
   searchQuery = '',
   hideWidgets = false,
 }: CapacityAnalyticsViewProps) {
-  const [viewScope, setViewScope] = useState<ViewScope>('q1');
+  const [viewScope, setViewScope] = useState<ViewScope>('full');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('insourced');
   const [showBreakdown, setShowBreakdown] = useState(false);
   const year = 2026;
