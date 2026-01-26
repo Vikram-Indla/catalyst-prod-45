@@ -343,6 +343,16 @@ export function CapacityPlannerGantt({
 
       {/* Gantt Wrapper */}
       <div className="cpg-wrapper">
+        {/* Global Today Marker - single line spanning all rows */}
+        {todayMarkerPosition !== null && (
+          <div 
+            className="cpg-today-marker-global"
+            style={{ left: RESOURCE_COLUMN_WIDTH + todayMarkerPosition }}
+          >
+            <div className="cpg-today-label">TODAY</div>
+            <div className="cpg-today-line" />
+          </div>
+        )}
         <div className="cpg-grid" style={{ gridTemplateColumns: `${RESOURCE_COLUMN_WIDTH}px 1fr` }}>
           {/* Header */}
           <div className="cpg-header">
@@ -473,13 +483,7 @@ export function CapacityPlannerGantt({
                         );
                       })}
 
-                      {/* Today Marker */}
-                      {todayMarkerPosition !== null && (
-                        <div 
-                          className="cpg-today-marker"
-                          style={{ left: todayMarkerPosition }}
-                        />
-                      )}
+                      {/* Today marker is now rendered globally at container level */}
 
                       {/* Contract End Zone */}
                       {contractMarkerLeft !== null && contractInfo.status !== 'permanent' && (
