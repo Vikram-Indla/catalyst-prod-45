@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { PERMISSION_GROUPS, PermissionLevel } from './useProductRoles';
@@ -21,6 +23,7 @@ interface EffectivePermissions {
  */
 export function useProductPermissions(): EffectivePermissions {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ['effective-product-permissions', user?.id],
@@ -105,6 +108,44 @@ export function useProductPermissions(): EffectivePermissions {
     },
     enabled: !!user,
   });
+
+  // Set up real-time subscription for permission changes
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`user-permissions-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'product_role_permissions',
+        },
+        () => {
+          // Invalidate user's effective permissions when any role permission changes
+          queryClient.invalidateQueries({ queryKey: ['effective-product-permissions', user.id] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_product_roles',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Invalidate when this user's role assignment changes
+          queryClient.invalidateQueries({ queryKey: ['effective-product-permissions', user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
 
   const defaultPermissions = PERMISSION_GROUPS.reduce((acc, group) => {
     acc[group] = 'None';
