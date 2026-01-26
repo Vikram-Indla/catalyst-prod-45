@@ -86,8 +86,14 @@ export function useAllocationMutation() {
     // Always refetch after error or success
     onSettled: () => {
       setTimeout(() => {
+       // Invalidate ALL allocation-related queries for complete CRUD sync
         queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+       queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline'] });
         queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+       queryClient.invalidateQueries({ queryKey: ['analytics-allocations'] });
+       queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
+       queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
+       queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
       }, 100);
     },
   });

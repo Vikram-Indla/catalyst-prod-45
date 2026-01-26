@@ -291,8 +291,14 @@ export function useResourceAllocations() {
       }
     },
     onSuccess: () => {
+     // Invalidate ALL allocation-related queries for complete CRUD sync
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+     queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+     queryClient.invalidateQueries({ queryKey: ['analytics-allocations'] });
+     queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
+     queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
+     queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
       toast.success('Allocations saved');
     },
     onError: (error) => {
@@ -337,8 +343,14 @@ export function useResourceAllocations() {
       return data;
     },
     onSuccess: () => {
+     // Invalidate ALL allocation-related queries for complete CRUD sync
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+     queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+     queryClient.invalidateQueries({ queryKey: ['analytics-allocations'] });
+     queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
+     queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
+     queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
       toast.success('Allocation added');
     },
     onError: (error) => {
@@ -377,8 +389,14 @@ export function useResourceAllocations() {
       return data;
     },
     onSuccess: () => {
+     // Invalidate ALL allocation-related queries for complete CRUD sync
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+     queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+     queryClient.invalidateQueries({ queryKey: ['analytics-allocations'] });
+     queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
+     queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
+     queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
       toast.success('Allocation updated');
     },
     onError: (error) => {
@@ -394,8 +412,14 @@ export function useResourceAllocations() {
       if (error) throw error;
     },
     onSuccess: () => {
+     // Invalidate ALL allocation-related queries for complete CRUD sync
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+     queryClient.invalidateQueries({ queryKey: ['resource-allocations-timeline'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+     queryClient.invalidateQueries({ queryKey: ['analytics-allocations'] });
+     queryClient.invalidateQueries({ queryKey: ['analytics-resources'] });
+     queryClient.invalidateQueries({ queryKey: ['capacity-summary'] });
+     queryClient.invalidateQueries({ queryKey: ['resource-utilization'] });
       toast.success('Allocation removed');
     },
     onError: (error) => {
