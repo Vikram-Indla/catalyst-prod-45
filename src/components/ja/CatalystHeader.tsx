@@ -607,14 +607,22 @@ export function CatalystHeader() {
             {/* User Avatar */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-primary-foreground text-[13px] font-semibold cursor-pointer transition-transform hover:scale-105 bg-gradient-to-br from-primary to-primary/80"
+                <button
+                  type="button"
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center",
+                    "text-primary-foreground text-[13px] font-semibold",
+                    "cursor-pointer transition-transform hover:scale-105",
+                    "bg-gradient-to-br from-primary to-primary/80",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  )}
                   title="Profile"
+                  aria-label="Open user menu"
                 >
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
-                </div>
+                </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-popover">
+              <DropdownMenuContent align="end" className="w-56 z-[9999]">
                 <div className="flex flex-col space-y-1 p-2">
                   <p className="text-sm font-medium truncate">{user?.email}</p>
                   <p className="text-xs text-muted-foreground">User Account</p>
