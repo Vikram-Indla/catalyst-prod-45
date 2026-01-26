@@ -87,24 +87,6 @@ export function BudgetExecutiveSummaryView({ data, currentDept, onDeptChange, pe
 
   return (
     <div className="space-y-6" id={EXEC_CONTENT_ID}>
-      {/* Export Button */}
-      <div className="flex justify-end">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleExportPdf}
-          disabled={isExporting}
-          className="gap-1.5"
-        >
-          {isExporting ? (
-            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <FileText className="w-4 h-4" />
-          )}
-          Export PDF
-        </Button>
-      </div>
-
       {/* Department Selector */}
       <div className="flex gap-2 flex-wrap">
         {departments.map(d => (
