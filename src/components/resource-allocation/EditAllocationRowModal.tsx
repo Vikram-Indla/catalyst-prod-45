@@ -5,12 +5,11 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, Calendar } from 'lucide-react';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { format, parseISO } from 'date-fns';
 import type { AllocationStatus, TimelineBar } from '@/types/resource-allocation.types';
 
@@ -139,57 +138,27 @@ export function EditAllocationRowModal({
                 {/* Start Date */}
                 <div>
                   <label className="text-[10px] text-muted-foreground mb-1.5 block">Start Date</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal h-10",
-                          !startDate && "text-muted-foreground"
-                        )}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, 'MMM d, yyyy') : 'Select date'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 z-[1200]" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        selected={startDate}
-                        onSelect={(date) => date && setStartDate(date)}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <CatalystDatePicker
+                    value={startDate}
+                    onChange={(date) => date && setStartDate(date)}
+                    placeholder="Select start date"
+                    dateFormat="MMM d, yyyy"
+                    showClearButton={false}
+                    showTodayButton={false}
+                  />
                 </div>
                 {/* End Date */}
                 <div>
                   <label className="text-[10px] text-muted-foreground mb-1.5 block">End Date</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal h-10",
-                          !endDate && "text-muted-foreground"
-                        )}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, 'MMM d, yyyy') : 'Select date'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 z-[1200]" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        selected={endDate}
-                        onSelect={(date) => date && setEndDate(date)}
-                        disabled={(date) => date < startDate}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <CatalystDatePicker
+                    value={endDate}
+                    onChange={(date) => date && setEndDate(date)}
+                    placeholder="Select end date"
+                    dateFormat="MMM d, yyyy"
+                    minDate={startDate}
+                    showClearButton={false}
+                    showTodayButton={false}
+                  />
                 </div>
               </div>
             </div>
