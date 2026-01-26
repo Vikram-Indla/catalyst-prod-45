@@ -385,7 +385,11 @@ export default function BudgetPlannerPage() {
               period={period}
             />
           ) : activeTab === 'data-quality' ? (
-            <BudgetDataQualityTab data={data} />
+            <BudgetDataQualityTab 
+              data={data} 
+              period={period}
+              totalBudget={data?.departments?.all?.total || 0}
+            />
           ) : null}
         </div>
       </div>
