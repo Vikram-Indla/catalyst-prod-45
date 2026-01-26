@@ -10,12 +10,16 @@
 
 import React, { useMemo, useCallback, useState } from 'react';
 import './capacity-planner-gantt.css';
+import '@/styles/capacity-module.css';
 import { ChevronLeft, ChevronRight, Calendar, Download, LayoutGrid } from 'lucide-react';
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 import { getContractStatus } from '@/lib/constants/catalyst-colors';
 import { useRealtimeAllocations } from '@/hooks/useRealtimeAllocations';
 import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
+import { cn } from '@/lib/utils';
 
+// Consistent department order across all Capacity views
+const DEPARTMENT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
 // ═══════════════════════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════════════════════
@@ -122,16 +126,23 @@ export function CapacityPlannerGantt({
     );
   }, [resources, selectedDepartment]);
 
-  // Calculate department counts for pills
+  // Calculate department counts for pills - use consistent order
   const departmentCounts = useMemo(() => {
     const counts: Record<string, number> = { all: resources.length };
-    departments.forEach(dept => {
-      counts[dept.name.toLowerCase()] = resources.filter(
-        r => r.department?.toLowerCase() === dept.name.toLowerCase()
+    DEPARTMENT_ORDER.forEach(deptName => {
+      counts[deptName.toLowerCase()] = resources.filter(
+        r => r.department?.toLowerCase() === deptName.toLowerCase()
       ).length;
     });
     return counts;
-  }, [resources, departments]);
+  }, [resources]);
+
+  // Get ordered department tabs matching Utilization view
+  const orderedDepartmentTabs = useMemo(() => {
+    return DEPARTMENT_ORDER.filter(deptName => 
+      departmentCounts[deptName.toLowerCase()] !== undefined
+    );
+  }, [departmentCounts]);
 
   // Generate months for timeline
   const months = useMemo((): TimelinePeriod[] => {
@@ -341,25 +352,6 @@ export function CapacityPlannerGantt({
         </div>
       </div>
 
-      {/* Department Filter Pills */}
-      <div className="cpg-department-filters">
-        <button
-          className={`cpg-dept-pill ${selectedDepartment === 'all' ? 'active' : ''}`}
-          onClick={() => setSelectedDepartment('all')}
-        >
-          All Departments ({departmentCounts.all || 0})
-        </button>
-        {departments.map(dept => (
-          <button
-            key={dept.id}
-            className={`cpg-dept-pill ${selectedDepartment.toLowerCase() === dept.name.toLowerCase() ? 'active' : ''}`}
-            onClick={() => setSelectedDepartment(dept.name.toLowerCase())}
-          >
-            {dept.name} ({departmentCounts[dept.name.toLowerCase()] || 0})
-          </button>
-        ))}
-      </div>
-
       {/* Legend */}
       <div className="cpg-legend">
         <div className="cpg-legend-item">
@@ -383,6 +375,32 @@ export function CapacityPlannerGantt({
           <span>Utilization</span>
         </div>
       </div>
+
+      {/* Gantt Container with attached filters */}
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
+        {/* Department Filter Pills - Same styling as Utilization tab */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <div className="analytics-dept-filters">
+            <button
+              onClick={() => setSelectedDepartment('all')}
+              className={cn('analytics-dept-pill', selectedDepartment === 'all' && 'active')}
+            >
+              All Departments ({departmentCounts.all || 0})
+            </button>
+            {orderedDepartmentTabs.map(deptName => (
+              <button
+                key={deptName}
+                onClick={() => setSelectedDepartment(deptName.toLowerCase())}
+                className={cn(
+                  'analytics-dept-pill',
+                  selectedDepartment.toLowerCase() === deptName.toLowerCase() && 'active'
+                )}
+              >
+                {deptName} ({departmentCounts[deptName.toLowerCase()] || 0})
+              </button>
+            ))}
+          </div>
+        </div>
 
       {/* Gantt Wrapper */}
       <div className="cpg-wrapper">
@@ -555,6 +573,7 @@ export function CapacityPlannerGantt({
           </div>
         </div>
       </div>
+      </div> {/* Close Gantt Container with attached filters */}
 
       {/* Summary Footer */}
       <div className="cpg-summary">

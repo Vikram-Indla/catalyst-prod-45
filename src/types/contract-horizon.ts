@@ -37,7 +37,7 @@ export interface DepartmentStats {
   byMonth: Record<number, ContractResourceWithStatus[]>;
 }
 
-export type ContractFilter = 'all' | 'critical' | 'delivery' | 'product' | 'operations' | 'support';
+export type ContractFilter = 'all' | 'delivery' | 'product' | 'operations' | 'technical_support' | 'governance';
 
 export const DEPARTMENT_COLORS: Record<string, { gradient: string; shadow: string; text: string }> = {
   Delivery: {
