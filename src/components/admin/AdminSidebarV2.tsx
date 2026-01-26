@@ -68,6 +68,7 @@ const adminPockets = [
     icon: Settings,
     path: '/admin/general',
     children: [
+      { label: 'User Access', path: '/admin/user-access' },
       { label: 'Modules & Packages', path: '/admin/modules-packages' },
       { label: 'Details Panels', path: '/admin/details-panels' },
       { label: 'General Settings', path: '/admin/general-settings' },
