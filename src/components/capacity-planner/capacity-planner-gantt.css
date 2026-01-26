@@ -292,30 +292,12 @@
   bottom: 0 !important;
   z-index: 50 !important;
   pointer-events: none !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-}
-
-.cpg-today-label {
-  font-family: var(--cpg-font-sans) !important;
-  font-size: 10px !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-  background: var(--cpg-danger) !important;
-  padding: 3px 8px !important;
-  border-radius: 4px !important;
-  white-space: nowrap !important;
-  letter-spacing: 0.05em !important;
-  margin-top: 8px !important;
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35) !important;
 }
 
 .cpg-today-line {
   width: 2px !important;
-  flex: 1 !important;
+  height: 100% !important;
   background: var(--cpg-danger) !important;
-  margin-top: 4px !important;
 }
 
 .cpg-wrapper::-webkit-scrollbar {
