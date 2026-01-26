@@ -388,7 +388,7 @@ export function CapacityAnalyticsView({
                   <td>
                     {resource.ctc 
                       ? formatCurrency(resource.ctc)
-                      : <span className="ct-ctc-missing">Missing</span>}
+                      : <span className="ct-ctc-missing">Compensation details missing</span>}
                   </td>
                   <td>{resource.department_name || '—'}</td>
                   <td>{resource.assignment_name || '—'}</td>

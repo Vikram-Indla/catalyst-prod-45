@@ -97,7 +97,7 @@ export function DepartmentRunRates({ users, activeDepartment, onDepartmentClick,
               {missingCtcCount > 0 && (
                 <div className="ct-runrate-missing">
                   <AlertTriangle size={12} />
-                  {missingCtcCount} missing CTC
+                  {missingCtcCount} compensation details missing
                 </div>
               )}
             </div>

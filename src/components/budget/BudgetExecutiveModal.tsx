@@ -184,7 +184,7 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
                   <div className="value" style={{ color: 'var(--budget-insourced)' }}>{formatCurrency(budget.insourced)}</div>
                   <div className="text-[12px] text-[var(--budget-text-muted)] mt-1">{budget.resources} resources • CTC × Duration</div>
                   {budget.dataIssues > 0 && (
-                    <div className="text-[12px] text-[var(--budget-warning)] mt-1">⚠️ {budget.dataIssues} missing CTC</div>
+                    <div className="text-[12px] text-[var(--budget-warning)] mt-1">⚠️ {budget.dataIssues} compensation details missing</div>
                   )}
                 </div>
                 <div 
