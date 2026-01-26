@@ -17,13 +17,15 @@ const PopoverAnchor = PopoverPrimitive.Anchor;
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "center", sideOffset = 4, style, onWheelCapture, ...props }, ref) => (
+>(({ className, align = "center", sideOffset = 4, collisionPadding = 8, style, onWheelCapture, ...props }, ref) => (
   <PopoverPrimitive.Portal>
     <PopoverPrimitive.Content
       ref={ref}
       data-radix-popover-content=""
       align={align}
       sideOffset={sideOffset}
+      collisionPadding={collisionPadding}
+      avoidCollisions={true}
       className={cn(
         "z-[500] w-72 rounded-md border border-border/50 dark:border-border/30 bg-popover p-4 text-popover-foreground shadow-lg outline-none",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
