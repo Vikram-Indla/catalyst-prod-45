@@ -158,6 +158,7 @@ export function EditAllocationRowModal({
                         selected={startDate}
                         onSelect={(date) => date && setStartDate(date)}
                         initialFocus
+                        className="p-3 pointer-events-auto"
                       />
                     </PopoverContent>
                   </Popover>
@@ -185,6 +186,7 @@ export function EditAllocationRowModal({
                         onSelect={(date) => date && setEndDate(date)}
                         disabled={(date) => date < startDate}
                         initialFocus
+                        className="p-3 pointer-events-auto"
                       />
                     </PopoverContent>
                   </Popover>
