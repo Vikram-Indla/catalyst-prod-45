@@ -169,6 +169,22 @@ serve(async (req) => {
       }
     }
 
+    // Auto-create resource_inventory record linked to this profile
+    const { error: inventoryError } = await supabaseAdmin
+      .from("resource_inventory")
+      .insert({
+        profile_id: userId,
+        name: fullName,
+        is_active: true,
+      });
+
+    if (inventoryError) {
+      console.error("Error creating resource_inventory record:", inventoryError);
+      // Don't fail - user/profile created successfully
+    } else {
+      console.log(`Resource inventory record created for user ${userId}`);
+    }
+
     console.log(`User ${email} created successfully with must_change_password=true`);
 
     return new Response(
