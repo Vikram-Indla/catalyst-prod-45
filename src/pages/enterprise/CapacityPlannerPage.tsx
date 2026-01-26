@@ -963,6 +963,8 @@ export default function CapacityPlannerPage() {
                     }))}
                     allocations={allocations}
                     year={2026}
+                    departmentFilter={departmentFilter}
+                    onDepartmentChange={setDepartmentFilter}
                     onEditResource={(id) => handleOpenAllocationModal(id)}
                     className="flex-1"
                   />
@@ -1674,6 +1676,8 @@ export default function CapacityPlannerPage() {
                     }))}
                     allocations={allocations}
                     year={2026}
+                    departmentFilter={departmentFilter}
+                    onDepartmentChange={setDepartmentFilter}
                     onEditResource={(id) => setResource360Id(id)}
                     className="flex-1"
                   />
