@@ -285,7 +285,10 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
         <EditAllocationRowModal
           allocation={editingAllocation}
           onSave={async (data) => {
-            await updateAllocation(data);
+            await updateAllocation({
+              ...data,
+              originalIds: editingAllocation.originalIds,
+            });
             setEditingAllocationId(null);
           }}
           onClose={() => setEditingAllocationId(null)}
