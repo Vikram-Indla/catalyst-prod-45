@@ -18,7 +18,7 @@ export function PortalDropdown({
 }: PortalDropdownProps) {
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
   // Calculate position when opening
   useEffect(() => {
@@ -85,7 +85,7 @@ export function PortalDropdown({
   return (
     <>
       <div ref={triggerRef} style={{ display: 'inline-flex' }}>{trigger}</div>
-      {isOpen &&
+      {isOpen && position &&
         createPortal(
           <div
             ref={dropdownRef}
