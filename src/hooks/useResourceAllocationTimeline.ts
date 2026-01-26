@@ -236,7 +236,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
       );
       
       // Merge consecutive/overlapping allocations with the same status
-      const merged: { startDate: string; endDate: string; percentage: number; status: string; id: string; assignmentName: string; assignmentColor: string }[] = [];
+      const merged: { startDate: string; endDate: string; percentage: number; status: string; id: string; originalIds: string[]; assignmentName: string; assignmentColor: string }[] = [];
       
       sorted.forEach((alloc: any) => {
         const lastMerged = merged[merged.length - 1];
@@ -250,6 +250,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
           if (daysDiff <= 1) {
             // Merge: extend the end date
             lastMerged.endDate = alloc.endDate;
+            lastMerged.originalIds.push(alloc.id);
             return;
           }
         }
@@ -257,6 +258,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
         // Start a new merged segment
         merged.push({
           id: alloc.id,
+          originalIds: [alloc.id],
           startDate: alloc.startDate,
           endDate: alloc.endDate,
           percentage: alloc.percentage,
@@ -314,6 +316,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
         
         result.push({
           allocationId: seg.id,
+          originalIds: seg.originalIds,
           assignmentId,
           assignmentName: seg.assignmentName,
           assignmentColor: seg.assignmentColor,
