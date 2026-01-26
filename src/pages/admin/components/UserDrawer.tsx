@@ -350,6 +350,17 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
                 />
               </div>
             </div>
+            <div className="um-form-row full">
+              <div className="um-form-group">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                  placeholder="user@example.com"
+                />
+              </div>
+            </div>
             <div className="um-form-row">
               <div className="um-form-group">
                 <label>Job Role</label>
