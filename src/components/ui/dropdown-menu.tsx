@@ -47,6 +47,7 @@ const DropdownMenuSubContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.SubContent
     ref={ref}
+    data-radix-dropdown-menu-content=""
     className={cn(
       "z-[500] min-w-[8rem] max-h-[min(320px,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto overscroll-contain rounded-md border border-border/50 dark:border-border/30 bg-popover p-1 text-popover-foreground shadow-lg",
       "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -68,6 +69,7 @@ const DropdownMenuContent = React.forwardRef<
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       ref={ref}
+      data-radix-dropdown-menu-content=""
       sideOffset={sideOffset}
       className={cn(
         "z-[500] min-w-[8rem] max-h-[min(320px,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto overscroll-contain rounded-md border border-border/50 dark:border-border/30 bg-popover p-1 text-popover-foreground shadow-lg",
