@@ -568,8 +568,8 @@ export function PlannerPage() {
           />
         )}
 
-        {/* View content */}
-        <div className="flex flex-1 min-h-0 bg-surface-0">
+        {/* View content - z-index lower than search bar */}
+        <div className="relative z-0 flex flex-1 min-h-0 bg-surface-0">
           <main className="flex-1 overflow-hidden">
             {(isLoading && tasks.length === 0) ? (
               <div className="h-full flex items-center justify-center">

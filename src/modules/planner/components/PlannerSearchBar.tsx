@@ -103,7 +103,7 @@ export function PlannerSearchBar({
   const selectedGroupLabel = GROUP_OPTIONS.find(o => o.id === groupBy)?.label || 'None';
   
   return (
-    <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-surface-0" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
+    <div className="relative z-50 flex items-center gap-3 px-4 py-2 border-b border-border bg-surface-0">
       {/* Search Input */}
       <div className="relative flex-1 max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
