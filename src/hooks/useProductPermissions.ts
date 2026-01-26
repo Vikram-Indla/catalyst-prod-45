@@ -37,17 +37,21 @@ export function useProductPermissions(): EffectivePermissions {
 
       const isSuperAdmin = !!systemRole;
 
-      // Get user's product role
+      // Get user's product role with role details
       const { data: userProductRole } = await supabase
         .from('user_product_roles')
-        .select('role_id')
+        .select('role_id, product_roles(code)')
         .eq('user_id', user.id)
         .maybeSingle();
 
       let rolePermissions: Record<string, PermissionLevel> = {};
+      const productRoleCode = (userProductRole?.product_roles as any)?.code;
+      
+      // Check if user has super_admin product role - they get full access to everything
+      const hasSuperAdminProductRole = productRoleCode === 'super_admin';
 
-      if (userProductRole) {
-        // Get role permissions
+      if (userProductRole && !hasSuperAdminProductRole) {
+        // Get role permissions for non-super-admin roles
         const { data: perms } = await supabase
           .from('product_role_permissions')
           .select('permission_group, permission_level')
@@ -60,6 +64,9 @@ export function useProductPermissions(): EffectivePermissions {
           }, {} as Record<string, PermissionLevel>);
         }
       }
+      
+      // Determine if user should have full access
+      const hasFullAccess = isSuperAdmin || hasSuperAdminProductRole;
 
       // Get user overrides
       const { data: overrides } = await supabase
@@ -86,15 +93,15 @@ export function useProductPermissions(): EffectivePermissions {
           }
         }
 
-        // Super admin always has Full access
-        if (isSuperAdmin) {
+        // Super admin (system role) or super_admin (product role) always has Full access
+        if (hasFullAccess) {
           level = 'Full';
         }
 
         effectivePermissions[group] = level;
       }
 
-      return { permissions: effectivePermissions, isSuperAdmin };
+      return { permissions: effectivePermissions, isSuperAdmin: hasFullAccess };
     },
     enabled: !!user,
   });
