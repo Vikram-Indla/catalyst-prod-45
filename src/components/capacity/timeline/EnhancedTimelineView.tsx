@@ -268,11 +268,55 @@ export function EnhancedTimelineView({
   const timelineStartDate = months[0]?.start || new Date(year, 0, 1);
   const timelineEndDate = months[months.length - 1]?.end || new Date(year, 11, 31);
 
+  // ═══════════════════════════════════════════════════════════════
+  // MERGE MONTHLY ALLOCATION FRAGMENTS BY ASSIGNMENT
+  // The database stores allocations as monthly fragments, but we need
+  // to display them as single continuous bars per assignment.
+  // ═══════════════════════════════════════════════════════════════
+  const mergedAllocations = useMemo(() => {
+    // Group by (resource_id, assignment_id, status) to merge consecutive months
+    const groupKey = (a: ResourceAllocation) => 
+      `${a.resource_id || a.profile_id}::${a.assignment_id}::${a.status}`;
+    
+    const grouped = new Map<string, ResourceAllocation[]>();
+    allocations.forEach((a) => {
+      const key = groupKey(a);
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key)!.push(a);
+    });
+
+    // Merge each group into a single allocation with min start_date and max end_date
+    const merged: ResourceAllocation[] = [];
+    grouped.forEach((fragments, _key) => {
+      if (fragments.length === 0) return;
+      
+      // Sort by start_date to find the true range
+      fragments.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+      
+      const first = fragments[0];
+      const minStart = fragments.reduce((min, f) => 
+        new Date(f.start_date) < new Date(min) ? f.start_date : min, first.start_date);
+      const maxEnd = fragments.reduce((max, f) => 
+        new Date(f.end_date) > new Date(max) ? f.end_date : max, first.end_date);
+      
+      // Use the first fragment's percent (they should all be the same for the same assignment)
+      merged.push({
+        ...first,
+        start_date: minStart,
+        end_date: maxEnd,
+        // Track original IDs for potential editing operations
+        originalIds: fragments.map(f => f.id),
+      } as ResourceAllocation & { originalIds: string[] });
+    });
+
+    return merged;
+  }, [allocations]);
+
   // Build allocation map by resource - index by BOTH profile_id and resource_id
   // This ensures matching works regardless of which ID the resource list uses
   const allocationsByResource = useMemo(() => {
     const map = new Map<string, ResourceAllocation[]>();
-    allocations.forEach((a) => {
+    mergedAllocations.forEach((a) => {
       // Add under profile_id if available
       if (a.profile_id) {
         if (!map.has(a.profile_id)) {
@@ -290,7 +334,7 @@ export function EnhancedTimelineView({
       // Fallback: if neither profile_id nor resource_id, skip
     });
     return map;
-  }, [allocations]);
+  }, [mergedAllocations]);
 
   // Calculate bar position
   const calculateBarPosition = useCallback((alloc: ResourceAllocation) => {
