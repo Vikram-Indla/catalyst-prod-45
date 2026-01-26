@@ -9,28 +9,46 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ProductRole, useAllRolePermissions, useUpdateRolePermissions, PERMISSION_GROUPS, PermissionLevel } from '@/hooks/useProductRoles';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { ChevronDown } from 'lucide-react';
 
 interface PermissionsMatrixProps {
   roles: ProductRole[];
 }
 
-const PERMISSION_LEVELS: PermissionLevel[] = ['Full', 'View only', 'Own only', 'None'];
+// Map display labels to database values
+const PERMISSION_OPTIONS = [
+  { label: 'Full', value: 'Full' as PermissionLevel, color: 'text-green-600' },
+  { label: 'View', value: 'View only' as PermissionLevel, color: 'text-blue-600' },
+  { label: 'Hide', value: 'None' as PermissionLevel, color: 'text-muted-foreground' },
+];
 
-const PERMISSION_LEVEL_STYLES: Record<string, string> = {
-  'Full': 'text-green-600 font-medium',
-  'View only': 'text-blue-600',
-  'Own only': 'text-purple-600',
-  'None': 'text-muted-foreground',
+const getDisplayLabel = (level: PermissionLevel): string => {
+  switch (level) {
+    case 'Full': return 'Full';
+    case 'View only': return 'View';
+    case 'Own only': return 'View'; // Treat as View for display
+    case 'None': return 'Hide';
+    default: return 'Hide';
+  }
+};
+
+const getColorClass = (level: PermissionLevel): string => {
+  switch (level) {
+    case 'Full': return 'text-green-600 font-medium';
+    case 'View only': 
+    case 'Own only': return 'text-blue-600';
+    case 'None': return 'text-muted-foreground';
+    default: return 'text-muted-foreground';
+  }
 };
 
 // Super Admin role code - always has full access
@@ -40,7 +58,7 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
   const { data: allPermissions, isLoading, refetch } = useAllRolePermissions();
   const updatePermissions = useUpdateRolePermissions();
   const { isAdmin, isSuperAdmin } = useUserRole();
-  const [editingCell, setEditingCell] = useState<{ roleId: string; group: string } | null>(null);
+  const [updatingCell, setUpdatingCell] = useState<string | null>(null);
 
   // Check if user can edit the matrix
   const canEdit = isAdmin || isSuperAdmin;
@@ -70,15 +88,21 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
       return;
     }
 
+    const cellKey = `${roleId}-${group}`;
+    setUpdatingCell(cellKey);
+
     try {
       await updatePermissions.mutateAsync({
         roleId,
         permissions: { [group]: newLevel }
       });
-      setEditingCell(null);
       refetch();
+      toast.success('Permission updated');
     } catch (error) {
       console.error('Failed to update permission:', error);
+      toast.error('Failed to update permission');
+    } finally {
+      setUpdatingCell(null);
     }
   };
 
@@ -147,50 +171,58 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
                     </TableCell>
                     {PERMISSION_GROUPS.map((group) => {
                       const level = getEffectiveLevel(role, group);
-                      const isEditing = editingCell?.roleId === role.id && editingCell?.group === group;
+                      const displayLabel = getDisplayLabel(level);
+                      const colorClass = getColorClass(level);
                       const isProtected = isSuperAdminRole(role);
+                      const cellKey = `${role.id}-${group}`;
+                      const isUpdating = updatingCell === cellKey;
+
+                      if (!canEdit || isProtected) {
+                        return (
+                          <TableCell 
+                            key={group}
+                            className={cn("text-xs text-center", colorClass)}
+                          >
+                            {displayLabel}
+                          </TableCell>
+                        );
+                      }
 
                       return (
                         <TableCell 
                           key={group}
-                          className={cn(
-                            "text-xs text-center p-1",
-                            !isEditing && PERMISSION_LEVEL_STYLES[level],
-                            canEdit && !isProtected && "cursor-pointer hover:bg-muted/50 transition-colors"
-                          )}
-                          onClick={() => {
-                            if (canEdit && !isProtected && !isEditing) {
-                              setEditingCell({ roleId: role.id, group });
-                            }
-                          }}
+                          className="text-xs text-center p-1"
                         >
-                          {isEditing ? (
-                            <Select
-                              value={level}
-                              onValueChange={(value) => handlePermissionChange(role.id, role.code, group, value as PermissionLevel)}
-                              onOpenChange={(open) => {
-                                if (!open) setEditingCell(null);
-                              }}
-                              defaultOpen
+                          <DropdownMenu>
+                            <DropdownMenuTrigger 
+                              className={cn(
+                                "flex items-center justify-center gap-1 w-full px-2 py-1 rounded hover:bg-muted/50 transition-colors",
+                                colorClass,
+                                isUpdating && "opacity-50 pointer-events-none"
+                              )}
+                              disabled={isUpdating}
                             >
-                              <SelectTrigger className="h-7 text-xs w-[90px] mx-auto">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {PERMISSION_LEVELS.map((lvl) => (
-                                  <SelectItem key={lvl} value={lvl} className="text-xs">
-                                    <span className={PERMISSION_LEVEL_STYLES[lvl]}>{lvl}</span>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <span className={cn(
-                              isProtected && "font-medium text-green-600"
-                            )}>
-                              {level}
-                            </span>
-                          )}
+                              {isUpdating ? (
+                                <span className="animate-pulse">...</span>
+                              ) : (
+                                <>
+                                  {displayLabel}
+                                  <ChevronDown className="h-3 w-3" />
+                                </>
+                              )}
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="center" className="min-w-[80px]">
+                              {PERMISSION_OPTIONS.map((option) => (
+                                <DropdownMenuItem
+                                  key={option.value}
+                                  onClick={() => handlePermissionChange(role.id, role.code, group, option.value)}
+                                  className={cn("text-xs cursor-pointer", option.color)}
+                                >
+                                  {option.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       );
                     })}
