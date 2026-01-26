@@ -4946,21 +4946,12 @@ button,
   outline: none;
 }
 
-/* === TOOLTIP FADE IN === */
-@keyframes tooltip-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-[data-radix-popper-content-wrapper] {
-  animation: tooltip-in 150ms ease-out;
-}
+/* NOTE: Tooltips already animate via Tailwind classes in TooltipContent.
+   Do NOT attach tooltip animations to [data-radix-popper-content-wrapper],
+   because that wrapper is shared by DropdownMenu/Popover/Select/etc.
+   Overriding its `animation` breaks the global Radix flicker mitigation above
+   (and can leave menus permanently invisible/un-clickable).
+*/
 
 /* === ROW HIGHLIGHT ON SELECT === */
 .row-highlight {
