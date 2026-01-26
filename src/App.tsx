@@ -187,6 +187,7 @@ import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import KanbanSettings from "./pages/admin/KanbanSettings";
 
 const ResourceUtilizationPage = lazy(() => import("./pages/admin/ResourceUtilization"));
+const UserAccessPage = lazy(() => import("./pages/admin/UserAccessPage"));
 import MockDataGenerator from "./pages/admin/MockDataGenerator";
 const AiIntegrationPage = lazy(() => import("./pages/admin/AiIntegrationPage"));
 import ProcessSteps from "./pages/admin/ProcessSteps";
@@ -886,6 +887,7 @@ const App = () => (
                 <Route path="general-config" element={<GeneralConfig />} />
                 <Route path="security-settings" element={<SecuritySettings />} />
                 <Route path="announcements" element={<Announcements />} />
+                <Route path="user-access" element={<Suspense fallback={<div>Loading...</div>}><UserAccessPage /></Suspense>} />
                 <Route path="users" element={<UsersManagement />} />
                 <Route path="roles-permissions" element={<RolesPermissions />} />
                 <Route path="theme-groups" element={<ThemeGroups />} />
