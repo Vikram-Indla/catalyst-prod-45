@@ -1,6 +1,7 @@
 /**
  * Filter Pills Bar
  * Filter resources by department/status
+ * Catalyst V8 ring-fenced design
  */
 
 import { cn } from '@/lib/utils';
@@ -30,26 +31,19 @@ export function FilterBar({ filter, onFilterChange, counts }: FilterBarProps) {
   ];
 
   return (
-    <div className="flex items-center gap-3 mb-4">
-      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.08em]">
-        Filter by:
-      </span>
-      <div className="flex gap-2">
-        {filters.map(f => (
-          <button
-            key={f.id}
-            onClick={() => onFilterChange(f.id)}
-            className={cn(
-              "h-8 px-3.5 rounded-full text-[12px] font-medium border transition-all duration-150",
-              filter === f.id
-                ? "bg-[#2563eb] border-[#2563eb] text-white shadow-[0_2px_8px_rgba(37,99,235,0.25)]"
-                : "bg-card border-border text-muted-foreground hover:border-[#2563eb] hover:text-[#2563eb]"
-            )}
-          >
-            {f.label} <span className="font-bold">({f.count})</span>
-          </button>
-        ))}
-      </div>
+    <div className="analytics-dept-filters mb-4">
+      {filters.map(f => (
+        <button
+          key={f.id}
+          onClick={() => onFilterChange(f.id)}
+          className={cn(
+            'analytics-dept-pill',
+            filter === f.id && 'active'
+          )}
+        >
+          {f.label} ({f.count})
+        </button>
+      ))}
     </div>
   );
 }
