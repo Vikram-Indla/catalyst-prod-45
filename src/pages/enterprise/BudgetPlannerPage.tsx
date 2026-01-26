@@ -157,27 +157,17 @@ export default function BudgetPlannerPage() {
 
   return (
     <PageChrome hideHeader>
-      <div className="budget-module flex flex-col h-full bg-[hsl(var(--background))] relative">
-        {/* Header - Matches Capacity Planner Structure */}
-        <div className="bg-card border-b border-border">
-          {/* ROW 1: Breadcrumb + Title + Live Badge | Empty Right (no CTA) */}
-          <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
-            {/* Left: Title + Live Badge Inline */}
+      <div className="budget-module min-h-screen bg-[var(--budget-bg)]">
+        <div className="p-6 lg:px-8">
+          {/* Row 1: Title + Live Badge | Tab Navigation */}
+          <header className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-4">
-              <div className="flex flex-col gap-0.5">
-                {/* Breadcrumb - Shows active tab */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-slate-500">Enterprise / Budget Planner</span>
-                  <span className="text-xs text-slate-400">•</span>
-                  <span className="text-xs font-medium text-slate-500">
-                    {activeTab === 'summary' ? 'Summary' : activeTab === 'budget' ? 'Budget' : 'Scenario Planning'}
-                  </span>
+              {/* Title Block */}
+              <div>
+                <div className="text-xs font-medium text-slate-500 mb-1">
+                  Enterprise / Budget Planner <span className="text-blue-600">• {activeTab === 'summary' ? 'Summary' : activeTab === 'budget' ? 'Budget' : 'Scenario Planning'}</span>
                 </div>
-                
-                {/* Title */}
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
-                  Budget Planner
-                </h1>
+                <h1 className="text-2xl font-bold text-slate-900">Budget Planner</h1>
               </div>
               
               {/* Live Badge - Inline with title */}
@@ -189,27 +179,8 @@ export default function BudgetPlannerPage() {
                 <span className="text-xs font-semibold text-emerald-700">Live</span>
               </div>
             </div>
-
-            {/* Right: Empty (No CTA in header per Capacity Planner pattern) */}
-            <div className="flex items-center gap-3">
-              {/* Reserved for future actions if needed */}
-            </div>
-          </div>
-
-          {/* ROW 2: Search + Hero Tab Strip */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search assignments..."
-                className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
-              />
-            </div>
-
-            {/* Hero Tab Strip - Right Aligned (matches Capacity Planner) */}
+            
+            {/* Tab Navigation - Right Aligned */}
             <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
               {viewTabs.map((tab) => {
                 const Icon = tab.icon;
@@ -230,11 +201,8 @@ export default function BudgetPlannerPage() {
                 );
               })}
             </nav>
-          </div>
-        </div>
+          </header>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-surface-2 dark:bg-surface-1 overflow-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <div className="w-8 h-8 border-2 border-[var(--budget-primary)] border-t-transparent rounded-full animate-spin" />
