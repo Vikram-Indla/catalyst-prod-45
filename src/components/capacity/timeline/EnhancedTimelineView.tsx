@@ -528,6 +528,7 @@ export function EnhancedTimelineView({
         // No grouping - flat list
         <div className={styles.timelineBody}>
           {resources.map((resource) => {
+            // Get allocations for this resource - the map is indexed by both profile_id and resource_id
             const resourceAllocations = allocationsByResource.get(resource.id) || [];
             const contractInfo = getContractStatus(resource.contractEndDate);
             const contractMarkerLeft = getContractMarkerPosition(resource.contractEndDate);
