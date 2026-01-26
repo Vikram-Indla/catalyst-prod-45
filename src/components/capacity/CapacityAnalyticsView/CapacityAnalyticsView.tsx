@@ -141,7 +141,7 @@ export function CapacityAnalyticsView({
 
     return {
       insourced: { total: insourcedTotal, count: insourcedCount, missing: missingCtc },
-      cosourced: { total: cosourcedTotal, count: cosourcedAssignments.length },
+      cosourced: { total: cosourcedTotal, count: cosourcedAssignments.length, assignments: cosourcedAssignments },
       outsourced: { 
         total: outsourcedTotal, 
         count: outsourcedAssignments.length, 
@@ -154,6 +154,14 @@ export function CapacityAnalyticsView({
       licenses: { total: licensesPeriodTotal, count: licenses.length, monthly: licensesMonthly },
     };
   }, [insourcedResources, assignments, licenses, periodMonths]);
+
+  // Get resources for cosourced assignments
+  const cosourcedResources = useMemo(() => {
+    const cosourcedAssignmentIds = categoryTotals.cosourced.assignments?.map(a => a.id) || [];
+    return runRateResources.filter(r => 
+      r.assignment_id && cosourcedAssignmentIds.includes(r.assignment_id)
+    );
+  }, [runRateResources, categoryTotals.cosourced.assignments]);
 
   // Calculate run rates by department (using period totals)
   const runRates = useMemo(() => {
@@ -287,10 +295,15 @@ export function CapacityAnalyticsView({
 
           {/* Cosourced Card */}
           <div 
-            className={cn("ct-category-card cosourced", activeCategory === 'cosourced' && "active")}
+            className={cn("ct-category-card cosourced", activeCategory === 'cosourced' && showBreakdown && "active")}
             onClick={() => {
-              setActiveCategory(activeCategory === 'cosourced' ? null : 'cosourced');
-              setShowBreakdown(false);
+              if (activeCategory === 'cosourced') {
+                setActiveCategory(null);
+                setShowBreakdown(false);
+              } else {
+                setActiveCategory('cosourced');
+                setShowBreakdown(true);
+              }
             }}
             role="button"
             tabIndex={0}
@@ -298,7 +311,7 @@ export function CapacityAnalyticsView({
             <div className="ct-category-header">
               <span className="ct-category-title">COSOURCED</span>
               <span className="ct-category-badge violet">{categoryTotals.cosourced.count} Assignment{categoryTotals.cosourced.count !== 1 ? 's' : ''}</span>
-              <ChevronDown size={16} />
+              {activeCategory === 'cosourced' && showBreakdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
             <div className="ct-category-value violet">{formatCurrency(categoryTotals.cosourced.total)}</div>
             <div className="ct-category-sub">SAR • Fixed Vendor Budget</div>
@@ -306,18 +319,31 @@ export function CapacityAnalyticsView({
 
           {/* Outsourced Card */}
           <div 
-            className={cn("ct-category-card outsourced", activeCategory === 'outsourced' && "active")}
+            className={cn("ct-category-card outsourced", activeCategory === 'outsourced' && showBreakdown && "active")}
             onClick={() => {
-              setActiveCategory(activeCategory === 'outsourced' ? null : 'outsourced');
-              setShowBreakdown(false);
+              if (activeCategory === 'outsourced') {
+                setActiveCategory(null);
+                setShowBreakdown(false);
+              } else {
+                setActiveCategory('outsourced');
+                setShowBreakdown(true);
+              }
             }}
             role="button"
             tabIndex={0}
           >
             <div className="ct-category-header">
               <span className="ct-category-title">OUTSOURCED</span>
+              {categoryTotals.outsourced.unpaidCount > 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-semibold uppercase tracking-wide rounded-md">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                  </svg>
+                  Unpaid
+                </span>
+              )}
               <span className="ct-category-badge teal">{categoryTotals.outsourced.count} Assignments</span>
-              {activeCategory === 'outsourced' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {activeCategory === 'outsourced' && showBreakdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
             <div className="ct-category-value teal">{formatCurrency(categoryTotals.outsourced.total)}</div>
             <div className="ct-category-sub">SAR • Fixed Contract</div>
@@ -414,6 +440,179 @@ export function CapacityAnalyticsView({
                 {formatCurrency(categoryTotals.insourced.total)}
               </span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cosourced Breakdown Panel */}
+      {!hideWidgets && activeCategory === 'cosourced' && showBreakdown && (
+        <div className="ct-breakdown-panel">
+          <div className="ct-breakdown-header">
+            <span className="ct-breakdown-title">Cosourced Breakdown</span>
+            <button 
+              className="ct-breakdown-close"
+              onClick={() => setShowBreakdown(false)}
+            >
+              <X size={18} />
+            </button>
+          </div>
+          
+          {/* Assignments Section */}
+          <div className="mb-4">
+            <div className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2 px-4">Assignments</div>
+            <table className="ct-breakdown-table">
+              <thead>
+                <tr>
+                  <th>Assignment</th>
+                  <th>Vendor</th>
+                  <th>Status</th>
+                  <th>Payment</th>
+                  <th>Budget (SAR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categoryTotals.cosourced.assignments?.map((assignment: any) => (
+                  <tr key={assignment.id}>
+                    <td>{assignment.name || '—'}</td>
+                    <td>{assignment.resource_vendors?.name || '—'}</td>
+                    <td>
+                      <span className="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-blue-100 text-blue-700">
+                        {assignment.assignment_status?.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Active'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium ${
+                        assignment.payment_status === 'on_track' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
+                      }`}>
+                        {assignment.payment_status?.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'N/A'}
+                      </span>
+                    </td>
+                    <td>{formatCurrency(assignment.budget || 0)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Resources Section */}
+          {cosourcedResources.length > 0 && (
+            <div>
+              <div className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2 px-4">Allocated Resources ({cosourcedResources.length})</div>
+              <table className="ct-breakdown-table">
+                <thead>
+                  <tr>
+                    <th>Resource Name</th>
+                    <th>Monthly CTC</th>
+                    <th>Department</th>
+                    <th>Assignment</th>
+                    <th>Contract End Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cosourcedResources.map((resource) => (
+                    <tr key={resource.id}>
+                      <td>{resource.name || '—'}</td>
+                      <td>
+                        {resource.ctc 
+                          ? formatCurrency(resource.ctc)
+                          : <span className="ct-ctc-missing">Compensation details missing</span>}
+                      </td>
+                      <td>{resource.department_name || '—'}</td>
+                      <td>{resource.assignment_name || '—'}</td>
+                      <td>
+                        {resource.contract_end_date 
+                          ? format(parseISO(resource.contract_end_date), 'MMM dd, yyyy')
+                          : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <div className="ct-breakdown-footer">
+            <div className="ct-breakdown-total">
+              <span className="ct-breakdown-total-label">Total Budget</span>
+              <span className="ct-breakdown-total-value">
+                {formatCurrency(categoryTotals.cosourced.total)}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Outsourced Breakdown Panel */}
+      {!hideWidgets && activeCategory === 'outsourced' && showBreakdown && (
+        <div className="ct-breakdown-panel">
+          <div className="ct-breakdown-header">
+            <span className="ct-breakdown-title">Outsourced Breakdown</span>
+            <button 
+              className="ct-breakdown-close"
+              onClick={() => setShowBreakdown(false)}
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <table className="ct-breakdown-table">
+            <thead>
+              <tr>
+                <th>Assignment</th>
+                <th>Vendor</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Budget (SAR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categoryTotals.outsourced.assignments?.map((assignment: any) => (
+                <tr key={assignment.id} className={assignment.payment_status === 'unpaid' ? 'bg-red-50' : ''}>
+                  <td className="flex items-center gap-2">
+                    {assignment.name || '—'}
+                    {assignment.payment_status === 'unpaid' && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 text-[9px] font-bold uppercase tracking-wide rounded">
+                        <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                        </svg>
+                        Unpaid
+                      </span>
+                    )}
+                  </td>
+                  <td>{assignment.resource_vendors?.name || '—'}</td>
+                  <td>
+                    <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium ${
+                      assignment.assignment_status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+                    }`}>
+                      {assignment.assignment_status?.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Active'}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium ${
+                      assignment.payment_status === 'unpaid' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
+                    }`}>
+                      {assignment.payment_status?.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'N/A'}
+                    </span>
+                  </td>
+                  <td>{formatCurrency(assignment.budget || 0)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="ct-breakdown-footer">
+            <div className="ct-breakdown-total">
+              <span className="ct-breakdown-total-label">Total Budget</span>
+              <span className="ct-breakdown-total-value">
+                {formatCurrency(categoryTotals.outsourced.total)}
+              </span>
+            </div>
+            {categoryTotals.outsourced.unpaidCount > 0 && (
+              <div className="ct-breakdown-total">
+                <span className="ct-breakdown-total-label text-red-600">Unpaid Amount</span>
+                <span className="ct-breakdown-total-value text-red-600">
+                  {formatCurrency(categoryTotals.outsourced.unpaidTotal)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}

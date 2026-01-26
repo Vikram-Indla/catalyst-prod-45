@@ -14,6 +14,7 @@ export interface RunRateResource {
   ctc: number | null;
   contract_end_date: string | null;
   assignment_name: string | null;
+  assignment_id: string | null;
 }
 
 export function useRunRateData() {
@@ -46,6 +47,7 @@ export function useRunRateData() {
         ctc: r.ctc ? parseFloat(r.ctc) : null,
         contract_end_date: r.contract_end_date || null,
         assignment_name: r.resource_assignments?.name || null,
+        assignment_id: r.assignment_id || null,
       })) as RunRateResource[];
     },
     staleTime: 30000,
