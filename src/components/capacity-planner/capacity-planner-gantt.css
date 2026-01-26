@@ -27,6 +27,56 @@
   vertical-align: baseline !important;
 }
 
+/* ============================================================
+   UTILIZATION-STYLE DEPARTMENT FILTER PILLS (EXCEPTION)
+   The ring-fenced reset above strips button padding/borders.
+   These overrides restore the exact pills used in Utilization.
+   ============================================================ */
+
+.capacity-gantt-container .analytics-dept-filters {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.capacity-gantt-container .analytics-dept-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 20px !important;
+  font-family: var(--ct-font-ui) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--ct-text) !important;
+  background: var(--ct-surface) !important;
+  border: 1px solid var(--ct-border) !important;
+  border-radius: var(--ct-radius-md) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap !important;
+}
+
+.capacity-gantt-container .analytics-dept-pill:hover {
+  border-color: var(--ct-primary) !important;
+  color: var(--ct-primary) !important;
+  background: var(--ct-primary-light) !important;
+}
+
+.capacity-gantt-container .analytics-dept-pill.active {
+  background: var(--ct-primary) !important;
+  border-color: var(--ct-primary) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
+}
+
+.capacity-gantt-container .analytics-dept-pill.active:hover {
+  background: var(--ct-primary-hover) !important;
+  border-color: var(--ct-primary-hover) !important;
+  color: #ffffff !important;
+}
+
 /* ==================== DESIGN TOKENS ==================== */
 .capacity-gantt-container {
   /* Primary Colors */

@@ -52,6 +52,9 @@ interface CapacityPlannerGanttProps {
   allocations?: ResourceAllocation[];
   year?: number;
   onEditResource?: (id: string) => void;
+  /** Keep department filtering consistent with Utilization tab (lowercase ids: all/delivery/product/...) */
+  departmentFilter?: string;
+  onDepartmentChange?: (departmentId: string) => void;
   className?: string;
 }
 
@@ -105,10 +108,15 @@ export function CapacityPlannerGantt({
   allocations = [],
   year = 2026,
   onEditResource,
+  departmentFilter,
+  onDepartmentChange,
   className,
 }: CapacityPlannerGanttProps) {
   const [viewMode, setViewMode] = useState<'weeks' | 'months'>('months');
-  const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
+  // Local fallback if page doesn't pass global departmentFilter
+  const [localDepartment, setLocalDepartment] = useState<string>('all');
+  const selectedDepartment = departmentFilter ?? localDepartment;
+  const setSelectedDepartment = onDepartmentChange ?? setLocalDepartment;
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
