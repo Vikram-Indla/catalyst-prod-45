@@ -25,7 +25,7 @@ import { CATALYST, getUtilizationColor } from '@/lib/catalyst-colors';
 import { formatDistanceToNow } from 'date-fns';
 import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 
-export type PrimaryView = 'resources' | 'projects' | 'contracts' | 'budget';
+export type PrimaryView = 'resources' | 'projects' | 'contracts';
 export type ResourceViewMode = 'cards' | 'table' | 'timeline' | 'heatmap';
 export type ProjectViewMode = 'cards' | 'timeline';
 
@@ -228,22 +228,12 @@ export function SleekCapacityHeader({
         onPrimaryViewChange?.('contracts');
       }
     },
-    { 
-      id: 'budget', 
-      label: 'Budget', 
-      icon: Wallet,
-      isActive: primaryView === 'budget',
-      onClick: () => {
-        onPrimaryViewChange?.('budget');
-      }
-    },
   ];
 
   const activeTabIndex = viewTabs.findIndex(t => t.isActive);
 
   // Get current tab name for breadcrumb
   const getActiveTabName = () => {
-    if (primaryView === 'budget') return 'Budget';
     if (primaryView === 'contracts') return 'Contracts';
     if (primaryView === 'projects') return 'Projects';
     if (resourceView === 'heatmap') return 'Utilization';
@@ -267,7 +257,7 @@ export function SleekCapacityHeader({
             
             {/* Title */}
             <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
-              {primaryView === 'budget' ? 'Budget Governance' : 'Capacity Planner'}
+              Capacity Planner
             </h1>
           </div>
           
@@ -281,19 +271,8 @@ export function SleekCapacityHeader({
           </div>
         </div>
 
-        {/* Right: Primary CTA - Only Executive Summary on Budget tab */}
+        {/* Right: Reserved for future actions */}
         <div className="flex items-center gap-3">
-          {/* Executive Summary - Budget view only, PRIMARY CTA */}
-          {primaryView === 'budget' && onExecutiveSummary && (
-            <Button 
-              onClick={onExecutiveSummary}
-              size="sm"
-              className="h-10 px-6 text-sm gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md font-semibold"
-            >
-              <BarChart3 className="w-4 h-4" />
-              Executive Summary
-            </Button>
-          )}
         </div>
       </div>
 
