@@ -28,7 +28,8 @@ import {
   useUserProductRole, 
   useUserOverrides,
   useRolePermissions,
-  useSaveUserOverrides
+  useSaveUserOverrides,
+  PERMISSION_GROUPS
 } from '@/hooks/useProductRoles';
 
 interface UserOverridesModalProps {
@@ -38,19 +39,6 @@ interface UserOverridesModalProps {
   roleId: string | null;
   isAdmin: boolean;
 }
-
-const PERMISSION_GROUPS = [
-  'View Demands',
-  'CreateEdit Demands',
-  'Workflow Actions',
-  'Budget Tab',
-  'Risks Tab',
-  'Milestones Tab',
-  'Links Tab',
-  'Export',
-  'Import',
-  'Product Settings',
-];
 
 export function UserOverridesModal({ 
   isOpen, 

@@ -23,7 +23,7 @@ interface RoleDetailsProps {
   onViewDetailedPermissions: () => void;
 }
 
-// Generate permission summary from actual permissions
+// Generate module access summary from permissions
 function generatePermissionSummary(
   permissions: { permission_group: string; permission_level: string }[]
 ): string[] {
@@ -33,69 +33,33 @@ function generatePermissionSummary(
   }, {} as Record<string, string>);
 
   const summary: string[] = [];
+  const fullAccessModules: string[] = [];
+  const viewOnlyModules: string[] = [];
+  const noAccessModules: string[] = [];
 
-  // View Demands
-  const viewDemands = lookup['View Demands'];
-  if (viewDemands === 'Full') {
-    summary.push('Can view all demands across business lines');
-  } else if (viewDemands === 'Own only') {
-    summary.push('Can view own requests only');
-  } else if (viewDemands === 'View only') {
-    summary.push('Read-only access to demands');
-  }
-
-  // Create/Edit
-  const editDemands = lookup['CreateEdit Demands'];
-  if (editDemands === 'Full') {
-    summary.push('Can create and edit all demands');
-  } else if (editDemands === 'Own only') {
-    summary.push('Can edit own requests only');
-  }
-
-  // Workflow
-  const workflow = lookup['Workflow Actions'];
-  if (workflow === 'Full') {
-    summary.push('Can update workflow state and add comments');
-  } else if (workflow === 'Own only') {
-    summary.push('Can update workflow for own items only');
-  }
-
-  // Tabs summary
-  const budgetAccess = lookup['Budget Tab'];
-  const risksAccess = lookup['Risks Tab'];
-  const milestonesAccess = lookup['Milestones Tab'];
-
-  if (budgetAccess === 'Full' && risksAccess === 'Full' && milestonesAccess === 'Full') {
-    summary.push('Full access to budget, risks, and milestones');
-  } else if (budgetAccess === 'View only' || risksAccess === 'View only' || milestonesAccess === 'View only') {
-    const viewOnlyTabs = [];
-    if (budgetAccess === 'View only') viewOnlyTabs.push('budget');
-    if (risksAccess === 'View only') viewOnlyTabs.push('risks');
-    if (milestonesAccess === 'View only') viewOnlyTabs.push('milestones');
-    if (viewOnlyTabs.length > 0) {
-      summary.push(`View-only access to ${viewOnlyTabs.join(', ')}`);
+  // Categorize modules by access level
+  PERMISSION_GROUPS.forEach(module => {
+    const level = lookup[module];
+    if (level === 'Full') {
+      fullAccessModules.push(module);
+    } else if (level === 'View only') {
+      viewOnlyModules.push(module);
+    } else if (level === 'None' || !level) {
+      noAccessModules.push(module);
     }
-  } else if (budgetAccess === 'None' && risksAccess === 'None' && milestonesAccess === 'None') {
-    summary.push('No access to budget, risks, or milestones tabs');
-  }
+  });
 
-  // Export/Import
-  const canExport = lookup['Export'] === 'Full';
-  const canImport = lookup['Import'] === 'Full';
-  if (canExport && canImport) {
-    summary.push('Can import and export data');
-  } else if (canExport && !canImport) {
-    summary.push('Can export data but cannot import');
-  } else if (!canExport && !canImport) {
-    summary.push('Cannot import or export data');
+  // Build summary
+  if (fullAccessModules.length > 0) {
+    summary.push(`Full access: ${fullAccessModules.join(', ')}`);
   }
-
-  // Product Settings
-  const settings = lookup['Product Settings'];
-  if (settings === 'Full') {
-    summary.push('Can configure product settings');
-  } else {
-    summary.push('Cannot configure product settings');
+  if (viewOnlyModules.length > 0) {
+    summary.push(`View only: ${viewOnlyModules.join(', ')}`);
+  }
+  if (noAccessModules.length > 0 && noAccessModules.length <= 4) {
+    summary.push(`No access: ${noAccessModules.join(', ')}`);
+  } else if (noAccessModules.length > 4) {
+    summary.push(`No access to ${noAccessModules.length} modules`);
   }
 
   return summary.length > 0 ? summary : ['Contact administrator for permission details'];
