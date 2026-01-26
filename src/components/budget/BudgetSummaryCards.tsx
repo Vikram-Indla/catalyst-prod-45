@@ -1,6 +1,6 @@
 /**
- * Budget Summary Cards Component
- * STAGE 3: Expandable panels with breakdown tables
+ * Budget Summary Cards Component — Catalyst V8
+ * Per spec: 6px gradient top bar, hover lift effect, chevron indicator
  */
 
 import { useState, Fragment } from 'react';
@@ -22,6 +22,34 @@ interface BudgetSummaryCardsProps {
 
 type PanelType = 'insourced' | 'cosourced' | 'outsourced' | 'licenses' | null;
 
+// V8 Color definitions
+const cardColors = {
+  insourced: {
+    bar: 'bg-gradient-to-r from-[#2563eb] to-[#3b82f6]',
+    value: 'text-[#2563eb]',
+    badge: 'bg-[rgba(37,99,235,0.08)] text-[#2563eb]',
+    ring: 'shadow-[0_0_0_2px_rgba(37,99,235,0.3)]'
+  },
+  cosourced: {
+    bar: 'bg-gradient-to-r from-[#0f766e] to-[#0d9488]',
+    value: 'text-[#0d9488]',
+    badge: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
+    ring: 'shadow-[0_0_0_2px_rgba(13,148,136,0.3)]'
+  },
+  outsourced: {
+    bar: 'bg-gradient-to-r from-[#d97706] to-[#f59e0b]',
+    value: 'text-[#d97706]',
+    badge: 'bg-[rgba(217,119,6,0.1)] text-[#d97706]',
+    ring: 'shadow-[0_0_0_2px_rgba(217,119,6,0.3)]'
+  },
+  licenses: {
+    bar: 'bg-gradient-to-r from-[#7c3aed] to-[#a78bfa]',
+    value: 'text-[#7c3aed]',
+    badge: 'bg-[rgba(124,58,237,0.1)] text-[#7c3aed]',
+    ring: 'shadow-[0_0_0_2px_rgba(124,58,237,0.3)]'
+  }
+};
+
 export function BudgetSummaryCards({ 
   budget, 
   assignments, 
@@ -30,7 +58,7 @@ export function BudgetSummaryCards({
   licenseCount = 0,
   monthlyLicenseCost = 0,
   resources = [],
-  period = 'H1'
+  period = 'Full'
 }: BudgetSummaryCardsProps) {
   const [activePanel, setActivePanel] = useState<PanelType>(null);
 
@@ -61,143 +89,183 @@ export function BudgetSummaryCards({
     .sort((a, b) => new Date(a.renewalDate!).getTime() - new Date(b.renewalDate!).getTime());
   const nextRenewal = upcomingRenewals[0];
 
-  return (
-    <>
-      <div className="summary-row four-cols">
-        {/* Insourced Card */}
-        <div 
-          className={cn(
-            "summary-card insourced cursor-pointer transition-all",
-            activePanel === 'insourced' && "active ring-2 ring-[var(--budget-insourced)]"
-          )}
-          onClick={() => togglePanel('insourced')}
-        >
-          <div className="summary-header">
-            <span className="summary-title">Insourced</span>
-            <div className="flex items-center gap-2">
-              <span className="summary-badge insourced">{insourcedAssignments.length} Assignments</span>
-              {activePanel === 'insourced' ? 
-                <ChevronUp className="w-4 h-4 text-[var(--budget-insourced)]" /> : 
-                <ChevronDown className="w-4 h-4 text-[var(--budget-text-muted)]" />
-              }
-            </div>
-          </div>
-          <div className="summary-value insourced">{formatCurrency(budget.insourced)}</div>
-          <div className="summary-sub">SAR • CTC × Duration to Contract End</div>
-          <div className="summary-detail">Variable & Freelance contracts • {budget.resources} resources</div>
-        </div>
+  const hasUnpaid = outsourcedAssignments.some(a => a.paymentStatus === 'unpaid');
+  const unpaidCount = outsourcedAssignments.filter(a => a.paymentStatus === 'unpaid').length;
 
-        {/* Cosourced Card */}
-        <div 
-          className={cn(
-            "summary-card cosourced cursor-pointer transition-all",
-            activePanel === 'cosourced' && "active ring-2 ring-[var(--budget-cosourced)]"
-          )}
-          onClick={() => togglePanel('cosourced')}
-        >
-          <div className="summary-header">
-            <span className="summary-title">Cosourced</span>
+  // Card component helper
+  const BudgetCard = ({ 
+    type, 
+    value, 
+    title, 
+    subtitle, 
+    badgeText, 
+    detail,
+    showUnpaid = false
+  }: { 
+    type: keyof typeof cardColors;
+    value: number;
+    title: string;
+    subtitle: string;
+    badgeText: string;
+    detail: React.ReactNode;
+    showUnpaid?: boolean;
+  }) => {
+    const colors = cardColors[type];
+    const isActive = activePanel === type;
+    
+    return (
+      <div 
+        onClick={() => togglePanel(type)}
+        className={cn(
+          "relative bg-white rounded-2xl border border-slate-200 overflow-hidden cursor-pointer transition-all duration-200",
+          "hover:shadow-lg hover:-translate-y-0.5",
+          isActive && colors.ring
+        )}
+      >
+        {/* TOP COLOR BAR - 6px gradient */}
+        <div className={cn("absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl", colors.bar)} />
+        
+        <div className="p-5 pt-6">
+          {/* Header Row */}
+          <div className="flex justify-between items-start mb-4">
+            {/* Label */}
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              {title}
+            </span>
+            
+            {/* Badges + Chevron */}
             <div className="flex items-center gap-2">
-              <span className="summary-badge cosourced">{cosourcedAssignments.length} Assignment{cosourcedAssignments.length !== 1 ? 's' : ''}</span>
-              {activePanel === 'cosourced' ? 
-                <ChevronUp className="w-4 h-4 text-[var(--budget-cosourced)]" /> : 
-                <ChevronDown className="w-4 h-4 text-[var(--budget-text-muted)]" />
-              }
-            </div>
-          </div>
-          <div className="summary-value cosourced">{formatCurrency(budget.cosourced)}</div>
-          <div className="summary-sub">SAR • Fixed Vendor Budget</div>
-          <div className="summary-detail">
-            {cosourcedAssignments.length > 0 
-              ? <><strong>{cosourcedAssignments[0].vendor}</strong> — {cosourcedAssignments[0].name}</>
-              : 'No cosourced assignments'}
-          </div>
-        </div>
-
-        {/* Outsourced Card */}
-        {(() => {
-          const hasUnpaid = outsourcedAssignments.some(a => a.paymentStatus === 'unpaid');
-          const unpaidCount = outsourcedAssignments.filter(a => a.paymentStatus === 'unpaid').length;
-          return (
-        <div 
-          className={cn(
-            "summary-card outsourced cursor-pointer transition-all",
-            activePanel === 'outsourced' && "active ring-2 ring-[var(--budget-outsourced)]"
-          )}
-          onClick={() => togglePanel('outsourced')}
-        >
-          <div className="summary-header">
-            <span className="summary-title">Outsourced</span>
-            <div className="flex items-center gap-2">
-              <span className="summary-badge outsourced">{outsourcedAssignments.length} Assignments</span>
-              {hasUnpaid && (
-                <span className="summary-badge bg-red-50 text-red-600 border border-red-200 animate-pulse">
-                  ⚠ {unpaidCount} Unpaid
+              {/* Assignment Count Badge */}
+              <span className={cn("text-xs font-semibold px-2.5 py-1 rounded-md", colors.badge)}>
+                {badgeText}
+              </span>
+              
+              {/* Unpaid Badge (Outsourced only) */}
+              {showUnpaid && hasUnpaid && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-red-50 text-red-600 border border-red-200 animate-pulse">
+                  △ {unpaidCount} Unpaid
                 </span>
               )}
-              {activePanel === 'outsourced' ? 
-                <ChevronUp className="w-4 h-4 text-[var(--budget-outsourced)]" /> : 
-                <ChevronDown className="w-4 h-4 text-[var(--budget-text-muted)]" />
-              }
+              
+              {/* Expand Chevron */}
+              {isActive ? (
+                <ChevronUp className="w-4 h-4 text-slate-400" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              )}
             </div>
           </div>
-          <div className="summary-value outsourced">{formatCurrency(budget.outsourced)}</div>
-          <div className="summary-sub">SAR • Fixed Contract</div>
-          <div className="summary-detail">
-            {outsourcedAssignments.slice(0, 2).map(a => (
-              <div key={a.id} className="flex items-center gap-1.5 mt-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--budget-outsourced)]" />
-                <span><strong>{a.vendor}</strong> — {a.name}</span>
-              </div>
-            ))}
+          
+          {/* VALUE - Large, monospace */}
+          <div className={cn("font-mono text-4xl font-bold mb-2", colors.value)}>
+            {formatCurrency(value)}
+          </div>
+          
+          {/* Description */}
+          <div className="text-sm text-slate-500 mb-4">
+            SAR • {subtitle}
+          </div>
+          
+          {/* Divider */}
+          <div className="h-px bg-slate-100 my-4" />
+          
+          {/* Type-specific Details */}
+          <div className="text-sm text-slate-600">
+            {detail}
           </div>
         </div>
-          );
-        })()}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      {/* V8: 4-column grid */}
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        {/* Insourced Card */}
+        <BudgetCard
+          type="insourced"
+          value={budget.insourced}
+          title="Insourced"
+          subtitle="CTC × Duration to Contract End"
+          badgeText={`${insourcedAssignments.length} Assignment${insourcedAssignments.length !== 1 ? 's' : ''}`}
+          detail={
+            <>
+              Variable & Freelance contracts
+              <br />
+              <span className="font-semibold">{budget.resources} resources</span>
+            </>
+          }
+        />
+
+        {/* Cosourced Card */}
+        <BudgetCard
+          type="cosourced"
+          value={budget.cosourced}
+          title="Cosourced"
+          subtitle="Fixed Vendor Budget"
+          badgeText={`${cosourcedAssignments.length} Assignment${cosourcedAssignments.length !== 1 ? 's' : ''}`}
+          detail={
+            cosourcedAssignments.length > 0 
+              ? <><strong>{cosourcedAssignments[0].vendor}</strong> — {cosourcedAssignments[0].name}</>
+              : 'No cosourced assignments'
+          }
+        />
+
+        {/* Outsourced Card */}
+        <BudgetCard
+          type="outsourced"
+          value={budget.outsourced}
+          title="Outsourced"
+          subtitle="Fixed Contract"
+          badgeText={`${outsourcedAssignments.length} Assignment${outsourcedAssignments.length !== 1 ? 's' : ''}`}
+          showUnpaid={true}
+          detail={
+            <div className="space-y-1">
+              {outsourcedAssignments.slice(0, 2).map(a => (
+                <div key={a.id} className="flex items-center gap-1.5">
+                  <span className={cn(
+                    "w-2 h-2 rounded-full",
+                    a.paymentStatus === 'unpaid' ? "bg-amber-500" : "bg-green-500"
+                  )} />
+                  <span><strong>{a.vendor}</strong> — {a.name}</span>
+                </div>
+              ))}
+            </div>
+          }
+        />
 
         {/* Licenses Card */}
-        <div 
-          className={cn(
-            "summary-card licenses cursor-pointer transition-all",
-            activePanel === 'licenses' && "active ring-2 ring-[var(--budget-warning)]"
-          )}
-          onClick={() => togglePanel('licenses')}
-        >
-          <div className="summary-header">
-            <span className="summary-title">Licenses</span>
-            <div className="flex items-center gap-2">
-              <span className="summary-badge licenses">{licenseCount} Active</span>
-              {activePanel === 'licenses' ? 
-                <ChevronUp className="w-4 h-4 text-[var(--budget-warning)]" /> : 
-                <ChevronDown className="w-4 h-4 text-[var(--budget-text-muted)]" />
-              }
-            </div>
-          </div>
-          <div className="summary-value licenses">{formatCurrency(budget.licenses)}</div>
-          <div className="summary-sub">SAR • Software Subscriptions</div>
-          <div className="summary-detail">
+        <BudgetCard
+          type="licenses"
+          value={budget.licenses}
+          title="Licenses"
+          subtitle="Software Subscriptions"
+          badgeText={`${licenseCount} Active`}
+          detail={
             <div className="flex items-center justify-between">
               <span>Monthly: <strong>{formatCurrency(monthlyLicenseCost)}</strong></span>
               {nextRenewal && (
-                <span className="text-[10px] text-[var(--budget-warning)]">
+                <span className="text-xs text-[#7c3aed] font-medium">
                   Next: {new Date(nextRenewal.renewalDate!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </span>
               )}
             </div>
-          </div>
-        </div>
+          }
+        />
       </div>
 
-      {/* Expanded Panel: Insourced */}
+      {/* V8: Expanded Panel - Insourced - with colored border */}
       {activePanel === 'insourced' && (
-        <div className="expanded-panel animate-in">
-          <div className="expanded-panel-header">
-            <h3>Insourced Breakdown</h3>
+        <div className="mt-4 rounded-xl border overflow-hidden border-[rgba(37,99,235,0.2)] bg-[rgba(37,99,235,0.02)] animate-in slide-in-from-top-2 duration-200 mb-6">
+          {/* Panel Header */}
+          <div className="flex justify-between items-center px-5 py-3 border-b bg-[rgba(37,99,235,0.05)] border-[rgba(37,99,235,0.1)]">
+            <h4 className="text-sm font-bold text-slate-700">Insourced Breakdown</h4>
             <button 
               onClick={(e) => { e.stopPropagation(); setActivePanel(null); }}
-              className="text-[var(--budget-text-muted)] hover:text-[var(--budget-text)]"
+              className="text-slate-400 hover:text-slate-600 transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
           <div className="expanded-panel-body">
