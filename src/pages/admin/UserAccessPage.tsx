@@ -29,7 +29,8 @@ import {
   UserCog,
   Mail,
   Eye,
-  EyeOff
+  EyeOff,
+  UserPlus
 } from 'lucide-react';
 
 interface ResourceUser {
@@ -47,6 +48,7 @@ export default function UserAccessPage() {
   const [selectedUser, setSelectedUser] = useState<ResourceUser | null>(null);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [createAccountOpen, setCreateAccountOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -201,6 +203,28 @@ export default function UserAccessPage() {
     },
   });
 
+  // Create linked account mutation
+  const createAccountMutation = useMutation({
+    mutationFn: async ({ resourceId, email, fullName, rid }: { resourceId: string; email: string; fullName: string; rid?: string }) => {
+      const { data, error } = await supabase.functions.invoke('create-linked-account', {
+        body: { resourceInventoryId: resourceId, email, fullName, rid },
+      });
+
+      if (error) throw error;
+      if (!data.success) throw new Error(data.error || 'Failed to create account');
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || 'Account created successfully');
+      setCreateAccountOpen(false);
+      setSelectedUser(null);
+      queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to create account');
+    },
+  });
+
   // Filter users based on search
   const filteredUsers = useMemo(() => {
     if (!searchQuery.trim()) return users;
@@ -240,6 +264,19 @@ export default function UserAccessPage() {
     resetPasswordMutation.mutate(selectedUser.profile_id);
   };
 
+  const handleCreateAccount = () => {
+    if (!selectedUser?.email) {
+      toast.error('Email is required to create an account');
+      return;
+    }
+    createAccountMutation.mutate({
+      resourceId: selectedUser.id,
+      email: selectedUser.email,
+      fullName: selectedUser.name,
+      rid: selectedUser.rid || undefined,
+    });
+  };
+
   const openChangePassword = (user: ResourceUser) => {
     setSelectedUser(user);
     setNewPassword('');
@@ -251,6 +288,11 @@ export default function UserAccessPage() {
   const openResetPassword = (user: ResourceUser) => {
     setSelectedUser(user);
     setResetPasswordOpen(true);
+  };
+
+  const openCreateAccount = (user: ResourceUser) => {
+    setSelectedUser(user);
+    setCreateAccountOpen(true);
   };
 
   return (
@@ -358,9 +400,19 @@ export default function UserAccessPage() {
                             Reset
                           </Button>
                         </div>
+                      ) : user.email ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openCreateAccount(user)}
+                          className="gap-1.5 whitespace-nowrap"
+                        >
+                          <UserPlus className="h-3.5 w-3.5" />
+                          Create Account
+                        </Button>
                       ) : (
                         <span className="text-xs text-muted-foreground italic">
-                          No linked account
+                          No email
                         </span>
                       )}
                     </TableCell>
@@ -470,6 +522,39 @@ export default function UserAccessPage() {
               disabled={resetPasswordMutation.isPending}
             >
               {resetPasswordMutation.isPending ? 'Sending...' : 'Send Reset Link'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Account Dialog */}
+      <Dialog open={createAccountOpen} onOpenChange={setCreateAccountOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-brand-primary" />
+              Create Account
+            </DialogTitle>
+            <DialogDescription>
+              Create a login account for <strong>{selectedUser?.name}</strong> using their email{' '}
+              <strong>{selectedUser?.email}</strong>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              This will create a new login account with a temporary password (<code>password@99</code>). 
+              The user will be required to change this password on their first login.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreateAccountOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateAccount}
+              disabled={createAccountMutation.isPending}
+            >
+              {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
             </Button>
           </DialogFooter>
         </DialogContent>
