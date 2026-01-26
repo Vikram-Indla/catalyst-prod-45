@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Table, 
   TableBody, 
@@ -224,16 +223,16 @@ export default function UserAccessPage() {
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg bg-card">
-        <ScrollArea className="h-[calc(100vh-280px)]">
-          <Table>
+      <div className="border rounded-lg bg-card overflow-hidden">
+        <div className="overflow-auto h-[calc(100vh-280px)]">
+          <Table className="min-w-full">
             <TableHeader className="sticky top-0 bg-card z-10">
               <TableRow>
-                <TableHead className="w-[100px]">RID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead className="w-[100px]">Status</TableHead>
-                <TableHead className="w-[200px] text-right">Actions</TableHead>
+                <TableHead className="w-[80px]">RID</TableHead>
+                <TableHead className="min-w-[150px]">Name</TableHead>
+                <TableHead className="min-w-[200px]">Email</TableHead>
+                <TableHead className="w-[80px]">Status</TableHead>
+                <TableHead className="w-[220px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -259,8 +258,8 @@ export default function UserAccessPage() {
                     <TableCell className="text-muted-foreground">
                       {user.email ? (
                         <span className="flex items-center gap-1.5">
-                          <Mail className="h-3.5 w-3.5" />
-                          {user.email}
+                          <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+                          <span className="truncate">{user.email}</span>
                         </span>
                       ) : (
                         <span className="text-muted-foreground/50">No email</span>
@@ -282,23 +281,23 @@ export default function UserAccessPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => openChangePassword(user)}
-                            className="gap-1.5"
+                            className="gap-1.5 whitespace-nowrap"
                           >
                             <Key className="h-3.5 w-3.5" />
-                            Change
+                            Change Password
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => openResetPassword(user)}
-                            className="gap-1.5"
+                            className="gap-1.5 whitespace-nowrap"
                           >
                             <RotateCcw className="h-3.5 w-3.5" />
                             Reset
                           </Button>
                         </div>
                       ) : (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-muted-foreground italic">
                           No linked account
                         </span>
                       )}
@@ -308,7 +307,7 @@ export default function UserAccessPage() {
               )}
             </TableBody>
           </Table>
-        </ScrollArea>
+        </div>
       </div>
 
       {/* Change Password Dialog */}
