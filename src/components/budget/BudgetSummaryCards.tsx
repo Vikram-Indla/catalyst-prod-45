@@ -190,7 +190,7 @@ export function BudgetSummaryCards({
 
       {/* Expanded Panel: Insourced */}
       {activePanel === 'insourced' && (
-        <div className="expanded-panel animate-in slide-in-from-top-2">
+        <div className="expanded-panel animate-in">
           <div className="expanded-panel-header">
             <h3>Insourced Breakdown</h3>
             <button 
@@ -281,7 +281,7 @@ export function BudgetSummaryCards({
 
       {/* Expanded Panel: Cosourced */}
       {activePanel === 'cosourced' && (
-        <div className="expanded-panel animate-in slide-in-from-top-2">
+        <div className="expanded-panel animate-in">
           <div className="expanded-panel-header">
             <h3>Cosourced Breakdown</h3>
             <button 
@@ -389,7 +389,7 @@ export function BudgetSummaryCards({
 
       {/* Expanded Panel: Outsourced */}
       {activePanel === 'outsourced' && (
-        <div className="expanded-panel animate-in slide-in-from-top-2">
+        <div className="expanded-panel animate-in">
           <div className="expanded-panel-header">
             <h3>Outsourced Breakdown</h3>
             <button 
@@ -474,7 +474,7 @@ export function BudgetSummaryCards({
 
       {/* Expanded Panel: Licenses */}
       {activePanel === 'licenses' && (
-        <div className="expanded-panel animate-in slide-in-from-top-2">
+        <div className="expanded-panel animate-in">
           <div className="expanded-panel-header">
             <h3>Software Licenses</h3>
             <button 
