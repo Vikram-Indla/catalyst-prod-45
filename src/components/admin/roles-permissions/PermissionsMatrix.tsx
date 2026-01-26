@@ -58,7 +58,7 @@ const SUPER_ADMIN_CODE = 'super_admin';
 export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
   const { data: allPermissions, isLoading, refetch } = useAllRolePermissions();
   const updatePermissions = useUpdateRolePermissions();
-  const { isAdmin, isSuperAdmin } = useUserRole();
+  const { isSuperAdmin } = useUserRole();
   const [updatingCell, setUpdatingCell] = useState<string | null>(null);
   
   // Enable real-time synchronization
@@ -265,7 +265,7 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
       <p className="text-xs text-muted-foreground italic mt-3">
         {canEdit 
           ? 'Changes are saved automatically when you select a new permission level.'
-          : 'Note: This matrix can only be edited by administrators.'}
+           : 'Note: This matrix can only be edited by Super Admins.'}
       </p>
     </section>
   );
