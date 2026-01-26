@@ -14,6 +14,7 @@ import {
   Users as UsersIcon, 
   TrendingUp,
   Settings,
+  Wallet,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -33,6 +34,7 @@ const enterpriseSidebarConfig: SidebarConfig = {
     { id: 'roadmaps', title: 'Enterprise Roadmap', path: '/enterprise/roadmaps', icon: Map, exact: false },
     { id: 'risks', title: 'Risks', path: '/enterprise/risks', icon: Blocks, exact: false },
     { id: 'capacity', title: 'Capacity Planner', path: '/enterprise/capacity', icon: UsersIcon, exact: false },
+    { id: 'budget-planner', title: 'Budget Planner', path: '/enterprise/budget-planner', icon: Wallet, exact: false },
     { id: 'reports', title: 'Reports', path: '/reports-discovery', icon: TrendingUp, exact: false },
   ],
   footerItem: {
