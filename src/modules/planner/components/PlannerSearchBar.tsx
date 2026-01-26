@@ -141,7 +141,7 @@ export function PlannerSearchBar({
             <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-56 max-h-80 overflow-y-auto">
+        <DropdownMenuContent align="start" className="z-[9999] bg-popover w-56 max-h-80 overflow-y-auto">
           <DropdownMenuItem 
             onClick={() => onTeamChange(null)}
             className={cn(!selectedTeamId && "bg-blue-50")}
@@ -204,7 +204,7 @@ export function PlannerSearchBar({
             <ChevronDown className="w-3.5 h-3.5 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-44">
+        <DropdownMenuContent align="start" className="z-[9999] bg-popover w-44">
           <DropdownMenuItem onClick={() => onStatusChange(null)}>
             All Statuses
           </DropdownMenuItem>
@@ -243,7 +243,7 @@ export function PlannerSearchBar({
             <ChevronDown className="w-3.5 h-3.5 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-44">
+        <DropdownMenuContent align="start" className="z-[9999] bg-popover w-44">
           <DropdownMenuItem onClick={() => onPriorityChange(null)}>
             All Priorities
           </DropdownMenuItem>
@@ -283,7 +283,7 @@ export function PlannerSearchBar({
               <ChevronDown className="w-3.5 h-3.5 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-56 max-h-80 overflow-y-auto">
+           <DropdownMenuContent align="start" className="z-[9999] bg-popover w-56 max-h-80 overflow-y-auto">
             <DropdownMenuItem 
               onClick={() => onAssigneeChange(null)}
               className={cn(!filters.assigneeId && "bg-blue-50")}
@@ -327,7 +327,7 @@ export function PlannerSearchBar({
               <ChevronDown className="w-3.5 h-3.5 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-44">
+           <DropdownMenuContent align="start" className="z-[9999] bg-popover w-44">
             {GROUP_OPTIONS.map(option => (
               <DropdownMenuItem
                 key={option.id}
@@ -353,7 +353,7 @@ export function PlannerSearchBar({
             <ChevronDown className="w-3.5 h-3.5 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-surface-0 z-50 w-48">
+         <DropdownMenuContent align="start" className="z-[9999] bg-popover w-48">
           <DropdownMenuItem
             onClick={() => onBlockedChange(filters.blocked === true ? null : true)}
             className={cn(filters.blocked === true && "bg-red-50 text-red-700")}
@@ -400,7 +400,7 @@ export function PlannerSearchBar({
               Columns
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-popover z-50">
+           <DropdownMenuContent align="end" className="w-48 bg-popover z-[9999]">
             {ALL_COLUMNS.map(column => (
               <DropdownMenuCheckboxItem
                 key={column.id}
