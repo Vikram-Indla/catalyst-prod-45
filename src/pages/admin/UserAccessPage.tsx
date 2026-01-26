@@ -58,7 +58,7 @@ export default function UserAccessPage() {
       // First, get all resources
       const { data: resources, error: resourceError } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, name, rid, is_active')
+        .select('id, profile_id, name, rid, is_active, email')
         .order('name', { ascending: true });
 
       if (resourceError) throw resourceError;
@@ -115,13 +115,13 @@ export default function UserAccessPage() {
         let email: string | null = null;
 
         if (item.profile_id) {
-          // Direct link exists
-          email = profilesById[item.profile_id]?.email || null;
+          // Direct link exists - prefer profile email
+          email = profilesById[item.profile_id]?.email || item.email || null;
         } else if (item.rid && profilesByRid[item.rid]) {
           // Auto-link by RID
           const matchedProfile = profilesByRid[item.rid];
           linkedProfileId = matchedProfile.id;
-          email = matchedProfile.email;
+          email = matchedProfile.email || item.email || null;
 
           // Update resource_inventory.profile_id in the background
           updatePromises.push(
@@ -133,6 +133,9 @@ export default function UserAccessPage() {
               if (error) console.error(`Failed to auto-link RID ${item.rid}:`, error);
             })()
           );
+        } else {
+          // No profile link - use inventory email directly
+          email = item.email || null;
         }
 
         mappedUsers.push({
