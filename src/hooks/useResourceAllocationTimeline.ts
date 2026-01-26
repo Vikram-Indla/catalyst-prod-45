@@ -467,7 +467,7 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
   });
 
   const updateAllocation = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; percentage?: number; status?: AllocationStatus; startDate?: string; endDate?: string }) => {
+    mutationFn: async ({ id, originalIds, ...updates }: { id: string; originalIds?: string[]; percentage?: number; status?: AllocationStatus; startDate?: string; endDate?: string }) => {
       // Validate end date against contract if being updated
       if (updates.endDate !== undefined) {
         if (!validateAllocationDatesAgainstContract(
@@ -480,12 +480,30 @@ export function useResourceAllocationTimeline({ resource, onClose }: UseResource
         }
       }
       
+      // CRITICAL FIX: Delete merged records before updating
+      // If this bar was merged from multiple DB records, delete all except the first
+      if (originalIds && originalIds.length > 1) {
+        const idsToDelete = originalIds.slice(1); // Keep first, delete rest
+        console.log(`[updateAllocation] Deleting ${idsToDelete.length} merged records:`, idsToDelete);
+        
+        const { error: deleteError } = await supabase
+          .from('resource_allocations')
+          .delete()
+          .in('id', idsToDelete);
+        
+        if (deleteError) {
+          console.error('[updateAllocation] Failed to delete merged records:', deleteError);
+          throw deleteError;
+        }
+      }
+      
       const updateData: any = { updated_at: new Date().toISOString() };
       if (updates.percentage !== undefined) updateData.allocation_percent = updates.percentage;
       if (updates.status !== undefined) updateData.status = updates.status;
       if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
       if (updates.endDate !== undefined) updateData.end_date = updates.endDate;
       
+      console.log(`[updateAllocation] Updating primary record ${id}:`, updateData);
       const { error } = await supabase
         .from('resource_allocations')
         .update(updateData)
