@@ -240,7 +240,7 @@ export function PlannerCreateModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
             aria-hidden="true"
           />
 
@@ -250,7 +250,7 @@ export function PlannerCreateModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[101] flex items-center justify-center p-4"
           >
             <div className="w-full max-w-[600px] bg-background rounded-2xl shadow-2xl overflow-visible">
               {/* Header */}
