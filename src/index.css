@@ -66,22 +66,19 @@ html:has(body[data-scroll-locked]) {
    without breaking interactivity.
 */
 
-/* Additional flicker guard (safe):
-   Hide the *wrapper* until the inner content has data-side, which is Radix's
-   signal that positioning is complete. This prevents a 0,0 flash even when
-   the wrapper itself stays at left/top 0 for transform-based positioning.
+/* Flicker mitigation (browser-safe):
+   Keep the portal wrapper invisible on first paint; the content itself is
+   only made visible once Radix sets data-side (see rules below).
+   This avoids the 0,0 flash without relying on :has() selectors.
 */
-[data-radix-popper-content-wrapper]:not(:has([data-side])) {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+[data-radix-popper-content-wrapper] {
+  opacity: 0;
+  animation: radix-fade-in 0.12s ease-out 0.02s forwards;
 }
 
-[data-radix-popper-content-wrapper]:has([data-side]) {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity 0.12s ease-out;
+@keyframes radix-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Fix: Hide content until Radix sets data-side attribute (indicates positioning done) */
