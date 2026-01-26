@@ -190,39 +190,51 @@ export function BudgetSummaryCards({
             </button>
           </div>
           <div className="expanded-panel-body">
+            {/* Get all insourced resources instead of showing by assignment */}
+            {(() => {
+              const insourcedResourcesList = resources.filter(r => 
+                r.resourceType === 'Variable' || r.resourceType === 'Freelance'
+              );
+              
+              return (
             <table className="expanded-panel-table">
               <thead>
                 <tr>
-                  <th>Assignment</th>
+                  <th>Resource Name</th>
+                  <th>Monthly CTC</th>
                   <th>Department</th>
-                  <th className="center">Resources</th>
-                  <th className="right">Monthly CTC</th>
-                  <th className="right">{period} Total</th>
+                  <th>Assignment</th>
+                  <th>Contract End Date</th>
                 </tr>
               </thead>
               <tbody>
-                {insourcedAssignments.map(a => {
-                  const assignmentResources = getResourcesForAssignment(a.aid);
-                  const monthlyCTC = assignmentResources.reduce((sum, r) => sum + (r.ctc || 0), 0);
-                  return (
-                    <tr key={a.id}>
-                      <td className="font-medium">{a.name}</td>
-                      <td className="text-[var(--budget-text-secondary)]">{a.department}</td>
-                      <td className="center">{assignmentResources.length}</td>
-                      <td className="right font-mono">{formatCurrency(monthlyCTC)}</td>
-                      <td className="right font-mono font-semibold">{formatCurrency(monthlyCTC * months)}</td>
-                    </tr>
-                  );
-                })}
-                {insourcedAssignments.length === 0 && (
+                {insourcedResourcesList.map(r => (
+                  <tr key={r.id}>
+                    <td className="font-medium">{r.name}</td>
+                    <td className="right font-mono">
+                      {r.ctc 
+                        ? formatCurrency(r.ctc) 
+                        : <span className="text-[var(--budget-danger)] text-xs font-semibold">Missing CTC</span>}
+                    </td>
+                    <td className="text-[var(--budget-text-secondary)]">{r.department || '—'}</td>
+                    <td className="text-[var(--budget-text-secondary)]">{r.assignmentName || '—'}</td>
+                    <td className="text-[var(--budget-text-secondary)] text-sm">{r.contractEnd || '—'}</td>
+                  </tr>
+                ))}
+                {insourcedResourcesList.length === 0 && (
                   <tr>
                     <td colSpan={5} className="text-center text-[var(--budget-text-muted)] py-8">
-                      No insourced assignments found
+                      <div className="flex flex-col items-center gap-2">
+                        <X className="w-8 h-8 opacity-20" />
+                        <span>No insourced resources found</span>
+                      </div>
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
+              );
+            })()}
           </div>
         </div>
       )}
@@ -232,6 +244,108 @@ export function BudgetSummaryCards({
         <div className="expanded-panel animate-in slide-in-from-top-2">
           <div className="expanded-panel-header">
             <h3>Cosourced Breakdown</h3>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setActivePanel(null); }}
+              className="text-[var(--budget-text-muted)] hover:text-[var(--budget-text)]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="expanded-panel-body">
+            {/* Section 1: Assignments */}
+            <div className="mb-6">
+              <div className="text-xs font-semibold text-[var(--budget-text-secondary)] uppercase tracking-wider mb-2">
+                Assignments
+              </div>
+            <table className="expanded-panel-table">
+              <thead>
+                <tr>
+                  <th>Vendor</th>
+                  <th>Status</th>
+                  <th>Payment</th>
+                  <th className="right">Budget (SAR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cosourcedAssignments.map(a => (
+                  <tr key={a.id}>
+                    <td className="font-medium">{a.name}</td>
+                    <td>{a.vendor || '—'}</td>
+                    <td>
+                      <span className={cn('status-badge', a.status)}>
+                        {a.status === 'in_progress' ? 'In Progress' : a.status}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={cn(
+                        'payment-badge',
+                        a.paymentStatus === 'unpaid' ? 'unpaid' : 
+                        a.paymentStatus === 'on_track' ? 'on-track' : 'na'
+                      )}>
+                        {a.paymentStatus === 'not_applicable' ? 'N/A' : 
+                         a.paymentStatus === 'on_track' ? 'On Track' :
+                         a.paymentStatus === 'unpaid' ? 'Unpaid' : a.paymentStatus}
+                      </span>
+                    </td>
+                    <td className="right font-mono font-semibold">{formatCurrency(a.budget)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            </div>
+
+            {/* Section 2: Allocated Resources */}
+            {(() => {
+              const cosourcedAids = cosourcedAssignments.map(a => a.aid);
+              const cosourcedResourcesList = resources.filter(r => 
+                r.aid && cosourcedAids.includes(r.aid)
+              );
+              
+              if (cosourcedResourcesList.length === 0) return null;
+              
+              return (
+                <div>
+                  <div className="text-xs font-semibold text-[var(--budget-text-secondary)] uppercase tracking-wider mb-2">
+                    Allocated Resources ({cosourcedResourcesList.length})
+                  </div>
+                  <table className="expanded-panel-table">
+                    <thead>
+                      <tr>
+                        <th>Resource Name</th>
+                        <th>Monthly CTC</th>
+                        <th>Department</th>
+                        <th>Assignment</th>
+                        <th>Contract End Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cosourcedResourcesList.map(r => (
+                        <tr key={r.id}>
+                          <td className="font-medium">{r.name}</td>
+                          <td className="right font-mono">
+                            {r.ctc 
+                              ? formatCurrency(r.ctc) 
+                              : <span className="text-[var(--budget-danger)] text-xs font-semibold">Missing CTC</span>}
+                          </td>
+                          <td className="text-[var(--budget-text-secondary)]">{r.department || '—'}</td>
+                          <td className="text-[var(--budget-text-secondary)]">{r.assignmentName || '—'}</td>
+                          <td className="text-[var(--budget-text-secondary)] text-sm">{r.contractEnd || '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* Expanded Panel: Outsourced */}
+      {activePanel === 'outsourced' && (
+        <div className="expanded-panel animate-in slide-in-from-top-2">
+          <div className="expanded-panel-header">
+            <h3>Outsourced Breakdown</h3>
             <button 
               onClick={(e) => { e.stopPropagation(); setActivePanel(null); }}
               className="text-[var(--budget-text-muted)] hover:text-[var(--budget-text)]"
@@ -251,7 +365,7 @@ export function BudgetSummaryCards({
                 </tr>
               </thead>
               <tbody>
-                {cosourcedAssignments.map(a => (
+                {outsourcedAssignments.map(a => (
                   <tr key={a.id}>
                     <td className="font-medium">{a.name}</td>
                     <td>{a.vendor || '—'}</td>
