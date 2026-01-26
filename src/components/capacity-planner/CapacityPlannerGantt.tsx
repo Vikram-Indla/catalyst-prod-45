@@ -17,6 +17,7 @@ import { getContractStatus } from '@/lib/constants/catalyst-colors';
 import { useRealtimeAllocations } from '@/hooks/useRealtimeAllocations';
 import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 import { cn } from '@/lib/utils';
+import { AnalyticsDepartmentTabs } from '@/components/capacity/CapacityAnalyticsView';
 
 // Consistent department order across all Capacity views
 const DEPARTMENT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
@@ -126,23 +127,18 @@ export function CapacityPlannerGantt({
     );
   }, [resources, selectedDepartment]);
 
-  // Calculate department counts for pills - use consistent order
-  const departmentCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: resources.length };
-    DEPARTMENT_ORDER.forEach(deptName => {
-      counts[deptName.toLowerCase()] = resources.filter(
-        r => r.department?.toLowerCase() === deptName.toLowerCase()
-      ).length;
-    });
-    return counts;
+  // Build Utilization-identical tabs (id/name/count) in the mandated order
+  const departmentTabs = useMemo(() => {
+    const tabs = [
+      { id: 'all', name: 'All Departments', count: resources.length },
+      ...DEPARTMENT_ORDER.map((deptName) => ({
+        id: deptName.toLowerCase(),
+        name: deptName,
+        count: resources.filter(r => r.department?.toLowerCase() === deptName.toLowerCase()).length,
+      }))
+    ];
+    return tabs;
   }, [resources]);
-
-  // Get ordered department tabs matching Utilization view
-  const orderedDepartmentTabs = useMemo(() => {
-    return DEPARTMENT_ORDER.filter(deptName => 
-      departmentCounts[deptName.toLowerCase()] !== undefined
-    );
-  }, [departmentCounts]);
 
   // Generate months for timeline
   const months = useMemo((): TimelinePeriod[] => {
@@ -314,9 +310,9 @@ export function CapacityPlannerGantt({
       {/* Toolbar */}
       <div className="cpg-toolbar">
         <div className="cpg-toolbar-left">
-          <h2 className="cpg-toolbar-title">
+          {/* Icon only (no label) to match Utilization header */}
+          <h2 className="cpg-toolbar-title" aria-label="Resource Timeline">
             <LayoutGrid />
-            Resource Timeline
           </h2>
           <div className="cpg-date-navigator">
             <button className="cpg-nav-btn">
@@ -380,26 +376,11 @@ export function CapacityPlannerGantt({
       <div className="bg-card rounded-lg border border-border overflow-hidden">
         {/* Department Filter Pills - Same styling as Utilization tab */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <div className="analytics-dept-filters">
-            <button
-              onClick={() => setSelectedDepartment('all')}
-              className={cn('analytics-dept-pill', selectedDepartment === 'all' && 'active')}
-            >
-              All Departments ({departmentCounts.all || 0})
-            </button>
-            {orderedDepartmentTabs.map(deptName => (
-              <button
-                key={deptName}
-                onClick={() => setSelectedDepartment(deptName.toLowerCase())}
-                className={cn(
-                  'analytics-dept-pill',
-                  selectedDepartment.toLowerCase() === deptName.toLowerCase() && 'active'
-                )}
-              >
-                {deptName} ({departmentCounts[deptName.toLowerCase()] || 0})
-              </button>
-            ))}
-          </div>
+          <AnalyticsDepartmentTabs
+            tabs={departmentTabs}
+            activeTab={selectedDepartment}
+            onTabChange={setSelectedDepartment}
+          />
         </div>
 
       {/* Gantt Wrapper */}
