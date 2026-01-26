@@ -1,7 +1,7 @@
 /**
  * Filter Pills Bar
- * Filter resources by department/status
- * Catalyst V8 ring-fenced design
+ * Filter resources by department
+ * Matches Utilization tab order and styling
  */
 
 import { cn } from '@/lib/utils';
@@ -12,26 +12,27 @@ interface FilterBarProps {
   onFilterChange: (filter: ContractFilter) => void;
   counts: {
     total: number;
-    critical: number;
     delivery: number;
     product: number;
     operations: number;
-    support: number;
+    technical_support: number;
+    governance: number;
   };
 }
 
 export function FilterBar({ filter, onFilterChange, counts }: FilterBarProps) {
+  // Ordered to match Utilization tab: All, Delivery, Product, Operations, Technical Support, Governance
   const filters: { id: ContractFilter; label: string; count: number }[] = [
-    { id: 'all', label: 'All', count: counts.total },
-    { id: 'critical', label: 'Critical', count: counts.critical },
+    { id: 'all', label: 'All Departments', count: counts.total },
     { id: 'delivery', label: 'Delivery', count: counts.delivery },
     { id: 'product', label: 'Product', count: counts.product },
     { id: 'operations', label: 'Operations', count: counts.operations },
-    { id: 'support', label: 'Support', count: counts.support },
+    { id: 'technical_support', label: 'Technical Support', count: counts.technical_support },
+    { id: 'governance', label: 'Governance', count: counts.governance },
   ];
 
   return (
-    <div className="analytics-dept-filters mb-4">
+    <div className="analytics-dept-filters">
       {filters.map(f => (
         <button
           key={f.id}

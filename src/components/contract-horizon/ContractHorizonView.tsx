@@ -5,7 +5,6 @@
 
 import { useState } from 'react';
 import { useContractHorizon } from '@/hooks/useContractHorizon';
-import { CriticalAlert } from './CriticalAlert';
 import { FilterBar } from './FilterBar';
 import { TimelineHeader } from './TimelineHeader';
 import { DepartmentRow } from './DepartmentRow';
@@ -13,6 +12,7 @@ import { ResourceDrawer } from './ResourceDrawer';
 import { AllocationModal } from '@/components/resource-allocation';
 import { Loader2 } from 'lucide-react';
 import type { AllocationResource } from '@/types/resource-allocation.types';
+import '@/styles/capacity-module.css';
 
 export function ContractHorizonView() {
   const {
@@ -67,29 +67,25 @@ export function ContractHorizonView() {
 
   return (
     <div className="px-6 pb-6">
-      {/* Critical Alert */}
-      <CriticalAlert 
-        criticalCount={summary.critical}
-        criticalResources={summary.criticalResources}
-        onViewAll={() => setFilter('critical')}
-      />
-      
-      {/* Filter Bar */}
-      <FilterBar 
-        filter={filter}
-        onFilterChange={setFilter}
-        counts={{
-          total: summary.total,
-          critical: summary.critical,
-          delivery: summary.byDepartment.delivery,
-          product: summary.byDepartment.product,
-          operations: summary.byDepartment.operations,
-          support: summary.byDepartment.support
-        }}
-      />
-      
-      {/* Main Timeline Container */}
+      {/* Main Timeline Container with attached filters */}
       <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+        {/* Filter Bar - attached to table header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <FilterBar 
+            filter={filter}
+            onFilterChange={setFilter}
+            counts={{
+              total: summary.total,
+              delivery: summary.byDepartment.delivery,
+              product: summary.byDepartment.product,
+              operations: summary.byDepartment.operations,
+              technical_support: summary.byDepartment.technical_support,
+              governance: summary.byDepartment.governance
+            }}
+          />
+        </div>
+        
+        {/* Timeline Header */}
         {/* Timeline Header */}
         <TimelineHeader 
           monthlyTotals={monthlyTotals}

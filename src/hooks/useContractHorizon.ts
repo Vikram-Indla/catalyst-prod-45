@@ -143,11 +143,11 @@ export function useContractHorizon() {
   const filteredResources = useMemo(() => {
     return resources.filter(r => {
       if (filter === 'all') return true;
-      if (filter === 'critical') return r.status === 'critical';
       if (filter === 'delivery') return r.department.toLowerCase().includes('delivery');
       if (filter === 'product') return r.department.toLowerCase().includes('product');
       if (filter === 'operations') return r.department.toLowerCase().includes('operations');
-      if (filter === 'support') return r.department.toLowerCase().includes('support');
+      if (filter === 'technical_support') return r.department.toLowerCase().includes('technical support');
+      if (filter === 'governance') return r.department.toLowerCase().includes('governance');
       return true;
     });
   }, [resources, filter]);
@@ -195,16 +195,14 @@ export function useContractHorizon() {
 
   // Summary stats
   const summary = useMemo(() => {
-    const critical = resources.filter(r => r.status === 'critical');
     return {
       total: resources.length,
-      critical: critical.length,
-      criticalResources: critical.slice(0, 5),
       byDepartment: {
         delivery: resources.filter(r => r.department.toLowerCase().includes('delivery')).length,
         product: resources.filter(r => r.department.toLowerCase().includes('product')).length,
         operations: resources.filter(r => r.department.toLowerCase().includes('operations')).length,
-        support: resources.filter(r => r.department.toLowerCase().includes('support')).length
+        technical_support: resources.filter(r => r.department.toLowerCase().includes('technical support')).length,
+        governance: resources.filter(r => r.department.toLowerCase().includes('governance')).length
       }
     };
   }, [resources]);
