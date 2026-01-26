@@ -217,22 +217,32 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
           return { month, year: y, segments: [], isEnded: true, totalPercent: 0 };
         }
 
-        // Find overlapping allocations
-        const segments = resourceAllocs
-          .filter((a) => {
-            const start = new Date(a.start_date);
-            const end = new Date(a.end_date);
-            return start <= monthEnd && end >= monthStart;
-          })
-          .map((a) => ({
-            assignment: {
-              id: a.assignment?.id || a.assignment_id || '',
-              name: a.assignment?.name || 'Unassigned',
-              color: a.assignment?.color || 'primary',
-            },
-            percent: a.allocation_percent,
-            status: a.status,
-          }));
+        // Find overlapping allocations - dedupe by assignment_id to avoid double-counting
+        const overlappingAllocs = resourceAllocs.filter((a) => {
+          const start = new Date(a.start_date);
+          const end = new Date(a.end_date);
+          return start <= monthEnd && end >= monthStart;
+        });
+
+        // Group by assignment_id and take MAX percent to avoid duplicates
+        const assignmentMaxMap = new Map<string, { alloc: typeof overlappingAllocs[0]; percent: number }>();
+        overlappingAllocs.forEach((a) => {
+          const key = a.assignment_id || a.id;
+          const existing = assignmentMaxMap.get(key);
+          if (!existing || a.allocation_percent > existing.percent) {
+            assignmentMaxMap.set(key, { alloc: a, percent: a.allocation_percent });
+          }
+        });
+
+        const segments = Array.from(assignmentMaxMap.values()).map(({ alloc: a, percent }) => ({
+          assignment: {
+            id: a.assignment?.id || a.assignment_id || '',
+            name: a.assignment?.name || 'Unassigned',
+            color: a.assignment?.color || 'primary',
+          },
+          percent,
+          status: a.status,
+        }));
 
         const totalPercent = segments.reduce((sum, s) => sum + s.percent, 0);
 
