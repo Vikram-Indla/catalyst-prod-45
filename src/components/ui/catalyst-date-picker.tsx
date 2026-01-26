@@ -187,7 +187,7 @@ function CatalystDatePicker({
           {selectedDate ? format(selectedDate, dateFormat) : placeholder}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("w-auto p-0", className)} align="start">
+      <PopoverContent className={cn("w-auto p-0 z-[1200] pointer-events-auto", className)} align="start">
         <div className="p-3 bg-popover rounded-md border shadow-lg">
           {/* Header with month/year selector and navigation */}
           <div className="flex items-center justify-between mb-3">
