@@ -2,13 +2,17 @@
  * Budget Planner Page - V8 Design System
  * Route: /enterprise/budget-planner
  * 
- * Two tabs: Budget | Executive Summary
+ * Matches Capacity Planner structure with:
+ * - Row 1: Breadcrumb + Title + Live badge | (no CTA on right in Budget tab)
+ * - Row 2: Search left | Hero Tab Strip right (Budget | Executive Summary)
+ * - Period toggle below header in content area
  */
 
 import { useState, useMemo } from 'react';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCw, Download } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { AlertTriangle, Search, Wallet, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBudgetData, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
 import { toast } from 'sonner';
@@ -32,6 +36,7 @@ const PERIODS: { value: BudgetPeriod; label: string }[] = [
 export default function BudgetPlannerPage() {
   const [activeTab, setActiveTab] = useState<BudgetPlannerTab>('budget');
   const [period, setPeriod] = useState<BudgetPeriod>('H1');
+  const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading, error, refetch } = useBudgetData(period);
   const [currentDept, setCurrentDept] = useState('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -48,6 +53,16 @@ export default function BudgetPlannerPage() {
     }
   };
 
+  // Get period label for display
+  const getPeriodLabel = () => {
+    const periodLabels: Record<BudgetPeriod, string> = {
+      'Q1': 'Q1 2026 (Jan–Mar)',
+      'H1': 'H1 2026 (Jan–Jun)',
+      'Full': 'Full Year 2026 (Jan–Dec)',
+    };
+    return periodLabels[period];
+  };
+
   // Derive departments dynamically from budget data
   const departments = useMemo(() => {
     if (!data?.departments) return [{ id: 'all', name: 'All Departments' }];
@@ -61,21 +76,35 @@ export default function BudgetPlannerPage() {
         });
       }
     });
-    deptList.push({ id: 'External', name: 'External' });
     return deptList;
   }, [data?.departments]);
 
-  // Filter assignments by department
+  // Filter assignments by department and search
   const filteredAssignments = useMemo(() => {
     if (!data?.assignments) return [];
     
-    if (currentDept === 'all') return [...data.assignments];
-    if (currentDept === 'External') return data.assignments.filter(a => a.type === 'Outsourced');
-    return data.assignments.filter(a => 
-      a.department === currentDept || 
-      (a.type === 'Cosourced' && a.department === currentDept)
-    );
-  }, [data?.assignments, currentDept]);
+    let assignments = [...data.assignments];
+    
+    // Filter by department
+    if (currentDept !== 'all') {
+      assignments = assignments.filter(a => 
+        a.department === currentDept || 
+        (a.type === 'Cosourced' && a.department === currentDept)
+      );
+    }
+    
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      assignments = assignments.filter(a => 
+        a.name?.toLowerCase().includes(query) ||
+        a.department?.toLowerCase().includes(query) ||
+        a.vendor?.toLowerCase().includes(query)
+      );
+    }
+    
+    return assignments;
+  }, [data?.assignments, currentDept, searchQuery]);
 
   // Sort by budget descending
   const sortedAssignments = useMemo(() => {
@@ -88,9 +117,27 @@ export default function BudgetPlannerPage() {
     return data.departments[currentDept] || data.departments.all;
   }, [data?.departments, currentDept]);
 
+  // Hero Tab Configuration (matches Capacity Planner style)
+  const viewTabs = [
+    { 
+      id: 'budget', 
+      label: 'Budget', 
+      icon: Wallet,
+      isActive: activeTab === 'budget',
+      onClick: () => setActiveTab('budget')
+    },
+    { 
+      id: 'executive', 
+      label: 'Executive Summary', 
+      icon: BarChart3,
+      isActive: activeTab === 'executive',
+      onClick: () => setActiveTab('executive')
+    },
+  ];
+
   if (error) {
     return (
-      <PageChrome>
+      <PageChrome hideHeader>
         <div className="p-8 text-center">
           <AlertTriangle className="w-12 h-12 mx-auto text-destructive mb-4" />
           <h2 className="text-lg font-semibold mb-2">Failed to load budget data</h2>
@@ -102,21 +149,31 @@ export default function BudgetPlannerPage() {
   }
 
   return (
-    <PageChrome>
-      <div className="budget-module min-h-screen bg-[var(--budget-bg)]">
-        <div className="p-6 lg:px-8">
-          {/* Header Row */}
-          <header className="flex items-start justify-between mb-6">
+    <PageChrome hideHeader>
+      <div className="budget-module flex flex-col h-full bg-[hsl(var(--background))] relative">
+        {/* Header - Matches Capacity Planner Structure */}
+        <div className="bg-card border-b border-border">
+          {/* ROW 1: Breadcrumb + Title + Live Badge | Empty Right (no CTA) */}
+          <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
+            {/* Left: Title + Live Badge Inline */}
             <div className="flex items-center gap-4">
-              {/* Title Block */}
-              <div>
-                <div className="text-xs font-medium text-slate-500 mb-1">
-                  Enterprise <span className="text-blue-600">• Budget Planner</span>
+              <div className="flex flex-col gap-0.5">
+                {/* Breadcrumb - Shows active tab */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-medium text-slate-500">Enterprise / Budget Planner</span>
+                  <span className="text-xs text-slate-400">•</span>
+                  <span className="text-xs font-medium text-slate-500">
+                    {activeTab === 'budget' ? 'Budget' : 'Executive Summary'}
+                  </span>
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900">Budget Planner</h1>
+                
+                {/* Title */}
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
+                  Budget Planner
+                </h1>
               </div>
               
-              {/* Live Badge */}
+              {/* Live Badge - Inline with title */}
               <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-200">
                 <span className="relative flex items-center justify-center">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -125,72 +182,86 @@ export default function BudgetPlannerPage() {
                 <span className="text-xs font-semibold text-emerald-700">Live</span>
               </div>
             </div>
-            
-            {/* Period Toggle + Refresh */}
-            <div className="flex items-center gap-3">
-              {/* Period Toggle */}
-              <div className="flex items-center bg-slate-100 rounded-lg p-1">
-                {PERIODS.map(p => (
-                  <button
-                    key={p.value}
-                    onClick={() => setPeriod(p.value)}
-                    className={cn(
-                      'px-3 py-1.5 text-xs font-medium rounded-md transition-all',
-                      period === p.value
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900'
-                    )}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="h-8"
-              >
-                <RefreshCw className={cn('w-4 h-4 mr-1', isRefreshing && 'animate-spin')} />
-                Refresh
-              </Button>
-            </div>
-          </header>
 
-          {/* Tab Navigation */}
-          <div className="flex items-center gap-1 mb-6 bg-slate-100 p-1 rounded-lg w-fit">
-            <button
-              onClick={() => setActiveTab('budget')}
-              className={cn(
-                'px-4 py-2 text-sm font-medium rounded-md transition-all',
-                activeTab === 'budget'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
-              )}
-            >
-              Budget
-            </button>
-            <button
-              onClick={() => setActiveTab('executive')}
-              className={cn(
-                'px-4 py-2 text-sm font-medium rounded-md transition-all',
-                activeTab === 'executive'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
-              )}
-            >
-              Executive Summary
-            </button>
+            {/* Right: Empty (No CTA in header per Capacity Planner pattern) */}
+            <div className="flex items-center gap-3">
+              {/* Reserved for future actions if needed */}
+            </div>
           </div>
 
+          {/* ROW 2: Search + Hero Tab Strip */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search assignments..."
+                className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
+              />
+            </div>
+
+            {/* Hero Tab Strip - Right Aligned (matches Capacity Planner) */}
+            <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
+              {viewTabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={tab.onClick}
+                    className={cn(
+                      'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
+                      tab.isActive 
+                        ? 'bg-[#2563eb] text-white shadow-md'
+                        : 'text-slate-700 hover:bg-white hover:shadow-sm hover:text-slate-900'
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-surface-2 dark:bg-surface-1 overflow-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <div className="w-8 h-8 border-2 border-[var(--budget-primary)] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : activeTab === 'budget' ? (
             <>
+              {/* Period Toggle + Showing Label */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
+                  {PERIODS.map(p => (
+                    <button
+                      key={p.value}
+                      onClick={() => setPeriod(p.value)}
+                      className={cn(
+                        'px-4 py-2 text-sm font-medium rounded-md transition-all',
+                        period === p.value
+                          ? 'bg-white text-slate-900 shadow-sm'
+                          : 'text-slate-600 hover:text-slate-900'
+                      )}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <span className="font-medium">Showing:</span>
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200">
+                    <span className="text-base">📅</span>
+                    <span className="font-medium text-slate-900">{getPeriodLabel()}</span>
+                  </span>
+                </div>
+              </div>
+
               {/* Department Filter Tabs */}
               <BudgetDepartmentTabs
                 departments={departments}
