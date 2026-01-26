@@ -15,9 +15,9 @@ import { useNavigate } from 'react-router-dom';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AlertTriangle, Search, Wallet, BarChart3, GitBranch, Lock, Home } from 'lucide-react';
+import { AlertTriangle, Search, Wallet, BarChart3, GitBranch, Lock, Home, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useBudgetData, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
+import { useBudgetData, formatCurrency, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
 import { useUserRole } from '@/hooks/useUserRole';
 import { toast } from 'sonner';
 import '@/styles/budget-module.css';
@@ -44,8 +44,8 @@ export default function BudgetPlannerPage() {
   // Access control: Only admin, super_admin, or program_manager can access
   const canAccessBudgetPlanner = isAdmin || isSuperAdmin || isProgramManager;
   
-  const [activeTab, setActiveTab] = useState<BudgetPlannerTab>('summary');
-  const [period, setPeriod] = useState<BudgetPeriod>('H1');
+  const [activeTab, setActiveTab] = useState<BudgetPlannerTab>('budget');
+  const [period, setPeriod] = useState<BudgetPeriod>('Full');  // V8: Default to Full Year
   const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading, error, refetch } = useBudgetData(period);
   const [currentDept, setCurrentDept] = useState('all');
@@ -297,22 +297,23 @@ export default function BudgetPlannerPage() {
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 border-2 border-[var(--budget-primary)] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : activeTab === 'budget' ? (
             <>
-              {/* Period Toggle + Showing Label */}
+              {/* V8: Period Toggle + Context Badge */}
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
+                {/* Period Toggle - Pill-style */}
+                <div className="inline-flex items-center bg-slate-100 p-1 rounded-xl">
                   {PERIODS.map(p => (
                     <button
                       key={p.value}
                       onClick={() => setPeriod(p.value)}
                       className={cn(
-                        'px-4 py-2 text-sm font-medium rounded-md transition-all',
+                        "px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150",
                         period === p.value
-                          ? 'bg-white text-slate-900 shadow-sm'
-                          : 'text-slate-600 hover:text-slate-900'
+                          ? "bg-white text-[#2563eb] shadow-sm"
+                          : "text-slate-600 hover:text-slate-800"
                       )}
                     >
                       {p.label}
@@ -320,11 +321,15 @@ export default function BudgetPlannerPage() {
                   ))}
                 </div>
                 
-                <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <span className="font-medium">Showing:</span>
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200">
-                    <span className="text-base">📅</span>
-                    <span className="font-medium text-slate-900">{getPeriodLabel()}</span>
+                {/* V8: Context Badge - Shows period + total */}
+                <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                  <Calendar className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm text-slate-600">
+                    <span className="font-bold text-slate-800">{getPeriodLabel()}</span>
+                    <span className="mx-2 text-slate-300">•</span>
+                    <span className="font-mono font-bold text-[#2563eb]">
+                      {formatCurrency(currentBudget?.total || 0)} SAR
+                    </span>
                   </span>
                 </div>
               </div>

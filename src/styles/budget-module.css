@@ -1,13 +1,14 @@
 /**
- * Budget Governance Module - V8 Design System
- * Route: /enterprise/capacity-planner/budget
+ * Budget Governance Module - Catalyst V8 Design System
+ * Route: /enterprise/budget-planner
  * Version: 8.0 - Production Ready
  * 
  * DESIGN TOKENS FROM SPECIFICATION:
  * - Primary: #2563eb (buttons, active states)
- * - Insourced: #2563eb, Cosourced: #7c3aed, Outsourced: #0d9488
+ * - Insourced: #2563eb, Cosourced: #0d9488, Outsourced: #d97706
+ * - Licenses: #7c3aed
  * - Text: #0f172a primary, #334155 secondary, #64748b muted
- * - 5px solid top borders on cards, 36px/800 JetBrains Mono values
+ * - 5px solid top borders on cards, font-mono for values
  */
 
 .budget-module {
@@ -16,39 +17,55 @@
      ============================================ */
   --budget-primary: #2563eb;
   --budget-primary-dark: #1d4ed8;
-  --budget-primary-light: #dbeafe;
+  --budget-primary-light: rgba(37, 99, 235, 0.08);
   --budget-primary-bg: #eff6ff;
 
   /* ============================================
-     V8 BUDGET TYPE COLORS
+     V8 BUDGET TYPE COLORS — PER SPEC
      ============================================ */
-  --budget-insourced: #2563eb;
+  --budget-insourced: #2563eb;      /* Blue */
   --budget-insourced-dark: #1d4ed8;
-  --budget-insourced-light: rgba(37, 99, 235, 0.08); /* per A1.3 */
+  --budget-insourced-light: rgba(37, 99, 235, 0.08);
   
-  --budget-cosourced: #7c3aed;
-  --budget-cosourced-dark: #6d28d9;
-  --budget-cosourced-light: rgba(124, 58, 237, 0.1); /* per A1.7 */
+  --budget-cosourced: #0d9488;      /* Teal */
+  --budget-cosourced-dark: #0f766e;
+  --budget-cosourced-light: rgba(13, 148, 136, 0.1);
   
-  --budget-outsourced: #0d9488;
-  --budget-outsourced-dark: #0f766e;
-  --budget-outsourced-light: rgba(13, 148, 136, 0.1); /* per A1.5 */
+  --budget-outsourced: #d97706;     /* Amber */
+  --budget-outsourced-dark: #b45309;
+  --budget-outsourced-light: rgba(217, 119, 6, 0.1);
+  
+  --budget-licenses: #7c3aed;       /* Violet */
+  --budget-licenses-dark: #6d28d9;
+  --budget-licenses-light: rgba(124, 58, 237, 0.1);
 
   /* ============================================
      V8 SEMANTIC COLORS
      ============================================ */
-  --budget-success: #10b981; /* per A1.12: #10b981 green */
-  --budget-success-light: rgba(16, 185, 129, 0.1); /* per A1.13 */
+  --budget-success: #059669;
+  --budget-success-light: rgba(5, 150, 105, 0.1);
   --budget-warning: #d97706;
-  --budget-warning-light: rgba(217, 119, 6, 0.1); /* per A1.9 */
-  --budget-danger: #ef4444; /* per A1.10: #ef4444 */
-  --budget-danger-light: rgba(239, 68, 68, 0.1); /* per A1.11 */
-  --budget-licenses: #d97706; /* Licenses use warning/amber color */
+  --budget-warning-light: rgba(217, 119, 6, 0.1);
+  --budget-danger: #dc2626;
+  --budget-danger-light: rgba(220, 38, 38, 0.1);
+  --budget-info: #2563eb;
 
   /* ============================================
      V8 NEUTRALS (WCAG AA COMPLIANT)
      ============================================ */
-  --budget-bg-page: #f1f5f9;
+  --slate-900: #0f172a;
+  --slate-800: #1e293b;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-400: #94a3b8;
+  --slate-300: #cbd5e1;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --slate-50: #f8fafc;
+  --white: #ffffff;
+
+  --budget-bg-page: #f8fafc;
   --budget-bg-surface: #ffffff;
   --budget-text-primary: #0f172a;
   --budget-text-secondary: #334155;
@@ -57,7 +74,7 @@
   --budget-border-strong: #cbd5e1;
 
   /* Legacy aliases for compatibility */
-  --budget-bg: #f1f5f9;
+  --budget-bg: #f8fafc;
   --budget-surface: #ffffff;
   --budget-text: #0f172a;
   --budget-border-light: #e2e8f0;
@@ -65,7 +82,7 @@
   /* ============================================
      V8 SHADOWS
      ============================================ */
-  --budget-shadow-sm: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1);
+  --budget-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
   --budget-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
   --budget-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
 
@@ -73,38 +90,42 @@
      V8 TYPOGRAPHY
      ============================================ */
   --budget-font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --budget-font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --budget-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* ============================================
      V8 BORDER RADIUS
      ============================================ */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
   --budget-radius-xs: 4px;
   --budget-radius-sm: 6px;
   --budget-radius-md: 8px;
-  --budget-radius-lg: 10px;
-  --budget-radius-xl: 12px;
+  --budget-radius-lg: 12px;
+  --budget-radius-xl: 16px;
 }
 
 /* ============================================
-   PERIOD TOGGLE - DYNAMITE V2 (HIGH VISIBILITY)
-   V8 Spec: Q1/H1/Full Year toggle buttons
+   V8 PERIOD TOGGLE — Pill-style with clear hierarchy
+   Spec: Pill container with rounded-xl, active has white bg + shadow
    ============================================ */
 .budget-module .period-toggle {
   display: inline-flex;
   align-items: center;
-  background: #e2e8f0;
-  border: 1px solid #cbd5e1;
+  background: var(--slate-100);
+  padding: 4px;
   border-radius: 12px;
-  padding: 6px;
-  gap: 4px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+  gap: 2px;
 }
 
 .budget-module .period-btn {
   padding: 10px 20px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: #475569;
+  color: var(--slate-600);
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -113,38 +134,38 @@
 }
 
 .budget-module .period-btn:hover {
-  color: #1e293b;
-  background: rgba(255,255,255,0.6);
+  color: var(--slate-800);
 }
 
 .budget-module .period-btn.active {
-  color: #2563eb;
-  background: #ffffff;
+  color: var(--budget-primary);
+  background: var(--white);
   box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-  border: 1px solid #e2e8f0;
 }
 
 /* ============================================
-   DEPARTMENT FILTER TABS - DYNAMITE V2 (FULL WIDTH)
-   V8 Spec: 11px/600 name, 18px/800 Mono amount
+   V8 DEPARTMENT FILTER CARDS — Per spec
+   - Active card has left accent bar + gradient background
+   - Cards with 0 budget are muted
+   - Warning indicators for missing data
    ============================================ */
 .budget-module .dept-filter {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   width: 100%;
 }
 
 .budget-module .dept-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #475569;
+  color: var(--slate-500);
   margin-bottom: 12px;
 }
 
 .budget-module .dept-tabs {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 12px;
   width: 100%;
 }
@@ -162,12 +183,13 @@
 }
 
 .budget-module .dept-tab {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 16px 12px;
-  background: #ffffff;
-  border: 2px solid #e2e8f0;
+  background: var(--white);
+  border: 2px solid var(--slate-200);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -175,63 +197,112 @@
 }
 
 .budget-module .dept-tab:hover {
-  border-color: #93c5fd;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: var(--budget-shadow-sm);
 }
 
+/* ACTIVE STATE with gradient + left accent bar */
 .budget-module .dept-tab.active {
-  border-color: #2563eb;
-  background: #eff6ff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  border-color: var(--budget-primary);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0.08) 50%, rgba(37, 99, 235, 0.05) 100%);
+  box-shadow: var(--budget-shadow-sm);
+}
+
+/* Left accent bar - ONLY for active card */
+.budget-module .dept-tab.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  background: var(--budget-primary);
+  border-radius: 2px;
+}
+
+/* INACTIVE NO BUDGET (muted) */
+.budget-module .dept-tab.no-budget {
+  background: rgba(248, 250, 252, 0.5);
+  border-color: var(--slate-200);
+}
+
+.budget-module .dept-tab.no-budget:hover {
+  border-color: var(--slate-300);
 }
 
 .budget-module .dept-tab-name {
   font-size: 12px;
-  font-weight: 600;
-  color: #64748b;
-  margin-bottom: 6px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--slate-500);
+  margin-bottom: 8px;
 }
 
 .budget-module .dept-tab.active .dept-tab-name {
-  color: #1d4ed8;
+  color: var(--budget-primary);
 }
 
-/* V8: Department amount uses JetBrains Mono 800 */
+/* V8: Department amount uses font-mono with large size */
 .budget-module .dept-tab-amount {
   font-family: var(--budget-font-mono);
-  font-size: 20px;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--slate-800);
+  margin-bottom: 8px;
 }
 
 .budget-module .dept-tab.active .dept-tab-amount {
-  color: #2563eb;
+  color: var(--budget-primary);
+}
+
+.budget-module .dept-tab.no-budget .dept-tab-amount {
+  color: var(--slate-400);
 }
 
 .budget-module .dept-tab-count {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
-  color: #64748b;
-  margin-top: 4px;
+  color: var(--slate-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.budget-module .dept-tab.active .dept-tab-count {
+  color: rgba(37, 99, 235, 0.7);
 }
 
 .budget-module .dept-tab-count .warning {
-  color: #d97706;
+  color: var(--budget-warning);
   font-weight: 600;
 }
 
 /* ============================================
-   SUMMARY CARDS
-   V8 Spec: 5px top border, 36px/800 Mono value
+   V8 SUMMARY CARDS — Budget Type Cards
+   Spec: 5px top bar (gradient), hover lift, chevron indicator
    ============================================ */
 .budget-module .summary-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 16px;
 }
 
-/* V8: 4-column grid for summary cards with licenses */
+@media (max-width: 1200px) {
+  .budget-module .summary-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .budget-module .summary-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* V8: 4-column grid alias */
 .budget-module .summary-row.four-cols {
   grid-template-columns: repeat(4, 1fr);
 }
@@ -242,88 +313,87 @@
   }
 }
 
-@media (max-width: 768px) {
-  .budget-module .summary-row,
-  .budget-module .summary-row.four-cols {
-    grid-template-columns: 1fr;
-  }
-}
-
 .budget-module .summary-card {
+  position: relative;
   background: var(--budget-bg-surface);
   border: 1px solid var(--budget-border);
-  border-radius: var(--budget-radius-xl); /* 12px per spec */
+  border-radius: 16px;
   padding: 20px;
-  position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   box-shadow: var(--budget-shadow-sm);
 }
 
+/* V8 CRITICAL: Hover effect - translateY + shadow */
 .budget-module .summary-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--budget-shadow-md);
+  box-shadow: var(--budget-shadow-lg);
 }
 
-/* V8 CRITICAL: 5px solid top border - full opacity */
+/* V8 CRITICAL: 6px solid top bar - gradient */
 .budget-module .summary-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
+  height: 6px;
+  border-radius: 16px 16px 0 0;
 }
 
-/* D2.3: 4px left accent bar when active */
-.budget-module .summary-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.15s ease;
+.budget-module .summary-card.insourced::before { 
+  background: linear-gradient(90deg, var(--budget-insourced) 0%, #3b82f6 100%); 
+}
+.budget-module .summary-card.cosourced::before { 
+  background: linear-gradient(90deg, #0f766e 0%, var(--budget-cosourced) 100%); 
+}
+.budget-module .summary-card.outsourced::before { 
+  background: linear-gradient(90deg, var(--budget-outsourced) 0%, #f59e0b 100%); 
+}
+.budget-module .summary-card.licenses::before { 
+  background: linear-gradient(90deg, var(--budget-licenses) 0%, #a78bfa 100%); 
 }
 
-.budget-module .summary-card.insourced::before { background: var(--budget-insourced); }
-.budget-module .summary-card.cosourced::before { background: var(--budget-cosourced); }
-.budget-module .summary-card.outsourced::before { background: var(--budget-outsourced); }
-.budget-module .summary-card.licenses::before { background: var(--budget-warning); }
+/* Ring effect when expanded */
+.budget-module .summary-card.active {
+  ring: 2px;
+  ring-offset: 2px;
+}
 
-.budget-module .summary-card.insourced::after { background: var(--budget-insourced); }
-.budget-module .summary-card.cosourced::after { background: var(--budget-cosourced); }
-.budget-module .summary-card.outsourced::after { background: var(--budget-outsourced); }
-.budget-module .summary-card.licenses::after { background: var(--budget-warning); }
-
-/* Active state shows left bar */
-.budget-module .summary-card.active::after,
-.budget-module .summary-card:focus::after {
-  opacity: 1;
+.budget-module .summary-card.insourced.active { 
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3), var(--budget-shadow-lg);
+}
+.budget-module .summary-card.cosourced.active { 
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.3), var(--budget-shadow-lg);
+}
+.budget-module .summary-card.outsourced.active { 
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.3), var(--budget-shadow-lg);
+}
+.budget-module .summary-card.licenses.active { 
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3), var(--budget-shadow-lg);
 }
 
 .budget-module .summary-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .budget-module .summary-title {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px; /* per B2.9 spec */
-  color: var(--budget-text-muted);
+  letter-spacing: 0.05em;
+  color: var(--slate-500);
 }
 
 .budget-module .summary-badge {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 4px 8px;
-  border-radius: var(--budget-radius-xs);
+  padding: 5px 10px;
+  border-radius: 6px;
 }
 
 .budget-module .summary-badge.insourced { 
@@ -339,43 +409,50 @@
   color: var(--budget-outsourced); 
 }
 .budget-module .summary-badge.licenses { 
-  background: var(--budget-warning-light); 
-  color: var(--budget-warning); 
+  background: var(--budget-licenses-light); 
+  color: var(--budget-licenses); 
 }
 
-/* V8 CRITICAL: Card value - 28px/700 JetBrains Mono (per audit spec) */
+/* V8 CRITICAL: Card value - 36px/700 JetBrains Mono */
 .budget-module .summary-value {
   font-family: var(--budget-font-mono);
-  font-size: 28px;
+  font-size: 36px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .budget-module .summary-value.insourced { color: var(--budget-insourced); }
 .budget-module .summary-value.cosourced { color: var(--budget-cosourced); }
 .budget-module .summary-value.outsourced { color: var(--budget-outsourced); }
-.budget-module .summary-value.licenses { color: var(--budget-warning); }
+.budget-module .summary-value.licenses { color: var(--budget-licenses); }
 
 .budget-module .summary-sub {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
-  color: var(--budget-text-secondary);
-  margin-bottom: 12px;
+  color: var(--slate-500);
+  margin-bottom: 16px;
+}
+
+/* Divider line */
+.budget-module .summary-divider {
+  height: 1px;
+  background: var(--slate-100);
+  margin: 16px 0;
 }
 
 .budget-module .summary-detail {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
-  color: var(--budget-text-secondary);
-  padding-top: 12px;
-  border-top: 1px solid var(--budget-border);
+  color: var(--slate-600);
+  padding-top: 16px;
+  border-top: 1px solid var(--slate-100);
 }
 
 .budget-module .summary-detail strong {
   font-weight: 600;
-  color: var(--budget-text-primary);
+  color: var(--slate-800);
 }
 
 /* ============================================
