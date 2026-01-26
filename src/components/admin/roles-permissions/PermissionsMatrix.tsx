@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ProductRole, useAllRolePermissions, useUpdateRolePermissions, PERMISSION_GROUPS, PermissionLevel } from '@/hooks/useProductRoles';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useRolePermissionsRealtime } from '@/hooks/useRolePermissionsRealtime';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { ChevronDown } from 'lucide-react';
@@ -59,6 +60,9 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
   const updatePermissions = useUpdateRolePermissions();
   const { isAdmin, isSuperAdmin } = useUserRole();
   const [updatingCell, setUpdatingCell] = useState<string | null>(null);
+  
+  // Enable real-time synchronization
+  useRolePermissionsRealtime();
 
   // Check if user can edit the matrix
   const canEdit = isAdmin || isSuperAdmin;
@@ -96,7 +100,6 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
         roleId,
         permissions: { [group]: newLevel }
       });
-      refetch();
       toast.success('Permission updated');
     } catch (error) {
       console.error('Failed to update permission:', error);
