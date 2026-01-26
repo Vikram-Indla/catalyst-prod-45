@@ -2,6 +2,8 @@
  * Budget Planner Page - V8 Design System
  * Route: /enterprise/budget-planner
  * 
+ * Access: Restricted to admin, super_admin, and program_manager (management) roles only
+ * 
  * Matches Capacity Planner structure with:
  * - Row 1: Breadcrumb + Title + Live badge | (no CTA on right in Budget tab)
  * - Row 2: Search left | Hero Tab Strip right (Budget | Executive Summary)
@@ -9,12 +11,14 @@
  */
 
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AlertTriangle, Search, Wallet, BarChart3, GitBranch } from 'lucide-react';
+import { AlertTriangle, Search, Wallet, BarChart3, GitBranch, Lock, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBudgetData, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
+import { useUserRole } from '@/hooks/useUserRole';
 import { toast } from 'sonner';
 import '@/styles/budget-module.css';
 
@@ -34,12 +38,60 @@ const PERIODS: { value: BudgetPeriod; label: string }[] = [
 ];
 
 export default function BudgetPlannerPage() {
+  const navigate = useNavigate();
+  const { isAdmin, isSuperAdmin, isProgramManager, isLoading: roleLoading } = useUserRole();
+  
+  // Access control: Only admin, super_admin, or program_manager can access
+  const canAccessBudgetPlanner = isAdmin || isSuperAdmin || isProgramManager;
+  
   const [activeTab, setActiveTab] = useState<BudgetPlannerTab>('summary');
   const [period, setPeriod] = useState<BudgetPeriod>('H1');
   const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading, error, refetch } = useBudgetData(period);
   const [currentDept, setCurrentDept] = useState('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Show loading while checking role
+  if (roleLoading) {
+    return (
+      <PageChrome hideHeader>
+        <div className="flex items-center justify-center h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      </PageChrome>
+    );
+  }
+
+  // Access denied screen for unauthorized users
+  if (!canAccessBudgetPlanner) {
+    return (
+      <PageChrome hideHeader>
+        <div className="flex flex-col items-center justify-center h-screen p-8 bg-background">
+          <div className="bg-card border rounded-lg p-8 max-w-md text-center space-y-6 shadow-sm">
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+              <Lock className="h-6 w-6 text-red-600" />
+            </div>
+            
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-foreground">Access Restricted</h2>
+              <p className="text-muted-foreground text-sm">
+                The Budget Planner module is only accessible to users with Super Admin, Admin, or Management (Program Manager) roles.
+              </p>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/home')}
+              className="w-full"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Return to Home
+            </Button>
+          </div>
+        </div>
+      </PageChrome>
+    );
+  }
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
