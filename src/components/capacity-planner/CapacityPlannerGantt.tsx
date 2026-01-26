@@ -14,6 +14,7 @@ import { ChevronLeft, ChevronRight, Calendar, Download, LayoutGrid } from 'lucid
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 import { getContractStatus } from '@/lib/constants/catalyst-colors';
 import { useRealtimeAllocations } from '@/hooks/useRealtimeAllocations';
+import { useCapacityDepartments } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -102,12 +103,35 @@ export function CapacityPlannerGantt({
   className,
 }: CapacityPlannerGanttProps) {
   const [viewMode, setViewMode] = useState<'weeks' | 'months'>('months');
+  const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
+  // Fetch departments for filter
+  const { departments } = useCapacityDepartments();
+
   // Enable real-time subscriptions
   useRealtimeAllocations();
+
+  // Filter resources by department
+  const filteredResources = useMemo(() => {
+    if (selectedDepartment === 'all') return resources;
+    return resources.filter(r => 
+      r.department?.toLowerCase() === selectedDepartment.toLowerCase()
+    );
+  }, [resources, selectedDepartment]);
+
+  // Calculate department counts for pills
+  const departmentCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: resources.length };
+    departments.forEach(dept => {
+      counts[dept.name.toLowerCase()] = resources.filter(
+        r => r.department?.toLowerCase() === dept.name.toLowerCase()
+      ).length;
+    });
+    return counts;
+  }, [resources, departments]);
 
   // Generate months for timeline
   const months = useMemo((): TimelinePeriod[] => {
@@ -317,6 +341,25 @@ export function CapacityPlannerGantt({
         </div>
       </div>
 
+      {/* Department Filter Pills */}
+      <div className="cpg-department-filters">
+        <button
+          className={`cpg-dept-pill ${selectedDepartment === 'all' ? 'active' : ''}`}
+          onClick={() => setSelectedDepartment('all')}
+        >
+          All Departments ({departmentCounts.all || 0})
+        </button>
+        {departments.map(dept => (
+          <button
+            key={dept.id}
+            className={`cpg-dept-pill ${selectedDepartment.toLowerCase() === dept.name.toLowerCase() ? 'active' : ''}`}
+            onClick={() => setSelectedDepartment(dept.name.toLowerCase())}
+          >
+            {dept.name} ({departmentCounts[dept.name.toLowerCase()] || 0})
+          </button>
+        ))}
+      </div>
+
       {/* Legend */}
       <div className="cpg-legend">
         <div className="cpg-legend-item">
@@ -395,7 +438,7 @@ export function CapacityPlannerGantt({
 
           {/* Body */}
           <div className="cpg-body">
-            {resources.map(resource => {
+            {filteredResources.map(resource => {
               const resourceAllocs = allocationsByResource.get(resource.id) || 
                                     allocationsByResource.get((resource as any).resourceInventoryId) || [];
               const contractInfo = getContractStatus(resource.contractEndDate);
