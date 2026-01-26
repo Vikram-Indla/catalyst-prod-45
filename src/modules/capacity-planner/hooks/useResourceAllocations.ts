@@ -251,12 +251,15 @@ export function useResourceAllocations() {
       // Process each allocation - update existing or insert new
       for (const alloc of newAllocations) {
         // Determine which ID to use for update
+        // Priority: originalIds[0] > id (for merged records, originalIds holds the DB IDs)
         const updateId = alloc.originalIds && alloc.originalIds.length > 0 
           ? alloc.originalIds[0]  // For merged, use first ID (others already deleted)
           : alloc.id;
         
-        if (updateId) {
-          // Update existing record
+        console.log(`[saveAllocations] Processing "${alloc.assignment_name}": id=${alloc.id}, originalIds=${JSON.stringify(alloc.originalIds)}, updateId=${updateId}`);
+        
+        if (updateId && existingIds.has(updateId)) {
+          // Update existing record - ONLY if the ID exists in DB
           const { error } = await supabase
             .from('resource_allocations')
             .update({
@@ -264,26 +267,26 @@ export function useResourceAllocations() {
               allocation_percent: alloc.allocation_percent,
               start_date: alloc.start_date,
               end_date: alloc.end_date,
-             status: alloc.status || 'forecast',
+              status: alloc.status || 'forecast',
               updated_at: new Date().toISOString(),
             })
             .eq('id', updateId);
 
           if (error) throw error;
-          console.log(`[saveAllocations] Updated allocation ${updateId} for "${alloc.assignment_name}"`);
+          console.log(`[saveAllocations] ✅ Updated allocation ${updateId} for "${alloc.assignment_name}"`);
         } else {
-          // Insert new (no id and no originalIds means brand new allocation)
+          // Insert new (no valid updateId or ID doesn't exist in DB)
           const { error } = await supabase.from('resource_allocations').insert({
             resource_id: inventoryId,
             assignment_id: alloc.assignment_id,
             allocation_percent: alloc.allocation_percent,
             start_date: alloc.start_date,
             end_date: alloc.end_date,
-           status: alloc.status || 'forecast',
+            status: alloc.status || 'forecast',
           });
 
           if (error) throw error;
-          console.log(`[saveAllocations] Inserted new allocation for "${alloc.assignment_name}"`);
+          console.log(`[saveAllocations] ✅ Inserted new allocation for "${alloc.assignment_name}" (updateId was ${updateId}, existed=${existingIds.has(updateId || '')})`);
         }
       }
     },
