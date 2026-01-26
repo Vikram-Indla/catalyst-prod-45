@@ -404,6 +404,7 @@ export function PlannerPage() {
           externalSearch={filters.search}
           externalPriority={filters.priority}
           externalAssigneeId={filters.assigneeId}
+          externalStatusSlug={filters.status}
         />;
       case 'task-list':
         return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} visibleColumns={visibleColumns} />;
