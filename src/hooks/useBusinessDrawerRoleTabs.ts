@@ -18,27 +18,26 @@ const ALL_TABS = [
 const BASE_TABS = ['demand-details', 'business-score', 'audit-history'];
 
 /**
- * Maps tab values to their corresponding permission keys
+ * Maps tab values to their corresponding module permission keys
+ * Now uses module-level access control
  */
 const TAB_PERMISSION_MAP: Record<string, string | null> = {
-  'demand-details': 'View Demands',
-  'business-score': 'View Demands',
+  'demand-details': 'Industry Backlog',
+  'business-score': 'Industry Backlog',
   'ea-review': null, // Special handling for EA Review
-  'budget': 'Budget Tab',
-  'risks': 'Risks Tab',
-  'milestones': 'Milestones Tab',
-  'links': 'Links Tab',
+  'budget': 'Budget Planner',
+  'risks': 'Industry Backlog',
+  'milestones': 'Industry Backlog',
+  'links': 'Industry Backlog',
   'audit-history': null, // Always visible
 };
 
 /**
- * Hook to determine which tabs should be visible based on user's product role permissions
+ * Hook to determine which tabs should be visible based on user's module access permissions
  * 
- * Permission-based visibility:
- * - Budget tab: Visible if 'Budget Tab' permission is not 'None'
- * - Risks tab: Visible if 'Risks Tab' permission is not 'None'
- * - Milestones tab: Visible if 'Milestones Tab' permission is not 'None'
- * - Links tab: Visible if 'Links Tab' permission is not 'None'
+ * Module-based visibility:
+ * - Budget tab: Visible if 'Budget Planner' module access is not 'None'
+ * - Risks/Milestones/Links tabs: Visible if 'Industry Backlog' module access is not 'None'
  * - EA Review: Visible only for Enterprise Architects or Admin roles
  * - Admin/Super Admin: All tabs visible
  */

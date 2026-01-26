@@ -42,17 +42,19 @@ export interface UserPermissionOverride {
   module: string;
 }
 
+// Module-level access control
 export const PERMISSION_GROUPS = [
-  'View Demands',
-  'CreateEdit Demands',
-  'Workflow Actions',
-  'Budget Tab',
-  'Risks Tab',
-  'Milestones Tab',
-  'Links Tab',
-  'Export',
-  'Import',
-  'Product Settings',
+  'Capacity Planner',
+  'Budget Planner',
+  'Industry Backlog',
+  'Work Manager',
+  'Release Dashboard',
+  'Incident Room',
+  'Dependency Board',
+  'Defects',
+  'Test Management',
+  'Reports & Analytics',
+  'Settings & Admin',
 ] as const;
 
 export type PermissionGroup = typeof PERMISSION_GROUPS[number];
@@ -60,16 +62,17 @@ export type PermissionLevel = 'Full' | 'View only' | 'Own only' | 'None';
 
 // Default permissions for new roles
 const DEFAULT_PERMISSIONS: Record<PermissionGroup, PermissionLevel> = {
-  'View Demands': 'View only',
-  'CreateEdit Demands': 'None',
-  'Workflow Actions': 'None',
-  'Budget Tab': 'None',
-  'Risks Tab': 'None',
-  'Milestones Tab': 'None',
-  'Links Tab': 'None',
-  'Export': 'None',
-  'Import': 'None',
-  'Product Settings': 'None',
+  'Capacity Planner': 'None',
+  'Budget Planner': 'None',
+  'Industry Backlog': 'View only',
+  'Work Manager': 'View only',
+  'Release Dashboard': 'None',
+  'Incident Room': 'None',
+  'Dependency Board': 'View only',
+  'Defects': 'View only',
+  'Test Management': 'None',
+  'Reports & Analytics': 'View only',
+  'Settings & Admin': 'None',
 };
 
 export function useProductRoles() {
