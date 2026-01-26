@@ -95,6 +95,8 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
     const cellKey = `${roleId}-${group}`;
     setUpdatingCell(cellKey);
 
+    console.log('Changing permission:', { roleId, roleCode, group, newLevel });
+ 
     try {
       await updatePermissions.mutateAsync({
         roleId,
@@ -133,7 +135,8 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
       </div>
 
       <Card>
-        <CardContent className="p-0 overflow-x-auto">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
@@ -161,10 +164,11 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
                     key={role.id}
                     className={cn(
                       idx % 2 === 1 && "bg-muted/20",
-                      isSuperAdminRole(role) && "bg-green-50/50"
+                      isSuperAdminRole(role) && "bg-green-50/50",
+                      "relative"
                     )}
                   >
-                    <TableCell className="text-sm font-medium bg-muted/30 border-r sticky left-0 z-10">
+                    <TableCell className="text-sm font-medium bg-muted/30 border-r sticky left-0 z-[5]">
                       <div className="flex flex-col">
                         <span>{role.name}</span>
                         {isSuperAdminRole(role) && (
@@ -194,7 +198,7 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
                       return (
                         <TableCell 
                           key={group}
-                          className="text-xs text-center p-1"
+                          className="text-xs text-center p-1 relative"
                         >
                           <DropdownMenu modal={false}>
                             <DropdownMenuTrigger 
@@ -207,9 +211,11 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
                                   "flex items-center justify-center gap-1 w-full px-2 py-1.5 rounded",
                                   "hover:bg-muted/60 transition-colors cursor-pointer",
                                   "focus:outline-none focus:ring-2 focus:ring-primary/20",
+                                  "disabled:opacity-50 disabled:cursor-not-allowed",
                                   colorClass,
                                   isUpdating && "opacity-50 pointer-events-none"
                                 )}
+                                disabled={isUpdating}
                               >
                                 {isUpdating ? (
                                   <span className="animate-pulse">...</span>
@@ -226,7 +232,8 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
                               side="bottom"
                               sideOffset={4}
                               collisionPadding={8}
-                              className="min-w-[90px] bg-popover border shadow-md z-[600]"
+                              className="min-w-[90px] bg-popover/100 backdrop-blur-sm border shadow-lg z-[9999]"
+                              avoidCollisions={true}
                             >
                               {PERMISSION_OPTIONS.map((option) => (
                                 <DropdownMenuItem
@@ -251,6 +258,7 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
               </TableBody>
             </Table>
           )}
+          </div>
         </CardContent>
       </Card>
 
