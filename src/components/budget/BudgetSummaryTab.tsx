@@ -422,30 +422,12 @@ export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
             </div>
           )}
 
-          {/* Missing CTC Alerts */}
-          {Object.entries(missingCTCByDept).map(([dept, count]) => (
-            <div key={dept} className="bg-white rounded-xl border-l-4 border-l-slate-400 border border-slate-200 p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 bg-slate-100 rounded">
-                  <Building2 className="w-4 h-4 text-slate-500" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold uppercase text-slate-500">{dept} Department</span>
-                    <button className="text-xs font-semibold text-blue-600 hover:underline">
-                      Fix Data →
-                    </button>
-                  </div>
-                  <h4 className="font-semibold text-slate-800 mb-1">
-                    {count} Resources Missing Compensation Data
-                  </h4>
-                  <p className="text-sm text-slate-600">
-                    Cannot calculate budget. All CTC data needs entry.
-                  </p>
-                </div>
-              </div>
+          {/* No data quality alerts here - moved to Data Quality tab */}
+          {criticalResources.length === 0 && unpaidAssignments.length === 0 && (
+            <div className="text-center py-8 text-slate-500">
+              <span className="text-sm">No critical recommendations at this time.</span>
             </div>
-          ))}
+          )}
         </div>
       </section>
 
