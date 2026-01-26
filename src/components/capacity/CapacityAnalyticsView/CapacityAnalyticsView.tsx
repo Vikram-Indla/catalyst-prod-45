@@ -130,8 +130,8 @@ export function CapacityAnalyticsView({
     const outsourcedTotal = outsourcedAssignments.reduce((sum, a) => sum + (a.budget || 0), 0);
     
     // Calculate paid vs unpaid for outsourced
-    const outsourcedPaid = outsourcedAssignments.filter(a => a.payment_status?.toLowerCase() === 'paid');
-    const outsourcedUnpaid = outsourcedAssignments.filter(a => a.payment_status?.toLowerCase() !== 'paid');
+    const outsourcedUnpaid = outsourcedAssignments.filter(a => a.payment_status?.toLowerCase() === 'unpaid');
+    const outsourcedPaid = outsourcedAssignments.filter(a => a.payment_status && a.payment_status?.toLowerCase() !== 'unpaid');
     const outsourcedPaidTotal = outsourcedPaid.reduce((sum, a) => sum + (a.budget || 0), 0);
     const outsourcedUnpaidTotal = outsourcedUnpaid.reduce((sum, a) => sum + (a.budget || 0), 0);
 
