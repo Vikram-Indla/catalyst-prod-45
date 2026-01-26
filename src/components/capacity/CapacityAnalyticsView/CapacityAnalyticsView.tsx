@@ -55,7 +55,7 @@ export function CapacityAnalyticsView({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_assignments')
-        .select('id, name, assignment_type, budget, resource_vendors(name)')
+        .select('id, name, assignment_type, budget, payment_status, resource_vendors(name)')
         .eq('is_active', true);
       if (error) throw error;
       return data || [];
@@ -128,6 +128,12 @@ export function CapacityAnalyticsView({
 
     const outsourcedAssignments = assignments.filter(a => a.assignment_type?.toLowerCase().includes('outsourced'));
     const outsourcedTotal = outsourcedAssignments.reduce((sum, a) => sum + (a.budget || 0), 0);
+    
+    // Calculate paid vs unpaid for outsourced
+    const outsourcedPaid = outsourcedAssignments.filter(a => a.payment_status?.toLowerCase() === 'paid');
+    const outsourcedUnpaid = outsourcedAssignments.filter(a => a.payment_status?.toLowerCase() !== 'paid');
+    const outsourcedPaidTotal = outsourcedPaid.reduce((sum, a) => sum + (a.budget || 0), 0);
+    const outsourcedUnpaidTotal = outsourcedUnpaid.reduce((sum, a) => sum + (a.budget || 0), 0);
 
     const licensesTotal = licenses.reduce((sum, l) => sum + (l.annual_cost || 0), 0);
     const licensesMonthly = licensesTotal / 12;
@@ -136,7 +142,15 @@ export function CapacityAnalyticsView({
     return {
       insourced: { total: insourcedTotal, count: insourcedCount, missing: missingCtc },
       cosourced: { total: cosourcedTotal, count: cosourcedAssignments.length },
-      outsourced: { total: outsourcedTotal, count: outsourcedAssignments.length, assignments: outsourcedAssignments },
+      outsourced: { 
+        total: outsourcedTotal, 
+        count: outsourcedAssignments.length, 
+        assignments: outsourcedAssignments,
+        paidTotal: outsourcedPaidTotal,
+        unpaidTotal: outsourcedUnpaidTotal,
+        paidCount: outsourcedPaid.length,
+        unpaidCount: outsourcedUnpaid.length,
+      },
       licenses: { total: licensesPeriodTotal, count: licenses.length, monthly: licensesMonthly },
     };
   }, [insourcedResources, assignments, licenses, periodMonths]);
@@ -303,10 +317,23 @@ export function CapacityAnalyticsView({
             <div className="ct-category-header">
               <span className="ct-category-title">OUTSOURCED</span>
               <span className="ct-category-badge teal">{categoryTotals.outsourced.count} Assignments</span>
-              <ChevronDown size={16} />
+              {activeCategory === 'outsourced' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
             <div className="ct-category-value teal">{formatCurrency(categoryTotals.outsourced.total)}</div>
             <div className="ct-category-sub">SAR • Fixed Contract</div>
+            {/* Paid/Unpaid breakdown */}
+            <div className="ct-category-detail flex items-center gap-3 mt-1">
+              {categoryTotals.outsourced.paidCount > 0 && (
+                <span className="text-emerald-600">
+                  Paid: {formatCurrency(categoryTotals.outsourced.paidTotal)} ({categoryTotals.outsourced.paidCount})
+                </span>
+              )}
+              {categoryTotals.outsourced.unpaidCount > 0 && (
+                <span className="text-amber-600">
+                  Unpaid: {formatCurrency(categoryTotals.outsourced.unpaidTotal)} ({categoryTotals.outsourced.unpaidCount})
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Licenses Card */}
