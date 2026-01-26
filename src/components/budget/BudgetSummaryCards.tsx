@@ -115,6 +115,10 @@ export function BudgetSummaryCards({
         </div>
 
         {/* Outsourced Card */}
+        {(() => {
+          const hasUnpaid = outsourcedAssignments.some(a => a.paymentStatus === 'unpaid');
+          const unpaidCount = outsourcedAssignments.filter(a => a.paymentStatus === 'unpaid').length;
+          return (
         <div 
           className={cn(
             "summary-card outsourced cursor-pointer transition-all",
@@ -126,6 +130,11 @@ export function BudgetSummaryCards({
             <span className="summary-title">Outsourced</span>
             <div className="flex items-center gap-2">
               <span className="summary-badge outsourced">{outsourcedAssignments.length} Assignments</span>
+              {hasUnpaid && (
+                <span className="summary-badge bg-red-50 text-red-600 border border-red-200 animate-pulse">
+                  ⚠ {unpaidCount} Unpaid
+                </span>
+              )}
               {activePanel === 'outsourced' ? 
                 <ChevronUp className="w-4 h-4 text-[var(--budget-outsourced)]" /> : 
                 <ChevronDown className="w-4 h-4 text-[var(--budget-text-muted)]" />
@@ -143,6 +152,8 @@ export function BudgetSummaryCards({
             ))}
           </div>
         </div>
+          );
+        })()}
 
         {/* Licenses Card */}
         <div 
@@ -201,32 +212,54 @@ export function BudgetSummaryCards({
             <table className="expanded-panel-table">
               <thead>
                 <tr>
+                  <th>RID</th>
                   <th>Resource Name</th>
+                  <th>Type</th>
+                  <th>Contract End</th>
                   <th>Monthly CTC</th>
-                  <th>Department</th>
-                <th>Vendor</th>
                   <th>Assignment</th>
-                  <th>Contract End Date</th>
+                  <th>Vendor</th>
                 </tr>
               </thead>
               <tbody>
-                {insourcedResourcesList.map(r => (
+                {insourcedResourcesList.map(r => {
+                  const typeColors: Record<string, string> = {
+                    'Variable': 'bg-blue-500',
+                    'Fixed': 'bg-emerald-500',
+                    'Freelance': 'bg-violet-500',
+                    'Permanent': 'bg-slate-500'
+                  };
+                  const contractEndDate = r.contractEnd ? new Date(r.contractEnd) : null;
+                  const isEndingSoon = contractEndDate && 
+                    (contractEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24) <= 90;
+                  
+                  return (
                   <tr key={r.id}>
+                    <td className="font-mono text-xs text-[var(--budget-text-muted)]">{r.rid || '—'}</td>
                     <td className="font-medium">{r.name}</td>
+                    <td>
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn('w-2 h-2 rounded-full', typeColors[r.resourceType] || 'bg-slate-400')} />
+                        <span className="text-xs text-[var(--budget-text-secondary)]">{r.resourceType}</span>
+                      </div>
+                    </td>
+                    <td className={cn('text-sm', isEndingSoon ? 'text-amber-600 font-medium' : 'text-[var(--budget-text-secondary)]')}>
+                      {r.contractEnd || '—'}
+                      {isEndingSoon && ' ⚠️'}
+                    </td>
                     <td className="right font-mono">
                       {r.ctc 
                         ? formatCurrency(r.ctc) 
                         : <span className="text-[var(--budget-danger)] text-xs font-semibold">Missing CTC</span>}
                     </td>
-                    <td className="text-[var(--budget-text-secondary)]">{r.department || '—'}</td>
-                  <td className="text-[var(--budget-text-secondary)]">{r.vendorName || '—'}</td>
                     <td className="text-[var(--budget-text-secondary)]">{r.assignmentName || '—'}</td>
-                    <td className="text-[var(--budget-text-secondary)] text-sm">{r.contractEnd || '—'}</td>
+                    <td className="text-[var(--budget-text-secondary)]">{r.vendorName || '—'}</td>
                   </tr>
-                ))}
+                  );
+                })}
                 {insourcedResourcesList.length === 0 && (
                   <tr>
-                  <td colSpan={6} className="text-center text-[var(--budget-text-muted)] py-8">
+                    <td colSpan={7} className="text-center text-[var(--budget-text-muted)] py-8">
                       <div className="flex flex-col items-center gap-2">
                         <X className="w-8 h-8 opacity-20" />
                         <span>No insourced resources found</span>
@@ -263,6 +296,7 @@ export function BudgetSummaryCards({
             <table className="expanded-panel-table">
               <thead>
                 <tr>
+                  <th>Assignment</th>
                   <th>Vendor</th>
                   <th>Status</th>
                   <th>Payment</th>
@@ -275,15 +309,22 @@ export function BudgetSummaryCards({
                     <td className="font-medium">{a.name}</td>
                     <td>{a.vendor || '—'}</td>
                     <td>
-                      <span className={cn('status-badge', a.status)}>
-                        {a.status === 'in_progress' ? 'In Progress' : a.status}
+                      <span className={cn(
+                        "inline-block px-2 py-0.5 rounded text-[11px] font-medium",
+                        a.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                        a.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                        'bg-slate-100 text-slate-700'
+                      )}>
+                        {a.status === 'in_progress' ? 'In Progress' : 
+                         a.status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                       </span>
                     </td>
                     <td>
                       <span className={cn(
-                        'payment-badge',
-                        a.paymentStatus === 'unpaid' ? 'unpaid' : 
-                        a.paymentStatus === 'on_track' ? 'on-track' : 'na'
+                        "inline-block px-2 py-0.5 rounded text-[11px] font-medium",
+                        a.paymentStatus === 'unpaid' ? 'bg-red-100 text-red-700' :
+                        a.paymentStatus === 'on_track' ? 'bg-emerald-100 text-emerald-700' :
+                        'bg-slate-100 text-slate-700'
                       )}>
                         {a.paymentStatus === 'not_applicable' ? 'N/A' : 
                          a.paymentStatus === 'on_track' ? 'On Track' :
@@ -311,30 +352,26 @@ export function BudgetSummaryCards({
                   <div className="text-xs font-semibold text-[var(--budget-text-secondary)] uppercase tracking-wider mb-2">
                     Allocated Resources ({cosourcedResourcesList.length})
                   </div>
-                  <table className="expanded-panel-table">
+                   <table className="expanded-panel-table">
                     <thead>
                       <tr>
+                        <th>RID</th>
                         <th>Resource Name</th>
+                        <th>Role</th>
                         <th>Monthly CTC</th>
-                        <th>Department</th>
-                      <th>Vendor</th>
-                        <th>Assignment</th>
-                        <th>Contract End Date</th>
                       </tr>
                     </thead>
                     <tbody>
                       {cosourcedResourcesList.map(r => (
                         <tr key={r.id}>
+                          <td className="font-mono text-xs text-[var(--budget-text-muted)]">{r.rid || '—'}</td>
                           <td className="font-medium">{r.name}</td>
+                          <td className="text-[var(--budget-text-secondary)]">{r.role || '—'}</td>
                           <td className="right font-mono">
                             {r.ctc 
                               ? formatCurrency(r.ctc) 
                               : <span className="text-[var(--budget-danger)] text-xs font-semibold">Missing CTC</span>}
                           </td>
-                          <td className="text-[var(--budget-text-secondary)]">{r.department || '—'}</td>
-                        <td className="text-[var(--budget-text-secondary)]">{r.vendorName || '—'}</td>
-                          <td className="text-[var(--budget-text-secondary)]">{r.assignmentName || '—'}</td>
-                          <td className="text-[var(--budget-text-secondary)] text-sm">{r.contractEnd || '—'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -342,71 +379,6 @@ export function BudgetSummaryCards({
                 </div>
               );
             })()}
-          </div>
-        </div>
-      )}
-
-      {/* Expanded Panel: Outsourced */}
-      {activePanel === 'outsourced' && (
-        <div className="expanded-panel animate-in slide-in-from-top-2">
-          <div className="expanded-panel-header">
-            <h3>Outsourced Breakdown</h3>
-            <button 
-              onClick={(e) => { e.stopPropagation(); setActivePanel(null); }}
-              className="text-[var(--budget-text-muted)] hover:text-[var(--budget-text)]"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="expanded-panel-body">
-            <table className="expanded-panel-table">
-              <thead>
-                <tr>
-                  <th>Assignment</th>
-                  <th>Vendor</th>
-                  <th>Status</th>
-                  <th>Payment</th>
-                  <th className="right">Budget (SAR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {outsourcedAssignments.map(a => (
-                  <tr key={a.id}>
-                    <td className="font-medium">{a.name}</td>
-                    <td>{a.vendor || '—'}</td>
-                    <td>
-                      <span className={cn(
-                        "inline-block px-2 py-0.5 rounded text-[11px] font-medium",
-                        a.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                        a.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
-                        'bg-slate-100 text-slate-700'
-                      )}>
-                        {a.status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={cn(
-                        "inline-block px-2 py-0.5 rounded text-[11px] font-medium",
-                        a.paymentStatus === 'unpaid' ? 'bg-red-100 text-red-700' :
-                        a.paymentStatus === 'on_track' ? 'bg-emerald-100 text-emerald-700' :
-                        'bg-slate-100 text-slate-700'
-                      )}>
-                        {a.paymentStatus === 'not_applicable' ? 'N/A' : 
-                         a.paymentStatus.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                      </span>
-                    </td>
-                    <td className="right font-mono font-semibold">{formatFull(a.budget)}</td>
-                  </tr>
-                ))}
-                {cosourcedAssignments.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="text-center text-[var(--budget-text-muted)] py-8">
-                      No cosourced assignments found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
           </div>
         </div>
       )}
@@ -476,6 +448,23 @@ export function BudgetSummaryCards({
               </tbody>
             </table>
           </div>
+          {/* Unpaid Total Footer */}
+          {(() => {
+            const unpaidTotal = outsourcedAssignments
+              .filter(a => a.paymentStatus === 'unpaid')
+              .reduce((sum, a) => sum + (a.budget || 0), 0);
+            
+            if (unpaidTotal <= 0) return null;
+            
+            return (
+              <div className="flex justify-between items-center px-4 py-3 bg-red-50 border-t border-red-100">
+                <span className="font-semibold text-red-600">Total Unpaid</span>
+                <span className="font-mono text-lg font-bold text-red-600">
+                  {formatFull(unpaidTotal)} SAR
+                </span>
+              </div>
+            );
+          })()}
         </div>
       )}
 
