@@ -56,28 +56,40 @@ export default function UserAccessPage() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['user-access-resources'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First, get all resources
+      const { data: resources, error: resourceError } = await supabase
         .from('resource_inventory')
-        .select(`
-          id,
-          profile_id,
-          name,
-          rid,
-          is_active,
-          profiles:profile_id (
-            id,
-            email
-          )
-        `)
+        .select('id, profile_id, name, rid, is_active')
         .order('name', { ascending: true });
 
-      if (error) throw error;
+      if (resourceError) throw resourceError;
 
-      return (data || []).map((item: any) => ({
+      // Get unique profile IDs that are not null
+      const profileIds = (resources || [])
+        .map(r => r.profile_id)
+        .filter((id): id is string => id !== null);
+
+      // Fetch profiles for those IDs
+      let profilesMap: Record<string, { email: string }> = {};
+      if (profileIds.length > 0) {
+        const { data: profiles, error: profileError } = await supabase
+          .from('profiles')
+          .select('id, email')
+          .in('id', profileIds);
+
+        if (profileError) throw profileError;
+
+        profilesMap = (profiles || []).reduce((acc, p) => {
+          acc[p.id] = { email: p.email };
+          return acc;
+        }, {} as Record<string, { email: string }>);
+      }
+
+      return (resources || []).map((item) => ({
         id: item.id,
         profile_id: item.profile_id,
         name: item.name || 'Unknown',
-        email: item.profiles?.email || null,
+        email: item.profile_id ? profilesMap[item.profile_id]?.email || null : null,
         rid: item.rid,
         is_active: item.is_active ?? true,
       })) as ResourceUser[];
