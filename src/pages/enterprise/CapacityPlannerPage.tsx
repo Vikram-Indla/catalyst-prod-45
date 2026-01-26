@@ -955,13 +955,14 @@ export default function CapacityPlannerPage() {
                   <EnhancedTimelineView 
                     resources={allGanttResources.map(r => ({
                       id: r.id,
+                      resourceInventoryId: (r as any).resourceInventoryId,
                       name: r.name,
                       role: r.role,
                       department: r.department,
                       allocation: r.allocation,
                       contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
                       assignmentName: r.assignmentName,
-                    }))} 
+                    }))}
                     allocations={allocations}
                     year={2026}
                     onEditResource={(id) => handleOpenAllocationModal(id)}

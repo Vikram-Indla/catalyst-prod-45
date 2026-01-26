@@ -409,7 +409,9 @@ export function EnhancedTimelineView({
               {/* Group Timeline */}
               <div className={styles.timelineBody}>
                 {groupResources.map((resource) => {
-                  const resourceAllocations = allocationsByResource.get(resource.id) || [];
+                  const resourceAllocations = allocationsByResource.get(resource.id) || 
+                                             allocationsByResource.get((resource as any).resourceInventoryId) || 
+                                             [];
                   const contractInfo = getContractStatus(resource.contractEndDate);
                   const contractMarkerLeft = getContractMarkerPosition(resource.contractEndDate);
                   
@@ -528,8 +530,10 @@ export function EnhancedTimelineView({
         // No grouping - flat list
         <div className={styles.timelineBody}>
           {resources.map((resource) => {
-            // Get allocations for this resource - the map is indexed by both profile_id and resource_id
-            const resourceAllocations = allocationsByResource.get(resource.id) || [];
+            // Get allocations for this resource - check both id and resourceInventoryId
+            const resourceAllocations = allocationsByResource.get(resource.id) || 
+                                       allocationsByResource.get((resource as any).resourceInventoryId) || 
+                                       [];
             const contractInfo = getContractStatus(resource.contractEndDate);
             const contractMarkerLeft = getContractMarkerPosition(resource.contractEndDate);
             
