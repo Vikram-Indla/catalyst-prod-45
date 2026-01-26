@@ -267,11 +267,42 @@ export default function UsersManagement() {
   // Bulk update mutation
   const bulkUpdateMutation = useMutation({
     mutationFn: async ({ ids, updates }: { ids: string[]; updates: Record<string, string> }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ ...updates, updated_at: new Date().toISOString() })
-        .in('id', ids);
-      if (error) throw error;
+      // Fields that belong to resource_inventory vs profiles
+      const inventoryFields = [
+        'department_id', 'assignment_id', 'vendor_id', 
+        'resource_type', 'country_id', 'location_id'
+      ];
+      const profileFields = ['full_name'];
+
+      // Separate updates by table
+      const inventoryUpdates: Record<string, string> = {};
+      const profileUpdates: Record<string, string> = {};
+
+      Object.entries(updates).forEach(([key, value]) => {
+        if (inventoryFields.includes(key)) {
+          inventoryUpdates[key] = value;
+        } else if (profileFields.includes(key)) {
+          profileUpdates[key] = value;
+        }
+      });
+
+      // Update resource_inventory if needed
+      if (Object.keys(inventoryUpdates).length > 0) {
+        const { error: invError } = await (supabase as any)
+          .from('resource_inventory')
+          .update({ ...inventoryUpdates, updated_at: new Date().toISOString() })
+          .in('profile_id', ids);
+        if (invError) throw invError;
+      }
+
+      // Update profiles if needed
+      if (Object.keys(profileUpdates).length > 0) {
+        const { error: profError } = await supabase
+          .from('profiles')
+          .update({ ...profileUpdates, updated_at: new Date().toISOString() })
+          .in('id', ids);
+        if (profError) throw profError;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
