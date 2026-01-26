@@ -55,7 +55,7 @@ export function CapacityAnalyticsView({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_assignments')
-        .select('id, name, assignment_type, budget, payment_status, resource_vendors(name)')
+        .select('id, name, assignment_type, assignment_status, budget, payment_status, resource_vendors(name)')
         .eq('is_active', true);
       if (error) throw error;
       return data || [];
