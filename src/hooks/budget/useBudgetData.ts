@@ -287,7 +287,7 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
       .map(r => ({
         name: r.name,
         department: r.department,
-        issue: 'Missing CTC value'
+        issue: 'Compensation details missing'
       }));
 
     return {
