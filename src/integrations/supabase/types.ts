@@ -120,6 +120,75 @@ export type Database = {
           },
         ]
       }
+      budget_scenarios: {
+        Row: {
+          avg_extension_months: number | null
+          cosourced_budget: number
+          created_at: string
+          created_by: string | null
+          delta_from_baseline: number
+          description: string | null
+          filter_department: string | null
+          filter_expiry_end: string | null
+          filter_expiry_start: string | null
+          id: string
+          insourced_budget: number
+          is_active: boolean
+          licenses_budget: number
+          name: string
+          outsourced_budget: number
+          resource_count: number
+          scenario_data: Json
+          total_budget: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          avg_extension_months?: number | null
+          cosourced_budget?: number
+          created_at?: string
+          created_by?: string | null
+          delta_from_baseline?: number
+          description?: string | null
+          filter_department?: string | null
+          filter_expiry_end?: string | null
+          filter_expiry_start?: string | null
+          id?: string
+          insourced_budget?: number
+          is_active?: boolean
+          licenses_budget?: number
+          name: string
+          outsourced_budget?: number
+          resource_count?: number
+          scenario_data?: Json
+          total_budget?: number
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          avg_extension_months?: number | null
+          cosourced_budget?: number
+          created_at?: string
+          created_by?: string | null
+          delta_from_baseline?: number
+          description?: string | null
+          filter_department?: string | null
+          filter_expiry_end?: string | null
+          filter_expiry_start?: string | null
+          id?: string
+          insourced_budget?: number
+          is_active?: boolean
+          licenses_budget?: number
+          name?: string
+          outsourced_budget?: number
+          resource_count?: number
+          scenario_data?: Json
+          total_budget?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       capacity_departments: {
         Row: {
           color: string | null
