@@ -60,6 +60,7 @@ export interface KanbanTaskFilters {
   priority: KanbanTaskPriority | 'all';
   assignee_id: string | 'all';
   workstream_id: string | 'all';
+  status_slug?: string | null; // Filter by status slug (e.g., 'backlog', 'in-progress')
 }
 
 export type KanbanViewMode = 'board' | 'swimlane';

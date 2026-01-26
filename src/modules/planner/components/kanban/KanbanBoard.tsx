@@ -42,6 +42,7 @@ interface KanbanBoardProps {
   externalSearch?: string;
   externalPriority?: string | null;
   externalAssigneeId?: string | null;
+  externalStatusSlug?: string | null;
 }
 
 export function KanbanBoard({
@@ -53,6 +54,7 @@ export function KanbanBoard({
   externalSearch,
   externalPriority,
   externalAssigneeId,
+  externalStatusSlug,
 }: KanbanBoardProps) {
   // Internal filters state (merged with external)
   const [internalFilters, setInternalFilters] = useState<KanbanTaskFilters>({
@@ -85,7 +87,8 @@ export function KanbanBoard({
     priority: (externalPriority as KanbanTaskFilters['priority']) || internalFilters.priority,
     assignee_id: externalAssigneeId || internalFilters.assignee_id,
     workstream_id: externalWorkstreamId || internalFilters.workstream_id,
-  }), [externalSearch, externalPriority, externalAssigneeId, externalWorkstreamId, internalFilters]);
+    status_slug: externalStatusSlug || null,
+  }), [externalSearch, externalPriority, externalAssigneeId, externalWorkstreamId, externalStatusSlug, internalFilters]);
 
   // Data hooks
   const { data: statuses = [], isLoading: statusesLoading } = useKanbanStatuses();

@@ -52,7 +52,14 @@ export function useKanbanTasks(filters?: KanbanTaskFilters) {
         console.error('Error fetching tasks:', error);
         throw error;
       }
-      return data as unknown as KanbanTask[];
+
+      // Filter by status slug client-side (PostgREST doesn't support filtering on joined columns)
+      let result = data as unknown as KanbanTask[];
+      if (filters?.status_slug) {
+        result = result.filter(task => task.status?.slug === filters.status_slug);
+      }
+
+      return result;
     },
   });
 }
