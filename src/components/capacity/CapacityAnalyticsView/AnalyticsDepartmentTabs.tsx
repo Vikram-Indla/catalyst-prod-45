@@ -1,5 +1,6 @@
 /**
  * Department filter tabs with counts
+ * Catalyst V5 ring-fenced pill design
  */
 
 import { cn } from '@/lib/utils';
@@ -18,7 +19,7 @@ interface AnalyticsDepartmentTabsProps {
 
 export function AnalyticsDepartmentTabs({ tabs, activeTab, onTabChange }: AnalyticsDepartmentTabsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="analytics-dept-filters">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -26,10 +27,8 @@ export function AnalyticsDepartmentTabs({ tabs, activeTab, onTabChange }: Analyt
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              'px-4 py-2 text-sm font-medium rounded-lg transition-all',
-              isActive
-                ? 'bg-[#2563eb] text-white shadow-sm'
-                : 'bg-card border border-border text-foreground hover:bg-muted'
+              'analytics-dept-pill',
+              isActive && 'active'
             )}
           >
             {tab.name} ({tab.count})

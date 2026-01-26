@@ -847,3 +847,52 @@
   font-size: 12px;
   font-weight: 500;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ANALYTICS DEPARTMENT FILTER PILLS
+   Matches Gantt Chart design (ring-fenced)
+   ═══════════════════════════════════════════════════════════════ */
+
+.analytics-dept-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.analytics-dept-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-family: var(--ct-font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ct-text);
+  background: var(--ct-surface);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.analytics-dept-pill:hover {
+  border-color: var(--ct-primary);
+  color: var(--ct-primary);
+  background: var(--ct-primary-light);
+}
+
+.analytics-dept-pill.active {
+  background: var(--ct-primary);
+  border-color: var(--ct-primary);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.analytics-dept-pill.active:hover {
+  background: var(--ct-primary-hover);
+  border-color: var(--ct-primary-hover);
+  color: #ffffff;
+}
