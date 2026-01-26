@@ -98,6 +98,7 @@ export interface AllocationBookingInput {
   allocation_percent: number;
   start_date: string;
   end_date: string;
+  status?: 'committed' | 'forecast';  // Allocation status
 }
 
 /**
