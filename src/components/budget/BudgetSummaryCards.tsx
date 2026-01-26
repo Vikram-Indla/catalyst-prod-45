@@ -206,7 +206,11 @@ export function BudgetSummaryCards({
               const insourcedResourcesList = resources.filter(r => 
                 (r.resourceType === 'Variable' || r.resourceType === 'Freelance') &&
                 (currentDept === 'all' || r.department === currentDept)
-              );
+              ).sort((a, b) => {
+                const assignmentA = a.assignmentName || '';
+                const assignmentB = b.assignmentName || '';
+                return assignmentA.localeCompare(assignmentB);
+              });
               
               return (
             <table className="expanded-panel-table">
