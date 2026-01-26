@@ -88,7 +88,7 @@ export function useContractHorizon() {
     return map;
   }, [vendors]);
 
-  // Fetch resources from resource_inventory
+  // Fetch ALL resources from resource_inventory (no filters - parity with Utilization/Gantt views)
   const { data: rawResources = [], isLoading } = useQuery({
     queryKey: ['contract-horizon-resources', departmentMap, vendorMap],
     queryFn: async () => {
@@ -106,19 +106,14 @@ export function useContractHorizon() {
           profile_id,
           country_id,
           location_id
-        `)
-        .not('contract_end_date', 'is', null)
-        .gte('contract_end_date', TODAY.toISOString().split('T')[0]);
+        `);
+      // Removed filters: .not('contract_end_date', 'is', null) and .gte('contract_end_date', ...)
+      // This ensures parity with Utilization and Gantt views (74 resources)
 
       if (error) throw error;
 
-      // Filter out management roles and map to contract resources
-      return (data || [])
-        .filter((r: any) => {
-          const role = (r.role_name || '').toLowerCase();
-          return !role.includes('management') && !role.includes('manager');
-        })
-        .map((r: any) => ({
+      // Map to contract resources (no role filtering - include all resources)
+      return (data || []).map((r: any) => ({
           id: r.id,
           name: r.name || 'Unknown',
           role: r.role_name || 'Team Member',

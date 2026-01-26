@@ -322,17 +322,7 @@ export function CapacityPlannerGantt({
           <h2 className="cpg-toolbar-title" aria-label="Resource Timeline">
             <LayoutGrid />
           </h2>
-          <div className="cpg-date-navigator">
-            <button className="cpg-nav-btn">
-              <ChevronLeft />
-            </button>
-            <span className="cpg-date-range">
-              {months[0]?.monthName} – {months[11]?.monthName} {year}
-            </span>
-            <button className="cpg-nav-btn">
-              <ChevronRight />
-            </button>
-          </div>
+          {/* Date navigator removed per user request */}
         </div>
         <div className="cpg-toolbar-right">
           <div className="cpg-view-toggle">
