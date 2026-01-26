@@ -77,18 +77,26 @@ export default function BudgetGovernancePage() {
   }
 
   return (
-    <PageChrome>
-      <div className="budget-module min-h-screen bg-[var(--budget-bg)]">
-        <div className="p-6 lg:px-8">
-          {/* Row 1: Title + Live Badge | Executive Summary */}
-          <header className="flex items-start justify-between mb-6">
+    <PageChrome hideHeader>
+      <div className="budget-module flex flex-col h-full bg-[hsl(var(--background))]">
+        {/* Header - Matches Capacity Planner 2-Row Structure */}
+        <div className="bg-card border-b border-border">
+          {/* ROW 1: Title + Live Badge (inline) */}
+          <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
+            {/* Left: Title + Live Badge Inline */}
             <div className="flex items-center gap-4">
-              {/* Title Block */}
-              <div>
-                <div className="text-xs font-medium text-slate-500 mb-1">
-                  Enterprise / Capacity <span className="text-blue-600">• Budget</span>
+              <div className="flex flex-col gap-0.5">
+                {/* Breadcrumb - Shows active tab */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-medium text-slate-500">Enterprise / Capacity</span>
+                  <span className="text-xs text-slate-400">•</span>
+                  <span className="text-xs font-medium text-blue-600">Budget</span>
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900">Budget Governance</h1>
+                
+                {/* Title */}
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
+                  Budget Governance
+                </h1>
               </div>
               
               {/* Live Badge - Inline with title */}
@@ -100,8 +108,8 @@ export default function BudgetGovernancePage() {
                 <span className="text-xs font-semibold text-emerald-700">Live</span>
               </div>
             </div>
-            
-            {/* Executive Summary - Primary CTA Only */}
+
+            {/* Right: Executive Summary CTA */}
             <Button 
               onClick={() => setExecModalOpen(true)}
               size="sm"
@@ -110,7 +118,11 @@ export default function BudgetGovernancePage() {
               <BarChart3 className="w-4 h-4" />
               Executive Summary
             </Button>
-          </header>
+          </div>
+        </div>
+
+        {/* Content Area - Scrollable */}
+        <div className="flex-1 overflow-auto p-6 lg:px-8" style={{ backgroundColor: 'var(--bg)' }}>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">

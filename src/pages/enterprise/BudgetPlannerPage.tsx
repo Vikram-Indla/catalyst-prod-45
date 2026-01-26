@@ -207,19 +207,37 @@ export default function BudgetPlannerPage() {
     );
   }
 
+  // Get active tab label for breadcrumb
+  const getActiveTabName = () => {
+    switch (activeTab) {
+      case 'summary': return 'Summary';
+      case 'budget': return 'Budget';
+      case 'scenario': return 'Scenario Planning';
+      default: return 'Summary';
+    }
+  };
+
   return (
     <PageChrome hideHeader>
-      <div className="budget-module min-h-screen bg-[var(--budget-bg)]">
-        <div className="p-6 lg:px-8">
-          {/* Row 1: Title + Live Badge | Tab Navigation */}
-          <header className="flex items-start justify-between mb-6">
+      <div className="budget-module flex flex-col h-full bg-[hsl(var(--background))]">
+        {/* Header - Matches Capacity Planner 2-Row Structure */}
+        <div className="bg-card border-b border-border">
+          {/* ROW 1: Title + Live Badge (inline) */}
+          <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
+            {/* Left: Title + Live Badge Inline */}
             <div className="flex items-center gap-4">
-              {/* Title Block */}
-              <div>
-                <div className="text-xs font-medium text-slate-500 mb-1">
-                  Enterprise / Budget Planner <span className="text-blue-600">• {activeTab === 'summary' ? 'Summary' : activeTab === 'budget' ? 'Budget' : 'Scenario Planning'}</span>
+              <div className="flex flex-col gap-0.5">
+                {/* Breadcrumb - Shows active tab */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-medium text-slate-500">Enterprise / Budget Planner</span>
+                  <span className="text-xs text-slate-400">•</span>
+                  <span className="text-xs font-medium text-blue-600">{getActiveTabName()}</span>
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900">Budget Planner</h1>
+                
+                {/* Title */}
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
+                  Budget Planner
+                </h1>
               </div>
               
               {/* Live Badge - Inline with title */}
@@ -231,8 +249,26 @@ export default function BudgetPlannerPage() {
                 <span className="text-xs font-semibold text-emerald-700">Live</span>
               </div>
             </div>
-            
-            {/* Tab Navigation - Right Aligned */}
+
+            {/* Right: Reserved for future actions */}
+            <div className="flex items-center gap-3">
+            </div>
+          </div>
+
+          {/* ROW 2: Search + Hero Tabs */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search assignments..."
+                className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
+              />
+            </div>
+
+            {/* Hero Tab Strip - Right Aligned */}
             <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
               {viewTabs.map((tab) => {
                 const Icon = tab.icon;
@@ -253,7 +289,11 @@ export default function BudgetPlannerPage() {
                 );
               })}
             </nav>
-          </header>
+          </div>
+        </div>
+
+        {/* Content Area - Scrollable */}
+        <div className="flex-1 overflow-auto p-6 lg:px-8" style={{ backgroundColor: 'var(--bg)' }}>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
