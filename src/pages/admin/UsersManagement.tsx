@@ -305,7 +305,10 @@ export default function UsersManagement() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      // Force full refetch of users list to show updated assignment data
+      queryClient.invalidateQueries({ queryKey: ['users-list'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
       toast.success(`Updated ${selectedIds.size} users`);
       setSelectedIds(new Set());
       setBulkModalOpen(false);
