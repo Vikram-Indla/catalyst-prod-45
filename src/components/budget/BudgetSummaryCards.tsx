@@ -193,7 +193,8 @@ export function BudgetSummaryCards({
             {/* Get all insourced resources instead of showing by assignment */}
             {(() => {
               const insourcedResourcesList = resources.filter(r => 
-                r.resourceType === 'Variable' || r.resourceType === 'Freelance'
+                (r.resourceType === 'Variable' || r.resourceType === 'Freelance') &&
+                (currentDept === 'all' || r.department === currentDept)
               );
               
               return (
