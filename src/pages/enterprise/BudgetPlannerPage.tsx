@@ -12,7 +12,7 @@ import { useState, useMemo } from 'react';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AlertTriangle, Search, Wallet, BarChart3 } from 'lucide-react';
+import { AlertTriangle, Search, Wallet, BarChart3, GitBranch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBudgetData, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
 import { toast } from 'sonner';
@@ -25,7 +25,7 @@ import { BudgetLedgerTable } from '@/components/budget/BudgetLedgerTable';
 import { BudgetQualityPanel } from '@/components/budget/BudgetQualityPanel';
 import { BudgetExecutiveSummaryView } from '@/components/budget/BudgetExecutiveSummaryView';
 
-type BudgetPlannerTab = 'budget' | 'executive';
+type BudgetPlannerTab = 'summary' | 'budget' | 'scenario';
 
 const PERIODS: { value: BudgetPeriod; label: string }[] = [
   { value: 'Q1', label: 'Q1' },
@@ -34,7 +34,7 @@ const PERIODS: { value: BudgetPeriod; label: string }[] = [
 ];
 
 export default function BudgetPlannerPage() {
-  const [activeTab, setActiveTab] = useState<BudgetPlannerTab>('budget');
+  const [activeTab, setActiveTab] = useState<BudgetPlannerTab>('summary');
   const [period, setPeriod] = useState<BudgetPeriod>('H1');
   const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading, error, refetch } = useBudgetData(period);
@@ -120,6 +120,13 @@ export default function BudgetPlannerPage() {
   // Hero Tab Configuration (matches Capacity Planner style)
   const viewTabs = [
     { 
+      id: 'summary', 
+      label: 'Summary', 
+      icon: BarChart3,
+      isActive: activeTab === 'summary',
+      onClick: () => setActiveTab('summary')
+    },
+    { 
       id: 'budget', 
       label: 'Budget', 
       icon: Wallet,
@@ -127,11 +134,11 @@ export default function BudgetPlannerPage() {
       onClick: () => setActiveTab('budget')
     },
     { 
-      id: 'executive', 
-      label: 'Executive Summary', 
-      icon: BarChart3,
-      isActive: activeTab === 'executive',
-      onClick: () => setActiveTab('executive')
+      id: 'scenario', 
+      label: 'Scenario Planning', 
+      icon: GitBranch,
+      isActive: activeTab === 'scenario',
+      onClick: () => setActiveTab('scenario')
     },
   ];
 
@@ -163,7 +170,7 @@ export default function BudgetPlannerPage() {
                   <span className="text-xs font-medium text-slate-500">Enterprise / Budget Planner</span>
                   <span className="text-xs text-slate-400">•</span>
                   <span className="text-xs font-medium text-slate-500">
-                    {activeTab === 'budget' ? 'Budget' : 'Executive Summary'}
+                    {activeTab === 'summary' ? 'Summary' : activeTab === 'budget' ? 'Budget' : 'Scenario Planning'}
                   </span>
                 </div>
                 
@@ -297,13 +304,22 @@ export default function BudgetPlannerPage() {
                 <BudgetQualityPanel issues={data.dataQualityIssues} />
               )}
             </>
-          ) : (
+          ) : activeTab === 'summary' ? (
             <BudgetExecutiveSummaryView 
               data={data}
               currentDept={currentDept}
               onDeptChange={setCurrentDept}
               period={period}
             />
+          ) : (
+            /* Scenario Planning Tab - Placeholder */
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <GitBranch className="w-16 h-16 text-slate-300 mb-4" />
+              <h2 className="text-xl font-semibold text-slate-700 mb-2">Scenario Planning</h2>
+              <p className="text-slate-500 max-w-md">
+                Model different budget scenarios, compare outcomes, and plan for various financial situations.
+              </p>
+            </div>
           )}
         </div>
       </div>
