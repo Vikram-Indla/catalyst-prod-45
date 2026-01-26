@@ -1,14 +1,15 @@
 /**
  * Budget Summary Tab - V8 Design
- * Portfolio baseline cards, department budget bars with quarterly values,
- * assignment costs table, and recommendations section
+ * Matches exact reference: Portfolio baseline cards, department budget bars with quarterly timeline,
+ * assignment costs table with run rate, and recommendations by department
  */
 
 import { useState, useMemo } from 'react';
-import { ChevronRight, AlertTriangle, DollarSign, Users, FileText, TrendingUp, Calendar, Building2, X } from 'lucide-react';
+import { ChevronRight, AlertTriangle, Users, FileText, TrendingUp, Building2, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatFull, type BudgetPeriod, type BudgetResource, type BudgetAssignment, type DepartmentBudget, type BudgetLicense } from '@/hooks/budget/useBudgetData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useNavigate } from 'react-router-dom';
 
 interface BudgetSummaryTabProps {
   data: {
@@ -27,13 +28,17 @@ interface BudgetSummaryTabProps {
 type ModalType = 'insourced' | 'fixed' | 'licenses' | 'department' | null;
 
 const cardColors = {
-  total: 'from-slate-600 to-slate-700',
+  total: 'from-emerald-500 to-emerald-600',
   insourced: 'from-[#2563eb] to-[#3b82f6]',
   fixed: 'from-[#d97706] to-[#f59e0b]',
   licenses: 'from-[#7c3aed] to-[#a78bfa]',
 };
 
+// Department display order
+const DEPT_ORDER = ['Delivery', 'Product', 'Operations', 'Tech Support', 'Governance'];
+
 export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
+  const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
 
@@ -55,21 +60,27 @@ export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
   const insourcedResources = data.resources.filter(r => 
     r.resourceType === 'Variable' || r.resourceType === 'Freelance'
   );
-  
-  // Calculate quarterly values for Delivery department
-  const deliveryBudget = data.departments['Delivery'];
-  const quarterlyValues = useMemo(() => {
-    if (!deliveryBudget) return { q1: 0, q2: 0, q3: 0, q4: 0 };
-    const monthlyRate = deliveryBudget.insourced / months;
-    return {
-      q1: monthlyRate * 3,
-      q2: monthlyRate * 6,
-      q3: monthlyRate * 9,
-      q4: monthlyRate * 12,
-    };
-  }, [deliveryBudget, months]);
 
-  // Critical resources expiring soon
+  // Fixed contracts count (Cosourced + Outsourced assignments)
+  const fixedContractsCount = data.assignments.filter(a => 
+    a.type === 'Cosourced' || a.type === 'Outsourced'
+  ).length;
+
+  // Get ordered departments
+  const departments = DEPT_ORDER.filter(d => data.departments[d]);
+
+  // Missing CTC by department
+  const missingCTCByDept = useMemo(() => {
+    const byDept: Record<string, number> = {};
+    data.resources.forEach(r => {
+      if (!r.ctc || r.ctc === 0) {
+        byDept[r.department] = (byDept[r.department] || 0) + 1;
+      }
+    });
+    return byDept;
+  }, [data.resources]);
+
+  // Critical resources expiring soon (Q1-Q2)
   const criticalResources = useMemo(() => {
     const now = new Date();
     return data.resources.filter(r => {
@@ -84,25 +95,19 @@ export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
     });
   }, [data.resources]);
 
-  // Unpaid outsourced
+  // Unpaid outsourced assignments
   const unpaidAssignments = data.assignments.filter(a => 
     a.type === 'Outsourced' && a.paymentStatus === 'unpaid'
   );
   const unpaidTotal = unpaidAssignments.reduce((sum, a) => sum + a.budget, 0);
 
-  // Missing CTC by department
-  const missingCTCByDept = useMemo(() => {
-    const byDept: Record<string, number> = {};
-    data.resources.forEach(r => {
-      if (!r.ctc || r.ctc === 0) {
-        byDept[r.department] = (byDept[r.department] || 0) + 1;
-      }
-    });
-    return byDept;
-  }, [data.resources]);
+  // Calculate max department budget for bar scaling
+  const maxDeptBudget = Math.max(
+    ...departments.map(d => data.departments[d]?.total || 0)
+  );
 
-  // Department list for breakdown
-  const departments = Object.keys(data.departments).filter(k => k !== 'all');
+  // Extension cost (3 months)
+  const extensionCost = criticalResources.reduce((sum, r) => sum + (r.ctc || 0) * 3, 0);
 
   return (
     <div className="space-y-8">
@@ -113,180 +118,156 @@ export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
         </h2>
         <div className="grid grid-cols-4 gap-4">
           {/* Total Budget */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 relative overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 p-5 relative overflow-hidden">
             <div className={cn("absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r", cardColors.total)} />
-            <div className="flex items-center gap-2 mb-3">
-              <DollarSign className="w-4 h-4 text-slate-500" />
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Budget</span>
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+              Total Budget
             </div>
-            <div className="font-mono text-4xl font-bold text-slate-900 mb-2">
+            <div className="font-mono text-4xl font-bold text-emerald-600 mb-2">
               {formatCurrency(budget.total)}
             </div>
             <div className="text-sm text-slate-500">
-              SAR • {period === 'Q1' ? 'Q1' : period === 'H1' ? 'H1' : 'Full Year'} 2026
+              SAR · {period === 'Q1' ? 'Q1' : period === 'H1' ? 'H1' : 'Full Year'} 2026
             </div>
           </div>
 
           {/* Insourced */}
           <div 
-            className="bg-white rounded-2xl border border-slate-200 p-5 relative overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all"
+            className="bg-white rounded-xl border border-slate-200 p-5 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => setActiveModal('insourced')}
           >
             <div className={cn("absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r", cardColors.insourced)} />
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-[#2563eb]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Insourced</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+              Insourced
             </div>
             <div className="font-mono text-4xl font-bold text-[#2563eb] mb-2">
               {formatCurrency(budget.insourced)}
             </div>
             <div className="text-sm text-slate-500">
-              {insourcedResources.length} resources
+              {insourcedResources.length} resources · Click for details
             </div>
           </div>
 
           {/* Fixed Contracts */}
           <div 
-            className="bg-white rounded-2xl border border-slate-200 p-5 relative overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all"
+            className="bg-white rounded-xl border border-slate-200 p-5 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => setActiveModal('fixed')}
           >
             <div className={cn("absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r", cardColors.fixed)} />
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-[#d97706]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Fixed Contracts</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+              Fixed Contracts
             </div>
             <div className="font-mono text-4xl font-bold text-[#d97706] mb-2">
               {formatCurrency(fixedTotal)}
             </div>
             <div className="text-sm text-slate-500">
-              Cosourced + Outsourced
+              Cosourced + Outsourced · Click for details
             </div>
           </div>
 
           {/* Licenses */}
           <div 
-            className="bg-white rounded-2xl border border-slate-200 p-5 relative overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all"
+            className="bg-white rounded-xl border border-slate-200 p-5 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => setActiveModal('licenses')}
           >
             <div className={cn("absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r", cardColors.licenses)} />
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-[#7c3aed]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Licenses</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+              Licenses
             </div>
             <div className="font-mono text-4xl font-bold text-[#7c3aed] mb-2">
               {formatCurrency(budget.licenses)}
             </div>
             <div className="text-sm text-slate-500">
-              {data.licenseCount} active
+              {data.licenseCount} active · Click for details
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section 2: Department Budgets with Quarterly Values */}
+      {/* Section 2: Department Budgets with Timeline Bars */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Department Budgets
           </h2>
+          <button 
+            className="text-sm text-[#2563eb] hover:underline font-medium"
+            onClick={() => navigate('/enterprise/budget-planner?tab=budget')}
+          >
+            View Breakdown
+          </button>
         </div>
         
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          {/* Header */}
-          <div className="grid grid-cols-[140px_1fr_120px_100px] gap-4 px-5 py-3 bg-slate-50 border-b border-slate-200">
-            <div className="text-xs font-bold uppercase text-slate-500">Department</div>
-            <div className="flex justify-between text-xs font-bold uppercase text-slate-500">
-              <span>Q1</span>
-              <span>Q2</span>
-              <span>Q3</span>
-              <span>Q4</span>
-            </div>
-            <div className="text-xs font-bold uppercase text-slate-500 text-right">Total</div>
-            <div className="text-xs font-bold uppercase text-slate-500 text-right">Run Rate</div>
-          </div>
-          
-          {/* Department Rows */}
-          {departments.map(deptName => {
+        <div className="bg-white rounded-xl border border-slate-200">
+          {departments.map((deptName, idx) => {
             const dept = data.departments[deptName];
             if (!dept) return null;
             
             const hasBudget = dept.total > 0;
             const monthlyRate = hasBudget ? dept.insourced / months : 0;
-            const maxBudget = Math.max(...departments.map(d => data.departments[d]?.total || 0));
-            const barWidth = maxBudget > 0 ? (dept.total / maxBudget * 100) : 0;
-            
-            // Calculate quarterly cumulative values
-            const q1 = monthlyRate * 3;
-            const q2 = monthlyRate * 6;
-            const q3 = monthlyRate * 9;
-            const q4 = monthlyRate * 12;
-            
-            const resourceCount = data.resources.filter(r => r.department === deptName).length;
+            const barWidth = maxDeptBudget > 0 ? (dept.total / maxDeptBudget * 100) : 0;
+            const missingCount = missingCTCByDept[deptName] || 0;
             
             return (
               <div 
                 key={deptName}
-                className="grid grid-cols-[140px_1fr_120px_100px] gap-4 px-5 py-4 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 cursor-pointer transition-colors"
-                onClick={() => { setSelectedDept(deptName); setActiveModal('department'); }}
+                className={cn(
+                  "px-6 py-4",
+                  idx !== departments.length - 1 && "border-b border-slate-100"
+                )}
               >
-                <div>
-                  <div className="font-medium text-sm text-slate-800">{deptName}</div>
-                  <div className="text-xs text-slate-500">{resourceCount} resources</div>
-                </div>
-                
-                <div className="flex flex-col justify-center">
-                  {hasBudget ? (
-                    <>
-                      {/* Progress Bar */}
-                      <div className="h-5 bg-slate-100 rounded-full overflow-hidden relative mb-1">
-                        <div 
-                          className="h-full bg-gradient-to-r from-[#2563eb] to-[#60a5fa] rounded-full transition-all duration-500"
-                          style={{ width: `${barWidth}%` }}
-                        />
-                        {/* Quarter markers */}
-                        <div className="absolute inset-0 flex">
-                          {[25, 50, 75].map(pct => (
-                            <div key={pct} className="flex-1 border-r border-dashed border-slate-300" />
-                          ))}
-                          <div className="flex-1" />
-                        </div>
-                      </div>
-                      {/* Quarterly values */}
-                      <div className="flex justify-between text-[10px] font-mono text-slate-500">
-                        <span>{formatCurrency(q1)}</span>
-                        <span>{formatCurrency(q2)}</span>
-                        <span>{formatCurrency(q3)}</span>
-                        <span>{formatCurrency(q4)}</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="h-5 bg-slate-100 rounded-full flex items-center justify-center">
-                      <span className="text-xs text-slate-400">—</span>
+                <div className="flex items-center gap-6">
+                  {/* Department name */}
+                  <div className="w-28 shrink-0">
+                    <span className="font-medium text-slate-800">{deptName}</span>
+                  </div>
+                  
+                  {/* Timeline bar area */}
+                  <div className="flex-1">
+                    {/* Quarter labels */}
+                    <div className="flex justify-between mb-1 text-[10px] text-slate-400 font-medium">
+                      <span>Q1</span>
+                      <span>Q2</span>
+                      <span>Q3</span>
+                      <span>Q4</span>
                     </div>
-                  )}
-                </div>
-                
-                <div className="text-right font-mono font-bold text-sm text-slate-800">
-                  {hasBudget ? formatCurrency(dept.total) : '0'}
-                </div>
-                
-                <div className="text-right">
-                  {hasBudget ? (
-                    <span className="text-sm text-slate-600">{formatCurrency(monthlyRate)}/mo</span>
-                  ) : (
-                    <span className="text-xs text-amber-600 font-medium">
-                      △{missingCTCByDept[deptName] || 0} missing
-                    </span>
-                  )}
+                    {/* Bar container with quarter markers */}
+                    <div className="relative h-6 bg-slate-100 rounded-full overflow-hidden">
+                      {/* Quarter dividers */}
+                      <div className="absolute inset-0 flex">
+                        <div className="w-1/4 border-r border-slate-200" />
+                        <div className="w-1/4 border-r border-slate-200" />
+                        <div className="w-1/4 border-r border-slate-200" />
+                        <div className="w-1/4" />
+                      </div>
+                      {/* Actual budget bar */}
+                      {hasBudget && (
+                        <div 
+                          className="absolute top-0 left-0 h-full bg-[#2563eb] rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min(barWidth, 100)}%` }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Budget value and run rate OR missing CTC warning */}
+                  <div className="w-32 text-right shrink-0">
+                    {hasBudget ? (
+                      <>
+                        <div className="font-mono font-bold text-slate-800">
+                          {formatCurrency(dept.total)}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          Run rate: {formatCurrency(monthlyRate)}/mo
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-end gap-1.5 text-amber-600">
+                        <AlertTriangle className="w-3.5 h-3.5" />
+                        <span className="text-sm font-medium">{missingCount} missing CTC</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -300,60 +281,86 @@ export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Assignment Costs
           </h2>
-          <span className="text-xs text-slate-500">{data.assignments.length} assignments</span>
+          <button 
+            className="text-sm text-[#2563eb] hover:underline font-medium"
+            onClick={() => navigate('/admin/resource-assignments')}
+          >
+            View All {data.assignments.length} Assignments
+          </button>
         </div>
         
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Assignment</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Department</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Type</th>
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Duration</th>
-                <th className="px-4 py-3 text-center text-xs font-bold uppercase text-slate-500">Resources</th>
-                <th className="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">Budget</th>
+                <th className="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">Assignment</th>
+                <th className="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">Department</th>
+                <th className="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">Type</th>
+                <th className="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">Duration</th>
+                <th className="px-5 py-3 text-center text-xs font-bold uppercase text-slate-500">Resources</th>
+                <th className="px-5 py-3 text-right text-xs font-bold uppercase text-slate-500">Budget (SAR)</th>
+                <th className="px-5 py-3 text-right text-xs font-bold uppercase text-slate-500">Run Rate</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {data.assignments
                 .sort((a, b) => b.budget - a.budget)
-                .slice(0, 8)
+                .slice(0, 6)
                 .map(a => {
                   const isUnpaid = a.paymentStatus === 'unpaid';
+                  const durationMonths = a.startDate && a.endDate 
+                    ? Math.max(1, Math.ceil((new Date(a.endDate).getTime() - new Date(a.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30)))
+                    : months;
+                  const runRate = a.budget / durationMonths;
+                  
+                  const formatDate = (dateStr: string) => {
+                    const d = new Date(dateStr);
+                    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                  };
+                  
                   return (
                     <tr key={a.id} className="hover:bg-slate-50/50">
-                      <td className="px-4 py-3">
-                        <span className="font-medium text-sm text-slate-800">{a.name}</span>
+                      <td className="px-5 py-3">
+                        <span className="font-medium text-slate-800">{a.name}</span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600">{a.department}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-3 text-sm text-slate-600">{a.department}</td>
+                      <td className="px-5 py-3">
                         <span className={cn(
-                          "inline-block px-2 py-0.5 rounded text-xs font-medium",
-                          a.type === 'Insourced' && "bg-blue-100 text-blue-700",
-                          a.type === 'Cosourced' && "bg-teal-100 text-teal-700",
-                          a.type === 'Outsourced' && "bg-amber-100 text-amber-700",
+                          "inline-block px-2.5 py-1 rounded text-xs font-medium border",
+                          a.type === 'Insourced' && "bg-blue-50 text-blue-700 border-blue-200",
+                          a.type === 'Cosourced' && "bg-teal-50 text-teal-700 border-teal-200",
+                          a.type === 'Outsourced' && "bg-amber-50 text-amber-700 border-amber-200",
                         )}>
                           {a.type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-500">
+                      <td className="px-5 py-3 text-sm text-slate-500">
                         {a.startDate && a.endDate 
-                          ? `${new Date(a.startDate).toLocaleDateString('en-US', { month: 'short' })} – ${new Date(a.endDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}`
+                          ? `${formatDate(a.startDate)} – ${formatDate(a.endDate)}`
                           : '—'
                         }
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-slate-600">
+                      <td className="px-5 py-3 text-center text-sm text-slate-600">
                         {a.type === 'Outsourced' ? '—' : a.resourceCount || 0}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-5 py-3 text-right">
                         <span className={cn(
-                          "font-mono font-semibold text-sm",
-                          isUnpaid ? "text-red-600" : "text-slate-800"
+                          "font-mono font-semibold",
+                          isUnpaid ? "text-red-600" : "text-[#2563eb]"
                         )}>
-                          {formatCurrency(a.budget)}
-                          {isUnpaid && ' ⚠'}
+                          {formatFull(a.budget)}
                         </span>
+                      </td>
+                      <td className="px-5 py-3 text-right">
+                        {isUnpaid ? (
+                          <span className="text-xs font-bold text-red-600 uppercase tracking-wide">
+                            Unpaid
+                          </span>
+                        ) : (
+                          <span className="text-sm text-slate-500">
+                            {formatCurrency(runRate)}/mo
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -363,67 +370,104 @@ export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
         </div>
       </section>
 
-      {/* Section 4: Recommendations */}
+      {/* Section 4: Recommendations by Department */}
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">
           Recommendations by Department
         </h2>
         
         <div className="space-y-3">
-          {/* Critical Resources Alert */}
+          {/* Critical Resources Expiring */}
           {criticalResources.length > 0 && (
-            <div className="bg-white rounded-xl border-l-4 border-l-red-500 border border-slate-200 p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 bg-red-100 rounded">
-                  <AlertTriangle className="w-4 h-4 text-red-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold uppercase text-slate-500">Delivery Department</span>
-                    <span className="text-sm font-mono font-semibold text-red-600">
-                      Cost: +{formatCurrency(criticalResources.reduce((sum, r) => sum + (r.ctc || 0) * 3, 0))} SAR
-                    </span>
+            <div className="bg-white rounded-xl border border-slate-200 border-l-4 border-l-red-500 p-5">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-xs font-bold uppercase text-red-600 mb-1">
+                    Delivery Department
                   </div>
                   <h4 className="font-semibold text-slate-800 mb-1">
                     {criticalResources.length} Critical Resources Expiring Q1-Q2
                   </h4>
                   <p className="text-sm text-slate-600">
-                    {criticalResources.slice(0, 3).map(r => r.name).join(', ')}
-                    {criticalResources.length > 3 && ` +${criticalResources.length - 3} more`}
-                    {' — need extension decisions'}
+                    {criticalResources.slice(0, 5).map((r, i) => {
+                      const month = r.contractEnd 
+                        ? new Date(r.contractEnd).toLocaleDateString('en-US', { month: 'short' })
+                        : '';
+                      return `${r.name} (${month})`;
+                    }).join(', ')}
+                    {' need extension decisions.'}
                   </p>
+                </div>
+                <div className="text-right shrink-0 ml-6">
+                  <div className="text-xs text-slate-500 mb-1">Cost to extend +3mo</div>
+                  <div className="font-mono font-bold text-red-600">
+                    +{formatCurrency(extensionCost)} SAR
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Unpaid Payments Alert */}
+          {/* Outstanding Payments */}
           {unpaidAssignments.length > 0 && (
-            <div className="bg-white rounded-xl border-l-4 border-l-amber-500 border border-slate-200 p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 bg-amber-100 rounded">
-                  <DollarSign className="w-4 h-4 text-amber-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold uppercase text-slate-500">Delivery Department</span>
-                    <span className="text-sm font-mono font-semibold text-amber-600">
-                      Total: {formatCurrency(unpaidTotal)} SAR
-                    </span>
+            <div className="bg-white rounded-xl border border-slate-200 border-l-4 border-l-amber-500 p-5">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-xs font-bold uppercase text-amber-600 mb-1">
+                    Delivery Department
                   </div>
                   <h4 className="font-semibold text-slate-800 mb-1">
                     {unpaidAssignments.length} Outstanding Payments
                   </h4>
                   <p className="text-sm text-slate-600">
-                    {unpaidAssignments.map(a => `${a.name} (${a.vendor})`).join(' and ')} completed but unpaid
+                    {unpaidAssignments.map(a => `${a.name} (${a.vendor} vendor)`).join(' and ')} completed but unpaid.
                   </p>
+                </div>
+                <div className="text-right shrink-0 ml-6">
+                  <div className="text-xs text-slate-500 mb-1">Total outstanding</div>
+                  <div className="font-mono font-bold text-amber-600">
+                    {formatCurrency(unpaidTotal)} SAR
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* No data quality alerts here - moved to Data Quality tab */}
-          {criticalResources.length === 0 && unpaidAssignments.length === 0 && (
+          {/* Missing CTC Data - show departments with missing data */}
+          {Object.entries(missingCTCByDept)
+            .filter(([_, count]) => count > 0)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 2)
+            .map(([dept, count]) => (
+              <div key={dept} className="bg-white rounded-xl border border-slate-200 border-l-4 border-l-[#2563eb] p-5">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="text-xs font-bold uppercase text-[#2563eb] mb-1">
+                      {dept} Department
+                    </div>
+                    <h4 className="font-semibold text-slate-800 mb-1">
+                      {count} Resources Missing Compensation Data
+                    </h4>
+                    <p className="text-sm text-slate-600">
+                      Cannot calculate budget for {dept} team. All CTC data needs to be entered.
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0 ml-6">
+                    <div className="text-xs text-slate-500 mb-1">Action</div>
+                    <button 
+                      className="text-sm font-medium text-[#2563eb] hover:underline flex items-center gap-1"
+                      onClick={() => navigate(`/admin/users?department=${dept}&filter=missing-ctc`)}
+                    >
+                      Fix Data <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+
+          {/* Empty state */}
+          {criticalResources.length === 0 && unpaidAssignments.length === 0 && Object.keys(missingCTCByDept).length === 0 && (
             <div className="text-center py-8 text-slate-500">
               <span className="text-sm">No critical recommendations at this time.</span>
             </div>
@@ -495,6 +539,9 @@ export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
                     <span className="font-mono font-semibold text-teal-700">{formatCurrency(a.budget)}</span>
                   </div>
                 ))}
+                {data.assignments.filter(a => a.type === 'Cosourced').length === 0 && (
+                  <div className="text-sm text-slate-500 p-3">No cosourced assignments</div>
+                )}
               </div>
             </div>
             {/* Outsourced */}
@@ -523,6 +570,9 @@ export function BudgetSummaryTab({ data, period }: BudgetSummaryTabProps) {
                     </div>
                   </div>
                 ))}
+                {data.assignments.filter(a => a.type === 'Outsourced').length === 0 && (
+                  <div className="text-sm text-slate-500 p-3">No outsourced assignments</div>
+                )}
               </div>
             </div>
           </div>
