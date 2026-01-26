@@ -64,8 +64,8 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
   // Enable real-time synchronization
   useRolePermissionsRealtime();
 
-  // Check if user can edit the matrix
-  const canEdit = isAdmin || isSuperAdmin;
+  // Check if user can edit the matrix - only Super Admin can edit
+  const canEdit = isSuperAdmin;
 
   // Build permission lookup: roleId -> permissionGroup -> level
   const permissionLookup = (allPermissions || []).reduce((acc, p) => {
