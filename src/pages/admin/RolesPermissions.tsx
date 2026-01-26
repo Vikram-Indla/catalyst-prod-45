@@ -100,7 +100,6 @@ export default function RolesPermissions() {
                 onEditOverrides={handleEditOverrides}
                 onEditRole={handleEditRole}
                 onViewDetailedPermissions={handleViewDetailedPermissions}
-                isAdmin={isAdmin}
               />
             )}
           </div>

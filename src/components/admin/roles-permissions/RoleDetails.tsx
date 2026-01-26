@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { Pencil, UserPlus } from 'lucide-react';
 import { ProductRole, useUsersWithRole, useRolePermissions, PERMISSION_GROUPS } from '@/hooks/useProductRoles';
+import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
 import { AddUserToRoleModal } from './AddUserToRoleModal';
 
@@ -20,7 +21,6 @@ interface RoleDetailsProps {
   onEditOverrides: (userId: string) => void;
   onEditRole: (role: ProductRole) => void;
   onViewDetailedPermissions: () => void;
-  isAdmin: boolean;
 }
 
 // Generate permission summary from actual permissions
@@ -106,11 +106,14 @@ export function RoleDetails({
   onEditOverrides, 
   onEditRole,
   onViewDetailedPermissions,
-  isAdmin 
 }: RoleDetailsProps) {
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const { data: users, isLoading: usersLoading } = useUsersWithRole(role.id);
   const { data: permissions } = useRolePermissions(role.id);
+  const { isAdmin, isSuperAdmin } = useUserRole();
+  
+  // Check if user can manage roles
+  const canManageRoles = isAdmin || isSuperAdmin;
 
   // Get unique business lines from users
   const businessLines = [...new Set(
@@ -127,7 +130,7 @@ export function RoleDetails({
       <Card>
         <CardHeader className="pb-3 border-b flex flex-row items-center justify-between">
           <h2 className="text-sm font-semibold text-foreground">Role: {role.name}</h2>
-          {isAdmin && (
+          {canManageRoles && (
             <Button
               variant="ghost"
               size="icon"
@@ -179,7 +182,7 @@ export function RoleDetails({
       <Card>
         <CardHeader className="pb-3 border-b flex flex-row items-center justify-between">
           <h2 className="text-sm font-semibold text-foreground">Users with this role</h2>
-          {isAdmin && (
+          {canManageRoles && (
             <Button
               size="sm"
               onClick={() => setIsAddUserModalOpen(true)}
@@ -238,10 +241,10 @@ export function RoleDetails({
                       <button
                         className={cn(
                           "text-xs text-brand-primary hover:underline",
-                          !isAdmin && "opacity-50 cursor-not-allowed"
+                          !canManageRoles && "opacity-50 cursor-not-allowed"
                         )}
-                        onClick={() => isAdmin && onEditOverrides(userRole.user_id)}
-                        disabled={!isAdmin}
+                        onClick={() => canManageRoles && onEditOverrides(userRole.user_id)}
+                        disabled={!canManageRoles}
                       >
                         Edit overrides
                       </button>
