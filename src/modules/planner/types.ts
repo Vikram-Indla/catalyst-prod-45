@@ -237,13 +237,13 @@ export const STATUS_STYLE_CONFIG: Record<string, { colorful: boolean; bgColor: s
   'done': { colorful: true, bgColor: '#ecfdf5' },         // emerald-50
 };
 
-// Priority configuration - Catalyst V5 semantic priority colors
-// Balanced approach: colorful for urgent (critical/high), subtle for normal (medium/low)
+// Priority configuration - Deep, clean semantic priority colors
+// All priorities use colored dots for visual distinction
 export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; emoji: string; bgColor: string; colorful: boolean }> = {
-  critical: { label: 'Critical', color: '#e11d48', emoji: '⚠️', bgColor: '#fff1f2', colorful: true },  // rose-600
-  high: { label: 'High', color: '#d97706', emoji: '🔥', bgColor: '#fffbeb', colorful: true },          // amber-600
-  medium: { label: 'Medium', color: '#6b7280', emoji: '●', bgColor: 'transparent', colorful: false },  // gray-500 (subtle)
-  low: { label: 'Low', color: '#9ca3af', emoji: '○', bgColor: 'transparent', colorful: false },        // gray-400 (subtle)
+  critical: { label: 'Critical', color: '#dc2626', emoji: '●', bgColor: 'transparent', colorful: false },  // red-600 (deep red)
+  high: { label: 'High', color: '#ea580c', emoji: '●', bgColor: 'transparent', colorful: false },          // orange-600 (deep amber)
+  medium: { label: 'Medium', color: '#16a34a', emoji: '●', bgColor: 'transparent', colorful: false },      // green-600 (deep green)
+  low: { label: 'Low', color: '#64748b', emoji: '●', bgColor: 'transparent', colorful: false },            // slate-500 (neutral)
 };
 
 // Due date groups for grouping
@@ -256,13 +256,13 @@ export const DUE_DATE_GROUPS = [
   { id: 'noDueDate', title: 'No Due Date', color: '#94a3b8' }, // slate-400
 ];
 
-// Status colors for insights - Catalyst V5 semantic status colors
+// Status colors for insights - Deep, vibrant semantic status colors
 export const STATUS_COLORS: Record<TaskStatus, string> = {
-  backlog: '#9ca3af',   // gray-400
-  planned: '#2563eb',   // blue-600
-  'in-progress': '#d97706', // amber-600
-  review: '#0d9488',    // teal-600
-  done: '#10b981',      // emerald-500
+  backlog: '#64748b',   // slate-500 (neutral gray)
+  planned: '#2563eb',   // blue-600 (vibrant blue)
+  'in-progress': '#f97316', // orange-500 (vibrant orange)
+  review: '#8b5cf6',    // violet-500 (vibrant violet)
+  done: '#22c55e',      // green-500 (vibrant green)
 };
 
 // Progress color helper - returns color based on percentage
