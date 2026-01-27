@@ -319,9 +319,9 @@ function renderMenuItem(
         marginBottom: '2px',
         position: 'relative',
         justifyContent: expanded ? 'flex-start' : 'center',
-        /* V9.5: Subtle background on active, AAA contrast text */
-        background: active ? 'rgba(37, 99, 235, 0.06)' : 'transparent',
-        color: active ? 'hsl(var(--brand-primary))' : 'var(--nav-text-primary, #18181B)',
+        /* V9.5: Very light blue background on active (#EFF6FF), AAA contrast text */
+        background: active ? '#EFF6FF' : 'transparent',
+        color: active ? '#2563EB' : 'var(--nav-text-primary, #18181B)',
         fontWeight: active ? 600 : 500,
         fontSize: '13px',
         fontFamily: 'inherit',
@@ -331,7 +331,7 @@ function renderMenuItem(
         if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
       }}
       onMouseLeave={(e) => { 
-        e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.08)' : 'transparent'; 
+        e.currentTarget.style.background = active ? '#EFF6FF' : 'transparent'; 
       }}
     >
       {/* Left Accent Bar — Linear/Notion pattern (3px bar, not full background) */}
@@ -361,8 +361,8 @@ function renderMenuItem(
           <CustomIcon 
             className="h-[18px] w-[18px]" 
             style={{ 
-              /* V9.5: AAA contrast icons */
-              color: active ? 'hsl(var(--brand-primary))' : 'var(--nav-text-secondary, #3F3F46)',
+              /* V9.5: AAA contrast icons — use explicit hex for active */
+              color: active ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
               strokeWidth: 1.75,
             }}
           />

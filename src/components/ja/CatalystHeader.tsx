@@ -180,23 +180,47 @@ export function CatalystHeader() {
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* ===== LOGO ZONE - Split color treatment ===== */}
+        {/* ===== LOGO ZONE — Geometric Mark + Wordmark ===== */}
         <a 
-          className="flex items-center flex-shrink-0 cursor-pointer no-underline"
+          className="flex items-center gap-2.5 flex-shrink-0 cursor-pointer no-underline"
           style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          <span 
-            className="catalyst-logo"
-            style={{ 
-              fontSize: '22px', 
-              fontWeight: 700, 
-              letterSpacing: '-0.5px',
-              lineHeight: 1
+          {/* Logo Mark — 28×28 blue rounded square with icon */}
+          <div 
+            style={{
+              width: '28px',
+              height: '28px',
+              background: '#2563EB',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <span className="text-foreground">Cata</span>
-            <span className="text-brand-gold">lyst</span>
+            <svg 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+              style={{ width: '18px', height: '18px', color: 'white' }}
+            >
+              <path d="M7 5v14"/>
+              <path d="M17 9l-5 3 5 3"/>
+            </svg>
+          </div>
+          {/* Wordmark — NO gradient, just solid color */}
+          <span 
+            style={{ 
+              fontSize: '15px', 
+              fontWeight: 600, 
+              color: '#18181B',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Catalyst
           </span>
         </a>
         
