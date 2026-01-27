@@ -31,7 +31,7 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
       {
         title: 'Personal',
         items: [
-          { id: 'my-tasks', title: 'My Tasks', path: '/my-tasks', icon: CheckSquare, exact: true },
+          { id: 'my-tasks', title: 'My Tasks', path: '/planner/my-tasks', icon: CheckSquare, exact: true },
         ],
       },
       {

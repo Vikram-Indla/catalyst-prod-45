@@ -465,7 +465,7 @@ const App = () => (
               <Route path="/planner" element={<Navigate to="/planner/boards" replace />} />
               <Route path="/planner/:view" element={<PlannerPage />} />
               <Route path="/planner-kanban" element={<KanbanPage />} />
-              <Route path="/my-tasks" element={<MyTasksPage />} />
+              <Route path="/planner/my-tasks" element={<MyTasksPage />} />
               
               
               {/* Mining */}
