@@ -131,24 +131,24 @@ export function SidebarBase({
             background: expanded ? 'linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%)' : 'transparent',
           }}
         >
-        <div className="flex items-center gap-3 overflow-hidden">
-            {/* Module Badge — 40×40 with gradient & shadow (Commercial SaaS spec) */}
+        <div className="flex items-center gap-2.5 overflow-hidden">
+            {/* Module Badge — 32×32 (smaller than header logo for visual hierarchy) */}
             <div 
-              className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+              className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
               style={{
                 background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                 color: '#ffffff',
-                fontSize: '13px',
-                fontWeight: 700,
-                letterSpacing: '0.025em',
-                boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.02em',
+                boxShadow: '0 1px 3px rgba(37, 99, 235, 0.15)',
               }}
             >
               {config.badge}
             </div>
             {expanded && (
               <span 
-                className="text-[15px] font-bold truncate tracking-tight"
+                className="text-[14px] font-semibold truncate tracking-tight"
                 style={{ color: '#09090B' }}
               >
                 {config.label}
