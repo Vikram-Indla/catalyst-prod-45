@@ -1,6 +1,6 @@
 // ============================================================
 // TASK ROW
-// Planner V9: Individual task row with inline interactions
+// Planner V9: Enterprise task row with progress bars and badges
 // ============================================================
 
 import { useState, useRef } from 'react';
@@ -21,6 +21,7 @@ import { useCompleteMyTask, useUpdateMyTask, useDeleteMyTask } from '../../hooks
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,35 +112,51 @@ export function TaskRow({
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
+    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
 
     if (date < today) {
-      return { text: 'Overdue', className: 'text-[var(--planner-danger)]' };
+      const daysOverdue = Math.floor((today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+      return { text: `${daysOverdue}d overdue`, className: 'text-red-500 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-900/20' };
     } else if (date.toDateString() === today.toDateString()) {
-      return { text: 'Today', className: 'text-[var(--planner-warning)]' };
+      return { text: 'Today', className: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20' };
     } else if (date.toDateString() === tomorrow.toDateString()) {
-      return { text: 'Tomorrow', className: 'text-[var(--planner-primary)]' };
+      return { text: 'Tomorrow', className: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' };
     } else {
       return { 
-        text: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), 
-        className: 'text-[var(--planner-text-secondary)]' 
+        text: dayOfWeek, 
+        className: 'text-slate-500 dark:text-slate-400',
+        bg: 'bg-slate-50 dark:bg-slate-700/50'
       };
     }
   };
 
   const dueDate = formatDueDate();
+  const subtaskProgress = task.subtask_total > 0 
+    ? Math.round((task.subtask_completed / task.subtask_total) * 100) 
+    : 0;
+
+  // Format time estimate
+  const formatTime = (minutes: number | null) => {
+    if (!minutes) return null;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hours === 0) return `${mins}m`;
+    if (mins === 0) return `${hours}h`;
+    return `${hours}h`;
+  };
 
   return (
     <div
       className={cn(
-        'group relative flex items-center gap-3 px-4 py-3',
-        'hover:bg-[var(--planner-bg-hover)] cursor-pointer transition-colors',
-        isSelected && 'bg-[var(--planner-primary-muted)] border-l-2 border-l-[var(--planner-primary)]',
-        task.status_is_done && 'opacity-60'
+        'group relative flex items-start gap-3 px-4 py-3',
+        'hover:bg-slate-50 dark:hover:bg-slate-700/30 cursor-pointer transition-colors',
+        isSelected && 'bg-blue-50 dark:bg-blue-900/20 border-l-2 border-l-blue-500',
+        task.status_is_done && 'opacity-50'
       )}
       onClick={handleRowClick}
     >
       {/* Drag Handle */}
-      <div className="cursor-grab active:cursor-grabbing text-[var(--planner-text-muted)] opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="cursor-grab active:cursor-grabbing text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
         <GripVertical className="w-4 h-4" />
       </div>
 
@@ -149,19 +166,19 @@ export function TaskRow({
           checked={isSelected}
           onCheckedChange={handleSelectToggle}
           onClick={(e) => e.stopPropagation()}
-          className="data-[state=checked]:bg-[var(--planner-primary)]"
+          className="mt-1"
         />
       )}
 
-      {/* Complete Checkbox */}
+      {/* Complete Circle */}
       <button
         onClick={handleComplete}
         className={cn(
-          'flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center',
+          'flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5',
           'transition-all hover:scale-110',
           task.status_is_done 
-            ? 'bg-[var(--planner-success)] border-[var(--planner-success)] text-white' 
-            : 'hover:bg-[var(--planner-bg-hover)]'
+            ? 'bg-green-500 border-green-500 text-white' 
+            : 'hover:bg-slate-100 dark:hover:bg-slate-700'
         )}
         style={{ borderColor: task.status_is_done ? undefined : priority.color }}
       >
@@ -171,11 +188,13 @@ export function TaskRow({
       {/* Task Content */}
       <div className="flex-1 min-w-0">
         {/* Main Row */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-[var(--planner-text-muted)]">
+        <div className="flex items-center gap-2 mb-1">
+          {/* Task Key */}
+          <span className="text-xs font-mono text-slate-400 dark:text-slate-500">
             {task.task_key}
           </span>
           
+          {/* Title */}
           {isEditing ? (
             <input
               ref={inputRef}
@@ -185,16 +204,16 @@ export function TaskRow({
               onBlur={handleTitleSave}
               onKeyDown={handleTitleKeyDown}
               className={cn(
-                'flex-1 bg-transparent border-b-2 border-[var(--planner-primary)]',
-                'outline-none text-[var(--planner-text-primary)] font-medium'
+                'flex-1 bg-transparent border-b-2 border-blue-500',
+                'outline-none text-slate-900 dark:text-slate-100 font-medium'
               )}
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
             <span
               className={cn(
-                'font-medium text-[var(--planner-text-primary)] truncate',
-                task.status_is_done && 'line-through'
+                'font-medium text-slate-900 dark:text-slate-100 truncate',
+                task.status_is_done && 'line-through text-slate-500'
               )}
               onDoubleClick={handleTitleDoubleClick}
             >
@@ -211,7 +230,10 @@ export function TaskRow({
 
           {/* Dependencies Badge */}
           {task.blocking_count > 0 && (
-            <Badge variant="outline" className="text-xs px-1.5 py-0 h-5 gap-1">
+            <Badge 
+              variant="outline" 
+              className="text-xs px-1.5 py-0 h-5 gap-0.5 border-slate-300 dark:border-slate-600"
+            >
               <Link2 className="w-3 h-3" />
               {task.blocking_count}
             </Badge>
@@ -219,16 +241,14 @@ export function TaskRow({
         </div>
 
         {/* Meta Row */}
-        <div className="flex items-center gap-2 mt-1">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Workstream Badge */}
           {task.workstream_name && (
             <Badge
-              variant="secondary"
-              className="text-xs px-1.5 py-0 h-5"
+              className="text-xs px-2 py-0.5 h-5 font-medium border-0"
               style={{ 
                 backgroundColor: `${task.workstream_color}20`,
                 color: task.workstream_color || undefined,
-                borderColor: task.workstream_color || undefined,
               }}
             >
               {task.workstream_name}
@@ -237,19 +257,18 @@ export function TaskRow({
 
           {/* Status Badge */}
           <Badge
-            variant="outline"
-            className="text-xs px-1.5 py-0 h-5"
+            className="text-xs px-2 py-0.5 h-5 font-medium"
             style={{ 
-              borderColor: task.status_color,
+              backgroundColor: `${task.status_color}20`,
               color: task.status_color,
             }}
           >
-            {task.status_name}
+            ● {task.status_name}
           </Badge>
 
           {/* Due Date */}
           {dueDate && (
-            <span className={cn('flex items-center gap-1 text-xs', dueDate.className)}>
+            <span className={cn('flex items-center gap-1 text-xs px-2 py-0.5 rounded-full', dueDate.bg, dueDate.className)}>
               <Calendar className="w-3 h-3" />
               {dueDate.text}
             </span>
@@ -257,18 +276,23 @@ export function TaskRow({
 
           {/* Time Estimate */}
           {task.time_estimate_minutes && (
-            <span className="flex items-center gap-1 text-xs text-[var(--planner-text-muted)]">
+            <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
               <Clock className="w-3 h-3" />
-              {Math.floor(task.time_estimate_minutes / 60)}h {task.time_estimate_minutes % 60}m
+              {formatTime(task.time_estimate_minutes)}
             </span>
           )}
 
           {/* Subtask Progress */}
           {task.subtask_total > 0 && (
-            <span className="flex items-center gap-1 text-xs text-[var(--planner-text-secondary)]">
-              <CheckCircle2 className="w-3 h-3" />
-              {task.subtask_completed}/{task.subtask_total}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <Progress 
+                value={subtaskProgress} 
+                className="w-16 h-1.5"
+              />
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                {task.subtask_completed}/{task.subtask_total}
+              </span>
+            </div>
           )}
         </div>
       </div>
@@ -313,7 +337,7 @@ export function TaskRow({
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
-              className="text-[var(--planner-danger)]"
+              className="text-red-600 dark:text-red-400"
               onClick={() => deleteTask.mutate(task.id)}
             >
               <Trash2 className="w-4 h-4 mr-2" />

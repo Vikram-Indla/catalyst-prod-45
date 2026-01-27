@@ -12,6 +12,7 @@ import type { MyTask } from '../../types/my-tasks';
 interface TaskSectionProps {
   title: string;
   color: string;
+  icon?: string;
   tasks: MyTask[];
   selectedTasks: Set<string>;
   onTaskSelect: (taskId: string, isMultiSelect: boolean) => void;
@@ -23,11 +24,12 @@ interface TaskSectionProps {
 export function TaskSection({
   title,
   color,
+  icon,
   tasks,
   selectedTasks,
   onTaskSelect,
   onOpenDetail,
-  isCollapsible = false,
+  isCollapsible = true,
   defaultCollapsed = false,
 }: TaskSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
@@ -39,38 +41,52 @@ export function TaskSection({
   const isMultiSelectMode = selectedTasks.size > 0;
 
   return (
-    <div className="rounded-lg border border-[var(--planner-border)] overflow-hidden bg-[var(--planner-bg-primary)]">
+    <div className="rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
       {/* Section Header */}
       <button
         onClick={() => isCollapsible && setIsCollapsed(!isCollapsed)}
         className={cn(
-          'w-full flex items-center gap-3 px-4 py-3 transition-colors',
-          isCollapsible ? 'cursor-pointer hover:bg-[var(--planner-bg-hover)]' : 'cursor-default'
+          'w-full flex items-center gap-3 px-4 py-3 transition-colors bg-slate-50 dark:bg-slate-800/80',
+          isCollapsible ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50' : 'cursor-default'
         )}
         disabled={!isCollapsible}
       >
+        {/* Collapse Icon */}
         {isCollapsible && (
           isCollapsed ? (
-            <ChevronRight className="w-4 h-4 text-[var(--planner-text-muted)]" />
+            <ChevronRight className="w-4 h-4 text-slate-400 dark:text-slate-500" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-[var(--planner-text-muted)]" />
+            <ChevronDown className="w-4 h-4 text-slate-400 dark:text-slate-500" />
           )
         )}
-        <span
-          className="w-2 h-2 rounded-full"
-          style={{ backgroundColor: color }}
-        />
-        <span className="font-medium text-[var(--planner-text-primary)]">
+        
+        {/* Color/Icon Indicator */}
+        {icon ? (
+          <span className="text-base">{icon}</span>
+        ) : (
+          <span
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+        )}
+        
+        {/* Title */}
+        <span 
+          className="font-semibold text-slate-900 dark:text-slate-100"
+          style={{ color }}
+        >
           {title}
         </span>
-        <span className="text-sm text-[var(--planner-text-muted)]">
-          ({tasks.length})
+        
+        {/* Count */}
+        <span className="text-sm text-slate-400 dark:text-slate-500 font-medium">
+          {tasks.length}
         </span>
       </button>
 
       {/* Task Rows */}
       {!isCollapsed && (
-        <div className="divide-y divide-[var(--planner-border)]">
+        <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
           {tasks.map((task) => (
             <TaskRow
               key={task.id}
