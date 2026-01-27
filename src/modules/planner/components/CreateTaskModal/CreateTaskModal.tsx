@@ -207,13 +207,14 @@ export function CreateTaskModal({
               </div>
 
               {/* Form Body */}
-              <div className="p-5 space-y-5 max-h-[70vh] overflow-y-auto overflow-x-visible">
+              <div className="p-5 space-y-5 max-h-[70vh] overflow-visible">
                 {/* Title - Hero Input */}
                 <TitleInput
                   ref={titleInputRef}
                   value={title}
                   onChange={setTitle}
                   error={errors.title}
+                  label="Title"
                 />
 
                 {/* Description - Collapsible */}
