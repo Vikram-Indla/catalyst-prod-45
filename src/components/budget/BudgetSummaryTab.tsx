@@ -15,6 +15,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { formatDate } from '@/lib/budget/utils';
 import { FixCTCModal } from './FixCTCModal';
 import { useQueryClient } from '@tanstack/react-query';
+import { PeriodToggle } from './shared/PeriodToggle';
+import { DEPT_ORDER as CANONICAL_DEPT_ORDER, DEPT_ABBREV, MAX_VISIBLE_ASSIGNMENTS, CRITICAL_EXPIRY_DAYS, MS_PER_DAY, getBudgetTypeColors } from './shared/BudgetConstants';
 
 interface BudgetSummaryTabProps {
   data: {
@@ -28,24 +30,17 @@ interface BudgetSummaryTabProps {
     monthlyLicenseCost: number;
   } | null;
   period: BudgetPeriod;
+  onPeriodChange?: (period: BudgetPeriod) => void;
   onTabChange?: (tab: string, params?: Record<string, string>) => void;
 }
 
 type ModalType = 'insourced' | 'fixed' | 'licenses' | 'department' | 'assignment' | 'fixctc' | null;
 
-// Department display order
-const DEPT_ORDER = ['Delivery', 'Product', 'Operations', 'Tech Support', 'Governance'];
+// Use centralized department constants (DS-2 fix)
+const DEPT_ORDER = CANONICAL_DEPT_ORDER;
+const deptAbbrev = DEPT_ABBREV;
 
-// Abbreviate department names
-const deptAbbrev: Record<string, string> = {
-  'Delivery': 'Del',
-  'Product': 'Prod',
-  'Operations': 'Ops',
-  'Tech Support': 'Tech',
-  'Governance': 'Gov'
-};
-
-export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTabProps) {
+export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: BudgetSummaryTabProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [, setSearchParams] = useSearchParams();
@@ -87,14 +82,14 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
     return byDept;
   }, [data.resources]);
 
-  // Critical resources expiring soon (within 180 days / Q1-Q2)
+  // Critical resources expiring soon (CODE-3: Use named constants)
   const criticalResources = useMemo(() => {
     const now = new Date();
     return data.resources.filter(r => {
       if (!r.contractEnd || !r.ctc) return false;
       const endDate = new Date(r.contractEnd);
-      const daysUntilEnd = (endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-      return daysUntilEnd <= 180 && daysUntilEnd > 0;
+      const daysUntilEnd = (endDate.getTime() - now.getTime()) / MS_PER_DAY;
+      return daysUntilEnd <= CRITICAL_EXPIRY_DAYS && daysUntilEnd > 0;
     }).sort((a, b) => {
       const aDate = new Date(a.contractEnd!);
       const bDate = new Date(b.contractEnd!);
@@ -187,6 +182,11 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
 
   return (
     <div className="space-y-8">
+      {/* SUM-1 FIX: Period Toggle (was missing) */}
+      <div className="flex items-center justify-between">
+        <PeriodToggle period={period} onPeriodChange={onPeriodChange} />
+      </div>
+
       {/* Section 1: Portfolio Baseline Cards */}
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
@@ -199,7 +199,8 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Total Budget
             </div>
-            <div className="font-mono text-[22px] font-bold text-slate-700 dark:text-slate-300 mb-2">
+            {/* DS-4 FIX: Standardized font size to text-2xl (24px) */}
+            <div className="font-mono text-2xl font-bold text-slate-700 dark:text-slate-300 mb-2">
               {formatCurrency(budget.total)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -207,18 +208,18 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             </div>
           </div>
 
-          {/* Insourced - Clickable with enhanced hover */}
+          {/* Insourced - Clickable with enhanced hover (DS-1 FIX: Use Tailwind tokens) */}
           <div 
             className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-300"
             onClick={() => setActiveModal('insourced')}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#2563eb] to-[#3b82f6]" />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-blue-500" />
             {/* Bottom accent bar on hover */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#2563eb] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Insourced
             </div>
-            <div className="font-mono text-[22px] font-bold text-[#2563eb] mb-2">
+            <div className="font-mono text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               {formatCurrency(budget.insourced)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -231,13 +232,13 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-amber-300"
             onClick={() => setActiveModal('fixed')}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#d97706] to-[#f59e0b]" />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-600 to-amber-500" />
             {/* Bottom accent bar on hover */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#d97706] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-amber-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Fixed Contracts
             </div>
-            <div className="font-mono text-[22px] font-bold text-[#d97706] mb-2">
+            <div className="font-mono text-2xl font-bold text-amber-600 dark:text-amber-400 mb-2">
               {formatCurrency(fixedTotal)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -250,13 +251,13 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-violet-300"
             onClick={() => setActiveModal('licenses')}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#7c3aed] to-[#a78bfa]" />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-600 to-violet-500" />
             {/* Bottom accent bar on hover */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#7c3aed] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-violet-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Licenses
             </div>
-            <div className="font-mono text-[22px] font-bold text-[#7c3aed] mb-2">
+            <div className="font-mono text-2xl font-bold text-violet-600 dark:text-violet-400 mb-2">
               {formatCurrency(budget.licenses)}
             </div>
             <div className="text-[11px] text-muted-foreground">
@@ -331,9 +332,9 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                           <div className="w-1/4 border-r-2 border-dashed border-border/50" />
                           <div className="w-1/4" />
                         </div>
-                        {/* Actual budget bar */}
+                        {/* Actual budget bar (DS-1 FIX: Use Tailwind token) */}
                         <div 
-                          className="absolute top-0 left-0 h-full bg-[#2563eb] rounded-full transition-all duration-500"
+                          className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(barWidth, 100)}%` }}
                         />
                       </div>
@@ -351,8 +352,8 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                       </div>
                     )}
                     
-                    {/* Quarterly cumulative values below bar - separate row with more spacing */}
-                    <div className="grid grid-cols-4 mt-2 text-[10px] font-mono font-semibold text-muted-foreground">
+                    {/* SUM-3 FIX: Quarterly values font size increased from 10px to 12px (text-xs) */}
+                    <div className="grid grid-cols-4 mt-2 text-xs font-mono font-semibold text-muted-foreground">
                       <span className="text-right pr-1">
                         {hasBudget ? formatCurrency(quarterly.q1) : '—'}
                       </span>
@@ -426,9 +427,10 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
+              {/* SUM-4 FIX: Use constant MAX_VISIBLE_ASSIGNMENTS */}
               {data.assignments
                 .sort((a, b) => b.budget - a.budget)
-                .slice(0, 8)
+                .slice(0, MAX_VISIBLE_ASSIGNMENTS)
                 .map(a => {
                   const isUnpaid = a.paymentStatus === 'unpaid';
                   const durationMonths = a.startDate && a.endDate 
@@ -531,8 +533,9 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             <div className="bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 dark:border-red-800 border-l-4 border-l-red-500 p-5">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
+                  {/* SUM-5 FIX: Dynamic department label from resource data */}
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-                    Delivery Department
+                    {criticalResources[0]?.department || 'Multiple'} Department
                   </div>
                   <h4 className="font-semibold text-foreground mb-1">
                     {criticalResources.length} Critical Resources Expiring Q1-Q2
@@ -572,8 +575,9 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             <div className="bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800 border-l-4 border-l-amber-500 p-5">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
+                  {/* SUM-5 FIX: Dynamic department from unpaid assignments */}
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-                    Delivery Department
+                    {unpaidAssignments[0]?.department || 'Multiple'} Department
                   </div>
                   <h4 className="font-semibold text-foreground mb-1">
                     {unpaidAssignments.length} Outsourced Contracts Unpaid
@@ -976,7 +980,13 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                 </div>
                 <div>
                   <span className="text-muted-foreground">Budget:</span>{' '}
-                  <span className="font-mono font-semibold text-[#2563eb]">{formatFull(selectedAssignment.budget)} SAR</span>
+                  {/* SUM-6 FIX: Budget value color matches assignment type */}
+                  <span className={cn(
+                    "font-mono font-semibold",
+                    selectedAssignment.type === 'Insourced' && "text-blue-600 dark:text-blue-400",
+                    selectedAssignment.type === 'Cosourced' && "text-teal-600 dark:text-teal-400",
+                    selectedAssignment.type === 'Outsourced' && "text-amber-600 dark:text-amber-400"
+                  )}>{formatFull(selectedAssignment.budget)} SAR</span>
                   {selectedAssignment.type === 'Insourced' && (
                     <span className="text-xs text-muted-foreground ml-1">(calculated from {assignmentResources.length} resources)</span>
                   )}
