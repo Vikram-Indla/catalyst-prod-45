@@ -56,10 +56,14 @@ function CTCInput({
     onChange(raw);
   };
   
-  // Format display value with thousand separators
-  const displayValue = value 
+  // Format display value with thousand separators - allow "0" to show
+  const displayValue = value !== '' 
     ? parseInt(value).toLocaleString('en-US')
     : '';
+
+  // Check if value has been explicitly set (including 0)
+  const hasValue = value !== '';
+  const numericValue = value !== '' ? parseInt(value) : null;
   
   return (
     <div className={cn(
@@ -67,7 +71,7 @@ function CTCInput({
       "border rounded-lg transition-all duration-150",
       isFocused 
         ? "border-blue-500 ring-2 ring-blue-500/20" 
-        : value && parseInt(value) > 0
+        : hasValue && numericValue !== null && numericValue >= 0
           ? "border-emerald-400 bg-emerald-50/50 dark:bg-emerald-900/20"
           : "border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500"
     )}>
@@ -144,18 +148,20 @@ export function FixCTCModal({
   }, [ctcValues, resources.length]);
 
   const handleBulkApply = () => {
-    const value = parseInt(bulkValue.replace(/,/g, ''));
-    if (!value || value <= 0) {
+    const rawValue = bulkValue.replace(/,/g, '');
+    // Allow 0 as valid bulk value
+    if (rawValue === '' || isNaN(parseInt(rawValue)) || parseInt(rawValue) < 0) {
       toast.error('Please enter a valid CTC value');
       return;
     }
 
+    const numericValue = parseInt(rawValue);
     const updated: Record<string, string> = {};
     resources.forEach(r => {
-      updated[r.id] = value.toString();
+      updated[r.id] = numericValue.toString();
     });
     setCTCValues(updated);
-    toast.success(`Applied ${value.toLocaleString()} SAR to all ${resources.length} resources`);
+    toast.success(`Applied ${numericValue.toLocaleString()} SAR to all ${resources.length} resources`);
   };
 
   const handleSave = async () => {
@@ -281,10 +287,10 @@ export function FixCTCModal({
               </div>
               <button
                 onClick={handleBulkApply}
-                disabled={!bulkValue || parseInt(bulkValue) <= 0}
+                disabled={bulkValue === '' || parseInt(bulkValue) < 0}
                 className={cn(
                   "px-4 py-2.5 text-sm font-medium rounded-lg transition-all",
-                  bulkValue && parseInt(bulkValue) > 0
+                  bulkValue !== '' && parseInt(bulkValue) >= 0
                     ? "bg-slate-800 dark:bg-slate-600 text-white hover:bg-slate-900 dark:hover:bg-slate-500"
                     : "bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed"
                 )}
