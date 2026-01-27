@@ -60,6 +60,9 @@ export function useBoardTasks(filters?: BoardFilters) {
       if (filters?.due_status) {
         query = query.eq('due_status', filters.due_status);
       }
+      if (filters?.blocked === true) {
+        query = query.eq('blocked', true);
+      }
       if (filters?.search) {
         query = query.or(`title.ilike.%${filters.search}%,key.ilike.%${filters.search}%`);
       }

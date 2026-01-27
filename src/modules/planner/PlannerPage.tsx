@@ -400,7 +400,17 @@ export function PlannerPage() {
       case 'dashboard':
         return <PlannerDashboard />;
       case 'boards':
-        return <PlannerBoardsPage />;
+        return (
+          <PlannerBoardsPage
+            externalSearch={filters.search}
+            externalWorkstreamId={selectedTeamId}
+            externalStatusSlug={filters.status}
+            externalPriority={filters.priority}
+            externalAssigneeId={filters.assigneeId}
+            externalBlocked={filters.blocked}
+            externalOverdue={filters.overdue}
+          />
+        );
       case 'task-list':
         return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} visibleColumns={visibleColumns} />;
       case 'timeline':
