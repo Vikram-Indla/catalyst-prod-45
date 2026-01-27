@@ -1,10 +1,15 @@
 /**
- * Budget Data Quality Tab - V8 Design
- * Per spec: 4 metric cards, department table, expandable resource lists, Fix CTC Modal
+ * Budget Data Quality Tab - V8 Design (Critical Fixes Patch)
+ * 
+ * Fixes implemented:
+ * 1. Per-resource Edit buttons in expandable rows
+ * 2. Better visual hierarchy and hover states
+ * 3. Fixed modal integration with single-resource editing
+ * 4. Improved typography and spacing
  */
 
-import { useState, useMemo } from 'react';
-import { ChevronRight, ChevronDown, Calendar, Download, AlertTriangle, Check, Users } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { ChevronRight, ChevronDown, Calendar, Download, AlertTriangle, Check, Users, Pencil, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, type BudgetPeriod, type BudgetResource } from '@/hooks/budget/useBudgetData';
@@ -28,6 +33,7 @@ interface DepartmentQuality {
   missingCTC: number;
   coverage: number;
   missingResources: BudgetResource[];
+  allResources: BudgetResource[];
 }
 
 const PERIODS: { value: BudgetPeriod; label: string }[] = [
@@ -42,6 +48,18 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
   const [fixModalOpen, setFixModalOpen] = useState(false);
   const [selectedDept, setSelectedDept] = useState<DepartmentQuality | null>(null);
+  const [focusResourceId, setFocusResourceId] = useState<string | undefined>(undefined);
+
+  // Handle auto-open for fixDepartment prop
+  useEffect(() => {
+    if (fixDepartment && data) {
+      const dept = departmentQuality.find(d => d.name === fixDepartment);
+      if (dept && dept.missingCTC > 0) {
+        setSelectedDept(dept);
+        setFixModalOpen(true);
+      }
+    }
+  }, [fixDepartment, data]);
 
   if (!data) {
     return (
@@ -96,6 +114,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
           missingCTC: missingCount,
           coverage,
           missingResources: info.missing,
+          allResources: info.resources,
         };
       });
   }, [data.resources]);
@@ -128,9 +147,9 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
   };
 
   const getScoreTextColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-600';
-    if (score >= 50) return 'text-amber-600';
-    return 'text-red-600';
+    if (score >= 80) return 'text-emerald-600 dark:text-emerald-400';
+    if (score >= 50) return 'text-amber-600 dark:text-amber-400';
+    return 'text-red-600 dark:text-red-400';
   };
 
   const getBadgeClass = (coverage: number) => {
@@ -159,12 +178,19 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
     }
   };
 
-  const handleFixData = (dept: DepartmentQuality) => {
+  const handleFixData = (dept: DepartmentQuality, resourceId?: string) => {
     setSelectedDept(dept);
+    setFocusResourceId(resourceId);
     setFixModalOpen(true);
   };
 
+  const handleEditResource = (dept: DepartmentQuality, resourceId: string) => {
+    // Open modal and focus on specific resource
+    handleFixData(dept, resourceId);
+  };
+
   const handleSaved = () => {
+    setFocusResourceId(undefined);
     onRefresh?.();
   };
 
@@ -219,44 +245,44 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
 
         <div className="grid grid-cols-4 gap-4">
           {/* Total Resources */}
-          <div className="bg-card border border-border rounded-xl p-5">
+          <div className="bg-card border border-border rounded-xl p-5 hover:shadow-md transition-shadow">
             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Total Resources
             </div>
-            <div className="text-4xl font-bold text-foreground mb-1">
+            <div className="text-4xl font-bold text-foreground mb-1 font-mono">
               {qualityMetrics.total}
             </div>
             <div className="text-sm text-muted-foreground">In resource inventory</div>
           </div>
 
           {/* Complete Records */}
-          <div className="bg-card border border-border rounded-xl p-5 border-l-4 border-l-blue-500">
+          <div className="bg-card border border-border rounded-xl p-5 border-l-4 border-l-blue-500 hover:shadow-md transition-shadow">
             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Complete Records
             </div>
-            <div className="text-4xl font-bold text-blue-600 mb-1">
+            <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-1 font-mono">
               {qualityMetrics.complete}
             </div>
             <div className="text-sm text-muted-foreground">With CTC data</div>
           </div>
 
           {/* Missing CTC */}
-          <div className="bg-card border border-border rounded-xl p-5 border-l-4 border-l-amber-500">
+          <div className="bg-card border border-border rounded-xl p-5 border-l-4 border-l-amber-500 hover:shadow-md transition-shadow">
             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Missing CTC
             </div>
-            <div className="text-4xl font-bold text-amber-600 mb-1">
+            <div className="text-4xl font-bold text-amber-600 dark:text-amber-400 mb-1 font-mono">
               {qualityMetrics.missing}
             </div>
             <div className="text-sm text-muted-foreground">Need compensation data</div>
           </div>
 
           {/* Quality Score */}
-          <div className="bg-card border border-border rounded-xl p-5 relative overflow-hidden">
+          <div className="bg-card border border-border rounded-xl p-5 relative overflow-hidden hover:shadow-md transition-shadow">
             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Data Quality
             </div>
-            <div className={cn('text-4xl font-bold mb-1', getScoreTextColor(qualityMetrics.score))}>
+            <div className={cn('text-4xl font-bold mb-1 font-mono', getScoreTextColor(qualityMetrics.score))}>
               {qualityMetrics.score}%
             </div>
             <div className="text-sm text-muted-foreground">Completeness score</div>
@@ -311,10 +337,10 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
               {departmentQuality.map(dept => (
                 <tr key={dept.name} className="hover:bg-muted/20 transition-colors">
                   <td className="px-5 py-4 font-semibold text-foreground">{dept.name}</td>
-                  <td className="px-5 py-4 text-center text-muted-foreground">{dept.totalResources}</td>
-                  <td className="px-5 py-4 text-center text-muted-foreground">{dept.withCTC}</td>
+                  <td className="px-5 py-4 text-center text-muted-foreground font-mono">{dept.totalResources}</td>
+                  <td className="px-5 py-4 text-center text-muted-foreground font-mono">{dept.withCTC}</td>
                   <td className="px-5 py-4 text-center">
-                    <span className={cn('font-medium', dept.missingCTC > 0 ? 'text-red-600' : 'text-muted-foreground')}>
+                    <span className={cn('font-medium font-mono', dept.missingCTC > 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground')}>
                       {dept.missingCTC}
                     </span>
                   </td>
@@ -327,13 +353,13 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                     {dept.missingCTC > 0 ? (
                       <button
                         onClick={() => handleFixData(dept)}
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors hover:underline"
                       >
                         Fix {dept.missingCTC}
                         <ChevronRight className="w-4 h-4" />
                       </button>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-sm text-emerald-600">
+                      <span className="inline-flex items-center gap-1 text-sm text-emerald-600 dark:text-emerald-400">
                         <Check className="w-4 h-4" />
                         Complete
                       </span>
@@ -345,9 +371,9 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             <tfoot>
               <tr className="bg-muted/50 border-t-2 border-border">
                 <td className="px-5 py-4 font-bold text-foreground">TOTAL</td>
-                <td className="px-5 py-4 text-center font-bold">{totals.total}</td>
-                <td className="px-5 py-4 text-center font-bold">{totals.complete}</td>
-                <td className="px-5 py-4 text-center font-bold text-red-600">{totals.missing}</td>
+                <td className="px-5 py-4 text-center font-bold font-mono">{totals.total}</td>
+                <td className="px-5 py-4 text-center font-bold font-mono">{totals.complete}</td>
+                <td className="px-5 py-4 text-center font-bold text-red-600 dark:text-red-400 font-mono">{totals.missing}</td>
                 <td className="px-5 py-4 text-center">
                   <span className={cn('px-2 py-0.5 rounded text-xs font-semibold', getBadgeClass(qualityMetrics.score))}>
                     {qualityMetrics.score}%
@@ -360,7 +386,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
         </div>
       </section>
 
-      {/* EXPANDABLE RESOURCE LISTS */}
+      {/* EXPANDABLE RESOURCE LISTS - with per-resource Edit buttons */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -384,60 +410,87 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                 ) : (
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 )}
-                <span className="text-xs font-bold uppercase tracking-wider text-foreground flex-1">
+                <span className="text-sm font-bold uppercase tracking-wider text-foreground flex-1">
                   {dept.name}
                 </span>
-                <span className="text-xs font-semibold text-amber-600">{dept.missingCTC} missing</span>
+                <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{dept.missingCTC} missing</span>
                 <Button
                   variant="default"
                   size="sm"
-                  className="ml-4"
+                  className="ml-4 gap-1.5"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleFixData(dept);
                   }}
                 >
+                  <Users className="w-3.5 h-3.5" />
                   Fix All
                 </Button>
               </div>
 
-              {/* Expanded Content */}
+              {/* Expanded Content - with per-resource Edit buttons */}
               {expandedDepts.has(dept.name) && (
-                <div className="p-4 border-t border-border">
+                <div className="border-t border-border">
                   <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <thead className="bg-muted/20">
+                      <tr>
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           RID
                         </th>
-                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Name
                         </th>
-                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Role
                         </th>
-                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Vendor
                         </th>
-                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                           Contract End
                         </th>
-                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                          CTC
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          CTC Status
+                        </th>
+                        <th className="px-4 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Action
                         </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/50">
                       {dept.missingResources.map(r => (
-                        <tr key={r.id} className="hover:bg-muted/10">
-                          <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
+                        <tr key={r.id} className="hover:bg-muted/10 transition-colors">
+                          <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
                             {r.rid?.padStart(3, '0') || '—'}
                           </td>
-                          <td className="px-3 py-2 font-medium text-foreground">{r.name}</td>
-                          <td className="px-3 py-2 text-muted-foreground">{r.role || '—'}</td>
-                          <td className="px-3 py-2 text-muted-foreground">{r.vendorName || '—'}</td>
-                          <td className="px-3 py-2 text-muted-foreground">{formatDate(r.contractEnd)}</td>
-                          <td className="px-3 py-2 text-red-600 font-semibold">Missing</td>
+                          <td className="px-4 py-3 font-medium text-foreground">{r.name}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{r.role || '—'}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{r.vendorName || '—'}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{formatDate(r.contractEnd)}</td>
+                          <td className="px-4 py-3">
+                            <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium text-xs">
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              Missing
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditResource(dept, r.id);
+                              }}
+                              className={cn(
+                                "inline-flex items-center gap-1.5 px-3 py-1.5",
+                                "text-xs font-medium rounded-md transition-all",
+                                "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30",
+                                "hover:bg-blue-100 dark:hover:bg-blue-900/50",
+                                "border border-blue-200 dark:border-blue-800"
+                              )}
+                            >
+                              <Pencil className="w-3 h-3" />
+                              Add CTC
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -450,7 +503,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
           {departmentQuality.filter(d => d.missingCTC > 0).length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
-                <Check className="w-6 h-6 text-emerald-600" />
+                <Check className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               </div>
               <h3 className="font-semibold text-lg text-foreground mb-1">All Data Complete</h3>
               <p className="text-sm text-muted-foreground">
@@ -477,6 +530,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             ctc: r.ctc,
           }))}
           onSaved={handleSaved}
+          focusResourceId={focusResourceId}
         />
       )}
     </div>
