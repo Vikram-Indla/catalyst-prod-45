@@ -73,7 +73,8 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
   const qualityMetrics = useMemo(() => {
     if (!data) return { total: 0, complete: 0, missing: 0, score: 0 };
     const total = data.resources.length;
-    const complete = data.resources.filter(r => r.ctc && r.ctc > 0).length;
+    // CTC is considered present even if the value is 0; only null/undefined means missing
+    const complete = data.resources.filter(r => r.ctc !== null && r.ctc !== undefined).length;
     const missing = total - complete;
     const score = total > 0 ? Math.round((complete / total) * 100) : 0;
 
@@ -96,7 +97,8 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
       }
       byDept[r.department].total++;
       byDept[r.department].resources.push(r);
-      if (r.ctc && r.ctc > 0) {
+      // CTC is considered present even if the value is 0; only null/undefined means missing
+      if (r.ctc !== null && r.ctc !== undefined) {
         byDept[r.department].withCTC++;
       } else {
         byDept[r.department].missing.push(r);
@@ -227,7 +229,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
     if (!data) return;
 
     const total = data.resources.length;
-    const complete = data.resources.filter(r => r.ctc && r.ctc > 0).length;
+    const complete = data.resources.filter(r => r.ctc !== null && r.ctc !== undefined).length;
     const missing = total - complete;
     const quality = total > 0 ? Math.round((complete / total) * 100) : 0;
 
@@ -248,7 +250,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
 
     // Add missing resources
     data.resources
-      .filter(r => !r.ctc || r.ctc === 0)
+      .filter(r => r.ctc === null || r.ctc === undefined)
       .forEach(r => {
         csvRows.push([
           r.rid?.padStart(3, '0') || '',

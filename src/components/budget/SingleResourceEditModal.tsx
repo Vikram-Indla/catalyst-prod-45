@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { X, User, Calendar, Building2, Briefcase, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,7 @@ export function SingleResourceEditModal({
   resource,
   onSaved,
 }: SingleResourceEditModalProps) {
+  const queryClient = useQueryClient();
   const [ctcValue, setCTCValue] = useState(resource.ctc?.toString() || '');
   const [isSaving, setIsSaving] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -75,6 +77,14 @@ export function SingleResourceEditModal({
       if (error) throw error;
 
       toast.success(`CTC updated for ${resource.name}`);
+
+      // Optimistic UI: update cached budget resources immediately
+      const nextCtc = parseInt(ctcValue);
+      queryClient.setQueryData<any[]>(['budget-resources'], (old) => {
+        if (!old) return old;
+        return old.map((row: any) => (row.id === resource.id ? { ...row, ctc: nextCtc } : row));
+      });
+
       onSaved();
       onOpenChange(false);
     } catch (error) {
