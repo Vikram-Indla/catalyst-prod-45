@@ -1,15 +1,12 @@
 // ============================================================
-// MY TASKS CONTENT
-// Per Justification Matrix:
-// KEPT: Sections (Overdue, Today, This Week, Later), Task Rows
-// Grouped by time urgency, single column scan
+// MY TASKS CONTENT - V8 Design System (Budget Planner Aligned)
+// Sections: Overdue → Today → This Week → Later
 // ============================================================
 
 import { useMemo } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMyTasks } from '../../hooks/useMyTasks';
-import { MyTasksContentWrapper } from './MyTasksLayout';
 import { MyTasksHeader } from './MyTasksHeader';
 import { TaskSection } from './TaskSection';
 import type { FilterConfig, TimeSection, MyTask } from '../../types/my-tasks';
@@ -22,7 +19,6 @@ interface MyTasksContentProps {
 }
 
 // Per justification: Overdue → Today → This Week → Later
-// "completed" section moved to Later or hidden
 const SECTION_ORDER: TimeSection[] = ['overdue', 'today', 'this_week', 'upcoming'];
 
 const SECTION_CONFIG: Record<TimeSection, { label: string; color: string }> = {
@@ -74,19 +70,22 @@ export function MyTasksContent({
   }, [tasksBySection]);
 
   return (
-    <MyTasksContentWrapper>
-      {/* Header with Stats and Filters */}
+    <div className="flex flex-col h-full">
+      {/* Header with Stats and Filters - Budget Planner Style */}
       <MyTasksHeader
         filters={filters}
         onFilterChange={onFilterChange}
         onOpenCreateModal={onOpenCreateModal}
       />
 
-      {/* Task Sections - Single column scan */}
-      <div className="flex-1 overflow-y-auto px-6 py-4">
+      {/* Task Sections - Single column scan with Budget Planner content styling */}
+      <div 
+        className="flex-1 overflow-y-auto p-6 lg:px-8"
+        style={{ backgroundColor: 'var(--bg)' }}
+      >
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-slate-400 dark:text-slate-500">Loading tasks...</div>
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : visibleSections.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -102,10 +101,13 @@ export function MyTasksContent({
                 : 'You have no tasks yet. Create your first task to get started.'}
             </p>
             {!filters.searchQuery && (
-            <Button onClick={onOpenCreateModal} className="mt-4 gap-2 bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-4 h-4" />
-              Create Task
-            </Button>
+              <Button 
+                onClick={onOpenCreateModal} 
+                className="mt-4 gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md"
+              >
+                <Plus className="w-4 h-4" />
+                Create Task
+              </Button>
             )}
           </div>
         ) : (
@@ -122,6 +124,6 @@ export function MyTasksContent({
           </div>
         )}
       </div>
-    </MyTasksContentWrapper>
+    </div>
   );
 }
