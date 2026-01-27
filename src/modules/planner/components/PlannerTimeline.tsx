@@ -283,62 +283,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
           TIMELINE GRID CONTENT
           ============================================================ */}
       <div className="flex-1 overflow-hidden flex">
-        {/* Left Panel: Task Keys - uses shadow instead of border for cleaner separation */}
-        <div className="w-[160px] flex-shrink-0 bg-white dark:bg-slate-950 overflow-y-auto shadow-[2px_0_8px_-2px_rgba(0,0,0,0.08)] dark:shadow-[2px_0_8px_-2px_rgba(0,0,0,0.3)] z-10">
-          {/* Header */}
-          <div
-            className="sticky top-0 z-20 bg-white dark:bg-slate-950 flex items-center px-4"
-            style={{ height: HEADER_HEIGHT }}
-          >
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
-              Tasks ({filteredTasks.length})
-            </span>
-          </div>
-
-          {/* Workstream Groups */}
-          {groupedTasks.map(group => {
-            const colors = getWorkstreamColor(group.name);
-            
-            return (
-              <div key={group.name}>
-                {/* Workstream Header */}
-                <div
-                  className="flex items-center gap-2 px-4 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800"
-                  style={{ height: ROW_HEIGHT }}
-                >
-                  <div
-                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: colors.dot }}
-                  />
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide truncate">
-                    {group.name}
-                  </span>
-                </div>
-
-                {/* Task Keys */}
-                {group.tasks.map(task => (
-                  <div
-                    key={task.id}
-                    className={cn(
-                      "flex items-center px-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors",
-                      hoveredTaskId === task.id ? "bg-slate-100 dark:bg-slate-800" : "bg-white dark:bg-slate-950"
-                    )}
-                    style={{ height: ROW_HEIGHT }}
-                    onClick={() => onTaskClick(task)}
-                    onMouseEnter={() => setHoveredTaskId(task.id)}
-                    onMouseLeave={() => setHoveredTaskId(null)}
-                  >
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400 font-mono">
-                      {task.key}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Right Panel: Gantt Chart */}
+        {/* Full-width Gantt Chart - no left panel, all info on bars */}
         <div className="flex-1 overflow-auto" ref={gridRef}>
           <div style={{ minWidth: columnConfig.days * columnConfig.width }}>
             {/* Date Header Row */}
@@ -408,11 +353,26 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                 
                 return (
                   <div key={group.name}>
-                    {/* Workstream Header Row (empty grid) */}
+                    {/* Workstream Header Row - shows workstream name */}
                     <div
-                      className="relative flex bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800"
+                      className="relative flex bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700"
                       style={{ height: ROW_HEIGHT }}
                     >
+                      {/* Workstream Label - positioned at start */}
+                      <div className="absolute left-4 top-0 bottom-0 flex items-center gap-2 z-20">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: colors.dot }}
+                        />
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+                          {group.name}
+                        </span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-500">
+                          ({group.tasks.length})
+                        </span>
+                      </div>
+                      
+                      {/* Background Grid */}
                       <div className="absolute inset-0 flex pointer-events-none">
                         {dateColumns.map((date, i) => {
                           const isWeekend = getDay(date) === 5 || getDay(date) === 6;
@@ -464,31 +424,46 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                             })}
                           </div>
 
-                          {/* Gantt Bar */}
+                          {/* Gantt Bar - with task key, title, and assignee */}
                           {barStyle.isVisible && (
                             <div
-                              className="absolute top-2 bottom-2 rounded-lg cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                              className="absolute top-1.5 bottom-1.5 rounded-lg cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5"
                               style={{
-                                left: barStyle.left,
-                                width: barStyle.width,
+                                left: Math.max(4, barStyle.left),
+                                width: Math.max(140, barStyle.width),
                                 backgroundColor: colors.bar,
                               }}
                               onClick={() => onTaskClick(task)}
                             >
                               {/* Progress Fill */}
                               <div
-                                className="absolute inset-y-0 left-0 rounded-l-lg"
+                                className="absolute inset-y-0 left-0 rounded-l-lg opacity-40"
                                 style={{
                                   width: `${progress}%`,
-                                  backgroundColor: colors.barLight,
+                                  backgroundColor: '#fff',
                                 }}
                               />
                               
-                              {/* Task Title */}
-                              <div className="relative h-full flex items-center px-3 z-10">
-                                <span className="text-xs font-semibold text-white truncate drop-shadow-sm">
+                              {/* Content: Task Key | Title | Assignee */}
+                              <div className="relative h-full flex items-center gap-2 px-2.5 z-10">
+                                {/* Task Key */}
+                                <span className="text-[10px] font-bold text-white/90 bg-white/20 px-1.5 py-0.5 rounded flex-shrink-0">
+                                  {task.key}
+                                </span>
+                                
+                                {/* Title */}
+                                <span className="text-xs font-semibold text-white truncate flex-1 min-w-0 drop-shadow-sm">
                                   {task.title}
                                 </span>
+                                
+                                {/* Assignee Avatar */}
+                                {task.assigneeInitials && (
+                                  <div className="w-5 h-5 rounded-full bg-white/25 flex items-center justify-center flex-shrink-0">
+                                    <span className="text-[9px] font-bold text-white">
+                                      {task.assigneeInitials}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
