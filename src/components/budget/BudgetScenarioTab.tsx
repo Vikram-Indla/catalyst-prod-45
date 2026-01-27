@@ -528,16 +528,15 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
           <div className="bg-muted/50 rounded-xl p-4 text-center border-t-4 border-slate-500">
             <div className="text-xs text-muted-foreground mb-1 uppercase font-medium">Total</div>
             <div className="font-mono text-2xl font-bold text-foreground">{formatCurrency(currentBudgetImpact.total)}</div>
-            {currentBudgetImpact.delta !== 0 && (
+            {currentBudgetImpact.delta !== 0 ? (
               <div className={cn(
-                "text-sm font-mono font-medium mt-1",
-                currentBudgetImpact.delta > 0 ? "text-amber-600" : "text-green-600"
+                "text-sm font-mono font-semibold mt-1",
+                currentBudgetImpact.delta > 0 ? "text-green-600" : "text-red-600"
               )}>
                 {currentBudgetImpact.delta > 0 ? '+' : ''}{formatCurrency(currentBudgetImpact.delta)}
               </div>
-            )}
-            {currentBudgetImpact.delta === 0 && (
-              <div className="text-sm text-muted-foreground mt-1">+0</div>
+            ) : (
+              <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
             )}
           </div>
           
@@ -545,13 +544,12 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
           <div className="bg-blue-50 dark:bg-blue-950/30 rounded-xl p-4 text-center border-t-4 border-blue-500">
             <div className="text-xs text-blue-600 dark:text-blue-400 mb-1 uppercase font-medium">Insourced</div>
             <div className="font-mono text-2xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(currentBudgetImpact.insourced)}</div>
-            {currentBudgetImpact.insourcedDelta !== 0 && (
-              <div className="text-sm font-mono font-medium text-blue-600 mt-1">
+            {currentBudgetImpact.insourcedDelta !== 0 ? (
+              <div className="text-sm font-mono font-semibold text-green-600 mt-1">
                 +{formatCurrency(currentBudgetImpact.insourcedDelta)}
               </div>
-            )}
-            {currentBudgetImpact.insourcedDelta === 0 && (
-              <div className="text-sm text-muted-foreground mt-1">+0</div>
+            ) : (
+              <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
             )}
           </div>
           
@@ -559,21 +557,21 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
           <div className="bg-teal-50 dark:bg-teal-950/30 rounded-xl p-4 text-center border-t-4 border-teal-500">
             <div className="text-xs text-teal-600 dark:text-teal-400 mb-1 uppercase font-medium">Cosourced</div>
             <div className="font-mono text-2xl font-bold text-teal-700 dark:text-teal-300">{formatCurrency(currentBudgetImpact.cosourced)}</div>
-            <div className="text-sm text-muted-foreground mt-1">+0</div>
+            <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
           </div>
           
           {/* Outsourced */}
           <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-4 text-center border-t-4 border-amber-500">
             <div className="text-xs text-amber-600 dark:text-amber-400 mb-1 uppercase font-medium">Outsourced</div>
             <div className="font-mono text-2xl font-bold text-amber-700 dark:text-amber-300">{formatCurrency(currentBudgetImpact.outsourced)}</div>
-            <div className="text-sm text-muted-foreground mt-1">+0</div>
+            <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
           </div>
           
           {/* Licenses */}
           <div className="bg-violet-50 dark:bg-violet-950/30 rounded-xl p-4 text-center border-t-4 border-violet-500">
             <div className="text-xs text-violet-600 dark:text-violet-400 mb-1 uppercase font-medium">Licenses</div>
             <div className="font-mono text-2xl font-bold text-violet-700 dark:text-violet-300">{formatCurrency(currentBudgetImpact.licenses)}</div>
-            <div className="text-sm text-muted-foreground mt-1">+0</div>
+            <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
           </div>
         </div>
       </div>
@@ -629,13 +627,16 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                     )}>
                       {scenario.name}
                     </span>
-                    <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded flex-shrink-0 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                    <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded flex-shrink-0 bg-slate-700 dark:bg-slate-600 text-white">
                       Preset
                     </span>
                   </div>
                   
-                  {/* Description */}
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate pl-5">
+                  {/* Description - with tooltip on hover */}
+                  <p 
+                    className="text-xs text-slate-500 dark:text-slate-400 truncate pl-5 max-w-[200px]"
+                    title={scenario.description}
+                  >
                     {scenario.description}
                   </p>
                   
@@ -709,13 +710,16 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                     )}>
                       {scenario.name}
                     </span>
-                    <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded flex-shrink-0 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200">
+                    <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded flex-shrink-0 bg-blue-600 dark:bg-blue-700 text-white">
                       Custom
                     </span>
                   </div>
                   
                   {/* Description */}
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate pl-5">
+                  <p 
+                    className="text-xs text-slate-500 dark:text-slate-400 truncate pl-5 max-w-[200px]"
+                    title={`${scenario.resourceCount} resources · ${scenario.avgExtensionMonths.toFixed(0)}mo avg`}
+                  >
                     {scenario.resourceCount} resources · {scenario.avgExtensionMonths.toFixed(0)}mo avg
                   </p>
                   
@@ -842,14 +846,14 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                       <thead className="bg-muted/50 sticky top-0 border-b">
                         <tr>
                           <th className="px-3 py-2 text-left w-10"></th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Resource</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Dept</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Type</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Vendor</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Contract End</th>
-                          <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Monthly CTC</th>
-                          <th className="px-3 py-2 text-center text-xs font-medium text-muted-foreground">Extension</th>
-                          <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Delta</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[180px]">Resource</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[100px]">Dept</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[80px]">Type</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[90px]">Vendor</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[110px]">Contract End</th>
+                          <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground min-w-[100px]">Monthly CTC</th>
+                          <th className="px-3 py-2 text-center text-xs font-medium text-muted-foreground min-w-[140px]">Extension</th>
+                          <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground min-w-[90px]">Delta</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
@@ -925,7 +929,7 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                                     }
                                   }}
                                 >
-                                  <SelectTrigger className="h-8 w-28">
+                                  <SelectTrigger className="h-8 w-[130px] text-sm">
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -937,9 +941,9 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                               </td>
                               <td className="px-3 py-2 text-right font-mono">
                                 {months > 0 ? (
-                                  <span className="font-medium text-amber-600">+{formatCurrency(delta)}</span>
+                                  <span className="font-semibold text-green-600">+{formatCurrency(delta)}</span>
                                 ) : (
-                                  <span className="text-muted-foreground">—</span>
+                                  <span className="text-slate-400 dark:text-slate-500">—</span>
                                 )}
                               </td>
                             </tr>
@@ -954,7 +958,10 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                 <div className="mt-4 flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                   <div className="text-sm text-muted-foreground">
                     Selected: <strong className="text-foreground">{detailSelectedResources.size}</strong> resources · 
-                    Total Extension: <strong className="font-mono text-amber-600">
+                    Total Extension: <strong className={cn(
+                      "font-mono",
+                      detailTotals.totalDelta > 0 ? "text-green-600" : "text-slate-400 dark:text-slate-500"
+                    )}>
                       {detailTotals.totalDelta > 0 ? '+' : ''}{formatCurrency(detailTotals.totalDelta)} SAR
                     </strong>
                   </div>
