@@ -9,7 +9,7 @@
  * - View details and compare modals
  */
 
-import { useState, useMemo, Fragment } from 'react';
+import { useState, useMemo, useEffect, Fragment } from 'react';
 import { Plus, GitBranch, Eye, GitCompare, Trash2, Check, ChevronRight, RefreshCw, Save, ArrowRight, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, type BudgetPeriod, type BudgetResource, type DepartmentBudget } from '@/hooks/budget/useBudgetData';
@@ -64,6 +64,7 @@ const EXTENSION_OPTIONS = [
   { value: 12, label: '+12 months' },
 ];
 
+// DS-2 FIX: Use canonical 'Technical Support' value (matching database), but display as 'Tech Support'
 const DEPARTMENT_FILTERS = [
   { value: 'all', label: 'All' },
   { value: 'Delivery', label: 'Delivery' },
@@ -108,6 +109,9 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
   const [compareSelection, setCompareSelection] = useState<Set<string>>(new Set());
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [saveScenarioName, setSaveScenarioName] = useState('');
+  
+  // UX-2 FIX: Delete confirmation state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   
   // Detail panel editing state
   const [detailExtensions, setDetailExtensions] = useState<Record<string, number>>({});
@@ -169,12 +173,12 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
     return [...presetsAsScenarios, ...savedScenarios];
   }, [presetScenarios, savedScenarios]);
 
-  // Auto-select baseline on load
-  useMemo(() => {
+  // SCEN-5 FIX: Auto-select baseline on load using useEffect (not useMemo with side effect)
+  useEffect(() => {
     if (!selectedScenario && allScenarios.length > 0) {
       setSelectedScenario(allScenarios[0]);
     }
-  }, [allScenarios, selectedScenario]);
+  }, [allScenarios.length]); // Only run when scenario count changes
 
   // Filter resources by department for detail panel
   const filteredDetailResources = useMemo(() => {
@@ -536,7 +540,8 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                 {currentBudgetImpact.delta > 0 ? '+' : ''}{formatCurrency(currentBudgetImpact.delta)}
               </div>
             ) : (
-              <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
+              // SCEN-1 FIX: Show em-dash instead of +0 for zero deltas
+              <div className="text-sm font-mono font-medium text-slate-500 dark:text-slate-400 mt-1">—</div>
             )}
           </div>
           
@@ -549,7 +554,7 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                 +{formatCurrency(currentBudgetImpact.insourcedDelta)}
               </div>
             ) : (
-              <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
+              <div className="text-sm font-mono font-medium text-slate-500 dark:text-slate-400 mt-1">—</div>
             )}
           </div>
           
@@ -557,21 +562,21 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
           <div className="bg-teal-50 dark:bg-teal-950/30 rounded-xl p-4 text-center border-t-4 border-teal-500">
             <div className="text-xs text-teal-600 dark:text-teal-400 mb-1 uppercase font-medium">Cosourced</div>
             <div className="font-mono text-2xl font-bold text-teal-700 dark:text-teal-300">{formatCurrency(currentBudgetImpact.cosourced)}</div>
-            <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
+            <div className="text-sm font-mono font-medium text-slate-500 dark:text-slate-400 mt-1">—</div>
           </div>
           
           {/* Outsourced */}
           <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-4 text-center border-t-4 border-amber-500">
             <div className="text-xs text-amber-600 dark:text-amber-400 mb-1 uppercase font-medium">Outsourced</div>
             <div className="font-mono text-2xl font-bold text-amber-700 dark:text-amber-300">{formatCurrency(currentBudgetImpact.outsourced)}</div>
-            <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
+            <div className="text-sm font-mono font-medium text-slate-500 dark:text-slate-400 mt-1">—</div>
           </div>
           
           {/* Licenses */}
           <div className="bg-violet-50 dark:bg-violet-950/30 rounded-xl p-4 text-center border-t-4 border-violet-500">
             <div className="text-xs text-violet-600 dark:text-violet-400 mb-1 uppercase font-medium">Licenses</div>
             <div className="font-mono text-2xl font-bold text-violet-700 dark:text-violet-300">{formatCurrency(currentBudgetImpact.licenses)}</div>
-            <div className="text-sm font-mono font-medium text-slate-400 dark:text-slate-500 mt-1">+0</div>
+            <div className="text-sm font-mono font-medium text-slate-500 dark:text-slate-400 mt-1">—</div>
           </div>
         </div>
       </div>
@@ -815,7 +820,7 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                       variant="outline" 
                       size="sm" 
                       className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => deleteScenario.mutate(selectedScenario.id)}
+                      onClick={() => setDeleteConfirmOpen(true)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -1551,6 +1556,32 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
           )}
         </DialogContent>
       </Dialog>
+
+      {/* UX-2 FIX: Delete Confirmation Dialog */}
+      {selectedScenario && (
+        <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Scenario?</DialogTitle>
+            </DialogHeader>
+            <p className="text-muted-foreground">
+              This will permanently delete "{selectedScenario.name}". This action cannot be undone.
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
+              <Button 
+                variant="destructive"
+                onClick={() => {
+                  deleteScenario.mutate(selectedScenario.id);
+                  setDeleteConfirmOpen(false);
+                }}
+              >
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
