@@ -85,8 +85,8 @@ export function MyTasksPage() {
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
-      {/* Main Content with PageChrome */}
-      <PageChrome hideHeader>
+      {/* Main Content with PageChrome - flex-1 to fill remaining width */}
+      <PageChrome hideHeader className="flex-1">
         <div className="flex flex-col h-full bg-[hsl(var(--background))]">
           {/* My Tasks Content - Budget Planner Aligned */}
           <MyTasksContent
