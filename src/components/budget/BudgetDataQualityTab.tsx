@@ -1,13 +1,14 @@
 /**
  * Budget Data Quality Tab - V8 Design
- * Matches reference: Overview cards + Department table
+ * Per spec: 4 metric cards, department table, expandable resource lists, Fix CTC Modal
  */
 
-import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Calendar } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { ChevronRight, ChevronDown, Calendar, Download, AlertTriangle, Check, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { formatCurrency, type BudgetPeriod, type BudgetResource } from '@/hooks/budget/useBudgetData';
+import { FixCTCModal } from './FixCTCModal';
 
 interface BudgetDataQualityTabProps {
   data: {
@@ -16,6 +17,7 @@ interface BudgetDataQualityTabProps {
   } | null;
   period: BudgetPeriod;
   totalBudget: number;
+  onRefresh?: () => void;
 }
 
 interface DepartmentQuality {
@@ -24,6 +26,7 @@ interface DepartmentQuality {
   withCTC: number;
   missingCTC: number;
   coverage: number;
+  missingResources: BudgetResource[];
 }
 
 const PERIODS: { value: BudgetPeriod; label: string }[] = [
@@ -32,8 +35,12 @@ const PERIODS: { value: BudgetPeriod; label: string }[] = [
   { value: 'Full', label: 'Full Year' },
 ];
 
-export function BudgetDataQualityTab({ data, period, totalBudget }: BudgetDataQualityTabProps) {
-  const navigate = useNavigate();
+const DEPT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
+
+export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh }: BudgetDataQualityTabProps) {
+  const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
+  const [fixModalOpen, setFixModalOpen] = useState(false);
+  const [selectedDept, setSelectedDept] = useState<DepartmentQuality | null>(null);
 
   if (!data) {
     return (
@@ -46,107 +53,149 @@ export function BudgetDataQualityTab({ data, period, totalBudget }: BudgetDataQu
   // Calculate quality metrics
   const qualityMetrics = useMemo(() => {
     const total = data.resources.length;
-    
-    // Compensation Data (has CTC)
-    const withCTC = data.resources.filter(r => r.ctc && r.ctc > 0).length;
-    const compensationPct = total > 0 ? Math.round((withCTC / total) * 100) : 0;
-    
-    // Contract Dates (has contract_end)
-    const withContractDate = data.resources.filter(r => r.contractEnd).length;
-    const contractPct = total > 0 ? Math.round((withContractDate / total) * 100) : 0;
-    
-    // Vendor Mapping (has vendorName)
-    const withVendor = data.resources.filter(r => r.vendorName).length;
-    const vendorPct = total > 0 ? Math.round((withVendor / total) * 100) : 0;
-    
-    // Assignment Mapping (has assignmentName)
-    const withAssignment = data.resources.filter(r => r.assignmentName).length;
-    const assignmentPct = total > 0 ? Math.round((withAssignment / total) * 100) : 0;
-    
-    return {
-      compensation: { pct: compensationPct, count: withCTC, total },
-      contract: { pct: contractPct, count: withContractDate, total },
-      vendor: { pct: vendorPct, count: withVendor, total },
-      assignment: { pct: assignmentPct, count: withAssignment, total },
-    };
+    const complete = data.resources.filter(r => r.ctc && r.ctc > 0).length;
+    const missing = total - complete;
+    const score = total > 0 ? Math.round((complete / total) * 100) : 0;
+
+    return { total, complete, missing, score };
   }, [data.resources]);
 
-  // Calculate by department
+  // Calculate by department with resource lists
   const departmentQuality = useMemo<DepartmentQuality[]>(() => {
-    const byDept: Record<string, { total: number; withCTC: number }> = {};
-    
+    const byDept: Record<string, { 
+      total: number; 
+      withCTC: number; 
+      resources: BudgetResource[];
+      missing: BudgetResource[];
+    }> = {};
+
     data.resources.forEach(r => {
       if (!byDept[r.department]) {
-        byDept[r.department] = { total: 0, withCTC: 0 };
+        byDept[r.department] = { total: 0, withCTC: 0, resources: [], missing: [] };
       }
       byDept[r.department].total++;
+      byDept[r.department].resources.push(r);
       if (r.ctc && r.ctc > 0) {
         byDept[r.department].withCTC++;
+      } else {
+        byDept[r.department].missing.push(r);
       }
     });
 
-    // Order departments consistently
-    const deptOrder = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
-    
-    return deptOrder
+    return DEPT_ORDER
       .filter(name => byDept[name])
       .map(name => {
         const info = byDept[name];
-        const missing = info.total - info.withCTC;
+        const missingCount = info.total - info.withCTC;
         const coverage = info.total > 0 ? Math.round((info.withCTC / info.total) * 100) : 0;
         return {
           name,
           totalResources: info.total,
           withCTC: info.withCTC,
-          missingCTC: missing,
+          missingCTC: missingCount,
           coverage,
+          missingResources: info.missing,
         };
       });
   }, [data.resources]);
 
-  const handleFixData = (department: string, count: number) => {
-    navigate(`/admin/users?department=${encodeURIComponent(department)}&filter=missing-ctc`);
-  };
+  // Totals for table footer
+  const totals = useMemo(() => {
+    return departmentQuality.reduce(
+      (acc, d) => ({
+        total: acc.total + d.totalResources,
+        complete: acc.complete + d.withCTC,
+        missing: acc.missing + d.missingCTC,
+      }),
+      { total: 0, complete: 0, missing: 0 }
+    );
+  }, [departmentQuality]);
 
-  // Get period label
   const getPeriodLabel = () => {
     const periodLabels: Record<BudgetPeriod, string> = {
-      'Q1': 'Q1 2026 (Jan–Mar)',
-      'H1': 'H1 2026 (Jan–Jun)',
-      'Full': 'Full Year 2026 (Jan–Dec)',
+      Q1: 'Q1 2026 (Jan–Mar)',
+      H1: 'H1 2026 (Jan–Jun)',
+      Full: 'Full Year 2026 (Jan–Dec)',
     };
     return periodLabels[period];
   };
 
-  // Color for percentage
-  const getPctColor = (pct: number) => {
-    if (pct >= 90) return 'text-emerald-600';
-    if (pct >= 50) return 'text-amber-600';
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'bg-emerald-500';
+    if (score >= 50) return 'bg-amber-500';
+    return 'bg-red-500';
+  };
+
+  const getScoreTextColor = (score: number) => {
+    if (score >= 80) return 'text-emerald-600';
+    if (score >= 50) return 'text-amber-600';
     return 'text-red-600';
+  };
+
+  const getBadgeClass = (coverage: number) => {
+    if (coverage >= 80) return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
+    if (coverage >= 50) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+    return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+  };
+
+  const toggleExpand = (deptName: string) => {
+    setExpandedDepts(prev => {
+      const next = new Set(prev);
+      if (next.has(deptName)) {
+        next.delete(deptName);
+      } else {
+        next.add(deptName);
+      }
+      return next;
+    });
+  };
+
+  const toggleAllExpand = () => {
+    if (expandedDepts.size > 0) {
+      setExpandedDepts(new Set());
+    } else {
+      setExpandedDepts(new Set(departmentQuality.filter(d => d.missingCTC > 0).map(d => d.name)));
+    }
+  };
+
+  const handleFixData = (dept: DepartmentQuality) => {
+    setSelectedDept(dept);
+    setFixModalOpen(true);
+  };
+
+  const handleSaved = () => {
+    onRefresh?.();
+  };
+
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return '—';
+    return new Date(dateStr).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
   };
 
   return (
     <div className="space-y-6">
-      {/* Period Toggle + Context Badge - matches Budget tab */}
+      {/* Period Toggle + Context Badge */}
       <div className="flex items-center justify-between">
-        {/* Period Toggle (display only - not interactive here) */}
         <div className="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
           {PERIODS.map(p => (
             <div
               key={p.value}
               className={cn(
-                "px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150",
+                'px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150',
                 period === p.value
-                  ? "bg-white dark:bg-slate-700 text-primary shadow-sm"
-                  : "text-muted-foreground"
+                  ? 'bg-white dark:bg-slate-700 text-primary shadow-sm'
+                  : 'text-muted-foreground'
               )}
             >
               {p.label}
             </div>
           ))}
         </div>
-        
-        {/* Context Badge */}
+
         <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-border rounded-xl">
           <Calendar className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
@@ -159,76 +208,80 @@ export function BudgetDataQualityTab({ data, period, totalBudget }: BudgetDataQu
         </div>
       </div>
 
-      {/* Divider */}
       <div className="border-b border-border" />
 
-      {/* DATA QUALITY OVERVIEW */}
+      {/* DATA QUALITY METRICS - 4 Cards per spec */}
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
-          Data Quality Overview
+          Data Quality Metrics
         </h2>
-        
+
         <div className="grid grid-cols-4 gap-4">
-          {/* Compensation Data */}
+          {/* Total Resources */}
           <div className="bg-card border border-border rounded-xl p-5">
             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-              Compensation Data
+              Total Resources
             </div>
-            <div className={cn("text-4xl font-bold mb-1", getPctColor(qualityMetrics.compensation.pct))}>
-              {qualityMetrics.compensation.pct}%
+            <div className="text-4xl font-bold text-foreground mb-1">
+              {qualityMetrics.total}
             </div>
-            <div className="text-sm text-muted-foreground">
-              {qualityMetrics.compensation.count} of {qualityMetrics.compensation.total} resources
-            </div>
+            <div className="text-sm text-muted-foreground">In resource inventory</div>
           </div>
 
-          {/* Contract Dates */}
-          <div className="bg-card border border-border rounded-xl p-5">
+          {/* Complete Records */}
+          <div className="bg-card border border-border rounded-xl p-5 border-l-4 border-l-blue-500">
             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-              Contract Dates
+              Complete Records
             </div>
-            <div className={cn("text-4xl font-bold mb-1", getPctColor(qualityMetrics.contract.pct))}>
-              {qualityMetrics.contract.pct}%
+            <div className="text-4xl font-bold text-blue-600 mb-1">
+              {qualityMetrics.complete}
             </div>
-            <div className="text-sm text-muted-foreground">
-              {qualityMetrics.contract.count} of {qualityMetrics.contract.total} resources
-            </div>
+            <div className="text-sm text-muted-foreground">With CTC data</div>
           </div>
 
-          {/* Vendor Mapping */}
-          <div className="bg-card border border-border rounded-xl p-5">
+          {/* Missing CTC */}
+          <div className="bg-card border border-border rounded-xl p-5 border-l-4 border-l-amber-500">
             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-              Vendor Mapping
+              Missing CTC
             </div>
-            <div className={cn("text-4xl font-bold mb-1", getPctColor(qualityMetrics.vendor.pct))}>
-              {qualityMetrics.vendor.pct}%
+            <div className="text-4xl font-bold text-amber-600 mb-1">
+              {qualityMetrics.missing}
             </div>
-            <div className="text-sm text-muted-foreground">
-              {qualityMetrics.vendor.count} of {qualityMetrics.vendor.total} resources
-            </div>
+            <div className="text-sm text-muted-foreground">Need compensation data</div>
           </div>
 
-          {/* Assignment Mapping */}
-          <div className="bg-card border border-border rounded-xl p-5">
+          {/* Quality Score */}
+          <div className="bg-card border border-border rounded-xl p-5 relative overflow-hidden">
             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-              Assignment Mapping
+              Data Quality
             </div>
-            <div className={cn("text-4xl font-bold mb-1", getPctColor(qualityMetrics.assignment.pct))}>
-              {qualityMetrics.assignment.pct}%
+            <div className={cn('text-4xl font-bold mb-1', getScoreTextColor(qualityMetrics.score))}>
+              {qualityMetrics.score}%
             </div>
-            <div className="text-sm text-muted-foreground">
-              {qualityMetrics.assignment.count} of {qualityMetrics.assignment.total} resources
+            <div className="text-sm text-muted-foreground">Completeness score</div>
+            {/* Progress bar at bottom */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted">
+              <div
+                className={cn('h-full transition-all duration-500', getScoreColor(qualityMetrics.score))}
+                style={{ width: `${qualityMetrics.score}%` }}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* MISSING DATA BY DEPARTMENT */}
+      {/* MISSING DATA BY DEPARTMENT TABLE */}
       <section>
-        <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
-          Missing Data by Department
-        </h2>
-        
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Missing Data by Department
+          </h2>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Download className="w-4 h-4" />
+            Export Report
+          </Button>
+        </div>
+
         <div className="bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
@@ -236,70 +289,195 @@ export function BudgetDataQualityTab({ data, period, totalBudget }: BudgetDataQu
                 <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Department
                 </th>
-                <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Total Resources
+                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Total
                 </th>
-                <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  With CTC
+                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Complete
                 </th>
-                <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Missing CTC
+                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Missing
                 </th>
-                <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Coverage
+                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Quality
                 </th>
-                <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Action
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {departmentQuality.map((dept) => (
+              {departmentQuality.map(dept => (
                 <tr key={dept.name} className="hover:bg-muted/20 transition-colors">
-                  <td className="px-5 py-4 font-medium text-foreground">
-                    {dept.name}
-                  </td>
-                  <td className="px-5 py-4 text-muted-foreground">
-                    {dept.totalResources}
-                  </td>
-                  <td className="px-5 py-4 text-muted-foreground">
-                    {dept.withCTC}
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className={cn(
-                      "font-medium",
-                      dept.missingCTC > 0 ? "text-red-600" : "text-muted-foreground"
-                    )}>
+                  <td className="px-5 py-4 font-semibold text-foreground">{dept.name}</td>
+                  <td className="px-5 py-4 text-center text-muted-foreground">{dept.totalResources}</td>
+                  <td className="px-5 py-4 text-center text-muted-foreground">{dept.withCTC}</td>
+                  <td className="px-5 py-4 text-center">
+                    <span className={cn('font-medium', dept.missingCTC > 0 ? 'text-red-600' : 'text-muted-foreground')}>
                       {dept.missingCTC}
                     </span>
                   </td>
-                  <td className="px-5 py-4">
-                    <span className={cn(
-                      "font-medium",
-                      getPctColor(dept.coverage)
-                    )}>
+                  <td className="px-5 py-4 text-center">
+                    <span className={cn('px-2 py-0.5 rounded text-xs font-semibold', getBadgeClass(dept.coverage))}>
                       {dept.coverage}%
                     </span>
                   </td>
-                  <td className="px-5 py-4">
+                  <td className="px-5 py-4 text-center">
                     {dept.missingCTC > 0 ? (
                       <button
-                        onClick={() => handleFixData(dept.name, dept.missingCTC)}
-                        className="flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                        onClick={() => handleFixData(dept)}
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
                       >
                         Fix {dept.missingCTC}
                         <ChevronRight className="w-4 h-4" />
                       </button>
                     ) : (
-                      <span className="text-sm text-muted-foreground">—</span>
+                      <span className="inline-flex items-center gap-1 text-sm text-emerald-600">
+                        <Check className="w-4 h-4" />
+                        Complete
+                      </span>
                     )}
                   </td>
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr className="bg-muted/50 border-t-2 border-border">
+                <td className="px-5 py-4 font-bold text-foreground">TOTAL</td>
+                <td className="px-5 py-4 text-center font-bold">{totals.total}</td>
+                <td className="px-5 py-4 text-center font-bold">{totals.complete}</td>
+                <td className="px-5 py-4 text-center font-bold text-red-600">{totals.missing}</td>
+                <td className="px-5 py-4 text-center">
+                  <span className={cn('px-2 py-0.5 rounded text-xs font-semibold', getBadgeClass(qualityMetrics.score))}>
+                    {qualityMetrics.score}%
+                  </span>
+                </td>
+                <td className="px-5 py-4" />
+              </tr>
+            </tfoot>
           </table>
         </div>
       </section>
+
+      {/* EXPANDABLE RESOURCE LISTS */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Resources with Missing CTC
+          </h2>
+          <Button variant="ghost" size="sm" onClick={toggleAllExpand}>
+            {expandedDepts.size > 0 ? '▲ Collapse All' : '▼ Expand All'}
+          </Button>
+        </div>
+
+        <div className="space-y-2">
+          {departmentQuality.filter(d => d.missingCTC > 0).map(dept => (
+            <div key={dept.name} className="bg-card border border-border rounded-xl overflow-hidden">
+              {/* Header */}
+              <div
+                className="flex items-center gap-3 px-5 py-3 cursor-pointer bg-muted/30 hover:bg-muted/50 transition-colors"
+                onClick={() => toggleExpand(dept.name)}
+              >
+                {expandedDepts.has(dept.name) ? (
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                )}
+                <span className="text-xs font-bold uppercase tracking-wider text-foreground flex-1">
+                  {dept.name}
+                </span>
+                <span className="text-xs font-semibold text-amber-600">{dept.missingCTC} missing</span>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="ml-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleFixData(dept);
+                  }}
+                >
+                  Fix All
+                </Button>
+              </div>
+
+              {/* Expanded Content */}
+              {expandedDepts.has(dept.name) && (
+                <div className="p-4 border-t border-border">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          RID
+                        </th>
+                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Name
+                        </th>
+                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Role
+                        </th>
+                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Vendor
+                        </th>
+                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Contract End
+                        </th>
+                        <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          CTC
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/50">
+                      {dept.missingResources.map(r => (
+                        <tr key={r.id} className="hover:bg-muted/10">
+                          <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
+                            {r.rid?.padStart(3, '0') || '—'}
+                          </td>
+                          <td className="px-3 py-2 font-medium text-foreground">{r.name}</td>
+                          <td className="px-3 py-2 text-muted-foreground">{r.role || '—'}</td>
+                          <td className="px-3 py-2 text-muted-foreground">{r.vendorName || '—'}</td>
+                          <td className="px-3 py-2 text-muted-foreground">{formatDate(r.contractEnd)}</td>
+                          <td className="px-3 py-2 text-red-600 font-semibold">Missing</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {departmentQuality.filter(d => d.missingCTC > 0).length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
+                <Check className="w-6 h-6 text-emerald-600" />
+              </div>
+              <h3 className="font-semibold text-lg text-foreground mb-1">All Data Complete</h3>
+              <p className="text-sm text-muted-foreground">
+                All resources have compensation data entered
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Fix CTC Modal */}
+      {selectedDept && (
+        <FixCTCModal
+          open={fixModalOpen}
+          onOpenChange={setFixModalOpen}
+          department={selectedDept.name}
+          resources={selectedDept.missingResources.map(r => ({
+            id: r.id,
+            rid: r.rid,
+            name: r.name,
+            role: r.role,
+            vendorName: r.vendorName,
+            contractEnd: r.contractEnd,
+            ctc: r.ctc,
+          }))}
+          onSaved={handleSaved}
+        />
+      )}
     </div>
   );
 }
