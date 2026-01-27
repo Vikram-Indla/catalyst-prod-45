@@ -186,12 +186,14 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             </div>
           </div>
 
-          {/* Insourced - Clickable */}
+          {/* Insourced - Clickable with enhanced hover */}
           <div 
-            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-300"
             onClick={() => setActiveModal('insourced')}
           >
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#2563eb] to-[#3b82f6]" />
+            {/* Bottom accent bar on hover */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#2563eb] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Insourced
             </div>
@@ -199,16 +201,18 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
               {formatCurrency(budget.insourced)}
             </div>
             <div className="text-[11px] text-muted-foreground">
-              {insourcedResources.length} resources · Click for details
+              {insourcedResources.length} resources
             </div>
           </div>
 
-          {/* Fixed Contracts - Clickable */}
+          {/* Fixed Contracts - Clickable with enhanced hover */}
           <div 
-            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-amber-300"
             onClick={() => setActiveModal('fixed')}
           >
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#d97706] to-[#f59e0b]" />
+            {/* Bottom accent bar on hover */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#d97706] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Fixed Contracts
             </div>
@@ -216,16 +220,18 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
               {formatCurrency(fixedTotal)}
             </div>
             <div className="text-[11px] text-muted-foreground">
-              Cosourced + Outsourced · Click for details
+              Cosourced + Outsourced
             </div>
           </div>
 
-          {/* Licenses - Clickable */}
+          {/* Licenses - Clickable with enhanced hover */}
           <div 
-            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+            className="bg-card rounded-xl border border-border p-5 relative overflow-hidden cursor-pointer group transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-violet-300"
             onClick={() => setActiveModal('licenses')}
           >
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#7c3aed] to-[#a78bfa]" />
+            {/* Bottom accent bar on hover */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#7c3aed] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
               Licenses
             </div>
@@ -233,7 +239,7 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
               {formatCurrency(budget.licenses)}
             </div>
             <div className="text-[11px] text-muted-foreground">
-              {data.licenseCount} active · Click for details
+              {data.licenseCount} active
             </div>
           </div>
         </div>
@@ -295,25 +301,37 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                     </div>
                     
                     {/* Bar container with quarter markers */}
-                    <div className="relative h-6 bg-muted rounded-full overflow-hidden">
-                      {/* Quarter dividers */}
-                      <div className="absolute inset-0 flex pointer-events-none">
-                        <div className="w-1/4 border-r-2 border-dashed border-border/50" />
-                        <div className="w-1/4 border-r-2 border-dashed border-border/50" />
-                        <div className="w-1/4 border-r-2 border-dashed border-border/50" />
-                        <div className="w-1/4" />
-                      </div>
-                      {/* Actual budget bar */}
-                      {hasBudget && (
+                    {hasBudget ? (
+                      <div className="relative h-6 bg-muted rounded-full overflow-hidden">
+                        {/* Quarter dividers */}
+                        <div className="absolute inset-0 flex pointer-events-none">
+                          <div className="w-1/4 border-r-2 border-dashed border-border/50" />
+                          <div className="w-1/4 border-r-2 border-dashed border-border/50" />
+                          <div className="w-1/4 border-r-2 border-dashed border-border/50" />
+                          <div className="w-1/4" />
+                        </div>
+                        {/* Actual budget bar */}
                         <div 
                           className="absolute top-0 left-0 h-full bg-[#2563eb] rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(barWidth, 100)}%` }}
                         />
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      /* Empty/incomplete state with dashed pattern */
+                      <div className="relative h-6 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-dashed border-slate-300 dark:border-slate-600">
+                        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,rgba(0,0,0,0.03)_4px,rgba(0,0,0,0.03)_8px)]" />
+                        {/* Quarter dividers */}
+                        <div className="absolute inset-0 flex pointer-events-none">
+                          <div className="w-1/4 border-r-2 border-dashed border-slate-300/50 dark:border-slate-600/50" />
+                          <div className="w-1/4 border-r-2 border-dashed border-slate-300/50 dark:border-slate-600/50" />
+                          <div className="w-1/4 border-r-2 border-dashed border-slate-300/50 dark:border-slate-600/50" />
+                          <div className="w-1/4" />
+                        </div>
+                      </div>
+                    )}
                     
-                    {/* Quarterly cumulative values below bar */}
-                    <div className="grid grid-cols-4 mt-1.5 text-[10px] font-mono font-semibold text-muted-foreground">
+                    {/* Quarterly cumulative values below bar - separate row with more spacing */}
+                    <div className="grid grid-cols-4 mt-2 text-[10px] font-mono font-semibold text-muted-foreground">
                       <span className="text-right pr-1">
                         {hasBudget ? formatCurrency(quarterly.q1) : '—'}
                       </span>
@@ -436,28 +454,40 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                         {formatPeriod(a.startDate, a.endDate)}
                       </td>
                       <td className="px-3 py-3 text-center text-sm text-muted-foreground">
-                        {a.type === 'Outsourced' ? '—' : a.resourceCount || 0}
+                        {a.type === 'Outsourced' ? (
+                          <span className="text-slate-400 cursor-help" title="Outsourced contracts don't have individual resources">
+                            N/A
+                          </span>
+                        ) : (
+                          <span className="font-mono">{a.resourceCount || 0}</span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-right">
+                        {/* Budget value color-coded by type */}
                         <span className={cn(
                           "font-mono font-semibold",
-                          isUnpaid ? "text-red-600" : "text-[#2563eb]"
+                          isUnpaid && "text-red-600",
+                          !isUnpaid && a.type === 'Insourced' && "text-blue-600",
+                          !isUnpaid && a.type === 'Cosourced' && "text-teal-600",
+                          !isUnpaid && a.type === 'Outsourced' && "text-amber-600"
                         )}>
                           {formatFull(a.budget)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
+                        {/* Consistent status badges */}
                         {a.type === 'Insourced' ? (
-                          <span className="text-sm text-muted-foreground">—</span>
+                          <span className="text-slate-400">—</span>
                         ) : isUnpaid ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold">
-                            <AlertTriangle className="w-3 h-3" />
-                            UNPAID
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold">
+                            ⚠ UNPAID
                           </span>
                         ) : a.paymentStatus === 'on_track' || a.paymentStatus === 'paid' ? (
-                          <span className="text-sm text-emerald-600 font-medium">✓ On Track</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold">
+                            ✓ On Track
+                          </span>
                         ) : (
-                          <span className="text-sm text-muted-foreground">—</span>
+                          <span className="text-slate-400">—</span>
                         )}
                       </td>
                     </tr>
@@ -475,12 +505,12 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
         </h2>
         
         <div className="space-y-3">
-          {/* Critical Resources Expiring */}
+          {/* Critical Resources Expiring - severity: critical (red) */}
           {criticalResources.length > 0 && (
-            <div className="bg-card rounded-xl border border-border border-l-4 border-l-red-500 p-5">
+            <div className="bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 dark:border-red-800 border-l-4 border-l-red-500 p-5">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <div className="text-xs font-bold uppercase text-red-600 mb-1">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
                     Delivery Department
                   </div>
                   <h4 className="font-semibold text-foreground mb-1">
@@ -516,12 +546,12 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             </div>
           )}
 
-          {/* Outstanding Payments */}
+          {/* Outstanding Payments - severity: warning (amber) */}
           {unpaidAssignments.length > 0 && (
-            <div className="bg-card rounded-xl border border-border border-l-4 border-l-amber-500 p-5">
+            <div className="bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800 border-l-4 border-l-amber-500 p-5">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <div className="text-xs font-bold uppercase text-amber-600 mb-1">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
                     Delivery Department
                   </div>
                   <h4 className="font-semibold text-foreground mb-1">
@@ -537,7 +567,7 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                     {formatCurrency(unpaidTotal)} SAR
                   </div>
                   <button 
-                    className="px-3 py-1.5 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-medium hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors flex items-center gap-1"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400"
                     onClick={(e) => {
                       e.stopPropagation();
                       setActiveModal('fixed');
@@ -550,15 +580,15 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
             </div>
           )}
 
-          {/* Missing CTC Data - show departments with missing data */}
+          {/* Missing CTC Data - severity: info (blue) */}
           {Object.entries(missingCTCByDept)
             .filter(([_, count]) => count > 0)
             .sort((a, b) => b[1] - a[1])
             .map(([dept, count]) => (
-              <div key={dept} className="bg-card rounded-xl border border-border border-l-4 border-l-[#2563eb] p-5">
+              <div key={dept} className="bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800 border-l-4 border-l-blue-500 p-5">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <div className="text-xs font-bold uppercase text-[#2563eb] mb-1">
+                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
                       {dept} Department
                     </div>
                     <h4 className="font-semibold text-foreground mb-1">
@@ -571,7 +601,7 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                   <div className="text-right shrink-0 ml-6">
                     <div className="text-xs text-muted-foreground mb-1">Action Required</div>
                     <button 
-                      className="px-3 py-1.5 rounded-md bg-[#2563eb] text-white text-sm font-medium hover:bg-[#1d4ed8] transition-colors flex items-center gap-1"
+                      className="px-3 py-1.5 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-1"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigateToFixData(dept);
