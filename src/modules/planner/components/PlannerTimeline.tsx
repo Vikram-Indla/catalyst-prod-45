@@ -424,47 +424,28 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                             })}
                           </div>
 
-                          {/* Gantt Bar - with task key, title, and assignee */}
+                          {/* Gantt Bar - thin line style */}
                           {barStyle.isVisible && (
                             <div
-                              className="absolute top-1.5 bottom-1.5 rounded-lg cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5"
+                              className="absolute rounded-full cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-all hover:scale-y-125"
                               style={{
                                 left: Math.max(4, barStyle.left),
-                                width: Math.max(140, barStyle.width),
+                                width: Math.max(100, barStyle.width),
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                height: 8,
                                 backgroundColor: colors.bar,
                               }}
                               onClick={() => onTaskClick(task)}
                             >
                               {/* Progress Fill */}
                               <div
-                                className="absolute inset-y-0 left-0 rounded-l-lg opacity-40"
+                                className="absolute inset-y-0 left-0 rounded-l-full opacity-40"
                                 style={{
                                   width: `${progress}%`,
                                   backgroundColor: '#fff',
                                 }}
                               />
-                              
-                              {/* Content: Task Key | Title | Assignee */}
-                              <div className="relative h-full flex items-center gap-2 px-2.5 z-10">
-                                {/* Task Key */}
-                                <span className="text-[10px] font-bold text-white/90 bg-white/20 px-1.5 py-0.5 rounded flex-shrink-0">
-                                  {task.key}
-                                </span>
-                                
-                                {/* Title */}
-                                <span className="text-xs font-semibold text-white truncate flex-1 min-w-0 drop-shadow-sm">
-                                  {task.title}
-                                </span>
-                                
-                                {/* Assignee Avatar */}
-                                {task.assigneeInitials && (
-                                  <div className="w-5 h-5 rounded-full bg-white/25 flex items-center justify-center flex-shrink-0">
-                                    <span className="text-[9px] font-bold text-white">
-                                      {task.assigneeInitials}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
                             </div>
                           )}
                         </div>
