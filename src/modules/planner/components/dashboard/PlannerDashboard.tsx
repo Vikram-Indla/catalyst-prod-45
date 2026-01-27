@@ -105,8 +105,8 @@ export function PlannerDashboard() {
         </div>
       </div>
 
-      {/* Dashboard Content - Per audit: Compact layout, ~500px total */}
-      <div className="flex-1 overflow-auto p-4 space-y-4">
+      {/* Dashboard Content - Flex layout to expand Attention Required */}
+      <div className="flex-1 flex flex-col min-h-0 overflow-auto p-4 gap-4">
         {/* KPI Strip - Per audit: Single row, inline stats */}
         {metrics && (
           <DashboardKPIStrip 
@@ -116,7 +116,7 @@ export function PlannerDashboard() {
         )}
 
         {/* Main Grid - Per audit: 3-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 shrink-0">
           {/* Status Distribution */}
           <DashboardStatusChartV2 data={statusDistribution} />
           
@@ -130,8 +130,8 @@ export function PlannerDashboard() {
           />
         </div>
 
-        {/* Attention Required - Full width list */}
-        <DashboardUpcomingDeadlinesV2 data={upcomingDeadlines} />
+        {/* Attention Required - Full width, expands to fill remaining space */}
+        <DashboardUpcomingDeadlinesV2 data={upcomingDeadlines} className="flex-1 min-h-[200px]" />
       </div>
     </div>
   );

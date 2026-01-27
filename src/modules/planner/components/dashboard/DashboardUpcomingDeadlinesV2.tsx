@@ -12,6 +12,7 @@ import { format, parseISO, isToday, isTomorrow, isPast, differenceInDays } from 
 
 interface DashboardUpcomingDeadlinesV2Props {
   data: UpcomingDeadline[];
+  className?: string;
 }
 
 type DueStatus = 'overdue' | 'today' | 'tomorrow' | 'this-week' | 'upcoming';
@@ -69,7 +70,7 @@ const PRIORITY_INDICATOR: Record<string, string> = {
   low: '',
 };
 
-export function DashboardUpcomingDeadlinesV2({ data }: DashboardUpcomingDeadlinesV2Props) {
+export function DashboardUpcomingDeadlinesV2({ data, className }: DashboardUpcomingDeadlinesV2Props) {
   const navigate = useNavigate();
 
   // Count overdue for header
@@ -77,11 +78,14 @@ export function DashboardUpcomingDeadlinesV2({ data }: DashboardUpcomingDeadline
 
   if (data.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+      <div className={cn(
+        "bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 flex flex-col",
+        className
+      )}>
         <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
           Attention Required
         </h3>
-        <div className="flex items-center justify-center py-6 text-sm text-slate-400">
+        <div className="flex-1 flex items-center justify-center text-sm text-slate-400">
           <Clock className="w-4 h-4 mr-2" />
           No upcoming deadlines
         </div>
@@ -90,7 +94,10 @@ export function DashboardUpcomingDeadlinesV2({ data }: DashboardUpcomingDeadline
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+    <div className={cn(
+      "bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 flex flex-col",
+      className
+    )}>
       {/* Header - Per audit: "Attention Required" */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
@@ -104,8 +111,8 @@ export function DashboardUpcomingDeadlinesV2({ data }: DashboardUpcomingDeadline
         )}
       </div>
 
-      {/* Compact task list */}
-      <div className="space-y-1 max-h-64 overflow-auto">
+      {/* Compact task list - flex-1 to expand */}
+      <div className="flex-1 space-y-1 overflow-auto">
         {data.map((task) => {
           const dueStatus = getDueStatus(task.due_date);
           const statusConfig = DUE_STATUS_CONFIG[dueStatus];
