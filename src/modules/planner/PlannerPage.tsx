@@ -446,104 +446,106 @@ export function PlannerPage() {
 
       {/* Right column: header + search + view content */}
       <div className="flex flex-col flex-1 min-w-0 min-h-0">
-        {/* Header with breadcrumb */}
-        <div className="shrink-0" style={{ backgroundColor: 'var(--bg)', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
-          <div
-            className="flex items-center justify-between px-6"
-            style={{
-              height: '52px',
-              borderBottom: '1px solid var(--divider)',
-            }}
-          >
-            {/* Left: Breadcrumb + Title */}
-            <div className="flex items-center gap-2">
-              <span
-                className="text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--text-3)' }}
-              >
-                PLANNER
-              </span>
-              <span className="text-[14px]" style={{ color: 'var(--text-4)' }}>
-                /
-              </span>
-              <h1 className="text-[18px] font-semibold" style={{ color: 'var(--text-1)' }}>
-                {pageTitle}
-              </h1>
-            </div>
+        {/* Header with breadcrumb - hidden on dashboard (has its own header) */}
+        {activeView !== 'dashboard' && (
+          <div className="shrink-0" style={{ backgroundColor: 'var(--bg)', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
+            <div
+              className="flex items-center justify-between px-6"
+              style={{
+                height: '52px',
+                borderBottom: '1px solid var(--divider)',
+              }}
+            >
+              {/* Left: Breadcrumb + Title */}
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[11px] font-semibold uppercase tracking-wider"
+                  style={{ color: 'var(--text-3)' }}
+                >
+                  PLANNER
+                </span>
+                <span className="text-[14px]" style={{ color: 'var(--text-4)' }}>
+                  /
+                </span>
+                <h1 className="text-[18px] font-semibold" style={{ color: 'var(--text-1)' }}>
+                  {pageTitle}
+                </h1>
+              </div>
 
-            {/* Right: Export + Action Buttons */}
-            <div className="flex items-center gap-2">
-              {/* Export Buttons - Show on all views except workstreams/settings */}
-              {activeView !== 'workstreams' && activeView !== 'settings' && (
-                <>
+              {/* Right: Export + Action Buttons */}
+              <div className="flex items-center gap-2">
+                {/* Export Buttons - Show on all views except workstreams/settings */}
+                {activeView !== 'workstreams' && activeView !== 'settings' && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          catalystToast.success('Generating PDF...', 'Please wait');
+                          await exportPlannerToPDF({
+                            title: pageTitle,
+                            viewType: pageTitle,
+                            tasks: filteredTasks,
+                            filters: {
+                              Status: filters.status || '',
+                              Priority: filters.priority || '',
+                              Search: filters.search || '',
+                            },
+                          });
+                          catalystToast.success('PDF Exported', 'Report downloaded successfully');
+                        } catch (err) {
+                          console.error('PDF export error:', err);
+                          catalystToast.error('Export Failed', 'Could not generate PDF');
+                        }
+                      }}
+                      className="h-8 gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span className="text-sm">PDF</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        try {
+                          exportPlannerToExcel({
+                            title: pageTitle,
+                            viewType: pageTitle,
+                            tasks: filteredTasks,
+                          });
+                          catalystToast.success('Excel Exported', 'Report downloaded successfully');
+                        } catch (err) {
+                          console.error('Excel export error:', err);
+                          catalystToast.error('Export Failed', 'Could not generate Excel');
+                        }
+                      }}
+                      className="h-8 gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      <span className="text-sm">Excel</span>
+                    </Button>
+                  </>
+                )}
+
+                {/* Create Task Button - hidden on teams/settings/insight views */}
+                {activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
                   <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      try {
-                        catalystToast.success('Generating PDF...', 'Please wait');
-                        await exportPlannerToPDF({
-                          title: pageTitle,
-                          viewType: pageTitle,
-                          tasks: filteredTasks,
-                          filters: {
-                            Status: filters.status || '',
-                            Priority: filters.priority || '',
-                            Search: filters.search || '',
-                          },
-                        });
-                        catalystToast.success('PDF Exported', 'Report downloaded successfully');
-                      } catch (err) {
-                        console.error('PDF export error:', err);
-                        catalystToast.error('Export Failed', 'Could not generate PDF');
-                      }
-                    }}
-                    className="h-8 gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span className="text-sm">PDF</span>
-                  </Button>
-                  <Button
-                    variant="outline"
                     size="sm"
                     onClick={() => {
-                      try {
-                        exportPlannerToExcel({
-                          title: pageTitle,
-                          viewType: pageTitle,
-                          tasks: filteredTasks,
-                        });
-                        catalystToast.success('Excel Exported', 'Report downloaded successfully');
-                      } catch (err) {
-                        console.error('Excel export error:', err);
-                        catalystToast.error('Export Failed', 'Could not generate Excel');
-                      }
+                      setCreateDefaultStatus('backlog');
+                      setIsCreateModalOpen(true);
                     }}
-                    className="h-8 gap-2"
+                    className="h-8 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    <FileText className="w-4 h-4" />
-                    <span className="text-sm">Excel</span>
+                    <Plus className="w-4 h-4" />
+                    <span className="text-sm">Create Task</span>
                   </Button>
-                </>
-              )}
-
-              {/* Create Task Button - hidden on teams/settings/insight views */}
-              {activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setCreateDefaultStatus('backlog');
-                    setIsCreateModalOpen(true);
-                  }}
-                  className="h-8 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="text-sm">Create Task</span>
-                </Button>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Search Bar - hidden on dashboard/teams/settings/insight views */}
         {activeView !== 'dashboard' && activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
