@@ -91,7 +91,7 @@ export function DashboardWorkstreamHealthV2({ data }: DashboardWorkstreamHealthV
           return (
             <button
               key={ws.workstream_id}
-              onClick={() => navigate(`/planner/boards?workstream=${ws.workstream_slug}`)}
+              onClick={() => navigate(`/planner/task-list?workstream=${ws.workstream_id}`)}
               className={cn(
                 'w-full flex items-center gap-3 p-2.5 rounded-md',
                 'hover:bg-slate-50 dark:hover:bg-slate-700/50',

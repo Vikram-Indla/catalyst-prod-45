@@ -14,6 +14,7 @@ export interface TaskListFilters {
   priority?: TaskPriority | null;
   assignee?: string | null;
   overdueOnly?: boolean;
+  blockedOnly?: boolean;
 }
 
 export interface TaskListSorting {
@@ -69,16 +70,23 @@ export function useTaskList(filters: TaskListFilters = {}, sorting?: TaskListSor
         query = query.eq('workstream_id', filters.workstream);
       }
       if (filters.status) {
-        query = query.eq('status_id', filters.status);
+        // Support filtering by status slug or status id
+        query = query.or(`status_id.eq.${filters.status},status_slug.eq.${filters.status}`);
       }
       if (filters.priority) {
         query = query.eq('priority', filters.priority);
       }
-      if (filters.assignee) {
+      if (filters.assignee === null) {
+        // Unassigned tasks
+        query = query.is('assignee_id', null);
+      } else if (filters.assignee) {
         query = query.eq('assignee_id', filters.assignee);
       }
       if (filters.overdueOnly) {
         query = query.eq('is_overdue', true);
+      }
+      if (filters.blockedOnly) {
+        query = query.eq('blocked', true);
       }
       if (filters.search) {
         query = query.or(`title.ilike.%${filters.search}%,task_key.ilike.%${filters.search}%`);
