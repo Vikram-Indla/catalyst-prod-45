@@ -1,0 +1,17 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- Catalyst Convergence Hub Logo - Reversed (White) -->
+    <!-- For use on Catalyst Blue (#2563eb) backgrounds -->
+    <!-- Connection lines -->
+    <line x1="50" y1="50" x2="22" y2="22" stroke="rgba(255,255,255,0.4)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="50" y1="50" x2="78" y2="22" stroke="rgba(255,255,255,0.4)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="50" y1="50" x2="22" y2="78" stroke="rgba(255,255,255,0.4)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="50" y1="50" x2="78" y2="78" stroke="rgba(255,255,255,0.4)" stroke-width="4" stroke-linecap="round"/>
+    <!-- Outer nodes -->
+    <circle cx="22" cy="22" r="12" fill="white"/>
+    <circle cx="78" cy="22" r="12" fill="white"/>
+    <circle cx="22" cy="78" r="12" fill="white"/>
+    <circle cx="78" cy="78" r="12" fill="white"/>
+    <!-- Center hub -->
+    <circle cx="50" cy="50" r="18" fill="white"/>
+    <circle cx="50" cy="50" r="9" fill="#2563eb"/>
+</svg>
