@@ -13,6 +13,7 @@ import {
   Users,
   Settings,
   UsersRound,
+  CheckSquare,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from '@/components/layout/SidebarBase';
 
@@ -27,6 +28,12 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
     badge: 'PL',
     label: 'Planner',
     sections: [
+      {
+        title: 'Personal',
+        items: [
+          { id: 'my-tasks', title: 'My Tasks', path: '/my-tasks', icon: CheckSquare, exact: true },
+        ],
+      },
       {
         title: 'Views',
         items: [
