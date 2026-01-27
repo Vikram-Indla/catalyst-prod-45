@@ -46,7 +46,7 @@ export function DashboardTeamWorkloadV2({ data, unassignedCount }: DashboardTeam
       {/* Unassigned warning - Per audit: Make this prominent */}
       {unassignedCount > 0 && (
         <button
-          onClick={() => navigate('/planner/boards?assignee=unassigned')}
+          onClick={() => navigate('/planner/task-list?assignee=unassigned')}
           className={cn(
             'w-full flex items-center justify-between p-2.5 mb-3 rounded-md',
             'bg-amber-50 dark:bg-amber-900/20',
@@ -82,7 +82,7 @@ export function DashboardTeamWorkloadV2({ data, unassignedCount }: DashboardTeam
             return (
               <button
                 key={member.profile_id}
-                onClick={() => navigate(`/planner/boards?assignee=${member.profile_id}`)}
+                onClick={() => navigate(`/planner/task-list?assignee=${member.profile_id}`)}
                 className={cn(
                   'w-full flex items-center gap-3 p-2 rounded-md',
                   'hover:bg-slate-50 dark:hover:bg-slate-700/50',

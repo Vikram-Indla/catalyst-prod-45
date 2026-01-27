@@ -1,9 +1,11 @@
 /**
  * Task List Page - Planner V9
  * Main page component orchestrating all task list features
+ * Reads URL params for filtering from dashboard CTAs
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { TaskListHeader } from './TaskListHeader';
 import { TaskListToolbar } from './TaskListToolbar';
 import { TaskListTable } from './TaskListTable';
@@ -24,12 +26,45 @@ const DEFAULT_COLUMNS = new Set([
 ]);
 
 export function TaskListPage({ onTaskClick, onCreateTask }: TaskListPageProps) {
-  // Filter state
-  const [filters, setFilters] = useState<TaskListFilters>({});
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Parse initial filters from URL
+  const getInitialFilters = useCallback((): TaskListFilters => {
+    const filters: TaskListFilters = {};
+    
+    const workstream = searchParams.get('workstream');
+    const status = searchParams.get('status');
+    const assignee = searchParams.get('assignee');
+    const filter = searchParams.get('filter');
+    const search = searchParams.get('search');
+    
+    if (workstream) filters.workstream = workstream;
+    if (status) filters.status = status;
+    if (assignee && assignee !== 'unassigned') filters.assignee = assignee;
+    if (search) filters.search = search;
+    
+    // Special filters
+    if (filter === 'overdue') filters.overdueOnly = true;
+    if (filter === 'blocked') filters.blockedOnly = true;
+    if (assignee === 'unassigned') {
+      // Unassigned filter - assignee is null
+      filters.assignee = null;
+    }
+    
+    return filters;
+  }, [searchParams]);
+
+  // Filter state - initialized from URL
+  const [filters, setFilters] = useState<TaskListFilters>(getInitialFilters);
   const [sorting, setSorting] = useState<TaskListSorting>({ field: 'priority', direction: 'asc' });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(DEFAULT_COLUMNS);
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
+
+  // Sync URL params to filter state when URL changes
+  useEffect(() => {
+    setFilters(getInitialFilters());
+  }, [searchParams, getInitialFilters]);
 
   // Data fetching
   const { data: tasks = [], isLoading } = useTaskList(filters, sorting);

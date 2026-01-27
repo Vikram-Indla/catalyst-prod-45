@@ -124,7 +124,7 @@ export function DashboardUpcomingDeadlinesV2({ data, className }: DashboardUpcom
           return (
             <button
               key={task.id}
-              onClick={() => navigate(`/planner/boards?task=${task.id}`)}
+              onClick={() => navigate(`/planner/task-list?task=${task.id}`)}
               className={cn(
                 'w-full flex items-center gap-2 px-2 py-1.5 rounded text-left',
                 'hover:bg-slate-50 dark:hover:bg-slate-700/50',
