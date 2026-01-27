@@ -160,8 +160,8 @@ export function BudgetLedgerTable({
       return <ArrowUpDown className="w-3 h-3 ml-1 opacity-40" />;
     }
     return sortDirection === 'asc' 
-      ? <ArrowUp className="w-3 h-3 ml-1 text-blue-600" />
-      : <ArrowDown className="w-3 h-3 ml-1 text-blue-600" />;
+      ? <ArrowUp className="w-3 h-3 ml-1 text-primary" />
+      : <ArrowDown className="w-3 h-3 ml-1 text-primary" />;
   };
 
   // Get resources for an assignment
@@ -217,7 +217,7 @@ export function BudgetLedgerTable({
         </h3>
         <div className="flex items-center gap-3">
           <button 
-            className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded px-2 py-1"
+            className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded px-2 py-1"
             onClick={exportToCSV}
             title="Export to CSV"
             aria-label="Export ledger to CSV file"
@@ -226,7 +226,7 @@ export function BudgetLedgerTable({
             Export
           </button>
           <button 
-            className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded px-2 py-1"
+            className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded px-2 py-1"
             onClick={toggleCTC}
             aria-pressed={!isHidden}
             aria-label={isHidden ? 'Show CTC values' : 'Hide CTC values'}
@@ -246,7 +246,7 @@ export function BudgetLedgerTable({
               <button 
                 type="button"
                 onClick={() => handleSort('name')}
-                className="flex items-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                className="flex items-center w-full hover:text-primary transition-colors focus-visible:outline-none focus-visible:text-primary"
                 aria-sort={sortField === 'name' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
               >
                 Assignment
@@ -257,7 +257,7 @@ export function BudgetLedgerTable({
               <button 
                 type="button"
                 onClick={() => handleSort('type')}
-                className="flex items-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                className="flex items-center w-full hover:text-primary transition-colors focus-visible:outline-none focus-visible:text-primary"
                 aria-sort={sortField === 'type' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
               >
                 Type
@@ -268,7 +268,7 @@ export function BudgetLedgerTable({
               <button 
                 type="button"
                 onClick={() => handleSort('status')}
-                className="flex items-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                className="flex items-center w-full hover:text-primary transition-colors focus-visible:outline-none focus-visible:text-primary"
                 aria-sort={sortField === 'status' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
               >
                 Status
@@ -279,7 +279,7 @@ export function BudgetLedgerTable({
               <button 
                 type="button"
                 onClick={() => handleSort('vendor')}
-                className="flex items-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                className="flex items-center w-full hover:text-primary transition-colors focus-visible:outline-none focus-visible:text-primary"
                 aria-sort={sortField === 'vendor' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
               >
                 Vendor
@@ -290,7 +290,7 @@ export function BudgetLedgerTable({
               <button 
                 type="button"
                 onClick={() => handleSort('resourceCount')}
-                className="flex items-center justify-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                className="flex items-center justify-center w-full hover:text-primary transition-colors focus-visible:outline-none focus-visible:text-primary"
                 aria-sort={sortField === 'resourceCount' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
               >
                 Resources
@@ -301,7 +301,7 @@ export function BudgetLedgerTable({
               <button 
                 type="button"
                 onClick={() => handleSort('budget')}
-                className="flex items-center justify-end w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                className="flex items-center justify-end w-full hover:text-primary transition-colors focus-visible:outline-none focus-visible:text-primary"
                 aria-sort={sortField === 'budget' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
               >
                 Budget (SAR)
@@ -330,10 +330,6 @@ export function BudgetLedgerTable({
                   )}
                   data-type={a.type}
                   onClick={() => hasResources && toggleRow(a.id)}
-                  style={isExpanded ? { 
-                    background: '#eff6ff', 
-                    boxShadow: 'inset 4px 0 0 #2563eb' 
-                  } : undefined}
                 >
                   {/* Expand Arrow - Clear affordance */}
                   <td className="center expand-cell" style={{ width: 40 }}>
@@ -342,8 +338,8 @@ export function BudgetLedgerTable({
                         className={cn(
                           "w-5 h-5 flex-shrink-0 transition-transform duration-200",
                           isExpanded 
-                            ? "rotate-90 text-blue-600" 
-                            : "text-slate-400"
+                            ? "rotate-90 text-primary" 
+                            : "text-muted-foreground"
                         )} 
                       />
                     ) : (
@@ -384,35 +380,35 @@ export function BudgetLedgerTable({
                         <span className="vendor-name">{a.vendor}</span>
                       </div>
                     ) : (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-muted-foreground">—</span>
                     )}
                   </td>
                   
                   {/* Resources Count - JetBrains Mono */}
                   <td className="center">
                     {a.type === 'Outsourced' ? (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-muted-foreground">—</span>
                     ) : (
-                      <span className="font-mono font-semibold text-slate-700">{a.resourceCount || 0}</span>
+                      <span className="font-mono font-semibold text-foreground">{a.resourceCount || 0}</span>
                     )}
                   </td>
                   
                   {/* Budget Value - COLOR BY TYPE, clean hidden state */}
                   <td className="right">
                     {isHidden ? (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-muted-foreground">—</span>
                     ) : (
                       <>
                         <span className={cn(
                           'font-mono font-semibold',
-                          a.type === 'Insourced' && 'text-blue-600',
-                          a.type === 'Cosourced' && 'text-teal-600',
-                          a.type === 'Outsourced' && 'text-amber-600'
+                          a.type === 'Insourced' && 'text-[color:var(--budget-insourced)]',
+                          a.type === 'Cosourced' && 'text-[color:var(--budget-cosourced)]',
+                          a.type === 'Outsourced' && 'text-[color:var(--budget-outsourced)]'
                         )}>
                           {formatBudget(a.budget)}
                         </span>
                         {a.computed && (
-                          <span className="text-[10px] font-medium ml-1 text-slate-400">ƒ</span>
+                          <span className="text-[10px] font-medium ml-1 text-muted-foreground">ƒ</span>
                         )}
                       </>
                     )}
@@ -421,7 +417,7 @@ export function BudgetLedgerTable({
                   {/* Payment Status - Clear badges or dash */}
                   <td className="center">
                     {a.type === 'Insourced' ? (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-muted-foreground">—</span>
                     ) : (
                       <span className={cn('payment-badge', getPaymentClass(a.paymentStatus, a.type))}>
                         {formatPayment(a.paymentStatus, a.type)}
@@ -432,55 +428,55 @@ export function BudgetLedgerTable({
                 
                 {/* Expanded Resources Row */}
                 {isExpanded && assignmentResources.length > 0 && (
-                  <tr className="bg-slate-50">
-                    <td colSpan={8} className="p-0 border-b border-slate-200">
+                  <tr className="bg-muted/40">
+                    <td colSpan={8} className="p-0 border-b border-border">
                       <div className="ml-14 mr-4 my-4">
                         {/* Resources Header */}
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                             Resources ({assignmentResources.length})
                           </span>
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-muted-foreground">
                             Total Monthly CTC: 
-                            <span className="font-mono font-semibold text-slate-700 ml-1">
+                            <span className="font-mono font-semibold text-foreground ml-1">
                               {isHidden ? '••••••' : `${totalCTC.toLocaleString()} SAR`}
                             </span>
                           </span>
                         </div>
                         
                         {/* Resources Table Container */}
-                        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                        <div className="bg-card rounded-lg border border-border overflow-hidden shadow-sm">
                           <table className="w-full">
                             <thead>
-                              <tr className="bg-slate-50 border-b border-slate-200">
-                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider w-16">RID</th>
-                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Role</th>
-                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider w-24">Type</th>
-                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-slate-500 uppercase tracking-wider w-28">Vendor</th>
-                                <th className="px-4 py-2.5 text-right text-[10px] font-semibold text-slate-500 uppercase tracking-wider w-32">Monthly CTC</th>
+                              <tr className="bg-muted/30 border-b border-border">
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider w-16">RID</th>
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Name</th>
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Role</th>
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider w-24">Type</th>
+                                <th className="px-4 py-2.5 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider w-28">Vendor</th>
+                                <th className="px-4 py-2.5 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider w-32">Monthly CTC</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-border/60">
                               {assignmentResources.map((r, idx) => (
                                 <tr 
                                   key={r.id} 
                                   className={cn(
-                                    'hover:bg-blue-50/50 transition-colors',
-                                    idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'
+                                    'hover:bg-muted/40 transition-colors',
+                                    idx % 2 === 0 ? 'bg-card' : 'bg-muted/10'
                                   )}
                                 >
                                   <td className="px-4 py-3">
-                                    <span className="font-mono text-xs text-slate-500">{r.rid || '—'}</span>
+                                    <span className="font-mono text-xs text-muted-foreground">{r.rid || '—'}</span>
                                   </td>
                                   <td className="px-4 py-3">
-                                    <span className="font-medium text-sm text-slate-800">{r.name}</span>
+                                    <span className="font-medium text-sm text-foreground">{r.name}</span>
                                   </td>
                                   <td className="px-4 py-3">
-                                    <span className="text-sm text-slate-600">{r.role || '—'}</span>
+                                    <span className="text-sm text-muted-foreground">{r.role || '—'}</span>
                                   </td>
                                   <td className="px-4 py-3">
-                            <span className="inline-flex items-center gap-2 text-sm text-slate-600">
+                            <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
                               <span className={cn(
                                 "w-2 h-2 rounded-full",
                                 r.resourceType === 'Variable' ? 'bg-blue-600' :
@@ -492,17 +488,17 @@ export function BudgetLedgerTable({
                             </span>
                                   </td>
                                   <td className="px-4 py-3">
-                                    <span className="text-sm text-slate-600">{r.vendorName || '—'}</span>
+                                    <span className="text-sm text-muted-foreground">{r.vendorName || '—'}</span>
                                   </td>
                                   <td className="px-4 py-3 text-right">
                                     {isHidden ? (
-                                      <span className="font-mono text-sm text-slate-400">••••••</span>
+                                      <span className="font-mono text-sm text-muted-foreground">••••••</span>
                                     ) : r.ctc ? (
-                                      <span className="font-mono text-sm font-semibold text-slate-800">
+                                      <span className="font-mono text-sm font-semibold text-foreground">
                                         {r.ctc.toLocaleString()}
                                       </span>
                                     ) : (
-                                      <span className="inline-flex px-2 py-0.5 rounded bg-red-50 text-red-600 text-[10px] font-semibold">
+                                      <span className="inline-flex px-2 py-0.5 rounded bg-destructive/15 text-destructive text-[10px] font-semibold">
                                         Missing
                                       </span>
                                     )}
@@ -527,19 +523,19 @@ export function BudgetLedgerTable({
         <div className="footer-totals">
           <div className="footer-total">
             <div className="footer-total-label">Insourced</div>
-            <div className="footer-total-value text-blue-600">
+              <div className="footer-total-value text-[color:var(--budget-insourced)]">
               {isHidden ? '••••••' : formatBudget(totals.insourced)}
             </div>
           </div>
           <div className="footer-total">
             <div className="footer-total-label">Cosourced</div>
-            <div className="footer-total-value text-teal-600">
+              <div className="footer-total-value text-[color:var(--budget-cosourced)]">
               {isHidden ? '••••••' : formatBudget(totals.cosourced)}
             </div>
           </div>
           <div className="footer-total">
             <div className="footer-total-label">Outsourced</div>
-            <div className="footer-total-value text-amber-600">
+              <div className="footer-total-value text-[color:var(--budget-outsourced)]">
               {isHidden ? '••••••' : formatBudget(totals.outsourced)}
             </div>
           </div>

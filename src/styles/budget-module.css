@@ -109,6 +109,39 @@
 }
 
 /* ============================================
+   DARK MODE — Map V8 budget tokens to the global theme
+   Ensures no white surfaces leak in dark mode.
+   ============================================ */
+.dark .budget-module,
+[data-theme="dark"] .budget-module {
+  /* Neutrals (token-mapped) */
+  --slate-900: hsl(var(--foreground));
+  --slate-800: hsl(var(--foreground) / 0.92);
+  --slate-700: hsl(var(--foreground) / 0.82);
+  --slate-600: hsl(var(--muted-foreground));
+  --slate-500: hsl(var(--muted-foreground));
+  --slate-400: hsl(var(--muted-foreground) / 0.75);
+  --slate-300: hsl(var(--border) / 0.45);
+  --slate-200: hsl(var(--border) / 0.35);
+  --slate-100: hsl(var(--muted) / 0.55);
+  --slate-50: hsl(var(--muted) / 0.35);
+  --white: hsl(var(--card));
+
+  /* Surfaces + text */
+  --budget-bg-page: hsl(var(--background));
+  --budget-bg-surface: hsl(var(--card));
+  --budget-text-primary: hsl(var(--foreground));
+  --budget-text-secondary: hsl(var(--foreground) / 0.82);
+  --budget-text-muted: hsl(var(--muted-foreground));
+  --budget-border: hsl(var(--border) / 0.35);
+  --budget-border-strong: hsl(var(--border) / 0.5);
+
+  /* Primary surfaces used in info/expanded rows */
+  --budget-primary-bg: hsl(var(--primary) / 0.12);
+  --budget-primary-light: hsl(var(--primary) / 0.14);
+}
+
+/* ============================================
    V8 PERIOD TOGGLE — Pill-style with clear hierarchy
    Spec: Pill container with rounded-xl, active has white bg + shadow
    ============================================ */
@@ -543,7 +576,7 @@
    ============================================ */
 .budget-module td {
   padding: 8px 14px; /* Reduced from 10px */
-  border-bottom: 1px solid #f1f5f9; /* slate-100 - subtle divider */
+  border-bottom: 1px solid var(--slate-100); /* tokenized divider */
   vertical-align: middle;
   font-size: 13px;
   color: var(--budget-text-primary);
@@ -563,18 +596,18 @@
 .budget-module .expand-chevron {
   width: 20px !important;
   height: 20px !important;
-  color: #475569 !important; /* slate-600 - darker */
+  color: var(--slate-600) !important;
   transition: all 0.2s ease !important;
 }
 
 /* Arrow turns blue on row hover */
 .budget-module tbody tr.ledger-row:hover td.expand-cell svg {
-  color: #2563eb !important; /* blue-600 */
+  color: var(--budget-primary) !important;
 }
 
 /* Arrow rotated + blue when expanded */
 .budget-module td.expand-cell svg.rotate-90 {
-  color: #2563eb !important;
+  color: var(--budget-primary) !important;
 }
 
 .budget-module tbody tr {
@@ -583,15 +616,15 @@
 
 /* V8 UI POLISH: Row hover - slate-50 + blue left accent */
 .budget-module tbody tr.ledger-row:hover { 
-  background: #f8fafc !important; /* slate-50 */
-  box-shadow: inset 3px 0 0 #2563eb;
+  background: var(--slate-50) !important;
+  box-shadow: inset 3px 0 0 var(--budget-primary);
   cursor: pointer;
 }
 
 /* Expanded parent row */
 .budget-module tbody tr.expanded-parent {
-  background: #eff6ff !important;
-  box-shadow: inset 4px 0 0 #2563eb;
+  background: var(--budget-primary-bg) !important;
+  box-shadow: inset 4px 0 0 var(--budget-primary);
 }
 
 /* No border on last row */
@@ -658,13 +691,13 @@
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 2px;
-  color: #1e293b; /* slate-800 */
+  color: var(--slate-800);
 }
 
 .budget-module .assignment-info span {
   font-size: 12px;
   font-weight: 400;
-  color: #64748b; /* slate-500 */
+  color: var(--slate-500);
 }
 
 /* ============================================
@@ -681,19 +714,19 @@
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  background: #e2e8f0; /* slate-200 */
+  background: var(--slate-200);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10px;
   font-weight: 600;
-  color: #475569; /* slate-600 */
+  color: var(--slate-600);
   flex-shrink: 0;
 }
 
 .budget-module .vendor-name {
   font-size: 13px;
-  color: #334155; /* slate-700 */
+  color: var(--slate-700);
 }
 
 /* ============================================
