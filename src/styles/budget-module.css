@@ -537,10 +537,13 @@
 .budget-module th.right { text-align: right; }
 .budget-module th.center { text-align: center; }
 
-/* V8 QA: Table cells - TIGHTER padding (12px vs 20px+) */
+/* ============================================
+   V8 UI POLISH: Table cells - TIGHT 10px padding
+   Target row height: ~48px (not 60px+)
+   ============================================ */
 .budget-module td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--budget-border);
+  padding: 8px 14px; /* Reduced from 10px */
+  border-bottom: 1px solid #f1f5f9; /* slate-100 - subtle divider */
   vertical-align: middle;
   font-size: 13px;
   color: var(--budget-text-primary);
@@ -549,26 +552,49 @@
 .budget-module td.right { text-align: right; }
 .budget-module td.center { text-align: center; }
 
-/* Expand cell styling */
+/* Expand cell styling - bigger arrows */
 .budget-module td.expand-cell {
-  padding: 10px 8px;
+  padding: 8px 10px;
+  width: 44px;
+}
+
+/* Expand arrows - MORE VISIBLE (slate-600, 20px) */
+.budget-module td.expand-cell svg,
+.budget-module .expand-chevron {
+  width: 20px !important;
+  height: 20px !important;
+  color: #475569 !important; /* slate-600 - darker */
+  transition: all 0.2s ease !important;
+}
+
+/* Arrow turns blue on row hover */
+.budget-module tbody tr.ledger-row:hover td.expand-cell svg {
+  color: #2563eb !important; /* blue-600 */
+}
+
+/* Arrow rotated + blue when expanded */
+.budget-module td.expand-cell svg.rotate-90 {
+  color: #2563eb !important;
 }
 
 .budget-module tbody tr {
   transition: all 0.15s ease;
 }
 
-/* V8 QA: Row hover - slate-50 background + left border hint */
+/* V8 UI POLISH: Row hover - slate-50 + blue left accent */
 .budget-module tbody tr.ledger-row:hover { 
   background: #f8fafc !important; /* slate-50 */
   box-shadow: inset 3px 0 0 #2563eb;
+  cursor: pointer;
 }
 
 /* Expanded parent row */
 .budget-module tbody tr.expanded-parent {
   background: #eff6ff !important;
+  box-shadow: inset 4px 0 0 #2563eb;
 }
 
+/* No border on last row */
 .budget-module tbody tr:last-child td { 
   border-bottom: none; 
 }
@@ -701,33 +727,45 @@
   border-color: #fcd34d; /* amber-300 */
 }
 
-/* Status Badge - V8 QA: ALL use same component, different colors */
+/* ============================================
+   Status Badge - V8 UI POLISH
+   ALL statuses use SAME badge component with consistent styling
+   FIX: "Completed" now has proper badge (not plain text)
+   ============================================ */
 .budget-module .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 9999px; /* rounded-full */
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
+/* In Progress - Blue */
 .budget-module .status-badge.in-progress { 
   background: #dbeafe; /* blue-100 */
   color: #1d4ed8; /* blue-700 */
 }
+
+/* Completed - Slate (MUST have badge styling, not plain text) */
 .budget-module .status-badge.completed { 
-  background: #dcfce7; /* green-100 */
-  color: #166534; /* green-800 */
+  background: #f1f5f9 !important; /* slate-100 */
+  color: #475569 !important; /* slate-600 */
 }
+
+/* On Hold - Amber */
 .budget-module .status-badge.on-hold { 
   background: #fef3c7; /* amber-100 */
   color: #b45309; /* amber-700 */
 }
+
+/* Not Started / Yet to Start - Light slate */
 .budget-module .status-badge.yet-to-start,
 .budget-module .status-badge.not-started { 
   background: #f1f5f9; /* slate-100 */
-  color: #475569; /* slate-600 */
+  color: #64748b; /* slate-500 */
 }
 
 /* Payment Badge - V8 QA: Clear red for unpaid, green for on-track */

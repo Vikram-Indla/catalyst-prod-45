@@ -272,18 +272,24 @@ export function BudgetLedgerTable({
                     )}
                   </td>
                   
-                  {/* Budget Value - COLOR BY TYPE (Issue #1 fix) */}
+                  {/* Budget Value - COLOR BY TYPE, clean hidden state */}
                   <td className="right">
-                    <span className={cn(
-                      'font-mono font-semibold',
-                      a.type === 'Insourced' && 'text-blue-600',
-                      a.type === 'Cosourced' && 'text-teal-600',
-                      a.type === 'Outsourced' && 'text-amber-600'
-                    )}>
-                      {isHidden ? '••••••' : formatBudget(a.budget)}
-                    </span>
-                    {a.computed && (
-                      <span className="text-[10px] font-medium ml-1 text-slate-400">ƒ</span>
+                    {isHidden ? (
+                      <span className="text-slate-400">—</span>
+                    ) : (
+                      <>
+                        <span className={cn(
+                          'font-mono font-semibold',
+                          a.type === 'Insourced' && 'text-blue-600',
+                          a.type === 'Cosourced' && 'text-teal-600',
+                          a.type === 'Outsourced' && 'text-amber-600'
+                        )}>
+                          {formatBudget(a.budget)}
+                        </span>
+                        {a.computed && (
+                          <span className="text-[10px] font-medium ml-1 text-slate-400">ƒ</span>
+                        )}
+                      </>
                     )}
                   </td>
                   
