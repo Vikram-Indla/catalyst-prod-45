@@ -182,8 +182,8 @@ export function CatalystHeader() {
       >
         {/* ===== LOGO ZONE — Geometric Mark + Wordmark ===== */}
         <a 
-          className="flex items-center gap-2.5 flex-shrink-0 cursor-pointer no-underline"
-          style={{ marginRight: '32px' }}
+          className="flex items-center gap-2.5 flex-shrink-0 cursor-pointer no-underline rounded-md transition-colors hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+          style={{ marginRight: '32px', padding: '6px', margin: '-6px' }}
           onClick={() => navigate('/home')}
         >
           {/* Logo Mark — 28×28 blue rounded square with icon */}
@@ -196,6 +196,7 @@ export function CatalystHeader() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
             <svg 
@@ -211,12 +212,12 @@ export function CatalystHeader() {
               <path d="M17 9l-5 3 5 3"/>
             </svg>
           </div>
-          {/* Wordmark — NO gradient, just solid color */}
+          {/* Wordmark — NO gradient, theme-aware solid color */}
           <span 
+            className="text-[#18181B] dark:text-white"
             style={{ 
               fontSize: '15px', 
               fontWeight: 600, 
-              color: '#18181B',
               letterSpacing: '-0.01em',
             }}
           >
