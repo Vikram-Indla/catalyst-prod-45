@@ -1,9 +1,10 @@
 // ============================================================
-// MY TASKS PAGE - Dashboard Style (Planner V9 Aligned)
-// Matches PlannerDashboard layout and styling
+// MY TASKS PAGE - V8 Design System (Budget Planner Aligned)
+// Uses PageChrome + Budget Planner header styling
 // ============================================================
 
 import { useState, useCallback } from 'react';
+import { PageChrome } from '@/components/layout/PageChrome';
 import { PlannerSidebar } from '../components/PlannerSidebar';
 import { MyTasksContent } from '../components/my-tasks';
 import { useMyTasksRealtime } from '../hooks/useMyTasksRealtime';
@@ -84,15 +85,18 @@ export function MyTasksPage() {
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
-      {/* Main Content - Dashboard aligned styling */}
-      <div className="flex-1 flex flex-col h-full min-w-0 bg-slate-50 dark:bg-slate-900">
-        <MyTasksContent
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onOpenCreateModal={() => setIsCreateModalOpen(true)}
-          onOpenTaskDetail={handleOpenTaskDetail}
-        />
-      </div>
+      {/* Main Content with PageChrome - flex-1 to fill remaining width */}
+      <PageChrome hideHeader className="flex-1">
+        <div className="flex flex-col h-full bg-[hsl(var(--background))]">
+          {/* My Tasks Content - Budget Planner Aligned */}
+          <MyTasksContent
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onOpenCreateModal={() => setIsCreateModalOpen(true)}
+            onOpenTaskDetail={handleOpenTaskDetail}
+          />
+        </div>
+      </PageChrome>
 
       {/* Task Detail Drawer */}
       {detailTaskId && (
