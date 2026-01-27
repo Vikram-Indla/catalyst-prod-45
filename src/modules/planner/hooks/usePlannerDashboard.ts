@@ -29,7 +29,7 @@ export function useDashboardMetrics() {
         .single();
       
       if (error) throw error;
-      return data as DashboardMetrics;
+      return data as unknown as DashboardMetrics;
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,
@@ -68,7 +68,7 @@ export function useWorkstreamHealth() {
         .select('*');
       
       if (error) throw error;
-      return (data || []) as WorkstreamHealth[];
+      return (data || []) as unknown as WorkstreamHealth[];
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,
@@ -87,7 +87,7 @@ export function useUpcomingDeadlines() {
         .select('*');
       
       if (error) throw error;
-      return (data || []) as UpcomingDeadline[];
+      return (data || []) as unknown as UpcomingDeadline[];
     },
     staleTime: STALE_TIME,
     refetchInterval: REFETCH_INTERVAL,

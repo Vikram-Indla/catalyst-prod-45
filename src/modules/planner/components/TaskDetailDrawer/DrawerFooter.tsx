@@ -76,7 +76,7 @@ export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps)
       // Clone task without id, key, timestamps
       const { error } = await supabase
         .from('planner_tasks')
-        .insert({
+        .insert([{
           title: `${task.title} (Copy)`,
           description: task.description,
           status_id: task.status_id,
@@ -86,8 +86,9 @@ export function DrawerFooter({ task, onDelete, onDuplicate }: DrawerFooterProps)
           due_date: task.due_date,
           start_date: task.start_date,
           key: newKey,
+          task_key: newKey,
           position: task.position + 1,
-        });
+        }]);
 
       if (error) throw error;
 
