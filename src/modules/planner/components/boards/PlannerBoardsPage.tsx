@@ -108,6 +108,7 @@ export function PlannerBoardsPage({
         icon={Kanban}
         title="Boards"
         subtitle="Drag and drop tasks across status columns"
+        onAddTask={() => setIsCreateOpen(true)}
       />
 
       {/* Filter Bar - positioned below header */}

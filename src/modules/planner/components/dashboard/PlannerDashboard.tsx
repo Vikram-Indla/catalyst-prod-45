@@ -12,8 +12,9 @@ import { DashboardWorkstreamHealthV2 } from './DashboardWorkstreamHealthV2';
 import { DashboardUpcomingDeadlinesV2 } from './DashboardUpcomingDeadlinesV2';
 import { DashboardTeamWorkloadV2 } from './DashboardTeamWorkloadV2';
 import { DashboardSkeleton } from './DashboardSkeleton';
+import { CreateTaskModal } from '../kanban';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, LayoutDashboard, Calendar } from 'lucide-react';
+import { RefreshCw, LayoutDashboard, Calendar, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -38,6 +39,7 @@ export function PlannerDashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [dateRange, setDateRange] = useState('this-week');
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -102,6 +104,15 @@ export function PlannerDashboard() {
             <RefreshCw className={cn("w-3.5 h-3.5", isRefreshing && "animate-spin")} />
             Refresh
           </Button>
+          
+          {/* Add Task Button */}
+          <Button
+            onClick={() => setIsCreateOpen(true)}
+            className="h-8 gap-1.5 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Task
+          </Button>
         </div>
       </div>
 
@@ -133,6 +144,12 @@ export function PlannerDashboard() {
         {/* Attention Required - Full width, expands to fill remaining space */}
         <DashboardUpcomingDeadlinesV2 data={upcomingDeadlines} className="flex-1 min-h-[200px]" />
       </div>
+
+      {/* Create Task Modal */}
+      <CreateTaskModal
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+      />
     </div>
   );
 }

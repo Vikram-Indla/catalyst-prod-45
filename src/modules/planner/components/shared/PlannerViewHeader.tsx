@@ -1,23 +1,29 @@
 // ============================================================
 // PLANNER VIEW HEADER - Unified V9 style header for all views
 // Matches Dashboard header pattern: icon + title + subtitle + actions
+// Includes Add Task button as standard action
 // ============================================================
 
 import React, { ReactNode } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface PlannerViewHeaderProps {
   icon: LucideIcon;
   title: string;
   subtitle: string;
   actions?: ReactNode;
+  onAddTask?: () => void;
+  showAddTask?: boolean;
 }
 
 export function PlannerViewHeader({ 
   icon: Icon, 
   title, 
   subtitle, 
-  actions 
+  actions,
+  onAddTask,
+  showAddTask = true,
 }: PlannerViewHeaderProps) {
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
@@ -35,11 +41,19 @@ export function PlannerViewHeader({
         </div>
       </div>
       
-      {actions && (
-        <div className="flex items-center gap-2">
-          {actions}
-        </div>
-      )}
+      <div className="flex items-center gap-2">
+        {actions}
+        
+        {showAddTask && onAddTask && (
+          <Button
+            onClick={onAddTask}
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Task
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

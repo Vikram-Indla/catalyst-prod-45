@@ -3,6 +3,7 @@
 // Main page for viewing all workstreams with health and stats
 // ============================================================
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layers, RefreshCw, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,11 +11,13 @@ import { Button } from '@/components/ui/button';
 import { useWorkstreamsSummary } from './useWorkstreamsSummary';
 import { WorkstreamsSummaryBar } from './WorkstreamsSummaryBar';
 import { WorkstreamCard } from './WorkstreamCard';
+import { CreateTaskModal } from '../kanban';
 import { motion } from 'framer-motion';
 
 export function WorkstreamsPage() {
   const navigate = useNavigate();
   const { data, isLoading, refetch, isRefetching } = useWorkstreamsSummary();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const handleWorkstreamClick = (workstreamId: string, workstreamName: string) => {
     // Navigate to task list filtered by this workstream
@@ -52,6 +55,13 @@ export function WorkstreamsPage() {
             >
               <RefreshCw className={cn('w-4 h-4', isRefetching && 'animate-spin')} />
               Refresh
+            </Button>
+            <Button
+              onClick={() => setIsCreateOpen(true)}
+              className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25"
+            >
+              <Plus className="w-4 h-4" />
+              Add Task
             </Button>
           </div>
         </div>
@@ -111,6 +121,12 @@ export function WorkstreamsPage() {
           </>
         ) : null}
       </div>
+
+      {/* Create Task Modal */}
+      <CreateTaskModal
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+      />
     </div>
   );
 }
