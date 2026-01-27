@@ -8,15 +8,25 @@ import { BoardKanban } from './BoardKanban';
 import { BoardFiltersBar } from './BoardFiltersBar';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
+import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
 
 export function PlannerBoardsPage() {
   const [filters, setFilters] = useState<BoardFilters>({});
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createStatusId, setCreateStatusId] = useState<string | undefined>();
+  
+  // Task detail drawer state
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleTaskClick = useCallback((task: BoardTask) => {
-    // Navigate to task detail or open drawer - for now just log
-    console.log('Task clicked:', task.key);
+    setSelectedTaskId(task.id);
+    setIsDrawerOpen(true);
+  }, []);
+
+  const handleCloseDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+    setSelectedTaskId(null);
   }, []);
 
   const handleAddTask = useCallback((statusId?: string) => {
@@ -44,6 +54,14 @@ export function PlannerBoardsPage() {
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         defaultStatusId={createStatusId}
+      />
+
+      {/* Task Detail Drawer */}
+      <TaskDetailDrawer
+        taskId={selectedTaskId}
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+        onClose={handleCloseDrawer}
       />
     </div>
   );
