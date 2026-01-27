@@ -59,7 +59,8 @@ export function SingleResourceEditModal({
   };
 
   const handleSave = async () => {
-    if (!ctcValue) {
+    // Allow zero values - only block if empty string
+    if (ctcValue === '' || ctcValue === undefined) {
       toast.error('Please enter a CTC value');
       return;
     }
@@ -196,10 +197,10 @@ export function SingleResourceEditModal({
           </button>
           <button
             onClick={handleSave}
-            disabled={!ctcValue || parseInt(ctcValue) <= 0 || isSaving}
+            disabled={ctcValue === '' || ctcValue === undefined || parseInt(ctcValue) < 0 || isSaving}
             className={cn(
               'px-4 py-2 text-sm font-medium rounded-lg transition-all',
-              ctcValue && parseInt(ctcValue) > 0
+              ctcValue !== '' && ctcValue !== undefined && parseInt(ctcValue) >= 0
                 ? 'bg-blue-600 text-white hover:bg-blue-700'
                 : 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
             )}
