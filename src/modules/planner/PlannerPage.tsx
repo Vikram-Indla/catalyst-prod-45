@@ -17,6 +17,7 @@ import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './c
 import { PlannerSettings } from './components/PlannerSettings';
 import { PlannerDashboard } from './components/dashboard';
 import { PlannerBoardsPage } from './components/boards';
+import { WorkstreamsPage } from './components/workstreams';
 
 import { PlannerCreateModal } from './components/PlannerCreateModal';
 import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
@@ -424,7 +425,7 @@ export function PlannerPage() {
       case 'ai-insights':
         return <MonthlyChronicleView />;
       case 'workstreams':
-        return <PlannerSettings />;
+        return <WorkstreamsPage />;
       case 'settings':
         return <PlannerSettings />;
       default:
@@ -447,7 +448,7 @@ export function PlannerPage() {
       {/* Right column: header + search + view content */}
       <div className="flex flex-col flex-1 min-w-0 min-h-0">
         {/* Header with breadcrumb - hidden on dashboard, boards, task-list, timeline, calendar (all have their own V9 headers) */}
-        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && (
+        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && (
           <div className="shrink-0" style={{ backgroundColor: 'var(--bg)', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
             <div
               className="flex items-center justify-between px-6"
@@ -475,7 +476,7 @@ export function PlannerPage() {
               {/* Right: Export + Action Buttons */}
               <div className="flex items-center gap-2">
                 {/* Export Buttons - Show on all views except workstreams/settings */}
-                {activeView !== 'workstreams' && activeView !== 'settings' && (
+                {activeView !== 'settings' && (
                   <>
                     <Button
                       variant="outline"
@@ -529,7 +530,7 @@ export function PlannerPage() {
                 )}
 
                 {/* Create Task Button - hidden on teams/settings/insight views */}
-                {activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
+                {activeView !== 'settings' && !isInsightView(activeView) && (
                   <Button
                     size="sm"
                     onClick={() => {
