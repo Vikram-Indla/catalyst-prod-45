@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useMyTasksSummary } from '../../hooks/useMyTasks';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import type { FilterConfig } from '../../types/my-tasks';
 
 interface MyTasksHeaderProps {
@@ -42,7 +41,6 @@ export function MyTasksHeader({
   isFocusModeActive = false,
 }: MyTasksHeaderProps) {
   const { data: summary, isLoading } = useMyTasksSummary();
-  const { data: workstreams = [] } = usePlannerWorkstreams();
 
   const statsChips = [
     { 
@@ -201,11 +199,13 @@ export function MyTasksHeader({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Workstreams</SelectItem>
-            {workstreams.map((ws) => (
-              <SelectItem key={ws.id} value={ws.id}>
-                {ws.name}
-              </SelectItem>
-            ))}
+            <SelectItem value="senaie">Senaie</SelectItem>
+            <SelectItem value="catalyst">Catalyst</SelectItem>
+            <SelectItem value="tahommona">Tahommona</SelectItem>
+            <SelectItem value="delivery">Delivery</SelectItem>
+            <SelectItem value="mim">MIM</SelectItem>
+            <SelectItem value="standalone">Stand-Alone</SelectItem>
+            <SelectItem value="dataai">Data & AI</SelectItem>
           </SelectContent>
         </Select>
 

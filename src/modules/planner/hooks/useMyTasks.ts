@@ -39,9 +39,13 @@ export function useMyTasks(filters: FilterConfig = {}) {
       let query = supabase
         .from('planner_my_tasks')
         .select('*')
-        .eq('assignee_id', user?.id)
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('sort_order', { ascending: true });
+
+      // Filter by assignee if user is logged in (otherwise show all for demo)
+      if (user?.id) {
+        query = query.eq('assignee_id', user.id);
+      }
 
       // Apply filters
       if (filters.timeSection) {
@@ -64,7 +68,8 @@ export function useMyTasks(filters: FilterConfig = {}) {
       if (error) throw error;
       return data as MyTask[];
     },
-    enabled: !!user?.id,
+    // Enable query even without user for demo purposes
+    enabled: true,
   });
 }
 
@@ -77,11 +82,16 @@ export function useMyTasksSummary() {
   return useQuery({
     queryKey: myTasksKeys.summary(),
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('planner_my_tasks_summary')
-        .select('*')
-        .eq('assignee_id', user?.id)
-        .single();
+        .select('*');
+      
+      // Filter by assignee if user is logged in (otherwise get global summary for demo)
+      if (user?.id) {
+        query = query.eq('assignee_id', user.id);
+      }
+      
+      const { data, error } = await query.maybeSingle();
 
       if (error && error.code !== 'PGRST116') throw error;
       return (data || {
@@ -94,7 +104,8 @@ export function useMyTasksSummary() {
         total_tasks: 0,
       }) as TaskSummary;
     },
-    enabled: !!user?.id,
+    // Enable query even without user for demo purposes
+    enabled: true,
   });
 }
 
