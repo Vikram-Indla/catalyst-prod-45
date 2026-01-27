@@ -6,11 +6,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkstreamData, WorkstreamsSummary, WorkstreamMember } from './types';
-import { calculateHealth, getWorkstreamColor, getWorkstreamCode } from './types';
+import { calculateHealth, getWorkstreamCode } from './types';
 
 interface RawWorkstreamRow {
   id: string;
   name: string;
+  color: string | null;
 }
 
 interface TaskAggregation {
@@ -27,11 +28,11 @@ export function useWorkstreamsSummary() {
   return useQuery({
     queryKey: ['workstreams-summary'],
     queryFn: async (): Promise<{ workstreams: WorkstreamData[]; summary: WorkstreamsSummary }> => {
-      // Fetch workstreams
+      // Fetch workstreams with color from database
       const { data: workstreamsRaw, error: wsError } = await supabase
         .from('planner_workstreams')
-        .select('id, name')
-        .order('name');
+        .select('id, name, color')
+        .order('sort_order');
 
       if (wsError) throw wsError;
 
@@ -132,7 +133,7 @@ export function useWorkstreamsSummary() {
           id: ws.id,
           name: ws.name,
           code: getWorkstreamCode(ws.name),
-          color: getWorkstreamColor(ws.name),
+          color: ws.color || '#64748b', // Use database color, fallback to slate
           task_count: taskCount,
           overdue_count: overdueCount,
           completed_count: completedCount,

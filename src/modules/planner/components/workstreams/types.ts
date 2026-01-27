@@ -58,46 +58,16 @@ export function calculateHealth(
   return 'healthy';
 }
 
-// Workstream color palette from spec
-export const WORKSTREAM_PALETTE: Record<string, string> = {
-  'Senaie': '#06b6d4',
-  'Senaie Track': '#06b6d4',
-  'Catalyst': '#8b5cf6',
-  'Catalyst Track': '#8b5cf6',
-  'Tahommona': '#6366f1',
-  'Tahommona Track': '#6366f1',
-  'Delivery': '#f97316',
-  'Delivery Track': '#f97316',
-  'MIM': '#ec4899',
-  'MIM Website': '#ec4899',
-  'MIM Website Track': '#ec4899',
-  'Stand-Alone Projects': '#84cc16',
-  'Stand-Alone Projects Track': '#84cc16',
-  'Data & AI': '#14b8a6',
-  'Data & AI Track': '#14b8a6',
-};
-
-export function getWorkstreamColor(name: string): string {
-  return WORKSTREAM_PALETTE[name] || '#64748b';
-}
-
+// Generate workstream code from name
 export function getWorkstreamCode(name: string): string {
   const codeMap: Record<string, string> = {
     'Senaie': 'SEN',
-    'Senaie Track': 'SEN',
     'Catalyst': 'CAT',
-    'Catalyst Track': 'CAT',
     'Tahommona': 'TAH',
-    'Tahommona Track': 'TAH',
     'Delivery': 'DEL',
-    'Delivery Track': 'DEL',
     'MIM': 'MIM',
-    'MIM Website': 'MIM',
-    'MIM Website Track': 'MIM',
-    'Stand-Alone Projects': 'STD',
-    'Stand-Alone Projects Track': 'STD',
+    'Stand-Alone': 'STD',
     'Data & AI': 'DAI',
-    'Data & AI Track': 'DAI',
   };
   return codeMap[name] || name.slice(0, 3).toUpperCase();
 }
