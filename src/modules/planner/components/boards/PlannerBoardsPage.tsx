@@ -4,10 +4,12 @@
 // ============================================================
 
 import { useState, useCallback, useMemo } from 'react';
+import { Kanban } from 'lucide-react';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
 import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
+import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 
 export interface PlannerBoardsPageProps {
   // Parent filters from PlannerPage
@@ -68,9 +70,16 @@ export function PlannerBoardsPage({
   }, []);
 
   return (
-    <div className="planner-v9 flex flex-col h-full">
+    <div className="planner-v9 flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+      {/* V9 Header */}
+      <PlannerViewHeader
+        icon={Kanban}
+        title="Boards"
+        subtitle="Drag and drop tasks across status columns"
+      />
+
       {/* Kanban Board */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-auto">
         <BoardKanban
           filters={filters}
           onTaskClick={handleTaskClick}

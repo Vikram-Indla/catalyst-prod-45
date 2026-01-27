@@ -10,7 +10,8 @@ import {
   Lock, 
   MoreHorizontal,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  List
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -25,6 +26,7 @@ import { COLUMN_CONFIG, PRIORITY_CONFIG, STATUS_STYLE_CONFIG } from '../types';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { PlannerViewHeader } from './shared/PlannerViewHeader';
 
 interface PlannerTaskListProps {
   tasks: PlannerTask[];
@@ -188,7 +190,14 @@ export function PlannerTaskList({
   const visibleColumnDefs = ALL_COLUMNS.filter(col => visibleColumns.has(col.id));
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900">
+      {/* V9 Header */}
+      <PlannerViewHeader
+        icon={List}
+        title="Task List"
+        subtitle={`${tasks.length} tasks with sortable columns`}
+      />
+
       {/* Table */}
       <div className="flex-1 overflow-auto">
         <table className="w-full text-sm">
