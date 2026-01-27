@@ -983,3 +983,220 @@
 .cpg-tooltip-value {
   font-family: var(--cpg-font-mono) !important;
 }
+
+/* ============================================================
+   DARK MODE OVERRIDES
+   Applied when html has class="dark" or data-theme="dark"
+   ============================================================ */
+html.dark .capacity-gantt-container,
+html[data-theme="dark"] .capacity-gantt-container {
+  /* Override dark mode design tokens */
+  --cpg-slate-50: #1e293b !important;
+  --cpg-slate-100: #1e293b !important;
+  --cpg-slate-200: #334155 !important;
+  --cpg-slate-300: #475569 !important;
+  --cpg-slate-400: #64748b !important;
+  --cpg-slate-500: #94a3b8 !important;
+  --cpg-slate-600: #cbd5e1 !important;
+  --cpg-slate-700: #e2e8f0 !important;
+  --cpg-slate-800: #f1f5f9 !important;
+  --cpg-slate-900: #f8fafc !important;
+  
+  color: #f8fafc !important;
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+/* Container & main surfaces */
+html.dark .cpg-toolbar,
+html[data-theme="dark"] .cpg-toolbar {
+  background: linear-gradient(to bottom, #1e293b, #0f172a) !important;
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-toolbar-title,
+html[data-theme="dark"] .cpg-toolbar-title {
+  color: #f8fafc !important;
+}
+
+html.dark .cpg-date-navigator,
+html[data-theme="dark"] .cpg-date-navigator {
+  background: #1e293b !important;
+}
+
+html.dark .cpg-nav-btn,
+html[data-theme="dark"] .cpg-nav-btn {
+  background: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark .cpg-nav-btn:hover,
+html[data-theme="dark"] .cpg-nav-btn:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html.dark .cpg-date-range,
+html[data-theme="dark"] .cpg-date-range {
+  color: #e2e8f0 !important;
+}
+
+/* View Mode Toggle */
+html.dark .cpg-view-mode,
+html[data-theme="dark"] .cpg-view-mode {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-view-btn,
+html[data-theme="dark"] .cpg-view-btn {
+  color: #94a3b8 !important;
+}
+
+html.dark .cpg-view-btn:hover,
+html[data-theme="dark"] .cpg-view-btn:hover {
+  color: #f8fafc !important;
+}
+
+html.dark .cpg-view-btn.active,
+html[data-theme="dark"] .cpg-view-btn.active {
+  background: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* Today button */
+html.dark .cpg-today-btn,
+html[data-theme="dark"] .cpg-today-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .cpg-today-btn:hover,
+html[data-theme="dark"] .cpg-today-btn:hover {
+  border-color: #2563eb !important;
+  color: #2563eb !important;
+}
+
+/* Legend */
+html.dark .cpg-legend,
+html[data-theme="dark"] .cpg-legend {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-legend-label,
+html[data-theme="dark"] .cpg-legend-label {
+  color: #94a3b8 !important;
+}
+
+/* Grid header */
+html.dark .cpg-header-cell,
+html[data-theme="dark"] .cpg-header-cell {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+html.dark .cpg-resource-header,
+html[data-theme="dark"] .cpg-resource-header {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+html.dark .cpg-month-cell,
+html[data-theme="dark"] .cpg-month-cell {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-month-name,
+html[data-theme="dark"] .cpg-month-name {
+  color: #f8fafc !important;
+}
+
+html.dark .cpg-month-year,
+html[data-theme="dark"] .cpg-month-year {
+  color: #64748b !important;
+}
+
+/* Grid rows */
+html.dark .cpg-row,
+html[data-theme="dark"] .cpg-row {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-row:hover,
+html[data-theme="dark"] .cpg-row:hover {
+  background: #1e293b !important;
+}
+
+html.dark .cpg-resource-cell,
+html[data-theme="dark"] .cpg-resource-cell {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-resource-name,
+html[data-theme="dark"] .cpg-resource-name {
+  color: #f8fafc !important;
+}
+
+html.dark .cpg-resource-role,
+html[data-theme="dark"] .cpg-resource-role {
+  color: #94a3b8 !important;
+}
+
+html.dark .cpg-util-date,
+html[data-theme="dark"] .cpg-util-date {
+  color: #64748b !important;
+}
+
+/* Timeline cells */
+html.dark .cpg-timeline-cell,
+html[data-theme="dark"] .cpg-timeline-cell {
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-timeline-grid,
+html[data-theme="dark"] .cpg-timeline-grid {
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-week-divider,
+html[data-theme="dark"] .cpg-week-divider {
+  background: #1e293b !important;
+}
+
+/* Summary footer */
+html.dark .cpg-summary,
+html[data-theme="dark"] .cpg-summary {
+  background: linear-gradient(to bottom, #1e293b, #0f172a) !important;
+  border-color: #334155 !important;
+}
+
+html.dark .cpg-stat-label,
+html[data-theme="dark"] .cpg-stat-label {
+  color: #94a3b8 !important;
+}
+
+html.dark .cpg-export-btn,
+html[data-theme="dark"] .cpg-export-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .cpg-export-btn:hover,
+html[data-theme="dark"] .cpg-export-btn:hover {
+  border-color: #2563eb !important;
+  color: #2563eb !important;
+}
+
+/* Contract end marker */
+html.dark .cpg-contract-end,
+html[data-theme="dark"] .cpg-contract-end {
+  color: #94a3b8 !important;
+}
