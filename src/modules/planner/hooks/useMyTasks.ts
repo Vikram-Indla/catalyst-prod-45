@@ -35,17 +35,13 @@ export function useMyTasks(filters: FilterConfig = {}) {
 
   return useQuery({
     queryKey: myTasksKeys.list(filters),
-    queryFn: async () => {
+    queryFn: async (): Promise<MyTask[]> => {
+      // The view already filters by auth.uid() for user involvement
       let query = supabase
         .from('planner_my_tasks')
         .select('*')
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('sort_order', { ascending: true });
-
-      // Filter by assignee if user is logged in (otherwise show all for demo)
-      if (user?.id) {
-        query = query.eq('assignee_id', user.id);
-      }
 
       // Apply filters
       if (filters.timeSection) {
@@ -63,13 +59,15 @@ export function useMyTasks(filters: FilterConfig = {}) {
       if (filters.searchQuery) {
         query = query.or(`title.ilike.%${filters.searchQuery}%,task_key.ilike.%${filters.searchQuery}%`);
       }
+      if (filters.involvement && filters.involvement !== 'all') {
+        query = query.eq('involvement_type', filters.involvement);
+      }
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as MyTask[];
+      return (data || []) as MyTask[];
     },
-    // Enable query even without user for demo purposes
-    enabled: true,
+    enabled: !!user?.id,
   });
 }
 
@@ -81,31 +79,30 @@ export function useMyTasksSummary() {
 
   return useQuery({
     queryKey: myTasksKeys.summary(),
-    queryFn: async () => {
-      let query = supabase
+    queryFn: async (): Promise<TaskSummary> => {
+      // The view already filters by auth.uid()
+      const { data, error } = await supabase
         .from('planner_my_tasks_summary')
-        .select('*');
-      
-      // Filter by assignee if user is logged in (otherwise get global summary for demo)
-      if (user?.id) {
-        query = query.eq('assignee_id', user.id);
-      }
-      
-      const { data, error } = await query.maybeSingle();
+        .select('*')
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') throw error;
       return (data || {
+        user_id: user?.id || null,
+        total_tasks: 0,
         overdue_count: 0,
         today_count: 0,
         this_week_count: 0,
         upcoming_count: 0,
         someday_count: 0,
         completed_today: 0,
-        total_tasks: 0,
+        assigned_count: 0,
+        created_count: 0,
+        needs_review_count: 0,
+        watching_count: 0,
       }) as TaskSummary;
     },
-    // Enable query even without user for demo purposes
-    enabled: true,
+    enabled: !!user?.id,
   });
 }
 

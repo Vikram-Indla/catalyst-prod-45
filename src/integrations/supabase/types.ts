@@ -12642,6 +12642,165 @@ export type Database = {
           },
         ]
       }
+      planner_task_mentions: {
+        Row: {
+          created_at: string
+          id: string
+          source: string | null
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          source?: string | null
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          source?: string | null
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planner_task_mentions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_upcoming_deadlines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_my_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planner_task_watchers: {
+        Row: {
+          created_at: string
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planner_task_watchers_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_upcoming_deadlines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_my_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       planner_tasks: {
         Row: {
           assignee_id: string | null
@@ -12662,6 +12821,8 @@ export type Database = {
           position: number | null
           priority: string | null
           progress: number | null
+          reporter_id: string | null
+          reviewer_id: string | null
           sort_order: number | null
           start_date: string | null
           status_id: string | null
@@ -12691,6 +12852,8 @@ export type Database = {
           position?: number | null
           priority?: string | null
           progress?: number | null
+          reporter_id?: string | null
+          reviewer_id?: string | null
           sort_order?: number | null
           start_date?: string | null
           status_id?: string | null
@@ -12720,6 +12883,8 @@ export type Database = {
           position?: number | null
           priority?: string | null
           progress?: number | null
+          reporter_id?: string | null
+          reviewer_id?: string | null
           sort_order?: number | null
           start_date?: string | null
           status_id?: string | null
@@ -12816,6 +12981,62 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "planner_tasks_status_id_fkey"
             columns: ["status_id"]
             isOneToOne: false
@@ -12827,13 +13048,6 @@ export type Database = {
             columns: ["status_id"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_status_distribution"
-            referencedColumns: ["status_id"]
-          },
-          {
-            foreignKeyName: "planner_tasks_status_id_fkey"
-            columns: ["status_id"]
-            isOneToOne: false
-            referencedRelation: "planner_my_tasks"
             referencedColumns: ["status_id"]
           },
           {
@@ -12855,13 +13069,6 @@ export type Database = {
             columns: ["workstream_id"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_workstream_progress"
-            referencedColumns: ["workstream_id"]
-          },
-          {
-            foreignKeyName: "planner_tasks_workstream_id_fkey"
-            columns: ["workstream_id"]
-            isOneToOne: false
-            referencedRelation: "planner_my_tasks"
             referencedColumns: ["workstream_id"]
           },
           {
@@ -28692,13 +28899,6 @@ export type Database = {
             foreignKeyName: "planner_tasks_status_id_fkey"
             columns: ["status_id"]
             isOneToOne: false
-            referencedRelation: "planner_my_tasks"
-            referencedColumns: ["status_id"]
-          },
-          {
-            foreignKeyName: "planner_tasks_status_id_fkey"
-            columns: ["status_id"]
-            isOneToOne: false
             referencedRelation: "planner_statuses"
             referencedColumns: ["id"]
           },
@@ -28714,13 +28914,6 @@ export type Database = {
             columns: ["workstream_id"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_workstream_progress"
-            referencedColumns: ["workstream_id"]
-          },
-          {
-            foreignKeyName: "planner_tasks_workstream_id_fkey"
-            columns: ["workstream_id"]
-            isOneToOne: false
-            referencedRelation: "planner_my_tasks"
             referencedColumns: ["workstream_id"]
           },
           {
@@ -28882,13 +29075,6 @@ export type Database = {
             foreignKeyName: "planner_tasks_status_id_fkey"
             columns: ["status_id"]
             isOneToOne: false
-            referencedRelation: "planner_my_tasks"
-            referencedColumns: ["status_id"]
-          },
-          {
-            foreignKeyName: "planner_tasks_status_id_fkey"
-            columns: ["status_id"]
-            isOneToOne: false
             referencedRelation: "planner_statuses"
             referencedColumns: ["id"]
           },
@@ -28923,23 +29109,33 @@ export type Database = {
       }
       planner_my_tasks: {
         Row: {
+          assignee_avatar: string | null
           assignee_id: string | null
+          assignee_name: string | null
           blocked: boolean | null
-          blocked_by_count: number | null
           blocked_reason: string | null
-          blocking_count: number | null
           completed_at: string | null
+          cover_url: string | null
           created_at: string | null
           created_by: string | null
+          creator_name: string | null
+          deleted_at: string | null
           description: string | null
           due_date: string | null
           id: string | null
+          involvement_priority: number | null
+          involvement_type: string | null
           is_archived: boolean | null
           is_starred: boolean | null
+          key: string | null
           parent_task_id: string | null
           position: number | null
           priority: string | null
           progress: number | null
+          reporter_id: string | null
+          reporter_name: string | null
+          reviewer_id: string | null
+          reviewer_name: string | null
           sort_order: number | null
           start_date: string | null
           status_color: string | null
@@ -28947,8 +29143,6 @@ export type Database = {
           status_is_done: boolean | null
           status_name: string | null
           status_slug: string | null
-          subtask_completed: number | null
-          subtask_total: number | null
           task_key: string | null
           time_estimate_minutes: number | null
           time_logged_minutes: number | null
@@ -29045,49 +29239,122 @@ export type Database = {
             referencedRelation: "planner_tasks"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "planner_board_columns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_status_distribution"
+            referencedColumns: ["status_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "planner_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_workstream_health"
+            referencedColumns: ["workstream_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_workstream_progress"
+            referencedColumns: ["workstream_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "planner_workstreams"
+            referencedColumns: ["id"]
+          },
         ]
       }
       planner_my_tasks_summary: {
         Row: {
-          assignee_id: string | null
+          assigned_count: number | null
           completed_today: number | null
+          created_count: number | null
+          needs_review_count: number | null
           overdue_count: number | null
           someday_count: number | null
           this_week_count: number | null
           today_count: number | null
           total_tasks: number | null
           upcoming_count: number | null
+          user_id: string | null
+          watching_count: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "planner_tasks_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "planner_tasks_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "planner_tasks_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "planner_tasks_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       ra_generation_summary: {
         Row: {
