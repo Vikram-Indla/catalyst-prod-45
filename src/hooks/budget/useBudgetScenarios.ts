@@ -1,6 +1,13 @@
 /**
  * Budget Scenarios Hook - V8 Scenario Planning
  * Manages CRUD operations for budget scenarios with Supabase
+ * 
+ * Preset calculations:
+ * - Baseline: Current state, no extensions
+ * - Critical +3mo: Resources with contracts ending within 90 days
+ * - Expiring <3mo +3mo: Resources with contracts ending before Q2 end
+ * - Delivery +6mo: All Delivery department Variable/Freelance resources
+ * - Freelancers +3mo: All Freelance type resources
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -20,6 +27,8 @@ export interface ScenarioExtension {
   rid: string;
   role: string;
   resourceType: string;
+  vendorName: string | null;
+  location?: string;
 }
 
 export interface BudgetScenario {
@@ -45,6 +54,14 @@ export interface BudgetScenario {
   isActive: boolean;
 }
 
+export interface BaselineBudget {
+  insourced: number;
+  cosourced: number;
+  outsourced: number;
+  licenses: number;
+  total: number;
+}
+
 export interface CreateScenarioInput {
   name: string;
   description?: string;
@@ -52,13 +69,7 @@ export interface CreateScenarioInput {
   filterDepartment?: string;
   filterExpiryStart?: string;
   filterExpiryEnd?: string;
-  baselineBudget: {
-    insourced: number;
-    cosourced: number;
-    outsourced: number;
-    licenses: number;
-    total: number;
-  };
+  baselineBudget: BaselineBudget;
 }
 
 // Transform DB row to typed object
@@ -198,69 +209,128 @@ export function useDeleteScenario() {
   });
 }
 
-// Generate preset scenarios from live resource data
+// Helper: add months to a date string
+function addMonthsToDate(dateStr: string | null, months: number): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  date.setMonth(date.getMonth() + months);
+  return date.toISOString().split('T')[0];
+}
+
+// Helper: filter resources that are Variable or Freelance (insourced types)
+function getInsourcedResources(resources: BudgetResource[]): BudgetResource[] {
+  return resources.filter(r => 
+    r.resourceType?.toLowerCase() === 'variable' || 
+    r.resourceType?.toLowerCase() === 'freelance'
+  );
+}
+
+// Create extension records for a set of resources
+function createExtensions(resources: BudgetResource[], months: number): ScenarioExtension[] {
+  return resources.map(r => {
+    const deltaCost = (r.ctc || 0) * months;
+    return {
+      resourceId: r.id,
+      resourceName: r.name,
+      department: r.department,
+      originalEnd: r.contractEnd,
+      extensionMonths: months,
+      newEnd: addMonthsToDate(r.contractEnd, months),
+      deltaCost,
+      monthlyCTC: r.ctc || 0,
+      rid: r.rid,
+      role: r.role,
+      resourceType: r.resourceType,
+      vendorName: r.vendorName,
+    };
+  });
+}
+
+// Calculate total delta from extensions
+function calcDelta(extensions: ScenarioExtension[]): number {
+  return extensions.reduce((sum, e) => sum + e.deltaCost, 0);
+}
+
+/**
+ * Generate preset scenarios from live resource data
+ * 
+ * - Baseline: No changes
+ * - Critical +3mo: Resources expiring within 90 days
+ * - Expiring <3mo +3mo: All resources expiring before Q2 end (Jun 30)
+ * - Delivery +6mo: All Delivery department Variable/Freelance
+ * - Freelancers +3mo: All Freelance type resources
+ */
 export function generatePresetScenarios(
   resources: BudgetResource[],
-  baselineBudget: { insourced: number; cosourced: number; outsourced: number; licenses: number; total: number }
+  baselineBudget: BaselineBudget
 ): Omit<BudgetScenario, 'id' | 'createdAt' | 'createdBy' | 'updatedAt'>[] {
   const now = new Date();
-  const q1End = new Date(2026, 2, 31); // Mar 31, 2026
+  const ninetyDaysFromNow = new Date();
+  ninetyDaysFromNow.setDate(now.getDate() + 90);
+  
   const q2End = new Date(2026, 5, 30); // Jun 30, 2026
   
-  // Critical resources: contract ending within 90 days
-  const criticalResources = resources.filter(r => {
+  // Get only insourced resources (Variable/Freelance)
+  const insourcedResources = getInsourcedResources(resources);
+  
+  // Critical: contracts ending within 90 days
+  const criticalResources = insourcedResources.filter(r => {
     if (!r.contractEnd) return false;
     const endDate = new Date(r.contractEnd);
-    const daysUntilEnd = (endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-    return daysUntilEnd <= 90 && daysUntilEnd > 0;
+    return endDate >= now && endDate <= ninetyDaysFromNow;
   });
   
-  // Expiring <3 months
-  const expiringResources = resources.filter(r => {
+  // Expiring <Q2 end: all resources with contracts ending before Jun 30, 2026
+  const expiringQ2Resources = insourcedResources.filter(r => {
     if (!r.contractEnd) return false;
     const endDate = new Date(r.contractEnd);
-    return endDate <= q2End;
+    return endDate <= q2End && endDate >= now;
   });
   
   // Delivery department only
-  const deliveryResources = resources.filter(r => 
-    r.department === 'Delivery' && 
-    (r.resourceType === 'Variable' || r.resourceType === 'Freelance')
+  const deliveryResources = insourcedResources.filter(r => 
+    r.department?.toLowerCase() === 'delivery'
   );
   
   // Freelancers only
-  const freelancers = resources.filter(r => r.resourceType === 'Freelance');
+  const freelancers = insourcedResources.filter(r => 
+    r.resourceType?.toLowerCase() === 'freelance'
+  );
   
-  const createExtensions = (res: BudgetResource[], months: number): ScenarioExtension[] => {
-    return res.map(r => {
-      const originalEnd = r.contractEnd ? new Date(r.contractEnd) : new Date();
-      const newEnd = new Date(originalEnd);
-      newEnd.setMonth(newEnd.getMonth() + months);
-      const deltaCost = (r.ctc || 0) * months;
-      
-      return {
-        resourceId: r.id,
-        resourceName: r.name,
-        department: r.department,
-        originalEnd: r.contractEnd,
-        extensionMonths: months,
-        newEnd: newEnd.toISOString().split('T')[0],
-        deltaCost,
-        monthlyCTC: r.ctc || 0,
-        rid: r.rid,
-        role: r.role,
-        resourceType: r.resourceType,
-      };
-    });
-  };
-  
-  const calcDelta = (extensions: ScenarioExtension[]) => 
-    extensions.reduce((sum, e) => sum + e.deltaCost, 0);
-  
+  // Create extension sets
   const critical3mo = createExtensions(criticalResources, 3);
-  const expiring3mo = createExtensions(expiringResources, 3);
+  const expiring3mo = createExtensions(expiringQ2Resources, 3);
   const delivery6mo = createExtensions(deliveryResources, 6);
   const freelance3mo = createExtensions(freelancers, 3);
+  
+  const createScenario = (
+    name: string,
+    description: string,
+    extensions: ScenarioExtension[],
+    avgMonths: number,
+    filterDept: string | null = null,
+    filterExpiryEnd: string | null = null
+  ): Omit<BudgetScenario, 'id' | 'createdAt' | 'createdBy' | 'updatedAt'> => {
+    const delta = calcDelta(extensions);
+    return {
+      name,
+      description,
+      type: 'preset',
+      totalBudget: baselineBudget.total + delta,
+      deltaFromBaseline: delta,
+      resourceCount: extensions.length,
+      avgExtensionMonths: avgMonths,
+      insourcedBudget: baselineBudget.insourced + delta,
+      cosourcedBudget: baselineBudget.cosourced,
+      outsourcedBudget: baselineBudget.outsourced,
+      licensesBudget: baselineBudget.licenses,
+      filterDepartment: filterDept,
+      filterExpiryStart: null,
+      filterExpiryEnd,
+      scenarioData: extensions,
+      isActive: true,
+    };
+  };
   
   return [
     {
@@ -281,77 +351,63 @@ export function generatePresetScenarios(
       scenarioData: [],
       isActive: true,
     },
-    {
-      name: 'Critical +3mo',
-      description: `Extend ${criticalResources.length} critical resources expiring within 90 days`,
-      type: 'preset',
-      totalBudget: baselineBudget.total + calcDelta(critical3mo),
-      deltaFromBaseline: calcDelta(critical3mo),
-      resourceCount: criticalResources.length,
-      avgExtensionMonths: 3,
-      insourcedBudget: baselineBudget.insourced + calcDelta(critical3mo),
-      cosourcedBudget: baselineBudget.cosourced,
-      outsourcedBudget: baselineBudget.outsourced,
-      licensesBudget: baselineBudget.licenses,
-      filterDepartment: null,
-      filterExpiryStart: null,
-      filterExpiryEnd: null,
-      scenarioData: critical3mo,
-      isActive: true,
-    },
-    {
-      name: 'Expiring <Q2 +3mo',
-      description: `Extend ${expiringResources.length} resources expiring before Q2 end`,
-      type: 'preset',
-      totalBudget: baselineBudget.total + calcDelta(expiring3mo),
-      deltaFromBaseline: calcDelta(expiring3mo),
-      resourceCount: expiringResources.length,
-      avgExtensionMonths: 3,
-      insourcedBudget: baselineBudget.insourced + calcDelta(expiring3mo),
-      cosourcedBudget: baselineBudget.cosourced,
-      outsourcedBudget: baselineBudget.outsourced,
-      licensesBudget: baselineBudget.licenses,
-      filterDepartment: null,
-      filterExpiryStart: null,
-      filterExpiryEnd: q2End.toISOString().split('T')[0],
-      scenarioData: expiring3mo,
-      isActive: true,
-    },
-    {
-      name: 'Delivery +6mo',
-      description: `Extend all ${deliveryResources.length} Delivery resources by 6 months`,
-      type: 'preset',
-      totalBudget: baselineBudget.total + calcDelta(delivery6mo),
-      deltaFromBaseline: calcDelta(delivery6mo),
-      resourceCount: deliveryResources.length,
-      avgExtensionMonths: 6,
-      insourcedBudget: baselineBudget.insourced + calcDelta(delivery6mo),
-      cosourcedBudget: baselineBudget.cosourced,
-      outsourcedBudget: baselineBudget.outsourced,
-      licensesBudget: baselineBudget.licenses,
-      filterDepartment: 'Delivery',
-      filterExpiryStart: null,
-      filterExpiryEnd: null,
-      scenarioData: delivery6mo,
-      isActive: true,
-    },
-    {
-      name: 'Freelancers +3mo',
-      description: `Extend all ${freelancers.length} freelance resources by 3 months`,
-      type: 'preset',
-      totalBudget: baselineBudget.total + calcDelta(freelance3mo),
-      deltaFromBaseline: calcDelta(freelance3mo),
-      resourceCount: freelancers.length,
-      avgExtensionMonths: 3,
-      insourcedBudget: baselineBudget.insourced + calcDelta(freelance3mo),
-      cosourcedBudget: baselineBudget.cosourced,
-      outsourcedBudget: baselineBudget.outsourced,
-      licensesBudget: baselineBudget.licenses,
-      filterDepartment: null,
-      filterExpiryStart: null,
-      filterExpiryEnd: null,
-      scenarioData: freelance3mo,
-      isActive: true,
-    },
+    createScenario(
+      'Critical +3mo',
+      `Extend ${criticalResources.length} resources expiring within 90 days by 3 months`,
+      critical3mo,
+      3,
+      null,
+      ninetyDaysFromNow.toISOString().split('T')[0]
+    ),
+    createScenario(
+      'Expiring <Q2 +3mo',
+      `Extend ${expiringQ2Resources.length} resources expiring before Q2 end by 3 months`,
+      expiring3mo,
+      3,
+      null,
+      q2End.toISOString().split('T')[0]
+    ),
+    createScenario(
+      'Delivery +6mo',
+      `Extend all ${deliveryResources.length} Delivery department resources by 6 months`,
+      delivery6mo,
+      6,
+      'Delivery',
+      null
+    ),
+    createScenario(
+      'Freelancers +3mo',
+      `Extend all ${freelancers.length} Freelance resources by 3 months`,
+      freelance3mo,
+      3,
+      null,
+      null
+    ),
   ];
+}
+
+/**
+ * Calculate scenario budget breakdown by department
+ */
+export function calculateScenarioBudgetByDepartment(
+  scenario: BudgetScenario,
+  baselineBudget: BaselineBudget,
+  department: string
+): { insourced: number; delta: number } {
+  if (department === 'all') {
+    return {
+      insourced: scenario.insourcedBudget,
+      delta: scenario.deltaFromBaseline,
+    };
+  }
+  
+  const deptExtensions = scenario.scenarioData.filter(
+    e => e.department?.toLowerCase() === department.toLowerCase()
+  );
+  const deptDelta = deptExtensions.reduce((sum, e) => sum + e.deltaCost, 0);
+  
+  return {
+    insourced: baselineBudget.insourced + deptDelta,
+    delta: deptDelta,
+  };
 }
