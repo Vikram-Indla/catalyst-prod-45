@@ -15,6 +15,9 @@ interface DashboardMetricCardsProps {
 export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
   const navigate = useNavigate();
 
+  // Check if all metrics are zero (empty state)
+  const isEmpty = metrics.total_tasks === 0;
+
   const cards = [
     {
       id: 'total',
@@ -24,6 +27,7 @@ export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
       colorClass: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
       borderClass: 'border-l-blue-500',
       onClick: () => navigate('/planner/boards'),
+      emptyText: 'No tasks yet',
     },
     {
       id: 'overdue',
@@ -33,6 +37,7 @@ export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
       colorClass: 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400',
       borderClass: 'border-l-red-500',
       onClick: () => navigate('/planner/boards?filter=overdue'),
+      emptyText: 'None overdue',
     },
     {
       id: 'blocked',
@@ -42,6 +47,7 @@ export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
       colorClass: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
       borderClass: 'border-l-amber-500',
       onClick: () => navigate('/planner/boards?filter=blocked'),
+      emptyText: 'None blocked',
     },
     {
       id: 'completed',
@@ -51,6 +57,7 @@ export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
       colorClass: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400',
       borderClass: 'border-l-emerald-500',
       onClick: () => navigate('/planner/boards?status=done'),
+      emptyText: 'None this week',
     },
   ];
 
@@ -77,7 +84,12 @@ export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
             </div>
             
             {/* Value */}
-            <span className="text-3xl font-bold font-mono text-slate-900 dark:text-slate-100 tabular-nums">
+            <span className={cn(
+              "text-3xl font-bold font-mono tabular-nums",
+              card.value === 0 && isEmpty
+                ? "text-slate-300 dark:text-slate-600"
+                : "text-slate-900 dark:text-slate-100"
+            )}>
               {card.value.toLocaleString()}
             </span>
             
@@ -85,6 +97,13 @@ export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
             <span className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
               {card.label}
             </span>
+            
+            {/* Empty hint for zero values when dashboard is empty */}
+            {card.value === 0 && isEmpty && (
+              <span className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                {card.emptyText}
+              </span>
+            )}
           </button>
         );
       })}
