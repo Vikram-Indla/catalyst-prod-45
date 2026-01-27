@@ -326,10 +326,10 @@ export function TaskListToolbar({
           Export
         </Button>
 
-        {/* Create Task */}
+        {/* Add Task */}
         <Button size="sm" className="h-9 gap-2 bg-blue-600 hover:bg-blue-700" onClick={onCreateTask}>
           <Plus className="w-4 h-4" />
-          Create Task
+          Add Task
         </Button>
       </div>
     </div>

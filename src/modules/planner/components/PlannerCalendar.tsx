@@ -4,15 +4,16 @@
 // CRITICAL FIX: Shows task TITLE (not assignee name)
 // ============================================================
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { PlannerTask, GroupByOption } from '../types';
 import { motion } from 'framer-motion';
+import { CreateTaskModal } from './kanban';
 import { 
   startOfMonth, 
-  endOfMonth, 
+  endOfMonth,
   startOfWeek, 
   endOfWeek, 
   eachDayOfInterval,
@@ -50,6 +51,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   const [view, setView] = useState<CalendarViewType>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [quickAddDate, setQuickAddDate] = useState<Date | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Local state for filters
@@ -172,6 +174,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
         icon={CalendarIcon}
         title="Calendar"
         subtitle={title}
+        onAddTask={() => setIsCreateOpen(true)}
         actions={
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={goToToday}>
@@ -352,6 +355,12 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
       </div>
 
       <CalendarLegend workstreams={workstreams} />
+
+      {/* Create Task Modal */}
+      <CreateTaskModal
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+      />
     </div>
   );
 }

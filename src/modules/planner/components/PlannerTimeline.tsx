@@ -4,12 +4,13 @@
 // ============================================================
 
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, CalendarDays, Menu } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays, Menu, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { PlannerTask, GroupByOption } from '../types';
 import { addDays, startOfWeek, format, differenceInDays, isToday, isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, subDays } from 'date-fns';
 import { PlannerSearchBar } from './PlannerSearchBar';
+import { CreateTaskModal } from './kanban';
 import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { usePlannerSearch } from '../hooks/usePlannerSearch';
@@ -57,6 +58,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -204,6 +206,15 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
 
         {/* Right: Controls */}
         <div className="flex items-center gap-3">
+          {/* Add Task Button */}
+          <Button 
+            onClick={() => setIsCreateOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Task
+          </Button>
+
           {/* Today Button */}
           <Button variant="outline" size="sm" onClick={goToToday} className="gap-2 h-9">
             <CalendarDays className="w-4 h-4" />
@@ -510,6 +521,12 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
           </div>
         </div>
       )}
+
+      {/* Create Task Modal */}
+      <CreateTaskModal
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+      />
     </div>
   );
 }

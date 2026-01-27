@@ -106,7 +106,7 @@ export function MyTasksContent({
                 className="mt-4 gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md"
               >
                 <Plus className="w-4 h-4" />
-                Create Task
+                Add Task
               </Button>
             )}
           </div>

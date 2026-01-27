@@ -193,7 +193,7 @@ export function CreateTaskModal({
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
                 <h2 id="create-task-title" className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
-                  Create Task
+                  Add Task
                 </h2>
                 <button
                   type="button"
@@ -255,7 +255,7 @@ export function CreateTaskModal({
                   <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded text-[10px] font-medium">⌘</kbd>
                   {' + '}
                   <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded text-[10px] font-medium">Enter</kbd>
-                  {' to create'}
+                  {' to add'}
                 </div>
                 <div className="flex items-center gap-3">
                   <button
@@ -285,12 +285,12 @@ export function CreateTaskModal({
                     {isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Creating...
+                        Adding...
                       </>
                     ) : (
                       <>
                         <Plus className="w-4 h-4" />
-                        Create Task
+                        Add Task
                       </>
                     )}
                   </button>
