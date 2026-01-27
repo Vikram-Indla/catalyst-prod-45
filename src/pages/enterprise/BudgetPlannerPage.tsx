@@ -389,6 +389,7 @@ export default function BudgetPlannerPage() {
               data={data} 
               period={period}
               totalBudget={data?.departments?.all?.total || 0}
+              onRefresh={refetch}
             />
           ) : null}
         </div>
