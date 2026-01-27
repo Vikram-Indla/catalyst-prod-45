@@ -37,7 +37,7 @@ export function MyTasksContentWrapper({ children, className }: MyTasksContentWra
     <main 
       className={cn(
         'flex-1 min-w-0 flex flex-col h-full overflow-hidden',
-        'bg-white dark:bg-slate-900',
+        'bg-slate-50 dark:bg-slate-900',
         className
       )}
     >
