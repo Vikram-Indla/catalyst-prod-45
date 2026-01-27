@@ -123,11 +123,14 @@ export function FixCTCModal({
     let count = 0;
     let totalMonthly = 0;
 
-    Object.entries(ctcValues).forEach(([, value]) => {
-      const numValue = parseInt(value) || 0;
-      if (numValue > 0) {
-        count++;
-        totalMonthly += numValue;
+    Object.entries(ctcValues).forEach(([id, value]) => {
+      // Allow zero values - check if the value was explicitly set (not empty string)
+      if (value !== '' && value !== undefined) {
+        const numValue = parseInt(value) || 0;
+        if (numValue >= 0) {
+          count++;
+          totalMonthly += numValue;
+        }
       }
     });
 
@@ -161,9 +164,12 @@ export function FixCTCModal({
     const updates: { id: string; ctc: number }[] = [];
 
     Object.entries(ctcValues).forEach(([id, value]) => {
-      const numValue = parseInt(value) || 0;
-      if (numValue > 0) {
-        updates.push({ id, ctc: numValue });
+      // Allow zero values - check if the value was explicitly set (not empty string)
+      if (value !== '' && value !== undefined) {
+        const numValue = parseInt(value) || 0;
+        if (numValue >= 0) {
+          updates.push({ id, ctc: numValue });
+        }
       }
     });
 
