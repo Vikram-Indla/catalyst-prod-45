@@ -523,12 +523,12 @@ function TeamMemberItem({ member }: { member: TeamMemberPerformance }) {
 
 // Milestone Item
 function MilestoneItem({ milestone }: { milestone: Milestone }) {
-  const urgencyConfig = {
+  const urgencyConfig: Record<string, { border: string; text: string }> = {
     normal: { border: CATALYST_V5.primary, text: 'text-foreground' },
     warning: { border: CATALYST_V5.warning, text: 'text-[#d97706]' },
     danger: { border: CATALYST_V5.danger, text: 'text-[#ef4444]' },
   };
-  const config = urgencyConfig[milestone.urgency];
+  const config = urgencyConfig[milestone.urgency] ?? urgencyConfig.normal;
   const date = new Date(milestone.dueDate);
   
   return (
