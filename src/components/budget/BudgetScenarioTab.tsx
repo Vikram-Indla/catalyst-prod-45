@@ -35,6 +35,7 @@ interface BudgetScenarioTabProps {
     licenseBudget: number;
   } | null;
   period: BudgetPeriod;
+  presetToLoad?: string; // Optional preset ID to auto-load
 }
 
 type WizardStep = 1 | 2 | 3 | 4;

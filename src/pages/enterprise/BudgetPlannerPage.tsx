@@ -31,7 +31,7 @@ import { BudgetScenarioTab } from '@/components/budget/BudgetScenarioTab';
 import { BudgetDataQualityTab } from '@/components/budget/BudgetDataQualityTab';
 import { FileCheck } from 'lucide-react';
 
-type BudgetPlannerTab = 'summary' | 'budget' | 'scenario' | 'data-quality';
+type BudgetPlannerTab = 'summary' | 'budget' | 'scenario' | 'quality';
 
 const PERIODS: { value: BudgetPeriod; label: string }[] = [
   { value: 'Q1', label: 'Q1' },
@@ -46,12 +46,21 @@ export default function BudgetPlannerPage() {
   // Access control: Only admin, super_admin, or program_manager can access
   const canAccessBudgetPlanner = isAdmin || isSuperAdmin || isProgramManager;
   
-  const [activeTab, setActiveTab] = useState<BudgetPlannerTab>('budget');
+  const [activeTab, setActiveTab] = useState<BudgetPlannerTab>('summary');
   const [period, setPeriod] = useState<BudgetPeriod>('Full');  // V8: Default to Full Year
   const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading, error, refetch } = useBudgetData(period);
   const [currentDept, setCurrentDept] = useState('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // Cross-tab navigation params (for Fix Data, Scenario presets)
+  const [tabParams, setTabParams] = useState<Record<string, string>>({});
+
+  // Handler for cross-tab navigation with params
+  const handleTabChange = (tab: string, params?: Record<string, string>) => {
+    setActiveTab(tab as BudgetPlannerTab);
+    setTabParams(params || {});
+  };
 
   // Show loading while checking role
   if (roleLoading) {
@@ -195,11 +204,11 @@ export default function BudgetPlannerPage() {
       onClick: () => setActiveTab('scenario')
     },
     { 
-      id: 'data-quality', 
+      id: 'quality', 
       label: 'Data Quality', 
       icon: FileCheck,
-      isActive: activeTab === 'data-quality',
-      onClick: () => setActiveTab('data-quality')
+      isActive: activeTab === 'quality',
+      onClick: () => handleTabChange('quality')
     },
   ];
 
@@ -222,7 +231,7 @@ export default function BudgetPlannerPage() {
       case 'summary': return 'Summary';
       case 'budget': return 'Budget';
       case 'scenario': return 'Scenario Planning';
-      case 'data-quality': return 'Data Quality';
+      case 'quality': return 'Data Quality';
       default: return 'Summary';
     }
   };
@@ -378,18 +387,21 @@ export default function BudgetPlannerPage() {
             <BudgetSummaryTab 
               data={data}
               period={period}
+              onTabChange={handleTabChange}
             />
           ) : activeTab === 'scenario' ? (
             <BudgetScenarioTab
               data={data}
               period={period}
+              presetToLoad={tabParams.preset}
             />
-          ) : activeTab === 'data-quality' ? (
+          ) : activeTab === 'quality' ? (
             <BudgetDataQualityTab 
               data={data} 
               period={period}
               totalBudget={data?.departments?.all?.total || 0}
               onRefresh={refetch}
+              fixDepartment={tabParams.fixDepartment}
             />
           ) : null}
         </div>
