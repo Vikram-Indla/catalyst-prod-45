@@ -1,7 +1,7 @@
 // ============================================================
 // TASK SECTION
 // Per Justification Matrix: Simple section grouping by time urgency
-// Minimal UI - section header + task rows
+// Per Design Audit: Sentence case headers, no ALL CAPS
 // ============================================================
 
 import { cn } from '@/lib/utils';
@@ -25,13 +25,13 @@ export function TaskSection({
 
   return (
     <div className="mb-4">
-      {/* Section Header */}
+      {/* Section Header - Sentence case per audit (no uppercase) */}
       <div className="flex items-center gap-2 mb-2 px-2">
         <span
           className="w-2.5 h-2.5 rounded-full"
           style={{ backgroundColor: color }}
         />
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
           {title}
         </h3>
         <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
