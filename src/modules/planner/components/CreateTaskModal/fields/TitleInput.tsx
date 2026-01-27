@@ -10,13 +10,19 @@ interface TitleInputProps {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  label?: string;
   className?: string;
 }
 
 export const TitleInput = forwardRef<HTMLInputElement, TitleInputProps>(
-  ({ value, onChange, error, className }, ref) => {
+  ({ value, onChange, error, label, className }, ref) => {
     return (
       <div className={cn("space-y-1", className)}>
+        {label && (
+          <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+            {label}
+          </label>
+        )}
         <input
           ref={ref}
           type="text"
