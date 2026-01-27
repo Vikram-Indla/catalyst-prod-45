@@ -4,6 +4,7 @@
 // ============================================================
 
 export type PlannerView = 
+  | 'dashboard'
   | 'boards' 
   | 'task-list' 
   | 'timeline' 

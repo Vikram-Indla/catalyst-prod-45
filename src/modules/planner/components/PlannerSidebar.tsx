@@ -4,6 +4,7 @@
 // ============================================================
 
 import { 
+  LayoutDashboard,
   LayoutGrid, 
   List, 
   Calendar, 
@@ -29,6 +30,7 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
       {
         title: 'Views',
         items: [
+          { id: 'dashboard', title: 'Dashboard', path: '/planner/dashboard', icon: LayoutDashboard, exact: true },
           { id: 'boards', title: 'Boards', path: '/planner/boards', icon: LayoutGrid, exact: true },
           { id: 'task-list', title: 'Task List', path: '/planner/task-list', icon: List, exact: true },
           { id: 'timeline', title: 'Timeline', path: '/planner/timeline', icon: GanttChartSquare, exact: true },

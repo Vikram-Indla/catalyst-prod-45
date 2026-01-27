@@ -15,6 +15,7 @@ import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
 import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './components/insights';
 import { PlannerSettings } from './components/PlannerSettings';
+import { PlannerDashboard } from './components/dashboard';
 
 import { PlannerCreateModal } from './components/PlannerCreateModal';
 import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
@@ -39,6 +40,7 @@ import { exportPlannerToPDF, exportPlannerToExcel } from './utils/plannerExport'
 
 // View titles for breadcrumb header
 const VIEW_TITLES: Record<PlannerView, string> = {
+  'dashboard': 'Dashboard',
   'boards': 'Boards',
   'task-list': 'Task List',
   'timeline': 'Timeline',
@@ -394,6 +396,8 @@ export function PlannerPage() {
     const viewTasks = filteredTasks;
     
     switch (activeView) {
+      case 'dashboard':
+        return <PlannerDashboard />;
       case 'boards':
         return <KanbanBoard 
           onTaskClick={handleKanbanTaskClick} 
