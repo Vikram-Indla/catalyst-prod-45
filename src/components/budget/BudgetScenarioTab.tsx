@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ScenarioDetailsModal, type ScenarioData, type ScenarioBreakdown } from './ScenarioDetailsModal';
 
 interface BudgetScenarioTabProps {
   data: {
@@ -1365,121 +1366,62 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
         </DialogContent>
       </Dialog>
 
-      {/* View Scenario Modal */}
-      <Dialog open={viewModalOpen} onOpenChange={setViewModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
-          {selectedScenario && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{selectedScenario.name}</DialogTitle>
-              </DialogHeader>
-              
-              {/* Summary Cards */}
-              <div className="grid grid-cols-4 gap-4 my-4">
-                <div className="bg-muted/50 rounded-lg p-3 text-center">
-                  <div className="text-xs text-muted-foreground">Total Budget</div>
-                  <div className="font-mono font-bold">{formatCurrency(selectedScenario.totalBudget)}</div>
-                </div>
-                <div className="bg-amber-100 dark:bg-amber-950/30 rounded-lg p-3 text-center">
-                  <div className="text-xs text-amber-700 dark:text-amber-400">Delta from Baseline</div>
-                  <div className="font-mono font-bold text-amber-700 dark:text-amber-300">
-                    {selectedScenario.deltaFromBaseline > 0 ? '+' : ''}{formatCurrency(selectedScenario.deltaFromBaseline)}
-                  </div>
-                </div>
-                <div className="bg-blue-100 dark:bg-blue-950/30 rounded-lg p-3 text-center">
-                  <div className="text-xs text-blue-700 dark:text-blue-400">Resources Extended</div>
-                  <div className="font-mono font-bold text-blue-700 dark:text-blue-300">{selectedScenario.resourceCount}</div>
-                </div>
-                <div className="bg-green-100 dark:bg-green-950/30 rounded-lg p-3 text-center">
-                  <div className="text-xs text-green-700 dark:text-green-400">Avg Extension</div>
-                  <div className="font-mono font-bold text-green-700 dark:text-green-300">{selectedScenario.avgExtensionMonths.toFixed(0)} mo</div>
-                </div>
-              </div>
-
-              {/* Budget Impact by Category */}
-              <div className="mb-4">
-                <h4 className="text-sm font-bold text-foreground mb-3">Budget Impact by Category</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-4 p-2 bg-blue-50 dark:bg-blue-950/30 rounded">
-                    <span className="text-blue-600 dark:text-blue-400 font-medium w-24">Insourced</span>
-                    <span className="font-mono text-muted-foreground">{formatCurrency(baselineBudget.insourced)}</span>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-mono font-medium">{formatCurrency(selectedScenario.insourcedBudget)}</span>
-                    <span className="font-mono text-amber-600 ml-auto">
-                      {selectedScenario.deltaFromBaseline > 0 ? '+' : ''}{formatCurrency(selectedScenario.deltaFromBaseline)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 p-2 bg-teal-50 dark:bg-teal-950/30 rounded">
-                    <span className="text-teal-600 dark:text-teal-400 font-medium w-24">Cosourced</span>
-                    <span className="font-mono text-muted-foreground">{formatCurrency(baselineBudget.cosourced)}</span>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-mono font-medium">{formatCurrency(selectedScenario.cosourcedBudget)}</span>
-                    <span className="font-mono text-muted-foreground ml-auto">+0</span>
-                  </div>
-                  <div className="flex items-center gap-4 p-2 bg-amber-50 dark:bg-amber-950/30 rounded">
-                    <span className="text-amber-600 dark:text-amber-400 font-medium w-24">Outsourced</span>
-                    <span className="font-mono text-muted-foreground">{formatCurrency(baselineBudget.outsourced)}</span>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-mono font-medium">{formatCurrency(selectedScenario.outsourcedBudget)}</span>
-                    <span className="font-mono text-muted-foreground ml-auto">+0</span>
-                  </div>
-                  <div className="flex items-center gap-4 p-2 bg-violet-50 dark:bg-violet-950/30 rounded">
-                    <span className="text-violet-600 dark:text-violet-400 font-medium w-24">Licenses</span>
-                    <span className="font-mono text-muted-foreground">{formatCurrency(baselineBudget.licenses)}</span>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-mono font-medium">{formatCurrency(selectedScenario.licensesBudget)}</span>
-                    <span className="font-mono text-muted-foreground ml-auto">+0</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Extended Resources Table */}
-              {selectedScenario.scenarioData.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-bold text-foreground mb-3">Extended Resources</h4>
-                  <div className="border rounded-lg overflow-hidden max-h-[250px] overflow-auto">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted/50 border-b sticky top-0">
-                        <tr>
-                          <th className="px-3 py-2 text-left">Resource</th>
-                          <th className="px-3 py-2 text-left">Dept</th>
-                          <th className="px-3 py-2 text-left">Original End</th>
-                          <th className="px-3 py-2 text-center">Extension</th>
-                          <th className="px-3 py-2 text-left">New End</th>
-                          <th className="px-3 py-2 text-right">Delta</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border">
-                        {selectedScenario.scenarioData.map((ext, idx) => (
-                          <tr key={idx}>
-                            <td className="px-3 py-2 font-medium">{ext.resourceName}</td>
-                            <td className="px-3 py-2 text-muted-foreground">{ext.department}</td>
-                            <td className="px-3 py-2 font-mono text-xs">{formatDateDisplay(ext.originalEnd)}</td>
-                            <td className="px-3 py-2 text-center">
-                              <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-xs font-medium">
-                                +{ext.extensionMonths}mo
-                              </span>
-                            </td>
-                            <td className="px-3 py-2 font-mono text-xs">{formatDateDisplay(ext.newEnd)}</td>
-                            <td className="px-3 py-2 text-right font-mono text-amber-600">+{formatCurrency(ext.deltaCost)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {selectedScenario.scenarioData.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <GitBranch className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>Baseline scenario — no extensions applied</p>
-                </div>
-              )}
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* View Scenario Modal — Redesigned V2 */}
+      <ScenarioDetailsModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        scenario={selectedScenario ? {
+          id: selectedScenario.id,
+          name: selectedScenario.name,
+          description: selectedScenario.description || '',
+          type: selectedScenario.type,
+          totalBudget: selectedScenario.totalBudget,
+          deltaFromBaseline: selectedScenario.deltaFromBaseline,
+          resourceCount: selectedScenario.resourceCount,
+          avgExtensionMonths: selectedScenario.avgExtensionMonths,
+          insourcedBudget: selectedScenario.insourcedBudget,
+          cosourcedBudget: selectedScenario.cosourcedBudget,
+          outsourcedBudget: selectedScenario.outsourcedBudget,
+          licensesBudget: selectedScenario.licensesBudget,
+          scenarioData: selectedScenario.scenarioData.map(ext => ({
+            resourceName: ext.resourceName,
+            rid: ext.rid,
+            department: ext.department,
+            originalEnd: ext.originalEnd,
+            newEnd: ext.newEnd,
+            extensionMonths: ext.extensionMonths,
+            deltaCost: ext.deltaCost,
+          })),
+        } : null}
+        baselineBreakdown={baselineBudget}
+        onCompare={() => {
+          setViewModalOpen(false);
+          setCompareModalOpen(true);
+        }}
+        onExport={() => {
+          // Export scenario data as CSV
+          if (!selectedScenario) return;
+          const rows = [
+            ['Resource', 'Department', 'Original End', 'Extension (mo)', 'New End', 'Delta Cost'],
+            ...selectedScenario.scenarioData.map(ext => [
+              ext.resourceName,
+              ext.department,
+              ext.originalEnd,
+              ext.extensionMonths.toString(),
+              ext.newEnd,
+              ext.deltaCost.toString(),
+            ])
+          ];
+          const csv = rows.map(r => r.join(',')).join('\n');
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${selectedScenario.name.replace(/\s+/g, '_')}_scenario.csv`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }}
+      />
 
       {/* Compare Modal */}
       <Dialog open={compareModalOpen} onOpenChange={setCompareModalOpen}>
