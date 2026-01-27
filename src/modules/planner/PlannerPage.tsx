@@ -16,6 +16,7 @@ import { PlannerCalendar } from './components/PlannerCalendar';
 import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './components/insights';
 import { PlannerSettings } from './components/PlannerSettings';
 import { PlannerDashboard } from './components/dashboard';
+import { PlannerBoardsPage } from './components/boards';
 
 import { PlannerCreateModal } from './components/PlannerCreateModal';
 import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
@@ -399,17 +400,7 @@ export function PlannerPage() {
       case 'dashboard':
         return <PlannerDashboard />;
       case 'boards':
-        return <KanbanBoard 
-          onTaskClick={handleKanbanTaskClick} 
-          onTaskEdit={handleKanbanTaskClick} 
-          onTaskDelete={(id) => handleDeleteTask(id)} 
-          onAddTask={() => setIsCreateModalOpen(true)}
-          externalWorkstreamId={selectedTeamId}
-          externalSearch={filters.search}
-          externalPriority={filters.priority}
-          externalAssigneeId={filters.assigneeId}
-          externalStatusSlug={filters.status}
-        />;
+        return <PlannerBoardsPage />;
       case 'task-list':
         return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} visibleColumns={visibleColumns} />;
       case 'timeline':
