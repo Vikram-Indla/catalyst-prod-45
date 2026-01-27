@@ -68,14 +68,14 @@ export function DashboardTeamWorkloadV2({ data, unassignedCount }: DashboardTeam
         </button>
       )}
 
-      {/* Team list */}
-      {data.length === 0 ? (
+      {/* Team list - only show members with tasks */}
+      {data.filter(m => m.assigned_tasks > 0).length === 0 ? (
         <div className="flex items-center justify-center py-6 text-sm text-slate-400">
           No team members with assigned tasks
         </div>
       ) : (
         <div className="space-y-2 max-h-56 overflow-auto">
-          {data.map((member) => {
+          {data.filter(m => m.assigned_tasks > 0).map((member) => {
             const barWidth = Math.min((member.assigned_tasks / MAX_TASKS_FOR_BAR) * 100, 100);
             const isOverloaded = member.assigned_tasks >= 8;
             
