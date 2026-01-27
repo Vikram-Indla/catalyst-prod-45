@@ -147,20 +147,12 @@ export function SidebarBase({
               {config.badge}
             </div>
             {expanded && (
-              <div className="flex flex-col min-w-0">
-                <span 
-                  className="text-[15px] font-bold truncate tracking-tight"
-                  style={{ color: '#09090B' }}
-                >
-                  {config.label}
-                </span>
-                <span 
-                  className="text-[13px] truncate"
-                  style={{ color: '#71717A' }}
-                >
-                  All Workstreams
-                </span>
-              </div>
+              <span 
+                className="text-[15px] font-bold truncate tracking-tight"
+                style={{ color: '#09090B' }}
+              >
+                {config.label}
+              </span>
             )}
           </div>
           {/* Collapse button — with border per commercial spec */}
