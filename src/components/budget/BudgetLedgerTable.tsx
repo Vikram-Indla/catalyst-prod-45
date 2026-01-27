@@ -2,13 +2,18 @@
  * Budget Ledger Table Component
  * STAGE 3: Expandable rows, hide CTC toggle, export functionality
  * V8 QA Pass: Type-colored budgets, consistent badges, tight rows
+ * A11Y Pass: ARIA labels, sortable columns, focus states
  */
 
-import { useState, Fragment } from 'react';
-import { Eye, EyeOff, ChevronRight, Download } from 'lucide-react';
+import { useState, Fragment, useMemo } from 'react';
+import { Eye, EyeOff, ChevronRight, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatFull, type BudgetResource } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment } from '@/hooks/budget/useBudgetData';
+
+// UX-4: Sorting types
+type SortField = 'name' | 'type' | 'status' | 'vendor' | 'resourceCount' | 'budget' | null;
+type SortDirection = 'asc' | 'desc';
 
 interface BudgetLedgerTableProps {
   assignments: BudgetAssignment[];
@@ -79,6 +84,10 @@ export function BudgetLedgerTable({
 }: BudgetLedgerTableProps) {
   const [ctcVisible, setCtcVisible] = useState(true);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  
+  // UX-4: Sorting state
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   // Use external control if provided
   const isHidden = externalHideCTC !== undefined ? externalHideCTC : !ctcVisible;
@@ -101,6 +110,58 @@ export function BudgetLedgerTable({
       }
       return next;
     });
+  };
+  
+  // UX-4: Sort handler
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+  
+  // UX-4: Sorted assignments
+  const sortedAssignments = useMemo(() => {
+    if (!sortField) return assignments;
+    
+    return [...assignments].sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortField) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'type':
+          comparison = a.type.localeCompare(b.type);
+          break;
+        case 'status':
+          comparison = a.status.localeCompare(b.status);
+          break;
+        case 'vendor':
+          comparison = (a.vendor || '').localeCompare(b.vendor || '');
+          break;
+        case 'resourceCount':
+          comparison = (a.resourceCount || 0) - (b.resourceCount || 0);
+          break;
+        case 'budget':
+          comparison = a.budget - b.budget;
+          break;
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+  }, [assignments, sortField, sortDirection]);
+  
+  // UX-4: Sort icon component
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-3 h-3 ml-1 opacity-40" />;
+    }
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="w-3 h-3 ml-1 text-blue-600" />
+      : <ArrowDown className="w-3 h-3 ml-1 text-blue-600" />;
   };
 
   // Get resources for an assignment
@@ -149,45 +210,109 @@ export function BudgetLedgerTable({
   }, { insourced: 0, cosourced: 0, outsourced: 0 });
 
   return (
-    <div className="table-card">
+    <div className="table-card" role="region" aria-label={`Assignment Ledger for ${currentDept === 'all' ? 'All Departments' : currentDept}`}>
       <div className="table-header">
         <h3 className="table-title">
           Assignment Ledger <span>— {currentDept === 'all' ? 'All Departments' : currentDept}</span>
         </h3>
         <div className="flex items-center gap-3">
           <button 
-            className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded px-2 py-1"
             onClick={exportToCSV}
             title="Export to CSV"
+            aria-label="Export ledger to CSV file"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4" aria-hidden="true" />
             Export
           </button>
           <button 
-            className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-[var(--budget-text-muted)] hover:text-[var(--budget-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded px-2 py-1"
             onClick={toggleCTC}
+            aria-pressed={!isHidden}
+            aria-label={isHidden ? 'Show CTC values' : 'Hide CTC values'}
           >
-            {isHidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            {isHidden ? <Eye className="w-4 h-4" aria-hidden="true" /> : <EyeOff className="w-4 h-4" aria-hidden="true" />}
             {isHidden ? 'Show CTC' : 'Hide CTC'}
           </button>
         </div>
       </div>
       
-      <table>
+      <table role="grid" aria-label="Assignment ledger table">
         <thead>
           <tr>
-            <th style={{ width: 40 }}></th>
-            <th>Assignment</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Vendor</th>
-            <th className="center">Resources</th>
-            <th className="right">Budget (SAR)</th>
+            <th style={{ width: 40 }} aria-label="Expand row"></th>
+            {/* UX-4: Sortable columns with ARIA */}
+            <th>
+              <button 
+                type="button"
+                onClick={() => handleSort('name')}
+                className="flex items-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                aria-sort={sortField === 'name' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              >
+                Assignment
+                <SortIcon field="name" />
+              </button>
+            </th>
+            <th>
+              <button 
+                type="button"
+                onClick={() => handleSort('type')}
+                className="flex items-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                aria-sort={sortField === 'type' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              >
+                Type
+                <SortIcon field="type" />
+              </button>
+            </th>
+            <th>
+              <button 
+                type="button"
+                onClick={() => handleSort('status')}
+                className="flex items-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                aria-sort={sortField === 'status' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              >
+                Status
+                <SortIcon field="status" />
+              </button>
+            </th>
+            <th>
+              <button 
+                type="button"
+                onClick={() => handleSort('vendor')}
+                className="flex items-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                aria-sort={sortField === 'vendor' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              >
+                Vendor
+                <SortIcon field="vendor" />
+              </button>
+            </th>
+            <th className="center">
+              <button 
+                type="button"
+                onClick={() => handleSort('resourceCount')}
+                className="flex items-center justify-center w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                aria-sort={sortField === 'resourceCount' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              >
+                Resources
+                <SortIcon field="resourceCount" />
+              </button>
+            </th>
+            <th className="right">
+              <button 
+                type="button"
+                onClick={() => handleSort('budget')}
+                className="flex items-center justify-end w-full hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:text-blue-600"
+                aria-sort={sortField === 'budget' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              >
+                Budget (SAR)
+                <SortIcon field="budget" />
+              </button>
+            </th>
             <th className="center">Payment</th>
           </tr>
         </thead>
         <tbody>
-          {assignments.map(a => {
+          {sortedAssignments.map(a => {
             const typeClass = a.type.toLowerCase();
             const isExpanded = expandedRows.has(a.id);
             const assignmentResources = getAssignmentResources(a.aid);
@@ -196,7 +321,7 @@ export function BudgetLedgerTable({
 
             return (
               <Fragment key={a.id}>
-                {/* Main Assignment Row */}
+                {/* Main Assignment Row - A11Y enhanced */}
                 <tr 
                   className={cn(
                     'ledger-row transition-all duration-150',
