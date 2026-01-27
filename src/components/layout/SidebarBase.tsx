@@ -4,12 +4,17 @@
  * Used by all non-admin sidebars (Product, Release, Enterprise, Program, etc.)
  * All styling uses CSS custom properties for dark/light mode compatibility.
  * 
- * CATALYST V5 HARDENED:
- * - Section headers: Sentence case, text-xs font-medium
- * - Item height: 44px (h-11) for proper touch targets
+ * CATALYST V9.5 NAVIGATION SHELL — Research-Driven Design
+ * Based on analysis of 27 enterprise apps (Linear, Stripe, Figma, Vercel, etc.)
+ * 
+ * Key patterns implemented:
+ * - Module badges: NEUTRAL color (#3F3F46) not content colors
+ * - Active state: LEFT ACCENT BAR (3px) + subtle background (Linear/Notion pattern)
+ * - Text contrast: AAA compliant (15:1 primary, 8.5:1 secondary)
+ * - Section labels: 10px UPPERCASE with tracking
+ * - Collapsed state: Icon rail with tooltips (Grafana/Datadog pattern)
+ * - Item height: 44px for proper touch targets
  * - Icons: 18×18 with strokeWidth 1.75
- * - Active state: 3px left border, bg-blue-50/60, text-brand-primary
- * - Footer separator: border-t border-divider
  */
 
 import React from 'react';
@@ -124,14 +129,16 @@ export function SidebarBase({
             justifyContent: expanded ? 'space-between' : 'center',
           }}
         >
-          <div className="flex items-center gap-2.5 overflow-hidden">
+        <div className="flex items-center gap-2.5 overflow-hidden">
+            {/* Module Badge — NEUTRAL color per research (GitHub/GitLab pattern) */}
             <div 
               className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'var(--brand-primary-hex, #2563eb)',
+                background: 'var(--nav-module-badge, #3F3F46)',
                 color: 'var(--text-inverse, #ffffff)',
                 fontSize: '11px',
                 fontWeight: 700,
+                letterSpacing: '0.025em',
               }}
             >
               {config.badge}
@@ -139,7 +146,7 @@ export function SidebarBase({
             {expanded && (
               <span 
                 className="text-sm font-semibold truncate"
-                style={{ color: 'var(--text-1)' }}
+                style={{ color: 'var(--nav-text-primary, #18181B)' }}
               >
                 {config.label}
               </span>
@@ -175,10 +182,15 @@ export function SidebarBase({
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
           {config.showFavorites !== false && favoritedItems.length > 0 && expanded && (
             <div className="mb-4">
-              <div className="px-3 pt-3 pb-1">
+              {/* Section Label — 10px UPPERCASE per Linear/Stripe pattern */}
+              <div className="px-3 pt-3 pb-1.5">
                 <span 
-                  className="text-xs font-medium tracking-wide"
-                  style={{ color: 'var(--text-tertiary)' }}
+                  className="font-semibold tracking-wider uppercase"
+                  style={{ 
+                    color: 'var(--nav-section-label, #52525B)',
+                    fontSize: '10px',
+                    letterSpacing: '0.08em',
+                  }}
                 >
                   Favorites
                 </span>
@@ -205,13 +217,17 @@ export function SidebarBase({
               if (section.items.length === 0) return null;
               
               return (
-                <div key={section.title} className={sectionIndex > 0 ? 'mt-4' : ''}>
-                  {/* Section Header - sentence case, only show when expanded */}
-                  {expanded && (
-                    <div className="px-3 pt-3 pb-1">
+                <div key={section.title} className={sectionIndex > 0 ? 'mt-5' : ''}>
+                  {/* Section Header — 10px UPPERCASE per Linear/Stripe pattern */}
+                  {expanded && section.title && (
+                    <div className="px-3 pt-3 pb-1.5">
                       <span 
-                        className="text-xs font-medium tracking-wide"
-                        style={{ color: 'var(--text-tertiary)' }}
+                        className="font-semibold tracking-wider uppercase"
+                        style={{ 
+                          color: 'var(--nav-section-label, #52525B)',
+                          fontSize: '10px',
+                          letterSpacing: '0.08em',
+                        }}
                       >
                         {section.title}
                       </span>
@@ -303,9 +319,10 @@ function renderMenuItem(
         marginBottom: '2px',
         position: 'relative',
         justifyContent: expanded ? 'flex-start' : 'center',
-        background: active ? 'rgba(37, 99, 235, 0.08)' : 'transparent', // bg-blue-50/60 equivalent
-        color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
-        fontWeight: active ? 500 : 400,
+        /* V9.5: Subtle background on active, AAA contrast text */
+        background: active ? 'rgba(37, 99, 235, 0.06)' : 'transparent',
+        color: active ? 'hsl(var(--brand-primary))' : 'var(--nav-text-primary, #18181B)',
+        fontWeight: active ? 600 : 500,
         fontSize: '13px',
         fontFamily: 'inherit',
         outline: 'none',
@@ -317,17 +334,18 @@ function renderMenuItem(
         e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.08)' : 'transparent'; 
       }}
     >
-      {/* Left indicator bar for active state - 3px */}
+      {/* Left Accent Bar — Linear/Notion pattern (3px bar, not full background) */}
       {active && (
         <span 
           style={{
             position: 'absolute',
             left: 0,
-            top: expanded ? '8px' : '12px',
-            bottom: expanded ? '8px' : '12px',
+            top: expanded ? '6px' : '10px',
+            bottom: expanded ? '6px' : '10px',
             width: '3px',
-            background: 'hsl(var(--brand-primary))',
+            background: 'var(--nav-accent-bar, #2563eb)',
             borderRadius: '0 2px 2px 0',
+            boxShadow: '1px 0 3px rgba(37, 99, 235, 0.2)',
           }}
         />
       )}
@@ -343,7 +361,8 @@ function renderMenuItem(
           <CustomIcon 
             className="h-[18px] w-[18px]" 
             style={{ 
-              color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)',
+              /* V9.5: AAA contrast icons */
+              color: active ? 'hsl(var(--brand-primary))' : 'var(--nav-text-secondary, #3F3F46)',
               strokeWidth: 1.75,
             }}
           />

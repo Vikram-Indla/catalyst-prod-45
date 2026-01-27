@@ -594,19 +594,32 @@ export function CatalystHeader() {
               </Tooltip>
             )}
 
-            {/* Search Button - visible control with keyboard shortcut hint */}
+            {/* Search Button — Vercel/Raycast pattern: styled trigger with ⌘K hint */}
             <button
               onClick={() => setIsSearchOpen(true)}
               className={cn(
-                "hidden sm:flex items-center gap-2 h-8 px-3 rounded-md border transition-all",
-                "bg-[var(--surface-3)] border-[var(--border-default)] text-[var(--text-2)]",
-                "hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)]",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--surface-1)]"
+                "hidden sm:flex items-center gap-2 h-9 px-3 rounded-lg border transition-all",
+                "bg-[var(--surface-2)] border-[var(--border-default)]",
+                "hover:bg-[var(--surface-3)] hover:border-[var(--nav-text-tertiary)]",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1"
               )}
+              style={{ minWidth: '200px' }}
             >
-              <Search className="h-4 w-4" />
-              <span className="text-sm">Search Catalyst…</span>
-              <kbd className="hidden md:inline-flex h-5 items-center gap-0.5 rounded border px-1.5 text-[10px] font-medium border-[var(--border-color)] bg-[var(--surface-2)] text-[var(--text-3)]">
+              <Search className="h-4 w-4" style={{ color: 'var(--nav-text-tertiary, #52525B)' }} />
+              <span 
+                className="text-sm flex-1 text-left"
+                style={{ color: 'var(--nav-text-tertiary, #52525B)' }}
+              >
+                Search…
+              </span>
+              <kbd 
+                className="hidden md:inline-flex h-5 items-center gap-0.5 rounded border px-1.5 text-[10px] font-semibold"
+                style={{
+                  borderColor: 'var(--border-default)',
+                  background: 'var(--surface-1)',
+                  color: 'var(--nav-text-secondary, #3F3F46)',
+                }}
+              >
                 ⌘K
               </kbd>
             </button>

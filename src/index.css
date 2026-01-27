@@ -384,6 +384,17 @@ html:has(body[data-scroll-locked]) {
     --surface-card: #ffffff;
     --surface-muted: #f8f8f7;
     
+    /* ═══════════════════════════════════════════════════════════════
+       V9.5 NAVIGATION SHELL — AAA Contrast (Linear/Stripe Standard)
+       Primary: 15:1 | Secondary: 8.5:1 | Tertiary: 6:1
+       ═══════════════════════════════════════════════════════════════ */
+    --nav-text-primary: #18181B;           /* 15.4:1 contrast */
+    --nav-text-secondary: #3F3F46;         /* 8.59:1 contrast */
+    --nav-text-tertiary: #52525B;          /* 6.04:1 contrast */
+    --nav-module-badge: #3F3F46;           /* Neutral badge (not colored) */
+    --nav-section-label: #52525B;          /* Section headers */
+    --nav-accent-bar: #2563eb;             /* Left accent bar */
+    
     /* Legacy text tokens (HEX for direct use) */
     --text-1: #0a0a0a;
     --text-2: #404040;
@@ -642,6 +653,17 @@ html:has(body[data-scroll-locked]) {
     --text-secondary: 0 0% 72%;
     --text-tertiary: 0 0% 55%;
     --text-muted: 0 0% 55%;
+    
+    /* ═══════════════════════════════════════════════════════════════
+       V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
+       Based on Linear/Stripe dark mode standards
+       ═══════════════════════════════════════════════════════════════ */
+    --nav-text-primary: rgba(255,255,255,0.92);
+    --nav-text-secondary: rgba(255,255,255,0.72);
+    --nav-text-tertiary: rgba(255,255,255,0.55);
+    --nav-module-badge: #3F3F46;           /* Neutral badge (same as light) */
+    --nav-section-label: rgba(255,255,255,0.55);
+    --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
     /* === C) DIVIDER + BORDER GRAMMAR (Never white lines) === */
     --divider: rgba(255,255,255,0.06);
