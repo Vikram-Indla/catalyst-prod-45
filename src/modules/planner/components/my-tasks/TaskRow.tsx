@@ -20,21 +20,24 @@ interface TaskRowProps {
 }
 
 // Workstream color palette - all solid fills with white text
+// IMPORTANT: These OVERRIDE any database colors to ensure consistency
 const WORKSTREAM_COLORS: Record<string, string> = {
-  'Senaie': '#06b6d4',
-  'Catalyst': '#8b5cf6',
-  'Tahommona': '#6366f1',
-  'Delivery': '#f97316',  // Orange, NOT red (reserved for danger)
-  'MIM': '#ec4899',
-  'Standalone': '#64748b',
-  'Stand-Alone': '#64748b',  // Also support hyphenated version
-  'Data & AI': '#14b8a6',
+  'Senaie': '#06b6d4',        // Cyan
+  'Catalyst': '#8b5cf6',       // Purple
+  'Tahommona': '#6366f1',      // Indigo
+  'Delivery': '#f97316',       // Orange (NOT red - reserved for danger)
+  'MIM': '#ec4899',            // Pink
+  'Standalone': '#64748b',     // Slate
+  'Stand-Alone': '#64748b',    // Slate (hyphenated variant)
+  'Data & AI': '#14b8a6',      // Teal
 };
 
-// Get workstream badge color - fallback to provided or slate
-function getWorkstreamColor(name: string | null, fallbackColor: string | null): string {
+// Get workstream badge color - ALWAYS use our palette, ignore database colors
+function getWorkstreamColor(name: string | null): string {
   if (!name) return '#64748b';
-  return WORKSTREAM_COLORS[name] || fallbackColor || '#64748b';
+  // Normalize the name first, then lookup
+  const normalized = name === 'Stand-Alone' ? 'Standalone' : name;
+  return WORKSTREAM_COLORS[normalized] || WORKSTREAM_COLORS[name] || '#64748b';
 }
 
 // Normalize workstream name (e.g., Stand-Alone → Standalone)
@@ -119,7 +122,7 @@ export function TaskRow({ task, onOpenDetail }: TaskRowProps) {
   };
 
   const workstreamName = normalizeWorkstreamName(task.workstream_name);
-  const workstreamColor = getWorkstreamColor(task.workstream_name, task.workstream_color);
+  const workstreamColor = getWorkstreamColor(task.workstream_name);
   const timeEstimate = formatTime(task.time_estimate_minutes);
 
   return (
