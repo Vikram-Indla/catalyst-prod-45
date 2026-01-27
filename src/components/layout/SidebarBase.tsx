@@ -120,58 +120,59 @@ export function SidebarBase({
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* Header with collapse toggle */}
+        {/* Header with collapse toggle — Commercial SaaS: gradient bg + prominent module icon */}
         <div 
-          className="h-[52px] flex items-center justify-between border-b flex-shrink-0"
+          className="flex items-center justify-between border-b flex-shrink-0"
           style={{ 
-            borderColor: 'var(--divider)',
-            padding: expanded ? '0 12px' : '0',
+            height: expanded ? '64px' : '52px',
+            borderColor: '#E4E4E7',
+            padding: expanded ? '0 16px' : '0',
             justifyContent: expanded ? 'space-between' : 'center',
+            background: expanded ? 'linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%)' : 'transparent',
           }}
         >
-        <div className="flex items-center gap-2.5 overflow-hidden">
-            {/* Module Badge — NEUTRAL color per research (GitHub/GitLab pattern) */}
+        <div className="flex items-center gap-3 overflow-hidden">
+            {/* Module Badge — 40×40 with gradient & shadow (Commercial SaaS spec) */}
             <div 
-              className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+              className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'var(--nav-module-badge, #3F3F46)',
-                color: 'var(--text-inverse, #ffffff)',
-                fontSize: '11px',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                color: '#ffffff',
+                fontSize: '13px',
                 fontWeight: 700,
                 letterSpacing: '0.025em',
+                boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)',
               }}
             >
               {config.badge}
             </div>
             {expanded && (
-              <span 
-                className="text-sm font-semibold truncate"
-                style={{ color: 'var(--nav-text-primary, #18181B)' }}
-              >
-                {config.label}
-              </span>
+              <div className="flex flex-col min-w-0">
+                <span 
+                  className="text-[15px] font-bold truncate tracking-tight"
+                  style={{ color: '#09090B' }}
+                >
+                  {config.label}
+                </span>
+                <span 
+                  className="text-[13px] truncate"
+                  style={{ color: '#71717A' }}
+                >
+                  All Workstreams
+                </span>
+              </div>
             )}
           </div>
+          {/* Collapse button — with border per commercial spec */}
           <button
             onClick={onToggle}
-            className="w-7 h-7 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
-            style={{
-              color: 'var(--text-tertiary)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--nav-hover-bg)';
-              e.currentTarget.style.color = 'var(--text-1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--text-tertiary)';
-            }}
+            className="w-7 h-7 flex items-center justify-center rounded-md transition-all flex-shrink-0 border border-zinc-200 bg-white text-zinc-400 hover:text-zinc-600 hover:border-zinc-300"
             aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
           >
             {expanded ? (
-              <ChevronsLeft size={16} />
+              <ChevronsLeft size={14} />
             ) : (
-              <ChevronsRight size={16} />
+              <ChevronsRight size={14} />
             )}
           </button>
         </div>

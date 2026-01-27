@@ -180,45 +180,45 @@ export function CatalystHeader() {
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* ===== LOGO ZONE — Geometric Mark + Wordmark ===== */}
+        {/* ===== LOGO ZONE — Convergence Hub Mark + Bold Wordmark (Commercial SaaS) ===== */}
         <a 
-          className="flex items-center gap-2.5 flex-shrink-0 cursor-pointer no-underline rounded-md transition-colors hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
-          style={{ marginRight: '32px', padding: '6px', margin: '-6px' }}
+          className="flex items-center gap-3 flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-2 -m-2 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+          style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          {/* Logo Mark — 28×28 blue rounded square with icon */}
-          <div 
-            style={{
-              width: '28px',
-              height: '28px',
-              background: '#2563EB',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
+          {/* Convergence Hub Logo — 32×32 per commercial spec */}
+          <svg 
+            className="w-8 h-8 flex-shrink-0" 
+            viewBox="0 0 100 100" 
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-              style={{ width: '18px', height: '18px', color: 'white' }}
-            >
-              <path d="M7 5v14"/>
-              <path d="M17 9l-5 3 5 3"/>
-            </svg>
-          </div>
-          {/* Wordmark — NO gradient, theme-aware solid color */}
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6"/>
+                <stop offset="100%" stopColor="#1d4ed8"/>
+              </linearGradient>
+            </defs>
+            {/* Connection lines */}
+            <line x1="50" y1="50" x2="22" y2="22" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="78" y2="22" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="22" y2="78" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="78" y2="78" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
+            {/* Outer nodes */}
+            <circle cx="22" cy="22" r="12" fill="url(#logoGrad)"/>
+            <circle cx="78" cy="22" r="12" fill="url(#logoGrad)"/>
+            <circle cx="22" cy="78" r="12" fill="url(#logoGrad)"/>
+            <circle cx="78" cy="78" r="12" fill="url(#logoGrad)"/>
+            {/* Center hub */}
+            <circle cx="50" cy="50" r="18" fill="url(#logoGrad)"/>
+            <circle cx="50" cy="50" r="9" fill="white"/>
+          </svg>
+          {/* Wordmark — BOLD 18px (commercial SaaS spec) */}
           <span 
-            className="text-[#18181B] dark:text-white"
+            className="text-zinc-950 dark:text-white"
             style={{ 
-              fontSize: '15px', 
-              fontWeight: 600, 
-              letterSpacing: '-0.01em',
+              fontSize: '18px', 
+              fontWeight: 700, 
+              letterSpacing: '-0.025em',
             }}
           >
             Catalyst
@@ -266,28 +266,28 @@ export function CatalystHeader() {
               // Check if this nav item is active
               const isActive = item.label === activeNavItem;
               
-              // TopNav item styles - executive grade
-              // Active nav items use blue text + blue underline per design system v2.0
+              // TopNav item styles — COMMERCIAL SAAS (bold contrast, larger targets)
+              // Dark text (#27272A) for nav items, blue for active — per spec
               const navButtonStyle: React.CSSProperties = {
                 height: '36px',
                 padding: '0 14px',
                 fontSize: '14px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? 'hsl(var(--primary))' : 'var(--nav-text)',
+                color: isActive ? '#2563EB' : '#27272A', // Dark gray, NOT washed out
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
                 cursor: 'pointer',
-                transition: 'background 0.15s ease, color 0.15s ease',
+                transition: 'all 0.15s ease',
                 border: 'none',
-                background: isActive ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
+                background: isActive ? '#EFF6FF' : 'transparent', // Light blue bg for active
                 position: 'relative' as const,
                 fontFamily: 'inherit',
                 outline: 'none',
               };
               
-              // Active underline indicator - 2px evergreen underline
+              // Active underline indicator - 2px blue underline
               const activeUnderline = isActive ? (
                 <span 
                   style={{
@@ -296,7 +296,7 @@ export function CatalystHeader() {
                     left: '14px',
                     right: '14px',
                     height: '2px',
-                    background: 'var(--brand-active)',
+                    background: '#2563EB',
                     borderRadius: '1px',
                   }}
                 />
@@ -581,36 +581,16 @@ export function CatalystHeader() {
               </TooltipContent>
             </Tooltip>
 
-            {/* Settings - 32x32 icon button - Only visible to Admin */}
+            {/* Settings — 40×40 icon button (Commercial SaaS spec) */}
             {canAccessSettings && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: 'none',
-                      borderRadius: '6px',
-                      background: 'transparent',
-                      color: 'var(--icon-default)',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => { 
-                      e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
-                      e.currentTarget.style.color = 'var(--icon-hover)';
-                    }}
-                    onMouseLeave={(e) => { 
-                      e.currentTarget.style.background = 'transparent'; 
-                      e.currentTarget.style.color = 'var(--icon-default)';
-                    }}
+                    className="relative flex items-center justify-center w-10 h-10 rounded-lg text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all"
                     onClick={() => navigate('/admin/users')}
                     title="Settings"
                   >
-                    <Settings style={{ width: '20px', height: '20px' }} />
+                    <Settings className="w-5 h-5" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -619,42 +599,38 @@ export function CatalystHeader() {
               </Tooltip>
             )}
 
-            {/* Search Button — Vercel/Raycast pattern: styled trigger with ⌘K hint */}
+            {/* Search Trigger — PROMINENT (Commercial SaaS: 40px height, 240px min width) */}
             <button
               onClick={() => setIsSearchOpen(true)}
               className={cn(
-                "hidden sm:flex items-center gap-2 h-9 px-3 rounded-lg border transition-all",
-                "bg-[var(--surface-2)] border-[var(--border-default)]",
-                "hover:bg-[var(--surface-3)] hover:border-[var(--nav-text-tertiary)]",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1"
+                "hidden sm:flex items-center gap-2 h-10 px-4 rounded-lg transition-all",
+                "bg-zinc-100 dark:bg-zinc-800 border border-transparent",
+                "hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-200 dark:hover:border-zinc-600",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               )}
-              style={{ minWidth: '200px' }}
+              style={{ minWidth: '240px' }}
             >
-              <Search className="h-4 w-4" style={{ color: 'var(--nav-text-tertiary, #52525B)' }} />
-              <span 
-                className="text-sm flex-1 text-left"
-                style={{ color: 'var(--nav-text-tertiary, #52525B)' }}
-              >
-                Search…
+              <Search className="h-4 w-4 text-zinc-500" />
+              <span className="text-sm flex-1 text-left text-zinc-500">
+                Search anything...
               </span>
-              <kbd 
-                className="hidden md:inline-flex h-5 items-center gap-0.5 rounded border px-1.5 text-[10px] font-semibold"
-                style={{
-                  borderColor: 'var(--border-default)',
-                  background: 'var(--surface-1)',
-                  color: 'var(--nav-text-secondary, #3F3F46)',
-                }}
-              >
-                ⌘K
-              </kbd>
+              <div className="flex gap-1">
+                <kbd className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-600 rounded text-[11px] font-medium text-zinc-400">
+                  ⌘
+                </kbd>
+                <kbd className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-600 rounded text-[11px] font-medium text-zinc-400">
+                  K
+                </kbd>
+              </div>
             </button>
-            {/* Mobile search icon */}
+            {/* Mobile search icon — 40×40 */}
             <button
               onClick={() => setIsSearchOpen(true)}
               className={cn(
-                "sm:hidden flex items-center justify-center w-8 h-8 rounded-md transition-colors",
-                "text-[var(--icon-default)] hover:bg-[var(--nav-hover-bg)]",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1"
+                "sm:hidden flex items-center justify-center w-10 h-10 rounded-lg transition-colors",
+                "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+                "hover:bg-black/[0.04] dark:hover:bg-white/[0.06]",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
               )}
             >
               <Search className="h-5 w-5" />
