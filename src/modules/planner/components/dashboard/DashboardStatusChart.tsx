@@ -37,6 +37,23 @@ export function DashboardStatusChart({ data }: DashboardStatusChartProps) {
       : 0,
   }));
 
+  // Empty state when no tasks
+  if (totalTasks === 0) {
+    return (
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5">
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">
+          Status Distribution
+        </h3>
+        <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+          <div className="w-16 h-16 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3">
+            <span className="text-2xl font-mono font-bold text-slate-300 dark:text-slate-600">0</span>
+          </div>
+          <span className="text-sm">No tasks to display</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5">
       {/* Header */}
