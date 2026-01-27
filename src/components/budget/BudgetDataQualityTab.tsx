@@ -18,6 +18,7 @@ interface BudgetDataQualityTabProps {
   period: BudgetPeriod;
   totalBudget: number;
   onRefresh?: () => void;
+  fixDepartment?: string; // Optional department to auto-open Fix modal for
 }
 
 interface DepartmentQuality {
@@ -37,7 +38,7 @@ const PERIODS: { value: BudgetPeriod; label: string }[] = [
 
 const DEPT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
 
-export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh }: BudgetDataQualityTabProps) {
+export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fixDepartment }: BudgetDataQualityTabProps) {
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
   const [fixModalOpen, setFixModalOpen] = useState(false);
   const [selectedDept, setSelectedDept] = useState<DepartmentQuality | null>(null);
