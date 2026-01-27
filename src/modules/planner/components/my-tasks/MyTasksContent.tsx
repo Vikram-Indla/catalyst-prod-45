@@ -1,9 +1,9 @@
 // ============================================================
-// MY TASKS CONTENT - V8 Design System (Budget Planner Aligned)
+// MY TASKS CONTENT - Dashboard Style (Planner V9 Aligned)
 // Sections: Overdue → Today → This Week → Later
 // ============================================================
 
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMyTasks } from '../../hooks/useMyTasks';
@@ -36,7 +36,14 @@ export function MyTasksContent({
   onOpenCreateModal,
   onOpenTaskDetail,
 }: MyTasksContentProps) {
-  const { data: tasks = [], isLoading } = useMyTasks(filters);
+  const { data: tasks = [], isLoading, refetch } = useMyTasks(filters);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setTimeout(() => setIsRefreshing(false), 800);
+  }, [refetch]);
 
   // Group tasks by time section
   const tasksBySection = useMemo(() => {
@@ -70,32 +77,31 @@ export function MyTasksContent({
   }, [tasksBySection]);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header with Stats and Filters - Budget Planner Style */}
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+      {/* Header with Stats and Filters - Dashboard Style */}
       <MyTasksHeader
         filters={filters}
         onFilterChange={onFilterChange}
         onOpenCreateModal={onOpenCreateModal}
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
       />
 
-      {/* Task Sections - Single column scan with Budget Planner content styling */}
-      <div 
-        className="flex-1 overflow-y-auto p-6 lg:px-8"
-        style={{ backgroundColor: 'var(--bg)' }}
-      >
+      {/* Task Sections - Dashboard content area style */}
+      <div className="flex-1 overflow-auto p-4">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : visibleSections.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-center">
-            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
-              <Search className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+          <div className="flex flex-col items-center justify-center h-64 text-center bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-3">
+              <Search className="w-6 h-6 text-slate-400 dark:text-slate-500" />
             </div>
-            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-1">
+            <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">
               No tasks found
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm">
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mb-4">
               {filters.searchQuery
                 ? `No tasks match "${filters.searchQuery}"`
                 : 'You have no tasks yet. Create your first task to get started.'}
@@ -103,15 +109,16 @@ export function MyTasksContent({
             {!filters.searchQuery && (
               <Button 
                 onClick={onOpenCreateModal} 
-                className="mt-4 gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md"
+                size="sm"
+                className="gap-1.5 text-xs bg-blue-600 hover:bg-blue-700"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5" />
                 Create Task
               </Button>
             )}
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {visibleSections.map((section) => (
               <TaskSection
                 key={section}
