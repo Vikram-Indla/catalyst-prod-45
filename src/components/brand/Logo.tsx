@@ -1,4 +1,9 @@
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/useTheme";
+
+// Import both logo variants
+import logoLight from "@/assets/catalyst-logo-dark.svg"; // Blue logo for light backgrounds
+import logoDark from "@/assets/catalyst-logo-white.svg"; // White logo for dark backgrounds
 
 interface LogoProps {
   variant?: "light" | "dark";
@@ -13,8 +18,9 @@ interface LogoProps {
  * Catalyst Logo Component
  * 
  * Logo specification:
- * - "Cata" = Pure black #0a0a0a (light mode) or white #ffffff (dark mode)
- * - "lyst" = Brand gold #C69C6D (when useGold=true) or Brand teal #0d9488 (default)
+ * - Light mode: Blue convergence hub logo (catalyst-logo-dark.svg)
+ * - Dark mode: White convergence hub logo (catalyst-logo-white.svg)
+ * - Wordmark: "Cata" in primary text, "lyst" in brand teal or gold
  */
 export function Logo({ 
   variant = "dark", 
@@ -24,6 +30,8 @@ export function Logo({
   showWordmark = true,
   useGold = false
 }: LogoProps) {
+  const { isDark } = useTheme();
+  
   const sizes = {
     sm: "h-6",
     md: "h-8",
@@ -38,11 +46,27 @@ export function Logo({
     xl: "text-3xl",
   };
 
+  // Select logo based on current theme
+  const currentLogo = isDark ? logoDark : logoLight;
+
   // If custom image provided, use that
   if (imageSrc) {
     return (
       <div className={cn("flex items-center justify-center", className)}>
         <img src={imageSrc} alt="Logo" className={cn("object-contain", sizes[size])} />
+      </div>
+    );
+  }
+
+  // Default: show the theme-aware convergence hub logo
+  if (!showWordmark) {
+    return (
+      <div className={cn("flex items-center justify-center", className)}>
+        <img 
+          src={currentLogo} 
+          alt="Catalyst Logo" 
+          className={cn("object-contain", sizes[size])} 
+        />
       </div>
     );
   }
