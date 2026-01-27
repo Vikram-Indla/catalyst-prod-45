@@ -12879,6 +12879,7 @@ export type Database = {
           created_at: string | null
           icon: string | null
           id: string
+          is_active: boolean | null
           name: string
           slug: string
           sort_order: number | null
@@ -12889,6 +12890,7 @@ export type Database = {
           created_at?: string | null
           icon?: string | null
           id?: string
+          is_active?: boolean | null
           name: string
           slug: string
           sort_order?: number | null
@@ -12899,6 +12901,7 @@ export type Database = {
           created_at?: string | null
           icon?: string | null
           id?: string
+          is_active?: boolean | null
           name?: string
           slug?: string
           sort_order?: number | null
