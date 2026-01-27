@@ -11,6 +11,7 @@ export interface PlannerFilters {
   search: string;
   status: TaskStatus | null;
   priority: TaskPriority | null;
+  workstreamId: string | null;  // Added workstream filter
   assigneeId: string | null;
   blocked: boolean | null;
   overdue: boolean | null;
@@ -20,6 +21,7 @@ const DEFAULT_FILTERS: PlannerFilters = {
   search: '',
   status: null,
   priority: null,
+  workstreamId: null,
   assigneeId: null,
   blocked: null,
   overdue: null,
@@ -60,6 +62,11 @@ export function usePlannerSearch(tasks: PlannerTask[]) {
       result = result.filter(t => t.priority === filters.priority);
     }
 
+    // Apply workstream filter
+    if (filters.workstreamId) {
+      result = result.filter(t => t.teamId === filters.workstreamId);
+    }
+
     // Apply assignee filter
     if (filters.assigneeId) {
       result = result.filter(t => t.assigneeId === filters.assigneeId);
@@ -94,6 +101,10 @@ export function usePlannerSearch(tasks: PlannerTask[]) {
     setFilters(prev => ({ ...prev, priority }));
   }, []);
 
+  const setWorkstreamFilter = useCallback((workstreamId: string | null) => {
+    setFilters(prev => ({ ...prev, workstreamId }));
+  }, []);
+
   const setAssigneeFilter = useCallback((assigneeId: string | null) => {
     setFilters(prev => ({ ...prev, assigneeId }));
   }, []);
@@ -115,6 +126,7 @@ export function usePlannerSearch(tasks: PlannerTask[]) {
       filters.search !== '' ||
       filters.status !== null ||
       filters.priority !== null ||
+      filters.workstreamId !== null ||
       filters.assigneeId !== null ||
       filters.blocked !== null ||
       filters.overdue !== null
@@ -127,6 +139,7 @@ export function usePlannerSearch(tasks: PlannerTask[]) {
     setSearch,
     setStatusFilter,
     setPriorityFilter,
+    setWorkstreamFilter,
     setAssigneeFilter,
     setBlockedFilter,
     setOverdueFilter,

@@ -93,6 +93,7 @@ export function PlannerTaskList({
     setSearch,
     setStatusFilter,
     setPriorityFilter,
+    setWorkstreamFilter,
     setAssigneeFilter,
     setBlockedFilter,
     setOverdueFilter,
