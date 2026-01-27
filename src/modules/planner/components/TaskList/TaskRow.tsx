@@ -88,9 +88,6 @@ export function TaskRow({
         task.blocked && "bg-red-50/50 dark:bg-red-950/20",
         !isSelected && !isFocused && !task.blocked && "hover:bg-slate-50 dark:hover:bg-slate-800/30"
       )}
-      style={{
-        boxShadow: task.workstream_color ? `inset 4px 0 0 ${task.workstream_color}` : undefined,
-      }}
     >
       {/* Checkbox */}
       <td className="w-10 px-3" onClick={(e) => e.stopPropagation()}>
@@ -100,11 +97,14 @@ export function TaskRow({
         />
       </td>
 
-      {/* ID */}
+      {/* ID - clicking opens the task edit modal */}
       {visibleColumns.has('key') && (
         <td className="w-20 px-3">
           <button
-            onClick={handleCopyKey}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick(task);
+            }}
             className="font-mono text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline transition-colors"
           >
             {task.task_key}
