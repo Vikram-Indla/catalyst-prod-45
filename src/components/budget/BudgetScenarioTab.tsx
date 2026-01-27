@@ -770,30 +770,46 @@ export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenar
                   <h3 className="font-bold text-lg text-foreground">{selectedScenario.name}</h3>
                   <p className="text-sm text-muted-foreground">{selectedScenario.description || 'No description'}</p>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={resetDetailEdits}>
-                    <RefreshCw className="w-4 h-4 mr-1" />
+                <div className="flex items-center gap-2">
+                  {/* Reset */}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={resetDetailEdits}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-md transition-colors"
+                  >
+                    <RefreshCw className="w-4 h-4" />
                     Reset
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => setViewModalOpen(true)}>
-                    <Eye className="w-4 h-4 mr-1" />
+                  
+                  {/* View Details */}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setViewModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-md transition-colors"
+                  >
+                    <Eye className="w-4 h-4" />
                     View Details
                   </Button>
-                  {detailTotals.resourceCount > 0 && (
-                    <Button 
-                      size="sm" 
-                      className="bg-primary"
-                      onClick={() => setSaveModalOpen(true)}
-                    >
-                      <Save className="w-4 h-4 mr-1" />
-                      Save Scenario
-                    </Button>
-                  )}
+                  
+                  {/* Save Scenario — PRIMARY CTA (always visible) */}
+                  <Button 
+                    size="sm" 
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => setSaveModalOpen(true)}
+                    disabled={detailTotals.resourceCount === 0}
+                  >
+                    <Save className="w-4 h-4" />
+                    Save Scenario
+                  </Button>
+                  
+                  {/* Delete (custom scenarios only) */}
                   {selectedScenario.type === 'custom' && (
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="text-destructive hover:text-destructive"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => deleteScenario.mutate(selectedScenario.id)}
                     >
                       <Trash2 className="w-4 h-4" />
