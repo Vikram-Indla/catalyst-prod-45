@@ -545,8 +545,8 @@ export function PlannerPage() {
           </div>
         </div>
 
-        {/* Search Bar - hidden on teams/settings/insight views */}
-        {activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
+        {/* Search Bar - hidden on dashboard/teams/settings/insight views */}
+        {activeView !== 'dashboard' && activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
           <PlannerSearchBar
             filters={filters}
             onSearchChange={setSearch}
