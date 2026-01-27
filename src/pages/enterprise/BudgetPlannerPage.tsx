@@ -248,24 +248,24 @@ export default function BudgetPlannerPage() {
               <div className="flex flex-col gap-0.5">
                 {/* Breadcrumb - Shows active tab */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-slate-500">Enterprise / Budget Planner</span>
-                  <span className="text-xs text-slate-400">•</span>
-                  <span className="text-xs font-medium text-blue-600">{getActiveTabName()}</span>
+                  <span className="text-xs font-medium text-muted-foreground">Enterprise / Budget Planner</span>
+                  <span className="text-xs text-muted-foreground/60">•</span>
+                  <span className="text-xs font-medium text-primary">{getActiveTabName()}</span>
                 </div>
                 
                 {/* Title */}
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
+                <h1 className="text-2xl font-bold text-foreground tracking-tight">
                   Budget Planner
                 </h1>
               </div>
               
               {/* Live Badge - Inline with title */}
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-200">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border bg-muted border-border">
                 <span className="relative flex items-center justify-center">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                 </span>
-                <span className="text-xs font-semibold text-emerald-700">Live</span>
+                <span className="text-xs font-semibold text-foreground">Live</span>
               </div>
             </div>
 
@@ -278,17 +278,17 @@ export default function BudgetPlannerPage() {
           <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search assignments..."
-                className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
+                className="w-56 h-10 pl-10 pr-3 text-sm rounded-xl bg-muted/60 border-border focus:bg-card placeholder:text-muted-foreground"
               />
             </div>
 
             {/* Hero Tab Strip - Right Aligned */}
-            <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
+            <nav className="flex items-center gap-1 bg-muted rounded-xl p-1.5 border border-border">
               {viewTabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -298,8 +298,8 @@ export default function BudgetPlannerPage() {
                     className={cn(
                       'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
                       tab.isActive 
-                        ? 'bg-[#2563eb] text-white shadow-md'
-                        : 'text-slate-700 hover:bg-white hover:shadow-sm hover:text-slate-900'
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'text-muted-foreground hover:bg-card hover:shadow-sm hover:text-foreground'
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -312,27 +312,25 @@ export default function BudgetPlannerPage() {
         </div>
 
         {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-auto p-6 lg:px-8" style={{ backgroundColor: 'var(--bg)' }}>
+        <div className="flex-1 overflow-auto p-6 lg:px-8 bg-[hsl(var(--background))]">
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
           ) : activeTab === 'budget' ? (
             <>
               {/* V8: Period Toggle + Context Badge */}
               <div className="flex items-center justify-between mb-6">
                 {/* Period Toggle - Pill-style */}
-                <div className="inline-flex items-center bg-slate-100 p-1 rounded-xl">
+                <div className="period-toggle">
                   {PERIODS.map(p => (
                     <button
                       key={p.value}
                       onClick={() => setPeriod(p.value)}
                       className={cn(
-                        "px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150",
-                        period === p.value
-                          ? "bg-white text-[#2563eb] shadow-sm"
-                          : "text-slate-600 hover:text-slate-800"
+                        "period-btn",
+                        period === p.value && "active"
                       )}
                     >
                       {p.label}
@@ -341,12 +339,12 @@ export default function BudgetPlannerPage() {
                 </div>
                 
                 {/* V8: Context Badge - Shows period + total */}
-                <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                  <Calendar className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm text-slate-600">
-                    <span className="font-bold text-slate-800">{getPeriodLabel()}</span>
-                    <span className="mx-2 text-slate-300">•</span>
-                    <span className="font-mono font-bold text-[#2563eb]">
+                <div className="flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-xl">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    <span className="font-bold text-foreground">{getPeriodLabel()}</span>
+                    <span className="mx-2 text-muted-foreground/60">•</span>
+                    <span className="font-mono font-bold text-primary">
                       {formatCurrency(currentBudget?.total || 0)} SAR
                     </span>
                   </span>
