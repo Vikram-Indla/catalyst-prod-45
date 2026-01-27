@@ -55,6 +55,7 @@ export function QuickAddPopover({
         .from('planner_tasks')
         .insert([{
           key: taskKey,
+          task_key: taskKey,
           title: taskTitle,
           due_date: format(date, 'yyyy-MM-dd'),
           status_id: statusId,

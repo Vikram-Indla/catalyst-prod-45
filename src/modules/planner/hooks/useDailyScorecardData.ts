@@ -50,14 +50,16 @@ export function useDailyScorecardData() {
   return useQuery({
     queryKey: ['daily-scorecard-data'],
     queryFn: async (): Promise<DailyScorecardData> => {
-      // Fetch workstreams
-      const { data: workstreams, error: wsError } = await supabase
+      // Fetch workstreams - avoid chained query to prevent type recursion
+      const wsResult = await supabase
         .from('planner_workstreams')
-        .select('id, name, color')
-        .eq('is_active', true)
-        .order('sort_order');
+        .select('id, name, color');
       
-      if (wsError) throw wsError;
+      if (wsResult.error) throw wsResult.error;
+      // Filter in JS to avoid type issues with chained .eq()
+      const workstreams = ((wsResult.data || []) as { id: string; name: string; color: string; is_active?: boolean; sort_order?: number }[])
+        .filter(w => w.is_active !== false)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
       // Fetch tasks with related data
       const { data: tasks, error: taskError } = await supabase

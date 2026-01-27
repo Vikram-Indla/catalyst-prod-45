@@ -43,7 +43,9 @@ export function useBoardTasks(filters?: BoardFilters) {
   return useQuery({
     queryKey: ['planner', 'board', 'tasks', filters],
     queryFn: async (): Promise<BoardTask[]> => {
-      let query = supabase
+      // Use any to break excessive type recursion in Supabase query builder
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let query: any = supabase
         .from('planner_board_tasks')
         .select('*');
       
@@ -145,8 +147,9 @@ export function useCreateBoardTask() {
       // Insert task
       const { data, error } = await supabase
         .from('planner_tasks')
-        .insert({
+        .insert([{
           key: newKey,
+          task_key: newKey,
           title: input.title,
           description: input.description,
           status_id: input.status_id,
@@ -155,7 +158,7 @@ export function useCreateBoardTask() {
           assignee_id: input.assignee_id,
           due_date: input.due_date,
           position: newPosition,
-        })
+        }])
         .select()
         .single();
       

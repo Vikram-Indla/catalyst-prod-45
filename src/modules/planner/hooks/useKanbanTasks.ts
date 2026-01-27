@@ -120,6 +120,7 @@ export function useCreateKanbanTask() {
         .from('planner_tasks')
         .insert([{
           key: tempKey,
+          task_key: tempKey,
           title: task.title!,
           description: task.description || null,
           status_id: task.status_id!,

@@ -272,6 +272,7 @@ export function useDuplicatePlannerTask() {
         .from('planner_tasks')
         .insert([{
           key: newKey,
+          task_key: newKey,
           title: `${task.title} (Copy)`,
           description: task.description || null,
           status_id: defaultStatusId,

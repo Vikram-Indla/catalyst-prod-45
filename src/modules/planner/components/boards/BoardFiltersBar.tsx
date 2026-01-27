@@ -24,17 +24,18 @@ interface BoardFiltersBarProps {
 }
 
 export function BoardFiltersBar({ filters, onFiltersChange }: BoardFiltersBarProps) {
-  // Fetch workstreams
+  // Fetch workstreams - use direct SQL-style query to avoid type recursion
   const { data: workstreams = [] } = useQuery({
     queryKey: ['workstreams'],
-    queryFn: async () => {
-      const { data, error } = await supabase
+    queryFn: async (): Promise<{ id: string; name: string; slug: string; color: string }[]> => {
+      const result = await supabase
         .from('planner_workstreams')
-        .select('id, name, slug, color')
-        .eq('is_active', true)
-        .order('name');
-      if (error) throw error;
-      return data || [];
+        .select('id, name, slug, color');
+      if (result.error) throw result.error;
+      // Filter and sort in JS to avoid chained query type issues
+      return ((result.data || []) as { id: string; name: string; slug: string; color: string; is_active?: boolean }[])
+        .filter(w => w.is_active !== false)
+        .sort((a, b) => a.name.localeCompare(b.name));
     },
   });
 
