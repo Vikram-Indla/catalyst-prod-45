@@ -88,4 +88,5 @@ export interface BoardFilters {
   assignee_id?: string;
   priority?: string;
   due_status?: string;
+  blocked?: boolean;
 }
