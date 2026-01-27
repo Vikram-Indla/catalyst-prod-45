@@ -5,13 +5,12 @@
 
 import { useState, useCallback } from 'react';
 import { BoardKanban } from './BoardKanban';
-import { BoardFiltersBar } from './BoardFiltersBar';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
 import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
 
 export function PlannerBoardsPage() {
-  const [filters, setFilters] = useState<BoardFilters>({});
+  const [filters] = useState<BoardFilters>({});
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createStatusId, setCreateStatusId] = useState<string | undefined>();
   
@@ -35,11 +34,7 @@ export function PlannerBoardsPage() {
   }, []);
 
   return (
-    <div className="planner-v9 flex flex-col h-full bg-slate-50 dark:bg-slate-900">
-
-      {/* Filters Bar */}
-      <BoardFiltersBar filters={filters} onFiltersChange={setFilters} />
-
+    <div className="planner-v9 flex flex-col h-full">
       {/* Kanban Board */}
       <div className="flex-1 min-h-0">
         <BoardKanban
