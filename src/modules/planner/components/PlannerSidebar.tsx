@@ -1,18 +1,17 @@
 // ============================================================
 // PLANNER SIDEBAR COMPONENT
 // Uses SidebarBase for consistent styling with other modules
+// Per Design Audit: Removed "Task List" (merged into My Tasks)
+// Per Design Audit: Removed "Insights" section (not built yet)
 // ============================================================
 
 import { 
   LayoutDashboard,
   LayoutGrid, 
-  List, 
   Calendar, 
   GanttChartSquare,
-  FileText,
-  Users,
-  Settings,
   UsersRound,
+  Settings,
   CheckSquare,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from '@/components/layout/SidebarBase';
@@ -39,19 +38,12 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
         items: [
           { id: 'dashboard', title: 'Dashboard', path: '/planner/dashboard', icon: LayoutDashboard, exact: true },
           { id: 'boards', title: 'Boards', path: '/planner/boards', icon: LayoutGrid, exact: true },
-          { id: 'task-list', title: 'Task List', path: '/planner/task-list', icon: List, exact: true },
+          // Task List removed - merged into My Tasks per audit
           { id: 'timeline', title: 'Timeline', path: '/planner/timeline', icon: GanttChartSquare, exact: true },
           { id: 'calendar', title: 'Calendar', path: '/planner/calendar', icon: Calendar, exact: true },
         ],
       },
-      {
-        title: 'Insights',
-        items: [
-          { id: 'workstream-performance', title: 'Daily Scorecard', path: '/planner/workstream-performance', icon: Users, exact: true },
-          { id: 'weekly-report', title: 'Weekly Summary', path: '/planner/weekly-report', icon: FileText, exact: true },
-          { id: 'ai-insights', title: 'Monthly Chronicle', path: '/planner/ai-insights', icon: FileText, exact: true },
-        ],
-      },
+      // Insights section removed until built per audit
       {
         title: 'Workspace',
         items: [
