@@ -43,7 +43,8 @@ const mapPriority = (dbPriority: string | null): TaskPriority => {
 // Transform planner_tasks row to PlannerTask
 const transformPlannerTask = (row: any): PlannerTask => ({
   id: row.id,
-  key: row.key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
+  // Use task_key first (proper sequential key), then fallback to key, then generate from UUID
+  key: row.task_key || row.key || `PLN-${row.id.slice(0, 4).toUpperCase()}`,
   title: row.title || 'Untitled',
   description: row.description || '',
   status: mapStatusFromPlannerStatuses(row.status?.name),
