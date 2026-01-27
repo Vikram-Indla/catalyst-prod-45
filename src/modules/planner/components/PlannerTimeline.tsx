@@ -283,14 +283,14 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
           TIMELINE GRID CONTENT
           ============================================================ */}
       <div className="flex-1 overflow-hidden flex">
-        {/* Left Panel: Task Keys */}
-        <div className="w-[140px] flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 overflow-y-auto">
+        {/* Left Panel: Task Keys - uses shadow instead of border for cleaner separation */}
+        <div className="w-[160px] flex-shrink-0 bg-white dark:bg-slate-950 overflow-y-auto shadow-[2px_0_8px_-2px_rgba(0,0,0,0.08)] dark:shadow-[2px_0_8px_-2px_rgba(0,0,0,0.3)] z-10">
           {/* Header */}
           <div
-            className="sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex items-center px-4"
+            className="sticky top-0 z-20 bg-white dark:bg-slate-950 flex items-center px-4"
             style={{ height: HEADER_HEIGHT }}
           >
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
               Tasks ({filteredTasks.length})
             </span>
           </div>
