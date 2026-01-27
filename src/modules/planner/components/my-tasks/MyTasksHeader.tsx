@@ -90,7 +90,7 @@ export function MyTasksHeader({
 
         {/* Add Task Button */}
         <Button 
-          className="gap-2 bg-orange-500 hover:bg-orange-600"
+          className="gap-2 bg-blue-600 hover:bg-blue-700"
           onClick={onOpenCreateModal}
         >
           <Plus className="w-4 h-4" />
