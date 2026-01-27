@@ -394,6 +394,7 @@ export default function BudgetPlannerPage() {
               data={data}
               period={period}
               presetToLoad={tabParams.preset}
+              onPeriodChange={setPeriod}
             />
           ) : activeTab === 'quality' ? (
             <BudgetDataQualityTab 
@@ -402,6 +403,7 @@ export default function BudgetPlannerPage() {
               totalBudget={data?.departments?.all?.total || 0}
               onRefresh={refetch}
               fixDepartment={tabParams.fixDepartment}
+              onPeriodChange={setPeriod}
             />
           ) : null}
         </div>

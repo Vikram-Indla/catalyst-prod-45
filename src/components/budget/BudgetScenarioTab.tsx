@@ -36,7 +36,14 @@ interface BudgetScenarioTabProps {
   } | null;
   period: BudgetPeriod;
   presetToLoad?: string; // Optional preset ID to auto-load
+  onPeriodChange?: (period: BudgetPeriod) => void; // Callback to change period
 }
+
+const PERIODS: { value: BudgetPeriod; label: string }[] = [
+  { value: 'Q1', label: 'Q1' },
+  { value: 'H1', label: 'H1' },
+  { value: 'Full', label: 'Full Year' },
+];
 
 type WizardStep = 1 | 2 | 3 | 4;
 
@@ -87,7 +94,7 @@ function formatDateDisplay(dateStr: string | null): string {
   return `${day} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
-export function BudgetScenarioTab({ data, period }: BudgetScenarioTabProps) {
+export function BudgetScenarioTab({ data, period, onPeriodChange }: BudgetScenarioTabProps) {
   const { data: savedScenarios = [], isLoading } = useBudgetScenarios();
   const createScenario = useCreateScenario();
   const deleteScenario = useDeleteScenario();
@@ -474,7 +481,26 @@ export function BudgetScenarioTab({ data, period }: BudgetScenarioTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Section: Budget Impact Cards with Department Filter */}
+      {/* Period Toggle */}
+      <div className="flex items-center justify-between">
+        <div className="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+          {PERIODS.map(p => (
+            <button
+              key={p.value}
+              onClick={() => onPeriodChange?.(p.value)}
+              className={cn(
+                'px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150',
+                period === p.value
+                  ? 'bg-white dark:bg-slate-700 text-primary shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+              )}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="bg-card rounded-xl border border-border p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-bold uppercase text-muted-foreground tracking-wider">Budget Impact</h3>
