@@ -273,17 +273,6 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Department Budgets
           </h2>
-          <button 
-            type="button"
-            className="text-sm text-[#2563eb] hover:underline font-medium flex items-center gap-1 cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onTabChange?.('budget');
-            }}
-          >
-            View Breakdown <ChevronRight className="w-4 h-4" />
-          </button>
         </div>
         
         <div className="bg-card rounded-xl border border-border">
@@ -400,17 +389,6 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Assignment Costs
           </h2>
-          <button 
-            type="button"
-            className="text-sm text-blue-600 hover:underline font-medium flex items-center gap-1 cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              navigate('/admin/resource-assignments');
-            }}
-          >
-            View All {data.assignments.length} Assignments <ExternalLink className="w-3.5 h-3.5" />
-          </button>
         </div>
         
         <div className="bg-card rounded-xl border border-border overflow-hidden">
