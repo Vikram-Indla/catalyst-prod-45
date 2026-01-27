@@ -248,11 +248,12 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
         
         departments[dept].insourced += ctcBudget;
         departments[dept].resources++;
-        if (!r.ctc || r.ctc === 0) departments[dept].dataIssues++;
+        // CTC is considered present even if the value is 0; only null/undefined means missing
+        if (r.ctc === null || r.ctc === undefined) departments[dept].dataIssues++;
         
         departments.all.insourced += ctcBudget;
         departments.all.resources++;
-        if (!r.ctc || r.ctc === 0) departments.all.dataIssues++;
+        if (r.ctc === null || r.ctc === undefined) departments.all.dataIssues++;
       }
     });
 
@@ -283,7 +284,7 @@ export function useBudgetData(period: BudgetPeriod = 'H1') {
 
     // Data quality issues
     const dataQualityIssues: DataQualityIssue[] = resources
-      .filter(r => !r.ctc || r.ctc === 0)
+      .filter(r => r.ctc === null || r.ctc === undefined)
       .map(r => ({
         name: r.name,
         department: r.department,

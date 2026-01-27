@@ -10,6 +10,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { X, AlertCircle, Check, CheckCircle, Users, Loader2, Pencil } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -106,6 +107,7 @@ export function FixCTCModal({
   onSaved,
   focusResourceId 
 }: FixCTCModalProps) {
+  const queryClient = useQueryClient();
   const [ctcValues, setCTCValues] = useState<Record<string, string>>({});
   const [bulkValue, setBulkValue] = useState('');
   const [saving, setSaving] = useState(false);
@@ -196,6 +198,16 @@ export function FixCTCModal({
 
         if (error) throw error;
       }
+
+      // Optimistic UI: update cached budget resources immediately
+      queryClient.setQueryData<any[]>(['budget-resources'], (old) => {
+        if (!old) return old;
+        const nextById = new Map(updates.map(u => [u.id, u.ctc] as const));
+        return old.map((row: any) => {
+          const next = nextById.get(row.id);
+          return next !== undefined ? { ...row, ctc: next } : row;
+        });
+      });
 
       toast.success(`${updates.length} resource${updates.length > 1 ? 's' : ''} updated successfully!`);
       onSaved();

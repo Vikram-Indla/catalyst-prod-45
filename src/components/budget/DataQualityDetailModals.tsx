@@ -112,7 +112,8 @@ export function TotalResourcesModal({ isOpen, onClose, resources }: TotalResourc
                       <td className="px-3 py-2 font-medium text-slate-800 dark:text-slate-200">{r.name}</td>
                       <td className="px-3 py-2 text-slate-600 dark:text-slate-400">{r.role || '—'}</td>
                       <td className="px-3 py-2 text-right font-mono">
-                        {r.ctc && r.ctc > 0 ? (
+                        {/* CTC is considered present even if the value is 0; only null/undefined means missing */}
+                        {r.ctc !== null && r.ctc !== undefined ? (
                           <span className="text-slate-700 dark:text-slate-300">{r.ctc.toLocaleString()}</span>
                         ) : (
                           <span className="text-amber-600 dark:text-amber-400">Missing</span>
@@ -138,7 +139,7 @@ interface CompleteRecordsModalProps {
 }
 
 export function CompleteRecordsModal({ isOpen, onClose, resources }: CompleteRecordsModalProps) {
-  const completeResources = resources.filter(r => r.ctc && r.ctc > 0);
+  const completeResources = resources.filter(r => r.ctc !== null && r.ctc !== undefined);
   const totalMonthly = completeResources.reduce((sum, r) => sum + (r.ctc || 0), 0);
 
   return (
@@ -205,7 +206,7 @@ interface MissingCTCModalProps {
 }
 
 export function MissingCTCModal({ isOpen, onClose, resources, onFixAll }: MissingCTCModalProps) {
-  const missingResources = resources.filter(r => !r.ctc || r.ctc === 0);
+  const missingResources = resources.filter(r => r.ctc === null || r.ctc === undefined);
 
   // Group by department
   const grouped = missingResources.reduce((acc, r) => {
