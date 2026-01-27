@@ -1,12 +1,13 @@
 /**
  * Budget Ledger Table Component
  * STAGE 3: Expandable rows, hide CTC toggle, export functionality
+ * V8 QA Pass: Type-colored budgets, consistent badges, tight rows
  */
 
 import { useState, Fragment } from 'react';
 import { Eye, EyeOff, ChevronRight, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatFull, formatSAR, type BudgetResource } from '@/hooks/budget/useBudgetData';
+import { formatFull, type BudgetResource } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment } from '@/hooks/budget/useBudgetData';
 
 interface BudgetLedgerTableProps {
@@ -15,6 +16,14 @@ interface BudgetLedgerTableProps {
   resources?: BudgetResource[];
   hideCTC?: boolean;
   onHideCTCChange?: (hide: boolean) => void;
+}
+
+// Format budget as clean number (no trailing characters)
+function formatBudget(value: number): string {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
 }
 
 // Format status: in_progress -> In Progress
@@ -29,30 +38,35 @@ function formatStatus(status: string): string {
   return map[status] || status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
-// Format payment: not_applicable -> N/A, unpaid -> Unpaid
-function formatPayment(payment: string): string {
+// Format payment for Insourced (use dash), others get badge text
+function formatPayment(payment: string, type: string): string {
+  // Insourced doesn't have payment status - show dash
+  if (type === 'Insourced') return '—';
+  
   const map: Record<string, string> = {
-    'not_applicable': 'N/A',
-    'on_track': 'On Track',
-    'unpaid': 'Unpaid',
-    'paid': 'Paid',
+    'not_applicable': '—',
+    'on_track': '✓ On Track',
+    'unpaid': '⚠ Unpaid',
+    'paid': '✓ Paid',
   };
   return map[payment] || payment.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
-// Get status CSS class
+// Get status CSS class - consistent badge styling
 function getStatusClass(status: string): string {
   if (status === 'completed' || status === 'Completed') return 'completed';
   if (status === 'in_progress' || status === 'In Progress') return 'in-progress';
   if (status === 'yet_to_start' || status === 'Yet to Start' || status === 'not_started') return 'yet-to-start';
   if (status === 'on_hold' || status === 'On Hold') return 'on-hold';
-  return 'on-hold';
+  return 'yet-to-start';
 }
 
 // Get payment CSS class  
-function getPaymentClass(payment: string): string {
+function getPaymentClass(payment: string, type: string): string {
+  // Insourced shows dash, not a badge
+  if (type === 'Insourced' || payment === 'not_applicable') return 'na';
   if (payment === 'unpaid' || payment === 'Unpaid') return 'unpaid';
-  if (payment === 'on_track' || payment === 'On Track') return 'on-track';
+  if (payment === 'on_track' || payment === 'On Track' || payment === 'paid' || payment === 'Paid') return 'on-track';
   return 'na';
 }
 
@@ -106,7 +120,7 @@ export function BudgetLedgerTable({
       a.vendor || '—',
       a.type === 'Outsourced' ? '—' : (a.resourceCount || 0),
       a.budget,
-      formatPayment(a.paymentStatus)
+      formatPayment(a.paymentStatus, a.type)
     ]);
     
     const csv = [
@@ -162,7 +176,7 @@ export function BudgetLedgerTable({
       <table>
         <thead>
           <tr>
-            <th style={{ width: 32 }}></th>
+            <th style={{ width: 40 }}></th>
             <th>Assignment</th>
             <th>Type</th>
             <th>Status</th>
@@ -185,29 +199,37 @@ export function BudgetLedgerTable({
                 {/* Main Assignment Row */}
                 <tr 
                   className={cn(
-                    'transition-all duration-150',
+                    'ledger-row transition-all duration-150',
                     hasResources && 'cursor-pointer',
                     isExpanded && 'expanded-parent'
                   )}
+                  data-type={a.type}
                   onClick={() => hasResources && toggleRow(a.id)}
                   style={isExpanded ? { 
                     background: '#eff6ff', 
                     boxShadow: 'inset 4px 0 0 #2563eb' 
                   } : undefined}
                 >
-                  <td className="center" style={{ width: 32 }}>
-                    {hasResources && (
+                  {/* Expand Arrow - Clear affordance */}
+                  <td className="center expand-cell" style={{ width: 40 }}>
+                    {hasResources ? (
                       <ChevronRight 
                         className={cn(
-                          "w-4 h-4 flex-shrink-0 transition-transform duration-200 expand-chevron",
-                          isExpanded && "expanded"
+                          "w-5 h-5 flex-shrink-0 transition-transform duration-200",
+                          isExpanded 
+                            ? "rotate-90 text-blue-600" 
+                            : "text-slate-400"
                         )} 
                       />
+                    ) : (
+                      <span className="w-5 h-5" />
                     )}
                   </td>
+                  
+                  {/* Assignment Cell - Consistent badge color (slate-600) */}
                   <td>
                     <div className="assignment-cell">
-                      <div className={cn('assignment-icon', typeClass)}>
+                      <div className="assignment-badge">
                         {a.aid.replace('A', '')}
                       </div>
                       <div className="assignment-info">
@@ -216,14 +238,20 @@ export function BudgetLedgerTable({
                       </div>
                     </div>
                   </td>
+                  
+                  {/* Type Badge - Color by type */}
                   <td>
                     <span className={cn('type-badge', typeClass)}>{a.type}</span>
                   </td>
+                  
+                  {/* Status Badge - Consistent styling */}
                   <td>
                     <span className={cn('status-badge', getStatusClass(a.status))}>
                       {formatStatus(a.status)}
                     </span>
                   </td>
+                  
+                  {/* Vendor Cell - Consistent handling */}
                   <td>
                     {a.vendor ? (
                       <div className="vendor-cell">
@@ -231,26 +259,43 @@ export function BudgetLedgerTable({
                         <span className="vendor-name">{a.vendor}</span>
                       </div>
                     ) : (
-                      <span className="cost-cell muted">—</span>
+                      <span className="text-slate-400">—</span>
                     )}
                   </td>
+                  
+                  {/* Resources Count - JetBrains Mono */}
                   <td className="center">
-                    {a.type === 'Outsourced' ? '—' : (
-                      <span style={{ color: 'var(--budget-text)', fontWeight: 500 }}>{a.resourceCount || 0}</span>
+                    {a.type === 'Outsourced' ? (
+                      <span className="text-slate-400">—</span>
+                    ) : (
+                      <span className="font-mono font-semibold text-slate-700">{a.resourceCount || 0}</span>
                     )}
                   </td>
+                  
+                  {/* Budget Value - COLOR BY TYPE (Issue #1 fix) */}
                   <td className="right">
-                    <span className={cn('cost-cell', typeClass)}>
-                      {isHidden ? '••••••' : formatFull(a.budget)}
+                    <span className={cn(
+                      'font-mono font-semibold',
+                      a.type === 'Insourced' && 'text-blue-600',
+                      a.type === 'Cosourced' && 'text-teal-600',
+                      a.type === 'Outsourced' && 'text-amber-600'
+                    )}>
+                      {isHidden ? '••••••' : formatBudget(a.budget)}
                     </span>
                     {a.computed && (
-                      <span className="text-[10px] font-medium ml-1" style={{ color: 'var(--budget-text-muted)' }}>ƒ</span>
+                      <span className="text-[10px] font-medium ml-1 text-slate-400">ƒ</span>
                     )}
                   </td>
+                  
+                  {/* Payment Status - Clear badges or dash */}
                   <td className="center">
-                    <span className={cn('payment-badge', getPaymentClass(a.paymentStatus))}>
-                      {formatPayment(a.paymentStatus)}
-                    </span>
+                    {a.type === 'Insourced' ? (
+                      <span className="text-slate-400">—</span>
+                    ) : (
+                      <span className={cn('payment-badge', getPaymentClass(a.paymentStatus, a.type))}>
+                        {formatPayment(a.paymentStatus, a.type)}
+                      </span>
+                    )}
                   </td>
                 </tr>
                 
@@ -351,20 +396,20 @@ export function BudgetLedgerTable({
         <div className="footer-totals">
           <div className="footer-total">
             <div className="footer-total-label">Insourced</div>
-            <div className="footer-total-value" style={{ color: 'var(--budget-insourced)' }}>
-              {isHidden ? '••••••' : formatFull(totals.insourced)}
+            <div className="footer-total-value text-blue-600">
+              {isHidden ? '••••••' : formatBudget(totals.insourced)}
             </div>
           </div>
           <div className="footer-total">
             <div className="footer-total-label">Cosourced</div>
-            <div className="footer-total-value" style={{ color: 'var(--budget-cosourced)' }}>
-              {isHidden ? '••••••' : formatFull(totals.cosourced)}
+            <div className="footer-total-value text-teal-600">
+              {isHidden ? '••••••' : formatBudget(totals.cosourced)}
             </div>
           </div>
           <div className="footer-total">
             <div className="footer-total-label">Outsourced</div>
-            <div className="footer-total-value" style={{ color: 'var(--budget-outsourced)' }}>
-              {isHidden ? '••••••' : formatFull(totals.outsourced)}
+            <div className="footer-total-value text-amber-600">
+              {isHidden ? '••••••' : formatBudget(totals.outsourced)}
             </div>
           </div>
         </div>

@@ -537,9 +537,9 @@
 .budget-module th.right { text-align: right; }
 .budget-module th.center { text-align: center; }
 
-/* V8: Table cells 12px/14px padding */
+/* V8 QA: Table cells - TIGHTER padding (12px vs 20px+) */
 .budget-module td {
-  padding: 12px 14px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--budget-border);
   vertical-align: middle;
   font-size: 13px;
@@ -549,148 +549,221 @@
 .budget-module td.right { text-align: right; }
 .budget-module td.center { text-align: center; }
 
-.budget-module tbody tr {
-  transition: background 0.1s ease;
-  cursor: pointer;
+/* Expand cell styling */
+.budget-module td.expand-cell {
+  padding: 10px 8px;
 }
 
-/* V8: Row hover with primary-bg */
-.budget-module tbody tr:hover { 
-  background: var(--budget-primary-bg); 
+.budget-module tbody tr {
+  transition: all 0.15s ease;
+}
+
+/* V8 QA: Row hover - slate-50 background + left border hint */
+.budget-module tbody tr.ledger-row:hover { 
+  background: #f8fafc !important; /* slate-50 */
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+
+/* Expanded parent row */
+.budget-module tbody tr.expanded-parent {
+  background: #eff6ff !important;
 }
 
 .budget-module tbody tr:last-child td { 
   border-bottom: none; 
 }
 
-/* Assignment Cell */
+/* ============================================
+   ASSIGNMENT CELL
+   V8 QA: Consistent slate-600 badge (not random colors)
+   ============================================ */
 .budget-module .assignment-cell {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.budget-module .assignment-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--budget-radius-sm);
+/* V8 QA FIX: Assignment badge - CONSISTENT slate-600 color */
+.budget-module .assignment-badge {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
+  font-family: var(--budget-font-mono);
   color: white;
   flex-shrink: 0;
+  background: #475569; /* slate-600 - CONSISTENT */
 }
 
-.budget-module .assignment-icon.insourced { background: var(--budget-insourced); }
-.budget-module .assignment-icon.cosourced { background: var(--budget-cosourced); }
-.budget-module .assignment-icon.outsourced { background: var(--budget-outsourced); }
+/* Legacy support for old assignment-icon class */
+.budget-module .assignment-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: var(--budget-font-mono);
+  color: white;
+  flex-shrink: 0;
+  background: #475569; /* slate-600 - CONSISTENT */
+}
+
+/* Remove old type-based icon colors - now all consistent */
+.budget-module .assignment-icon.insourced,
+.budget-module .assignment-icon.cosourced,
+.budget-module .assignment-icon.outsourced { 
+  background: #475569; /* All same: slate-600 */
+}
+
+.budget-module .assignment-info {
+  line-height: 1.3;
+}
 
 .budget-module .assignment-info h4 {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   margin-bottom: 2px;
-  color: var(--budget-text-primary);
+  color: #1e293b; /* slate-800 */
 }
 
 .budget-module .assignment-info span {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
-  color: var(--budget-text-muted);
+  color: #64748b; /* slate-500 */
+}
+
+/* ============================================
+   VENDOR CELL
+   V8 QA: Consistent styling for all cases
+   ============================================ */
+.budget-module .vendor-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.budget-module .vendor-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #e2e8f0; /* slate-200 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #475569; /* slate-600 */
+  flex-shrink: 0;
+}
+
+.budget-module .vendor-name {
+  font-size: 13px;
+  color: #334155; /* slate-700 */
 }
 
 /* ============================================
    BADGES
-   V8 Spec: 4px/8px padding, 10px/600 font
+   V8 QA: Consistent rounded-full styling
    ============================================ */
 
-/* Type Badge - per spec C2.3: 4px 10px */
+/* Type Badge - with border for extra definition */
 .budget-module .type-badge {
   display: inline-block;
   padding: 4px 10px;
-  border-radius: var(--budget-radius-xs);
+  border-radius: 9999px; /* rounded-full */
   font-size: 10px;
   font-weight: 600;
+  border: 1px solid transparent;
 }
 
 .budget-module .type-badge.insourced { 
-  background: var(--budget-insourced-light); 
-  color: var(--budget-insourced); 
+  background: #dbeafe; /* blue-100 */
+  color: #1d4ed8; /* blue-700 */
+  border-color: #93c5fd; /* blue-300 */
 }
 .budget-module .type-badge.cosourced { 
-  background: var(--budget-cosourced-light); 
-  color: var(--budget-cosourced); 
+  background: #ccfbf1; /* teal-100 */
+  color: #0f766e; /* teal-700 */
+  border-color: #5eead4; /* teal-300 */
 }
 .budget-module .type-badge.outsourced { 
-  background: var(--budget-outsourced-light); 
-  color: var(--budget-outsourced); 
+  background: #fef3c7; /* amber-100 */
+  color: #b45309; /* amber-700 */
+  border-color: #fcd34d; /* amber-300 */
 }
 
-/* Status Badge - per spec C2.3: 3px 8px */
+/* Status Badge - V8 QA: ALL use same component, different colors */
 .budget-module .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 8px;
-  border-radius: var(--budget-radius-xs);
+  padding: 4px 10px;
+  border-radius: 9999px; /* rounded-full */
   font-size: 10px;
   font-weight: 600;
 }
 
 .budget-module .status-badge.in-progress { 
-  background: #dcfce7; /* emerald-100 */
-  color: #065f46; /* emerald-800 - WCAG AA fix (4.7:1 ratio) */
+  background: #dbeafe; /* blue-100 */
+  color: #1d4ed8; /* blue-700 */
 }
 .budget-module .status-badge.completed { 
-  background: #f1f5f9; /* slate-100 per G2.2 spec */
-  color: #475569; /* slate-600 */
+  background: #dcfce7; /* green-100 */
+  color: #166534; /* green-800 */
 }
 .budget-module .status-badge.on-hold { 
-  background: #fef3c7; /* amber-100 per G2.3 spec */
+  background: #fef3c7; /* amber-100 */
   color: #b45309; /* amber-700 */
 }
 .budget-module .status-badge.yet-to-start,
 .budget-module .status-badge.not-started { 
-  background: #dbeafe; /* blue-100 per G2.4 spec */
-  color: #1d4ed8; /* blue-700 */
+  background: #f1f5f9; /* slate-100 */
+  color: #475569; /* slate-600 */
 }
 
-/* Payment Badge - per spec C2.3: 3px 8px */
+/* Payment Badge - V8 QA: Clear red for unpaid, green for on-track */
 .budget-module .payment-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 8px;
-  border-radius: var(--budget-radius-xs);
+  padding: 4px 10px;
+  border-radius: 9999px; /* rounded-full */
   font-size: 10px;
   font-weight: 600;
 }
 
 .budget-module .payment-badge.na { 
-  background: #f1f5f9; /* slate-100 per G3.3 */
-  color: #64748b; /* slate-500 */
+  background: transparent;
+  color: #94a3b8; /* slate-400 */
 }
 .budget-module .payment-badge.on-track { 
-  background: #dcfce7; /* emerald-100 */
-  color: #065f46; /* emerald-800 - WCAG AA fix (4.7:1 ratio) */
+  background: #dcfce7; /* green-100 */
+  color: #166534; /* green-800 */
 }
-/* G3.2: Unpaid uses red background */
 .budget-module .payment-badge.unpaid { 
-  background: #fee2e2; /* red-100 per G3.2 */
+  background: #fee2e2; /* red-100 */
   color: #b91c1c; /* red-700 */
   font-weight: 700;
 }
 
-/* Cost Cell */
+/* Cost Cell - with type colors */
 .budget-module .cost-cell {
   font-family: var(--budget-font-mono);
   font-size: 13px;
   font-weight: 600;
 }
 
-.budget-module .cost-cell.insourced { color: var(--budget-insourced); }
-.budget-module .cost-cell.cosourced { color: var(--budget-cosourced); }
-.budget-module .cost-cell.outsourced { color: var(--budget-outsourced); }
+.budget-module .cost-cell.insourced { color: #2563eb; }
+.budget-module .cost-cell.cosourced { color: #0d9488; }
+.budget-module .cost-cell.outsourced { color: #d97706; }
 .budget-module .cost-cell.muted { color: var(--budget-text-muted); }
 
 /* ============================================
