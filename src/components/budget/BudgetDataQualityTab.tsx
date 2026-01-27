@@ -33,6 +33,7 @@ interface BudgetDataQualityTabProps {
   totalBudget: number;
   onRefresh?: () => void;
   fixDepartment?: string; // Optional department to auto-open Fix modal for
+  onPeriodChange?: (period: BudgetPeriod) => void; // Callback to change period
 }
 
 interface DepartmentQuality {
@@ -53,7 +54,7 @@ const PERIODS: { value: BudgetPeriod; label: string }[] = [
 
 const DEPT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
 
-export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fixDepartment }: BudgetDataQualityTabProps) {
+export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fixDepartment, onPeriodChange }: BudgetDataQualityTabProps) {
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
   const [fixModalOpen, setFixModalOpen] = useState(false);
   const [selectedDept, setSelectedDept] = useState<DepartmentQuality | null>(null);
@@ -309,17 +310,18 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
       <div className="flex items-center justify-between">
         <div className="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
           {PERIODS.map(p => (
-            <div
+            <button
               key={p.value}
+              onClick={() => onPeriodChange?.(p.value)}
               className={cn(
                 'px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150',
                 period === p.value
                   ? 'bg-white dark:bg-slate-700 text-primary shadow-sm'
-                  : 'text-muted-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
               )}
             >
               {p.label}
-            </div>
+            </button>
           ))}
         </div>
 
