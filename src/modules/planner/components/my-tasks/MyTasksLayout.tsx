@@ -1,6 +1,7 @@
 // ============================================================
 // MY TASKS LAYOUT
-// Planner V9: Enterprise 3-column layout for personal task management
+// Planner V9: Single-column focused personal task view
+// Per justification matrix: No sidebar, no right panel
 // ============================================================
 
 import { ReactNode } from 'react';
@@ -16,7 +17,7 @@ export function MyTasksLayout({ children, className }: MyTasksLayoutProps) {
     <div 
       className={cn(
         'my-tasks-module flex h-full min-h-0 w-full overflow-hidden',
-        'bg-slate-100 dark:bg-slate-900',
+        'bg-slate-50 dark:bg-slate-900',
         className
       )}
     >
@@ -25,27 +26,7 @@ export function MyTasksLayout({ children, className }: MyTasksLayoutProps) {
   );
 }
 
-// Sidebar wrapper (Left)
-interface MyTasksSidebarWrapperProps {
-  children: ReactNode;
-  className?: string;
-}
-
-export function MyTasksSidebarWrapper({ children, className }: MyTasksSidebarWrapperProps) {
-  return (
-    <aside 
-      className={cn(
-        'flex-shrink-0 flex flex-col h-full border-r w-[280px]',
-        'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700',
-        className
-      )}
-    >
-      {children}
-    </aside>
-  );
-}
-
-// Main content wrapper (Center)
+// Main content wrapper - Full width single column
 interface MyTasksContentWrapperProps {
   children: ReactNode;
   className?: string;
@@ -62,28 +43,5 @@ export function MyTasksContentWrapper({ children, className }: MyTasksContentWra
     >
       {children}
     </main>
-  );
-}
-
-// Right panel wrapper
-interface MyTasksRightPanelWrapperProps {
-  children: ReactNode;
-  className?: string;
-  isVisible?: boolean;
-}
-
-export function MyTasksRightPanelWrapper({ children, className, isVisible = true }: MyTasksRightPanelWrapperProps) {
-  if (!isVisible) return null;
-  
-  return (
-    <aside 
-      className={cn(
-        'flex-shrink-0 flex flex-col h-full border-l overflow-hidden w-[320px]',
-        'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700',
-        className
-      )}
-    >
-      {children}
-    </aside>
   );
 }
