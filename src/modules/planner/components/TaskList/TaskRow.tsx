@@ -130,16 +130,16 @@ export function TaskRow({
       {visibleColumns.has('status') && (
         <td className="w-28 px-3">
           <span
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-semibold"
             style={{
-              backgroundColor: task.status_color ? `${task.status_color}15` : undefined,
-              color: task.status_color || undefined,
-              border: task.status_color ? `1px solid ${task.status_color}30` : undefined,
+              borderColor: task.status_color ? `${task.status_color}40` : '#e2e8f0',
+              color: task.status_color || '#64748b',
+              backgroundColor: 'transparent',
             }}
           >
             <span
               className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: task.status_color || '#9ca3af' }}
+              style={{ backgroundColor: task.status_color || '#64748b' }}
             />
             {task.status_name || 'Unknown'}
           </span>
@@ -149,19 +149,14 @@ export function TaskRow({
       {/* Priority */}
       {visibleColumns.has('priority') && (
         <td className="w-24 px-3">
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold",
-              !priorityConfig.colorful && "bg-transparent"
-            )}
-            style={{
-              backgroundColor: priorityConfig.colorful ? priorityConfig.bgColor : 'transparent',
-              color: priorityConfig.color,
-              border: priorityConfig.colorful ? `1px solid ${priorityConfig.color}30` : undefined,
-            }}
-          >
-            <span className="text-[10px]">{priorityConfig.emoji}</span>
-            {priorityConfig.label}
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+            <span
+              className="w-2.5 h-2.5 rounded-full"
+              style={{ backgroundColor: priorityConfig.color }}
+            />
+            <span style={{ color: priorityConfig.color }}>
+              {priorityConfig.label}
+            </span>
           </span>
         </td>
       )}
@@ -170,18 +165,14 @@ export function TaskRow({
       {visibleColumns.has('workstream') && (
         <td className="w-36 px-3">
           {task.workstream_name ? (
-            <span
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
-              style={{
-                backgroundColor: workstreamColors.hexLight,
-                color: workstreamColors.hex,
-              }}
-            >
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium">
               <span
-                className="w-1.5 h-1.5 rounded-full"
+                className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: workstreamColors.hex }}
               />
-              {task.workstream_name}
+              <span style={{ color: workstreamColors.hex }}>
+                {task.workstream_name}
+              </span>
             </span>
           ) : (
             <span className="text-slate-400">—</span>
@@ -232,8 +223,8 @@ export function TaskRow({
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${task.progress}%`,
-                  backgroundColor: task.progress >= 100 ? '#10b981' : 
-                    task.progress >= 50 ? '#f59e0b' : '#3b82f6',
+                  backgroundColor: task.progress >= 100 ? '#22c55e' : 
+                    task.progress >= 50 ? '#22c55e' : '#94a3b8',
                 }}
               />
             </div>
