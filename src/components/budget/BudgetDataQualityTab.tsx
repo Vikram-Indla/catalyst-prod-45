@@ -10,7 +10,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Calendar, Download, AlertTriangle, Check, Users, Pencil, AlertCircle } from 'lucide-react';
+import { ChevronRight, ChevronDown, Calendar, Download, AlertTriangle, Check, Users, Pencil, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, type BudgetPeriod, type BudgetResource } from '@/hooks/budget/useBudgetData';
@@ -23,6 +23,7 @@ import {
   DataQualityBreakdownModal 
 } from './DataQualityDetailModals';
 import { toast } from 'sonner';
+import { PeriodToggle, DEPT_ORDER } from './shared';
 
 interface BudgetDataQualityTabProps {
   data: {
@@ -46,13 +47,7 @@ interface DepartmentQuality {
   allResources: BudgetResource[];
 }
 
-const PERIODS: { value: BudgetPeriod; label: string }[] = [
-  { value: 'Q1', label: 'Q1' },
-  { value: 'H1', label: 'H1' },
-  { value: 'Full', label: 'Full Year' },
-];
-
-const DEPT_ORDER = ['Delivery', 'Product', 'Operations', 'Technical Support', 'Governance'];
+// Using DEPT_ORDER from shared constants
 
 export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fixDepartment, onPeriodChange }: BudgetDataQualityTabProps) {
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
@@ -68,6 +63,9 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showMissingModal, setShowMissingModal] = useState(false);
   const [showQualityModal, setShowQualityModal] = useState(false);
+  
+  // Export loading state (DQ-2 fix)
+  const [isExporting, setIsExporting] = useState(false);
 
   // Calculate quality metrics
   const qualityMetrics = useMemo(() => {
@@ -224,56 +222,67 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
     onRefresh?.();
   };
 
-  // FIX #2: Export Report functionality
+  // FIX #2: Export Report functionality with loading state (DQ-2 fix)
   const handleExportReport = async () => {
-    if (!data) return;
+    if (!data || isExporting) return;
 
-    const total = data.resources.length;
-    const complete = data.resources.filter(r => r.ctc !== null && r.ctc !== undefined).length;
-    const missing = total - complete;
-    const quality = total > 0 ? Math.round((complete / total) * 100) : 0;
+    setIsExporting(true);
+    
+    try {
+      // Simulate slight delay for UX feedback
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const total = data.resources.length;
+      const complete = data.resources.filter(r => r.ctc !== null && r.ctc !== undefined).length;
+      const missing = total - complete;
+      const quality = total > 0 ? Math.round((complete / total) * 100) : 0;
 
-    // Generate CSV content
-    const csvRows: string[][] = [
-      ['DATA QUALITY REPORT', '', '', '', '', ''],
-      ['Generated:', new Date().toISOString(), '', '', '', ''],
-      ['', '', '', '', '', ''],
-      ['SUMMARY', '', '', '', '', ''],
-      ['Total Resources:', total.toString(), '', '', '', ''],
-      ['Complete Records:', complete.toString(), '', '', '', ''],
-      ['Missing CTC:', missing.toString(), '', '', '', ''],
-      ['Quality Score:', `${quality}%`, '', '', '', ''],
-      ['', '', '', '', '', ''],
-      ['RESOURCES WITH MISSING CTC', '', '', '', '', ''],
-      ['RID', 'Name', 'Role', 'Department', 'Vendor', 'Contract End'],
-    ];
+      // Generate CSV content
+      const csvRows: string[][] = [
+        ['DATA QUALITY REPORT', '', '', '', '', ''],
+        ['Generated:', new Date().toISOString(), '', '', '', ''],
+        ['', '', '', '', '', ''],
+        ['SUMMARY', '', '', '', '', ''],
+        ['Total Resources:', total.toString(), '', '', '', ''],
+        ['Complete Records:', complete.toString(), '', '', '', ''],
+        ['Missing CTC:', missing.toString(), '', '', '', ''],
+        ['Quality Score:', `${quality}%`, '', '', '', ''],
+        ['', '', '', '', '', ''],
+        ['RESOURCES WITH MISSING CTC', '', '', '', '', ''],
+        ['RID', 'Name', 'Role', 'Department', 'Vendor', 'Contract End'],
+      ];
 
-    // Add missing resources
-    data.resources
-      .filter(r => r.ctc === null || r.ctc === undefined)
-      .forEach(r => {
-        csvRows.push([
-          r.rid?.padStart(3, '0') || '',
-          r.name,
-          r.role || '',
-          r.department,
-          r.vendorName || '',
-          r.contractEnd || '',
-        ]);
-      });
+      // Add missing resources
+      data.resources
+        .filter(r => r.ctc === null || r.ctc === undefined)
+        .forEach(r => {
+          csvRows.push([
+            r.rid?.padStart(3, '0') || '',
+            r.name,
+            r.role || '',
+            r.department,
+            r.vendorName || '',
+            r.contractEnd || '',
+          ]);
+        });
 
-    // Create and download CSV
-    const csvContent = csvRows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
+      // Create and download CSV
+      const csvContent = csvRows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `data-quality-report-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `data-quality-report-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
 
-    URL.revokeObjectURL(url);
-    toast.success('Report exported successfully!');
+      URL.revokeObjectURL(url);
+      toast.success('Report exported successfully!');
+    } catch (error) {
+      toast.error('Failed to export report');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Handle "Fix All" from Missing CTC modal
@@ -307,31 +316,22 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
   }
 
   return (
-    <div className="space-y-6">
-      {/* Period Toggle + Context Badge */}
+    <div className="space-y-6" role="region" aria-label="Data Quality Analysis">
+      {/* Period Toggle + Context Badge - A11Y-1: ARIA labels */}
       <div className="flex items-center justify-between">
-        <div className="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-          {PERIODS.map(p => (
-            <button
-              key={p.value}
-              onClick={() => onPeriodChange?.(p.value)}
-              className={cn(
-                'px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150',
-                period === p.value
-                  ? 'bg-white dark:bg-slate-700 text-primary shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
-              )}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
+        <PeriodToggle 
+          period={period} 
+          onPeriodChange={onPeriodChange} 
+        />
 
-        <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-border rounded-xl">
-          <Calendar className="w-4 h-4 text-muted-foreground" />
+        <div 
+          className="flex items-center gap-3 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-border rounded-xl"
+          aria-label={`Current period: ${getPeriodLabel()}, Total budget: ${formatCurrency(totalBudget)} SAR`}
+        >
+          <Calendar className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
           <span className="text-sm text-muted-foreground">
             <span className="font-bold text-foreground">{getPeriodLabel()}</span>
-            <span className="mx-2 text-border">•</span>
+            <span className="mx-2 text-border" aria-hidden="true">•</span>
             <span className="font-mono font-bold text-primary">
               {formatCurrency(totalBudget)} SAR
             </span>
@@ -341,21 +341,24 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
 
       <div className="border-b border-border" />
 
-      {/* DATA QUALITY METRICS - FIX #3 & #5: Clickable cards with visual weight */}
-      <section>
-        <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+      {/* DATA QUALITY METRICS - A11Y-1: ARIA labels and focus states */}
+      <section aria-labelledby="quality-metrics-heading">
+        <h2 id="quality-metrics-heading" className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
           Data Quality Metrics
         </h2>
 
-        <div className="grid grid-cols-4 gap-4">
-          {/* Total Resources - CLICKABLE */}
-          <div 
+        <div className="grid grid-cols-4 gap-4" role="list" aria-label="Quality metric cards">
+          {/* Total Resources - CLICKABLE with A11Y */}
+          <button 
+            type="button"
             onClick={() => setShowTotalModal(true)}
+            aria-label={`Total Resources: ${qualityMetrics.total}. Click to view details.`}
             className={cn(
-              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5",
+              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 text-left",
               "border-l-4 border-l-slate-400 dark:border-l-slate-500",
               "cursor-pointer transition-all duration-200",
               "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-slate-500 dark:hover:border-l-slate-400",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2",
               "group"
             )}
           >
@@ -366,17 +369,20 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
               {qualityMetrics.total}
             </div>
             <div className="text-[13px] text-slate-500 dark:text-slate-400">In resource inventory</div>
-            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+          </button>
 
-          {/* Complete Records - CLICKABLE */}
-          <div 
+          {/* Complete Records - CLICKABLE with A11Y */}
+          <button 
+            type="button"
             onClick={() => setShowCompleteModal(true)}
+            aria-label={`Complete Records: ${qualityMetrics.complete}. Click to view details.`}
             className={cn(
-              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5",
+              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 text-left",
               "border-l-4 border-l-blue-500",
               "cursor-pointer transition-all duration-200",
               "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-blue-600",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
               "group"
             )}
           >
@@ -387,17 +393,20 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
               {qualityMetrics.complete}
             </div>
             <div className="text-[13px] text-slate-500 dark:text-slate-400">With CTC data</div>
-            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-blue-300 dark:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-blue-300 dark:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+          </button>
 
-          {/* Missing CTC - CLICKABLE */}
-          <div 
+          {/* Missing CTC - CLICKABLE with A11Y */}
+          <button 
+            type="button"
             onClick={() => setShowMissingModal(true)}
+            aria-label={`Missing CTC: ${qualityMetrics.missing}. Click to view details.`}
             className={cn(
-              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5",
+              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 text-left",
               "border-l-4 border-l-amber-500",
               "cursor-pointer transition-all duration-200",
               "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-amber-600",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2",
               "group"
             )}
           >
@@ -408,14 +417,16 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
               {qualityMetrics.missing}
             </div>
             <div className="text-[13px] text-slate-500 dark:text-slate-400">Need compensation data</div>
-            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-amber-300 dark:text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-amber-300 dark:text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+          </button>
 
-          {/* Quality Score - CLICKABLE */}
-          <div 
+          {/* Quality Score - CLICKABLE with A11Y */}
+          <button 
+            type="button"
             onClick={() => setShowQualityModal(true)}
+            aria-label={`Data Quality: ${qualityMetrics.score}% completeness score. Click to view breakdown.`}
             className={cn(
-              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 overflow-hidden",
+              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 overflow-hidden text-left",
               "border-l-4",
               qualityMetrics.score >= 80 
                 ? "border-l-emerald-500" 
@@ -424,6 +435,12 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                 : "border-l-red-500",
               "cursor-pointer transition-all duration-200",
               "hover:shadow-lg hover:-translate-y-0.5",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+              qualityMetrics.score >= 80 
+                ? "focus-visible:ring-emerald-500" 
+                : qualityMetrics.score >= 50 
+                ? "focus-visible:ring-amber-500" 
+                : "focus-visible:ring-red-500",
               "group"
             )}
           >
@@ -435,32 +452,39 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             </div>
             <div className="text-[13px] text-slate-500 dark:text-slate-400">Completeness score</div>
             {/* Progress bar at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-700">
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-700" aria-hidden="true">
               <div
                 className={cn('h-full transition-all duration-500', getScoreColor(qualityMetrics.score))}
                 style={{ width: `${qualityMetrics.score}%` }}
               />
             </div>
-            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+          </button>
         </div>
       </section>
 
-      {/* MISSING DATA BY DEPARTMENT TABLE - FIX #4: Improved visibility */}
-      <section>
+      {/* MISSING DATA BY DEPARTMENT TABLE - A11Y labels */}
+      <section aria-labelledby="missing-data-heading">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <h2 id="missing-data-heading" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Missing Data by Department
           </h2>
-          {/* FIX #2: Working Export Button */}
+          {/* DQ-2: Export Button with loading state */}
           <Button 
             variant="outline" 
             size="sm" 
             className="gap-2"
             onClick={handleExportReport}
+            disabled={isExporting}
+            aria-busy={isExporting}
+            aria-label={isExporting ? 'Exporting report...' : 'Export data quality report as CSV'}
           >
-            <Download className="w-4 h-4" />
-            Export Report
+            {isExporting ? (
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Download className="w-4 h-4" aria-hidden="true" />
+            )}
+            {isExporting ? 'Exporting...' : 'Export Report'}
           </Button>
         </div>
 
