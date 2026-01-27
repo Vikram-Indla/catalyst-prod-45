@@ -1,11 +1,12 @@
 /**
- * Budget Data Quality Tab - V8 Design (Critical Fixes Patch)
+ * Budget Data Quality Tab - V8 Design (Comprehensive Fixes V2)
  * 
  * Fixes implemented:
- * 1. Per-resource Edit buttons in expandable rows
- * 2. Better visual hierarchy and hover states
- * 3. Fixed modal integration with single-resource editing
- * 4. Improved typography and spacing
+ * 1. Individual Edit opens single-resource modal (not full department)
+ * 2. Export Report button downloads CSV
+ * 3. Metric cards are clickable with detail modals
+ * 4. Improved table text visibility and density
+ * 5. Enhanced metric card visual weight
  */
 
 import { useState, useMemo, useEffect } from 'react';
@@ -14,6 +15,14 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, type BudgetPeriod, type BudgetResource } from '@/hooks/budget/useBudgetData';
 import { FixCTCModal } from './FixCTCModal';
+import { SingleResourceEditModal } from './SingleResourceEditModal';
+import { 
+  TotalResourcesModal, 
+  CompleteRecordsModal, 
+  MissingCTCModal, 
+  DataQualityBreakdownModal 
+} from './DataQualityDetailModals';
+import { toast } from 'sonner';
 
 interface BudgetDataQualityTabProps {
   data: {
@@ -48,39 +57,31 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
   const [fixModalOpen, setFixModalOpen] = useState(false);
   const [selectedDept, setSelectedDept] = useState<DepartmentQuality | null>(null);
-  const [focusResourceId, setFocusResourceId] = useState<string | undefined>(undefined);
-
-  // Handle auto-open for fixDepartment prop
-  useEffect(() => {
-    if (fixDepartment && data) {
-      const dept = departmentQuality.find(d => d.name === fixDepartment);
-      if (dept && dept.missingCTC > 0) {
-        setSelectedDept(dept);
-        setFixModalOpen(true);
-      }
-    }
-  }, [fixDepartment, data]);
-
-  if (!data) {
-    return (
-      <div className="flex items-center justify-center py-20 text-muted-foreground">
-        Loading data quality information...
-      </div>
-    );
-  }
+  
+  // Single resource edit state
+  const [singleEditModalOpen, setSingleEditModalOpen] = useState(false);
+  const [singleEditResource, setSingleEditResource] = useState<BudgetResource | null>(null);
+  
+  // Detail modals state
+  const [showTotalModal, setShowTotalModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showMissingModal, setShowMissingModal] = useState(false);
+  const [showQualityModal, setShowQualityModal] = useState(false);
 
   // Calculate quality metrics
   const qualityMetrics = useMemo(() => {
+    if (!data) return { total: 0, complete: 0, missing: 0, score: 0 };
     const total = data.resources.length;
     const complete = data.resources.filter(r => r.ctc && r.ctc > 0).length;
     const missing = total - complete;
     const score = total > 0 ? Math.round((complete / total) * 100) : 0;
 
     return { total, complete, missing, score };
-  }, [data.resources]);
+  }, [data?.resources]);
 
   // Calculate by department with resource lists
   const departmentQuality = useMemo<DepartmentQuality[]>(() => {
+    if (!data) return [];
     const byDept: Record<string, { 
       total: number; 
       withCTC: number; 
@@ -117,7 +118,29 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
           allResources: info.resources,
         };
       });
-  }, [data.resources]);
+  }, [data?.resources]);
+
+  // Handle auto-open for fixDepartment prop
+  useEffect(() => {
+    if (fixDepartment && data) {
+      const dept = departmentQuality.find(d => d.name === fixDepartment);
+      if (dept && dept.missingCTC > 0) {
+        setSelectedDept(dept);
+        setFixModalOpen(true);
+      }
+    }
+  }, [fixDepartment, data, departmentQuality]);
+
+  // Dept stats for quality breakdown modal
+  const deptStats = useMemo(() => {
+    return departmentQuality.map(d => ({
+      name: d.name,
+      total: d.totalResources,
+      complete: d.withCTC,
+      missing: d.missingCTC,
+      quality: d.coverage,
+    }));
+  }, [departmentQuality]);
 
   // Totals for table footer
   const totals = useMemo(() => {
@@ -153,9 +176,9 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
   };
 
   const getBadgeClass = (coverage: number) => {
-    if (coverage >= 80) return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
-    if (coverage >= 50) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
-    return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+    if (coverage >= 80) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400';
+    if (coverage >= 50) return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
+    return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
   };
 
   const toggleExpand = (deptName: string) => {
@@ -178,20 +201,89 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
     }
   };
 
-  const handleFixData = (dept: DepartmentQuality, resourceId?: string) => {
+  const handleFixAllDept = (dept: DepartmentQuality) => {
     setSelectedDept(dept);
-    setFocusResourceId(resourceId);
     setFixModalOpen(true);
   };
 
-  const handleEditResource = (dept: DepartmentQuality, resourceId: string) => {
-    // Open modal and focus on specific resource
-    handleFixData(dept, resourceId);
+  // FIX #1: Individual Edit opens single-resource modal
+  const handleEditSingleResource = (resource: BudgetResource) => {
+    setSingleEditResource(resource);
+    setSingleEditModalOpen(true);
   };
 
-  const handleSaved = () => {
-    setFocusResourceId(undefined);
+  const handleSingleEditSaved = () => {
+    setSingleEditResource(null);
     onRefresh?.();
+  };
+
+  const handleBulkSaved = () => {
+    onRefresh?.();
+  };
+
+  // FIX #2: Export Report functionality
+  const handleExportReport = async () => {
+    if (!data) return;
+
+    const total = data.resources.length;
+    const complete = data.resources.filter(r => r.ctc && r.ctc > 0).length;
+    const missing = total - complete;
+    const quality = total > 0 ? Math.round((complete / total) * 100) : 0;
+
+    // Generate CSV content
+    const csvRows: string[][] = [
+      ['DATA QUALITY REPORT', '', '', '', '', ''],
+      ['Generated:', new Date().toISOString(), '', '', '', ''],
+      ['', '', '', '', '', ''],
+      ['SUMMARY', '', '', '', '', ''],
+      ['Total Resources:', total.toString(), '', '', '', ''],
+      ['Complete Records:', complete.toString(), '', '', '', ''],
+      ['Missing CTC:', missing.toString(), '', '', '', ''],
+      ['Quality Score:', `${quality}%`, '', '', '', ''],
+      ['', '', '', '', '', ''],
+      ['RESOURCES WITH MISSING CTC', '', '', '', '', ''],
+      ['RID', 'Name', 'Role', 'Department', 'Vendor', 'Contract End'],
+    ];
+
+    // Add missing resources
+    data.resources
+      .filter(r => !r.ctc || r.ctc === 0)
+      .forEach(r => {
+        csvRows.push([
+          r.rid?.padStart(3, '0') || '',
+          r.name,
+          r.role || '',
+          r.department,
+          r.vendorName || '',
+          r.contractEnd || '',
+        ]);
+      });
+
+    // Create and download CSV
+    const csvContent = csvRows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `data-quality-report-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    URL.revokeObjectURL(url);
+    toast.success('Report exported successfully!');
+  };
+
+  // Handle "Fix All" from Missing CTC modal
+  const handleFixAllFromModal = () => {
+    // Find department with most missing
+    const deptWithMost = departmentQuality
+      .filter(d => d.missingCTC > 0)
+      .sort((a, b) => b.missingCTC - a.missingCTC)[0];
+    
+    if (deptWithMost) {
+      setSelectedDept(deptWithMost);
+      setFixModalOpen(true);
+    }
   };
 
   const formatDate = (dateStr: string | null) => {
@@ -202,6 +294,14 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
       year: 'numeric',
     });
   };
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center py-20 text-muted-foreground">
+        Loading data quality information...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -237,73 +337,124 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
 
       <div className="border-b border-border" />
 
-      {/* DATA QUALITY METRICS - 4 Cards per spec */}
+      {/* DATA QUALITY METRICS - FIX #3 & #5: Clickable cards with visual weight */}
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
           Data Quality Metrics
         </h2>
 
         <div className="grid grid-cols-4 gap-4">
-          {/* Total Resources */}
-          <div className="bg-card border border-border rounded-xl p-5 hover:shadow-md transition-shadow">
-            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+          {/* Total Resources - CLICKABLE */}
+          <div 
+            onClick={() => setShowTotalModal(true)}
+            className={cn(
+              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5",
+              "border-l-4 border-l-slate-400 dark:border-l-slate-500",
+              "cursor-pointer transition-all duration-200",
+              "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-slate-500 dark:hover:border-l-slate-400",
+              "group"
+            )}
+          >
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
               Total Resources
             </div>
-            <div className="text-4xl font-bold text-foreground mb-1 font-mono">
+            <div className="text-[32px] font-bold text-slate-800 dark:text-slate-100 font-mono leading-none mb-1">
               {qualityMetrics.total}
             </div>
-            <div className="text-sm text-muted-foreground">In resource inventory</div>
+            <div className="text-[13px] text-slate-500 dark:text-slate-400">In resource inventory</div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
 
-          {/* Complete Records */}
-          <div className="bg-card border border-border rounded-xl p-5 border-l-4 border-l-blue-500 hover:shadow-md transition-shadow">
-            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+          {/* Complete Records - CLICKABLE */}
+          <div 
+            onClick={() => setShowCompleteModal(true)}
+            className={cn(
+              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5",
+              "border-l-4 border-l-blue-500",
+              "cursor-pointer transition-all duration-200",
+              "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-blue-600",
+              "group"
+            )}
+          >
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
               Complete Records
             </div>
-            <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-1 font-mono">
+            <div className="text-[32px] font-bold text-blue-600 dark:text-blue-400 font-mono leading-none mb-1">
               {qualityMetrics.complete}
             </div>
-            <div className="text-sm text-muted-foreground">With CTC data</div>
+            <div className="text-[13px] text-slate-500 dark:text-slate-400">With CTC data</div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-blue-300 dark:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
 
-          {/* Missing CTC */}
-          <div className="bg-card border border-border rounded-xl p-5 border-l-4 border-l-amber-500 hover:shadow-md transition-shadow">
-            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+          {/* Missing CTC - CLICKABLE */}
+          <div 
+            onClick={() => setShowMissingModal(true)}
+            className={cn(
+              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5",
+              "border-l-4 border-l-amber-500",
+              "cursor-pointer transition-all duration-200",
+              "hover:shadow-lg hover:-translate-y-0.5 hover:border-l-amber-600",
+              "group"
+            )}
+          >
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
               Missing CTC
             </div>
-            <div className="text-4xl font-bold text-amber-600 dark:text-amber-400 mb-1 font-mono">
+            <div className="text-[32px] font-bold text-amber-600 dark:text-amber-400 font-mono leading-none mb-1">
               {qualityMetrics.missing}
             </div>
-            <div className="text-sm text-muted-foreground">Need compensation data</div>
+            <div className="text-[13px] text-slate-500 dark:text-slate-400">Need compensation data</div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-amber-300 dark:text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
 
-          {/* Quality Score */}
-          <div className="bg-card border border-border rounded-xl p-5 relative overflow-hidden hover:shadow-md transition-shadow">
-            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+          {/* Quality Score - CLICKABLE */}
+          <div 
+            onClick={() => setShowQualityModal(true)}
+            className={cn(
+              "relative bg-card border border-slate-200 dark:border-slate-700 rounded-xl p-5 overflow-hidden",
+              "border-l-4",
+              qualityMetrics.score >= 80 
+                ? "border-l-emerald-500" 
+                : qualityMetrics.score >= 50 
+                ? "border-l-amber-500" 
+                : "border-l-red-500",
+              "cursor-pointer transition-all duration-200",
+              "hover:shadow-lg hover:-translate-y-0.5",
+              "group"
+            )}
+          >
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
               Data Quality
             </div>
-            <div className={cn('text-4xl font-bold mb-1 font-mono', getScoreTextColor(qualityMetrics.score))}>
+            <div className={cn('text-[32px] font-bold font-mono leading-none mb-1', getScoreTextColor(qualityMetrics.score))}>
               {qualityMetrics.score}%
             </div>
-            <div className="text-sm text-muted-foreground">Completeness score</div>
+            <div className="text-[13px] text-slate-500 dark:text-slate-400">Completeness score</div>
             {/* Progress bar at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted">
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-700">
               <div
                 className={cn('h-full transition-all duration-500', getScoreColor(qualityMetrics.score))}
                 style={{ width: `${qualityMetrics.score}%` }}
               />
             </div>
+            <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         </div>
       </section>
 
-      {/* MISSING DATA BY DEPARTMENT TABLE */}
+      {/* MISSING DATA BY DEPARTMENT TABLE - FIX #4: Improved visibility */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Missing Data by Department
           </h2>
-          <Button variant="outline" size="sm" className="gap-2">
+          {/* FIX #2: Working Export Button */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2"
+            onClick={handleExportReport}
+          >
             <Download className="w-4 h-4" />
             Export Report
           </Button>
@@ -312,54 +463,57 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
         <div className="bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border bg-muted/30">
-                <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <tr className="border-b border-border bg-slate-50 dark:bg-slate-800/50">
+                <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Department
                 </th>
-                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Total
                 </th>
-                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Complete
                 </th>
-                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Missing
                 </th>
-                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Quality
                 </th>
-                <th className="px-5 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Action
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
               {departmentQuality.map(dept => (
-                <tr key={dept.name} className="hover:bg-muted/20 transition-colors">
-                  <td className="px-5 py-4 font-semibold text-foreground">{dept.name}</td>
-                  <td className="px-5 py-4 text-center text-muted-foreground font-mono">{dept.totalResources}</td>
-                  <td className="px-5 py-4 text-center text-muted-foreground font-mono">{dept.withCTC}</td>
+                <tr key={dept.name} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="px-5 py-4 font-semibold text-slate-800 dark:text-slate-200">{dept.name}</td>
+                  <td className="px-5 py-4 text-center text-slate-600 dark:text-slate-400 font-mono font-medium">{dept.totalResources}</td>
+                  <td className="px-5 py-4 text-center text-slate-600 dark:text-slate-400 font-mono font-medium">{dept.withCTC}</td>
                   <td className="px-5 py-4 text-center">
-                    <span className={cn('font-medium font-mono', dept.missingCTC > 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground')}>
+                    <span className={cn(
+                      'font-mono font-semibold',
+                      dept.missingCTC > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-400'
+                    )}>
                       {dept.missingCTC}
                     </span>
                   </td>
                   <td className="px-5 py-4 text-center">
-                    <span className={cn('px-2 py-0.5 rounded text-xs font-semibold', getBadgeClass(dept.coverage))}>
+                    <span className={cn('px-2.5 py-1 rounded-full text-xs font-semibold', getBadgeClass(dept.coverage))}>
                       {dept.coverage}%
                     </span>
                   </td>
                   <td className="px-5 py-4 text-center">
                     {dept.missingCTC > 0 ? (
                       <button
-                        onClick={() => handleFixData(dept)}
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors hover:underline"
+                        onClick={() => handleFixAllDept(dept)}
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors hover:underline"
                       >
                         Fix {dept.missingCTC}
                         <ChevronRight className="w-4 h-4" />
                       </button>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-sm text-emerald-600 dark:text-emerald-400">
+                      <span className="inline-flex items-center gap-1 text-sm text-emerald-600 dark:text-emerald-400 font-medium">
                         <Check className="w-4 h-4" />
                         Complete
                       </span>
@@ -369,13 +523,13 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
               ))}
             </tbody>
             <tfoot>
-              <tr className="bg-muted/50 border-t-2 border-border">
-                <td className="px-5 py-4 font-bold text-foreground">TOTAL</td>
-                <td className="px-5 py-4 text-center font-bold font-mono">{totals.total}</td>
-                <td className="px-5 py-4 text-center font-bold font-mono">{totals.complete}</td>
-                <td className="px-5 py-4 text-center font-bold text-red-600 dark:text-red-400 font-mono">{totals.missing}</td>
+              <tr className="bg-slate-100 dark:bg-slate-800/70 border-t-2 border-slate-200 dark:border-slate-600">
+                <td className="px-5 py-4 font-bold text-slate-900 dark:text-slate-100">TOTAL</td>
+                <td className="px-5 py-4 text-center font-bold font-mono text-slate-900 dark:text-slate-100">{totals.total}</td>
+                <td className="px-5 py-4 text-center font-bold font-mono text-slate-900 dark:text-slate-100">{totals.complete}</td>
+                <td className="px-5 py-4 text-center font-bold font-mono text-red-600 dark:text-red-400">{totals.missing}</td>
                 <td className="px-5 py-4 text-center">
-                  <span className={cn('px-2 py-0.5 rounded text-xs font-semibold', getBadgeClass(qualityMetrics.score))}>
+                  <span className={cn('px-2.5 py-1 rounded-full text-xs font-semibold', getBadgeClass(qualityMetrics.score))}>
                     {qualityMetrics.score}%
                   </span>
                 </td>
@@ -386,7 +540,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
         </div>
       </section>
 
-      {/* EXPANDABLE RESOURCE LISTS - with per-resource Edit buttons */}
+      {/* EXPANDABLE RESOURCE LISTS - FIX #1: Per-resource Edit buttons */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -402,7 +556,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             <div key={dept.name} className="bg-card border border-border rounded-xl overflow-hidden">
               {/* Header */}
               <div
-                className="flex items-center gap-3 px-5 py-3 cursor-pointer bg-muted/30 hover:bg-muted/50 transition-colors"
+                className="flex items-center gap-3 px-5 py-3.5 cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 onClick={() => toggleExpand(dept.name)}
               >
                 {expandedDepts.has(dept.name) ? (
@@ -410,7 +564,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                 ) : (
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 )}
-                <span className="text-sm font-bold uppercase tracking-wider text-foreground flex-1">
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-200 flex-1">
                   {dept.name}
                 </span>
                 <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{dept.missingCTC} missing</span>
@@ -420,7 +574,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                   className="ml-4 gap-1.5"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleFixData(dept);
+                    handleFixAllDept(dept);
                   }}
                 >
                   <Users className="w-3.5 h-3.5" />
@@ -428,45 +582,45 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                 </Button>
               </div>
 
-              {/* Expanded Content - with per-resource Edit buttons */}
+              {/* Expanded Content */}
               {expandedDepts.has(dept.name) && (
                 <div className="border-t border-border">
                   <table className="w-full text-sm">
-                    <thead className="bg-muted/20">
+                    <thead className="bg-slate-50/50 dark:bg-slate-800/30">
                       <tr>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           RID
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           Name
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           Role
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           Vendor
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           Contract End
                         </th>
-                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           CTC Status
                         </th>
-                        <th className="px-4 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <th className="px-4 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           Action
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border/50">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                       {dept.missingResources.map(r => (
-                        <tr key={r.id} className="hover:bg-muted/10 transition-colors">
-                          <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                        <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                          <td className="px-4 py-3 font-mono text-xs text-slate-600 dark:text-slate-400">
                             {r.rid?.padStart(3, '0') || '—'}
                           </td>
-                          <td className="px-4 py-3 font-medium text-foreground">{r.name}</td>
-                          <td className="px-4 py-3 text-muted-foreground">{r.role || '—'}</td>
-                          <td className="px-4 py-3 text-muted-foreground">{r.vendorName || '—'}</td>
-                          <td className="px-4 py-3 text-muted-foreground">{formatDate(r.contractEnd)}</td>
+                          <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">{r.name}</td>
+                          <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{r.role || '—'}</td>
+                          <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{r.vendorName || '—'}</td>
+                          <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{formatDate(r.contractEnd)}</td>
                           <td className="px-4 py-3">
                             <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium text-xs">
                               <AlertCircle className="w-3.5 h-3.5" />
@@ -474,10 +628,11 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right">
+                            {/* FIX #1: Opens single-resource modal, not full department */}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleEditResource(dept, r.id);
+                                handleEditSingleResource(r);
                               }}
                               className={cn(
                                 "inline-flex items-center gap-1.5 px-3 py-1.5",
@@ -514,7 +669,7 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
         </div>
       </section>
 
-      {/* Fix CTC Modal */}
+      {/* Fix All CTC Modal (Bulk) */}
       {selectedDept && (
         <FixCTCModal
           open={fixModalOpen}
@@ -529,10 +684,53 @@ export function BudgetDataQualityTab({ data, period, totalBudget, onRefresh, fix
             contractEnd: r.contractEnd,
             ctc: r.ctc,
           }))}
-          onSaved={handleSaved}
-          focusResourceId={focusResourceId}
+          onSaved={handleBulkSaved}
         />
       )}
+
+      {/* Single Resource Edit Modal */}
+      {singleEditResource && (
+        <SingleResourceEditModal
+          open={singleEditModalOpen}
+          onOpenChange={setSingleEditModalOpen}
+          resource={{
+            id: singleEditResource.id,
+            rid: singleEditResource.rid,
+            name: singleEditResource.name,
+            role: singleEditResource.role,
+            vendorName: singleEditResource.vendorName,
+            contractEnd: singleEditResource.contractEnd,
+            ctc: singleEditResource.ctc,
+          }}
+          onSaved={handleSingleEditSaved}
+        />
+      )}
+
+      {/* Detail Modals */}
+      <TotalResourcesModal
+        isOpen={showTotalModal}
+        onClose={() => setShowTotalModal(false)}
+        resources={data.resources}
+      />
+
+      <CompleteRecordsModal
+        isOpen={showCompleteModal}
+        onClose={() => setShowCompleteModal(false)}
+        resources={data.resources}
+      />
+
+      <MissingCTCModal
+        isOpen={showMissingModal}
+        onClose={() => setShowMissingModal(false)}
+        resources={data.resources}
+        onFixAll={handleFixAllFromModal}
+      />
+
+      <DataQualityBreakdownModal
+        isOpen={showQualityModal}
+        onClose={() => setShowQualityModal(false)}
+        deptStats={deptStats}
+      />
     </div>
   );
 }
