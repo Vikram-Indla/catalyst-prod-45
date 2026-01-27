@@ -2,6 +2,8 @@
  * Budget Summary Tab - V8 Design
  * Matches exact reference: Portfolio baseline cards, department budget bars with quarterly timeline,
  * assignment costs table with run rate, and recommendations by department
+ * 
+ * V8.1 FIX: "Fix Data" buttons now open FixCTCModal directly instead of navigating to Data Quality tab
  */
 
 import { useState, useMemo } from 'react';
@@ -11,6 +13,8 @@ import { formatCurrency, formatFull, type BudgetPeriod, type BudgetResource, typ
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { formatDate } from '@/lib/budget/utils';
+import { FixCTCModal } from './FixCTCModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface BudgetSummaryTabProps {
   data: {
@@ -27,7 +31,7 @@ interface BudgetSummaryTabProps {
   onTabChange?: (tab: string, params?: Record<string, string>) => void;
 }
 
-type ModalType = 'insourced' | 'fixed' | 'licenses' | 'department' | 'assignment' | null;
+type ModalType = 'insourced' | 'fixed' | 'licenses' | 'department' | 'assignment' | 'fixctc' | null;
 
 // Department display order
 const DEPT_ORDER = ['Delivery', 'Product', 'Operations', 'Tech Support', 'Governance'];
@@ -43,10 +47,12 @@ const deptAbbrev: Record<string, string> = {
 
 export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTabProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [, setSearchParams] = useSearchParams();
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
   const [selectedAssignment, setSelectedAssignment] = useState<BudgetAssignment | null>(null);
+  const [fixCTCDept, setFixCTCDept] = useState<string | null>(null);
 
   if (!data) {
     return (
@@ -132,12 +138,27 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
     };
   };
 
-  // Navigate to Data Quality tab with department filter
-  const navigateToFixData = (department: string) => {
-    if (onTabChange) {
-      onTabChange('quality', { fixDepartment: department });
-    }
+  // Open FixCTCModal directly for the specified department (instead of navigating)
+  const openFixCTCModal = (department: string) => {
+    setFixCTCDept(department);
+    setActiveModal('fixctc');
   };
+
+  // Get resources to fix for the selected department
+  const resourcesToFix = useMemo(() => {
+    if (!fixCTCDept || !data) return [];
+    return data.resources
+      .filter(r => r.department === fixCTCDept && (r.ctc === null || r.ctc === undefined))
+      .map(r => ({
+        id: r.id,
+        rid: r.rid || '',
+        name: r.name,
+        role: r.role || '',
+        vendorName: r.vendorName || null,
+        contractEnd: r.contractEnd || null,
+        ctc: r.ctc,
+      }));
+  }, [fixCTCDept, data]);
 
   // Navigate to Scenario Planning tab with preset
   const navigateToScenario = (preset: string) => {
@@ -146,7 +167,7 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
     }
   };
 
-  // Open department modal or navigate to fix data
+  // Open department modal or open fix CTC modal
   const handleDeptClick = (deptName: string) => {
     const dept = data.departments[deptName];
     if (!dept) return;
@@ -155,8 +176,8 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
     const hasBudget = dept.total > 0;
     
     if (!hasBudget && missingCount > 0) {
-      // Navigate to Data Quality + open fix modal
-      navigateToFixData(deptName);
+      // Open FixCTCModal directly
+      openFixCTCModal(deptName);
     } else {
       // Open department detail modal
       setSelectedDept(deptName);
@@ -604,7 +625,7 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                       className="px-3 py-1.5 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-1"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigateToFixData(dept);
+                        openFixCTCModal(dept);
                       }}
                     >
                       Fix Data <ChevronRight className="w-4 h-4" />
@@ -908,7 +929,7 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
                     onClick={() => {
                       setActiveModal(null);
                       setSelectedDept(null);
-                      navigateToFixData(selectedDept);
+                      if (selectedDept) openFixCTCModal(selectedDept);
                     }}
                   >
                     Fix Data <ChevronRight className="w-4 h-4" />
@@ -1002,6 +1023,27 @@ export function BudgetSummaryTab({ data, period, onTabChange }: BudgetSummaryTab
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Fix CTC Modal - Opens directly from Summary tab */}
+      {fixCTCDept && (
+        <FixCTCModal
+          open={activeModal === 'fixctc'}
+          onOpenChange={(open) => {
+            if (!open) {
+              setActiveModal(null);
+              setFixCTCDept(null);
+            }
+          }}
+          department={fixCTCDept}
+          resources={resourcesToFix}
+          onSaved={() => {
+            queryClient.invalidateQueries({ queryKey: ['budget-resources'] });
+            setActiveModal(null);
+            setFixCTCDept(null);
+          }}
+        />
+      )}
     </div>
   );
 }
+
