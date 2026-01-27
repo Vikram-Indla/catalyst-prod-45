@@ -68,7 +68,8 @@ const transformPlannerTask = (row: any): PlannerTask => ({
 
 export function usePlannerTasks(teamId?: string | null) {
   return useQuery({
-    queryKey: ['planner-tasks', teamId],
+    // Cache-buster: ensures UI picks up task_key mapping changes immediately
+    queryKey: ['planner-tasks', teamId, 'v2-task-key'],
     queryFn: async () => {
       let query = supabase
         .from('planner_tasks')
