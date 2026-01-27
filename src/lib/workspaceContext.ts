@@ -21,7 +21,7 @@ export interface WorkspaceContext {
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
   
-  // Planner module - separate from Home
+  // Planner module - separate from Home (includes /planner/* and /planner/my-tasks)
   if (pathname.startsWith('/planner')) {
     return 'planner';
   }
