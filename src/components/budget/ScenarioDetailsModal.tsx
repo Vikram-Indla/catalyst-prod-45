@@ -151,17 +151,12 @@ export function ScenarioDetailsModal({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-lg p-0 gap-0 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-start justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 pr-14">
             <div>
               <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{scenario.name}</h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">{scenario.description || 'Current portfolio state'}</p>
             </div>
-            <button 
-              onClick={() => onClose()}
-              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 text-slate-500" />
-            </button>
+            {/* Close button provided by DialogContent */}
           </div>
 
           {/* Content */}
@@ -244,7 +239,7 @@ export function ScenarioDetailsModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] p-0 gap-0 overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex items-start justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 pr-14">
           <div className="flex items-center gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -256,12 +251,7 @@ export function ScenarioDetailsModal({
               <p className="text-sm text-slate-500 dark:text-slate-400">{scenario.description || 'Scenario details'}</p>
             </div>
           </div>
-          <button 
-            onClick={() => onClose()}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-slate-500" />
-          </button>
+          {/* Close button provided by DialogContent */}
         </div>
 
         {/* Summary Cards */}
