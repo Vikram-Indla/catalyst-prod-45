@@ -1,15 +1,14 @@
 // ============================================================
-// PLANNER TIMELINE (GANTT) VIEW - V2 ENTERPRISE STYLE
-// Workstream-grouped Gantt chart with colored bars
+// PLANNER TIMELINE (GANTT) VIEW - V9 ENTERPRISE
+// Workstream-grouped Gantt chart with colored bars per V2 spec
 // ============================================================
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, CalendarDays, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { PlannerTask, GroupByOption } from '../types';
-import { addDays, startOfWeek, format, differenceInDays, isToday, isSameMonth } from 'date-fns';
-import { getWorkstreamColor } from '@/lib/workstream-colors';
+import { addDays, startOfWeek, format, differenceInDays, isToday, isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, subDays } from 'date-fns';
 import { PlannerSearchBar } from './PlannerSearchBar';
 import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
@@ -20,36 +19,46 @@ interface PlannerTimelineProps {
   onTaskClick: (task: PlannerTask) => void;
 }
 
-type ZoomLevel = 'day' | 'week' | 'month';
+type ViewMode = 'day' | 'week' | 'month';
 
-// Workstream color palette for the reference design
-const WORKSTREAM_BAR_COLORS: Record<string, { primary: string; progress: string; dot: string }> = {
-  'Catalyst Track': { primary: '#a78bfa', progress: '#c4b5fd', dot: '#8b5cf6' }, // Purple
-  'Senaie Track': { primary: '#22d3ee', progress: '#67e8f9', dot: '#06b6d4' }, // Cyan
-  'Delivery Track': { primary: '#fb923c', progress: '#fdba74', dot: '#f97316' }, // Orange
-  'MIM Website': { primary: '#f472b6', progress: '#f9a8d4', dot: '#ec4899' }, // Pink
-  'MIM Website Track': { primary: '#f472b6', progress: '#f9a8d4', dot: '#ec4899' }, // Pink
-  'Data & AI Track': { primary: '#34d399', progress: '#6ee7b7', dot: '#10b981' }, // Green
-  'Tahommona Track': { primary: '#818cf8', progress: '#a5b4fc', dot: '#6366f1' }, // Indigo
-  'Stand-Alone Projects Track': { primary: '#94a3b8', progress: '#cbd5e1', dot: '#64748b' }, // Slate
+// ============================================================
+// WORKSTREAM COLOR PALETTE (Catalyst V5 Design System)
+// ============================================================
+const WORKSTREAM_COLORS: Record<string, { bar: string; barLight: string; dot: string }> = {
+  'Catalyst': { bar: '#8b5cf6', barLight: '#c4b5fd', dot: '#7c3aed' },
+  'Senaie': { bar: '#06b6d4', barLight: '#67e8f9', dot: '#0891b2' },
+  'Delivery': { bar: '#f97316', barLight: '#fdba74', dot: '#ea580c' },
+  'MIM': { bar: '#ec4899', barLight: '#f9a8d4', dot: '#db2777' },
+  'Data & AI': { bar: '#10b981', barLight: '#6ee7b7', dot: '#059669' },
+  'Tahommona': { bar: '#6366f1', barLight: '#a5b4fc', dot: '#4f46e5' },
+  'Stand-Alone': { bar: '#64748b', barLight: '#94a3b8', dot: '#475569' },
 };
 
-const DEFAULT_BAR_COLOR = { primary: '#94a3b8', progress: '#cbd5e1', dot: '#64748b' };
+const DEFAULT_COLOR = { bar: '#64748b', barLight: '#94a3b8', dot: '#475569' };
 
-function getBarColors(workstream: string | undefined) {
-  if (!workstream) return DEFAULT_BAR_COLOR;
-  return WORKSTREAM_BAR_COLORS[workstream] || DEFAULT_BAR_COLOR;
+function getWorkstreamColor(workstreamName: string | undefined) {
+  if (!workstreamName) return DEFAULT_COLOR;
+  // Match by partial name
+  for (const [key, colors] of Object.entries(WORKSTREAM_COLORS)) {
+    if (workstreamName.toLowerCase().includes(key.toLowerCase())) {
+      return colors;
+    }
+  }
+  return DEFAULT_COLOR;
 }
 
+// ============================================================
+// TIMELINE COMPONENT
+// ============================================================
 export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
-  const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('week');
+  // State
+  const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [viewStart, setViewStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 0 }));
   const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  // Local state for filters
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Data hooks
   const { data: teams = [] } = usePlannerWorkstreams();
@@ -71,126 +80,172 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
     filteredCount,
   } = usePlannerSearch(tasks);
 
-  // Generate date columns based on zoom level
+  // ============================================================
+  // DATE CALCULATIONS
+  // ============================================================
+  const columnConfig = useMemo(() => {
+    switch (viewMode) {
+      case 'day': return { days: 14, width: 60 };
+      case 'week': return { days: 28, width: 48 };
+      case 'month': return { days: 60, width: 24 };
+    }
+  }, [viewMode]);
+
   const dateColumns = useMemo(() => {
     const columns: Date[] = [];
-    const numDays = zoomLevel === 'day' ? 14 : zoomLevel === 'week' ? 28 : 60;
-    
-    for (let i = 0; i < numDays; i++) {
+    for (let i = 0; i < columnConfig.days; i++) {
       columns.push(addDays(viewStart, i));
     }
     return columns;
-  }, [viewStart, zoomLevel]);
+  }, [viewStart, columnConfig.days]);
 
-  // Column width based on zoom
-  const columnWidth = zoomLevel === 'day' ? 60 : zoomLevel === 'week' ? 48 : 24;
+  const viewEnd = useMemo(() => addDays(viewStart, columnConfig.days - 1), [viewStart, columnConfig.days]);
 
-  // Group tasks by workstream
+  // ============================================================
+  // TASK GROUPING
+  // ============================================================
   const groupedTasks = useMemo(() => {
-    const groups: Map<string, PlannerTask[]> = new Map();
+    const groups = new Map<string, PlannerTask[]>();
     
     filteredTasks.forEach(task => {
-      const workstream = task.teamName || 'Unassigned';
-      if (!groups.has(workstream)) {
-        groups.set(workstream, []);
+      const groupKey = task.teamName || 'Unassigned';
+      if (!groups.has(groupKey)) {
+        groups.set(groupKey, []);
       }
-      groups.get(workstream)!.push(task);
+      groups.get(groupKey)!.push(task);
     });
 
-    // Sort groups by name
-    return Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b));
+    // Sort by group name, then tasks by start date
+    return Array.from(groups.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([name, tasks]) => ({
+        name,
+        tasks: tasks.sort((a, b) => {
+          const aDate = a.startDate ? new Date(a.startDate).getTime() : Infinity;
+          const bDate = b.startDate ? new Date(b.startDate).getTime() : Infinity;
+          return aDate - bDate;
+        }),
+      }));
   }, [filteredTasks]);
 
-  // Calculate bar position and width for each task
-  const getTaskBar = (task: PlannerTask) => {
+  // ============================================================
+  // BAR POSITION CALCULATIONS
+  // ============================================================
+  const getTaskBarStyle = useCallback((task: PlannerTask) => {
     const startDate = task.startDate ? new Date(task.startDate) : new Date();
     const endDate = task.dueDate ? new Date(task.dueDate) : addDays(startDate, 5);
     
     const startOffset = differenceInDays(startDate, viewStart);
     const duration = Math.max(1, differenceInDays(endDate, startDate) + 1);
     
-    return {
-      left: Math.max(0, startOffset * columnWidth),
-      width: duration * columnWidth,
-      isVisible: startOffset + duration > 0 && startOffset < dateColumns.length,
-    };
-  };
+    const left = Math.max(0, startOffset * columnConfig.width);
+    const width = Math.min(
+      duration * columnConfig.width,
+      (columnConfig.days - Math.max(0, startOffset)) * columnConfig.width
+    );
+    
+    const isVisible = startOffset + duration > 0 && startOffset < columnConfig.days;
+    
+    return { left, width, isVisible };
+  }, [viewStart, columnConfig]);
 
-  const navigateView = (direction: 'prev' | 'next') => {
-    const days = zoomLevel === 'day' ? 7 : zoomLevel === 'week' ? 14 : 30;
-    setViewStart(prev => addDays(prev, direction === 'next' ? days : -days));
-  };
+  // ============================================================
+  // NAVIGATION HANDLERS
+  // ============================================================
+  const navigateView = useCallback((direction: 'prev' | 'next') => {
+    const days = viewMode === 'day' ? 7 : viewMode === 'week' ? 14 : 30;
+    setViewStart(prev => direction === 'next' ? addDays(prev, days) : subDays(prev, days));
+  }, [viewMode]);
 
-  const goToToday = () => {
+  const goToToday = useCallback(() => {
     setViewStart(startOfWeek(new Date(), { weekStartsOn: 0 }));
-  };
+    // Scroll to today position
+    if (gridRef.current) {
+      const todayOffset = differenceInDays(new Date(), startOfWeek(new Date(), { weekStartsOn: 0 }));
+      gridRef.current.scrollLeft = Math.max(0, (todayOffset - 3) * columnConfig.width);
+    }
+  }, [columnConfig.width]);
 
-  // Calculate today line position
+  // ============================================================
+  // TODAY LINE CALCULATION
+  // ============================================================
   const todayOffset = differenceInDays(new Date(), viewStart);
-  const todayPosition = todayOffset * columnWidth + columnWidth / 2;
-  const showTodayLine = todayOffset >= 0 && todayOffset < dateColumns.length;
+  const todayPosition = todayOffset * columnConfig.width + columnConfig.width / 2;
+  const showTodayLine = todayOffset >= 0 && todayOffset < columnConfig.days;
 
-  // Calculate total content height for today line
+  // Calculate total height for today line
+  const ROW_HEIGHT = 44;
+  const HEADER_HEIGHT = 48;
   let totalRows = 0;
-  groupedTasks.forEach(([, tasks]) => {
-    totalRows += 1 + tasks.length; // 1 header + tasks
+  groupedTasks.forEach(group => {
+    totalRows += 1 + group.tasks.length; // header + tasks
   });
-  const rowHeight = 48;
-  const headerHeight = 32;
-  const totalContentHeight = totalRows * rowHeight;
+  const totalContentHeight = totalRows * ROW_HEIGHT;
 
+  // ============================================================
+  // RENDER
+  // ============================================================
   return (
     <div className="h-full flex flex-col bg-white dark:bg-slate-950">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+      {/* ============================================================
+          TOP BAR - Title, Today, Date Nav, View Mode Toggle
+          ============================================================ */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+        {/* Left: Title */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Menu className="h-5 w-5 text-slate-500" />
-          </Button>
+          <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+            <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+          </button>
           <div>
             <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Timeline</h1>
             <p className="text-sm text-slate-500 dark:text-slate-400">Gantt chart view with task dependencies</p>
           </div>
         </div>
 
+        {/* Right: Controls */}
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" onClick={goToToday} className="h-9">
-            <CalendarDays className="w-4 h-4 mr-2" />
+          {/* Today Button */}
+          <Button variant="outline" size="sm" onClick={goToToday} className="gap-2 h-9">
+            <CalendarDays className="w-4 h-4" />
             Today
           </Button>
-          
-          <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900">
-            <Button variant="ghost" size="sm" onClick={() => navigateView('prev')} className="h-9 px-2">
+
+          {/* Date Navigation */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg">
+            <Button variant="ghost" size="sm" className="h-9 px-2 rounded-l-lg" onClick={() => navigateView('prev')}>
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <span className="px-3 text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[160px] text-center">
-              {format(viewStart, 'MMM d')} - {format(addDays(viewStart, dateColumns.length - 1), 'MMM d, yyyy')}
+            <span className="px-4 text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[160px] text-center">
+              {format(viewStart, 'MMM d')} - {format(viewEnd, 'MMM d, yyyy')}
             </span>
-            <Button variant="ghost" size="sm" onClick={() => navigateView('next')} className="h-9 px-2">
+            <Button variant="ghost" size="sm" className="h-9 px-2 rounded-r-lg" onClick={() => navigateView('next')}>
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
 
+          {/* View Mode Toggle */}
           <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-            {(['day', 'week', 'month'] as const).map(level => (
+            {(['day', 'week', 'month'] as const).map(mode => (
               <button
-                key={level}
-                onClick={() => setZoomLevel(level)}
+                key={mode}
+                onClick={() => setViewMode(mode)}
                 className={cn(
-                  "px-4 py-1.5 text-sm font-medium rounded-md transition-colors capitalize",
-                  zoomLevel === level 
-                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm" 
+                  "px-4 py-1.5 text-sm font-medium rounded-md transition-all capitalize",
+                  viewMode === mode
+                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                 )}
               >
-                {level === 'day' ? 'Day' : level === 'week' ? 'Week' : 'Month'}
+                {mode.charAt(0).toUpperCase() + mode.slice(1)}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Filter Bar */}
+      {/* ============================================================
+          FILTER BAR - Search, Workstream, Status, Priority, etc.
+          ============================================================ */}
       <PlannerSearchBar
         filters={filters}
         onSearchChange={setSearch}
@@ -213,147 +268,143 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
         showColumnsButton={false}
       />
 
-      {/* Timeline Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="flex min-h-full">
-          {/* Left Panel - Task Keys */}
-          <div className="w-[140px] flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
-            {/* Header */}
-            <div 
-              className="sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex items-center px-4"
-              style={{ height: headerHeight }}
-            >
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                Tasks ({filteredTasks.length})
-              </span>
-            </div>
-
-            {/* Workstream Groups */}
-            {groupedTasks.map(([workstream, wsTasksInGroup]) => {
-              const colors = getBarColors(workstream);
-              
-              return (
-                <div key={workstream}>
-                  {/* Workstream Header */}
-                  <div 
-                    className="flex items-center gap-2 px-4 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800"
-                    style={{ height: rowHeight }}
-                  >
-                    <div 
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: colors.dot }}
-                    />
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide truncate">
-                      {workstream.replace(' Track', '').toUpperCase()}
-                    </span>
-                  </div>
-
-                  {/* Task Keys */}
-                  {wsTasksInGroup.map((task) => (
-                    <div 
-                      key={task.id}
-                      className={cn(
-                        "flex items-center px-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors",
-                        hoveredTaskId === task.id ? "bg-slate-100 dark:bg-slate-800" : "bg-white dark:bg-slate-950"
-                      )}
-                      style={{ height: rowHeight }}
-                      onClick={() => onTaskClick(task)}
-                      onMouseEnter={() => setHoveredTaskId(task.id)}
-                      onMouseLeave={() => setHoveredTaskId(null)}
-                    >
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                        {task.key}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+      {/* ============================================================
+          TIMELINE GRID CONTENT
+          ============================================================ */}
+      <div className="flex-1 overflow-hidden flex">
+        {/* Left Panel: Task Keys */}
+        <div className="w-[140px] flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 overflow-y-auto">
+          {/* Header */}
+          <div
+            className="sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex items-center px-4"
+            style={{ height: HEADER_HEIGHT }}
+          >
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+              Tasks ({filteredTasks.length})
+            </span>
           </div>
 
-          {/* Gantt Chart Area */}
-          <div className="flex-1 overflow-x-auto relative">
-            {/* Date Headers */}
-            <div 
+          {/* Workstream Groups */}
+          {groupedTasks.map(group => {
+            const colors = getWorkstreamColor(group.name);
+            
+            return (
+              <div key={group.name}>
+                {/* Workstream Header */}
+                <div
+                  className="flex items-center gap-2 px-4 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800"
+                  style={{ height: ROW_HEIGHT }}
+                >
+                  <div
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: colors.dot }}
+                  />
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide truncate">
+                    {group.name}
+                  </span>
+                </div>
+
+                {/* Task Keys */}
+                {group.tasks.map(task => (
+                  <div
+                    key={task.id}
+                    className={cn(
+                      "flex items-center px-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors",
+                      hoveredTaskId === task.id ? "bg-slate-100 dark:bg-slate-800" : "bg-white dark:bg-slate-950"
+                    )}
+                    style={{ height: ROW_HEIGHT }}
+                    onClick={() => onTaskClick(task)}
+                    onMouseEnter={() => setHoveredTaskId(task.id)}
+                    onMouseLeave={() => setHoveredTaskId(null)}
+                  >
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400 font-mono">
+                      {task.key}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Right Panel: Gantt Chart */}
+        <div className="flex-1 overflow-auto" ref={gridRef}>
+          <div style={{ minWidth: columnConfig.days * columnConfig.width }}>
+            {/* Date Header Row */}
+            <div
               className="flex sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950"
-              style={{ height: headerHeight }}
+              style={{ height: HEADER_HEIGHT }}
             >
               {dateColumns.map((date, i) => {
                 const isCurrentDay = isToday(date);
-                const dayOfWeek = date.getDay();
-                const isWeekend = dayOfWeek === 5 || dayOfWeek === 6; // Saudi weekend
+                const dayOfWeek = getDay(date);
+                const isWeekend = dayOfWeek === 5 || dayOfWeek === 6; // Saudi weekend (Fri/Sat)
                 
                 return (
                   <div
                     key={i}
                     className={cn(
-                      "flex-shrink-0 flex flex-col items-center justify-center border-r border-slate-100 dark:border-slate-800",
-                      isCurrentDay && "bg-blue-500 text-white rounded-full",
-                      isWeekend && !isCurrentDay && "bg-slate-50 dark:bg-slate-900"
+                      "flex-shrink-0 flex flex-col items-center justify-center border-r border-slate-100 dark:border-slate-800 transition-colors",
+                      isWeekend && !isCurrentDay && "bg-slate-50/80 dark:bg-slate-900/50"
                     )}
-                    style={{ 
-                      width: columnWidth,
-                      ...(isCurrentDay ? { 
-                        backgroundColor: '#3b82f6',
-                        borderRadius: '50%',
-                        margin: '2px',
-                        width: columnWidth - 4,
-                      } : {})
-                    }}
+                    style={{ width: columnConfig.width }}
                   >
-                    <span className={cn(
-                      "text-[10px] font-medium uppercase",
-                      isCurrentDay ? "text-white" : "text-slate-400 dark:text-slate-500"
-                    )}>
-                      {format(date, 'EEE')}
-                    </span>
-                    <span className={cn(
-                      "text-sm font-semibold",
-                      isCurrentDay ? "text-white" : "text-slate-600 dark:text-slate-300"
-                    )}>
-                      {format(date, 'd')}
-                    </span>
+                    {/* Day circle for today */}
+                    {isCurrentDay ? (
+                      <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full bg-blue-600 text-white">
+                        <span className="text-[9px] font-medium uppercase leading-none">
+                          {format(date, 'EEE')}
+                        </span>
+                        <span className="text-sm font-bold leading-none">
+                          {format(date, 'd')}
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">
+                          {format(date, 'EEE')}
+                        </span>
+                        <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                          {format(date, 'd')}
+                        </span>
+                      </>
+                    )}
                   </div>
                 );
               })}
             </div>
 
-            {/* Grid and Bars */}
-            <div className="relative" style={{ minWidth: dateColumns.length * columnWidth }}>
+            {/* Grid Body with Bars */}
+            <div className="relative">
               {/* Today Line */}
               {showTodayLine && (
-                <div 
+                <div
                   className="absolute z-30 pointer-events-none"
-                  style={{ 
-                    left: todayPosition,
-                    top: 0,
-                    height: totalContentHeight,
-                  }}
+                  style={{ left: todayPosition, top: 0, height: totalContentHeight }}
                 >
-                  <div 
+                  <div
                     className="w-0.5 h-full"
                     style={{
-                      background: 'repeating-linear-gradient(to bottom, #3b82f6 0, #3b82f6 4px, transparent 4px, transparent 8px)',
+                      background: 'repeating-linear-gradient(to bottom, #2563eb 0, #2563eb 4px, transparent 4px, transparent 8px)',
                     }}
                   />
                 </div>
               )}
 
               {/* Workstream Groups with Bars */}
-              {groupedTasks.map(([workstream, wsTasksInGroup]) => {
-                const colors = getBarColors(workstream);
+              {groupedTasks.map(group => {
+                const colors = getWorkstreamColor(group.name);
                 
                 return (
-                  <div key={workstream}>
-                    {/* Workstream Header Row */}
-                    <div 
+                  <div key={group.name}>
+                    {/* Workstream Header Row (empty grid) */}
+                    <div
                       className="relative flex bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800"
-                      style={{ height: rowHeight }}
+                      style={{ height: ROW_HEIGHT }}
                     >
-                      {/* Background grid */}
                       <div className="absolute inset-0 flex pointer-events-none">
                         {dateColumns.map((date, i) => {
-                          const isWeekend = date.getDay() === 5 || date.getDay() === 6;
+                          const isWeekend = getDay(date) === 5 || getDay(date) === 6;
                           return (
                             <div
                               key={i}
@@ -361,34 +412,34 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                                 "flex-shrink-0 border-r border-slate-100 dark:border-slate-800",
                                 isWeekend && "bg-slate-100/50 dark:bg-slate-800/30"
                               )}
-                              style={{ width: columnWidth }}
+                              style={{ width: columnConfig.width }}
                             />
                           );
                         })}
                       </div>
                     </div>
 
-                    {/* Task Rows with Bars */}
-                    {wsTasksInGroup.map((task) => {
-                      const bar = getTaskBar(task);
+                    {/* Task Rows with Gantt Bars */}
+                    {group.tasks.map(task => {
+                      const barStyle = getTaskBarStyle(task);
                       const isHovered = hoveredTaskId === task.id;
                       const progress = Math.min(100, Math.max(0, task.progress || 0));
 
                       return (
-                        <div 
+                        <div
                           key={task.id}
                           className={cn(
                             "relative border-b border-slate-100 dark:border-slate-800 transition-colors",
                             isHovered ? "bg-slate-50 dark:bg-slate-900" : "bg-white dark:bg-slate-950"
                           )}
-                          style={{ height: rowHeight }}
+                          style={{ height: ROW_HEIGHT }}
                           onMouseEnter={() => setHoveredTaskId(task.id)}
                           onMouseLeave={() => setHoveredTaskId(null)}
                         >
-                          {/* Background grid */}
+                          {/* Background Grid */}
                           <div className="absolute inset-0 flex pointer-events-none">
                             {dateColumns.map((date, i) => {
-                              const isWeekend = date.getDay() === 5 || date.getDay() === 6;
+                              const isWeekend = getDay(date) === 5 || getDay(date) === 6;
                               return (
                                 <div
                                   key={i}
@@ -396,20 +447,20 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                                     "flex-shrink-0 border-r border-slate-100 dark:border-slate-800",
                                     isWeekend && "bg-slate-50/50 dark:bg-slate-800/20"
                                   )}
-                                  style={{ width: columnWidth }}
+                                  style={{ width: columnConfig.width }}
                                 />
                               );
                             })}
                           </div>
 
                           {/* Gantt Bar */}
-                          {bar.isVisible && (
+                          {barStyle.isVisible && (
                             <div
                               className="absolute top-2 bottom-2 rounded-lg cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                               style={{
-                                left: bar.left,
-                                width: bar.width,
-                                backgroundColor: colors.primary,
+                                left: barStyle.left,
+                                width: barStyle.width,
+                                backgroundColor: colors.bar,
                               }}
                               onClick={() => onTaskClick(task)}
                             >
@@ -418,7 +469,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                                 className="absolute inset-y-0 left-0 rounded-l-lg"
                                 style={{
                                   width: `${progress}%`,
-                                  backgroundColor: colors.progress,
+                                  backgroundColor: colors.barLight,
                                 }}
                               />
                               
@@ -441,13 +492,21 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
         </div>
       </div>
 
-      {/* Empty State */}
+      {/* ============================================================
+          EMPTY STATE
+          ============================================================ */}
       {filteredTasks.length === 0 && (
-        <div className="flex-1 flex items-center justify-center text-slate-500 dark:text-slate-400">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-950/80 z-40">
           <div className="text-center">
-            <CalendarDays className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
-            <p className="text-sm font-medium">No tasks to display on timeline</p>
-            <p className="text-xs text-slate-400 mt-1">Tasks with start dates will appear here</p>
+            <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+              <CalendarDays className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+            </div>
+            <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-1">
+              No tasks to display on timeline
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Tasks with start dates will appear here
+            </p>
           </div>
         </div>
       )}
