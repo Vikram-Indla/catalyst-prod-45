@@ -120,15 +120,15 @@ export function SidebarBase({
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* Header with collapse toggle — Commercial SaaS: gradient bg + prominent module icon */}
+        {/* Header with collapse toggle — Dark mode compatible */}
         <div 
           className="flex items-center justify-between border-b flex-shrink-0"
           style={{ 
             height: expanded ? '64px' : '52px',
-            borderColor: '#E4E4E7',
+            borderColor: 'var(--divider)',
             padding: expanded ? '0 16px' : '0',
             justifyContent: expanded ? 'space-between' : 'center',
-            background: expanded ? 'linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%)' : 'transparent',
+            background: 'transparent',
           }}
         >
         <div className="flex items-center gap-2.5 overflow-hidden">
@@ -149,16 +149,20 @@ export function SidebarBase({
             {expanded && (
               <span 
                 className="text-[14px] font-semibold truncate tracking-tight"
-                style={{ color: '#09090B' }}
+                style={{ color: 'var(--text-1)' }}
               >
                 {config.label}
               </span>
             )}
           </div>
-          {/* Collapse button — with border per commercial spec */}
+          {/* Collapse button — dark mode compatible */}
           <button
             onClick={onToggle}
-            className="w-7 h-7 flex items-center justify-center rounded-md transition-all flex-shrink-0 border border-zinc-200 bg-white text-zinc-400 hover:text-zinc-600 hover:border-zinc-300"
+            className="w-7 h-7 flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-white/5 dark:hover:bg-white/10"
+            style={{
+              borderColor: 'var(--divider)',
+              color: 'var(--text-3)',
+            }}
             aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
           >
             {expanded ? (
