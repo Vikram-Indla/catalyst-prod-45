@@ -17,14 +17,16 @@ import {
   Bookmark,
   Trash2,
   Star,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { useSavedFilters, useDeleteSavedFilter } from '../../hooks/useSavedFilters';
 import { useMyTasksSummary } from '../../hooks/useMyTasks';
 import type { FilterConfig, TimeSection } from '../../types/my-tasks';
 import { MyTasksSidebarWrapper } from './MyTasksLayout';
+import { MiniCalendar, DailyGoal } from './widgets';
 
 type ViewMode = 'list' | 'board' | 'calendar';
 
@@ -36,15 +38,17 @@ interface MyTasksSidebarProps {
   filters: FilterConfig;
   onFilterChange: (filters: Partial<FilterConfig>) => void;
   onApplySavedFilter: (filter: FilterConfig) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-const QUICK_FILTERS: { id: TimeSection | 'all'; label: string; icon: React.ElementType; color: string }[] = [
+const TIME_SECTIONS: { id: TimeSection | 'all'; label: string; icon: React.ElementType; color: string }[] = [
   { id: 'all' as const, label: 'All Tasks', icon: List, color: '#64748b' },
   { id: 'overdue', label: 'Overdue', icon: AlertCircle, color: '#ef4444' },
   { id: 'today', label: 'Today', icon: Calendar, color: '#f59e0b' },
   { id: 'this_week', label: 'This Week', icon: CalendarDays, color: '#3b82f6' },
   { id: 'upcoming', label: 'Upcoming', icon: CalendarPlus, color: '#8b5cf6' },
-  { id: 'someday', label: 'Someday', icon: Cloud, color: '#94a3b8' },
+  { id: 'someday', label: 'Someday/Maybe', icon: Cloud, color: '#94a3b8' },
 ];
 
 export function MyTasksSidebar({
@@ -55,22 +59,12 @@ export function MyTasksSidebar({
   filters,
   onFilterChange,
   onApplySavedFilter,
+  isCollapsed = false,
+  onToggleCollapse,
 }: MyTasksSidebarProps) {
   const { data: savedFilters = [] } = useSavedFilters();
   const { data: summary } = useMyTasksSummary();
   const deleteSavedFilter = useDeleteSavedFilter();
-
-  // Calculate daily progress
-  const dailyProgress = useMemo(() => {
-    if (!summary) return { completed: 0, total: 0, percentage: 0 };
-    const completed = summary.completed_today || 0;
-    const total = summary.today_count + completed;
-    return {
-      completed,
-      total,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
-    };
-  }, [summary]);
 
   const handleQuickFilterClick = (id: TimeSection | 'all') => {
     if (id === 'all') {
@@ -93,11 +87,42 @@ export function MyTasksSidebar({
     }
   };
 
+  // Mock task dates for calendar
+  const taskDates = useMemo(() => {
+    const dates: Date[] = [];
+    const today = new Date();
+    // Add some sample dates
+    dates.push(new Date(today.getFullYear(), today.getMonth(), 6));
+    dates.push(new Date(today.getFullYear(), today.getMonth(), 13));
+    dates.push(new Date(today.getFullYear(), today.getMonth(), 20));
+    dates.push(new Date(today.getFullYear(), today.getMonth(), 21));
+    dates.push(new Date(today.getFullYear(), today.getMonth(), 22));
+    dates.push(new Date(today.getFullYear(), today.getMonth(), 23));
+    return dates;
+  }, []);
+
   return (
     <MyTasksSidebarWrapper>
+      {/* Header with collapse toggle */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+        <span className="font-semibold text-slate-900 dark:text-slate-100 uppercase text-xs tracking-wider">
+          My Tasks
+        </span>
+        {onToggleCollapse && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-6 w-6"
+            onClick={onToggleCollapse}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+
       {/* View Switcher */}
-      <div className="flex-shrink-0 p-4 border-b border-[var(--planner-border)]">
-        <div className="flex items-center gap-1 p-1 bg-[var(--planner-bg-secondary)] rounded-lg">
+      <div className="flex-shrink-0 p-3 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
           {[
             { id: 'list' as ViewMode, icon: List, label: 'List' },
             { id: 'board' as ViewMode, icon: LayoutGrid, label: 'Board' },
@@ -107,152 +132,104 @@ export function MyTasksSidebar({
               key={view.id}
               onClick={() => onViewModeChange(view.id)}
               className={cn(
-                'flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-sm font-medium transition-all',
+                'flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-md text-xs font-medium transition-all',
                 viewMode === view.id
-                  ? 'bg-[var(--planner-bg-primary)] text-[var(--planner-text-primary)] shadow-sm'
-                  : 'text-[var(--planner-text-secondary)] hover:text-[var(--planner-text-primary)]'
+                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               )}
             >
               <view.icon className="w-4 h-4" />
-              <span className="hidden lg:inline">{view.label}</span>
+              {view.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Quick Filters */}
-      <div className="flex-shrink-0 p-4 border-b border-[var(--planner-border)]">
-        <h3 className="text-xs font-semibold text-[var(--planner-text-muted)] uppercase tracking-wider mb-3">
-          Quick Filters
-        </h3>
-        <div className="space-y-1">
-          {QUICK_FILTERS.map((filter) => {
-            const isActive = filter.id === 'all' ? !activeSection : activeSection === filter.id;
-            const count = getFilterCount(filter.id);
-            
-            return (
-              <button
-                key={filter.id}
-                onClick={() => handleQuickFilterClick(filter.id)}
-                className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all',
-                  isActive
-                    ? 'bg-[var(--planner-primary-muted)] text-[var(--planner-primary)]'
-                    : 'text-[var(--planner-text-secondary)] hover:bg-[var(--planner-bg-hover)]'
-                )}
-              >
-                <filter.icon 
-                  className="w-4 h-4" 
-                  style={{ color: isActive ? 'var(--planner-primary)' : filter.color }}
-                />
-                <span className="flex-1 text-left">{filter.label}</span>
-                {count > 0 && (
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Time Sections */}
+        <div className="p-3 border-b border-slate-200 dark:border-slate-700">
+          <h3 className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-2">
+            Time Sections
+          </h3>
+          <div className="space-y-0.5">
+            {TIME_SECTIONS.map((section) => {
+              const isActive = section.id === 'all' ? !activeSection : activeSection === section.id;
+              const count = getFilterCount(section.id);
+              
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => handleQuickFilterClick(section.id)}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all',
+                    isActive
+                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                  )}
+                >
+                  <section.icon 
+                    className="w-4 h-4" 
+                    style={{ color: isActive ? undefined : section.color }}
+                  />
+                  <span className="flex-1 text-left">{section.label}</span>
                   <span 
                     className={cn(
-                      'text-xs font-medium px-1.5 py-0.5 rounded-full',
+                      'text-xs font-semibold min-w-[20px] text-center',
                       isActive
-                        ? 'bg-[var(--planner-primary)] text-white'
-                        : 'bg-[var(--planner-bg-secondary)] text-[var(--planner-text-muted)]'
+                        ? 'text-blue-600 dark:text-blue-300'
+                        : 'text-slate-400 dark:text-slate-500'
                     )}
                   >
                     {count}
                   </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Saved Filters */}
-      <div className="flex-shrink-0 p-4 border-b border-[var(--planner-border)]">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-semibold text-[var(--planner-text-muted)] uppercase tracking-wider">
-            Saved Filters
-          </h3>
-          <Button variant="ghost" size="icon" className="h-6 w-6">
-            <Plus className="w-3.5 h-3.5" />
-          </Button>
-        </div>
-        
-        {savedFilters.length === 0 ? (
-          <p className="text-xs text-[var(--planner-text-muted)] italic">
-            No saved filters yet
-          </p>
-        ) : (
-          <div className="space-y-1">
-            {savedFilters.map((filter) => (
-              <div
-                key={filter.id}
-                className="group flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-[var(--planner-bg-hover)] cursor-pointer"
-                onClick={() => onApplySavedFilter(filter.filter_config as FilterConfig)}
-              >
-                <Bookmark className="w-4 h-4 text-[var(--planner-text-muted)]" />
-                <span className="flex-1 text-[var(--planner-text-secondary)] truncate">
-                  {filter.name}
-                </span>
-                {filter.is_default && (
-                  <Star className="w-3.5 h-3.5 text-[var(--planner-warning)] fill-current" />
-                )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteSavedFilter.mutate(filter.id);
-                  }}
-                  className="opacity-0 group-hover:opacity-100 text-[var(--planner-text-muted)] hover:text-[var(--planner-danger)]"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Daily Progress */}
-      <div className="flex-shrink-0 p-4">
-        <h3 className="text-xs font-semibold text-[var(--planner-text-muted)] uppercase tracking-wider mb-3">
-          Today's Progress
-        </h3>
-        <div className="bg-[var(--planner-bg-secondary)] rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-[var(--planner-text-secondary)]">
-              {dailyProgress.completed}/{dailyProgress.total} completed
-            </span>
-            <span className="text-sm font-semibold text-[var(--planner-text-primary)]">
-              {dailyProgress.percentage}%
-            </span>
+        {/* Saved Filters */}
+        <div className="p-3 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center justify-between mb-2 px-2">
+            <h3 className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              Saved Filters
+            </h3>
           </div>
-          <Progress 
-            value={dailyProgress.percentage} 
-            className="h-2 bg-[var(--planner-bg-active)]"
-          />
-          {dailyProgress.total === 0 && (
-            <p className="text-xs text-[var(--planner-text-muted)] mt-2 text-center">
-              No tasks due today
+          
+          {savedFilters.length === 0 ? (
+            <p className="text-xs text-slate-400 dark:text-slate-500 italic px-2">
+              No saved filters yet
             </p>
+          ) : (
+            <div className="space-y-0.5">
+              {savedFilters.slice(0, 3).map((filter) => (
+                <div
+                  key={filter.id}
+                  className="group flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-slate-100 dark:hover:bg-slate-700/50 cursor-pointer"
+                  onClick={() => onApplySavedFilter(filter.filter_config as FilterConfig)}
+                >
+                  <span 
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: '#ef4444' }}
+                  />
+                  <span className="flex-1 text-slate-600 dark:text-slate-300 truncate">
+                    {filter.name}
+                  </span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Spacer */}
-      <div className="flex-1" />
+        {/* Daily Goal */}
+        <div className="p-3 border-b border-slate-200 dark:border-slate-700">
+          <DailyGoal />
+        </div>
 
-      {/* Keyboard Shortcuts Hint */}
-      <div className="flex-shrink-0 p-4 border-t border-[var(--planner-border)]">
-        <div className="text-xs text-[var(--planner-text-muted)] space-y-1">
-          <div className="flex items-center justify-between">
-            <span>Quick add</span>
-            <kbd className="px-1.5 py-0.5 bg-[var(--planner-bg-secondary)] rounded text-[10px]">Q</kbd>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>Search</span>
-            <kbd className="px-1.5 py-0.5 bg-[var(--planner-bg-secondary)] rounded text-[10px]">⌘K</kbd>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>Complete</span>
-            <kbd className="px-1.5 py-0.5 bg-[var(--planner-bg-secondary)] rounded text-[10px]">X</kbd>
-          </div>
+        {/* Mini Calendar */}
+        <div className="p-3">
+          <MiniCalendar taskDates={taskDates} />
         </div>
       </div>
     </MyTasksSidebarWrapper>

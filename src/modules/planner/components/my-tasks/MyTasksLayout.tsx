@@ -1,6 +1,6 @@
 // ============================================================
 // MY TASKS LAYOUT
-// Planner V9: 3-column layout for personal task management
+// Planner V9: Enterprise 3-column layout for personal task management
 // ============================================================
 
 import { ReactNode } from 'react';
@@ -15,39 +15,17 @@ export function MyTasksLayout({ children, className }: MyTasksLayoutProps) {
   return (
     <div 
       className={cn(
-        'my-tasks-module flex h-full min-h-0 w-full',
-        'bg-[var(--planner-bg-secondary)]',
+        'my-tasks-module flex h-full min-h-0 w-full overflow-hidden',
+        'bg-slate-100 dark:bg-slate-900',
         className
       )}
-      style={{
-        // Planner V9 CSS variables
-        '--planner-bg-primary': '#ffffff',
-        '--planner-bg-secondary': '#f8fafc',
-        '--planner-bg-hover': '#f1f5f9',
-        '--planner-bg-active': '#e2e8f0',
-        '--planner-text-primary': '#0f172a',
-        '--planner-text-secondary': '#475569',
-        '--planner-text-muted': '#94a3b8',
-        '--planner-border': '#e2e8f0',
-        '--planner-border-strong': '#cbd5e1',
-        '--planner-primary': '#8b5cf6',
-        '--planner-primary-muted': 'rgba(139, 92, 246, 0.12)',
-        '--planner-success': '#10b981',
-        '--planner-success-muted': 'rgba(16, 185, 129, 0.12)',
-        '--planner-warning': '#f59e0b',
-        '--planner-warning-muted': 'rgba(245, 158, 11, 0.12)',
-        '--planner-danger': '#ef4444',
-        '--planner-danger-muted': 'rgba(239, 68, 68, 0.12)',
-        '--planner-sidebar-width': '280px',
-        '--planner-right-panel-width': '320px',
-      } as React.CSSProperties}
     >
       {children}
     </div>
   );
 }
 
-// Sidebar wrapper
+// Sidebar wrapper (Left)
 interface MyTasksSidebarWrapperProps {
   children: ReactNode;
   className?: string;
@@ -57,18 +35,17 @@ export function MyTasksSidebarWrapper({ children, className }: MyTasksSidebarWra
   return (
     <aside 
       className={cn(
-        'flex-shrink-0 flex flex-col h-full border-r',
-        'bg-[var(--planner-bg-primary)] border-[var(--planner-border)]',
+        'flex-shrink-0 flex flex-col h-full border-r w-[280px]',
+        'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700',
         className
       )}
-      style={{ width: 'var(--planner-sidebar-width)' }}
     >
       {children}
     </aside>
   );
 }
 
-// Main content wrapper
+// Main content wrapper (Center)
 interface MyTasksContentWrapperProps {
   children: ReactNode;
   className?: string;
@@ -79,7 +56,7 @@ export function MyTasksContentWrapper({ children, className }: MyTasksContentWra
     <main 
       className={cn(
         'flex-1 min-w-0 flex flex-col h-full overflow-hidden',
-        'bg-[var(--planner-bg-primary)]',
+        'bg-white dark:bg-slate-900',
         className
       )}
     >
@@ -101,11 +78,10 @@ export function MyTasksRightPanelWrapper({ children, className, isVisible = true
   return (
     <aside 
       className={cn(
-        'flex-shrink-0 flex flex-col h-full border-l overflow-hidden',
-        'bg-[var(--planner-bg-primary)] border-[var(--planner-border)]',
+        'flex-shrink-0 flex flex-col h-full border-l overflow-hidden w-[320px]',
+        'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700',
         className
       )}
-      style={{ width: 'var(--planner-right-panel-width)' }}
     >
       {children}
     </aside>

@@ -1,15 +1,16 @@
 // ============================================================
 // MY TASKS PAGE
-// Planner V9: Personal task management - full page integration
+// Planner V9: Enterprise personal task management - 3-column layout
 // ============================================================
 
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import { PlannerSidebar } from '../components/PlannerSidebar';
 import { 
   MyTasksLayout, 
   MyTasksSidebar, 
   MyTasksContent,
-  MyTasksRightPanelWrapper,
+  MyTasksRightPanel,
 } from '../components/my-tasks';
 import { useMyTasksRealtime } from '../hooks/useMyTasksRealtime';
 import { useMyTasksKeyboard } from '../hooks/useMyTasksKeyboard';
@@ -21,6 +22,9 @@ import type { FilterConfig, TimeSection } from '../types/my-tasks';
 type ViewMode = 'list' | 'board' | 'calendar';
 
 export function MyTasksPage() {
+  // Sidebar state (Planner module sidebar)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
   // View state
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   
@@ -35,6 +39,9 @@ export function MyTasksPage() {
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
+  
+  // Focus mode state
+  const [isFocusModeActive, setIsFocusModeActive] = useState(false);
   
   // Hooks
   useMyTasksRealtime(); // Subscribe to live updates
@@ -80,7 +87,6 @@ export function MyTasksPage() {
   }, []);
 
   const handleBulkComplete = useCallback(() => {
-    // Handled by BulkActionToolbar
     toast.success(`${selectedTasks.size} tasks marked complete`);
     setSelectedTasks(new Set());
   }, [selectedTasks.size]);
@@ -95,11 +101,18 @@ export function MyTasksPage() {
     setDetailTaskId(null);
   }, []);
 
+  // Focus mode
+  const handleToggleFocusMode = useCallback(() => {
+    setIsFocusModeActive(prev => !prev);
+    if (!isFocusModeActive) {
+      toast.info('Focus Mode activated');
+    }
+  }, [isFocusModeActive]);
+
   // Keyboard shortcuts
   useMyTasksKeyboard({
     onQuickAdd: () => setIsCreateModalOpen(true),
     onCommandPalette: () => {
-      // TODO: Open command palette
       toast.info('Command Palette: ⌘K (Coming soon)');
     },
     onClearSelection: handleClearSelection,
@@ -111,46 +124,60 @@ export function MyTasksPage() {
   });
 
   return (
-    <MyTasksLayout>
-      {/* Left Sidebar */}
-      <MyTasksSidebar
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        activeSection={activeSection}
-        onQuickFilter={handleQuickFilter}
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onApplySavedFilter={handleApplySavedFilter}
+    <div className="flex h-full min-h-0 bg-slate-100 dark:bg-slate-900">
+      {/* Planner Module Sidebar (Navigation) */}
+      <PlannerSidebar
+        expanded={!sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
-      {/* Main Content */}
-      <MyTasksContent
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        selectedTasks={selectedTasks}
-        onTaskSelect={handleTaskSelect}
-        onBulkComplete={handleBulkComplete}
-        onClearSelection={handleClearSelection}
-        onOpenCreateModal={() => setIsCreateModalOpen(true)}
-        onOpenTaskDetail={handleOpenTaskDetail}
-      />
-
-      {/* Right Panel - Task Detail */}
-      <MyTasksRightPanelWrapper isVisible={!!detailTaskId}>
-        <TaskDetailDrawer
-          taskId={detailTaskId}
-          open={!!detailTaskId}
-          onClose={handleCloseTaskDetail}
-          onOpenChange={(open) => !open && handleCloseTaskDetail()}
+      {/* My Tasks Module - 3 Column Layout */}
+      <MyTasksLayout>
+        {/* Left Sidebar (Time Sections & Filters) */}
+        <MyTasksSidebar
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          activeSection={activeSection}
+          onQuickFilter={handleQuickFilter}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onApplySavedFilter={handleApplySavedFilter}
         />
-      </MyTasksRightPanelWrapper>
+
+        {/* Main Content */}
+        <MyTasksContent
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          selectedTasks={selectedTasks}
+          onTaskSelect={handleTaskSelect}
+          onBulkComplete={handleBulkComplete}
+          onClearSelection={handleClearSelection}
+          onOpenCreateModal={() => setIsCreateModalOpen(true)}
+          onOpenTaskDetail={handleOpenTaskDetail}
+          onToggleFocusMode={handleToggleFocusMode}
+          isFocusModeActive={isFocusModeActive}
+        />
+
+        {/* Right Panel - Productivity Widgets */}
+        {!detailTaskId && <MyTasksRightPanel />}
+
+        {/* Right Panel - Task Detail (when viewing a task) */}
+        {detailTaskId && (
+          <TaskDetailDrawer
+            taskId={detailTaskId}
+            open={!!detailTaskId}
+            onClose={handleCloseTaskDetail}
+            onOpenChange={(open) => !open && handleCloseTaskDetail()}
+          />
+        )}
+      </MyTasksLayout>
 
       {/* Create Task Modal */}
       <CreateTaskModal
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
       />
-    </MyTasksLayout>
+    </div>
   );
 }
 
