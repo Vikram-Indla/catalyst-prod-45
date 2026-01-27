@@ -4,11 +4,11 @@
 // CRITICAL FIX: Shows task TITLE (not assignee name)
 // ============================================================
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import type { PlannerTask } from '../types';
+import type { PlannerTask, GroupByOption } from '../types';
 import { motion } from 'framer-motion';
 import { 
   startOfMonth, 
@@ -30,6 +30,10 @@ import { QuickAddPopover } from './calendar/QuickAddPopover';
 import { useRescheduleTask } from '../hooks/useRescheduleTask';
 import { useCalendarTasksRealtime } from '../hooks/useCalendarTasksRealtime';
 import { PlannerViewHeader } from './shared/PlannerViewHeader';
+import { PlannerSearchBar } from './PlannerSearchBar';
+import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
+import { usePlannerUsers } from '../hooks/usePlannerUsers';
+import { usePlannerSearch } from '../hooks/usePlannerSearch';
 
 interface PlannerCalendarProps {
   tasks: PlannerTask[];
@@ -46,6 +50,31 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   const [view, setView] = useState<CalendarViewType>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [quickAddDate, setQuickAddDate] = useState<Date | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Local state for filters
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
+
+  // Data hooks
+  const { data: teams = [] } = usePlannerWorkstreams();
+  const { data: users = [] } = usePlannerUsers();
+
+  // Search and filter
+  const {
+    filters,
+    filteredTasks,
+    setSearch,
+    setStatusFilter,
+    setPriorityFilter,
+    setAssigneeFilter,
+    setBlockedFilter,
+    setOverdueFilter,
+    clearFilters,
+    hasActiveFilters,
+    totalCount,
+    filteredCount,
+  } = usePlannerSearch(tasks);
 
   const rescheduleTask = useRescheduleTask();
 
@@ -75,11 +104,11 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   // Real-time subscription
   useCalendarTasksRealtime({ startDate, endDate });
 
-  // Group tasks by date
+  // Group filtered tasks by date
   const tasksByDate = useMemo(() => {
     const map = new Map<string, PlannerTask[]>();
     
-    tasks.forEach(task => {
+    filteredTasks.forEach(task => {
       if (task.dueDate) {
         const dateKey = format(new Date(task.dueDate), 'yyyy-MM-dd');
         const existing = map.get(dateKey) || [];
@@ -88,7 +117,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
     });
 
     return map;
-  }, [tasks]);
+  }, [filteredTasks]);
 
   // Get unique workstreams for legend
   const workstreams = useMemo(() => {
@@ -186,6 +215,29 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
             </div>
           </div>
         }
+      />
+
+      {/* Filter Bar - positioned below header */}
+      <PlannerSearchBar
+        filters={filters}
+        onSearchChange={setSearch}
+        onStatusChange={setStatusFilter}
+        onPriorityChange={setPriorityFilter}
+        onAssigneeChange={setAssigneeFilter}
+        onBlockedChange={setBlockedFilter}
+        onOverdueChange={setOverdueFilter}
+        onClearFilters={clearFilters}
+        hasActiveFilters={hasActiveFilters}
+        filteredCount={filteredCount}
+        totalCount={totalCount}
+        inputRef={searchInputRef}
+        teams={teams}
+        users={users}
+        selectedTeamId={selectedTeamId}
+        onTeamChange={setSelectedTeamId}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
+        showColumnsButton={false}
       />
 
       <div className="flex-1 flex overflow-hidden">

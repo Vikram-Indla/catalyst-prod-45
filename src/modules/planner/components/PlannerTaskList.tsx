@@ -4,7 +4,7 @@
 // Catalyst V5 semantic colors with priority-based styling
 // ============================================================
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { 
   ArrowUpDown, 
   Lock, 
@@ -21,12 +21,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { PlannerTask, TaskStatus, TaskPriority } from '../types';
+import type { PlannerTask, TaskStatus, TaskPriority, GroupByOption } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG, STATUS_STYLE_CONFIG } from '../types';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { PlannerViewHeader } from './shared/PlannerViewHeader';
+import { PlannerSearchBar } from './PlannerSearchBar';
+import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
+import { usePlannerUsers } from '../hooks/usePlannerUsers';
+import { usePlannerTasks } from '../hooks/usePlannerTasks';
+import { usePlannerSearch } from '../hooks/usePlannerSearch';
 
 interface PlannerTaskListProps {
   tasks: PlannerTask[];
@@ -71,6 +76,31 @@ export function PlannerTaskList({
 }: PlannerTaskListProps) {
   const [sortField, setSortField] = useState<SortField>('priority');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Local state for filters
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
+
+  // Data hooks
+  const { data: teams = [] } = usePlannerWorkstreams();
+  const { data: users = [] } = usePlannerUsers();
+
+  // Search and filter - use the passed tasks
+  const {
+    filters,
+    filteredTasks,
+    setSearch,
+    setStatusFilter,
+    setPriorityFilter,
+    setAssigneeFilter,
+    setBlockedFilter,
+    setOverdueFilter,
+    clearFilters,
+    hasActiveFilters,
+    totalCount,
+    filteredCount,
+  } = usePlannerSearch(tasks);
 
   // Priority order for sorting
   const priorityOrder: Record<TaskPriority, number> = {
@@ -80,9 +110,9 @@ export function PlannerTaskList({
     low: 3,
   };
 
-  // Sorted tasks
+  // Sorted tasks - use filteredTasks from hook
   const sortedTasks = useMemo(() => {
-    return [...tasks].sort((a, b) => {
+    return [...filteredTasks].sort((a, b) => {
       let comparison = 0;
 
       switch (sortField) {
@@ -121,7 +151,7 @@ export function PlannerTaskList({
 
       return sortDirection === 'asc' ? comparison : -comparison;
     });
-  }, [tasks, sortField, sortDirection]);
+  }, [filteredTasks, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -195,7 +225,31 @@ export function PlannerTaskList({
       <PlannerViewHeader
         icon={List}
         title="Task List"
-        subtitle={`${tasks.length} tasks with sortable columns`}
+        subtitle={`${filteredCount} of ${totalCount} tasks`}
+      />
+
+      {/* Filter Bar - positioned below header */}
+      <PlannerSearchBar
+        filters={filters}
+        onSearchChange={setSearch}
+        onStatusChange={setStatusFilter}
+        onPriorityChange={setPriorityFilter}
+        onAssigneeChange={setAssigneeFilter}
+        onBlockedChange={setBlockedFilter}
+        onOverdueChange={setOverdueFilter}
+        onClearFilters={clearFilters}
+        hasActiveFilters={hasActiveFilters}
+        filteredCount={filteredCount}
+        totalCount={totalCount}
+        inputRef={searchInputRef}
+        teams={teams}
+        users={users}
+        selectedTeamId={selectedTeamId}
+        onTeamChange={setSelectedTeamId}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
+        visibleColumns={visibleColumns}
+        showColumnsButton={true}
       />
 
       {/* Table */}

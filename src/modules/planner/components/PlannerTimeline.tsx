@@ -3,17 +3,21 @@
 // Clean white bars with workstream-based color stripes
 // ============================================================
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { ChevronLeft, ChevronRight, CalendarDays, GanttChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import type { PlannerTask } from '../types';
+import type { PlannerTask, GroupByOption } from '../types';
 import { motion } from 'framer-motion';
 import { addDays, startOfWeek, format, differenceInDays, isToday, isWeekend } from 'date-fns';
 import { GanttBarEnterprise } from './timeline/GanttBarEnterprise';
 import { TimelineTaskRow } from './timeline/TimelineTaskRow';
 import { TodayLine } from './timeline/TodayLine';
 import { PlannerViewHeader } from './shared/PlannerViewHeader';
+import { PlannerSearchBar } from './PlannerSearchBar';
+import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
+import { usePlannerUsers } from '../hooks/usePlannerUsers';
+import { usePlannerSearch } from '../hooks/usePlannerSearch';
 
 interface PlannerTimelineProps {
   tasks: PlannerTask[];
@@ -27,6 +31,31 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   const [viewStart, setViewStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 0 }));
   const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Local state for filters
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
+
+  // Data hooks
+  const { data: teams = [] } = usePlannerWorkstreams();
+  const { data: users = [] } = usePlannerUsers();
+
+  // Search and filter
+  const {
+    filters,
+    filteredTasks,
+    setSearch,
+    setStatusFilter,
+    setPriorityFilter,
+    setAssigneeFilter,
+    setBlockedFilter,
+    setOverdueFilter,
+    clearFilters,
+    hasActiveFilters,
+    totalCount,
+    filteredCount,
+  } = usePlannerSearch(tasks);
 
   // Generate date columns based on zoom level
   const dateColumns = useMemo(() => {
@@ -118,6 +147,29 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
         }
       />
 
+      {/* Filter Bar - positioned below header */}
+      <PlannerSearchBar
+        filters={filters}
+        onSearchChange={setSearch}
+        onStatusChange={setStatusFilter}
+        onPriorityChange={setPriorityFilter}
+        onAssigneeChange={setAssigneeFilter}
+        onBlockedChange={setBlockedFilter}
+        onOverdueChange={setOverdueFilter}
+        onClearFilters={clearFilters}
+        hasActiveFilters={hasActiveFilters}
+        filteredCount={filteredCount}
+        totalCount={totalCount}
+        inputRef={searchInputRef}
+        teams={teams}
+        users={users}
+        selectedTeamId={selectedTeamId}
+        onTeamChange={setSelectedTeamId}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
+        showColumnsButton={false}
+      />
+
       {/* Timeline Content */}
       <div className="flex-1 overflow-auto">
         <div className="flex min-h-full">
@@ -125,11 +177,11 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
           <div className="w-[320px] flex-shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
             <div className="h-10 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 flex items-center px-3 sticky top-0 z-10">
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                Tasks ({tasks.length})
+                Tasks ({filteredTasks.length})
               </span>
             </div>
             <div>
-              {tasks.map((task) => (
+              {filteredTasks.map((task) => (
                 <TimelineTaskRow
                   key={task.id}
                   task={task}
@@ -207,7 +259,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
               {showTodayLine && <TodayLine position={todayPosition} />}
 
               {/* Task Bars */}
-              {tasks.map((task, index) => {
+              {filteredTasks.map((task, index) => {
                 const bar = getTaskBar(task);
                 const isHovered = hoveredTaskId === task.id;
 
@@ -238,7 +290,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
         </div>
       </div>
 
-      {tasks.length === 0 && (
+      {filteredTasks.length === 0 && (
         <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400">
           <div className="text-center">
             <CalendarDays className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />

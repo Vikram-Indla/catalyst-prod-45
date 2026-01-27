@@ -547,8 +547,8 @@ export function PlannerPage() {
           </div>
         )}
 
-        {/* Search Bar - hidden on dashboard/boards/teams/settings/insight views (boards has its own integrated filter bar) */}
-        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
+        {/* Search Bar - hidden on views that have their own integrated filter bars */}
+        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
           <PlannerSearchBar
             filters={filters}
             onSearchChange={setSearch}
@@ -571,7 +571,7 @@ export function PlannerPage() {
             onCreateTeam={() => setIsCreateTeamModalOpen(true)}
             visibleColumns={visibleColumns}
             onToggleColumn={toggleColumn}
-            showColumnsButton={activeView === 'task-list'}
+            showColumnsButton={false}
           />
         )}
 
