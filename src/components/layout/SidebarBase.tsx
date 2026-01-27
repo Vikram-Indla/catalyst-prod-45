@@ -28,6 +28,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface SidebarMenuItem {
   id: string;
@@ -84,6 +85,7 @@ export function SidebarBase({
   const location = useLocation();
   const navigate = useNavigate();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { isDark } = useTheme();
 
   const isActive = (path: string, exact: boolean = false) => {
     if (exact) return location.pathname === path;
@@ -301,34 +303,20 @@ function renderMenuItem(
   const menuButton = (
     <button
       onClick={() => handleNavigation(item.path)}
-      className="group"
+      className={cn(
+        "group w-full flex items-center rounded-lg border-none cursor-pointer transition-all relative",
+        expanded ? "px-3 justify-start" : "justify-center",
+        active 
+          ? "bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 font-semibold" 
+          : "bg-transparent text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-medium"
+      )}
       style={{
-        width: '100%',
-        height: '44px', // 44px = h-11 for proper touch targets
-        padding: expanded ? '0 12px' : '0',
-        display: 'flex',
-        alignItems: 'center',
+        height: '44px',
         gap: '10px',
-        borderRadius: '8px', // rounded-lg
-        border: 'none',
-        cursor: 'pointer',
-        transition: 'background 0.15s ease, color 0.15s ease',
         marginBottom: '2px',
-        position: 'relative',
-        justifyContent: expanded ? 'flex-start' : 'center',
-        /* V9.5: Very light blue background on active (#EFF6FF), AAA contrast text */
-        background: active ? '#EFF6FF' : 'transparent',
-        color: active ? '#2563EB' : 'var(--nav-text-primary, #18181B)',
-        fontWeight: active ? 600 : 500,
         fontSize: '13px',
         fontFamily: 'inherit',
         outline: 'none',
-      }}
-      onMouseEnter={(e) => { 
-        if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
-      }}
-      onMouseLeave={(e) => { 
-        e.currentTarget.style.background = active ? '#EFF6FF' : 'transparent'; 
       }}
     >
       {/* Left Accent Bar — Linear/Notion pattern (3px bar, not full background) */}
