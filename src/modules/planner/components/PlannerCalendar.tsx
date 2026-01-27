@@ -5,7 +5,9 @@
 // ============================================================
 
 import { useState, useMemo } from 'react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import type { PlannerTask } from '../types';
 import { motion } from 'framer-motion';
 import { 
@@ -23,10 +25,11 @@ import {
   addWeeks,
   subWeeks,
 } from 'date-fns';
-import { CalendarHeader, CalendarCell, CalendarLegend } from './calendar';
+import { CalendarCell, CalendarLegend } from './calendar';
 import { QuickAddPopover } from './calendar/QuickAddPopover';
 import { useRescheduleTask } from '../hooks/useRescheduleTask';
 import { useCalendarTasksRealtime } from '../hooks/useCalendarTasksRealtime';
+import { PlannerViewHeader } from './shared/PlannerViewHeader';
 
 interface PlannerCalendarProps {
   tasks: PlannerTask[];
@@ -129,15 +132,60 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
     ? tasksByDate.get(format(selectedDate, 'yyyy-MM-dd')) || []
     : [];
 
+  const title = view === 'month' 
+    ? format(currentDate, 'MMMM yyyy')
+    : `Week of ${format(currentDate, 'MMM d, yyyy')}`;
+
   return (
-    <div className="h-full flex flex-col bg-surface-0">
-      <CalendarHeader
-        currentDate={currentDate}
-        view={view}
-        onViewChange={setView}
-        onPrevPeriod={() => navigatePeriod('prev')}
-        onNextPeriod={() => navigatePeriod('next')}
-        onToday={goToToday}
+    <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-900">
+      {/* V9 Header */}
+      <PlannerViewHeader
+        icon={CalendarIcon}
+        title="Calendar"
+        subtitle={title}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={goToToday}>
+              Today
+            </Button>
+            {/* View Toggle */}
+            <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-0.5">
+              <button
+                onClick={() => setView('month')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
+                  view === 'month'
+                    ? "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                )}
+              >
+                <CalendarIcon className="w-4 h-4" />
+                Month
+              </button>
+              <button
+                onClick={() => setView('week')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
+                  view === 'week'
+                    ? "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                )}
+              >
+                <CalendarDays className="w-4 h-4" />
+                Week
+              </button>
+            </div>
+            {/* Navigation */}
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" onClick={() => navigatePeriod('prev')}>
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => navigatePeriod('next')}>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        }
       />
 
       <div className="flex-1 flex overflow-hidden">

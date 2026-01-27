@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays, GanttChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { PlannerTask } from '../types';
@@ -13,6 +13,7 @@ import { addDays, startOfWeek, format, differenceInDays, isToday, isWeekend } fr
 import { GanttBarEnterprise } from './timeline/GanttBarEnterprise';
 import { TimelineTaskRow } from './timeline/TimelineTaskRow';
 import { TodayLine } from './timeline/TodayLine';
+import { PlannerViewHeader } from './shared/PlannerViewHeader';
 
 interface PlannerTimelineProps {
   tasks: PlannerTask[];
@@ -74,44 +75,48 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-gray-950">
-      {/* Header Controls */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={goToToday}>
-            <CalendarDays className="w-4 h-4 mr-2" />
-            Today
-          </Button>
-          <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900">
-            <Button variant="ghost" size="sm" onClick={() => navigateView('prev')}>
-              <ChevronLeft className="w-4 h-4" />
+    <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-900">
+      {/* V9 Header */}
+      <PlannerViewHeader
+        icon={GanttChart}
+        title="Timeline"
+        subtitle="Gantt chart view with task dependencies"
+        actions={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={goToToday}>
+              <CalendarDays className="w-4 h-4 mr-2" />
+              Today
             </Button>
-            <span className="px-3 text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[140px] text-center">
-              {format(viewStart, 'MMM d')} - {format(addDays(viewStart, dateColumns.length - 1), 'MMM d, yyyy')}
-            </span>
-            <Button variant="ghost" size="sm" onClick={() => navigateView('next')}>
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+            <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900">
+              <Button variant="ghost" size="sm" onClick={() => navigateView('prev')}>
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <span className="px-3 text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[140px] text-center">
+                {format(viewStart, 'MMM d')} - {format(addDays(viewStart, dateColumns.length - 1), 'MMM d, yyyy')}
+              </span>
+              <Button variant="ghost" size="sm" onClick={() => navigateView('next')}>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-md p-0.5">
+              {(['day', 'week', 'month'] as const).map(level => (
+                <button
+                  key={level}
+                  onClick={() => setZoomLevel(level)}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-medium rounded transition-colors capitalize",
+                    zoomLevel === level 
+                      ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm" 
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                  )}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-md p-0.5">
-          {(['day', 'week', 'month'] as const).map(level => (
-            <button
-              key={level}
-              onClick={() => setZoomLevel(level)}
-              className={cn(
-                "px-3 py-1.5 text-xs font-medium rounded transition-colors capitalize",
-                zoomLevel === level 
-                  ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm" 
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              )}
-            >
-              {level}
-            </button>
-          ))}
-        </div>
-      </div>
+        }
+      />
 
       {/* Timeline Content */}
       <div className="flex-1 overflow-auto">
