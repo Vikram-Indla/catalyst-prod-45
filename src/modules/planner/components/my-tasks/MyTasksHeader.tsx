@@ -1,20 +1,15 @@
 // ============================================================
 // MY TASKS HEADER
-// Planner V9: Stats chips header with actions
+// Per Justification Matrix:
+// KEPT: Title, Overdue/Today/Done counts, Add Task button, 
+//       Search input, Workstream dropdown, Status dropdown
+// DELETED: Focus Mode button (consumer gimmick)
 // ============================================================
 
-import { useState } from 'react';
-import { Focus, Plus, MoreVertical, Search } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
@@ -23,25 +18,24 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useMyTasksSummary } from '../../hooks/useMyTasks';
+import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import type { FilterConfig } from '../../types/my-tasks';
 
 interface MyTasksHeaderProps {
   filters: FilterConfig;
   onFilterChange: (filters: Partial<FilterConfig>) => void;
   onOpenCreateModal: () => void;
-  onToggleFocusMode: () => void;
-  isFocusModeActive?: boolean;
 }
 
 export function MyTasksHeader({
   filters,
   onFilterChange,
   onOpenCreateModal,
-  onToggleFocusMode,
-  isFocusModeActive = false,
 }: MyTasksHeaderProps) {
   const { data: summary, isLoading } = useMyTasksSummary();
+  const { data: workstreams = [] } = usePlannerWorkstreams();
 
+  // Stats chips per justification: Overdue, Today, Done
   const statsChips = [
     { 
       label: 'Overdue', 
@@ -65,13 +59,13 @@ export function MyTasksHeader({
 
   return (
     <div className="flex-shrink-0 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-      {/* Top Row - Title and Stats */}
+      {/* Top Row - Title, Stats, Add Task */}
       <div className="flex items-center gap-4 px-6 py-4">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
           My Tasks
         </h1>
 
-        {/* Stats Chips */}
+        {/* Stats Chips - Overdue, Today, Done */}
         <div className="flex items-center gap-2">
           {statsChips.map((stat) => (
             <div
@@ -86,7 +80,7 @@ export function MyTasksHeader({
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: stat.color }}
               />
-              <span>{isLoading ? '...' : stat.value}</span>
+              <span className="font-semibold">{isLoading ? '...' : stat.value}</span>
               <span className="text-xs opacity-75">{stat.label}</span>
             </div>
           ))}
@@ -94,19 +88,7 @@ export function MyTasksHeader({
 
         <div className="flex-1" />
 
-        {/* Actions */}
-        <Button
-          variant={isFocusModeActive ? "default" : "outline"}
-          className={cn(
-            'gap-2',
-            isFocusModeActive && 'bg-slate-900 text-white hover:bg-slate-800'
-          )}
-          onClick={onToggleFocusMode}
-        >
-          <Focus className="w-4 h-4" />
-          Focus Mode
-        </Button>
-
+        {/* Add Task Button */}
         <Button 
           className="gap-2 bg-orange-500 hover:bg-orange-600"
           onClick={onOpenCreateModal}
@@ -114,24 +96,11 @@ export function MyTasksHeader({
           <Plus className="w-4 h-4" />
           Add Task
         </Button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Export Tasks</DropdownMenuItem>
-            <DropdownMenuItem>Print View</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
-      {/* Bottom Row - Search and Filters */}
+      {/* Bottom Row - Search, Status, Workstream */}
       <div className="flex items-center gap-3 px-6 py-3 bg-slate-50 dark:bg-slate-800/50">
-        {/* Search */}
+        {/* Search Input */}
         <div className="relative w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <Input
@@ -141,14 +110,29 @@ export function MyTasksHeader({
             onChange={(e) => onFilterChange({ searchQuery: e.target.value || undefined })}
             className="pl-9 h-9 bg-white dark:bg-slate-800"
           />
-          {filters.searchQuery && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-              ⌘K
-            </span>
-          )}
         </div>
 
-        {/* Status Filter */}
+        {/* Workstream Dropdown */}
+        <Select 
+          value={filters.workstreams?.[0] || 'all'}
+          onValueChange={(value) => onFilterChange({ 
+            workstreams: value === 'all' ? undefined : [value] 
+          })}
+        >
+          <SelectTrigger className="w-40 h-9 bg-white dark:bg-slate-800">
+            <SelectValue placeholder="All Workstreams" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Workstreams</SelectItem>
+            {workstreams.map((ws) => (
+              <SelectItem key={ws.id} value={ws.id}>
+                {ws.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Status Dropdown */}
         <Select 
           value={filters.statuses?.[0] || 'all'}
           onValueChange={(value) => onFilterChange({ 
@@ -168,59 +152,18 @@ export function MyTasksHeader({
           </SelectContent>
         </Select>
 
-        {/* Priority Filter */}
-        <Select 
-          value={filters.priorities?.[0] || 'all'}
-          onValueChange={(value) => onFilterChange({ 
-            priorities: value === 'all' ? undefined : [value as any] 
-          })}
-        >
-          <SelectTrigger className="w-32 h-9 bg-white dark:bg-slate-800">
-            <SelectValue placeholder="All Priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Priority</SelectItem>
-            <SelectItem value="critical">Critical</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Workstream Filter */}
-        <Select 
-          value={filters.workstreams?.[0] || 'all'}
-          onValueChange={(value) => onFilterChange({ 
-            workstreams: value === 'all' ? undefined : [value] 
-          })}
-        >
-          <SelectTrigger className="w-40 h-9 bg-white dark:bg-slate-800">
-            <SelectValue placeholder="All Workstreams" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Workstreams</SelectItem>
-            <SelectItem value="senaie">Senaie</SelectItem>
-            <SelectItem value="catalyst">Catalyst</SelectItem>
-            <SelectItem value="tahommona">Tahommona</SelectItem>
-            <SelectItem value="delivery">Delivery</SelectItem>
-            <SelectItem value="mim">MIM</SelectItem>
-            <SelectItem value="standalone">Stand-Alone</SelectItem>
-            <SelectItem value="dataai">Data & AI</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Active Filters Count */}
-        {(filters.statuses || filters.priorities || filters.workstreams) && (
+        {/* Clear Filters */}
+        {(filters.statuses || filters.workstreams || filters.searchQuery) && (
           <Badge 
             variant="secondary" 
             className="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700"
             onClick={() => onFilterChange({ 
               statuses: undefined, 
-              priorities: undefined, 
-              workstreams: undefined 
+              workstreams: undefined,
+              searchQuery: undefined,
             })}
           >
-            Clear filters ×
+            Clear ×
           </Badge>
         )}
       </div>
