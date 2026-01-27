@@ -16,8 +16,12 @@ import { useMyTasksRealtime } from '../hooks/useMyTasksRealtime';
 import { useMyTasksKeyboard } from '../hooks/useMyTasksKeyboard';
 import { useCompleteMyTask } from '../hooks/useMyTasks';
 import { TaskDetailDrawer } from '../components/TaskDetailDrawer/TaskDetailDrawer';
-import { CreateTaskModal } from '../components/kanban';
+import { PlannerCreateModal } from '../components/PlannerCreateModal';
+import { useCreatePlannerTask } from '../hooks/useCreatePlannerTask';
+import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
+import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import type { FilterConfig, TimeSection } from '../types/my-tasks';
+import type { TaskStatus, TaskPriority } from '../types';
 
 type ViewMode = 'list' | 'board' | 'calendar';
 
@@ -46,6 +50,39 @@ export function MyTasksPage() {
   // Hooks
   useMyTasksRealtime(); // Subscribe to live updates
   const completeTask = useCompleteMyTask();
+  const createTask = useCreatePlannerTask();
+  const { data: teams = [] } = usePlannerWorkstreams();
+  const { data: users = [] } = usePlannerUsers();
+
+  // Handler for creating task from modal
+  const handleCreateTask = useCallback((data: {
+    title: string;
+    description?: string;
+    status: TaskStatus;
+    priority: TaskPriority;
+    assigneeId?: string;
+    teamId?: string;
+    linkedWorkItemId?: string;
+    linkedWorkItemType?: 'story' | 'feature' | 'epic' | 'business_request';
+    startDate?: string;
+    dueDate?: string;
+  }) => {
+    const assignee = users.find(u => u.id === data.assigneeId);
+    
+    createTask.mutate({
+      title: data.title,
+      description: data.description,
+      status: data.status,
+      priority: data.priority,
+      assigneeId: data.assigneeId,
+      assigneeName: assignee?.name,
+      dueDate: data.dueDate,
+      startDate: data.startDate,
+      linkedWorkItemId: data.linkedWorkItemId,
+      linkedWorkItemType: data.linkedWorkItemType,
+      teamId: data.teamId,
+    });
+  }, [createTask, users]);
 
   // Filter handlers
   const handleFilterChange = useCallback((newFilters: Partial<FilterConfig>) => {
@@ -173,9 +210,13 @@ export function MyTasksPage() {
       </MyTasksLayout>
 
       {/* Create Task Modal */}
-      <CreateTaskModal
-        open={isCreateModalOpen}
-        onOpenChange={setIsCreateModalOpen}
+      <PlannerCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={handleCreateTask}
+        defaultStatus="backlog"
+        users={users}
+        teams={teams}
       />
     </div>
   );
