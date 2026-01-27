@@ -1,7 +1,6 @@
 // ============================================================
-// MY TASKS LAYOUT
-// Planner V9: Single-column focused personal task view
-// Per justification matrix: No sidebar, no right panel
+// MY TASKS LAYOUT - V8 Design System (Budget Planner Aligned)
+// Simplified wrapper - main styling handled by PageChrome
 // ============================================================
 
 import { ReactNode } from 'react';
@@ -16,8 +15,7 @@ export function MyTasksLayout({ children, className }: MyTasksLayoutProps) {
   return (
     <div 
       className={cn(
-        'my-tasks-module flex h-full min-h-0 w-full overflow-hidden',
-        'bg-slate-50 dark:bg-slate-900',
+        'my-tasks-module flex-1 flex flex-col h-full min-h-0 min-w-0 overflow-hidden',
         className
       )}
     >
@@ -37,7 +35,6 @@ export function MyTasksContentWrapper({ children, className }: MyTasksContentWra
     <main 
       className={cn(
         'flex-1 min-w-0 flex flex-col h-full overflow-hidden',
-        'bg-slate-50 dark:bg-slate-900',
         className
       )}
     >

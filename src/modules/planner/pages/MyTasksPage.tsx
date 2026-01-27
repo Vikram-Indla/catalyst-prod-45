@@ -1,14 +1,12 @@
 // ============================================================
-// MY TASKS PAGE
-// Per Justification Matrix:
-// - Single column layout (no sidebar, no right panel)
-// - Planner sidebar for navigation only
-// - Task detail via drawer
+// MY TASKS PAGE - V8 Design System (Budget Planner Aligned)
+// Uses PageChrome + Budget Planner header styling
 // ============================================================
 
 import { useState, useCallback } from 'react';
+import { PageChrome } from '@/components/layout/PageChrome';
 import { PlannerSidebar } from '../components/PlannerSidebar';
-import { MyTasksLayout, MyTasksContent } from '../components/my-tasks';
+import { MyTasksContent } from '../components/my-tasks';
 import { useMyTasksRealtime } from '../hooks/useMyTasksRealtime';
 import { TaskDetailDrawer } from '../components/TaskDetailDrawer/TaskDetailDrawer';
 import { PlannerCreateModal } from '../components/PlannerCreateModal';
@@ -80,22 +78,25 @@ export function MyTasksPage() {
   }, []);
 
   return (
-    <div className="flex h-full min-h-0 bg-slate-100 dark:bg-slate-900">
+    <div className="flex h-full min-h-0">
       {/* Planner Sidebar (Navigation) */}
       <PlannerSidebar
         expanded={!sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
-      {/* My Tasks - Single Column Content */}
-      <MyTasksLayout>
-        <MyTasksContent
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onOpenCreateModal={() => setIsCreateModalOpen(true)}
-          onOpenTaskDetail={handleOpenTaskDetail}
-        />
-      </MyTasksLayout>
+      {/* Main Content with PageChrome */}
+      <PageChrome hideHeader>
+        <div className="flex flex-col h-full bg-[hsl(var(--background))]">
+          {/* My Tasks Content - Budget Planner Aligned */}
+          <MyTasksContent
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onOpenCreateModal={() => setIsCreateModalOpen(true)}
+            onOpenTaskDetail={handleOpenTaskDetail}
+          />
+        </div>
+      </PageChrome>
 
       {/* Task Detail Drawer */}
       {detailTaskId && (
