@@ -186,7 +186,7 @@ export function CatalystHeader() {
           style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          {/* Convergence Hub Logo — 32×32 per commercial spec */}
+          {/* Convergence Hub Logo — 32×32 per commercial spec, theme-aware */}
           <svg 
             className="w-8 h-8 flex-shrink-0" 
             viewBox="0 0 100 100" 
@@ -194,15 +194,15 @@ export function CatalystHeader() {
           >
             <defs>
               <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6"/>
-                <stop offset="100%" stopColor="#1d4ed8"/>
+                <stop offset="0%" stopColor={isDark ? "#60a5fa" : "#3b82f6"}/>
+                <stop offset="100%" stopColor={isDark ? "#3b82f6" : "#1d4ed8"}/>
               </linearGradient>
             </defs>
             {/* Connection lines */}
-            <line x1="50" y1="50" x2="22" y2="22" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="78" y2="22" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="22" y2="78" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="78" y2="78" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="22" y2="22" stroke={isDark ? "#60a5fa" : "#93c5fd"} strokeWidth="5" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="78" y2="22" stroke={isDark ? "#60a5fa" : "#93c5fd"} strokeWidth="5" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="22" y2="78" stroke={isDark ? "#60a5fa" : "#93c5fd"} strokeWidth="5" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="78" y2="78" stroke={isDark ? "#60a5fa" : "#93c5fd"} strokeWidth="5" strokeLinecap="round"/>
             {/* Outer nodes */}
             <circle cx="22" cy="22" r="12" fill="url(#logoGrad)"/>
             <circle cx="78" cy="22" r="12" fill="url(#logoGrad)"/>
@@ -210,7 +210,7 @@ export function CatalystHeader() {
             <circle cx="78" cy="78" r="12" fill="url(#logoGrad)"/>
             {/* Center hub */}
             <circle cx="50" cy="50" r="18" fill="url(#logoGrad)"/>
-            <circle cx="50" cy="50" r="9" fill="white"/>
+            <circle cx="50" cy="50" r="9" fill={isDark ? "#0f172a" : "white"}/>
           </svg>
           {/* Wordmark — BOLD 18px (commercial SaaS spec) */}
           <span 
@@ -267,13 +267,13 @@ export function CatalystHeader() {
               const isActive = item.label === activeNavItem;
               
               // TopNav item styles — COMMERCIAL SAAS (bold contrast, larger targets)
-              // Dark text (#27272A) for nav items, blue for active — per spec
+              // Theme-aware colors using CSS variables
               const navButtonStyle: React.CSSProperties = {
                 height: '36px',
                 padding: '0 14px',
                 fontSize: '14px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#2563EB' : '#27272A', // Dark gray, NOT washed out
+                color: isActive ? '#2563EB' : 'var(--nav-text)',
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
@@ -281,7 +281,7 @@ export function CatalystHeader() {
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
                 border: 'none',
-                background: isActive ? '#EFF6FF' : 'transparent', // Light blue bg for active
+                background: isActive ? 'var(--nav-active-bg)' : 'transparent',
                 position: 'relative' as const,
                 fontFamily: 'inherit',
                 outline: 'none',
