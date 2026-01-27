@@ -424,28 +424,70 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                             })}
                           </div>
 
-                          {/* Gantt Bar - thin line style */}
+                          {/* Gantt Bar - thin line with labels */}
                           {barStyle.isVisible && (
                             <div
-                              className="absolute rounded-full cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-all hover:scale-y-125"
+                              className="absolute cursor-pointer group/bar"
                               style={{
                                 left: Math.max(4, barStyle.left),
                                 width: Math.max(100, barStyle.width),
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                height: 8,
-                                backgroundColor: colors.bar,
+                                top: 0,
+                                bottom: 0,
                               }}
                               onClick={() => onTaskClick(task)}
                             >
-                              {/* Progress Fill */}
+                              {/* Task Key + Status - above bar */}
+                              <div className="absolute left-0 top-1 flex items-center gap-1.5">
+                                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 font-mono">
+                                  {task.key}
+                                </span>
+                                <span 
+                                  className="text-[9px] font-semibold px-1.5 py-0.5 rounded-sm"
+                                  style={{
+                                    backgroundColor: `${colors.bar}20`,
+                                    color: colors.bar,
+                                  }}
+                                >
+                                  {task.status?.replace(/-/g, ' ').toUpperCase() || 'BACKLOG'}
+                                </span>
+                              </div>
+                              
+                              {/* Thin Bar */}
                               <div
-                                className="absolute inset-y-0 left-0 rounded-l-full opacity-40"
+                                className="absolute rounded-full overflow-hidden shadow-sm group-hover/bar:shadow-md transition-all group-hover/bar:scale-y-150"
                                 style={{
-                                  width: `${progress}%`,
-                                  backgroundColor: '#fff',
+                                  left: 0,
+                                  right: 0,
+                                  top: '50%',
+                                  transform: 'translateY(-50%)',
+                                  height: 6,
+                                  backgroundColor: colors.bar,
                                 }}
-                              />
+                              >
+                                {/* Progress Fill */}
+                                <div
+                                  className="absolute inset-y-0 left-0 rounded-l-full opacity-40"
+                                  style={{
+                                    width: `${progress}%`,
+                                    backgroundColor: '#fff',
+                                  }}
+                                />
+                              </div>
+                              
+                              {/* Assignee - below bar */}
+                              {task.assigneeName && (
+                                <div className="absolute left-0 bottom-1 flex items-center gap-1">
+                                  <div 
+                                    className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                                    style={{ backgroundColor: colors.bar }}
+                                  >
+                                    {task.assigneeInitials}
+                                  </div>
+                                  <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[80px]">
+                                    {task.assigneeName.split(' ')[0]}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
