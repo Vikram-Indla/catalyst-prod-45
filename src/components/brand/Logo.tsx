@@ -74,7 +74,7 @@ export function Logo({
   // Wordmark logo with proper brand colors
   if (showWordmark) {
     return (
-      <div className={cn("flex items-center", className)}>
+      <div className={cn("flex items-center gap-2", className)}>
         <span className={cn(
           "font-extrabold tracking-tight",
           textSizes[size]
