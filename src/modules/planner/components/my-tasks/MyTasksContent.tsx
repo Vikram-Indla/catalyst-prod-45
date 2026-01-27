@@ -102,10 +102,10 @@ export function MyTasksContent({
                 : 'You have no tasks yet. Create your first task to get started.'}
             </p>
             {!filters.searchQuery && (
-              <Button onClick={onOpenCreateModal} className="mt-4 gap-2 bg-orange-500 hover:bg-orange-600">
-                <Plus className="w-4 h-4" />
-                Create Task
-              </Button>
+            <Button onClick={onOpenCreateModal} className="mt-4 gap-2 bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4" />
+              Create Task
+            </Button>
             )}
           </div>
         ) : (
