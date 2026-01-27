@@ -7,7 +7,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { AlertTriangle, ExternalLink, ChevronRight } from 'lucide-react';
+import { AlertTriangle, ExternalLink, ChevronRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatFull, type BudgetPeriod, type BudgetResource, type BudgetAssignment, type DepartmentBudget, type BudgetLicense } from '@/hooks/budget/useBudgetData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -394,7 +394,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
         </div>
       </section>
 
-      {/* Section 3: Assignment Costs Table */}
+      {/* Section 3: Assignment Costs Table — FIXED */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -402,7 +402,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
           </h2>
           <button 
             type="button"
-            className="text-sm text-[#2563eb] hover:underline font-medium flex items-center gap-1 cursor-pointer"
+            className="text-sm text-blue-600 hover:underline font-medium flex items-center gap-1 cursor-pointer"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -417,25 +417,21 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
           <table className="w-full">
             <thead>
               <tr className="bg-muted/50 border-b border-border">
-                <th className="px-5 py-3 text-left text-xs font-bold uppercase text-muted-foreground">Assignment</th>
-                <th className="px-3 py-3 text-left text-xs font-bold uppercase text-muted-foreground">Dept</th>
-                <th className="px-3 py-3 text-left text-xs font-bold uppercase text-muted-foreground">Type</th>
-                <th className="px-3 py-3 text-left text-xs font-bold uppercase text-muted-foreground">Period</th>
-                <th className="px-3 py-3 text-center text-xs font-bold uppercase text-muted-foreground">Res</th>
-                <th className="px-4 py-3 text-right text-xs font-bold uppercase text-muted-foreground">Budget (SAR)</th>
-                <th className="px-4 py-3 text-right text-xs font-bold uppercase text-muted-foreground">Status</th>
+                <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground min-w-[200px]">Assignment</th>
+                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground min-w-[100px]">Dept</th>
+                <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground min-w-[100px]">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground min-w-[130px]">Period</th>
+                <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground min-w-[50px]">Res</th>
+                <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wider text-muted-foreground min-w-[130px]">Budget (SAR)</th>
+                <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground min-w-[100px]">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {/* SUM-4 FIX: Use constant MAX_VISIBLE_ASSIGNMENTS */}
               {data.assignments
                 .sort((a, b) => b.budget - a.budget)
-                .slice(0, MAX_VISIBLE_ASSIGNMENTS)
+                .slice(0, 10)
                 .map(a => {
                   const isUnpaid = a.paymentStatus === 'unpaid';
-                  const durationMonths = a.startDate && a.endDate 
-                    ? Math.max(1, Math.ceil((new Date(a.endDate).getTime() - new Date(a.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30)))
-                    : months;
                   
                   const formatPeriod = (start: string | null, end: string | null) => {
                     if (!start || !end) return '—';
@@ -445,27 +441,34 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                     const sYear = s.getFullYear().toString().slice(-2);
                     const eMonth = e.toLocaleDateString('en-US', { month: 'short' });
                     const eYear = e.getFullYear().toString().slice(-2);
-                    return `${sMonth}'${sYear}–${eMonth}'${eYear}`;
+                    return `${sMonth} '${sYear} – ${eMonth} '${eYear}`;
                   };
                   
                   return (
                     <tr 
                       key={a.id} 
-                      className="hover:bg-muted/30 cursor-pointer transition-colors"
+                      className="hover:bg-muted/30 cursor-pointer transition-colors group"
                       onClick={() => {
                         setSelectedAssignment(a);
                         setActiveModal('assignment');
                       }}
                     >
-                      <td className="px-5 py-3">
-                        <span className="font-medium text-foreground">{a.name}</span>
+                      {/* Assignment Name — Semibold */}
+                      <td className="px-5 py-2.5">
+                        <span className="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {a.name}
+                        </span>
                       </td>
-                      <td className="px-3 py-3 text-sm text-muted-foreground">
-                        {deptAbbrev[a.department] || a.department}
+                      
+                      {/* Department — FULL NAME */}
+                      <td className="px-4 py-2.5 text-sm text-slate-600 dark:text-slate-400">
+                        {a.department}
                       </td>
-                      <td className="px-3 py-3">
+                      
+                      {/* Type Badge — Centered */}
+                      <td className="px-4 py-2.5 text-center">
                         <span className={cn(
-                          "inline-block px-2 py-0.5 rounded text-xs font-medium",
+                          "inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-semibold min-w-[80px]",
                           a.type === 'Insourced' && "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
                           a.type === 'Cosourced' && "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400",
                           a.type === 'Outsourced' && "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
@@ -473,51 +476,68 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
                           {a.type}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-sm text-muted-foreground font-mono text-xs">
-                        {formatPeriod(a.startDate, a.endDate)}
+                      
+                      {/* Period — Consistent Format */}
+                      <td className="px-4 py-2.5">
+                        <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                          {formatPeriod(a.startDate, a.endDate)}
+                        </span>
                       </td>
-                      <td className="px-3 py-3 text-center text-sm text-muted-foreground">
+                      
+                      {/* Resources — Styled N/A */}
+                      <td className="px-3 py-2.5 text-center">
                         {a.type === 'Outsourced' ? (
-                          <span className="text-slate-400 cursor-help" title="Outsourced contracts don't have individual resources">
-                            N/A
-                          </span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500">N/A</span>
                         ) : (
-                          <span className="font-mono">{a.resourceCount || 0}</span>
+                          <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">
+                            {a.resourceCount || 0}
+                          </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        {/* Budget value color-coded by type */}
+                      
+                      {/* Budget — Color by Type */}
+                      <td className="px-5 py-2.5 text-right">
                         <span className={cn(
-                          "font-mono font-semibold",
-                          isUnpaid && "text-red-600",
-                          !isUnpaid && a.type === 'Insourced' && "text-blue-600",
-                          !isUnpaid && a.type === 'Cosourced' && "text-teal-600",
-                          !isUnpaid && a.type === 'Outsourced' && "text-amber-600"
+                          "font-mono font-semibold tabular-nums",
+                          isUnpaid && "text-red-600 dark:text-red-400",
+                          !isUnpaid && a.type === 'Insourced' && "text-blue-600 dark:text-blue-400",
+                          !isUnpaid && a.type === 'Cosourced' && "text-teal-600 dark:text-teal-400",
+                          !isUnpaid && a.type === 'Outsourced' && "text-amber-600 dark:text-amber-400"
                         )}>
                           {formatFull(a.budget)}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        {/* Consistent status badges */}
-                        {a.type === 'Insourced' ? (
-                          <span className="text-slate-400">—</span>
-                        ) : isUnpaid ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold">
-                            ⚠ UNPAID
+                      
+                      {/* Status — Clean */}
+                      <td className="px-4 py-2.5 text-center">
+                        {a.type !== 'Insourced' && isUnpaid ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold">
+                            <AlertTriangle className="w-3 h-3" />
+                            UNPAID
                           </span>
-                        ) : a.paymentStatus === 'on_track' || a.paymentStatus === 'paid' ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold">
-                            ✓ On Track
+                        ) : a.type !== 'Insourced' && (a.paymentStatus === 'on_track' || a.paymentStatus === 'paid') ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold">
+                            <Check className="w-3 h-3" />
+                            Paid
                           </span>
-                        ) : (
-                          <span className="text-slate-400">—</span>
-                        )}
+                        ) : null}
                       </td>
                     </tr>
                   );
                 })}
             </tbody>
           </table>
+          
+          {data.assignments.length > 10 && (
+            <div className="px-5 py-3 bg-muted/30 border-t border-border text-center">
+              <button 
+                onClick={() => onTabChange?.('budget')}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline"
+              >
+                Show {data.assignments.length - 10} more assignments →
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
