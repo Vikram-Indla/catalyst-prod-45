@@ -1,46 +1,38 @@
 // ============================================================
-// TASK ROW
-// Per Justification Matrix:
-// KEPT: Checkbox, Task Key, Title, Workstream Badge, Due Date, Time Estimate
-// DELETED: Priority indicator, Status badge, Subtask progress, Action buttons
-// Minimal scannable row - everything else opens in drawer
+// TASK ROW - V9 Design System (Task List Aligned)
+// Uses ring-fenced Task List typography and sizing
 // ============================================================
 
 import { useState, useRef } from 'react';
 import { CheckCircle2, Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCompleteMyTask, useUpdateMyTask } from '../../hooks/useMyTasks';
-import { Badge } from '@/components/ui/badge';
 import type { MyTask } from '../../types/my-tasks';
-import { format, isToday, isTomorrow, isThisWeek, isBefore, startOfDay, differenceInDays } from 'date-fns';
+import { format, isToday, isTomorrow, isThisWeek, isBefore, startOfDay } from 'date-fns';
 
 interface TaskRowProps {
   task: MyTask;
   onOpenDetail: (taskId: string) => void;
 }
 
-// Workstream color palette - all solid fills with white text
-// IMPORTANT: These OVERRIDE any database colors to ensure consistency
+// Workstream color palette
 const WORKSTREAM_COLORS: Record<string, string> = {
-  'Senaie': '#06b6d4',        // Cyan
-  'Catalyst': '#8b5cf6',       // Purple
-  'Tahommona': '#6366f1',      // Indigo
-  'Delivery': '#f97316',       // Orange (NOT red - reserved for danger)
-  'MIM': '#ec4899',            // Pink
-  'Standalone': '#64748b',     // Slate
-  'Stand-Alone': '#64748b',    // Slate (hyphenated variant)
-  'Data & AI': '#14b8a6',      // Teal
+  'Senaie': '#06b6d4',
+  'Catalyst': '#8b5cf6',
+  'Tahommona': '#6366f1',
+  'Delivery': '#f97316',
+  'MIM': '#ec4899',
+  'Standalone': '#64748b',
+  'Stand-Alone': '#64748b',
+  'Data & AI': '#14b8a6',
 };
 
-// Get workstream badge color - ALWAYS use our palette, ignore database colors
 function getWorkstreamColor(name: string | null): string {
   if (!name) return '#64748b';
-  // Normalize the name first, then lookup
   const normalized = name === 'Stand-Alone' ? 'Standalone' : name;
   return WORKSTREAM_COLORS[normalized] || WORKSTREAM_COLORS[name] || '#64748b';
 }
 
-// Normalize workstream name (e.g., Stand-Alone → Standalone)
 function normalizeWorkstreamName(name: string | null): string | null {
   if (!name) return null;
   if (name === 'Stand-Alone') return 'Standalone';
@@ -48,14 +40,8 @@ function normalizeWorkstreamName(name: string | null): string | null {
 }
 
 export function TaskRow({ task, onOpenDetail }: TaskRowProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(task.title);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const completeTask = useCompleteMyTask();
-  const updateTask = useUpdateMyTask();
 
-  // Handle checkbox click (complete task)
   const handleComplete = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!task.status_is_done) {
@@ -63,55 +49,35 @@ export function TaskRow({ task, onOpenDetail }: TaskRowProps) {
     }
   };
 
-  // Handle row click - opens drawer
   const handleRowClick = () => {
-    if (!isEditing) {
-      onOpenDetail(task.id);
-    }
+    onOpenDetail(task.id);
   };
 
-  // Format due date - consistent relative format per audit
+  // Format due date
   const formatDueDate = () => {
     if (!task.due_date) return null;
     const date = new Date(task.due_date);
     const today = startOfDay(new Date());
 
-    // Overdue - show just the date in red (no "X days overdue" text - section header says Overdue)
     if (isBefore(date, today)) {
-      return { 
-        text: format(date, 'MMM d'), 
-        className: 'text-red-500' 
-      };
+      return { text: format(date, 'MMM d'), isOverdue: true };
     }
-    
-    // Today
     if (isToday(date)) {
-      return { text: 'Today', className: 'text-amber-600' };
+      return { text: 'Today', isOverdue: false };
     }
-    
-    // Tomorrow
     if (isTomorrow(date)) {
-      return { text: 'Tomorrow', className: 'text-blue-600' };
+      return { text: 'Tomorrow', isOverdue: false };
     }
-    
-    // This week - show day name only (Mon, Tue, etc.)
     if (isThisWeek(date, { weekStartsOn: 0 })) {
-      return { 
-        text: format(date, 'EEE'), 
-        className: 'text-blue-600'
-      };
+      return { text: format(date, 'EEE'), isOverdue: false };
     }
-    
-    // Beyond this week - show date without day name (Jan 30, Feb 5)
-    return { 
-      text: format(date, 'MMM d'), 
-      className: 'text-slate-500 dark:text-slate-400'
-    };
+    return { text: format(date, 'MMM d'), isOverdue: false };
   };
 
   const dueDate = formatDueDate();
+  const workstreamName = normalizeWorkstreamName(task.workstream_name);
+  const workstreamColor = getWorkstreamColor(task.workstream_name);
 
-  // Format time estimate
   const formatTime = (minutes: number | null) => {
     if (!minutes) return null;
     const hours = Math.floor(minutes / 60);
@@ -121,20 +87,18 @@ export function TaskRow({ task, onOpenDetail }: TaskRowProps) {
     return `${hours}h ${mins}m`;
   };
 
-  const workstreamName = normalizeWorkstreamName(task.workstream_name);
-  const workstreamColor = getWorkstreamColor(task.workstream_name);
   const timeEstimate = formatTime(task.time_estimate_minutes);
 
   return (
     <div
       className={cn(
-        'group flex items-center gap-3 px-4 py-3',
-        'hover:bg-slate-50 dark:hover:bg-slate-700/30 cursor-pointer transition-colors',
+        'tl-row group flex items-center gap-3 px-4 cursor-pointer transition-colors',
         task.status_is_done && 'opacity-50'
       )}
+      style={{ padding: '0.5rem 0.75rem' }}
       onClick={handleRowClick}
     >
-      {/* Checkbox - Complete task (thicker border, hover state per audit) */}
+      {/* Checkbox */}
       <button
         onClick={handleComplete}
         className={cn(
@@ -142,52 +106,82 @@ export function TaskRow({ task, onOpenDetail }: TaskRowProps) {
           'transition-all hover:scale-110',
           task.status_is_done 
             ? 'bg-green-500 border-2 border-green-500 text-white' 
-            : 'border-2 border-slate-300 dark:border-slate-500 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20'
+            : 'border-2 hover:border-green-500 hover:bg-green-50'
         )}
+        style={{ 
+          borderColor: task.status_is_done ? undefined : 'var(--pln-tl-border-strong)' 
+        }}
       >
         {task.status_is_done && <CheckCircle2 className="w-3 h-3" />}
       </button>
 
-      {/* Task Key - slate-500 with medium weight per audit */}
-      <span className="flex-shrink-0 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 w-16">
+      {/* Task Key - Task List V3 style */}
+      <span 
+        className="flex-shrink-0 text-xs font-mono font-medium w-16"
+        style={{ color: 'var(--pln-tl-text-link)' }}
+      >
         {task.task_key}
       </span>
 
-      {/* Title */}
+      {/* Title - Task List V3 style */}
       <span
         className={cn(
-          'flex-1 font-medium text-slate-900 dark:text-slate-100 truncate',
-          task.status_is_done && 'line-through text-slate-500'
+          'tl-title-text flex-1 truncate',
+          task.status_is_done && 'line-through'
         )}
+        style={{ 
+          color: task.status_is_done ? 'var(--pln-tl-text-muted)' : 'var(--pln-tl-text-primary)',
+          fontWeight: 500,
+          fontSize: '0.875rem',
+        }}
       >
         {task.title}
       </span>
 
-      {/* Workstream Badge - ALL SOLID FILL with white text per audit */}
+      {/* Workstream Badge - Task List V3 style */}
       {workstreamName && (
-        <Badge
-          className="flex-shrink-0 text-xs px-2 py-0.5 h-5 font-medium border-0 text-white"
-          style={{ 
-            backgroundColor: workstreamColor,
-          }}
+        <span 
+          className="tl-workstream-cell flex-shrink-0"
+          style={{ fontSize: '0.75rem', fontWeight: 500 }}
         >
-          {workstreamName}
-        </Badge>
+          <span 
+            className="tl-workstream-dot"
+            style={{ backgroundColor: workstreamColor }}
+          />
+          <span style={{ color: 'var(--pln-tl-text-secondary)' }}>
+            {workstreamName}
+          </span>
+        </span>
       )}
 
-      {/* Due Date + Time Estimate grouped together per audit */}
-      {(dueDate || timeEstimate) && (
-        <span className={cn('flex-shrink-0 flex items-center gap-1.5 text-xs', dueDate?.className || 'text-slate-500')}>
-          {dueDate && (
-            <>
-              <Calendar className="w-3 h-3" />
-              <span>{dueDate.text}</span>
-            </>
-          )}
-          {dueDate && timeEstimate && <span className="text-slate-300 dark:text-slate-600">·</span>}
-          {timeEstimate && (
-            <span className="text-slate-400 dark:text-slate-500">{timeEstimate}</span>
-          )}
+      {/* Due Date - Task List V3 style */}
+      {dueDate && (
+        <span 
+          className="tl-date-cell flex-shrink-0"
+          style={{ padding: '0.25rem 0.5rem' }}
+        >
+          <Calendar className="w-3.5 h-3.5" style={{ color: 'var(--pln-tl-text-muted)' }} />
+          <span 
+            className={cn('tl-date-value', dueDate.isOverdue && 'tl-date-overdue')}
+            style={{ 
+              color: dueDate.isOverdue ? 'var(--pln-tl-priority-critical)' : 'var(--pln-tl-text-primary)',
+              fontSize: '0.8125rem',
+              fontWeight: 500,
+            }}
+          >
+            {dueDate.text}
+          </span>
+        </span>
+      )}
+
+      {/* Time Estimate */}
+      {timeEstimate && (
+        <span 
+          className="flex-shrink-0 flex items-center gap-1"
+          style={{ color: 'var(--pln-tl-text-muted)', fontSize: '0.75rem' }}
+        >
+          <Clock className="w-3 h-3" />
+          {timeEstimate}
         </span>
       )}
     </div>
