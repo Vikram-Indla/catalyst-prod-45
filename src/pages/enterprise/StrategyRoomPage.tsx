@@ -1,20 +1,7 @@
 /**
  * StrategyRoomPage — CIO-grade Enterprise Strategy Cockpit
  * Executive read-only view for strategic health and alignment
- * 
- * UX STABILITY LOCK (NON-NEGOTIABLE):
- * ─────────────────────────────────────────────────
- * 1. NO font size changes during loading/refresh
- * 2. NO greying out content during loading/refresh
- * 3. NO skeletons after first successful load
- * 4. NO layout shift, twitching, or flicker
- * 5. UI consistency > data freshness
- * 6. If data is refreshing → keep last visible UI intact
- * 
- * SNAPSHOT SWITCHING:
- * - Previous data remains visible until new data is ready
- * - If new data fails: keep previous + show "Data may be outdated"
- * - 200ms debounce prevents rapid-switch flicker
+ * Uses global Catalyst design tokens (no ring-fenced CSS)
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -34,9 +21,7 @@ import { toast } from 'sonner';
 import { Calendar, ChevronDown, Compass } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-
-// Import ring-fenced Strategy Room CSS
-import '@/styles/strategy-room.css';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type ObjectiveLevel = "OBJECTIVES";
 
@@ -45,7 +30,6 @@ const SNAPSHOT_CHANGE_DEBOUNCE_MS = 200;
 
 export default function StrategyRoomPage() {
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
-  // Debounced snapshot ID that actually triggers data fetches
   const [debouncedSnapshotId, setDebouncedSnapshotId] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<ObjectiveLevel | undefined>(undefined);
   const [filterPI, setFilterPI] = useState<string | undefined>(undefined);
@@ -55,25 +39,20 @@ export default function StrategyRoomPage() {
   const [themeDrawerOpen, setThemeDrawerOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
 
-  // Debounce timer ref
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Debounced snapshot change handler - prevents flicker during rapid changes
   const handleSnapshotChange = useCallback((newSnapshotId: string) => {
     setSelectedSnapshotId(newSnapshotId);
     
-    // Clear existing timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
     
-    // Debounce the actual data fetch
     debounceTimerRef.current = setTimeout(() => {
       setDebouncedSnapshotId(newSnapshotId);
     }, SNAPSHOT_CHANGE_DEBOUNCE_MS);
   }, []);
 
-  // Cleanup debounce timer on unmount
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
@@ -108,7 +87,6 @@ export default function StrategyRoomPage() {
     }
   }, [snapshots, selectedSnapshotId]);
 
-  // Use selectedSnapshotId for dropdown display, debouncedSnapshotId for data fetches
   const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots.find(s => s.name === 'Corporate Strategy 2025')?.id || snapshots[0]?.id || '';
   const effectiveDebouncedSnapshotId = debouncedSnapshotId || effectiveSelectedSnapshotId;
   const selectedSnapshot = snapshots.find((s) => s.id === effectiveSelectedSnapshotId);
@@ -149,54 +127,48 @@ export default function StrategyRoomPage() {
     s.name.toLowerCase().includes(snapshotSearchQuery.toLowerCase())
   );
 
-  // Skeleton only on INITIAL load - matches final layout exactly
-  // ⚠️ After first success, NEVER show skeletons again
+  // Skeleton on INITIAL load only
   if (snapshotsLoading && snapshots.length === 0) {
     return (
       <PageChrome>
-        <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto">
-          <div className="space-y-3">
-            {/* Strategic Pulse Skeleton */}
-            <SkeletonSection>
+        <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto space-y-3">
+          {/* Strategic Pulse Skeleton */}
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-3 border-b border-border bg-muted/30">
+              <Skeleton className="h-4 w-32" />
+            </div>
+            <div className="p-4">
               <div className="flex flex-col lg:flex-row gap-3">
-                <div className="lg:w-[240px] min-h-[120px] p-4 rounded-md flex-shrink-0 bg-muted/40 dark:bg-muted/20">
-                  <div className="h-3 w-24 rounded mb-3 animate-pulse bg-muted-foreground/15" />
-                  <div className="h-7 w-20 rounded mb-2 animate-pulse bg-muted-foreground/15" />
-                  <div className="h-2.5 w-28 rounded animate-pulse bg-muted-foreground/15" />
-                </div>
+                <Skeleton className="lg:w-[240px] h-[140px] rounded-lg" />
                 <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
                   {[1, 2, 3, 4].map((i) => (
-                    <div 
-                      key={i} 
-                      className="p-3 rounded-md min-h-[56px] bg-muted/40 dark:bg-muted/20"
-                    >
-                      <div className="h-2.5 w-14 rounded mb-2 animate-pulse bg-muted-foreground/15" />
-                      <div className="h-5 w-10 rounded mb-1 animate-pulse bg-muted-foreground/15" />
-                      <div className="h-2 w-16 rounded animate-pulse bg-muted-foreground/15" />
-                    </div>
+                    <Skeleton key={i} className="h-[100px] rounded-lg" />
                   ))}
                 </div>
               </div>
-            </SkeletonSection>
-
-            {/* Exposure & Gaps Skeleton */}
-            <SkeletonSection>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-                {[1, 2, 3].map((i) => (
-                  <SkeletonCard key={i} rows={4} />
-                ))}
-              </div>
-            </SkeletonSection>
-
-            {/* Strategy Coverage Skeleton */}
-            <SkeletonSection height="h-48" />
-
-            {/* OKR Tree Skeleton */}
-            <SkeletonSection height="h-64" />
-
-            {/* Strategy Context Skeleton */}
-            <SkeletonSection height="h-12" />
+            </div>
           </div>
+
+          {/* Exposure & Gaps Skeleton */}
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-3 border-b border-border bg-muted/30">
+              <Skeleton className="h-4 w-32" />
+            </div>
+            <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-[160px] rounded-lg" />
+              ))}
+            </div>
+          </div>
+
+          {/* Strategy Coverage Skeleton */}
+          <Skeleton className="h-48 rounded-lg" />
+
+          {/* OKR Tree Skeleton */}
+          <Skeleton className="h-64 rounded-lg" />
+
+          {/* Strategy Context Skeleton */}
+          <Skeleton className="h-12 rounded-lg" />
         </div>
       </PageChrome>
     );
@@ -217,7 +189,7 @@ export default function StrategyRoomPage() {
   const snapshotSelector = (
     <div className="flex items-center gap-3">
       <Calendar size={14} className="text-muted-foreground" />
-      <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
         Snapshot
       </span>
       <div className="w-56">
@@ -247,23 +219,22 @@ export default function StrategyRoomPage() {
 
   return (
     <PageChrome rightActions={snapshotSelector}>
-      {/* Ring-fenced Strategy Room container - applies sr-* CSS variables */}
-      <div className="strategy-room-content px-5 py-4 pb-6 max-w-[1400px] mx-auto">
-        {/* Executive Cockpit Grid — Tighter vertical rhythm */}
+      <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto">
+        {/* Executive Cockpit Grid */}
         <div className="space-y-3">
-          {/* Section 1: Strategic Pulse — Signal-led health cockpit */}
+          {/* Section 1: Strategic Pulse */}
           <StrategicPulseSection snapshotId={effectiveDebouncedSnapshotId} />
 
-          {/* Section 2: Exposure & Gaps — Risk surface */}
+          {/* Section 2: Exposure & Gaps */}
           <ExposureGapsSection snapshotId={effectiveDebouncedSnapshotId} />
 
-          {/* Section 3: Coverage & Alignment — Strategy layers */}
+          {/* Section 3: Coverage & Alignment */}
           <StrategyStack 
             onLayerClick={handlePyramidLayerClick} 
             snapshotId={effectiveDebouncedSnapshotId}
           />
 
-          {/* Section 4: OKR Tree — Execution details */}
+          {/* Section 4: OKR Tree */}
           <OkrTree
             selectedSnapshot={effectiveDebouncedSnapshotId}
             onObjectiveClick={handleObjectiveClick}
@@ -272,16 +243,16 @@ export default function StrategyRoomPage() {
 
           {/* Section 5: Strategy Context — Collapsible accordion */}
           <Collapsible open={contextOpen} onOpenChange={setContextOpen}>
-            <section className="sr-section">
+            <div className="rounded-lg border border-border bg-card overflow-hidden">
               <CollapsibleTrigger asChild>
-                <button className="sr-context-trigger">
+                <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-2">
-                    <Compass size={14} style={{ color: 'var(--sr-accent)' }} />
+                    <Compass size={14} className="text-primary" />
                     <div className="text-left">
-                      <h2 className="sr-section-title-text">
+                      <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                         Strategy Context
                       </h2>
-                      <p className="sr-section-subtitle">
+                      <p className="text-[10px] text-muted-foreground">
                         Mission, vision, and values
                       </p>
                     </div>
@@ -289,21 +260,18 @@ export default function StrategyRoomPage() {
                   <ChevronDown 
                     size={14} 
                     className={cn(
-                      "transition-transform duration-200"
+                      "text-muted-foreground transition-transform duration-200",
+                      contextOpen && "rotate-180"
                     )}
-                    style={{ 
-                      color: 'var(--sr-text-tertiary)',
-                      transform: contextOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-                    }}
                   />
                 </button>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div style={{ borderTop: '1px solid var(--sr-border-light)' }}>
+                <div className="border-t border-border">
                   <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
                 </div>
               </CollapsibleContent>
-            </section>
+            </div>
           </Collapsible>
         </div>
       </div>
@@ -326,44 +294,5 @@ export default function StrategyRoomPage() {
         }}
       />
     </PageChrome>
-  );
-}
-
-// ─────────────────────────────────────────────────
-// Skeleton components for INITIAL loading state ONLY
-// ⚠️ These are ONLY shown on first load, NEVER after first success
-// ─────────────────────────────────────────────────
-
-function SkeletonSection({ children, height }: { children?: React.ReactNode; height?: string }) {
-  return (
-    <div className={cn("rounded-lg overflow-hidden bg-card/50 dark:bg-card/30", height)}>
-      <div className="px-4 py-2 bg-muted/30 dark:bg-muted/10">
-        <div className="h-3 w-24 rounded animate-pulse bg-muted" />
-      </div>
-      {children ? (
-        <div className="p-3">{children}</div>
-      ) : (
-        <div className="p-3 flex-1" />
-      )}
-    </div>
-  );
-}
-
-function SkeletonCard({ rows = 3 }: { rows?: number }) {
-  return (
-    <div className="rounded-md overflow-hidden min-h-[140px] bg-muted/40 dark:bg-muted/20">
-      <div className="px-3 py-2 flex items-center gap-2 bg-muted/20 dark:bg-muted/10">
-        <div className="h-3 w-3 rounded animate-pulse bg-muted-foreground/20" />
-        <div className="h-2.5 w-20 rounded animate-pulse bg-muted-foreground/20" />
-      </div>
-      <div className="p-3 space-y-2">
-        {Array.from({ length: rows }).map((_, i) => (
-          <div key={i} className="flex items-center justify-between">
-            <div className="h-2.5 w-16 rounded animate-pulse bg-muted-foreground/20" />
-            <div className="h-3 w-5 rounded animate-pulse bg-muted-foreground/20" />
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }

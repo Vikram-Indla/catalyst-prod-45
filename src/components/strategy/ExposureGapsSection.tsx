@@ -1,7 +1,6 @@
 /**
  * ExposureGapsSection — CIO Cockpit exposure surface
- * Ring-fenced design using sr-* CSS classes from strategy-room.css
- * Clean 3-column executive block with equal weight cards
+ * Uses global Catalyst design tokens
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +16,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ExposureGapsSectionProps {
   snapshotId?: string;
@@ -78,23 +78,23 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     return items;
   }, [displayData.atRiskObjectives, displayData.topRisks, displayData.alignmentGaps, displayData.misalignedEpics, displayData.misalignedFeatures]);
 
-  // Skeleton only on first load - uses sr-* classes
+  // Skeleton only on first load
   if (isLoading && !hasData) {
     return (
-      <section className="sr-section">
-        <div className="sr-section-header">
-          <div className="sr-skeleton h-4 w-32" />
+      <section className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="px-4 py-3 border-b border-border bg-muted/30">
+          <Skeleton className="h-4 w-32" />
         </div>
-        <div className="sr-panels-grid">
+        <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="sr-panel">
-              <div className="sr-panel-header">
-                <div className="sr-skeleton h-4 w-28" />
+            <div key={i} className="rounded-lg border border-border overflow-hidden">
+              <div className="px-3 py-2 border-b border-border bg-muted/20">
+                <Skeleton className="h-4 w-28" />
               </div>
-              <div className="sr-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sr-space-2)' }}>
-                <div className="sr-skeleton h-5 w-full" />
-                <div className="sr-skeleton h-5 w-full" />
-                <div className="sr-skeleton h-5 w-3/4" />
+              <div className="p-3 space-y-2">
+                <Skeleton className="h-5 w-full" />
+                <Skeleton className="h-5 w-full" />
+                <Skeleton className="h-5 w-3/4" />
               </div>
             </div>
           ))}
@@ -106,21 +106,21 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const isUpdating = isFetching && hasData;
 
   return (
-    <section className="sr-section">
+    <section className="rounded-lg border border-border bg-card overflow-hidden">
       {/* Section Header */}
-      <div className="sr-section-header">
-        <div className="sr-section-title">
-          <Shield size={14} style={{ color: 'var(--sr-status-danger)' }} />
-          <span className="sr-section-title-text">Exposure & Gaps</span>
+      <div className="px-4 py-3 border-b border-border bg-muted/30 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Shield size={14} className="text-red-500" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-foreground">Exposure & Gaps</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
+        <div className="flex items-center gap-2">
           {showStaleIndicator && (
-            <span className="sr-section-subtitle" style={{ fontStyle: 'italic' }}>
+            <span className="text-[10px] text-muted-foreground italic">
               Data may be stale
             </span>
           )}
           {isUpdating && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-1)', fontSize: 'var(--sr-text-xs)', color: 'var(--sr-text-tertiary)' }}>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -128,22 +128,22 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         </div>
       </div>
 
-      <div className="sr-panels-grid">
+      <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Risk Exposure Panel */}
-        <div className="sr-panel">
-          <div className="sr-panel-header">
-            <div className="sr-panel-title">
-              <Shield size={14} style={{ color: 'var(--sr-status-danger)' }} />
-              <span>Risk Exposure</span>
+        <div className="rounded-lg border border-border overflow-hidden flex flex-col">
+          <div className="px-3 py-2 border-b border-border bg-muted/20 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Shield size={14} className="text-red-500" />
+              <span className="text-sm font-semibold text-foreground">Risk Exposure</span>
             </div>
             <button 
-              className="sr-panel-action"
+              className="text-xs text-primary font-medium hover:underline flex items-center gap-0.5"
               onClick={() => navigate('/enterprise/risks')}
             >
-              View all <ChevronRight size={12} style={{ display: 'inline', verticalAlign: 'middle' }} />
+              View all <ChevronRight size={12} />
             </button>
           </div>
-          <div className="sr-panel-body">
+          <div className="p-3 flex-1">
             <DataRow 
               label="Critical/High" 
               value={displayData.highRisks} 
@@ -167,12 +167,12 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             />
 
             {displayData.overdueRisks > 0 && (
-              <div className="sr-panel-row" style={{ borderTop: '1px solid var(--sr-border-light)', marginTop: 'var(--sr-space-2)', paddingTop: 'var(--sr-space-2)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
-                  <Clock size={14} style={{ color: 'var(--sr-status-danger)' }} />
-                  <span className="sr-panel-row-label">Overdue</span>
+              <div className="flex items-center justify-between py-2 border-t border-border mt-2 pt-2">
+                <div className="flex items-center gap-2">
+                  <Clock size={14} className="text-red-500" />
+                  <span className="text-sm text-muted-foreground">Overdue</span>
                 </div>
-                <span className="sr-panel-row-value" style={{ color: 'var(--sr-status-danger)' }}>
+                <span className="text-sm font-semibold text-red-500">
                   {displayData.overdueRisks}
                 </span>
               </div>
@@ -181,20 +181,20 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         </div>
 
         {/* Alignment Gaps Panel */}
-        <div className="sr-panel">
-          <div className="sr-panel-header">
-            <div className="sr-panel-title">
-              <Target size={14} style={{ color: 'var(--sr-status-warning)' }} />
-              <span>Alignment Gaps</span>
+        <div className="rounded-lg border border-border overflow-hidden flex flex-col">
+          <div className="px-3 py-2 border-b border-border bg-muted/20 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Target size={14} className="text-amber-500" />
+              <span className="text-sm font-semibold text-foreground">Alignment Gaps</span>
             </div>
             <button 
-              className="sr-panel-action"
+              className="text-xs text-primary font-medium hover:underline flex items-center gap-0.5"
               onClick={() => navigate('/enterprise/backlog')}
             >
-              View backlog <ChevronRight size={12} style={{ display: 'inline', verticalAlign: 'middle' }} />
+              View backlog <ChevronRight size={12} />
             </button>
           </div>
-          <div className="sr-panel-body">
+          <div className="p-3 flex-1">
             <DataRow label="Orphan Themes" value={0} variant="neutral" />
             <DataRow 
               label="Unlinked Epics" 
@@ -207,9 +207,12 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               variant={displayData.misalignedFeatures > 0 ? 'warning' : 'neutral'} 
             />
 
-            <div className="sr-panel-row" style={{ borderTop: '1px solid var(--sr-border-light)', marginTop: 'var(--sr-space-2)', paddingTop: 'var(--sr-space-2)' }}>
-              <span className="sr-panel-row-label" style={{ fontWeight: 'var(--sr-font-semibold)' }}>Total gaps</span>
-              <span className="sr-panel-row-value" style={{ color: displayData.alignmentGaps > 0 ? 'var(--sr-status-warning)' : 'var(--sr-text-primary)' }}>
+            <div className="flex items-center justify-between py-2 border-t border-border mt-2 pt-2">
+              <span className="text-sm font-semibold text-muted-foreground">Total gaps</span>
+              <span className={cn(
+                "text-sm font-semibold",
+                displayData.alignmentGaps > 0 ? "text-amber-500" : "text-foreground"
+              )}>
                 {displayData.alignmentGaps}
               </span>
             </div>
@@ -217,27 +220,27 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         </div>
 
         {/* Needs Attention Panel */}
-        <div className="sr-panel">
-          <div className="sr-panel-header">
-            <div className="sr-panel-title">
-              <AlertTriangle size={14} style={{ color: 'var(--sr-status-warning)' }} />
-              <span>Needs Attention</span>
+        <div className="rounded-lg border border-border overflow-hidden flex flex-col">
+          <div className="px-3 py-2 border-b border-border bg-muted/20">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={14} className="text-amber-500" />
+              <span className="text-sm font-semibold text-foreground">Needs Attention</span>
             </div>
           </div>
-          <div className="sr-panel-body">
+          <div className="p-3 flex-1">
             {attentionItems.length === 0 ? (
-              <div style={{ padding: 'var(--sr-space-4)', textAlign: 'center' }}>
-                <CheckCircle2 size={20} style={{ margin: '0 auto var(--sr-space-2)', color: 'var(--sr-status-success)' }} />
-                <span style={{ fontSize: 'var(--sr-text-sm)', color: 'var(--sr-text-secondary)' }}>No items need attention</span>
+              <div className="py-4 text-center">
+                <CheckCircle2 size={20} className="mx-auto mb-2 text-emerald-500" />
+                <span className="text-sm text-muted-foreground">No items need attention</span>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sr-space-2)' }}>
+              <div className="flex flex-col gap-2">
                 {attentionItems.slice(0, 4).map((item) => (
                   <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
                 ))}
                 {attentionItems.length > 4 && (
-                  <div style={{ textAlign: 'center', paddingTop: 'var(--sr-space-2)' }}>
-                    <span style={{ fontSize: 'var(--sr-text-xs)', color: 'var(--sr-accent)', fontWeight: 'var(--sr-font-medium)' }}>
+                  <div className="text-center pt-2">
+                    <span className="text-xs text-primary font-medium">
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -262,48 +265,37 @@ interface DataRowProps {
 function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: DataRowProps) {
   const barWidth = total > 0 ? Math.round((value / total) * 100) : 0;
 
-  const getValueColor = () => {
+  const getValueClass = () => {
     switch (variant) {
-      case 'danger': return 'var(--sr-status-danger)';
-      case 'warning': return 'var(--sr-status-warning)';
-      default: return 'var(--sr-text-primary)';
+      case 'danger': return 'text-red-500';
+      case 'warning': return 'text-amber-500';
+      default: return 'text-foreground';
     }
   };
 
-  const getBarColor = () => {
+  const getBarClass = () => {
     switch (variant) {
-      case 'danger': return 'var(--sr-status-danger)';
-      case 'warning': return 'var(--sr-status-warning)';
-      default: return 'var(--sr-text-tertiary)';
+      case 'danger': return 'bg-red-500';
+      case 'warning': return 'bg-amber-500';
+      default: return 'bg-muted-foreground';
     }
   };
 
   return (
-    <div className="sr-panel-row">
-      <span className="sr-panel-row-label">{label}</span>
+    <div className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
+      <span className="text-sm text-muted-foreground">{label}</span>
       
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
+      <div className="flex items-center gap-2">
         {showBar && total > 0 && (
-          <div style={{ 
-            width: '56px', 
-            height: '6px', 
-            borderRadius: 'var(--sr-radius-sm)', 
-            overflow: 'hidden', 
-            backgroundColor: 'var(--sr-surface-muted)' 
-          }}>
+          <div className="w-14 h-1.5 rounded-sm overflow-hidden bg-muted">
             <div 
-              style={{ 
-                height: '100%', 
-                borderRadius: 'var(--sr-radius-sm)', 
-                backgroundColor: getBarColor(),
-                width: `${barWidth}%`,
-                opacity: variant !== 'neutral' ? 0.8 : 0.5,
-              }}
+              className={cn("h-full rounded-sm", getBarClass(), variant !== 'neutral' ? 'opacity-80' : 'opacity-50')}
+              style={{ width: `${barWidth}%` }}
             />
           </div>
         )}
         
-        <span className="sr-panel-row-value" style={{ color: getValueColor(), minWidth: '28px', textAlign: 'right' }}>
+        <span className={cn("text-sm font-semibold min-w-[28px] text-right", getValueClass())}>
           {value}
         </span>
       </div>
@@ -312,50 +304,37 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
 }
 
 function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void }) {
-  const getSeverityDotColor = () => {
+  const getSeverityDotClass = () => {
     switch (item.severity) {
-      case 'critical': return 'var(--sr-status-danger)';
-      case 'high': return 'var(--sr-status-warning)';
-      default: return 'var(--sr-status-warning)';
+      case 'critical': return 'bg-red-500';
+      case 'high': return 'bg-amber-500';
+      default: return 'bg-amber-500';
     }
   };
 
-  const getReasonColor = () => {
+  const getReasonClass = () => {
     switch (item.severity) {
-      case 'critical': return 'var(--sr-status-danger-text)';
-      case 'high': return 'var(--sr-status-warning-text)';
-      default: return 'var(--sr-status-warning-text)';
+      case 'critical': return 'text-red-600 dark:text-red-400';
+      case 'high': return 'text-amber-600 dark:text-amber-400';
+      default: return 'text-amber-600 dark:text-amber-400';
     }
   };
 
   return (
     <button
       onClick={onClick}
-      className="sr-tree-node"
-      style={{ padding: 'var(--sr-space-2)' }}
+      className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors w-full text-left"
     >
       {/* Severity dot */}
-      <div style={{ 
-        width: '8px', 
-        height: '8px', 
-        borderRadius: '50%', 
-        flexShrink: 0, 
-        backgroundColor: getSeverityDotColor() 
-      }} />
+      <div className={cn("w-2 h-2 rounded-full flex-shrink-0", getSeverityDotClass())} />
       
       {/* Title */}
-      <span className="sr-tree-label" style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span className="flex-1 text-sm text-foreground truncate">
         {item.title}
       </span>
       
       {/* Reason badge */}
-      <span style={{ 
-        fontSize: 'var(--sr-text-xs)', 
-        whiteSpace: 'nowrap', 
-        flexShrink: 0, 
-        color: getReasonColor(),
-        fontWeight: 'var(--sr-font-medium)',
-      }}>
+      <span className={cn("text-xs font-medium whitespace-nowrap flex-shrink-0", getReasonClass())}>
         {item.reason}
       </span>
     </button>
