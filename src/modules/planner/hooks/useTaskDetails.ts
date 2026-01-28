@@ -396,18 +396,45 @@ export function useTaskActivity(taskId: string | null) {
     queryFn: async () => {
       if (!taskId) return [];
       
+      // Query from planner_activity_log (the actual activity table)
       const { data, error } = await supabase
-        .from('task_activity')
-        .select(`
-          *,
-          actor:profiles!task_activity_actor_id_fkey(id, full_name, avatar_url)
-        `)
+        .from('planner_activity_log')
+        .select('*')
         .eq('task_id', taskId)
         .order('created_at', { ascending: false })
         .limit(50);
       
-      if (error) throw error;
-      return data as TaskActivity[];
+      if (error) {
+        console.error('Error fetching activity:', error);
+        return [];
+      }
+      
+      // Get user IDs to fetch profiles
+      const userIds = [...new Set((data || []).map(d => d.user_id).filter(Boolean))];
+      let profilesMap: Record<string, { id: string; full_name: string | null; avatar_url: string | null }> = {};
+      
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', userIds);
+        
+        if (profiles) {
+          profilesMap = Object.fromEntries(profiles.map(p => [p.id, p]));
+        }
+      }
+      
+      // Map to TaskActivity interface
+      return (data || []).map(item => ({
+        id: item.id,
+        task_id: item.task_id,
+        actor_id: item.user_id,
+        action_type: item.action,
+        old_value: typeof item.old_value === 'object' ? JSON.stringify(item.old_value) : item.old_value,
+        new_value: typeof item.new_value === 'object' ? JSON.stringify(item.new_value) : item.new_value,
+        created_at: item.created_at,
+        actor: item.user_id ? profilesMap[item.user_id] : undefined,
+      })) as TaskActivity[];
     },
     enabled: !!taskId,
   });
