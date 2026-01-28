@@ -101,11 +101,12 @@ export function CreateWorkstreamModal({
   const excludeIds = useMemo(() => members.map(m => m.userId), [members]);
   
   // Use the search hook - queries profiles table
-  const { data: searchResults = [], isLoading: isSearching } = useSearchProfiles(
+  // NOTE: Use isFetching instead of isLoading to track all query states
+  const { data: searchResults = [], isFetching: isSearching } = useSearchProfiles(
     memberSearch,
     excludeIds
   );
-  
+
   // Auto-generate slug from name
   useEffect(() => {
     if (name && !slugManuallyEdited) {

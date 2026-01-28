@@ -45,8 +45,11 @@ export function useSearchProfiles(
   search: string, 
   excludeIds: string[] = []
 ) {
+  // Stabilize excludeIds for query key
+  const excludeIdsKey = excludeIds.sort().join(',');
+  
   return useQuery({
-    queryKey: ['profiles', 'search', search, excludeIds],
+    queryKey: ['profiles', 'search', search, excludeIdsKey],
     queryFn: async (): Promise<SearchableProfile[]> => {
       // Don't search if less than 2 characters
       if (!search || search.trim().length < 2) {
@@ -83,11 +86,12 @@ export function useSearchProfiles(
         email: user.email || '',
         avatar_url: user.avatar_url,
         avatar_color: generateAvatarColor(user.id),
-        job_title: user.vendor || user.role || null, // Use vendor or role as job title
+        job_title: user.vendor || user.role || null,
         initials: generateInitials(user.full_name),
       }));
     },
     enabled: search.trim().length >= 2,
-    staleTime: 30_000, // Cache for 30 seconds
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
   });
 }
