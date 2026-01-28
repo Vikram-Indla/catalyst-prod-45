@@ -13,6 +13,7 @@ export { HealthIndicator } from './HealthIndicator';
 export { useWorkstreamsSummary } from './useWorkstreamsSummary';
 export { useCreateWorkstream } from './useCreateWorkstream';
 export { useSearchProfiles } from './useSearchProfiles';
+export { useUpdateMemberRole } from './useUpdateMemberRole';
 export { 
   useWorkstreamDetails, 
   useWorkstreamMembers, 

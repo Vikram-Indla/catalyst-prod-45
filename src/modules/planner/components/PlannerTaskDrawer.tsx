@@ -2,10 +2,11 @@
 // PLANNER TASK DRAWER
 // Slide-in drawer for viewing/editing task details
 // Uses local state to prevent flickering on field changes
+// Delete restricted to workstream leads and admins
 // ============================================================
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Lock, Unlock, Calendar, User, Flag, Activity, AlertTriangle, Trash2 } from 'lucide-react';
+import { Lock, Unlock, Calendar, User, Flag, Activity, AlertTriangle, Trash2, ShieldAlert } from 'lucide-react';
 import type { PlannerTask, TaskStatus, TaskPriority, PlannerUser } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
 import {
@@ -32,10 +33,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TaskChecklist } from './TaskChecklist';
+import { useWorkstreamLeadAccess } from '../hooks/useWorkstreamLeadAccess';
 
 interface PlannerTaskDrawerProps {
   task: PlannerTask | null;
@@ -56,6 +59,8 @@ export function PlannerTaskDrawer({
   onDelete,
   users = [],
 }: PlannerTaskDrawerProps) {
+  const { canDeleteTask } = useWorkstreamLeadAccess();
+  
   // Local state to prevent flickering
   const [localStatus, setLocalStatus] = useState<TaskStatus | null>(null);
   const [localPriority, setLocalPriority] = useState<TaskPriority | null>(null);
@@ -66,6 +71,9 @@ export function PlannerTaskDrawer({
   
   // Track the task ID to reset local state when task changes
   const taskIdRef = useRef<string | null>(null);
+  
+  // Check if user can delete this task
+  const canDelete = task ? canDeleteTask(task.teamId) : false;
 
   // Initialize local state when task changes
   useEffect(() => {
@@ -360,15 +368,34 @@ export function PlannerTaskDrawer({
             <div className="space-y-1 text-xs text-muted-foreground">
               <p>Created: {new Date(task.createdAt).toLocaleDateString()}</p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowDeleteDialog(true)}
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete
-            </Button>
+            {canDelete ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </Button>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    className="opacity-50 cursor-not-allowed"
+                  >
+                    <ShieldAlert className="w-4 h-4 mr-2" />
+                    Delete
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Only workstream leads can delete tasks</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </SheetBody>
       </SheetContent>

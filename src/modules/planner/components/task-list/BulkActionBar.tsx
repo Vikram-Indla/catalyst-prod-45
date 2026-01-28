@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Clock, User, Flag, Trash2, X, Check, ChevronDown } from 'lucide-react';
+import { Clock, User, Flag, Trash2, X, Check, ChevronDown, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -17,10 +17,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useBulkUpdateTasks } from '../../hooks/useBulkUpdateTasks';
 import { useBulkDeleteTasks } from '../../hooks/useBulkDeleteTasks';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
+import { useWorkstreamLeadAccess } from '../../hooks/useWorkstreamLeadAccess';
 import { PRIORITY_CONFIG } from '../../types';
 import type { TaskPriority } from '../../types';
 
@@ -38,6 +40,7 @@ export function BulkActionBar({ selectedIds, selectedCount, onClearSelection }: 
   const { mutate: bulkDelete, isPending: isDeleting } = useBulkDeleteTasks();
   const { data: statuses = [] } = useKanbanStatuses();
   const { data: users = [] } = usePlannerUsers();
+  const { isLeadOfAny } = useWorkstreamLeadAccess();
 
   if (selectedCount === 0) return null;
 
@@ -158,15 +161,32 @@ export function BulkActionBar({ selectedIds, selectedCount, onClearSelection }: 
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Delete */}
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            disabled={isDeleting}
-            className="flex items-center gap-2 px-3 py-2 bg-slate-700 hover:bg-destructive rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
-          >
-            <Trash2 className="w-4 h-4" />
-            Delete
-          </button>
+          {/* Delete - Only visible to leads/admins */}
+          {isLeadOfAny ? (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={isDeleting}
+              className="flex items-center gap-2 px-3 py-2 bg-slate-700 hover:bg-destructive rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  disabled
+                  className="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-xs font-medium opacity-50 cursor-not-allowed"
+                >
+                  <ShieldAlert className="w-4 h-4" />
+                  Delete
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Only workstream leads can delete tasks</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
 
         {/* Close */}
