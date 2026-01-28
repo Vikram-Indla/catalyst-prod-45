@@ -79,6 +79,7 @@ export function PlannerBoardsPage({
     if (filters.assigneeId) mapped.assignee_id = filters.assigneeId;
     if (filters.priority) mapped.priority = filters.priority;
     if (filters.blocked) mapped.blocked = true;
+    if (filters.status) mapped.status = filters.status;
     
     // Map overdue to due_status filter
     if (filters.overdue) mapped.due_status = 'overdue';
