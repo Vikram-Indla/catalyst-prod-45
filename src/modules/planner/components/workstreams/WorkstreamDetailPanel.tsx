@@ -68,7 +68,7 @@ function useWorkstreamDescription(workstreamId: string | null) {
       
       const { data, error } = await supabase
         .from('planner_workstreams')
-        .select('description, created_at, is_active, updated_at')
+        .select('description, created_at, is_active, updated_at, start_date, due_date')
         .eq('id', workstreamId)
         .single();
       
@@ -521,6 +521,46 @@ export function WorkstreamDetailPanel({
                     className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     Add members first...
+                  </button>
+                )}
+              </div>
+              
+              {/* Start Date */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <Calendar className="w-4 h-4" />
+                  <span>Start Date</span>
+                </div>
+                {wsDetails?.start_date ? (
+                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
+                    {format(new Date(wsDetails.start_date), 'MMM d, yyyy')}
+                  </span>
+                ) : (
+                  <button
+                    onClick={handleEdit}
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                  >
+                    Set date...
+                  </button>
+                )}
+              </div>
+              
+              {/* Due Date */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <Calendar className="w-4 h-4" />
+                  <span>Due Date</span>
+                </div>
+                {wsDetails?.due_date ? (
+                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
+                    {format(new Date(wsDetails.due_date), 'MMM d, yyyy')}
+                  </span>
+                ) : (
+                  <button
+                    onClick={handleEdit}
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                  >
+                    Set date...
                   </button>
                 )}
               </div>
