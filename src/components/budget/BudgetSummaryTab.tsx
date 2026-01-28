@@ -653,7 +653,7 @@ export function BudgetSummaryTab({ data, period, onPeriodChange, onTabChange }: 
       <Dialog open={activeModal === 'insourced'} onOpenChange={() => setActiveModal(null)}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
+            <DialogTitle className="flex items-center justify-between pr-8">
               <span>Insourced Resources Breakdown</span>
               <span className="text-sm font-normal text-muted-foreground">
                 {insourcedResources.length} resources · Total: {formatCurrency(budget.insourced)} SAR
