@@ -1,6 +1,6 @@
 /**
  * ExposureGapsSection — CIO Cockpit exposure surface
- * Uses global Catalyst design tokens
+ * Uses ring-fenced --sr-* CSS tokens (V8 design system)
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface ExposureGapsSectionProps {
   snapshotId?: string;
@@ -81,21 +80,16 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   // Skeleton only on first load
   if (isLoading && !hasData) {
     return (
-      <section className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="px-4 py-3 border-b border-border bg-muted/30">
-          <Skeleton className="h-4 w-32" />
+      <section className="sr-section">
+        <div className="sr-section-header">
+          <Shield size={14} style={{ color: 'var(--sr-status-critical)' }} />
+          <span>Exposure & Gaps</span>
         </div>
-        <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="sr-panels-grid">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-lg border border-border overflow-hidden">
-              <div className="px-3 py-2 border-b border-border bg-muted/20">
-                <Skeleton className="h-4 w-28" />
-              </div>
-              <div className="p-3 space-y-2">
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-3/4" />
-              </div>
+            <div key={i} className="sr-panel">
+              <div className="sr-skeleton" style={{ height: '20px', width: '120px', marginBottom: 'var(--sr-space-3)' }} />
+              <div className="sr-skeleton" style={{ height: '100px' }} />
             </div>
           ))}
         </div>
@@ -106,148 +100,148 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const isUpdating = isFetching && hasData;
 
   return (
-    <section className="rounded-lg border border-border bg-card overflow-hidden">
+    <section className="sr-section">
       {/* Section Header */}
-      <div className="px-4 py-3 border-b border-border bg-muted/30 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Shield size={14} className="text-red-500" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-foreground">Exposure & Gaps</span>
+      <div className="sr-section-header" style={{ justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
+          <Shield size={14} style={{ color: 'var(--sr-status-critical)' }} />
+          <span>Exposure & Gaps</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
           {showStaleIndicator && (
-            <span className="text-[10px] text-muted-foreground italic">
+            <span style={{ fontSize: 'var(--sr-font-size-xs)', color: 'var(--sr-text-muted)', fontStyle: 'italic' }}>
               Data may be stale
             </span>
           )}
           {isUpdating && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Loader2 size={12} className="animate-spin" />
+            <div className="sr-refreshing">
+              <div className="sr-refreshing-spinner" />
               <span>Refreshing…</span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div className="sr-panels-grid">
         {/* Risk Exposure Panel */}
-        <div className="rounded-lg border border-border overflow-hidden flex flex-col">
-          <div className="px-3 py-2 border-b border-border bg-muted/20 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Shield size={14} className="text-red-500" />
-              <span className="text-sm font-semibold text-foreground">Risk Exposure</span>
+        <div className="sr-panel">
+          <div className="sr-panel-header">
+            <div className="sr-panel-title">
+              <Shield size={14} style={{ color: 'var(--sr-status-critical)' }} />
+              <span>Risk Exposure</span>
             </div>
-            <button 
-              className="text-xs text-primary font-medium hover:underline flex items-center gap-0.5"
+            <a 
+              className="sr-panel-link"
               onClick={() => navigate('/enterprise/risks')}
+              style={{ cursor: 'pointer' }}
             >
-              View all <ChevronRight size={12} />
-            </button>
+              View all <ChevronRight size={12} style={{ display: 'inline' }} />
+            </a>
           </div>
-          <div className="p-3 flex-1">
-            <DataRow 
-              label="Critical/High" 
-              value={displayData.highRisks} 
-              total={displayData.totalRisks}
-              variant={displayData.highRisks > 0 ? 'danger' : 'neutral'} 
-              showBar
-            />
-            <DataRow 
-              label="Medium" 
-              value={displayData.mediumRisks} 
-              total={displayData.totalRisks}
-              variant={displayData.mediumRisks > 0 ? 'warning' : 'neutral'} 
-              showBar
-            />
-            <DataRow 
-              label="Low" 
-              value={displayData.lowRisks} 
-              total={displayData.totalRisks}
-              variant="neutral" 
-              showBar
-            />
+          
+          <DataRow 
+            label="Critical/High" 
+            value={displayData.highRisks} 
+            total={displayData.totalRisks}
+            variant={displayData.highRisks > 0 ? 'danger' : 'neutral'} 
+            showBar
+          />
+          <DataRow 
+            label="Medium" 
+            value={displayData.mediumRisks} 
+            total={displayData.totalRisks}
+            variant={displayData.mediumRisks > 0 ? 'warning' : 'neutral'} 
+            showBar
+          />
+          <DataRow 
+            label="Low" 
+            value={displayData.lowRisks} 
+            total={displayData.totalRisks}
+            variant="neutral" 
+            showBar
+          />
 
-            {displayData.overdueRisks > 0 && (
-              <div className="flex items-center justify-between py-2 border-t border-border mt-2 pt-2">
-                <div className="flex items-center gap-2">
-                  <Clock size={14} className="text-red-500" />
-                  <span className="text-sm text-muted-foreground">Overdue</span>
-                </div>
-                <span className="text-sm font-semibold text-red-500">
-                  {displayData.overdueRisks}
-                </span>
+          {displayData.overdueRisks > 0 && (
+            <div className="sr-panel-row" style={{ borderTop: '1px solid var(--sr-border)', marginTop: 'var(--sr-space-2)', paddingTop: 'var(--sr-space-2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
+                <Clock size={14} style={{ color: 'var(--sr-status-critical)' }} />
+                <span className="sr-panel-row-label">Overdue</span>
               </div>
-            )}
-          </div>
+              <span style={{ fontSize: 'var(--sr-font-size-base)', fontWeight: 'var(--sr-font-weight-semibold)', color: 'var(--sr-status-critical)' }}>
+                {displayData.overdueRisks}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Alignment Gaps Panel */}
-        <div className="rounded-lg border border-border overflow-hidden flex flex-col">
-          <div className="px-3 py-2 border-b border-border bg-muted/20 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Target size={14} className="text-amber-500" />
-              <span className="text-sm font-semibold text-foreground">Alignment Gaps</span>
+        <div className="sr-panel">
+          <div className="sr-panel-header">
+            <div className="sr-panel-title">
+              <Target size={14} style={{ color: 'var(--sr-status-at-risk)' }} />
+              <span>Alignment Gaps</span>
             </div>
-            <button 
-              className="text-xs text-primary font-medium hover:underline flex items-center gap-0.5"
+            <a 
+              className="sr-panel-link"
               onClick={() => navigate('/enterprise/backlog')}
+              style={{ cursor: 'pointer' }}
             >
-              View backlog <ChevronRight size={12} />
-            </button>
+              View backlog <ChevronRight size={12} style={{ display: 'inline' }} />
+            </a>
           </div>
-          <div className="p-3 flex-1">
-            <DataRow label="Orphan Themes" value={0} variant="neutral" />
-            <DataRow 
-              label="Unlinked Epics" 
-              value={displayData.misalignedEpics} 
-              variant={displayData.misalignedEpics > 0 ? 'warning' : 'neutral'} 
-            />
-            <DataRow 
-              label="Unlinked Features" 
-              value={displayData.misalignedFeatures} 
-              variant={displayData.misalignedFeatures > 0 ? 'warning' : 'neutral'} 
-            />
+          
+          <DataRow label="Orphan Themes" value={0} variant="neutral" />
+          <DataRow 
+            label="Unlinked Epics" 
+            value={displayData.misalignedEpics} 
+            variant={displayData.misalignedEpics > 0 ? 'warning' : 'neutral'} 
+          />
+          <DataRow 
+            label="Unlinked Features" 
+            value={displayData.misalignedFeatures} 
+            variant={displayData.misalignedFeatures > 0 ? 'warning' : 'neutral'} 
+          />
 
-            <div className="flex items-center justify-between py-2 border-t border-border mt-2 pt-2">
-              <span className="text-sm font-semibold text-muted-foreground">Total gaps</span>
-              <span className={cn(
-                "text-sm font-semibold",
-                displayData.alignmentGaps > 0 ? "text-amber-500" : "text-foreground"
-              )}>
-                {displayData.alignmentGaps}
-              </span>
-            </div>
+          <div className="sr-panel-row" style={{ borderTop: '1px solid var(--sr-border)', marginTop: 'var(--sr-space-2)', paddingTop: 'var(--sr-space-2)' }}>
+            <span style={{ fontSize: 'var(--sr-font-size-base)', fontWeight: 'var(--sr-font-weight-semibold)', color: 'var(--sr-text-muted)' }}>Total gaps</span>
+            <span style={{ 
+              fontSize: 'var(--sr-font-size-base)', 
+              fontWeight: 'var(--sr-font-weight-semibold)',
+              color: displayData.alignmentGaps > 0 ? 'var(--sr-status-at-risk)' : 'var(--sr-text-primary)'
+            }}>
+              {displayData.alignmentGaps}
+            </span>
           </div>
         </div>
 
         {/* Needs Attention Panel */}
-        <div className="rounded-lg border border-border overflow-hidden flex flex-col">
-          <div className="px-3 py-2 border-b border-border bg-muted/20">
-            <div className="flex items-center gap-2">
-              <AlertTriangle size={14} className="text-amber-500" />
-              <span className="text-sm font-semibold text-foreground">Needs Attention</span>
+        <div className="sr-panel">
+          <div className="sr-panel-header">
+            <div className="sr-panel-title">
+              <AlertTriangle size={14} style={{ color: 'var(--sr-status-at-risk)' }} />
+              <span>Needs Attention</span>
             </div>
           </div>
-          <div className="p-3 flex-1">
-            {attentionItems.length === 0 ? (
-              <div className="py-4 text-center">
-                <CheckCircle2 size={20} className="mx-auto mb-2 text-emerald-500" />
-                <span className="text-sm text-muted-foreground">No items need attention</span>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {attentionItems.slice(0, 4).map((item) => (
-                  <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
-                ))}
-                {attentionItems.length > 4 && (
-                  <div className="text-center pt-2">
-                    <span className="text-xs text-primary font-medium">
-                      +{attentionItems.length - 4} more
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          
+          {attentionItems.length === 0 ? (
+            <div style={{ padding: 'var(--sr-space-4)', textAlign: 'center' }}>
+              <CheckCircle2 size={20} style={{ color: 'var(--sr-status-healthy)', margin: '0 auto var(--sr-space-2)' }} />
+              <span style={{ fontSize: 'var(--sr-font-size-base)', color: 'var(--sr-text-muted)' }}>No items need attention</span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sr-space-2)' }}>
+              {attentionItems.slice(0, 4).map((item) => (
+                <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
+              ))}
+              {attentionItems.length > 4 && (
+                <div style={{ textAlign: 'center', paddingTop: 'var(--sr-space-2)' }}>
+                  <span style={{ fontSize: 'var(--sr-font-size-sm)', color: 'var(--sr-accent)', fontWeight: 'var(--sr-font-weight-medium)' }}>
+                    +{attentionItems.length - 4} more
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -265,37 +259,43 @@ interface DataRowProps {
 function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: DataRowProps) {
   const barWidth = total > 0 ? Math.round((value / total) * 100) : 0;
 
-  const getValueClass = () => {
+  const getValueColor = () => {
     switch (variant) {
-      case 'danger': return 'text-red-500';
-      case 'warning': return 'text-amber-500';
-      default: return 'text-foreground';
+      case 'danger': return 'var(--sr-status-critical)';
+      case 'warning': return 'var(--sr-status-at-risk)';
+      default: return 'var(--sr-text-primary)';
     }
   };
 
   const getBarClass = () => {
     switch (variant) {
-      case 'danger': return 'bg-red-500';
-      case 'warning': return 'bg-amber-500';
-      default: return 'bg-muted-foreground';
+      case 'danger': return 'danger';
+      case 'warning': return 'warning';
+      default: return '';
     }
   };
 
   return (
-    <div className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
-      <span className="text-sm text-muted-foreground">{label}</span>
+    <div className="sr-panel-row">
+      <span className="sr-panel-row-label">{label}</span>
       
-      <div className="flex items-center gap-2">
+      <div className="sr-panel-row-value">
         {showBar && total > 0 && (
-          <div className="w-14 h-1.5 rounded-sm overflow-hidden bg-muted">
+          <div className="sr-panel-bar">
             <div 
-              className={cn("h-full rounded-sm", getBarClass(), variant !== 'neutral' ? 'opacity-80' : 'opacity-50')}
-              style={{ width: `${barWidth}%` }}
+              className={cn("sr-panel-bar-fill", getBarClass())}
+              style={{ width: `${barWidth}%`, opacity: variant !== 'neutral' ? 0.8 : 0.5 }}
             />
           </div>
         )}
         
-        <span className={cn("text-sm font-semibold min-w-[28px] text-right", getValueClass())}>
+        <span style={{ 
+          fontSize: 'var(--sr-font-size-base)', 
+          fontWeight: 'var(--sr-font-weight-semibold)', 
+          minWidth: '28px', 
+          textAlign: 'right',
+          color: getValueColor()
+        }}>
           {value}
         </span>
       </div>
@@ -304,39 +304,31 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
 }
 
 function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void }) {
-  const getSeverityDotClass = () => {
+  const getSeverityClass = () => {
     switch (item.severity) {
-      case 'critical': return 'bg-red-500';
-      case 'high': return 'bg-amber-500';
-      default: return 'bg-amber-500';
-    }
-  };
-
-  const getReasonClass = () => {
-    switch (item.severity) {
-      case 'critical': return 'text-red-600 dark:text-red-400';
-      case 'high': return 'text-amber-600 dark:text-amber-400';
-      default: return 'text-amber-600 dark:text-amber-400';
+      case 'critical': return 'critical';
+      case 'high': return 'at-risk';
+      default: return 'at-risk';
     }
   };
 
   return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors w-full text-left"
-    >
-      {/* Severity dot */}
-      <div className={cn("w-2 h-2 rounded-full flex-shrink-0", getSeverityDotClass())} />
-      
-      {/* Title */}
-      <span className="flex-1 text-sm text-foreground truncate">
-        {item.title}
-      </span>
-      
-      {/* Reason badge */}
-      <span className={cn("text-xs font-medium whitespace-nowrap flex-shrink-0", getReasonClass())}>
+    <div className="sr-attention-item" onClick={onClick}>
+      <div className={cn("sr-attention-dot", getSeverityClass())} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="sr-attention-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {item.title}
+        </div>
+      </div>
+      <span style={{ 
+        fontSize: 'var(--sr-font-size-sm)', 
+        fontWeight: 'var(--sr-font-weight-medium)',
+        color: item.severity === 'critical' ? 'var(--sr-status-critical)' : 'var(--sr-status-at-risk)',
+        whiteSpace: 'nowrap',
+        flexShrink: 0
+      }}>
         {item.reason}
       </span>
-    </button>
+    </div>
   );
 }

@@ -1,8 +1,10 @@
 /**
  * StrategyRoomPage — CIO-grade Enterprise Strategy Cockpit
  * Executive read-only view for strategic health and alignment
- * Uses global Catalyst design tokens (no ring-fenced CSS)
+ * Uses ring-fenced --sr-* CSS tokens (V8 design system)
  */
+
+import '@/styles/strategy-room.css';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -219,11 +221,13 @@ export default function StrategyRoomPage() {
 
   return (
     <PageChrome rightActions={snapshotSelector}>
-      <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto">
-        {/* Executive Cockpit Grid */}
-        <div className="space-y-3">
-          {/* Section 1: Strategic Pulse */}
-          <StrategicPulseSection snapshotId={effectiveDebouncedSnapshotId} />
+      {/* Ring-fenced Strategy Room wrapper - V8 design system */}
+      <div className="strategy-room-content">
+        <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto">
+          {/* Executive Cockpit Grid */}
+          <div className="space-y-3">
+            {/* Section 1: Strategic Pulse */}
+            <StrategicPulseSection snapshotId={effectiveDebouncedSnapshotId} />
 
           {/* Section 2: Exposure & Gaps */}
           <ExposureGapsSection snapshotId={effectiveDebouncedSnapshotId} />
@@ -275,6 +279,7 @@ export default function StrategyRoomPage() {
           </Collapsible>
         </div>
       </div>
+    </div>
 
       {/* Drawers */}
       <ObjectiveAnalyticsDrawer
