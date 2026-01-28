@@ -105,15 +105,21 @@ export function useUpdateWorkstream() {
     mutationFn: async ({ 
       id, 
       name, 
-      color 
+      color,
+      start_date,
+      due_date,
     }: { 
       id: string; 
       name?: string; 
       color?: string;
+      start_date?: string | null;
+      due_date?: string | null;
     }) => {
-      const updates: Record<string, string> = {};
+      const updates: Record<string, string | null> = {};
       if (name) updates.name = name;
       if (color) updates.color = color;
+      if (start_date !== undefined) updates.start_date = start_date;
+      if (due_date !== undefined) updates.due_date = due_date;
       
       const { data, error } = await supabase
         .from('planner_workstreams')

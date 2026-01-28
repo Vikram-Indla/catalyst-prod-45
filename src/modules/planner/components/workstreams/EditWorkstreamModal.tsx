@@ -5,7 +5,9 @@
 // ============================================================
 
 import { useState, useEffect, useMemo } from 'react';
-import { X, Save, Loader2, UserPlus, Trash2, Search, Check, Crown } from 'lucide-react';
+import { X, Save, Loader2, UserPlus, Trash2, Search, Check, Crown, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,8 +69,12 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
   // Form state
   const [name, setName] = useState('');
   const [color, setColor] = useState('#3b82f6');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [memberSearch, setMemberSearch] = useState('');
   const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [dueDateOpen, setDueDateOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
   // LOCAL pending members state (not committed until save)
@@ -102,6 +108,8 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
     if (workstream) {
       setName(workstream.name || '');
       setColor(workstream.color || '#3b82f6');
+      setStartDate(workstream.start_date ? new Date(workstream.start_date) : undefined);
+      setDueDate(workstream.due_date ? new Date(workstream.due_date) : undefined);
     }
   }, [workstream]);
   
@@ -147,8 +155,14 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
   // Check if there are any changes
   const hasNameChange = workstream && name !== workstream.name;
   const hasColorChange = workstream && color !== workstream.color;
+  const hasStartDateChange = workstream && (
+    (startDate?.toISOString().split('T')[0] || null) !== (workstream.start_date || null)
+  );
+  const hasDueDateChange = workstream && (
+    (dueDate?.toISOString().split('T')[0] || null) !== (workstream.due_date || null)
+  );
   const hasMemberChanges = pendingMembers.length > 0 || removedMemberIds.size > 0 || roleChanges.size > 0;
-  const hasChanges = hasNameChange || hasColorChange || hasMemberChanges;
+  const hasChanges = hasNameChange || hasColorChange || hasStartDateChange || hasDueDateChange || hasMemberChanges;
   
   // Add member to pending list (local only)
   const handleAddMember = (profile: { id: string; full_name: string | null; email: string | null; job_title?: string | null }) => {
@@ -246,12 +260,14 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
     setIsSaving(true);
     
     try {
-      // 1. Update workstream name/color if changed
-      if (hasNameChange || hasColorChange) {
+      // 1. Update workstream details if changed
+      if (hasNameChange || hasColorChange || hasStartDateChange || hasDueDateChange) {
         await updateWorkstream.mutateAsync({
           id: workstreamId,
           name: name.trim(),
           color,
+          start_date: startDate ? startDate.toISOString().split('T')[0] : null,
+          due_date: dueDate ? dueDate.toISOString().split('T')[0] : null,
         });
       }
       
@@ -355,6 +371,72 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
                     style={{ backgroundColor: c }}
                   />
                 ))}
+              </div>
+            </div>
+            
+            {/* Dates Section */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Start Date */}
+              <div className="space-y-2">
+                <Label>Start Date</Label>
+                <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal h-10",
+                        !startDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "MMM d, yyyy") : "Pick date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => {
+                        setStartDate(date);
+                        setStartDateOpen(false);
+                      }}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              {/* Due Date */}
+              <div className="space-y-2">
+                <Label>Due Date</Label>
+                <Popover open={dueDateOpen} onOpenChange={setDueDateOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal h-10",
+                        !dueDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dueDate ? format(dueDate, "MMM d, yyyy") : "Pick date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dueDate}
+                      onSelect={(date) => {
+                        setDueDate(date);
+                        setDueDateOpen(false);
+                      }}
+                      disabled={(date) => startDate ? date < startDate : false}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             

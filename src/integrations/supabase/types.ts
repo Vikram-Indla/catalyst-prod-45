@@ -13170,6 +13170,7 @@ export type Database = {
           color: string
           created_at: string | null
           description: string | null
+          due_date: string | null
           icon: string | null
           id: string
           is_active: boolean | null
@@ -13177,12 +13178,14 @@ export type Database = {
           name: string
           slug: string
           sort_order: number | null
+          start_date: string | null
           updated_at: string | null
         }
         Insert: {
           color?: string
           created_at?: string | null
           description?: string | null
+          due_date?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
@@ -13190,12 +13193,14 @@ export type Database = {
           name: string
           slug: string
           sort_order?: number | null
+          start_date?: string | null
           updated_at?: string | null
         }
         Update: {
           color?: string
           created_at?: string | null
           description?: string | null
+          due_date?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
@@ -13203,6 +13208,7 @@ export type Database = {
           name?: string
           slug?: string
           sort_order?: number | null
+          start_date?: string | null
           updated_at?: string | null
         }
         Relationships: [
