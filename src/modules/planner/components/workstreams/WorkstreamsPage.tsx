@@ -6,9 +6,10 @@
 
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layers, RefreshCw, Plus, Download } from 'lucide-react';
+import { UsersRound, RefreshCw, Plus, Download, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { useWorkstreamsSummary } from './useWorkstreamsSummary';
 import { WorkstreamsSummaryBar } from './WorkstreamsSummaryBar';
 import { WorkstreamsToolbar } from './WorkstreamsToolbar';
@@ -75,26 +76,15 @@ export function WorkstreamsPage() {
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
-      {/* Header */}
-      <div
-        className="shrink-0 px-6 py-4 border-b border-slate-200 dark:border-slate-700"
-        style={{ backgroundColor: 'var(--planner-bg, #f8fafc)' }}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-              <Layers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                Workstreams
-              </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Track-level overview and health monitoring
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
+      {/* Header - matches Calendar styling via PlannerViewHeader */}
+      <PlannerViewHeader
+        icon={UsersRound}
+        title="Workstreams"
+        subtitle="Track-level overview and health monitoring"
+        showAddTask={true}
+        onAddTask={() => setIsCreateOpen(true)}
+        actions={
+          <>
             <Button
               variant="outline"
               size="sm"
@@ -113,16 +103,9 @@ export function WorkstreamsPage() {
               <Download className="w-4 h-4" />
               Export
             </Button>
-            <Button
-              onClick={() => setIsCreateOpen(true)}
-              className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25"
-            >
-              <Plus className="w-4 h-4" />
-              Add Task
-            </Button>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* Content */}
       <div
