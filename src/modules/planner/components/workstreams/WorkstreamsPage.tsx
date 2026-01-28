@@ -37,6 +37,7 @@ export function WorkstreamsPage() {
   const [selectedWorkstream, setSelectedWorkstream] = useState<WorkstreamData | null>(null);
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [editWorkstreamId, setEditWorkstreamId] = useState<string | null>(null);
+  const [focusOnMembers, setFocusOnMembers] = useState(false);
 
   // Filter workstreams
   const filteredWorkstreams = useMemo(() => {
@@ -60,7 +61,8 @@ export function WorkstreamsPage() {
     navigate(`/planner/task-list?workstream=${encodeURIComponent(workstreamId)}`);
   };
 
-  const handleEditWorkstream = (workstreamId: string) => {
+  const handleEditWorkstream = (workstreamId: string, openMembers = false) => {
+    setFocusOnMembers(openMembers);
     setEditWorkstreamId(workstreamId);
   };
 
@@ -225,7 +227,12 @@ export function WorkstreamsPage() {
         onClose={handleCloseDetailPanel}
         onEdit={() => {
           if (selectedWorkstream) {
-            handleEditWorkstream(selectedWorkstream.id);
+            handleEditWorkstream(selectedWorkstream.id, false);
+          }
+        }}
+        onAddMembers={() => {
+          if (selectedWorkstream) {
+            handleEditWorkstream(selectedWorkstream.id, true);
           }
         }}
       />
@@ -247,7 +254,8 @@ export function WorkstreamsPage() {
       <EditWorkstreamModal
         workstreamId={editWorkstreamId}
         open={!!editWorkstreamId}
-        onClose={() => setEditWorkstreamId(null)}
+        onClose={() => { setEditWorkstreamId(null); setFocusOnMembers(false); }}
+        focusOnMembers={focusOnMembers}
       />
     </div>
   );
