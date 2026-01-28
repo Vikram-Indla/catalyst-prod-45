@@ -1,31 +1,33 @@
 // ============================================================
-// DRAWER HEADER - LINEAR-INSPIRED REDESIGN
-// Clean breadcrumb with workstream color, prominent status pill
+// DRAWER HEADER - MATCHES REFERENCE SCREENSHOT EXACTLY
+// Task ID + Workstream inline, action icons row, status pill
 // ============================================================
 
 import { useState } from 'react';
-import { X, ChevronRight, Check, ChevronDown } from 'lucide-react';
+import { X, ChevronRight, ChevronDown, Check, Link2, Eye, Pin, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
+import { toast } from 'sonner';
 
 interface DrawerHeaderProps {
   task: any;
   onClose: () => void;
   onTitleChange: (title: string) => void;
   onStatusChange: (statusId: string) => void;
+  saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; text: string; border: string }> = {
-  backlog: { label: 'Backlog', color: '#9ca3af', bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300' },
-  planned: { label: 'Planned', color: '#3b82f6', bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-300' },
-  'in-progress': { label: 'In Progress', color: '#f59e0b', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-300' },
-  in_progress: { label: 'In Progress', color: '#f59e0b', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-300' },
-  review: { label: 'Review', color: '#8b5cf6', bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-300' },
-  done: { label: 'Done', color: '#10b981', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-300' },
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; text: string }> = {
+  backlog: { label: 'Backlog', color: '#9ca3af', bg: 'bg-gray-100', text: 'text-gray-700' },
+  planned: { label: 'Planned', color: '#3b82f6', bg: 'bg-blue-50', text: 'text-blue-700' },
+  'in-progress': { label: 'In Progress', color: '#f59e0b', bg: 'bg-amber-50', text: 'text-amber-700' },
+  in_progress: { label: 'In Progress', color: '#f59e0b', bg: 'bg-amber-50', text: 'text-amber-700' },
+  review: { label: 'Review', color: '#8b5cf6', bg: 'bg-violet-50', text: 'text-violet-700' },
+  done: { label: 'Done', color: '#10b981', bg: 'bg-emerald-50', text: 'text-emerald-700' },
 };
 
 function useStatuses() {
@@ -67,19 +69,18 @@ function StatusSelector({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border transition-all",
-            "hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1",
+            "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+            "hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1",
             config.bg,
-            config.text,
-            config.border
+            config.text
           )}
         >
           <span
-            className="w-2.5 h-2.5 rounded-full"
+            className="w-2 h-2 rounded-full"
             style={{ backgroundColor: config.color }}
           />
           {resolvedCurrent?.name || config.label}
-          <ChevronDown className="w-4 h-4 opacity-60" />
+          <ChevronDown className="w-3.5 h-3.5 opacity-60" />
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -116,7 +117,7 @@ function StatusSelector({
   );
 }
 
-export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: DrawerHeaderProps) {
+export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange, saveStatus = 'idle' }: DrawerHeaderProps) {
   const workstreamName = task.workstream?.name || '';
   const wsColors = getWorkstreamColor(workstreamName);
   
@@ -126,56 +127,81 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: D
   const handleCopyLink = () => {
     const url = `${window.location.origin}/planner/task-list?task=${task.id}`;
     navigator.clipboard.writeText(url);
-    // Toast will be shown by the caller if needed
+    toast.success('Link copied to clipboard');
   };
 
   return (
-    <div className="px-6 pt-5 pb-5 bg-background border-b border-border">
-      {/* Close button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onClose}
-        className="absolute top-3 right-3 w-8 h-8 rounded-full hover:bg-muted"
-      >
-        <X className="w-4 h-4" />
-      </Button>
-
-      {/* Breadcrumb with Task ID - Workstream colored */}
-      <div className="flex items-center gap-2 text-xs mb-4">
-        {workstreamName && (
-          <span 
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-semibold text-[11px]"
-            style={{ 
-              backgroundColor: wsColors.hexLight, 
-              color: wsColors.hex 
-            }}
-          >
-            <span 
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: wsColors.hex }}
-            />
-            {workstreamName.replace(' Track', '')}
-          </span>
-        )}
-        <ChevronRight className="w-3 h-3 text-muted-foreground" />
-        {/* Task ID - Prominent display */}
-        <span className="font-mono font-bold text-foreground text-sm">{taskKey}</span>
+    <div className="px-6 pt-4 pb-4 bg-background border-b border-border">
+      {/* Top Row: Task ID + Workstream + Action Icons */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-1.5">
+          {/* Task ID */}
+          <span className="font-mono font-semibold text-foreground text-sm">{taskKey}</span>
+          
+          {/* Workstream badge */}
+          {workstreamName && (
+            <>
+              <span className="flex items-center gap-1 text-muted-foreground text-sm">
+                <span 
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: wsColors.hex }}
+                />
+                {workstreamName.replace(' Track', '')}
+              </span>
+              <ChevronRight className="w-3 h-3 text-muted-foreground" />
+            </>
+          )}
+        </div>
         
-        {/* Copy Link Button */}
-        <button
-          onClick={handleCopyLink}
-          className="ml-1 p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-          title="Copy link (⌘L)"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-          </svg>
-        </button>
+        {/* Action Icons */}
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleCopyLink}
+            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+            title="Copy link"
+          >
+            <Link2 className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+            title="Watch task"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+            title="Pin task"
+          >
+            <Pin className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+            title="More options"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+            title="Close"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
-      {/* Status Selector - PROMINENT */}
-      <div className="mb-4">
+      {/* Status Pill */}
+      <div className="mb-3">
         <StatusSelector 
           currentStatus={task.status}
           currentStatusId={task.status_id}
@@ -183,20 +209,34 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: D
         />
       </div>
 
-      {/* Title - Click-to-edit with visual feedback */}
+      {/* Title - Inline editable */}
       <h1 
         contentEditable
         suppressContentEditableWarning
         onBlur={(e) => onTitleChange(e.currentTarget.textContent || '')}
-        className="text-xl font-bold text-foreground outline-none hover:bg-muted/50 focus:bg-accent/50 focus:px-2 focus:-mx-2 rounded-md transition-colors leading-tight cursor-text py-1"
-        title="Click to edit (E)"
+        className="text-2xl font-bold text-foreground outline-none leading-tight cursor-text"
       >
         {task.title}
       </h1>
       
-      {/* Keyboard hint */}
-      <div className="mt-2 text-[10px] text-muted-foreground/60">
-        Press <kbd className="px-1 py-0.5 rounded bg-muted text-muted-foreground font-mono text-[9px]">E</kbd> to edit
+      {/* All changes saved indicator */}
+      <div className="mt-2 flex items-center gap-1.5">
+        {saveStatus === 'saved' ? (
+          <>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-xs text-emerald-600">All changes saved</span>
+          </>
+        ) : saveStatus === 'saving' ? (
+          <>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-xs text-amber-600">Saving...</span>
+          </>
+        ) : (
+          <>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-xs text-emerald-600">All changes saved</span>
+          </>
+        )}
       </div>
     </div>
   );
