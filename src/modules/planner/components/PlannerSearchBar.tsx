@@ -3,7 +3,8 @@
 // Search and filter toolbar for Planner
 // ============================================================
 
-import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight, Columns3 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight, Columns3, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';
@@ -19,6 +20,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 const GROUP_OPTIONS: { id: GroupByOption | 'none'; label: string }[] = [
   { id: 'none', label: 'None' },
@@ -268,45 +274,11 @@ export function PlannerSearchBar({
 
       {/* Assignee Filter */}
       {onAssigneeChange && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className={cn(
-              "h-9 gap-2",
-              filters.assigneeId && "border-blue-500 text-blue-600"
-            )}>
-              <span className="text-sm">Assignee</span>
-              {selectedAssignee && (
-                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 truncate max-w-[80px]">
-                  {selectedAssignee.name}
-                </span>
-              )}
-              <ChevronDown className="w-3.5 h-3.5 opacity-50" />
-            </Button>
-          </DropdownMenuTrigger>
-           <DropdownMenuContent align="start" className="z-[9999] bg-popover w-56 max-h-80 overflow-y-auto">
-            <DropdownMenuItem 
-              onClick={() => onAssigneeChange(null)}
-              className={cn(!filters.assigneeId && "bg-blue-50")}
-            >
-              All Assignees
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {users.map(user => (
-              <DropdownMenuItem
-                key={user.id}
-                onClick={() => onAssigneeChange(user.id)}
-                className={cn(filters.assigneeId === user.id && "bg-blue-50")}
-              >
-                <div className="flex items-center gap-2 w-full">
-                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium flex-shrink-0">
-                    {user.initials}
-                  </div>
-                  <span className="truncate flex-1">{user.name}</span>
-                </div>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AssigneeFilterPopover
+          users={users}
+          selectedAssigneeId={filters.assigneeId}
+          onAssigneeChange={onAssigneeChange}
+        />
       )}
 
       {/* Group By Dropdown */}
@@ -414,5 +386,100 @@ export function PlannerSearchBar({
         </DropdownMenu>
       )}
     </div>
+  );
+}
+
+// Assignee filter with search
+function AssigneeFilterPopover({
+  users,
+  selectedAssigneeId,
+  onAssigneeChange,
+}: {
+  users: PlannerUser[];
+  selectedAssigneeId: string | null | undefined;
+  onAssigneeChange: (id: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const selectedAssignee = users.find((u) => u.id === selectedAssigneeId);
+
+  const filteredUsers = useMemo(() => {
+    if (!search.trim()) return users;
+    const q = search.toLowerCase();
+    return users.filter((u) => u.name.toLowerCase().includes(q));
+  }, [users, search]);
+
+  return (
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(''); }}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="sm" className={cn(
+          "h-9 gap-2",
+          selectedAssigneeId && "border-blue-500 text-blue-600"
+        )}>
+          <span className="text-sm">Assignee</span>
+          {selectedAssignee && (
+            <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 truncate max-w-[80px]">
+              {selectedAssignee.name}
+            </span>
+          )}
+          <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="z-[9999] bg-popover w-64 p-0">
+        {/* Search input */}
+        <div className="p-2 border-b">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search assignees..."
+              autoFocus
+              className="w-full pl-8 pr-3 py-1.5 bg-muted/50 border rounded text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
+        
+        {/* Options */}
+        <div className="max-h-60 overflow-y-auto p-1">
+          <button
+            onClick={() => { onAssigneeChange(null); setOpen(false); setSearch(''); }}
+            className={cn(
+              "w-full flex items-center gap-2 px-2 py-2 rounded transition-colors text-left",
+              !selectedAssigneeId ? "bg-blue-50" : "hover:bg-muted/50"
+            )}
+          >
+            <Users className="w-4 h-4 text-muted-foreground" />
+            <span className="flex-1 text-sm">All Assignees</span>
+            {!selectedAssigneeId && <Check className="w-4 h-4 text-primary" />}
+          </button>
+          
+          {filteredUsers.length === 0 && search.trim() && (
+            <div className="px-2 py-4 text-center text-sm text-muted-foreground">
+              No matching users
+            </div>
+          )}
+          
+          {filteredUsers.map((user) => (
+            <button
+              key={user.id}
+              onClick={() => { onAssigneeChange(user.id); setOpen(false); setSearch(''); }}
+              className={cn(
+                "w-full flex items-center gap-2 px-2 py-2 rounded transition-colors text-left",
+                selectedAssigneeId === user.id ? "bg-blue-50" : "hover:bg-muted/50"
+              )}
+            >
+              <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium flex-shrink-0">
+                {user.initials}
+              </div>
+              <span className="flex-1 text-sm truncate">{user.name}</span>
+              {selectedAssigneeId === user.id && <Check className="w-4 h-4 text-primary" />}
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
