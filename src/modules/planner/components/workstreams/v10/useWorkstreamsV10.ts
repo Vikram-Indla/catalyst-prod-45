@@ -5,6 +5,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 import {
   WorkstreamDataV10,
   WorkstreamMemberV10,
@@ -60,15 +61,26 @@ export function useWorkstreamsV10() {
       if (membersError) throw new Error(membersError.message || 'Failed to fetch members');
 
       // Fetch profiles separately
-      const memberUserIds = [...new Set((allMembers || []).map(m => m.user_id))];
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url')
-        .in('id', memberUserIds.length > 0 ? memberUserIds : ['00000000-0000-0000-0000-000000000000']);
+      // NOTE: Some legacy/bad rows can have null user_id values; sending those through .in()
+      // causes Postgres to try to cast the literal "null" to uuid and explode.
+      const validMembers = (allMembers || []).filter(
+        (m) => isValidUUID(m.workstream_id) && isValidUUID(m.user_id)
+      );
 
-      if (profilesError) throw new Error(profilesError.message || 'Failed to fetch profiles');
+      const memberUserIds = [...new Set(validMembers.map((m) => m.user_id as string))];
+      let profiles: { id: string; full_name: string | null; avatar_url: string | null }[] = [];
 
-      const profileMap = new Map((profiles || []).map(p => [p.id, p]));
+      if (memberUserIds.length > 0) {
+        const { data: profileRows, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', memberUserIds);
+
+        if (profilesError) throw new Error(profilesError.message || 'Failed to fetch profiles');
+        profiles = profileRows || [];
+      }
+
+      const profileMap = new Map(profiles.map((p) => [p.id, p]));
 
       // Fetch task counts per workstream
       const { data: tasks, error: tasksError } = await supabase
@@ -90,13 +102,14 @@ export function useWorkstreamsV10() {
 
       // Aggregate data per workstream
       const result = (workstreams || []).map((ws) => {
-        const wsMembers = (allMembers || [])
+        const wsMembers = validMembers
           .filter(m => m.workstream_id === ws.id)
           .map((m): WorkstreamMemberV10 => {
-            const profile = profileMap.get(m.user_id);
+            const userId = m.user_id as string;
+            const profile = profileMap.get(userId);
             return {
               id: m.id,
-              user_id: m.user_id,
+              user_id: userId,
               role: m.role as 'lead' | 'member',
               initials: getInitials(profile?.full_name || null),
               color: getColorFromName(profile?.full_name || 'Unknown'),
