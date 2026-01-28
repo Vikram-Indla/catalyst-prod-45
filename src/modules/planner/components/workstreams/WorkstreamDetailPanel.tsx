@@ -498,12 +498,19 @@ export function WorkstreamDetailPanel({
                     <span>{leadMember.profile?.full_name || 'Unknown'}</span>
                     <Pencil className="w-3 h-3 opacity-50" />
                   </button>
-                ) : (
+                ) : members.length > 0 ? (
                   <button
                     onClick={handleEdit}
                     className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     Assign lead...
+                  </button>
+                ) : (
+                  <button
+                    onClick={onAddMembers}
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                  >
+                    Add members first...
                   </button>
                 )}
               </div>
