@@ -319,20 +319,20 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
               />
             </div>
             
-            {/* Color Picker */}
+            {/* Color Picker - Pill Style */}
             <div className="space-y-2">
               <Label>Color</Label>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {WORKSTREAM_COLORS.map((c) => (
                   <button
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
                     className={cn(
-                      'w-8 h-8 rounded-lg transition-all',
+                      'w-5 h-5 rounded-full transition-all',
                       color === c 
-                        ? 'ring-2 ring-offset-2 ring-primary scale-110' 
-                        : 'hover:scale-105'
+                        ? 'ring-2 ring-offset-1 ring-slate-400 scale-110' 
+                        : 'hover:scale-110 hover:ring-1 hover:ring-slate-300'
                     )}
                     style={{ backgroundColor: c }}
                   />
