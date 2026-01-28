@@ -3,7 +3,8 @@
 // Main entry point for Kanban board with filters
 // ============================================================
 
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Kanban } from 'lucide-react';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
@@ -37,6 +38,7 @@ export function PlannerBoardsPage({
   externalBlocked,
   externalOverdue,
 }: PlannerBoardsPageProps) {
+  const [searchParams] = useSearchParams();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createStatusId, setCreateStatusId] = useState<string | undefined>();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -45,14 +47,36 @@ export function PlannerBoardsPage({
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Local state for filters
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(externalWorkstreamId || null);
-  const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
-
   // Data hooks
-  const { data: tasks = [] } = usePlannerTasks(selectedTeamId);
   const { data: teams = [] } = usePlannerWorkstreams();
   const { data: users = [] } = usePlannerUsers();
+
+  // Get workstream ID from URL param (slug/code) or external prop
+  const urlWorkstream = searchParams.get('workstream');
+  const resolvedWorkstreamId = useMemo(() => {
+    if (externalWorkstreamId) return externalWorkstreamId;
+    if (!urlWorkstream) return null;
+    
+    // Match by slug (case-insensitive) or by ID
+    const match = teams.find(t => 
+      t.slug?.toLowerCase() === urlWorkstream.toLowerCase() ||
+      t.id === urlWorkstream
+    );
+    return match?.id || null;
+  }, [externalWorkstreamId, urlWorkstream, teams]);
+
+  // Local state for filters
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(resolvedWorkstreamId);
+  const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
+
+  // Sync selected team when URL changes
+  useEffect(() => {
+    if (resolvedWorkstreamId !== null) {
+      setSelectedTeamId(resolvedWorkstreamId);
+    }
+  }, [resolvedWorkstreamId]);
+
+  const { data: tasks = [] } = usePlannerTasks(selectedTeamId);
 
   // Search and filter
   const {

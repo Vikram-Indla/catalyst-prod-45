@@ -30,6 +30,7 @@ export function usePlannerWorkstreams() {
         id: ws.id,
         name: ws.name,
         shortName: ws.name.slice(0, 3).toUpperCase(),
+        slug: ws.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
         description: undefined,
         memberCount: 0, // No members table yet - will be wired when resources are added
         color: '#10b981', // Default green

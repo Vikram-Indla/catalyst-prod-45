@@ -1,10 +1,13 @@
 // ============================================================
 // WORKSTREAM DETAIL PANEL V9
 // Comprehensive panel with header, stats, progress, tasks, activity
+// Real-time data from database - NO MOCK DATA
 // ============================================================
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   X, 
   Pencil, 
@@ -41,49 +44,145 @@ interface WorkstreamDetailPanelProps {
   onEdit?: () => void;
 }
 
-// Mock recent tasks - in production would come from DB
-const getMockRecentTasks = (workstream: WorkstreamData) => [
-  { 
-    key: `${workstream.code}-12`, 
-    title: 'Factory Registration Module', 
-    status: 'Backlog',
-    statusColor: 'bg-slate-100 text-slate-600'
-  },
-  { 
-    key: `${workstream.code}-11`, 
-    title: 'Compliance Dashboard Design', 
-    status: 'In Progress',
-    statusColor: 'bg-amber-100 text-amber-700'
-  },
-];
+// Fetch recent tasks for this workstream from DB
+function useWorkstreamRecentTasks(workstreamId: string | null) {
+  return useQuery({
+    queryKey: ['workstream-recent-tasks', workstreamId],
+    queryFn: async () => {
+      if (!workstreamId) return [];
+      
+      const { data, error } = await supabase
+        .from('planner_tasks')
+        .select(`
+          id,
+          key,
+          title,
+          status:planner_statuses(slug, name, color)
+        `)
+        .eq('workstream_id', workstreamId)
+        .order('updated_at', { ascending: false })
+        .limit(5);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!workstreamId,
+    staleTime: 30 * 1000,
+  });
+}
 
-// Mock activity - in production would come from DB
-const getMockActivity = () => [
-  { 
-    id: '1',
-    user: 'Sara Ahmed', 
-    initials: 'SA', 
-    color: '#3b82f6',
-    action: 'moved SEN-11 to In Progress', 
-    time: '2 hours ago' 
-  },
-  { 
-    id: '2',
-    user: 'Ibrahim Khalil', 
-    initials: 'IB', 
-    color: '#f97316',
-    action: 'created task SEN-12', 
-    time: 'Yesterday' 
-  },
-  { 
-    id: '3',
-    user: 'System', 
-    initials: 'SY', 
-    color: '#a855f7',
-    action: 'marked SEN-10 as overdue', 
-    time: '2 days ago' 
-  },
-];
+// Fetch recent activity for this workstream from planner_activity_log
+function useWorkstreamActivity(workstreamId: string | null) {
+  return useQuery({
+    queryKey: ['workstream-activity', workstreamId],
+    queryFn: async () => {
+      if (!workstreamId) return [];
+      
+      // Get task IDs for this workstream first
+      const { data: tasks } = await supabase
+        .from('planner_tasks')
+        .select('id')
+        .eq('workstream_id', workstreamId);
+      
+      if (!tasks || tasks.length === 0) return [];
+      
+      const taskIds = tasks.map(t => t.id);
+      
+      // Get activity for these tasks
+      const { data: activities, error } = await supabase
+        .from('planner_activity_log')
+        .select('*')
+        .in('task_id', taskIds)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      if (!activities || activities.length === 0) return [];
+      
+      // Get user profiles for the activity
+      const userIds = [...new Set(activities.map(a => a.user_id).filter(Boolean))];
+      let profilesMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
+      
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', userIds);
+        
+        if (profiles) {
+          profilesMap = Object.fromEntries(profiles.map(p => [p.id, p]));
+        }
+      }
+      
+      // Get task keys for the activity
+      const activityTaskIds = [...new Set(activities.map(a => a.task_id).filter(Boolean))];
+      let taskKeysMap: Record<string, string> = {};
+      
+      if (activityTaskIds.length > 0) {
+        const { data: taskData } = await supabase
+          .from('planner_tasks')
+          .select('id, key')
+          .in('id', activityTaskIds);
+        
+        if (taskData) {
+          taskKeysMap = Object.fromEntries(taskData.map(t => [t.id, t.key]));
+        }
+      }
+      
+      return activities.map(activity => {
+        const profile = activity.user_id ? profilesMap[activity.user_id] : null;
+        const taskKey = activity.task_id ? taskKeysMap[activity.task_id] : null;
+        const userName = profile?.full_name || 'System';
+        const initials = userName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        
+        return {
+          id: activity.id,
+          user: userName,
+          initials,
+          color: getColorFromName(userName),
+          action: formatActivityAction(activity.action, activity.old_value, activity.new_value, taskKey),
+          time: formatDistanceToNow(new Date(activity.created_at), { addSuffix: true }),
+        };
+      });
+    },
+    enabled: !!workstreamId,
+    staleTime: 30 * 1000,
+  });
+}
+
+// Generate consistent color from name
+function getColorFromName(name: string): string {
+  const colors = ['#3b82f6', '#f97316', '#a855f7', '#10b981', '#ef4444', '#06b6d4', '#ec4899'];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+// Format activity action text
+function formatActivityAction(action: string, oldValue: any, newValue: any, taskKey: string | null): string {
+  const taskRef = taskKey || 'a task';
+  
+  switch (action) {
+    case 'created':
+      return `created task ${taskRef}`;
+    case 'status_changed':
+      const newStatus = typeof newValue === 'string' ? (JSON.parse(newValue)?.name || newValue) : (newValue?.name || 'unknown');
+      return `moved ${taskRef} to ${newStatus}`;
+    case 'priority_changed':
+      const newPriority = typeof newValue === 'string' ? newValue : 'updated';
+      return `changed ${taskRef} priority to ${newPriority}`;
+    case 'assignee_changed':
+      return `reassigned ${taskRef}`;
+    case 'title_changed':
+      return `updated ${taskRef} title`;
+    case 'description_changed':
+      return `updated ${taskRef} description`;
+    default:
+      return `updated ${taskRef}`;
+  }
+}
 
 export function WorkstreamDetailPanel({ 
   workstream, 
@@ -93,6 +192,10 @@ export function WorkstreamDetailPanel({
 }: WorkstreamDetailPanelProps) {
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(true);
+  
+  // Fetch real data
+  const { data: recentTasks = [] } = useWorkstreamRecentTasks(workstream?.id || null);
+  const { data: activity = [] } = useWorkstreamActivity(workstream?.id || null);
 
   // Close on escape
   useEffect(() => {
@@ -108,21 +211,20 @@ export function WorkstreamDetailPanel({
   if (!workstream) return null;
 
   const handleViewTasks = () => {
-    navigate(`/planner/task-list?workstream=${encodeURIComponent(workstream.id)}`);
+    // Use code as slug fallback for URL filtering
+    navigate(`/planner/task-list?workstream=${encodeURIComponent(workstream.code.toLowerCase())}`);
     onClose();
   };
 
   const handleViewBoard = () => {
-    navigate(`/planner/boards?workstream=${encodeURIComponent(workstream.id)}`);
+    // Use code as slug fallback for URL filtering  
+    navigate(`/planner/boards?workstream=${encodeURIComponent(workstream.code.toLowerCase())}`);
     onClose();
   };
 
   const handleEdit = () => {
     onEdit?.();
   };
-
-  const recentTasks = getMockRecentTasks(workstream);
-  const activity = getMockActivity();
 
   const stats = [
     { 
@@ -359,11 +461,14 @@ export function WorkstreamDetailPanel({
                   <span className="flex-1 text-sm text-slate-700 dark:text-slate-300 truncate">
                     {task.title}
                   </span>
-                  <span className={cn(
-                    'text-xs px-2 py-1 rounded-md font-medium flex-shrink-0',
-                    task.statusColor
-                  )}>
-                    {task.status}
+                  <span 
+                    className="text-xs px-2 py-1 rounded-md font-medium flex-shrink-0"
+                    style={{ 
+                      backgroundColor: task.status?.color ? `${task.status.color}20` : '#f1f5f9',
+                      color: task.status?.color || '#64748b'
+                    }}
+                  >
+                    {task.status?.name || 'Unknown'}
                   </span>
                 </div>
               ))}
@@ -386,27 +491,33 @@ export function WorkstreamDetailPanel({
               </h3>
             </div>
             
-            <div className="space-y-4">
-              {activity.map((item) => (
-                <div key={item.id} className="flex items-start gap-3">
-                  <div 
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
-                    style={{ backgroundColor: item.color }}
-                  >
-                    {item.initials}
+            {activity.length === 0 ? (
+              <div className="text-center py-6 text-sm text-slate-400 dark:text-slate-500">
+                No recent activity
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {activity.map((item) => (
+                  <div key={item.id} className="flex items-start gap-3">
+                    <div 
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
+                      style={{ backgroundColor: item.color }}
+                    >
+                      {item.initials}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-slate-700 dark:text-slate-300">
+                        <span className="font-semibold">{item.user}</span>
+                        {' '}{item.action}
+                      </p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                        {item.time}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-700 dark:text-slate-300">
-                      <span className="font-semibold">{item.user}</span>
-                      {' '}{item.action}
-                    </p>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                      {item.time}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -431,8 +542,8 @@ export function WorkstreamDetailPanel({
           </div>
           
           <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
-            <span>Created Jan 10, 2026</span>
-            <span>Updated 2 hours ago</span>
+            <span>{workstream.task_count} tasks total</span>
+            <span>{workstream.overdue_count > 0 ? `${workstream.overdue_count} overdue` : 'No overdue tasks'}</span>
           </div>
         </div>
       </SheetContent>
