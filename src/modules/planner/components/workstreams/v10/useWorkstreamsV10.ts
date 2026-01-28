@@ -24,6 +24,8 @@ export function useWorkstreamsV10() {
   return useQuery({
     queryKey: ['workstreams-v10'],
     queryFn: async (): Promise<WorkstreamDataV10[]> => {
+      console.log('[Workstreams V10] Fetching workstreams...');
+      
       // Fetch workstreams (no is_archived column - use is_active)
       const { data: workstreams, error } = await supabase
         .from('planner_workstreams')
@@ -41,6 +43,7 @@ export function useWorkstreamsV10() {
         .eq('is_active', true)
         .order('name');
 
+      console.log('[Workstreams V10] Workstreams query result:', { workstreams, error });
       if (error) throw error;
 
       // Fetch members for all workstreams
@@ -85,7 +88,7 @@ export function useWorkstreamsV10() {
       const now = new Date();
 
       // Aggregate data per workstream
-      return (workstreams || []).map((ws) => {
+      const result = (workstreams || []).map((ws) => {
         const wsMembers = (allMembers || [])
           .filter(m => m.workstream_id === ws.id)
           .map((m): WorkstreamMemberV10 => {
@@ -143,7 +146,7 @@ export function useWorkstreamsV10() {
           progress,
           members: wsMembers,
           health,
-          healthTrend: 'stable', // Would need historical data for real trends
+          healthTrend: 'stable' as const, // Would need historical data for real trends
           lead,
           isLocked: false,
           isMember: true, // TODO: Check actual membership
@@ -152,6 +155,9 @@ export function useWorkstreamsV10() {
           due_date: ws.due_date,
         };
       });
+      
+      console.log('[Workstreams V10] Transformed:', result.length, 'workstreams');
+      return result;
     },
     staleTime: 30000,
   });
