@@ -45,7 +45,7 @@ export function useWorkstreamsSummary() {
           status_id,
           due_date,
           assignee_id,
-          planner_statuses!inner(slug),
+          planner_statuses(slug),
           profiles(id, full_name)
         `)
         .is('deleted_at', null);
