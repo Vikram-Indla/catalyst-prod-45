@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { 
-  Layers, Plus, Loader2, X, Check, Search, UserPlus, Users, Trash2 
+  Layers, Plus, Loader2, X, Check, Search, Users, Trash2 
 } from 'lucide-react';
 import {
   Dialog,
@@ -27,9 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useCreateWorkstream } from './useCreateWorkstream';
-import { useAvailableResources } from './useWorkstreamMutations';
+import { useSearchProfiles } from './useSearchProfiles';
 
 interface CreateWorkstreamModalProps {
   open: boolean;
@@ -38,10 +39,13 @@ interface CreateWorkstreamModalProps {
 }
 
 interface MemberToAdd {
-  resourceId: string;
-  name: string;
-  email: string | null;
-  roleName: string | null;
+  userId: string;
+  fullName: string;
+  email: string;
+  avatarUrl: string | null;
+  avatarColor: string;
+  initials: string;
+  jobTitle: string | null;
   role: 'lead' | 'member';
 }
 
@@ -79,8 +83,9 @@ export function CreateWorkstreamModal({
   onSuccess,
 }: CreateWorkstreamModalProps) {
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const createWorkstream = useCreateWorkstream();
-  const { data: allResources = [] } = useAvailableResources();
   
   // Form state
   const [name, setName] = useState('');
@@ -89,8 +94,17 @@ export function CreateWorkstreamModal({
   const [description, setDescription] = useState('');
   const [members, setMembers] = useState<MemberToAdd[]>([]);
   const [memberSearch, setMemberSearch] = useState('');
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+  // Get IDs of already added members to exclude from search
+  const excludeIds = useMemo(() => members.map(m => m.userId), [members]);
+  
+  // Use the search hook - queries profiles table
+  const { data: searchResults = [], isLoading: isSearching } = useSearchProfiles(
+    memberSearch,
+    excludeIds
+  );
   
   // Auto-generate slug from name
   useEffect(() => {
@@ -116,48 +130,49 @@ export function CreateWorkstreamModal({
       setMembers([]);
       setMemberSearch('');
       setSlugManuallyEdited(false);
+      setIsDropdownOpen(false);
     }
   }, [open]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
-  // Filter available resources (exclude already added members)
-  const filteredResources = useMemo(() => {
-    const addedIds = new Set(members.map(m => m.resourceId));
-    return allResources.filter(r => {
-      if (addedIds.has(r.id)) return false;
-      if (!memberSearch.trim()) return true;
-      const searchLower = memberSearch.toLowerCase();
-      return (
-        r.name?.toLowerCase().includes(searchLower) ||
-        r.email?.toLowerCase().includes(searchLower) ||
-        r.role_name?.toLowerCase().includes(searchLower)
-      );
-    });
-  }, [allResources, members, memberSearch]);
-  
-  const handleAddMember = (resource: typeof allResources[0]) => {
+  const handleAddMember = (user: typeof searchResults[0]) => {
     const newMember: MemberToAdd = {
-      resourceId: resource.id,
-      name: resource.name || 'Unknown',
-      email: resource.email,
-      roleName: resource.role_name,
+      userId: user.id,
+      fullName: user.full_name,
+      email: user.email,
+      avatarUrl: user.avatar_url,
+      avatarColor: user.avatar_color || '#64748b',
+      initials: user.initials,
+      jobTitle: user.job_title,
       role: 'member',
     };
     setMembers([...members, newMember]);
     setMemberSearch('');
-    setIsSearchOpen(false);
+    setIsDropdownOpen(false);
+    searchInputRef.current?.focus();
   };
   
-  const handleRemoveMember = (resourceId: string) => {
-    setMembers(members.filter(m => m.resourceId !== resourceId));
+  const handleRemoveMember = (userId: string) => {
+    setMembers(members.filter(m => m.userId !== userId));
   };
   
-  const handleRoleChange = (resourceId: string, role: 'lead' | 'member') => {
+  const handleRoleChange = (userId: string, role: 'lead' | 'member') => {
     setMembers(members.map(m => {
       // If setting as lead, demote current lead
-      if (role === 'lead' && m.role === 'lead' && m.resourceId !== resourceId) {
+      if (role === 'lead' && m.role === 'lead' && m.userId !== userId) {
         return { ...m, role: 'member' as const };
       }
-      if (m.resourceId === resourceId) {
+      if (m.userId === userId) {
         return { ...m, role };
       }
       return m;
@@ -174,7 +189,7 @@ export function CreateWorkstreamModal({
         color,
         description: description.trim() || null,
         members: members.map(m => ({
-          resourceId: m.resourceId,
+          resourceId: m.userId, // Using userId from profiles
           role: m.role,
         })),
       });
@@ -186,7 +201,7 @@ export function CreateWorkstreamModal({
   };
   
   const canSubmit = name.trim() && slug.trim() && !createWorkstream.isPending;
-  const leadMember = members.find(m => m.role === 'lead');
+  const showDropdown = isDropdownOpen && memberSearch.trim().length >= 2;
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -325,24 +340,28 @@ export function CreateWorkstreamModal({
                   <div className="space-y-2">
                     {members.map((member) => (
                       <div
-                        key={member.resourceId}
+                        key={member.userId}
                         className="flex items-center gap-3 p-3 bg-background rounded-lg group"
                       >
-                        <div 
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0"
-                          style={{ backgroundColor: color }}
-                        >
-                          {member.name.charAt(0).toUpperCase()}
-                        </div>
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage src={member.avatarUrl || undefined} />
+                          <AvatarFallback 
+                            style={{ backgroundColor: member.avatarColor }}
+                            className="text-white text-xs font-semibold"
+                          >
+                            {member.initials}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium text-sm truncate">{member.name}</div>
+                          <div className="font-medium text-sm truncate">{member.fullName}</div>
                           <div className="text-xs text-muted-foreground truncate">
-                            {member.roleName || member.email || 'No role'}
+                            {member.email}
+                            {member.jobTitle && ` · ${member.jobTitle}`}
                           </div>
                         </div>
                         <Select
                           value={member.role}
-                          onValueChange={(value) => handleRoleChange(member.resourceId, value as 'lead' | 'member')}
+                          onValueChange={(value) => handleRoleChange(member.userId, value as 'lead' | 'member')}
                         >
                           <SelectTrigger className="w-24 h-7 text-xs">
                             <SelectValue />
@@ -356,7 +375,7 @@ export function CreateWorkstreamModal({
                           variant="ghost"
                           size="icon"
                           className="w-7 h-7 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
-                          onClick={() => handleRemoveMember(member.resourceId)}
+                          onClick={() => handleRemoveMember(member.userId)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -371,47 +390,74 @@ export function CreateWorkstreamModal({
                   </div>
                 )}
 
-                {/* Search Input */}
-                <div className="relative">
+                {/* Search Input with Dropdown */}
+                <div className="relative" ref={dropdownRef}>
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   <Input
-                    placeholder="Search by name, email, or role..."
+                    ref={searchInputRef}
+                    placeholder="Search by name or email..."
                     value={memberSearch}
-                    onChange={(e) => setMemberSearch(e.target.value)}
-                    onFocus={() => setIsSearchOpen(true)}
+                    onChange={(e) => {
+                      setMemberSearch(e.target.value);
+                      setIsDropdownOpen(true);
+                    }}
+                    onFocus={() => setIsDropdownOpen(true)}
                     className="pl-10 border-dashed"
                   />
                   
-                  {/* Search Dropdown */}
-                  {isSearchOpen && memberSearch && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-md max-h-48 overflow-y-auto z-20">
-                      {filteredResources.length === 0 ? (
-                        <div className="p-3 text-sm text-muted-foreground text-center">
-                          No users found
+                  {/* Loading indicator */}
+                  {isSearching && memberSearch.length >= 2 && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
+                  )}
+                  
+                  {/* Hint for minimum characters */}
+                  {memberSearch.length > 0 && memberSearch.length < 2 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg p-3 text-xs text-muted-foreground text-center z-50">
+                      Type at least 2 characters to search
+                    </div>
+                  )}
+
+                  {/* Search Results Dropdown */}
+                  {showDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
+                      {isSearching ? (
+                        <div className="p-4 text-center text-sm text-muted-foreground">
+                          <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
+                          Searching...
                         </div>
-                      ) : (
-                        filteredResources.slice(0, 10).map((resource) => (
+                      ) : searchResults.length > 0 ? (
+                        searchResults.map((user) => (
                           <button
-                            key={resource.id}
+                            key={user.id}
                             type="button"
                             className="w-full flex items-center gap-3 p-3 hover:bg-muted transition-colors text-left"
-                            onClick={() => handleAddMember(resource)}
+                            onClick={() => handleAddMember(user)}
                           >
-                            <div 
-                              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0"
-                              style={{ backgroundColor: color }}
-                            >
-                              {resource.name?.charAt(0).toUpperCase() || '?'}
-                            </div>
+                            <Avatar className="w-8 h-8">
+                              <AvatarImage src={user.avatar_url || undefined} />
+                              <AvatarFallback 
+                                style={{ backgroundColor: user.avatar_color || '#64748b' }}
+                                className="text-white text-xs font-semibold"
+                              >
+                                {user.initials}
+                              </AvatarFallback>
+                            </Avatar>
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm truncate">{resource.name}</div>
+                              <div className="font-medium text-sm truncate">
+                                {user.full_name}
+                              </div>
                               <div className="text-xs text-muted-foreground truncate">
-                                {resource.role_name || resource.email || 'No role'}
+                                {user.email}
+                                {user.job_title && ` · ${user.job_title}`}
                               </div>
                             </div>
                             <Plus className="w-4 h-4 text-muted-foreground shrink-0" />
                           </button>
                         ))
+                      ) : (
+                        <div className="p-4 text-center text-sm text-muted-foreground">
+                          No users found matching "{memberSearch}"
+                        </div>
                       )}
                     </div>
                   )}

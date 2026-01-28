@@ -13,7 +13,7 @@ export interface CreateWorkstreamInput {
   color: string;
   description: string | null;
   members: {
-    resourceId: string;
+    resourceId: string; // This is actually the user_id (profile id)
     role: 'lead' | 'member';
   }[];
 }
@@ -47,7 +47,7 @@ export function useCreateWorkstream() {
       if (input.members.length > 0) {
         const membersToInsert = input.members.map(m => ({
           workstream_id: workstream.id,
-          resource_id: m.resourceId,
+          user_id: m.resourceId, // Using user_id column for profile ids
           role: m.role,
         }));
 
@@ -79,6 +79,7 @@ export function useCreateWorkstream() {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
       queryClient.invalidateQueries({ queryKey: ['workstream-details'] });
       queryClient.invalidateQueries({ queryKey: ['planner', 'workstreams'] });
+      queryClient.invalidateQueries({ queryKey: ['workstream-members'] });
       toast.success(`Workstream "${data.name}" created!`);
     },
     onError: (error: Error) => {

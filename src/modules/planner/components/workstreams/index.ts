@@ -12,6 +12,7 @@ export { CreateWorkstreamModal } from './CreateWorkstreamModal';
 export { HealthIndicator } from './HealthIndicator';
 export { useWorkstreamsSummary } from './useWorkstreamsSummary';
 export { useCreateWorkstream } from './useCreateWorkstream';
+export { useSearchProfiles } from './useSearchProfiles';
 export { 
   useWorkstreamDetails, 
   useWorkstreamMembers, 

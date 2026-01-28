@@ -28885,7 +28885,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          resource_id: string
+          resource_id: string | null
           role: string | null
           user_id: string | null
           workstream_id: string
@@ -28893,7 +28893,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          resource_id: string
+          resource_id?: string | null
           role?: string | null
           user_id?: string | null
           workstream_id: string
@@ -28901,7 +28901,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
-          resource_id?: string
+          resource_id?: string | null
           role?: string | null
           user_id?: string | null
           workstream_id?: string
