@@ -477,14 +477,14 @@ export function WorkstreamDetailPanel({
                 {recentTasks.map((task) => (
                   <div 
                     key={task.id}
-                    onClick={() => navigate(`/planner/task/${task.id}`)}
+                    onClick={() => navigate(`/planner/tasks?taskId=${task.id}`)}
                     className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 group cursor-pointer transition-colors"
                   >
                     {/* Task Key - clickable */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/planner/task/${task.id}`);
+                        navigate(`/planner/tasks?taskId=${task.id}`);
                       }}
                       className="text-xs font-mono text-blue-600 dark:text-blue-400 w-[60px] flex-shrink-0 truncate hover:underline hover:text-blue-700 dark:hover:text-blue-300 text-left"
                     >
