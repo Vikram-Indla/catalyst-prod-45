@@ -1,57 +1,143 @@
+import { useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useRolePermissions, PERMISSION_GROUPS } from '@/hooks/useProductRoles';
+import { useRolePermissions, PERMISSION_GROUPS, useUpdateRolePermissions, PermissionLevel } from '@/hooks/useProductRoles';
+import { useUserRole } from '@/hooks/useUserRole';
 import { Check, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface RoleModuleAccessGridProps {
   roleId: string;
   roleName: string;
 }
 
-function getAccessBadge(level: string | undefined) {
+const PERMISSION_CYCLE: PermissionLevel[] = ['None', 'View only', 'Full'];
+
+function getNextPermission(current: PermissionLevel | undefined): PermissionLevel {
+  const currentLevel = current || 'None';
+  const currentIndex = PERMISSION_CYCLE.indexOf(currentLevel);
+  const nextIndex = (currentIndex + 1) % PERMISSION_CYCLE.length;
+  return PERMISSION_CYCLE[nextIndex];
+}
+
+interface AccessBadgeProps {
+  level: string | undefined;
+  isUpdating: boolean;
+  canEdit: boolean;
+  onClick: () => void;
+}
+
+function AccessBadge({ level, isUpdating, canEdit, onClick }: AccessBadgeProps) {
+  const baseClasses = cn(
+    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all",
+    canEdit && "cursor-pointer hover:scale-105 active:scale-95",
+    !canEdit && "cursor-default"
+  );
+
+  if (isUpdating) {
+    return (
+      <span className={cn(baseClasses, "bg-zinc-100 text-zinc-500")}>
+        <Loader2 className="h-3 w-3 animate-spin" />
+      </span>
+    );
+  }
+
   switch (level) {
     case 'Full':
       return (
-        <Badge 
-          variant="secondary" 
-          className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 gap-1 text-xs font-medium"
+        <button 
+          onClick={onClick}
+          disabled={!canEdit}
+          className={cn(
+            baseClasses, 
+            "bg-emerald-100 text-emerald-700 hover:bg-emerald-200",
+            !canEdit && "hover:bg-emerald-100"
+          )}
         >
           <Check className="h-3 w-3" />
           Full
-        </Badge>
+        </button>
       );
     case 'View only':
       return (
-        <Badge 
-          variant="secondary" 
-          className="bg-blue-100 text-blue-700 hover:bg-blue-100 gap-1 text-xs font-medium"
+        <button 
+          onClick={onClick}
+          disabled={!canEdit}
+          className={cn(
+            baseClasses, 
+            "bg-blue-100 text-blue-700 hover:bg-blue-200",
+            !canEdit && "hover:bg-blue-100"
+          )}
         >
           <Eye className="h-3 w-3" />
           View
-        </Badge>
+        </button>
       );
     case 'None':
     default:
       return (
-        <Badge 
-          variant="secondary" 
-          className="bg-zinc-100 text-zinc-500 hover:bg-zinc-100 gap-1 text-xs font-medium"
+        <button 
+          onClick={onClick}
+          disabled={!canEdit}
+          className={cn(
+            baseClasses, 
+            "bg-zinc-100 text-zinc-500 hover:bg-zinc-200",
+            !canEdit && "hover:bg-zinc-100"
+          )}
         >
           <EyeOff className="h-3 w-3" />
           Hide
-        </Badge>
+        </button>
       );
   }
 }
 
 export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridProps) {
+  const queryClient = useQueryClient();
   const { data: permissions, isLoading } = useRolePermissions(roleId);
+  const { isAdmin, isSuperAdmin } = useUserRole();
+  const updatePermissions = useUpdateRolePermissions();
+  const [updatingModule, setUpdatingModule] = useState<string | null>(null);
+
+  const canEdit = isAdmin || isSuperAdmin;
 
   const permissionLookup = (permissions || []).reduce((acc, p) => {
     acc[p.permission_group] = p.permission_level;
     return acc;
-  }, {} as Record<string, string>);
+  }, {} as Record<string, PermissionLevel>);
+
+  const handleTogglePermission = async (module: string) => {
+    if (!canEdit || updatingModule) return;
+
+    const currentLevel = permissionLookup[module] || 'None';
+    const nextLevel = getNextPermission(currentLevel);
+
+    setUpdatingModule(module);
+
+    // Optimistic update
+    queryClient.setQueryData(['role-permissions', roleId], (old: any) => {
+      if (!old) return old;
+      const existing = old.find((p: any) => p.permission_group === module);
+      if (existing) {
+        return old.map((p: any) =>
+          p.permission_group === module ? { ...p, permission_level: nextLevel } : p
+        );
+      }
+      return [...old, { role_id: roleId, permission_group: module, permission_level: nextLevel }];
+    });
+
+    try {
+      await updatePermissions.mutateAsync({
+        roleId,
+        permissions: { [module]: nextLevel },
+      });
+    } catch (error) {
+      // Revert optimistic update on error
+      queryClient.invalidateQueries({ queryKey: ['role-permissions', roleId] });
+    } finally {
+      setUpdatingModule(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -95,19 +181,26 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
         </div>
       </CardHeader>
       <CardContent className="pt-4">
+        {canEdit && (
+          <p className="text-xs text-muted-foreground mb-4">
+            Click on any access level to toggle between Hide → View → Full
+          </p>
+        )}
         <div className="grid grid-cols-2 gap-2">
           {PERMISSION_GROUPS.map((module) => {
             const level = permissionLookup[module];
             const isHidden = !level || level === 'None';
+            const isUpdating = updatingModule === module;
             
             return (
               <div 
                 key={module}
                 className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border",
+                  "flex items-center justify-between p-3 rounded-lg border transition-colors",
                   isHidden 
                     ? "bg-muted/30 border-border/50" 
-                    : "bg-background border-border"
+                    : "bg-background border-border",
+                  isUpdating && "opacity-70"
                 )}
               >
                 <span className={cn(
@@ -116,7 +209,12 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
                 )}>
                   {module}
                 </span>
-                {getAccessBadge(level)}
+                <AccessBadge
+                  level={level}
+                  isUpdating={isUpdating}
+                  canEdit={canEdit}
+                  onClick={() => handleTogglePermission(module)}
+                />
               </div>
             );
           })}
