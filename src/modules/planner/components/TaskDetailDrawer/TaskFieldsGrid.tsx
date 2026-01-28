@@ -53,6 +53,22 @@ function useProfiles() {
   });
 }
 
+function useWorkstreams() {
+  return useQuery({
+    queryKey: ['drawer-workstreams'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('planner_workstreams')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+}
+
 export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
   const { data: profiles = [] } = useProfiles();
   const workstreamName = task.workstream?.name || '';
@@ -97,16 +113,11 @@ export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
           icon={<Layers className="w-4 h-4" />} 
           label="Workstream"
         >
-          <div className="flex items-center gap-2">
-            <span 
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: wsColors.hex }}
-            />
-            <span className="text-sm text-foreground">
-              {workstreamName || 'None'}
-            </span>
-            <span className="text-muted-foreground">›</span>
-          </div>
+          <WorkstreamSelect
+            value={task.workstream_id}
+            currentWorkstream={task.workstream}
+            onChange={(id) => onFieldChange('workstream_id', id)}
+          />
         </FieldRow>
 
         {/* Start Date */}
@@ -381,6 +392,79 @@ function DueDatePicker({ value, onChange }: { value: string | null; onChange: (d
           }}
           className="p-3"
         />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// Workstream Select
+function WorkstreamSelect({ 
+  value, 
+  currentWorkstream,
+  onChange 
+}: { 
+  value: string | null; 
+  currentWorkstream: any; 
+  onChange: (id: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const { data: workstreams = [] } = useWorkstreams();
+
+  const displayWorkstream = useMemo(() => {
+    if (!value) return null;
+    return workstreams.find((w) => w.id === value) || currentWorkstream || null;
+  }, [workstreams, value, currentWorkstream]);
+
+  const wsColors = getWorkstreamColor(displayWorkstream?.name || '');
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className="flex items-center gap-2 hover:bg-muted/50 px-2 py-1 rounded transition-colors">
+          <span 
+            className="w-2 h-2 rounded-full"
+            style={{ backgroundColor: wsColors.hex }}
+          />
+          <span className="text-sm text-foreground">
+            {displayWorkstream?.name || 'None'}
+          </span>
+          <span className="text-muted-foreground">›</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-56 p-0 z-[500] bg-popover" align="end">
+        <div className="max-h-[240px] overflow-y-auto p-1">
+          <button
+            onClick={() => { onChange(null); setOpen(false); }}
+            className={cn(
+              "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
+              !value ? "bg-muted" : "hover:bg-muted/50"
+            )}
+          >
+            <span className="w-2 h-2 rounded-full bg-gray-400" />
+            <span className="text-sm text-muted-foreground">None</span>
+            {!value && <Check className="w-4 h-4 ml-auto text-primary" />}
+          </button>
+          {workstreams.map((ws) => {
+            const colors = getWorkstreamColor(ws.name);
+            return (
+              <button
+                key={ws.id}
+                onClick={() => { onChange(ws.id); setOpen(false); }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
+                  value === ws.id ? "bg-muted" : "hover:bg-muted/50"
+                )}
+              >
+                <span 
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: colors.hex }}
+                />
+                <span className="text-sm">{ws.name}</span>
+                {value === ws.id && <Check className="w-4 h-4 ml-auto text-primary" />}
+              </button>
+            );
+          })}
+        </div>
       </PopoverContent>
     </Popover>
   );
