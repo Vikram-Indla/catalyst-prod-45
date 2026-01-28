@@ -87,6 +87,37 @@
   --sr-transition-fast: 100ms ease;
   --sr-transition-base: 150ms ease;
   --sr-transition-slow: 250ms ease;
+
+  /* ==================== GLOBAL TOKEN MAPPINGS ==================== */
+  /* These map the global tokens used by child components to ring-fenced values */
+  --text-primary: var(--sr-text-primary);
+  --text-primary-hex: var(--sr-text-primary);
+  --text-secondary: var(--sr-text-secondary);
+  --text-tertiary: var(--sr-text-tertiary);
+  --text-muted: var(--sr-text-muted);
+  --text-light: var(--sr-text-light);
+  
+  --surface-subtle: var(--sr-surface-hover);
+  --surface-active: var(--sr-surface-selected);
+  --surface-hover: var(--sr-surface-hover);
+  --surface-card: var(--sr-surface-card);
+  
+  --border-subtle: var(--sr-border-light);
+  --border-default: var(--sr-border);
+  
+  --progress-track: var(--sr-border);
+  --progress-success: var(--sr-status-healthy);
+  --progress-warning: var(--sr-status-at-risk);
+  --progress-danger: var(--sr-status-critical);
+  
+  --status-success: var(--sr-status-healthy);
+  --status-success-bg: var(--sr-status-healthy-bg);
+  --status-warning: var(--sr-status-at-risk);
+  --status-warning-bg: var(--sr-status-at-risk-bg);
+  --status-danger: var(--sr-status-critical);
+  --status-danger-bg: var(--sr-status-critical-bg);
+  
+  --brand-primary: var(--sr-accent);
   
   /* Apply base styles */
   background: var(--sr-surface-page);
@@ -127,6 +158,36 @@
   
   --sr-accent-light: rgba(37, 99, 235, 0.2);
   --sr-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  /* Re-map global tokens for dark mode */
+  --text-primary: var(--sr-text-primary);
+  --text-primary-hex: var(--sr-text-primary);
+  --text-secondary: var(--sr-text-secondary);
+  --text-tertiary: var(--sr-text-tertiary);
+  --text-muted: var(--sr-text-muted);
+  --text-light: var(--sr-text-light);
+  
+  --surface-subtle: var(--sr-surface-hover);
+  --surface-active: var(--sr-surface-selected);
+  --surface-hover: var(--sr-surface-hover);
+  --surface-card: var(--sr-surface-card);
+  
+  --border-subtle: var(--sr-border-light);
+  --border-default: var(--sr-border);
+  
+  --progress-track: var(--sr-border);
+  --progress-success: var(--sr-status-healthy);
+  --progress-warning: var(--sr-status-at-risk);
+  --progress-danger: var(--sr-status-critical);
+  
+  --status-success: var(--sr-status-healthy);
+  --status-success-bg: var(--sr-status-healthy-bg);
+  --status-warning: var(--sr-status-at-risk);
+  --status-warning-bg: var(--sr-status-at-risk-bg);
+  --status-danger: var(--sr-status-critical);
+  --status-danger-bg: var(--sr-status-critical-bg);
+  
+  --brand-primary: var(--sr-accent);
 }
 
 /* ==================== SECTIONS ==================== */
