@@ -1,10 +1,13 @@
 // ============================================================
 // WORKSTREAMS SUMMARY HOOK
 // Fetches aggregated workstream data with task counts and health
+// Respects workstream access control - admins see all, others see memberships
 // ============================================================
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { useUserRole } from '@/hooks/useUserRole';
 import type { WorkstreamData, WorkstreamsSummary, WorkstreamMember } from './types';
 import { calculateHealth, getWorkstreamCode } from './types';
 
@@ -25,16 +28,45 @@ interface TaskAggregation {
 }
 
 export function useWorkstreamsSummary() {
-  return useQuery({
-    queryKey: ['workstreams-summary'],
-    queryFn: async (): Promise<{ workstreams: WorkstreamData[]; summary: WorkstreamsSummary }> => {
-      // Fetch workstreams with color from database
-      const { data: workstreamsRaw, error: wsError } = await supabase
-        .from('planner_workstreams')
-        .select('id, name, color')
-        .order('sort_order');
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin, isLoading: roleLoading } = useUserRole();
+  const canAccessAll = isAdmin || isSuperAdmin;
 
-      if (wsError) throw wsError;
+  return useQuery({
+    queryKey: ['workstreams-summary', user?.id, canAccessAll],
+    queryFn: async (): Promise<{ workstreams: WorkstreamData[]; summary: WorkstreamsSummary }> => {
+      if (!user) {
+        return { workstreams: [], summary: { totalWorkstreams: 0, totalTasks: 0, overallProgress: 0, atRiskCount: 0, criticalCount: 0, healthyCount: 0 } };
+      }
+
+      let workstreamsRaw: RawWorkstreamRow[] = [];
+
+      if (canAccessAll) {
+        // Admin/super_admin: fetch all workstreams
+        const { data, error } = await supabase
+          .from('planner_workstreams')
+          .select('id, name, color')
+          .eq('is_active', true)
+          .order('sort_order');
+        
+        if (error) throw error;
+        workstreamsRaw = data || [];
+      } else {
+        // Regular user: fetch only workstreams they are members of
+        const { data: memberships, error } = await supabase
+          .from('workstream_members')
+          .select(`
+            workstream_id,
+            workstream:planner_workstreams(id, name, color, is_active)
+          `)
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+
+        workstreamsRaw = (memberships || [])
+          .filter(m => (m.workstream as any)?.is_active)
+          .map(m => m.workstream as RawWorkstreamRow);
+      }
 
       // Fetch tasks with aggregations per workstream
       const { data: tasksRaw, error: tasksError } = await supabase
@@ -164,6 +196,7 @@ export function useWorkstreamsSummary() {
 
       return { workstreams, summary };
     },
+    enabled: !!user && !roleLoading,
     staleTime: 60000,
   });
 }

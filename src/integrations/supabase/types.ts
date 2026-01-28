@@ -13139,6 +13139,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_workstream_id_fkey"
             columns: ["workstream_id"]
             isOneToOne: false
+            referencedRelation: "my_accessible_workstreams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_workstream_health"
             referencedColumns: ["workstream_id"]
           },
@@ -28880,6 +28887,7 @@ export type Database = {
           id: string
           resource_id: string
           role: string | null
+          user_id: string | null
           workstream_id: string
         }
         Insert: {
@@ -28887,6 +28895,7 @@ export type Database = {
           id?: string
           resource_id: string
           role?: string | null
+          user_id?: string | null
           workstream_id: string
         }
         Update: {
@@ -28894,6 +28903,7 @@ export type Database = {
           id?: string
           resource_id?: string
           role?: string | null
+          user_id?: string | null
           workstream_id?: string
         }
         Relationships: [
@@ -28902,6 +28912,13 @@ export type Database = {
             columns: ["resource_id"]
             isOneToOne: false
             referencedRelation: "resource_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workstream_members_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "my_accessible_workstreams"
             referencedColumns: ["id"]
           },
           {
@@ -28941,6 +28958,56 @@ export type Database = {
             columns: ["license_id"]
             isOneToOne: false
             referencedRelation: "software_licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      my_accessible_workstreams: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string | null
+          is_active: boolean | null
+          lead_id: string | null
+          name: string | null
+          slug: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          lead_id?: string | null
+          name?: string | null
+          slug?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          lead_id?: string | null
+          name?: string | null
+          slug?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planner_workstreams_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "resource_inventory"
             referencedColumns: ["id"]
           },
         ]
@@ -29143,6 +29210,13 @@ export type Database = {
             columns: ["status_id"]
             isOneToOne: false
             referencedRelation: "planner_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "my_accessible_workstreams"
             referencedColumns: ["id"]
           },
           {
@@ -29570,6 +29644,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_workstream_id_fkey"
             columns: ["workstream_id"]
             isOneToOne: false
+            referencedRelation: "my_accessible_workstreams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_workstream_health"
             referencedColumns: ["workstream_id"]
           },
@@ -29717,6 +29798,13 @@ export type Database = {
             columns: ["status_id"]
             isOneToOne: false
             referencedRelation: "planner_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "my_accessible_workstreams"
             referencedColumns: ["id"]
           },
           {
@@ -30395,6 +30483,10 @@ export type Database = {
         Args: { p_release_id: string }
         Returns: Json
       }
+      can_access_all_workstreams: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       can_transition: {
         Args: {
           p_entity_id: string
@@ -30642,6 +30734,10 @@ export type Database = {
         Args: { p_team_id: string }
         Returns: string
       }
+      get_accessible_workstreams: {
+        Args: { _user_id: string }
+        Returns: string[]
+      }
       get_active_allocations: { Args: { p_project_id: string }; Returns: Json }
       get_all_blockers: {
         Args: { p_item_id: string; p_item_type: string }
@@ -30884,6 +30980,10 @@ export type Database = {
       }
       is_user_admin: { Args: { user_id: string }; Returns: boolean }
       is_user_approved: { Args: { user_id: string }; Returns: boolean }
+      is_workstream_member: {
+        Args: { _user_id: string; _workstream_id: string }
+        Returns: boolean
+      }
       link_defect_to_step_v2: {
         Args: {
           p_defect_id: string

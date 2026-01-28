@@ -6,6 +6,8 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { 
   User, 
   Calendar, 
@@ -54,16 +56,42 @@ function useProfiles() {
 }
 
 function useWorkstreams() {
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin, isLoading: roleLoading } = useUserRole();
+  const canAccessAll = isAdmin || isSuperAdmin;
+
   return useQuery({
-    queryKey: ['drawer-workstreams'],
+    queryKey: ['drawer-workstreams', user?.id, canAccessAll],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('planner_workstreams')
-        .select('id, name')
-        .order('name');
+      if (!user) return [];
+
+      if (canAccessAll) {
+        // Admin/super_admin: fetch all workstreams
+        const { data, error } = await supabase
+          .from('planner_workstreams')
+          .select('id, name')
+          .eq('is_active', true)
+          .order('name');
+        if (error) throw error;
+        return data || [];
+      }
+
+      // Regular user: fetch only workstreams they are members of
+      const { data: memberships, error } = await supabase
+        .from('workstream_members')
+        .select(`
+          workstream_id,
+          workstream:planner_workstreams(id, name, is_active)
+        `)
+        .eq('user_id', user.id);
+      
       if (error) throw error;
-      return data || [];
+
+      return (memberships || [])
+        .filter(m => (m.workstream as any)?.is_active)
+        .map(m => m.workstream as { id: string; name: string });
     },
+    enabled: !!user && !roleLoading,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });

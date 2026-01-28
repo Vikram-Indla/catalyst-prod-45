@@ -2,6 +2,7 @@
 // QUICK ACTIONS BAR - POLISHED
 // Move to workstream, Copy link, Star buttons with keyboard hints
 // NO TOASTS - silent operations as per guardrail
+// Workstreams filtered by user access
 // ============================================================
 
 import { useState, useEffect } from 'react';
@@ -15,6 +16,8 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
 
 interface QuickActionsProps {
@@ -26,18 +29,43 @@ interface QuickActionsProps {
   onStarredChange?: (isStarred: boolean) => void;
 }
 
-// GUARDRAIL: Aggressive caching to prevent flickering
+// GUARDRAIL: Aggressive caching + access control filtering
 function useWorkstreams() {
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin, isLoading: roleLoading } = useUserRole();
+  const canAccessAll = isAdmin || isSuperAdmin;
+
   return useQuery({
-    queryKey: ['quick-actions-workstreams'],
+    queryKey: ['quick-actions-workstreams', user?.id, canAccessAll],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('planner_workstreams')
-        .select('id, name')
-        .order('name');
+      if (!user) return [];
+
+      if (canAccessAll) {
+        const { data, error } = await supabase
+          .from('planner_workstreams')
+          .select('id, name')
+          .eq('is_active', true)
+          .order('name');
+        if (error) throw error;
+        return data || [];
+      }
+
+      // Regular user: only accessible workstreams
+      const { data: memberships, error } = await supabase
+        .from('workstream_members')
+        .select(`
+          workstream_id,
+          workstream:planner_workstreams(id, name, is_active)
+        `)
+        .eq('user_id', user.id);
+      
       if (error) throw error;
-      return data || [];
+
+      return (memberships || [])
+        .filter(m => (m.workstream as any)?.is_active)
+        .map(m => m.workstream as { id: string; name: string });
     },
+    enabled: !!user && !roleLoading,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     refetchOnMount: false,
