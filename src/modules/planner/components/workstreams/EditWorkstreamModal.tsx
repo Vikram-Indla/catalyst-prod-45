@@ -1,6 +1,7 @@
 // ============================================================
 // EDIT WORKSTREAM MODAL
 // Rename workstream, change color, manage members
+// Members are linked to profiles (APPROVED users only)
 // ============================================================
 
 import { useState, useEffect, useMemo } from 'react';
@@ -15,11 +16,11 @@ import { cn } from '@/lib/utils';
 import {
   useWorkstreamDetails,
   useWorkstreamMembers,
-  useAvailableResources,
   useUpdateWorkstream,
   useAddWorkstreamMember,
   useRemoveWorkstreamMember,
 } from './useWorkstreamMutations';
+import { useSearchProfiles } from './useSearchProfiles';
 
 interface EditWorkstreamModalProps {
   workstreamId: string | null;
@@ -43,7 +44,6 @@ const WORKSTREAM_COLORS = [
 export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstreamModalProps) {
   const { data: workstream, isLoading: loadingWorkstream } = useWorkstreamDetails(workstreamId);
   const { data: members = [], isLoading: loadingMembers } = useWorkstreamMembers(workstreamId);
-  const { data: allResources = [] } = useAvailableResources();
   
   const updateWorkstream = useUpdateWorkstream();
   const addMember = useAddWorkstreamMember();
@@ -55,6 +55,15 @@ export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstr
   const [memberSearch, setMemberSearch] = useState('');
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   
+  // Get existing member user IDs to exclude from search
+  const existingMemberIds = useMemo(() => members.map(m => m.user_id), [members]);
+  
+  // Search profiles (only when popover is open and there's a search term)
+  const { data: searchResults = [], isLoading: searchingProfiles } = useSearchProfiles(
+    addMemberOpen ? memberSearch : '', 
+    existingMemberIds
+  );
+  
   // Sync form state when workstream loads
   useEffect(() => {
     if (workstream) {
@@ -62,21 +71,6 @@ export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstr
       setColor(workstream.color || '#3b82f6');
     }
   }, [workstream]);
-  
-  // Filter available resources (exclude already added members)
-  const availableToAdd = useMemo(() => {
-    const memberIds = new Set(members.map(m => m.resource_id));
-    return allResources.filter(r => {
-      if (memberIds.has(r.id)) return false;
-      if (!memberSearch.trim()) return true;
-      const searchLower = memberSearch.toLowerCase();
-      return (
-        r.name?.toLowerCase().includes(searchLower) ||
-        r.email?.toLowerCase().includes(searchLower) ||
-        r.role_name?.toLowerCase().includes(searchLower)
-      );
-    });
-  }, [allResources, members, memberSearch]);
   
   const hasChanges = workstream && (name !== workstream.name || color !== workstream.color);
   
@@ -90,9 +84,9 @@ export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstr
     });
   };
   
-  const handleAddMember = async (resourceId: string) => {
+  const handleAddMember = async (userId: string) => {
     if (!workstreamId) return;
-    await addMember.mutateAsync({ workstreamId, resourceId });
+    await addMember.mutateAsync({ workstreamId, userId });
     setAddMemberOpen(false);
     setMemberSearch('');
   };
@@ -168,35 +162,44 @@ export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstr
                         <Input
                           value={memberSearch}
                           onChange={(e) => setMemberSearch(e.target.value)}
-                          placeholder="Search resources..."
+                          placeholder="Search users (min 2 chars)..."
                           className="pl-8 h-8 text-sm"
+                          autoFocus
                         />
                       </div>
                     </div>
                     <ScrollArea className="max-h-[200px]">
                       <div className="p-1">
-                        {availableToAdd.length === 0 ? (
+                        {memberSearch.trim().length < 2 ? (
                           <div className="px-3 py-4 text-center text-sm text-muted-foreground">
-                            {memberSearch.trim() ? 'No matching resources' : 'All resources added'}
+                            Type at least 2 characters to search
+                          </div>
+                        ) : searchingProfiles ? (
+                          <div className="px-3 py-4 text-center text-sm text-muted-foreground">
+                            <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                          </div>
+                        ) : searchResults.length === 0 ? (
+                          <div className="px-3 py-4 text-center text-sm text-muted-foreground">
+                            No matching users found
                           </div>
                         ) : (
-                          availableToAdd.slice(0, 20).map((resource) => (
+                          searchResults.map((profile) => (
                             <button
-                              key={resource.id}
-                              onClick={() => handleAddMember(resource.id)}
+                              key={profile.id}
+                              onClick={() => handleAddMember(profile.id)}
                               disabled={addMember.isPending}
                               className="w-full flex items-center gap-2 px-2 py-2 rounded hover:bg-muted/50 transition-colors text-left"
                             >
                               <div 
                                 className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold"
-                                style={{ backgroundColor: color }}
+                                style={{ backgroundColor: profile.avatar_color }}
                               >
-                                {resource.name?.charAt(0) || '?'}
+                                {profile.initials}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium truncate">{resource.name}</div>
+                                <div className="text-sm font-medium truncate">{profile.full_name}</div>
                                 <div className="text-xs text-muted-foreground truncate">
-                                  {resource.role_name || resource.email || 'No role'}
+                                  {profile.job_title || profile.email || 'No role'}
                                 </div>
                               </div>
                             </button>
@@ -215,36 +218,43 @@ export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstr
                     No members yet. Add team members to this workstream.
                   </div>
                 ) : (
-                  members.map((member) => (
-                    <div 
-                      key={member.id}
-                      className="flex items-center gap-3 px-3 py-2.5"
-                    >
+                  members.map((member) => {
+                    const profile = member.profile;
+                    const initials = profile?.full_name
+                      ? profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                      : '??';
+                    
+                    return (
                       <div 
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold"
-                        style={{ backgroundColor: color }}
+                        key={member.id}
+                        className="flex items-center gap-3 px-3 py-2.5"
                       >
-                        {member.resource?.name?.charAt(0) || '?'}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate">
-                          {member.resource?.name || 'Unknown'}
+                        <div 
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                          style={{ backgroundColor: color }}
+                        >
+                          {initials}
                         </div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          {member.resource?.role_name || member.resource?.email || 'No role'}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium truncate">
+                            {profile?.full_name || 'Unknown'}
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {profile?.vendor || profile?.role || profile?.email || 'No role'}
+                          </div>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                          onClick={() => handleRemoveMember(member.id)}
+                          disabled={removeMember.isPending}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleRemoveMember(member.id)}
-                        disabled={removeMember.isPending}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
