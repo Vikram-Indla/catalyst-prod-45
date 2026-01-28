@@ -1,12 +1,17 @@
 // ============================================================
 // WORKSTREAM DETAIL PANEL V9
-// Comprehensive panel with header, stats, progress, tasks, activity
+// Comprehensive panel matching reference design:
+// - Description section with edit CTA
+// - Details: Lead, Created, Status
+// - Members section with task counts and inline Add Member
+// - Task Overview, Progress, Recent Tasks, Recent Activity
+// - Footer: View Tasks, Board View
 // Real-time data from database - NO MOCK DATA
 // ============================================================
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   X, 
@@ -21,7 +26,13 @@ import {
   Grid3X3,
   Users,
   Activity,
-  Check
+  Check,
+  FileText,
+  Info,
+  User,
+  Calendar,
+  Circle,
+  UserPlus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -34,6 +45,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { HealthIndicator } from './HealthIndicator';
+import { useWorkstreamMembers } from './useWorkstreamMutations';
 import type { WorkstreamData } from './types';
 import { motion } from 'framer-motion';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -44,6 +56,56 @@ interface WorkstreamDetailPanelProps {
   onClose: () => void;
   onEdit?: () => void;
   onAddMembers?: () => void;
+}
+
+// Fetch workstream description from DB
+function useWorkstreamDescription(workstreamId: string | null) {
+  return useQuery({
+    queryKey: ['workstream-description', workstreamId],
+    queryFn: async () => {
+      if (!workstreamId) return null;
+      
+      const { data, error } = await supabase
+        .from('planner_workstreams')
+        .select('description, created_at, is_active, updated_at')
+        .eq('id', workstreamId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!workstreamId,
+    staleTime: 30 * 1000,
+  });
+}
+
+// Fetch task counts per member for this workstream
+function useMemberTaskCounts(workstreamId: string | null, memberUserIds: string[]) {
+  return useQuery({
+    queryKey: ['member-task-counts', workstreamId, memberUserIds],
+    queryFn: async () => {
+      if (!workstreamId || memberUserIds.length === 0) return {};
+      
+      const { data, error } = await supabase
+        .from('planner_tasks')
+        .select('assignee_id')
+        .eq('workstream_id', workstreamId)
+        .in('assignee_id', memberUserIds);
+      
+      if (error) throw error;
+      
+      // Count tasks per assignee
+      const counts: Record<string, number> = {};
+      (data || []).forEach(task => {
+        if (task.assignee_id) {
+          counts[task.assignee_id] = (counts[task.assignee_id] || 0) + 1;
+        }
+      });
+      return counts;
+    },
+    enabled: !!workstreamId && memberUserIds.length > 0,
+    staleTime: 30 * 1000,
+  });
 }
 
 // Fetch recent tasks for this workstream from DB
@@ -188,7 +250,6 @@ function formatActivityAction(action: string, oldValue: any, newValue: any, task
     case 'completed':
       return `completed ${taskRef}`;
     case 'status_changed':
-      // Handle {from: 'X', to: 'Y'} format or {name: 'X'} format
       const newStatus = parsedValue?.to || parsedValue?.name || (typeof parsedValue === 'string' ? parsedValue : null);
       return newStatus ? `moved ${taskRef} to ${newStatus}` : `updated ${taskRef} status`;
     case 'priority_changed':
@@ -216,6 +277,10 @@ export function WorkstreamDetailPanel({
   const [isSaved, setIsSaved] = useState(true);
   
   // Fetch real data
+  const { data: wsDetails } = useWorkstreamDescription(workstream?.id || null);
+  const { data: members = [] } = useWorkstreamMembers(workstream?.id || null);
+  const memberUserIds = members.map(m => m.user_id);
+  const { data: memberTaskCounts = {} } = useMemberTaskCounts(workstream?.id || null, memberUserIds);
   const { data: recentTasks = [] } = useWorkstreamRecentTasks(workstream?.id || null);
   const { data: activity = [] } = useWorkstreamActivity(workstream?.id || null);
 
@@ -233,13 +298,11 @@ export function WorkstreamDetailPanel({
   if (!workstream) return null;
 
   const handleViewTasks = () => {
-    // Use code as slug fallback for URL filtering
     navigate(`/planner/task-list?workstream=${encodeURIComponent(workstream.code.toLowerCase())}`);
     onClose();
   };
 
   const handleViewBoard = () => {
-    // Use code as slug fallback for URL filtering  
     navigate(`/planner/boards?workstream=${encodeURIComponent(workstream.code.toLowerCase())}`);
     onClose();
   };
@@ -301,6 +364,9 @@ export function WorkstreamDetailPanel({
 
   const remaining = workstream.task_count - workstream.completed_count;
   const progressColor = workstream.progress === 0 ? 'bg-amber-400' : workstream.color;
+
+  // Find lead (first member with role 'lead')
+  const leadMember = members.find(m => m.role?.toLowerCase() === 'lead');
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
@@ -387,8 +453,158 @@ export function WorkstreamDetailPanel({
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
+          {/* Description Section */}
+          <div className="px-5 py-5 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Description
+                </h3>
+              </div>
+              <button
+                onClick={handleEdit}
+                className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+              >
+                Edit
+              </button>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              {wsDetails?.description || 'No description provided. Click Edit to add one.'}
+            </p>
+          </div>
+
+          {/* Details Section */}
+          <div className="px-5 py-5 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2 mb-4">
+              <Info className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+              <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                Details
+              </h3>
+            </div>
+            
+            <div className="space-y-3">
+              {/* Lead */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <User className="w-4 h-4" />
+                  <span>Lead</span>
+                </div>
+                {leadMember ? (
+                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
+                    {leadMember.profile?.full_name || 'Unknown'}
+                  </span>
+                ) : (
+                  <button
+                    onClick={onAddMembers}
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                  >
+                    Assign lead...
+                  </button>
+                )}
+              </div>
+              
+              {/* Created */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <Calendar className="w-4 h-4" />
+                  <span>Created</span>
+                </div>
+                <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
+                  {wsDetails?.created_at ? format(new Date(wsDetails.created_at), 'MMM d, yyyy') : 'Unknown'}
+                </span>
+              </div>
+              
+              {/* Status */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <Clock className="w-4 h-4" />
+                  <span>Status</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Circle className="w-2.5 h-2.5 fill-emerald-500 text-emerald-500" />
+                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
+                    {wsDetails?.is_active !== false ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Members Section */}
+          <div className="px-5 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Members
+                </h3>
+              </div>
+              <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                {members.length} {members.length === 1 ? 'member' : 'members'}
+              </span>
+            </div>
+            
+            {members.length === 0 ? (
+              <div className="text-center py-4 text-sm text-slate-400 dark:text-slate-500">
+                No members yet
+              </div>
+            ) : (
+              <div className="space-y-2 mb-4">
+                {members.map((member) => {
+                  const initials = member.profile?.full_name
+                    ? member.profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                    : '??';
+                  const isLead = member.role?.toLowerCase() === 'lead';
+                  const taskCount = memberTaskCounts[member.user_id] || 0;
+                  
+                  return (
+                    <div 
+                      key={member.id}
+                      className="flex items-center gap-3 py-2.5 px-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
+                    >
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0"
+                        style={{ backgroundColor: getColorFromName(member.profile?.full_name || 'Unknown') }}
+                      >
+                        {initials}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                          {member.profile?.full_name || 'Unknown'}
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                          {member.profile?.vendor || member.profile?.role || 'Team Member'}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {isLead && (
+                          <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded">
+                            Lead
+                          </span>
+                        )}
+                        <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">
+                          {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            
+            {/* Inline Add Member Button */}
+            <button
+              onClick={onAddMembers}
+              className="flex items-center gap-2 w-full py-2.5 px-3 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+            >
+              <UserPlus className="w-4 h-4" />
+              Add Member
+            </button>
+          </div>
+
           {/* Task Overview Section */}
-          <div className="px-5 py-5 bg-slate-50/50 dark:bg-slate-900/30">
+          <div className="px-5 py-5 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2 mb-4">
               <CheckCircle2 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -428,7 +644,7 @@ export function WorkstreamDetailPanel({
           </div>
 
           {/* Progress Section */}
-          <div className="px-5 py-5 border-t border-slate-100 dark:border-slate-800">
+          <div className="px-5 py-5 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <BarChart2 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
@@ -463,7 +679,7 @@ export function WorkstreamDetailPanel({
           </div>
 
           {/* Recent Tasks Section */}
-          <div className="px-5 py-5 border-t border-slate-100 dark:border-slate-800">
+          <div className="px-5 py-5 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -483,7 +699,7 @@ export function WorkstreamDetailPanel({
                     onClick={() => navigate(`/planner/tasks?taskId=${task.id}`)}
                     className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 group cursor-pointer transition-colors"
                   >
-                    {/* Task Key - clickable navigates to filtered task list */}
+                    {/* Task Key */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -493,11 +709,11 @@ export function WorkstreamDetailPanel({
                     >
                       {task.key}
                     </button>
-                    {/* Task Title - takes remaining space */}
+                    {/* Task Title */}
                     <span className="flex-1 text-sm text-slate-700 dark:text-slate-300 truncate min-w-0">
                       {task.title}
                     </span>
-                    {/* Status Badge - fixed width for alignment */}
+                    {/* Status Badge */}
                     <span 
                       className="text-xs px-2.5 py-1 rounded-md font-medium flex-shrink-0 min-w-[80px] text-center"
                       style={{ 
@@ -523,7 +739,7 @@ export function WorkstreamDetailPanel({
           </div>
 
           {/* Recent Activity Section */}
-          <div className="px-5 py-5 border-t border-slate-100 dark:border-slate-800">
+          <div className="px-5 py-5">
             <div className="flex items-center gap-2 mb-4">
               <Activity className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -561,7 +777,7 @@ export function WorkstreamDetailPanel({
           </div>
         </div>
 
-        {/* Footer with Actions */}
+        {/* Footer with Actions - View Tasks + Board View (matching reference) */}
         <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex-shrink-0">
           <div className="flex gap-3 mb-3">
             <Button 
@@ -572,18 +788,18 @@ export function WorkstreamDetailPanel({
               View Tasks
             </Button>
             <Button 
-              onClick={onAddMembers} 
+              onClick={handleViewBoard} 
               variant="outline" 
               className="flex-1 gap-2"
             >
-              <Users className="w-4 h-4" />
-              Add Members
+              <Grid3X3 className="w-4 h-4" />
+              Board View
             </Button>
           </div>
           
           <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
-            <span>{workstream.task_count} tasks total</span>
-            <span>{workstream.overdue_count > 0 ? `${workstream.overdue_count} overdue` : 'No overdue tasks'}</span>
+            <span>Created {wsDetails?.created_at ? format(new Date(wsDetails.created_at), 'MMM d, yyyy') : 'Unknown'}</span>
+            <span>Updated {wsDetails?.updated_at ? formatDistanceToNow(new Date(wsDetails.updated_at), { addSuffix: true }) : 'recently'}</span>
           </div>
         </div>
       </SheetContent>
