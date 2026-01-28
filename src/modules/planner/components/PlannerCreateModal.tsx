@@ -38,7 +38,6 @@ interface PlannerCreateModalProps {
 export function PlannerCreateModal({
   isOpen,
   onClose,
-  onCreate,
   defaultStatus = 'backlog',
   defaultTeamId,
 }: PlannerCreateModalProps) {
@@ -50,8 +49,9 @@ export function PlannerCreateModal({
       }}
       defaultWorkstream={defaultTeamId}
       onSuccess={() => {
-        // Note: The new modal handles its own create mutation
-        // This callback is for any post-creation logic in the parent
+        // The new modal handles its own create mutation internally
+        // Just close the modal on success
+        onClose();
       }}
     />
   );
