@@ -76,6 +76,7 @@ export interface PlannerWorkstream {
   id: string;
   name: string;
   shortName: string;
+  slug?: string;
   description?: string;
   emoji?: string;
   leadId?: string;

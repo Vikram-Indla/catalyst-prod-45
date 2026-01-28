@@ -67,7 +67,9 @@ export function useTaskList(filters: TaskListFilters = {}, sorting?: TaskListSor
 
       // Apply filters
       if (filters.workstream) {
-        query = query.eq('workstream_id', filters.workstream);
+        // Support filtering by workstream ID, slug, or code (case-insensitive)
+        const ws = filters.workstream.toLowerCase();
+        query = query.or(`workstream_id.eq.${filters.workstream},workstream_slug.ilike.${ws}`);
       }
       if (filters.status) {
         // Support filtering by status slug or status id
