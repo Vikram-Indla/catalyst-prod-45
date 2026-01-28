@@ -1,12 +1,15 @@
 // ============================================================
 // DEPENDENCIES SECTION - CONTENT ONLY (no header, wrapped by CollapsibleSection)
+// Now with working task picker for adding relations
 // ============================================================
 
 import { useState, useMemo } from 'react';
 import { Ban, Layers, Link2, Plus, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { TaskDependency } from '../../hooks/useTaskDetails';
-import { useRemoveDependency } from '../../hooks/useTaskDetails';
+import { useRemoveDependency, useAddDependency } from '../../hooks/useTaskDetails';
+import { TaskPicker } from './TaskPicker';
 
 interface DependenciesSectionProps {
   taskId: string;
@@ -24,7 +27,7 @@ const DEPENDENCY_CONFIG = {
     label: 'Blocks', 
     icon: Layers, 
     color: 'text-amber-500',
-    bgColor: 'bg-amber-50',
+    bgColor: 'bg-amber-50 dark:bg-amber-500/10',
   },
   related: { 
     label: 'Related', 
@@ -36,7 +39,9 @@ const DEPENDENCY_CONFIG = {
 
 export function DependenciesSection({ taskId, dependencies }: DependenciesSectionProps) {
   const [activeAddType, setActiveAddType] = useState<string | null>(null);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const removeDependency = useRemoveDependency();
+  const addDependency = useAddDependency();
   
   const grouped = useMemo(() => {
     const result: Record<string, TaskDependency[]> = { blocked_by: [], blocks: [], related: [] };
@@ -45,6 +50,22 @@ export function DependenciesSection({ taskId, dependencies }: DependenciesSectio
   }, [dependencies]);
 
   const hasAny = (dependencies?.length || 0) > 0;
+
+  const handleSelectTask = async (linkedTaskId: string) => {
+    if (!activeAddType) return;
+    
+    try {
+      await addDependency.mutateAsync({
+        taskId,
+        dependsOnTaskId: linkedTaskId,
+        type: activeAddType,
+      });
+      toast.success('Relation added');
+    } catch (err) {
+      console.error('Failed to add relation:', err);
+      toast.error('Failed to add relation');
+    }
+  };
 
   // CONTENT ONLY - no header (CollapsibleSection provides the header)
   return (
@@ -95,10 +116,7 @@ export function DependenciesSection({ taskId, dependencies }: DependenciesSectio
       {activeAddType ? (
         <button 
           className="w-full flex items-center justify-center gap-1.5 p-2 border border-dashed border-muted-foreground/30 rounded-lg text-xs text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all"
-          onClick={() => {
-            // TODO: Open task picker modal
-            console.log('Add', activeAddType);
-          }}
+          onClick={() => setIsPickerOpen(true)}
         >
           <Plus className="w-3 h-3" />
           Add {DEPENDENCY_CONFIG[activeAddType as keyof typeof DEPENDENCY_CONFIG]?.label.toLowerCase()}
@@ -112,6 +130,15 @@ export function DependenciesSection({ taskId, dependencies }: DependenciesSectio
           Add relation...
         </button>
       )}
+
+      {/* Task Picker Modal */}
+      <TaskPicker
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        onSelect={handleSelectTask}
+        excludeTaskId={taskId}
+        title={`Add "${DEPENDENCY_CONFIG[activeAddType as keyof typeof DEPENDENCY_CONFIG]?.label || 'relation'}"`}
+      />
     </div>
   );
 }

@@ -18693,6 +18693,97 @@ export type Database = {
           },
         ]
       }
+      task_label_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          label_id: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label_id: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label_id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_label_assignments_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "task_labels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_label_assignments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_label_assignments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_upcoming_deadlines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_label_assignments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_my_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_label_assignments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_task_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_label_assignments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_labels: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       team_member_skills: {
         Row: {
           created_at: string | null

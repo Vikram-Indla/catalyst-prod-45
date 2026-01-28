@@ -137,11 +137,7 @@ export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
           icon={<Tag className="w-4 h-4" />} 
           label="Labels"
         >
-          <LabelsSelector
-            taskId={task.id}
-            selectedLabels={task.labels || []}
-            onLabelsChange={(labels) => onFieldChange('labels', labels)}
-          />
+          <LabelsSelector taskId={task.id} />
         </FieldRow>
       </div>
     </div>

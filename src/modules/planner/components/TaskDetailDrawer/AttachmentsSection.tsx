@@ -1,13 +1,14 @@
 // ============================================================
 // ATTACHMENTS SECTION - CONTENT ONLY (no header, wrapped by CollapsibleSection)
-// Compact upload zone, no huge box for empty state
+// Compact upload zone with real file upload functionality
 // ============================================================
 
-import { useState, useCallback } from 'react';
-import { Upload, FileText, X, Plus } from 'lucide-react';
+import { useState, useCallback, useRef } from 'react';
+import { Upload, FileText, X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { TaskAttachment } from '../../hooks/useTaskDetails';
-import { useDeleteAttachment } from '../../hooks/useTaskDetails';
+import { useDeleteAttachment, useUploadAttachment } from '../../hooks/useTaskDetails';
 
 interface AttachmentsSectionProps {
   taskId: string;
@@ -28,13 +29,34 @@ function formatFileSize(bytes: number | null): string {
 
 export function AttachmentsSection({ taskId, attachments }: AttachmentsSectionProps) {
   const deleteAttachment = useDeleteAttachment();
+  const uploadAttachment = useUploadAttachment();
   const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = useCallback(async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    
+    for (const file of Array.from(files)) {
+      try {
+        await uploadAttachment.mutateAsync({ taskId, file });
+        toast.success(`Uploaded ${file.name}`);
+      } catch (err) {
+        console.error('Upload error:', err);
+        toast.error(`Failed to upload ${file.name}`);
+      }
+    }
+  }, [taskId, uploadAttachment]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    console.log('Files dropped:', e.dataTransfer.files);
-  }, []);
+    handleFileUpload(e.dataTransfer.files);
+  }, [handleFileUpload]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileUpload(e.target.files);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   // CONTENT ONLY - no header (CollapsibleSection provides the header)
   return (
@@ -52,23 +74,39 @@ export function AttachmentsSection({ taskId, attachments }: AttachmentsSectionPr
         </div>
       )}
 
-      {/* COMPACT Upload Zone - not huge box */}
+      {/* Upload Zone with real functionality */}
       <label
         className={cn(
           "flex items-center gap-2 p-3 border border-dashed rounded-lg cursor-pointer transition-all",
           isDragging 
             ? "border-primary bg-primary/5" 
-            : "border-muted-foreground/30 hover:border-primary hover:bg-primary/5"
+            : "border-muted-foreground/30 hover:border-primary hover:bg-primary/5",
+          uploadAttachment.isPending && "opacity-50 pointer-events-none"
         )}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
       >
-        <input type="file" multiple className="hidden" />
-        <Upload className={cn("w-4 h-4", isDragging ? "text-primary" : "text-muted-foreground")} />
-        <span className="text-xs text-muted-foreground">
-          Drop files here or <span className="text-primary font-medium">click to upload</span>
-        </span>
+        <input 
+          ref={fileInputRef}
+          type="file" 
+          multiple 
+          className="hidden" 
+          onChange={handleFileChange}
+        />
+        {uploadAttachment.isPending ? (
+          <>
+            <Loader2 className="w-4 h-4 text-primary animate-spin" />
+            <span className="text-xs text-muted-foreground">Uploading...</span>
+          </>
+        ) : (
+          <>
+            <Upload className={cn("w-4 h-4", isDragging ? "text-primary" : "text-muted-foreground")} />
+            <span className="text-xs text-muted-foreground">
+              Drop files here or <span className="text-primary font-medium">click to upload</span>
+            </span>
+          </>
+        )}
       </label>
     </div>
   );
