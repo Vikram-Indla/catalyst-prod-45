@@ -13,7 +13,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CatalystLoginPage } from "./components/auth/login";
-import { CatyChatWidget } from "./components/caty";
+import { CatyPanelV4 } from "./components/caty";
 // Jira test pages removed - AtlasKit migration complete
 import SlackOAuthCallback from "./pages/SlackOAuthCallback";
 import BrowsePage from "./pages/BrowsePage";
@@ -321,13 +321,13 @@ const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/I
 
 const queryClient = new QueryClient();
 
-// Route guard: Only show CatyChatWidget on capacity planner module
+// Route guard: Only show CatyPanelV4 on capacity planner module
 function CatyWidgetRouteGuard() {
   const location = useLocation();
   const isCapacityPlannerRoute = location.pathname.startsWith('/enterprise/capacity');
   
   if (!isCapacityPlannerRoute) return null;
-  return <CatyChatWidget />;
+  return <CatyPanelV4 />;
 }
 
 const App = () => (
