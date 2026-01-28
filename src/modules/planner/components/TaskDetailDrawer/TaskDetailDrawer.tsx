@@ -218,6 +218,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
       <SheetContent 
         side="right" 
         className="w-full sm:max-w-[540px] p-0 gap-0 overflow-hidden"
+        hideClose
       >
         {isLoading ? (
           <DrawerSkeleton />
