@@ -1,41 +1,18 @@
 // ============================================================
 // MONTHLY CHRONICLE VIEW - Editorial Strategic Review
-// Dark hero with masthead, funnels, health grid, strategic items
+// Uses ONLY real data from database - NO MOCK DATA
 // ============================================================
 
 import { format } from 'date-fns';
 import { 
-  Lightbulb, FileText, Layers, Target, Rocket, 
-  AlertTriangle, TestTube, Download, ArrowRight, TrendingDown
+  FileText, Rocket, AlertTriangle, TestTube, Download, 
+  ArrowRight, TrendingDown, Inbox, BarChart3
 } from 'lucide-react';
-import { sampleMonthlyData } from '../../data/insightsMockData';
 import { useMonthlyInsightsData } from '../../hooks/useInsightsData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-
-// Funnel component
-function Funnel({ stages }: { stages: { label: string; value: number; highlight?: boolean }[] }) {
-  return (
-    <div className="flex items-center gap-2.5 p-6 bg-slate-50 rounded-lg">
-      {stages.map((stage, i) => (
-        <div key={stage.label} className="contents">
-          <div className={cn(
-            "flex-1 text-center py-4 px-3 bg-white border border-slate-200 rounded-lg",
-            stage.highlight && "bg-emerald-50 border-emerald-400"
-          )}>
-            <div className={cn("text-[28px] font-extrabold leading-none", stage.highlight && "text-emerald-600")}>
-              {stage.value}
-            </div>
-            <div className="text-[9px] font-semibold text-slate-500 uppercase mt-1.5">{stage.label}</div>
-          </div>
-          {i < stages.length - 1 && <ArrowRight className="text-slate-300 w-5 h-5 flex-shrink-0" />}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 // Section header component
 function SectionHeader({ icon: Icon, title, color }: { icon: any; title: string; color: string }) {
@@ -49,34 +26,39 @@ function SectionHeader({ icon: Icon, title, color }: { icon: any; title: string;
   );
 }
 
-// Strategic item component
-function StrategicItem({ 
+// Empty state component
+function EmptyState({ title }: { title: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-8 text-slate-400 bg-slate-50 rounded-lg">
+      <Inbox className="w-8 h-8 mb-2" />
+      <p className="text-sm">No {title} this month</p>
+    </div>
+  );
+}
+
+// Item card component
+function ItemCard({ 
   id, 
   title, 
   meta, 
-  project, 
-  status, 
-  progress, 
   iconBg, 
-  icon: Icon 
+  icon: Icon,
+  status,
 }: { 
   id: string; 
   title: string; 
   meta: string; 
-  project?: string; 
-  status?: string; 
-  progress?: number;
   iconBg: string;
   icon: any;
+  status?: string;
 }) {
   return (
     <div className={cn(
       "flex items-center gap-3.5 p-4 bg-white border border-slate-200 rounded-lg transition-all hover:translate-x-1 hover:shadow-sm",
       "border-l-4",
-      status === 'on-track' && "border-l-emerald-500",
-      status === 'at-risk' && "border-l-amber-500",
-      status === 'converted' && "border-l-blue-500",
-      status === 'approved' && "border-l-emerald-500",
+      status === 'completed' && "border-l-emerald-500",
+      status === 'in_progress' && "border-l-blue-500",
+      status === 'planned' && "border-l-amber-500",
       !status && "border-l-slate-300"
     )}>
       <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0", iconBg)}>
@@ -84,35 +66,39 @@ function StrategicItem({
       </div>
       <div className="flex-1">
         <div className="text-[15px] font-semibold text-slate-800">
-          <span className="text-blue-600 cursor-pointer hover:underline">{id}</span> {title}
+          {id && <span className="text-blue-600 cursor-pointer hover:underline mr-2">{id}</span>}
+          {title}
         </div>
         <div className="text-xs text-slate-500 mt-0.5">{meta}</div>
-        {project && <div className="text-[11px] text-teal-600 font-medium mt-1">{project}</div>}
       </div>
-      {progress !== undefined && (
-        <div className={cn(
-          "text-lg font-extrabold",
-          progress >= 70 ? "text-emerald-600" : progress >= 50 ? "text-amber-600" : "text-red-600"
-        )}>
-          {progress}%
-        </div>
-      )}
     </div>
   );
 }
 
 export function MonthlyChronicleView() {
-  // Fetch real data from Supabase
-  const { data: liveData, isLoading } = useMonthlyInsightsData();
-  
-  // Use mock data structure, overlay live counts
-  const data = sampleMonthlyData;
-  
-  // Merge live counts - use live data arrays length
-  const releasesCount = liveData?.releases?.length ?? data.releases.items.length;
-  const incidentsTotal = liveData?.incidents?.length ?? data.incidents.items.length;
-  const testCyclesCount = liveData?.testCycles?.length ?? data.testCycles.items.length;
-  const businessRequestsTotal = liveData?.businessRequests?.length ?? data.businessRequests.items.length;
+  const { data, isLoading, error } = useMonthlyInsightsData();
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-4">
+        <Skeleton className="h-48 w-full" />
+        <div className="space-y-4">
+          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32" />)}
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500">
+        <AlertTriangle className="w-12 h-12 mb-4 text-amber-500" />
+        <p>Failed to load monthly insights data</p>
+      </div>
+    );
+  }
+
+  const { period, releases, incidents, businessRequests, testCycles } = data;
 
   return (
     <ScrollArea className="h-full">
@@ -130,225 +116,130 @@ export function MonthlyChronicleView() {
               <div className="flex items-center justify-between mb-7 pb-4 border-b border-white/10">
                 <div className="font-serif text-[26px] font-bold">Monthly Chronicle</div>
                 <div className="flex items-center gap-3.5">
-                  <span className="text-sm opacity-70">{data.period.month} {data.period.year} • Edition {data.period.edition}</span>
-                  <span className="text-[9px] font-bold px-3 py-1.5 bg-emerald-500 rounded uppercase">Published</span>
+                  <span className="text-sm opacity-70">{period.month} {period.year}</span>
                 </div>
               </div>
               
-              {/* Headline */}
-              <h1 className="font-serif text-[32px] font-bold leading-tight mb-4">{data.headline}</h1>
-              <p className="text-base opacity-85 leading-relaxed max-w-[720px]">{data.subhead}</p>
+              {/* Summary Stats */}
+              <div className="grid grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-4xl font-extrabold">{releases.length}</div>
+                  <div className="text-sm opacity-75 mt-1">Releases</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-extrabold">{incidents.length}</div>
+                  <div className="text-sm opacity-75 mt-1">Incidents</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-extrabold">{businessRequests.length}</div>
+                  <div className="text-sm opacity-75 mt-1">Business Requests</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-extrabold">{testCycles.length}</div>
+                  <div className="text-sm opacity-75 mt-1">Test Cycles</div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Chronicle Body */}
           <div className="p-8 space-y-10">
             
-            {/* Ideas Hub Section */}
-            <section>
-              <SectionHeader icon={Lightbulb} title="Ideas Hub Activity" color="bg-amber-500" />
-              <Funnel stages={[
-                { label: 'Submitted', value: data.ideas.funnel.submitted },
-                { label: 'Under Review', value: data.ideas.funnel.underReview },
-                { label: 'Approved', value: data.ideas.funnel.approved },
-                { label: 'Converted', value: data.ideas.funnel.converted, highlight: true },
-              ]} />
-              <div className="mt-4 space-y-3">
-                {data.ideas.items.map(idea => (
-                  <StrategicItem
-                    key={idea.id}
-                    id={idea.id}
-                    title={idea.title}
-                    meta={`Submitted by ${idea.submittedBy} • ${idea.votes} votes${idea.convertedTo ? ` → ${idea.convertedTo}` : ''}`}
-                    project={idea.project}
-                    status={idea.status}
-                    iconBg="bg-amber-100 text-amber-600"
-                    icon={Lightbulb}
-                  />
-                ))}
-              </div>
-            </section>
-
             {/* Business Requests Section */}
             <section>
-              <SectionHeader icon={FileText} title="Business Requests Pipeline" color="bg-blue-600" />
-              <Funnel stages={[
-                { label: 'Submitted', value: data.businessRequests.funnel.submitted },
-                { label: 'In Review', value: data.businessRequests.funnel.inReview },
-                { label: 'Approved', value: data.businessRequests.funnel.approved },
-                { label: 'Epics Created', value: data.businessRequests.funnel.epics, highlight: true },
-              ]} />
-              <div className="mt-4 space-y-3">
-                {data.businessRequests.items.map(br => (
-                  <StrategicItem
-                    key={br.id}
-                    id={br.id}
-                    title={br.title}
-                    meta={`Source: ${br.source} • Priority: ${br.priority}${br.epicId ? ` → Epic ${br.epicId}` : ''}`}
-                    project={br.project}
-                    iconBg="bg-blue-100 text-blue-600"
-                    icon={FileText}
-                  />
-                ))}
-              </div>
-            </section>
-
-            {/* Strategic Themes Section */}
-            <section>
-              <SectionHeader icon={Layers} title="Strategic Themes" color="bg-purple-600" />
-              
-              {/* Health Grid */}
-              <div className="grid grid-cols-4 gap-4 mb-4">
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-emerald-600">{data.themes.health.onTrack}/{data.themes.health.total}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Themes On Track</div>
+              <SectionHeader icon={FileText} title="Business Requests" color="bg-blue-600" />
+              {businessRequests.length === 0 ? (
+                <EmptyState title="business requests" />
+              ) : (
+                <div className="space-y-3">
+                  {businessRequests.slice(0, 5).map((br: any) => (
+                    <ItemCard
+                      key={br.id}
+                      id={br.id?.slice(0, 8)}
+                      title={br.title}
+                      meta={`Process Step: ${br.process_step || 'Unknown'} • Created ${format(new Date(br.created_at), 'MMM d')}`}
+                      iconBg="bg-blue-100 text-blue-600"
+                      icon={FileText}
+                    />
+                  ))}
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-600">{data.themes.objectives.onTrack}/{data.themes.objectives.total}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Objectives</div>
-                </div>
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-amber-600">{data.themes.keyResults.onTrack}/{data.themes.keyResults.total}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Key Results</div>
-                  <div className="text-[9px] text-red-600 font-medium mt-1">{data.themes.keyResults.atRisk} at risk</div>
-                </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-slate-700">{data.themes.risks.active}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Active Risks</div>
-                  <div className="text-[9px] text-emerald-600 font-medium mt-1">{data.themes.risks.mitigated} mitigated</div>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                {data.themes.items.map(theme => (
-                  <StrategicItem
-                    key={theme.id}
-                    id={theme.id}
-                    title={theme.name}
-                    meta={`${theme.objectives} objectives • ${theme.epics} epics`}
-                    project={theme.projects.join(', ')}
-                    status={theme.status}
-                    progress={theme.progress}
-                    iconBg="bg-purple-100 text-purple-600"
-                    icon={Layers}
-                  />
-                ))}
-              </div>
-            </section>
-
-            {/* OKR Progress Section */}
-            <section>
-              <SectionHeader icon={Target} title="OKR Progress" color="bg-teal-600" />
-              <div className="space-y-3">
-                {data.okrs.map(okr => (
-                  <StrategicItem
-                    key={okr.id}
-                    id={okr.id}
-                    title={okr.title}
-                    meta={`${okr.keyResults} key results • Due ${format(okr.dueDate, 'MMM d')} • Owner: ${okr.owner}`}
-                    project={okr.project}
-                    status={okr.status}
-                    progress={okr.progress}
-                    iconBg="bg-teal-100 text-teal-600"
-                    icon={Target}
-                  />
-                ))}
-              </div>
+              )}
             </section>
 
             {/* Releases Section */}
             <section>
-              <SectionHeader icon={Rocket} title="Releases" color="bg-blue-600" />
-              <div className="space-y-3">
-                {data.releases.items.map(release => (
-                  <StrategicItem
-                    key={release.id}
-                    id={release.id}
-                    title={`${release.version} (${release.type})`}
-                    meta={`${release.features} features • ${release.stories} stories • ${format(release.date, 'MMM d')}`}
-                    project={release.projects.join(', ')}
-                    iconBg="bg-blue-100 text-blue-600"
-                    icon={Rocket}
-                  />
-                ))}
-              </div>
+              <SectionHeader icon={Rocket} title="Releases" color="bg-emerald-600" />
+              {releases.length === 0 ? (
+                <EmptyState title="releases" />
+              ) : (
+                <div className="space-y-3">
+                  {releases.slice(0, 5).map((release: any) => (
+                    <ItemCard
+                      key={release.id}
+                      id={release.version || release.name}
+                      title={release.name || 'Release'}
+                      meta={`Status: ${release.status || 'Unknown'} • ${release.release_date ? format(new Date(release.release_date), 'MMM d, yyyy') : 'No date'}`}
+                      iconBg="bg-emerald-100 text-emerald-600"
+                      icon={Rocket}
+                      status={release.status}
+                    />
+                  ))}
+                </div>
+              )}
             </section>
 
             {/* Incidents Section */}
             <section>
-              <SectionHeader icon={AlertTriangle} title="Incident Summary" color="bg-amber-500" />
-              <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-lg mb-4">
-                <TrendingDown className="w-6 h-6 text-emerald-600" />
-                <div>
-                  <span className="text-lg font-bold text-emerald-600">{data.incidents.reductionPercent}%</span>
-                  <span className="text-sm text-slate-600 ml-2">reduction in incidents this month</span>
+              <SectionHeader icon={AlertTriangle} title="Incidents" color="bg-amber-500" />
+              {incidents.length === 0 ? (
+                <EmptyState title="incidents" />
+              ) : (
+                <div className="space-y-3">
+                  {incidents.slice(0, 5).map((incident: any) => (
+                    <ItemCard
+                      key={incident.id}
+                      id={incident.id?.slice(0, 8)}
+                      title={incident.title}
+                      meta={`Severity: ${incident.severity || 'Unknown'} • Status: ${incident.status || 'Unknown'}`}
+                      iconBg="bg-amber-100 text-amber-600"
+                      icon={AlertTriangle}
+                    />
+                  ))}
                 </div>
-              </div>
-              <div className="space-y-3">
-                {data.incidents.items.map(incident => (
-                  <StrategicItem
-                    key={incident.id}
-                    id={incident.id}
-                    title={incident.title}
-                    meta={`Severity: ${incident.severity} • Status: ${incident.status}${incident.mttr ? ` • MTTR: ${incident.mttr}` : ''}`}
-                    project={incident.project}
-                    iconBg="bg-amber-100 text-amber-600"
-                    icon={AlertTriangle}
-                  />
-                ))}
-              </div>
+              )}
             </section>
 
             {/* Test Cycles Section */}
             <section>
               <SectionHeader icon={TestTube} title="Test Cycles" color="bg-teal-600" />
-              
-              {/* Test Stats Grid */}
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-emerald-600">{data.testCycles.passRate}%</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Pass Rate</div>
+              {testCycles.length === 0 ? (
+                <EmptyState title="test cycles" />
+              ) : (
+                <div className="space-y-3">
+                  {testCycles.slice(0, 5).map((cycle: any) => (
+                    <ItemCard
+                      key={cycle.id}
+                      id={cycle.id?.slice(0, 8)}
+                      title={cycle.name}
+                      meta={`Status: ${cycle.status || 'Unknown'} • Created ${format(new Date(cycle.created_at), 'MMM d')}`}
+                      iconBg="bg-teal-100 text-teal-600"
+                      icon={TestTube}
+                    />
+                  ))}
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-600">{data.testCycles.testsRun.toLocaleString()}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Tests Run</div>
-                </div>
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-amber-600">{data.testCycles.defectsFound}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Defects Found</div>
-                  <div className="text-[9px] text-emerald-600 font-medium mt-1">{data.testCycles.defectsFixed} fixed</div>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                {data.testCycles.items.map(cycle => (
-                  <StrategicItem
-                    key={cycle.id}
-                    id={cycle.id}
-                    title={cycle.name}
-                    meta={`${cycle.testCases} test cases • Pass rate: ${cycle.passRate}% • QA Lead: ${cycle.qaLead}`}
-                    project={cycle.project}
-                    iconBg="bg-teal-100 text-teal-600"
-                    icon={TestTube}
-                  />
-                ))}
-              </div>
+              )}
             </section>
           </div>
 
           {/* Chronicle Footer */}
           <div className="flex items-center justify-between px-8 py-5 border-t border-slate-200 bg-slate-50">
             <span className="text-xs text-slate-500">
-              Published {format(new Date(), 'MMMM d, yyyy')} • Edition locked
+              Data as of {format(new Date(), 'MMMM d, yyyy h:mm a')}
             </span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" className="gap-2">
                 <Download className="w-4 h-4" />
-                PDF
-              </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <FileText className="w-4 h-4" />
-                Excel
+                Export PDF
               </Button>
             </div>
           </div>

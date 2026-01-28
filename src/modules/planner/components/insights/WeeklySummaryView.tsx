@@ -1,14 +1,13 @@
 // ============================================================
 // WEEKLY SUMMARY VIEW - Operational Dashboard
-// Slate gradient header, KPI strip, 2-column card grid
+// Uses ONLY real data from database - NO MOCK DATA
 // ============================================================
 
 import { format } from 'date-fns';
 import { 
   FileText, Download, Rocket, AlertTriangle, Bug, 
-  GitBranch, FileCheck, Users, BarChart3, TrendingUp, TrendingDown
+  GitBranch, BarChart3, TrendingUp, TrendingDown, Inbox
 } from 'lucide-react';
-import { sampleWeeklyData } from '../../data/insightsMockData';
 import { useWeeklyInsightsData } from '../../hooks/useInsightsData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -36,46 +35,65 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span className={cn(
       'px-2 py-0.5 text-[10px] font-semibold rounded-full uppercase',
-      styles[status] || 'bg-slate-100 text-slate-600'
+      styles[status?.toLowerCase()] || 'bg-slate-100 text-slate-600'
     )}>
-      {status.replace('-', ' ')}
+      {(status || 'unknown').replace('-', ' ')}
     </span>
   );
 }
 
+// Empty state component
+function EmptyState({ title, icon: Icon }: { title: string; icon: any }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-8 text-slate-400">
+      <Icon className="w-8 h-8 mb-2" />
+      <p className="text-sm">No {title} this week</p>
+    </div>
+  );
+}
+
 export function WeeklySummaryView() {
-  // Fetch real data from Supabase
-  const { data: liveData, isLoading } = useWeeklyInsightsData();
-  
-  // Use mock data structure for display, overlay live counts
-  const data = sampleWeeklyData;
-  
-  // Use live period or fallback
-  const dateRange = liveData 
-    ? `${format(liveData.period.start, 'MMM d')} - ${format(liveData.period.end, 'MMM d, yyyy')}`
-    : `${format(data.period.start, 'MMM d')} - ${format(data.period.end, 'MMM d, yyyy')}`;
-  
-  // Merge live counts into display
-  const storiesDelivered = liveData?.storiesCount ?? data.storiesDelivered;
-  const releasesCount = liveData?.releasesCount ?? data.releases.length;
-  const incidentsTotal = liveData?.incidentsCount ?? data.incidents.total;
-  const defectsTotal = liveData?.defectsCount ?? data.defects.total;
-  
-  // Header KPIs
+  const { data, isLoading, error } = useWeeklyInsightsData();
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-4">
+        <Skeleton className="h-32 w-full" />
+        <div className="grid grid-cols-6 gap-3">
+          {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-24" />)}
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-64" />)}
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500">
+        <AlertTriangle className="w-12 h-12 mb-4 text-amber-500" />
+        <p>Failed to load weekly insights data</p>
+      </div>
+    );
+  }
+
+  const { period, releases, incidents, defects, stories } = data;
+  const dateRange = `${format(period.start, 'MMM d')} - ${format(period.end, 'MMM d, yyyy')}`;
+
+  // Calculate statistics from real data
   const headerKPIs = [
-    { label: 'Stories Delivered', value: data.storiesDelivered },
-    { label: 'Test Pass Rate', value: '94%' },
-    { label: 'Releases', value: data.releases.length },
+    { label: 'Stories Added', value: stories.length },
+    { label: 'Releases', value: releases.length },
+    { label: 'Incidents', value: incidents.length },
   ];
-  
-  // KPI Strip data
+
+  // KPI Strip data from real counts
   const kpiStrip = [
-    { label: 'Stories Added', value: data.storiesAdded, trend: '+8%', trendUp: true, colorClass: 'text-slate-800' },
-    { label: 'Stories Delivered', value: data.storiesDelivered, trend: '+12%', trendUp: true, colorClass: 'text-emerald-600', highlight: true },
-    { label: 'Features Delivered', value: data.featuresDelivered, trend: '+5%', trendUp: true, colorClass: 'text-slate-800' },
-    { label: 'Change Requests', value: data.changeRequests.total, trend: '-2', trendUp: false, colorClass: 'text-slate-800' },
-    { label: 'Incidents', value: data.incidents.total, trend: '-25%', trendUp: true, colorClass: 'text-amber-600' },
-    { label: 'QA Defects', value: data.defects.total, trend: '+3', trendUp: false, colorClass: 'text-red-600' },
+    { label: 'Stories', value: stories.length, colorClass: 'text-slate-800' },
+    { label: 'Releases', value: releases.length, colorClass: 'text-emerald-600', highlight: releases.length > 0 },
+    { label: 'Incidents', value: incidents.length, colorClass: incidents.length > 0 ? 'text-amber-600' : 'text-slate-800' },
+    { label: 'Defects', value: defects.length, colorClass: defects.length > 0 ? 'text-red-600' : 'text-slate-800' },
   ];
 
   return (
@@ -100,7 +118,7 @@ export function WeeklySummaryView() {
         </div>
 
         {/* KPI Strip */}
-        <div className="grid grid-cols-6 gap-3 mb-5">
+        <div className="grid grid-cols-4 gap-3 mb-5">
           {kpiStrip.map(kpi => (
             <div 
               key={kpi.label}
@@ -111,10 +129,6 @@ export function WeeklySummaryView() {
             >
               <div className={cn("text-3xl font-extrabold", kpi.colorClass)}>{kpi.value}</div>
               <div className="text-[10px] font-semibold text-slate-500 uppercase mt-1.5">{kpi.label}</div>
-              <div className={cn("text-[10px] font-semibold mt-1 flex items-center justify-center gap-1", kpi.trendUp ? "text-emerald-600" : "text-red-500")}>
-                {kpi.trendUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                {kpi.trend}
-              </div>
             </div>
           ))}
         </div>
@@ -128,31 +142,29 @@ export function WeeklySummaryView() {
                 <Rocket className="w-5 h-5 text-blue-600" />
                 <h3 className="font-bold text-slate-800">Releases</h3>
               </div>
-              <span className="text-xs text-slate-500">{data.releases.length} this week</span>
+              <span className="text-xs text-slate-500">{releases.length} this week</span>
             </div>
             <div className="p-4 space-y-3">
-              {data.releases.map(release => (
-                <div key={release.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                  <div className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs",
-                    release.type === 'hotfix' ? 'bg-amber-500' : 'bg-blue-600'
-                  )}>
-                    {release.type === 'hotfix' ? 'HF' : 'PRD'}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-semibold text-slate-800">
-                      <span className="text-blue-600 cursor-pointer hover:underline">{release.id}</span>
-                      {' '}{release.version}
+              {releases.length === 0 ? (
+                <EmptyState title="releases" icon={Rocket} />
+              ) : (
+                releases.slice(0, 5).map((release: any) => (
+                  <div key={release.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-600 text-white font-bold text-xs">
+                      REL
                     </div>
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      {release.project} • {format(release.deployedAt, 'MMM d, h:mm a')}
+                    <div className="flex-1">
+                      <div className="text-sm font-semibold text-slate-800">
+                        {release.name || release.version}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {release.release_date ? format(new Date(release.release_date), 'MMM d, yyyy') : 'No date'}
+                      </div>
                     </div>
+                    <StatusBadge status={release.status} />
                   </div>
-                  <div className="text-right">
-                    <div className="text-xs text-slate-500">{release.features} features, {release.stories} stories</div>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -163,31 +175,33 @@ export function WeeklySummaryView() {
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
                 <h3 className="font-bold text-slate-800">Incidents</h3>
               </div>
-              <div className="flex gap-3 text-xs">
-                <span className="text-red-600 font-semibold">SEV1: {data.incidents.sev1}</span>
-                <span className="text-amber-600 font-semibold">SEV2: {data.incidents.sev2}</span>
-                <span className="text-blue-600 font-semibold">SEV3: {data.incidents.sev3}</span>
-              </div>
+              <span className="text-xs text-slate-500">{incidents.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
-              {data.incidentItems.map(incident => (
-                <div key={incident.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                  <div className={cn(
-                    "w-2.5 h-2.5 rounded-full flex-shrink-0",
-                    incident.severity === 'sev1' && "bg-red-500 animate-pulse",
-                    incident.severity === 'sev2' && "bg-amber-500",
-                    incident.severity === 'sev3' && "bg-blue-500"
-                  )} />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-800 truncate">
-                      <span className="text-blue-600 cursor-pointer hover:underline">{incident.id}</span>
-                      {' '}{incident.title}
+              {incidents.length === 0 ? (
+                <EmptyState title="incidents" icon={AlertTriangle} />
+              ) : (
+                incidents.slice(0, 5).map((incident: any) => (
+                  <div key={incident.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                    <div className={cn(
+                      "w-2.5 h-2.5 rounded-full flex-shrink-0",
+                      incident.severity === 'critical' && "bg-red-500 animate-pulse",
+                      incident.severity === 'high' && "bg-amber-500",
+                      incident.severity === 'medium' && "bg-blue-500",
+                      incident.severity === 'low' && "bg-slate-400"
+                    )} />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-slate-800 truncate">
+                        {incident.title}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {incident.severity || 'Unknown'} severity
+                      </div>
                     </div>
-                    <div className="text-xs text-slate-500 mt-0.5">{incident.project} • {incident.assignee}</div>
+                    <StatusBadge status={incident.status} />
                   </div>
-                  <StatusBadge status={incident.status} />
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
@@ -196,181 +210,74 @@ export function WeeklySummaryView() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Bug className="w-5 h-5 text-red-600" />
-                <h3 className="font-bold text-slate-800">QA Defects</h3>
+                <h3 className="font-bold text-slate-800">Defects</h3>
               </div>
-              <div className="flex gap-3 text-xs">
-                <span className="text-red-600 font-semibold">Critical: {data.defects.critical}</span>
-                <span className="text-amber-600 font-semibold">Major: {data.defects.major}</span>
-                <span className="text-teal-600 font-semibold">Minor: {data.defects.minor}</span>
-              </div>
+              <span className="text-xs text-slate-500">{defects.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
-              {data.defectItems.map(defect => (
-                <div key={defect.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                  <div className={cn(
-                    "w-2.5 h-2.5 rounded-full flex-shrink-0",
-                    defect.severity === 'critical' && "bg-red-500",
-                    defect.severity === 'major' && "bg-amber-500",
-                    defect.severity === 'minor' && "bg-teal-500"
-                  )} />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-800 truncate">
-                      <span className="text-blue-600 cursor-pointer hover:underline">{defect.id}</span>
-                      {' '}{defect.title}
+              {defects.length === 0 ? (
+                <EmptyState title="defects" icon={Bug} />
+              ) : (
+                defects.slice(0, 5).map((defect: any) => (
+                  <div key={defect.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                    <div className={cn(
+                      "w-2.5 h-2.5 rounded-full flex-shrink-0",
+                      defect.severity === 'critical' && "bg-red-500",
+                      defect.severity === 'major' && "bg-amber-500",
+                      defect.severity === 'minor' && "bg-teal-500"
+                    )} />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-slate-800 truncate">
+                        {defect.title}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {defect.severity || 'Unknown'} severity
+                      </div>
                     </div>
-                    <div className="text-xs text-slate-500 mt-0.5">{defect.project} • {defect.assignee}</div>
+                    <StatusBadge status={defect.status} />
                   </div>
-                  <StatusBadge status={defect.status} />
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
-          {/* Features Card */}
+          {/* Stories Card */}
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <GitBranch className="w-5 h-5 text-purple-600" />
-                <h3 className="font-bold text-slate-800">Feature Status</h3>
+                <h3 className="font-bold text-slate-800">Stories</h3>
               </div>
-              <div className="flex gap-3 text-xs">
-                <span className="text-emerald-600 font-semibold">Done: {data.features.filter(f => f.status === 'done').length}</span>
-                <span className="text-blue-600 font-semibold">In Dev: {data.features.filter(f => f.status === 'in-dev').length}</span>
-              </div>
+              <span className="text-xs text-slate-500">{stories.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
-              {data.features.map(feature => (
-                <div key={feature.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-800">
-                      <span className="text-blue-600 cursor-pointer hover:underline">{feature.id}</span>
-                      {' '}{feature.title}
-                    </div>
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      {feature.storiesCompleted}/{feature.storiesTotal} stories
-                    </div>
-                  </div>
-                  <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-emerald-500 rounded-full" 
-                      style={{ width: `${(feature.storiesCompleted / feature.storiesTotal) * 100}%` }} 
-                    />
-                  </div>
-                  <StatusBadge status={feature.status} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Team Subtasks - Full Width */}
-          <div className="col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-slate-800">Team Subtasks</h3>
-              </div>
-            </div>
-            <div className="p-4 space-y-2">
-              {data.teamMembers.map(member => (
-                <div key={member.id} className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-lg">
-                  <div 
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
-                    style={{ background: member.color }}
-                  >
-                    {member.initials}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-semibold text-slate-800 hover:text-blue-600 cursor-pointer">{member.name}</div>
-                    <div className="text-xs text-slate-500">{member.storiesAssigned.length} stories • {member.storiesAssigned.slice(0, 3).join(', ')}...</div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-center">
-                      <div className="text-base font-bold text-emerald-600">{member.subtasksDone}</div>
-                      <div className="text-[9px] text-slate-500 uppercase">Done</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-base font-bold text-slate-800">{member.subtasksActive}</div>
-                      <div className="text-[9px] text-slate-500 uppercase">Active</div>
-                    </div>
-                    <div className="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div 
-                        className={cn("h-full rounded-full", member.completionPercent >= 70 ? "bg-emerald-500" : "bg-amber-500")}
-                        style={{ width: `${member.completionPercent}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Project Performance - Full Width */}
-          <div className="col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-teal-600" />
-                <h3 className="font-bold text-slate-800">Project Performance</h3>
-              </div>
-            </div>
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b-2 border-slate-200">
-                  <th className="text-left p-3 text-[10px] font-bold uppercase text-slate-500">Project</th>
-                  <th className="text-center p-3 text-[10px] font-bold uppercase text-slate-500">Features</th>
-                  <th className="text-center p-3 text-[10px] font-bold uppercase text-slate-500">Stories</th>
-                  <th className="text-center p-3 text-[10px] font-bold uppercase text-slate-500">Defects</th>
-                  <th className="text-center p-3 text-[10px] font-bold uppercase text-slate-500">Tests</th>
-                  <th className="text-center p-3 text-[10px] font-bold uppercase text-slate-500">Incidents</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.projectPerformance.map(project => (
-                  <tr key={project.id} className="hover:bg-slate-50 border-b border-slate-100">
-                    <td className="p-3.5">
-                      <div className="flex items-center gap-2.5">
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ background: project.color }} />
-                        <span className="font-semibold text-slate-800 hover:text-blue-600 cursor-pointer">{project.name}</span>
+              {stories.length === 0 ? (
+                <EmptyState title="stories" icon={GitBranch} />
+              ) : (
+                stories.slice(0, 5).map((story: any) => (
+                  <div key={story.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-slate-800 truncate">
+                        {story.title}
                       </div>
-                    </td>
-                    <td className="text-center font-bold text-slate-700">{project.features}</td>
-                    <td className="text-center font-bold text-emerald-600">{project.storiesDelivered}</td>
-                    <td className={cn("text-center font-bold", project.defectsTracked > 2 ? "text-amber-600" : "text-slate-700")}>
-                      {project.defectsTracked}
-                    </td>
-                    <td className="text-center font-bold text-slate-700">{project.testsExecuted}</td>
-                    <td className={cn("text-center font-bold", project.incidentsResolved === 0 ? "text-emerald-600" : "text-slate-700")}>
-                      {project.incidentsResolved}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="bg-slate-50 border-t-2 border-slate-200">
-                  <td className="p-3.5 font-extrabold text-slate-800">TOTAL</td>
-                  <td className="text-center font-extrabold text-lg">{data.projectPerformance.reduce((a, p) => a + p.features, 0)}</td>
-                  <td className="text-center font-extrabold text-lg text-emerald-600">{data.projectPerformance.reduce((a, p) => a + p.storiesDelivered, 0)}</td>
-                  <td className="text-center font-extrabold text-lg text-amber-600">{data.projectPerformance.reduce((a, p) => a + p.defectsTracked, 0)}</td>
-                  <td className="text-center font-extrabold text-lg">{data.projectPerformance.reduce((a, p) => a + p.testsExecuted, 0)}</td>
-                  <td className="text-center font-extrabold text-lg text-emerald-600">{data.projectPerformance.reduce((a, p) => a + p.incidentsResolved, 0)}</td>
-                </tr>
-              </tfoot>
-            </table>
+                    </div>
+                    <StatusBadge status={story.status} />
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200">
+        <div className="flex items-center justify-between mt-6 px-2">
           <span className="text-xs text-slate-500">
-            Generated {format(new Date(), 'MMM d, yyyy')} at {format(new Date(), 'h:mm a')}
+            Data as of {format(new Date(), 'MMM d, yyyy h:mm a')}
           </span>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="gap-2">
               <Download className="w-4 h-4" />
-              PDF
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2">
-              <FileText className="w-4 h-4" />
-              Excel
+              Export
             </Button>
           </div>
         </div>
