@@ -16,7 +16,6 @@ export { useSearchProfiles } from './useSearchProfiles';
 export { 
   useWorkstreamDetails, 
   useWorkstreamMembers, 
-  useAvailableResources, 
   useUpdateWorkstream, 
   useAddWorkstreamMember, 
   useRemoveWorkstreamMember,
