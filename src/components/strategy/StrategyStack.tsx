@@ -562,7 +562,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 const isSelected = selectedLayer === layer.key;
                 const hasGap = data.gap !== null && data.gap > 0;
                 const hasNoData = data.hasNoData || data.coverage === null;
-                const coverageStatus = hasNoData ? { color: 'var(--text-muted)', label: '—', badgeClass: 'bg-muted text-muted-foreground' } : getCoverageStatus(data.coverage ?? 0);
+                const coverageStatus = hasNoData ? { color: 'var(--sr-text-muted)', label: '—', badgeClass: '' } : getCoverageStatus(data.coverage ?? 0);
                 const tooltipText = getCalculationTooltip(layer.key);
                 
                 return (
@@ -628,7 +628,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                             <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--sr-text-secondary)' }}>—</span>
                           ) : data.count > 0 ? (
                             <>
-                              <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: 'var(--progress-track)' }}>
+                              <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: 'var(--sr-border)' }}>
                                 <div 
                                   className="h-full rounded-full transition-all"
                                   style={{ 

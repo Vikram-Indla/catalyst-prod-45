@@ -131,35 +131,43 @@
 
 /* ==================== DARK MODE ==================== */
 .dark .strategy-room-content,
-[data-theme="dark"] .strategy-room-content {
-  --sr-surface-page: #0f172a;
-  --sr-surface-card: #1e293b;
-  --sr-surface-hover: #334155;
+[data-theme="dark"] .strategy-room-content,
+.strategy-room-content:has([data-theme="dark"]),
+html.dark .strategy-room-content {
+  /* ==================== DARK SURFACES ==================== */
+  --sr-surface-page: #0c1222;
+  --sr-surface-card: #141d2e;
+  --sr-surface-hover: #1e293b;
   --sr-surface-selected: #1e3a5f;
-  --sr-surface-elevated: #1e293b;
+  --sr-surface-elevated: #1a2538;
   
+  /* ==================== DARK TEXT ==================== */
   --sr-text-primary: #f1f5f9;
   --sr-text-secondary: #cbd5e1;
   --sr-text-tertiary: #94a3b8;
   --sr-text-muted: #64748b;
   --sr-text-light: #475569;
   
+  /* ==================== DARK BORDERS ==================== */
   --sr-border: #334155;
   --sr-border-light: #1e293b;
   
-  --sr-status-healthy-bg: rgba(5, 150, 105, 0.15);
-  --sr-status-at-risk-bg: rgba(217, 119, 6, 0.15);
-  --sr-status-critical-bg: rgba(220, 38, 38, 0.15);
+  /* ==================== DARK STATUS BACKGROUNDS ==================== */
+  --sr-status-healthy-bg: rgba(5, 150, 105, 0.2);
+  --sr-status-at-risk-bg: rgba(217, 119, 6, 0.2);
+  --sr-status-critical-bg: rgba(220, 38, 38, 0.2);
   
-  --sr-layer-objective-bg: rgba(37, 99, 235, 0.2);
-  --sr-layer-theme-bg: rgba(13, 148, 136, 0.2);
-  --sr-layer-epic-bg: rgba(217, 119, 6, 0.2);
-  --sr-layer-feature-bg: rgba(124, 58, 237, 0.2);
+  /* ==================== DARK LAYER BACKGROUNDS ==================== */
+  --sr-layer-objective-bg: rgba(37, 99, 235, 0.25);
+  --sr-layer-theme-bg: rgba(13, 148, 136, 0.25);
+  --sr-layer-epic-bg: rgba(217, 119, 6, 0.25);
+  --sr-layer-feature-bg: rgba(124, 58, 237, 0.25);
   
-  --sr-accent-light: rgba(37, 99, 235, 0.2);
-  --sr-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --sr-accent-light: rgba(37, 99, 235, 0.25);
+  --sr-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   
-  /* Re-map global tokens for dark mode */
+  /* ==================== GLOBAL TOKEN REMAPPING FOR DARK MODE ==================== */
+  /* These ensure any component using global tokens gets proper dark values */
   --text-primary: var(--sr-text-primary);
   --text-primary-hex: var(--sr-text-primary);
   --text-secondary: var(--sr-text-secondary);
@@ -188,6 +196,10 @@
   --status-danger-bg: var(--sr-status-critical-bg);
   
   --brand-primary: var(--sr-accent);
+  
+  /* Override background and text */
+  background: var(--sr-surface-page);
+  color: var(--sr-text-primary);
 }
 
 /* ==================== SECTIONS ==================== */
@@ -232,6 +244,10 @@
 .strategy-room-content .sr-kpi-card:hover {
   border-color: var(--sr-text-muted);
   box-shadow: var(--sr-shadow-md);
+}
+
+.strategy-room-content .sr-kpi-card:hover .sr-kpi-chevron {
+  opacity: 1;
 }
 
 .strategy-room-content .sr-kpi-card:focus-visible {

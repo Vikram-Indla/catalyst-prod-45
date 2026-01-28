@@ -247,16 +247,32 @@ export default function StrategyRoomPage() {
 
           {/* Section 5: Strategy Context — Collapsible accordion */}
           <Collapsible open={contextOpen} onOpenChange={setContextOpen}>
-            <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div 
+              className="sr-section" 
+              style={{ padding: 0, overflow: 'hidden' }}
+            >
               <CollapsibleTrigger asChild>
-                <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors">
+                <button 
+                  className="w-full flex items-center justify-between px-4 py-3 transition-colors"
+                  style={{ 
+                    backgroundColor: 'transparent',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--sr-surface-hover)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
                   <div className="flex items-center gap-2">
-                    <Compass size={14} className="text-primary" />
+                    <Compass size={14} style={{ color: 'var(--sr-accent)' }} />
                     <div className="text-left">
-                      <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                      <h2 
+                        className="text-xs font-semibold uppercase tracking-wider"
+                        style={{ color: 'var(--sr-text-primary)' }}
+                      >
                         Strategy Context
                       </h2>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p 
+                        className="text-[10px]"
+                        style={{ color: 'var(--sr-text-muted)' }}
+                      >
                         Mission, vision, and values
                       </p>
                     </div>
@@ -264,14 +280,15 @@ export default function StrategyRoomPage() {
                   <ChevronDown 
                     size={14} 
                     className={cn(
-                      "text-muted-foreground transition-transform duration-200",
+                      "transition-transform duration-200",
                       contextOpen && "rotate-180"
                     )}
+                    style={{ color: 'var(--sr-text-muted)' }}
                   />
                 </button>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div className="border-t border-border">
+                <div style={{ borderTop: '1px solid var(--sr-border)' }}>
                   <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
                 </div>
               </CollapsibleContent>
