@@ -59,9 +59,9 @@ export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
 
   return (
     <div className="space-y-1">
-      {/* Section Header */}
+      {/* Section Header - Sentence case */}
       <div className="px-1 py-2">
-        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+        <span className="text-xs font-medium text-muted-foreground">
           Details
         </span>
       </div>
@@ -421,7 +421,7 @@ function DatePicker({
   );
 }
 
-// Due Date Picker with urgency
+// Due Date Picker with urgency - WCAG AA compliant badges
 function DueDatePicker({ value, onChange }: { value: string | null; onChange: (date: string | null) => void }) {
   const [open, setOpen] = useState(false);
   
@@ -445,8 +445,9 @@ function DueDatePicker({ value, onChange }: { value: string | null; onChange: (d
           {urgency && (
             <span className={cn(
               "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase",
-              urgency.variant === 'warning' && "bg-amber-100 text-amber-700",
-              urgency.variant === 'danger' && "bg-red-100 text-red-700"
+              // WCAG AA compliant: darker text colors for proper contrast
+              urgency.variant === 'warning' && "bg-amber-100 text-amber-800",
+              urgency.variant === 'danger' && "bg-red-100 text-red-800"
             )}>
               {urgency.label}
             </span>
