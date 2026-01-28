@@ -30616,6 +30616,7 @@ export type Database = {
         Args: { p_program_id: string }
         Returns: string
       }
+      generate_planner_task_key: { Args: never; Returns: string }
       generate_work_item_display_id: {
         Args: {
           p_generation_id: string

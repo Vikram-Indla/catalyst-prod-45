@@ -24,26 +24,37 @@ interface CreateTaskResult {
   task_key: string;
 }
 
-// Generate unique task key
+// Generate unique task key using database sequence
 async function generateTaskKey(): Promise<string> {
-  // Get latest task key to increment
-  const { data } = await supabase
-    .from('planner_tasks')
-    .select('task_key')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
-
-  if (data?.task_key) {
-    // Extract number from PLN-XXX format
-    const match = data.task_key.match(/PLN-(\d+)/);
-    if (match) {
-      const nextNum = parseInt(match[1], 10) + 1;
-      return `PLN-${String(nextNum).padStart(3, '0')}`;
+  // Use database function for guaranteed unique sequential keys
+  const { data, error } = await supabase.rpc('generate_planner_task_key');
+  
+  if (error || !data) {
+    console.error('Error generating task key:', error);
+    // Fallback: query max and increment (but DB sequence is preferred)
+    const { data: maxTask } = await supabase
+      .from('planner_tasks')
+      .select('task_key')
+      .like('task_key', 'PLN-%')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    
+    if (maxTask && maxTask.length > 0) {
+      // Find the highest valid number (exclude sub-tasks like PLN-45-2 and timestamps)
+      let maxNum = 0;
+      for (const t of maxTask) {
+        const match = t.task_key?.match(/^PLN-(\d{1,4})$/);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum && num < 10000) maxNum = num;
+        }
+      }
+      return `PLN-${maxNum + 1}`;
     }
+    return `PLN-1`;
   }
   
-  return `PLN-${String(Math.floor(Math.random() * 1000) + 1).padStart(3, '0')}`;
+  return data;
 }
 
 export function useCreateTaskMutation() {
