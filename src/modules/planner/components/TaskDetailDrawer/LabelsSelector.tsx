@@ -1,16 +1,18 @@
 // ============================================================
-// LABELS SELECTOR - Task labels with add functionality
+// LABELS SELECTOR - Task labels with add/delete functionality
 // Uses database for persistence
+// Delete: management/super_admin only | Create: everyone
 // ============================================================
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Check, Loader2 } from 'lucide-react';
+import { Plus, Check, Loader2, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useUserRole } from '@/hooks/useUserRole';
 
 // Predefined label colors
 const LABEL_COLORS: Record<string, { bg: string; text: string }> = {
@@ -41,6 +43,10 @@ export function LabelsSelector({ taskId }: LabelsSelectorProps) {
   const [isCreating, setIsCreating] = useState(false);
   const [newLabelName, setNewLabelName] = useState('');
   const queryClient = useQueryClient();
+  
+  // Get user role for delete permission check
+  const { isProgramManager, isSuperAdmin } = useUserRole();
+  const canDeleteLabels = isProgramManager || isSuperAdmin;
 
   // Fetch all available labels
   const { data: allLabels = [] } = useQuery({
@@ -124,6 +130,33 @@ export function LabelsSelector({ taskId }: LabelsSelectorProps) {
     },
   });
 
+  // Delete label (management/super_admin only)
+  const deleteLabel = useMutation({
+    mutationFn: async (labelId: string) => {
+      // First remove all assignments for this label
+      const { error: assignError } = await supabase
+        .from('task_label_assignments')
+        .delete()
+        .eq('label_id', labelId);
+      if (assignError) throw assignError;
+      
+      // Then delete the label
+      const { error } = await supabase
+        .from('task_labels')
+        .delete()
+        .eq('id', labelId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['task-labels'] });
+      queryClient.invalidateQueries({ queryKey: ['task-label-assignments'] });
+      toast.success('Label deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete label');
+    },
+  });
+
   const getColorClasses = (color: string) => {
     return LABEL_COLORS[color] || LABEL_COLORS.gray;
   };
@@ -167,19 +200,42 @@ export function LabelsSelector({ taskId }: LabelsSelectorProps) {
             const isSelected = assignedLabelIds.includes(label.id);
             
             return (
-              <button
+              <div
                 key={label.id}
-                onClick={() => toggleLabel.mutate(label.id)}
-                disabled={toggleLabel.isPending}
                 className={cn(
-                  "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors",
+                  "w-full flex items-center gap-2.5 px-2 py-2 rounded transition-colors group",
                   isSelected ? "bg-muted" : "hover:bg-muted/50"
                 )}
               >
-                <div className={cn("w-3 h-3 rounded-full", colors.bg)} />
-                <span className="text-sm flex-1 text-left">{label.name}</span>
-                {isSelected && <Check className="w-4 h-4 text-primary" />}
-              </button>
+                <button
+                  onClick={() => toggleLabel.mutate(label.id)}
+                  disabled={toggleLabel.isPending}
+                  className="flex-1 flex items-center gap-2.5"
+                >
+                  <div className={cn("w-3 h-3 rounded-full", colors.bg)} />
+                  <span className="text-sm flex-1 text-left">{label.name}</span>
+                  {isSelected && <Check className="w-4 h-4 text-primary" />}
+                </button>
+                
+                {/* Delete button - only for management/super_admin */}
+                {canDeleteLabels && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteLabel.mutate(label.id);
+                    }}
+                    disabled={deleteLabel.isPending}
+                    className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-destructive/10 transition-opacity"
+                    title="Delete label"
+                  >
+                    {deleteLabel.isPending ? (
+                      <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
+                    ) : (
+                      <X className="w-3 h-3 text-muted-foreground hover:text-destructive" />
+                    )}
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>
