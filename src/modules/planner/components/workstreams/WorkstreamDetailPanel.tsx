@@ -455,37 +455,48 @@ export function WorkstreamDetailPanel({
               </h3>
             </div>
             
-            <div className="space-y-3">
-              {recentTasks.map((task) => (
-                <div 
-                  key={task.key}
-                  className="flex items-center gap-3 group cursor-pointer"
-                >
-                  <span className="text-xs font-mono text-blue-600 dark:text-blue-400 w-14 flex-shrink-0">
-                    {task.key}
-                  </span>
-                  <span className="flex-1 text-sm text-slate-700 dark:text-slate-300 truncate">
-                    {task.title}
-                  </span>
-                  <span 
-                    className="text-xs px-2 py-1 rounded-md font-medium flex-shrink-0"
-                    style={{ 
-                      backgroundColor: task.status?.color ? `${task.status.color}20` : '#f1f5f9',
-                      color: task.status?.color || '#64748b'
-                    }}
+            {recentTasks.length === 0 ? (
+              <div className="text-center py-6 text-sm text-slate-400 dark:text-slate-500">
+                No tasks in this workstream
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {recentTasks.map((task) => (
+                  <div 
+                    key={task.id}
+                    className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 group cursor-pointer transition-colors"
                   >
-                    {task.status?.name || 'Unknown'}
-                  </span>
-                </div>
-              ))}
-            </div>
+                    {/* Task Key - fixed width for alignment */}
+                    <span className="text-xs font-mono text-blue-600 dark:text-blue-400 w-[60px] flex-shrink-0 truncate">
+                      {task.key}
+                    </span>
+                    {/* Task Title - takes remaining space */}
+                    <span className="flex-1 text-sm text-slate-700 dark:text-slate-300 truncate min-w-0">
+                      {task.title}
+                    </span>
+                    {/* Status Badge - fixed width for alignment */}
+                    <span 
+                      className="text-xs px-2.5 py-1 rounded-md font-medium flex-shrink-0 min-w-[80px] text-center"
+                      style={{ 
+                        backgroundColor: task.status?.color ? `${task.status.color}20` : '#f1f5f9',
+                        color: task.status?.color || '#64748b'
+                      }}
+                    >
+                      {task.status?.name || 'Unknown'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
             
-            <button
-              onClick={handleViewTasks}
-              className="flex items-center justify-center gap-1 w-full mt-4 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
-            >
-              View all {workstream.task_count} tasks →
-            </button>
+            {workstream.task_count > 0 && (
+              <button
+                onClick={handleViewTasks}
+                className="flex items-center justify-center gap-1 w-full mt-4 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+              >
+                View all {workstream.task_count} tasks →
+              </button>
+            )}
           </div>
 
           {/* Recent Activity Section */}
