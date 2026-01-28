@@ -338,12 +338,12 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
         />
 
         {/* ============================================================
-            TIMELINE GRID CONTENT - Split panel layout
+            TIMELINE GRID CONTENT - Unified layout (no vertical divider)
             ============================================================ */}
         <div className="flex-1 overflow-hidden flex">
-          {/* Left Panel - Task Info */}
+          {/* Left Panel - Task Info (no right border for unified look) */}
           <div 
-            className="flex-shrink-0 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 overflow-y-auto"
+            className="flex-shrink-0 bg-white dark:bg-slate-950 overflow-y-auto"
             style={{ width: LEFT_PANEL_WIDTH }}
           >
             {/* Header */}
@@ -460,7 +460,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                     <div
                       key={i}
                       className={cn(
-                        "flex-shrink-0 flex flex-col items-center justify-center border-r border-slate-100 dark:border-slate-800 transition-colors",
+                        "flex-shrink-0 flex flex-col items-center justify-center transition-colors",
                         isWeekend && !isCurrentDay && "bg-slate-50/80 dark:bg-slate-900/50"
                       )}
                       style={{ width: columnConfig.width }}
@@ -525,7 +525,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                               <div
                                 key={i}
                                 className={cn(
-                                  "flex-shrink-0 border-r border-slate-100 dark:border-slate-800",
+                                  "flex-shrink-0",
                                   isWeekend && "bg-slate-100/50 dark:bg-slate-800/30"
                                 )}
                                 style={{ width: columnConfig.width }}
@@ -565,7 +565,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
                                   <div
                                     key={i}
                                     className={cn(
-                                      "flex-shrink-0 border-r border-slate-100 dark:border-slate-800",
+                                      "flex-shrink-0",
                                       isWeekend && "bg-slate-50/50 dark:bg-slate-800/20"
                                     )}
                                     style={{ width: columnConfig.width }}
