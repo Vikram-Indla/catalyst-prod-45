@@ -26,25 +26,26 @@ export function useWorkstreamsV10() {
     queryFn: async (): Promise<WorkstreamDataV10[]> => {
       console.log('[Workstreams V10] Fetching workstreams...');
       
-      // Fetch workstreams (no is_archived column - use is_active)
-      const { data: workstreams, error } = await supabase
-        .from('planner_workstreams')
-        .select(`
-          id,
-          name,
-          slug,
-          color,
-          description,
-          created_at,
-          start_date,
-          due_date,
-          is_active
-        `)
-        .eq('is_active', true)
-        .order('name');
+      try {
+        // Fetch workstreams (no is_archived column - use is_active)
+        const { data: workstreams, error } = await supabase
+          .from('planner_workstreams')
+          .select(`
+            id,
+            name,
+            slug,
+            color,
+            description,
+            created_at,
+            start_date,
+            due_date,
+            is_active
+          `)
+          .eq('is_active', true)
+          .order('name');
 
-      console.log('[Workstreams V10] Workstreams query result:', { workstreams, error });
-      if (error) throw error;
+        console.log('[Workstreams V10] Workstreams query result:', { workstreams, error });
+        if (error) throw new Error(error.message || 'Failed to fetch workstreams');
 
       // Fetch members for all workstreams
       const { data: allMembers, error: membersError } = await supabase
@@ -56,7 +57,7 @@ export function useWorkstreamsV10() {
           role
         `);
 
-      if (membersError) throw membersError;
+      if (membersError) throw new Error(membersError.message || 'Failed to fetch members');
 
       // Fetch profiles separately
       const memberUserIds = [...new Set((allMembers || []).map(m => m.user_id))];
@@ -65,7 +66,7 @@ export function useWorkstreamsV10() {
         .select('id, full_name, avatar_url')
         .in('id', memberUserIds.length > 0 ? memberUserIds : ['00000000-0000-0000-0000-000000000000']);
 
-      if (profilesError) throw profilesError;
+      if (profilesError) throw new Error(profilesError.message || 'Failed to fetch profiles');
 
       const profileMap = new Map((profiles || []).map(p => [p.id, p]));
 
@@ -75,14 +76,14 @@ export function useWorkstreamsV10() {
         .select('id, workstream_id, status_id, due_date')
         .not('workstream_id', 'is', null);
 
-      if (tasksError) throw tasksError;
+      if (tasksError) throw new Error(tasksError.message || 'Failed to fetch tasks');
 
       // Fetch statuses (use is_done instead of is_done_state)
       const { data: statuses, error: statusesError } = await supabase
         .from('planner_statuses')
         .select('id, name, is_done');
 
-      if (statusesError) throw statusesError;
+      if (statusesError) throw new Error(statusesError.message || 'Failed to fetch statuses');
 
       const statusMap = new Map((statuses || []).map(s => [s.id, s]));
       const now = new Date();
@@ -158,6 +159,10 @@ export function useWorkstreamsV10() {
       
       console.log('[Workstreams V10] Transformed:', result.length, 'workstreams');
       return result;
+      } catch (err) {
+        console.error('[Workstreams V10] Error in queryFn:', err);
+        throw err instanceof Error ? err : new Error(String(err));
+      }
     },
     staleTime: 30000,
   });
