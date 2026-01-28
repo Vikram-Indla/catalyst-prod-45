@@ -19,6 +19,7 @@ import {
   Clock,
   BarChart2,
   Grid3X3,
+  Users,
   Activity,
   Check
 } from 'lucide-react';
@@ -480,11 +481,11 @@ export function WorkstreamDetailPanel({
                     onClick={() => navigate(`/planner/tasks?taskId=${task.id}`)}
                     className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 group cursor-pointer transition-colors"
                   >
-                    {/* Task Key - clickable */}
+                    {/* Task Key - clickable navigates to filtered task list */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/planner/tasks?taskId=${task.id}`);
+                        navigate(`/planner/task-list?search=${encodeURIComponent(task.key)}`);
                       }}
                       className="text-xs font-mono text-blue-600 dark:text-blue-400 w-[60px] flex-shrink-0 truncate hover:underline hover:text-blue-700 dark:hover:text-blue-300 text-left"
                     >
@@ -569,12 +570,12 @@ export function WorkstreamDetailPanel({
               View Tasks
             </Button>
             <Button 
-              onClick={handleViewBoard} 
+              onClick={onEdit} 
               variant="outline" 
               className="flex-1 gap-2"
             >
-              <Grid3X3 className="w-4 h-4" />
-              Board View
+              <Users className="w-4 h-4" />
+              Add Members
             </Button>
           </div>
           
