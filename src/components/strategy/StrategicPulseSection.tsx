@@ -1,6 +1,6 @@
 /**
  * StrategicPulseSection — CIO Cockpit "Pulse Strip"
- * Uses global Catalyst design tokens
+ * Uses ring-fenced --sr-* CSS tokens (V8 design system)
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +25,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Skeleton } from '@/components/ui/skeleton';
 
 // Calculation explanations for each metric
 const METRIC_TOOLTIPS = {
@@ -60,33 +59,32 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const overallProgress = displayData.avgProgress;
 
   const statusConfig = {
-    'on-track': { label: 'On Track', variant: 'success' as const, bgClass: 'bg-emerald-50 dark:bg-emerald-950/30', textClass: 'text-emerald-700 dark:text-emerald-400', borderClass: 'border-l-emerald-500' },
-    'at-risk': { label: 'At Risk', variant: 'warning' as const, bgClass: 'bg-amber-50 dark:bg-amber-950/30', textClass: 'text-amber-700 dark:text-amber-400', borderClass: 'border-l-amber-500' },
-    'off-track': { label: 'Off Track', variant: 'danger' as const, bgClass: 'bg-red-50 dark:bg-red-950/30', textClass: 'text-red-700 dark:text-red-400', borderClass: 'border-l-red-500' },
-    'no-data': { label: 'No Data', variant: 'muted' as const, bgClass: 'bg-muted', textClass: 'text-muted-foreground', borderClass: 'border-l-muted-foreground' },
+    'on-track': { label: 'On Track', variant: 'healthy' as const },
+    'at-risk': { label: 'At Risk', variant: 'at-risk' as const },
+    'off-track': { label: 'Off Track', variant: 'critical' as const },
+    'no-data': { label: 'No Data', variant: 'muted' as const },
   };
 
   const isNoData = displayData.overallStatus === 'no-data';
   const config = statusConfig[displayData.overallStatus];
   const TrendIcon = overallProgress >= 50 ? TrendingUp : overallProgress >= 30 ? Minus : TrendingDown;
   const trendLabel = overallProgress >= 50 ? 'Ahead' : overallProgress >= 30 ? 'On pace' : 'Behind';
+  const isPositiveTrend = overallProgress >= 50;
 
   // Skeleton only on first load
   if (isLoading && !hasData) {
     return (
-      <section className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="px-4 py-3 border-b border-border bg-muted/30">
-          <Skeleton className="h-4 w-32" />
+      <section className="sr-section">
+        <div className="sr-section-header">
+          <Activity size={14} style={{ color: 'var(--sr-accent)' }} />
+          <span>Strategic Pulse</span>
         </div>
-        <div className="p-4">
-          <div className="flex flex-col lg:flex-row gap-3">
-            <Skeleton className="lg:w-[220px] h-[140px] rounded-lg flex-shrink-0" />
-            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-[100px] rounded-lg" />
-              ))}
-            </div>
-          </div>
+        <div className="sr-pulse-grid">
+          <div className="sr-skeleton" style={{ height: '140px' }} />
+          <div className="sr-skeleton" style={{ height: '100px' }} />
+          <div className="sr-skeleton" style={{ height: '100px' }} />
+          <div className="sr-skeleton" style={{ height: '100px' }} />
+          <div className="sr-skeleton" style={{ height: '100px' }} />
         </div>
       </section>
     );
@@ -95,22 +93,22 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const isUpdating = isFetching && hasData;
 
   return (
-    <section className="rounded-lg border border-border bg-card overflow-hidden">
+    <section className="sr-section">
       {/* Section Header */}
-      <div className="px-4 py-3 border-b border-border bg-muted/30 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Activity size={14} className="text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-foreground">Strategic Pulse</span>
+      <div className="sr-section-header" style={{ justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
+          <Activity size={14} style={{ color: 'var(--sr-accent)' }} />
+          <span>Strategic Pulse</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
           {showStaleIndicator && (
-            <span className="text-[10px] text-muted-foreground italic">
+            <span style={{ fontSize: 'var(--sr-font-size-xs)', color: 'var(--sr-text-muted)', fontStyle: 'italic' }}>
               Data may be stale
             </span>
           )}
           {isUpdating && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Loader2 size={12} className="animate-spin" />
+            <div className="sr-refreshing">
+              <div className="sr-refreshing-spinner" />
               <span>Refreshing…</span>
             </div>
           )}
@@ -118,109 +116,91 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
       </div>
 
       <TooltipProvider>
-      <div className="p-4">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
-            {/* PRIMARY CARD: Strategy Health */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div 
-                  className={cn(
-                    "rounded-lg border border-border p-5 min-h-[120px] flex flex-col cursor-help transition-all hover:shadow-sm",
-                    "border-l-4",
-                    config.borderClass
-                  )}
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Strategy Health</span>
-                      <Info size={14} className="text-muted-foreground/60" />
-                    </div>
-                    
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className={cn(
-                        "inline-flex items-center px-3 py-1 rounded text-sm font-semibold",
-                        config.bgClass,
-                        config.textClass
-                      )}>
-                        {config.label}
-                      </span>
-                    </div>
-                    
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {isNoData 
-                        ? 'No data to calculate'
-                        : displayData.overallStatus === 'on-track' 
-                          ? 'Execution on track' 
-                          : displayData.overallStatus === 'at-risk' 
-                            ? 'Needs attention' 
-                            : 'Intervention needed'}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-3 pt-2 border-t border-border">
-                    {isNoData ? (
-                      <span className="text-sm font-medium text-muted-foreground">
-                        — · Add objectives to see trends
-                      </span>
-                    ) : (
-                      <>
-                        <TrendIcon size={16} className={config.textClass} />
-                        <span className="text-sm font-medium text-foreground">
-                          {overallProgress}% · {trendLabel}
-                        </span>
-                      </>
-                    )}
-                  </div>
+        <div className="sr-pulse-grid">
+          {/* PRIMARY CARD: Strategy Health (Hero) */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <article 
+                className={cn(
+                  "sr-kpi-card hero",
+                  config.variant === 'healthy' && 'healthy',
+                  config.variant === 'critical' && 'critical'
+                )}
+                tabIndex={0}
+              >
+                <div className="sr-kpi-header">
+                  <span className="sr-kpi-label">Strategy Health</span>
+                  <Info size={14} className="sr-kpi-icon" />
                 </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs whitespace-pre-line text-xs">
-                {METRIC_TOOLTIPS.strategyHealth}
-              </TooltipContent>
-            </Tooltip>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-3)', flexWrap: 'wrap' }}>
+                  <span className={cn("sr-status-badge", config.variant)}>
+                    {config.label}
+                  </span>
+                  {!isNoData && (
+                    <span className={cn("sr-trend", !isPositiveTrend && "negative")}>
+                      {isPositiveTrend ? '↑' : '↓'} {overallProgress}% {trendLabel}
+                    </span>
+                  )}
+                </div>
+                
+                <div className="sr-kpi-sublabel" style={{ marginTop: 'var(--sr-space-2)' }}>
+                  {isNoData 
+                    ? 'No data to calculate'
+                    : displayData.overallStatus === 'on-track' 
+                      ? 'Execution on track' 
+                      : displayData.overallStatus === 'at-risk' 
+                        ? 'Needs attention' 
+                        : 'Intervention needed'}
+                </div>
+              </article>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs whitespace-pre-line text-xs">
+              {METRIC_TOOLTIPS.strategyHealth}
+            </TooltipContent>
+          </Tooltip>
 
-            {/* SECONDARY CARDS: 4 KPI tiles in remaining columns */}
-              <CompactKPITile
-                label="Progress"
-                value={displayData.objectivesCount > 0 ? `${overallProgress}%` : '—'}
-                subtext={displayData.objectivesCount > 0 ? `${displayData.objectivesCount} objectives` : 'No objectives'}
-                icon={<BarChart3 size={18} />}
-                onClick={() => navigate('/enterprise/okr-hub')}
-                accentColor={displayData.objectivesCount > 0 ? 'accent' : undefined}
-                showProgress={displayData.objectivesCount > 0}
-                progressValue={overallProgress}
-                tooltip={METRIC_TOOLTIPS.progress}
-              />
+          {/* SECONDARY CARDS: 4 KPI tiles */}
+          <CompactKPITile
+            label="Progress"
+            value={displayData.objectivesCount > 0 ? `${overallProgress}%` : '—'}
+            subtext={displayData.objectivesCount > 0 ? `${displayData.objectivesCount} objectives` : 'No objectives'}
+            icon={<BarChart3 size={18} />}
+            onClick={() => navigate('/enterprise/okr-hub')}
+            showProgress={displayData.objectivesCount > 0}
+            progressValue={overallProgress}
+            tooltip={METRIC_TOOLTIPS.progress}
+          />
 
-              <CompactKPITile
-                label="At Risk"
-                value={displayData.objectivesCount > 0 ? atRiskCount : '—'}
-                subtext={displayData.objectivesCount === 0 ? 'No objectives' : atRiskCount === 0 ? 'All healthy' : 'Need attention'}
-                icon={<AlertTriangle size={18} />}
-                onClick={() => navigate('/enterprise/okr-hub')}
-                accentColor={displayData.objectivesCount > 0 && atRiskCount > 0 ? 'warning' : undefined}
-                tooltip={METRIC_TOOLTIPS.atRisk}
-              />
+          <CompactKPITile
+            label="At Risk"
+            value={displayData.objectivesCount > 0 ? atRiskCount : '—'}
+            subtext={displayData.objectivesCount === 0 ? 'No objectives' : atRiskCount === 0 ? 'All healthy' : 'Need attention'}
+            icon={<AlertTriangle size={18} />}
+            onClick={() => navigate('/enterprise/okr-hub')}
+            accentColor={displayData.objectivesCount > 0 && atRiskCount > 0 ? 'warning' : undefined}
+            tooltip={METRIC_TOOLTIPS.atRisk}
+          />
 
-              <CompactKPITile
-                label="Gaps"
-                value={displayData.alignmentGaps}
-                subtext={displayData.alignmentGaps === 0 ? 'Aligned' : 'Unlinked'}
-                icon={<Target size={18} />}
-                onClick={() => navigate('/enterprise/backlog')}
-                accentColor={displayData.alignmentGaps > 0 ? 'warning' : undefined}
-                tooltip={METRIC_TOOLTIPS.gaps}
-              />
+          <CompactKPITile
+            label="Gaps"
+            value={displayData.alignmentGaps}
+            subtext={displayData.alignmentGaps === 0 ? 'Aligned' : 'Unlinked'}
+            icon={<Target size={18} />}
+            onClick={() => navigate('/enterprise/backlog')}
+            accentColor={displayData.alignmentGaps > 0 ? 'warning' : undefined}
+            tooltip={METRIC_TOOLTIPS.gaps}
+          />
 
-              <CompactKPITile
-                label="Risks"
-                value={displayData.totalRisks}
-                subtext={displayData.highRisks > 0 ? `${displayData.highRisks} high` : 'No critical'}
-                icon={<Shield size={18} />}
-                onClick={() => navigate('/enterprise/risks')}
-                accentColor={displayData.highRisks > 0 ? 'danger' : undefined}
-                tooltip={METRIC_TOOLTIPS.risks}
-              />
-          </div>
+          <CompactKPITile
+            label="Risks"
+            value={displayData.totalRisks}
+            subtext={displayData.highRisks > 0 ? `${displayData.highRisks} high` : 'No critical'}
+            icon={<Shield size={18} />}
+            onClick={() => navigate('/enterprise/risks')}
+            accentColor={displayData.highRisks > 0 ? 'danger' : undefined}
+            tooltip={METRIC_TOOLTIPS.risks}
+          />
         </div>
       </TooltipProvider>
     </section>
@@ -250,61 +230,66 @@ function CompactKPITile({
   progressValue = 0,
   tooltip
 }: CompactKPITileProps) {
-  const accentStyles = {
-    accent: { borderClass: 'border-l-primary', iconClass: 'text-primary' },
-    warning: { borderClass: 'border-l-amber-500', iconClass: 'text-amber-500' },
-    danger: { borderClass: 'border-l-red-500', iconClass: 'text-red-500' },
+  const getAccentStyles = () => {
+    switch (accentColor) {
+      case 'warning': return { borderColor: 'var(--sr-status-at-risk)', iconColor: 'var(--sr-status-at-risk)' };
+      case 'danger': return { borderColor: 'var(--sr-status-critical)', iconColor: 'var(--sr-status-critical)' };
+      case 'accent': return { borderColor: 'var(--sr-accent)', iconColor: 'var(--sr-accent)' };
+      default: return { borderColor: 'var(--sr-border)', iconColor: 'var(--sr-text-light)' };
+    }
   };
   
-  const styles = accentColor ? accentStyles[accentColor] : { borderClass: '', iconClass: 'text-muted-foreground' };
+  const styles = getAccentStyles();
 
   const tileContent = (
-    <button
+    <article 
+      className="sr-kpi-card"
       onClick={onClick}
-      className={cn(
-        "relative rounded-lg border border-border p-4 min-h-[100px] flex flex-col text-left w-full",
-        "transition-all hover:shadow-sm hover:border-border/80 group",
-        accentColor && "border-l-4",
-        styles.borderClass
-      )}
+      tabIndex={0}
+      style={{
+        borderLeft: accentColor ? `4px solid ${styles.borderColor}` : undefined,
+      }}
     >
-      {/* Label row */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-1">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
-          {tooltip && <Info size={12} className="text-muted-foreground/60" />}
+      <div className="sr-kpi-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-1)' }}>
+          <span className="sr-kpi-label">{label}</span>
+          {tooltip && <Info size={12} style={{ color: 'var(--sr-text-light)', opacity: 0.6 }} />}
         </div>
-        <span className={styles.iconClass}>
+        <span style={{ color: styles.iconColor }}>
           {icon}
         </span>
       </div>
       
-      {/* Primary Value */}
-      <span className="text-xl font-bold text-foreground">
+      <div className="sr-kpi-value">
         {value}
-      </span>
+      </div>
       
-      {/* Subtext */}
-      <p className="text-sm text-muted-foreground mt-1">
+      <div className="sr-kpi-sublabel">
         {subtext}
-      </p>
+      </div>
 
-      {/* Progress bar */}
       {showProgress && (
-        <div className="w-full h-1.5 rounded-sm mt-3 overflow-hidden bg-muted">
+        <div className="sr-kpi-progress-bar">
           <div 
-            className="h-full rounded-sm bg-primary/80"
+            className="sr-kpi-progress-fill"
             style={{ width: `${progressValue}%` }}
           />
         </div>
       )}
 
-      {/* Hover chevron */}
       <ChevronRight 
         size={14} 
-        className="absolute top-3 right-3 opacity-0 group-hover:opacity-60 transition-opacity text-muted-foreground"
+        style={{
+          position: 'absolute',
+          top: 'var(--sr-space-3)',
+          right: 'var(--sr-space-3)',
+          opacity: 0,
+          color: 'var(--sr-text-muted)',
+          transition: 'opacity var(--sr-transition-fast)',
+        }}
+        className="sr-kpi-chevron"
       />
-    </button>
+    </article>
   );
 
   if (tooltip) {
