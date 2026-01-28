@@ -206,13 +206,41 @@ function ActivityItem({ activity }: { activity: TaskActivity }) {
   const initials = actorName.split(' ').map(n => n[0]).join('').slice(0, 2);
   
   const getActionText = () => {
-    switch (activity.action_type) {
+    // Handle planner_activity_log action types
+    const action = activity.action_type;
+    const newVal = activity.new_value;
+    
+    // Try to parse JSON if it's a stringified object
+    let parsedNewVal: any = newVal;
+    try {
+      if (newVal && newVal.startsWith('{')) {
+        parsedNewVal = JSON.parse(newVal);
+      }
+    } catch { /* ignore */ }
+    
+    switch (action) {
+      case 'created':
+        return `created this task`;
+      case 'completed':
+        return `marked as completed`;
+      case 'status_changed':
+        if (typeof parsedNewVal === 'object' && parsedNewVal.from && parsedNewVal.to) {
+          return `changed status from "${parsedNewVal.from}" to "${parsedNewVal.to}"`;
+        }
+        return 'changed status';
+      case 'priority_changed':
+        if (typeof parsedNewVal === 'object' && parsedNewVal.from && parsedNewVal.to) {
+          return `changed priority from "${parsedNewVal.from}" to "${parsedNewVal.to}"`;
+        }
+        return 'changed priority';
+      case 'assignee_changed':
+        return `changed assignee`;
+      case 'updated':
+        return `updated this task`;
       case 'status_change':
-        return `changed status from "${activity.old_value}" to "${activity.new_value}"`;
+        return `changed status from "${activity.old_value}" to "${newVal}"`;
       case 'assignment':
-        return activity.new_value 
-          ? `assigned to ${activity.new_value}`
-          : 'removed assignment';
+        return newVal ? `assigned to ${newVal}` : 'removed assignment';
       case 'edit':
         return `updated ${activity.old_value}`;
       case 'comment':
@@ -220,7 +248,7 @@ function ActivityItem({ activity }: { activity: TaskActivity }) {
       case 'attachment':
         return 'added an attachment';
       default:
-        return activity.action_type;
+        return action || 'made a change';
     }
   };
   
