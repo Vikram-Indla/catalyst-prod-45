@@ -5,6 +5,7 @@ import { CatyOrb } from './CatyOrb';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import catalystLogoWhite from '@/assets/catalyst-ai-logo-white.svg';
 
 interface DepartmentStats {
   id: string;
@@ -752,30 +753,29 @@ export function CatyChatWidget() {
 
   return (
     <>
-      {/* FAB Button */}
+      {/* FAB Button - Enterprise Catalyst AI */}
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
-          "fixed bottom-6 right-6 w-[60px] h-[60px] rounded-full z-[1000]",
+          "fixed bottom-6 right-6 w-[64px] h-[64px] rounded-full z-[1000]",
           "flex items-center justify-center cursor-pointer",
           "transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
           "hover:scale-110",
           isOpen && "opacity-0 pointer-events-none"
         )}
         style={{
-          background: 'linear-gradient(135deg, #5eaaa8 0%, #3d9a98 50%, #2d8a88 100%)',
-          boxShadow: '0 4px 20px rgba(20, 184, 166, 0.4), 0 0 60px rgba(20, 184, 166, 0.3)',
+          background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)',
+          boxShadow: '0 4px 24px rgba(37, 99, 235, 0.4), 0 0 60px rgba(37, 99, 235, 0.25)',
           animation: 'fab-breathe 4s ease-in-out infinite'
         }}
-        aria-label="Open Caty AI Assistant"
+        aria-label="Open Catalyst AI Assistant"
       >
-        <div className="flex flex-col items-center gap-1">
-          <div className="flex gap-2">
-            <div className="w-[5px] h-[7px] bg-white rounded-[2px]" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.8)' }} />
-            <div className="w-[5px] h-[7px] bg-white rounded-[2px]" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.8)' }} />
-          </div>
-          <div className="w-3 h-1.5 border-b-2 border-white rounded-b-full" />
-        </div>
+        <img 
+          src={catalystLogoWhite} 
+          alt="Catalyst AI" 
+          className="w-10 h-10"
+          style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
+        />
 
         {stats.critical > 0 && (
           <div 
@@ -1042,8 +1042,8 @@ export function CatyChatWidget() {
       {/* Global styles */}
       <style>{`
         @keyframes fab-breathe {
-          0%, 100% { box-shadow: 0 4px 20px rgba(20, 184, 166, 0.4), 0 0 60px rgba(20, 184, 166, 0.3); }
-          50% { box-shadow: 0 4px 30px rgba(20, 184, 166, 0.5), 0 0 80px rgba(20, 184, 166, 0.4); }
+          0%, 100% { box-shadow: 0 4px 24px rgba(37, 99, 235, 0.4), 0 0 60px rgba(37, 99, 235, 0.25); }
+          50% { box-shadow: 0 4px 32px rgba(37, 99, 235, 0.5), 0 0 80px rgba(37, 99, 235, 0.35); }
         }
         @keyframes orb-breathe {
           0%, 100% { transform: scale(1); }
