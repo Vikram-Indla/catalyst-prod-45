@@ -118,15 +118,14 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
       </div>
 
       <TooltipProvider>
-        <div className="p-4">
-          <div className="flex flex-col lg:flex-row gap-3">
+      <div className="p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
             {/* PRIMARY CARD: Strategy Health */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <div 
                   className={cn(
-                    "rounded-lg border border-border p-5 min-h-[140px] flex flex-col cursor-help transition-all hover:shadow-sm",
-                    "lg:w-[220px] flex-shrink-0",
+                    "rounded-lg border border-border p-5 min-h-[120px] flex flex-col cursor-help transition-all hover:shadow-sm",
                     "border-l-4",
                     config.borderClass
                   )}
@@ -179,8 +178,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               </TooltipContent>
             </Tooltip>
 
-            {/* SECONDARY CARDS: Metrics grid */}
-            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
+            {/* SECONDARY CARDS: 4 KPI tiles in remaining columns */}
               <CompactKPITile
                 label="Progress"
                 value={displayData.objectivesCount > 0 ? `${overallProgress}%` : '—'}
@@ -222,7 +220,6 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
                 accentColor={displayData.highRisks > 0 ? 'danger' : undefined}
                 tooltip={METRIC_TOOLTIPS.risks}
               />
-            </div>
           </div>
         </div>
       </TooltipProvider>
