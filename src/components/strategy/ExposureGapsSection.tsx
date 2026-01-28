@@ -1,24 +1,7 @@
 /**
  * ExposureGapsSection — CIO Cockpit exposure surface
+ * Ring-fenced design using sr-* CSS classes from strategy-room.css
  * Clean 3-column executive block with equal weight cards
- * Compact rows, thin bars, improved scannability
- * 
- * TYPOGRAPHY LOCK (CIO COCKPIT UX — NON-NEGOTIABLE):
- * ─────────────────────────────────────────────────
- * - Section title: 12px, semibold, uppercase, tracking 0.08em
- * - Card label: 14px, medium weight, secondary color
- * - Data row label: 12px, muted color
- * - Data row value: 14px, medium weight, primary color
- * 
- * LOADING BEHAVIOR:
- * - Skeleton allowed ONCE on initial load only
- * - After first success: NEVER show skeleton again
- * - During refresh: show "Refreshing…" in header, keep content visible
- * - NO greying, NO opacity reduction, NO layout shift
- * 
- * FORBIDDEN:
- * - NO opacity-*, NO text-white/* on content text
- * - NO undefined/NaN values passed to bars/charts
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -33,10 +16,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useMemo } from 'react';
-import { TYPOGRAPHY, TEXT_COLORS } from './strategyRoomTypography';
 
 interface ExposureGapsSectionProps {
   snapshotId?: string;
@@ -57,8 +37,6 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const { data, isLoading, isFetching, hasData, isStale, error } = useStrategyRoomSummary(snapshotId);
   
   const displayData = data ?? EMPTY_SUMMARY;
-  
-  // Show stale indicator if we're showing cached data after an error
   const showStaleIndicator = isStale && !isFetching && !!error;
 
   const attentionItems = useMemo((): AttentionItem[] => {
@@ -100,26 +78,26 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     return items;
   }, [displayData.atRiskObjectives, displayData.topRisks, displayData.alignmentGaps, displayData.misalignedEpics, displayData.misalignedFeatures]);
 
-  // Skeleton only on first load
+  // Skeleton only on first load - uses sr-* classes
   if (isLoading && !hasData) {
     return (
-      <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
-        <div className="px-4 py-2.5 bg-muted/30 dark:bg-muted/10">
-          <Skeleton className="h-4 w-32" />
+      <section className="sr-section">
+        <div className="sr-section-header">
+          <div className="sr-skeleton h-4 w-32" />
         </div>
-        <div className="p-3">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-            {['c1', 'c2', 'c3'].map((key) => (
-              <div key={key} className="rounded-md p-3 bg-muted/40 dark:bg-muted/20 min-h-[150px]">
-                <Skeleton className="h-4 w-28 mb-4" />
-                <div className="space-y-2">
-                  <Skeleton className="h-5 w-full" />
-                  <Skeleton className="h-5 w-full" />
-                  <Skeleton className="h-5 w-3/4" />
-                </div>
+        <div className="sr-panels-grid">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="sr-panel">
+              <div className="sr-panel-header">
+                <div className="sr-skeleton h-4 w-28" />
               </div>
-            ))}
-          </div>
+              <div className="sr-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sr-space-2)' }}>
+                <div className="sr-skeleton h-5 w-full" />
+                <div className="sr-skeleton h-5 w-full" />
+                <div className="sr-skeleton h-5 w-3/4" />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     );
@@ -128,25 +106,21 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const isUpdating = isFetching && hasData;
 
   return (
-    <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
-      {/* Section Header - surface separation via background, not border */}
-      <div className="px-4 py-2.5 flex items-center justify-between bg-muted/30 dark:bg-muted/10">
-        <div className="flex items-center gap-2">
-          <Shield size={14} className="text-destructive" />
-          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
-            Exposure & Gaps
-          </h2>
+    <section className="sr-section">
+      {/* Section Header */}
+      <div className="sr-section-header">
+        <div className="sr-section-title">
+          <Shield size={14} style={{ color: 'var(--sr-status-danger)' }} />
+          <span className="sr-section-title-text">Exposure & Gaps</span>
         </div>
-        <div className="flex items-center gap-2">
-          {/* Stale data indicator - CATALYST STANDARD */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="sr-section-subtitle" style={{ fontStyle: 'italic' }}>
               Data may be stale
             </span>
           )}
-          {/* Refreshing indicator - CATALYST STANDARD */}
           {isUpdating && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-1)', fontSize: 'var(--sr-text-xs)', color: 'var(--sr-text-tertiary)' }}>
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -154,163 +128,126 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         </div>
       </div>
 
-      <div className="p-3">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-          {/* Risk Exposure Column */}
-          <CockpitCard
-            title="Risk Exposure"
-            icon={<Shield size={14} />}
-            iconColor="text-destructive"
-            cta={{ label: 'View all', onClick: () => navigate('/enterprise/risks') }}
-          >
-            <div className="space-y-1.5">
-              <DataRow 
-                label="Critical/High" 
-                value={displayData.highRisks} 
-                total={displayData.totalRisks}
-                variant={displayData.highRisks > 0 ? 'danger' : 'neutral'} 
-                showBar
-              />
-              <DataRow 
-                label="Medium" 
-                value={displayData.mediumRisks} 
-                total={displayData.totalRisks}
-                variant={displayData.mediumRisks > 0 ? 'warning' : 'neutral'} 
-                showBar
-              />
-              <DataRow 
-                label="Low" 
-                value={displayData.lowRisks} 
-                total={displayData.totalRisks}
-                variant="neutral" 
-                showBar
-              />
+      <div className="sr-panels-grid">
+        {/* Risk Exposure Panel */}
+        <div className="sr-panel">
+          <div className="sr-panel-header">
+            <div className="sr-panel-title">
+              <Shield size={14} style={{ color: 'var(--sr-status-danger)' }} />
+              <span>Risk Exposure</span>
             </div>
+            <button 
+              className="sr-panel-action"
+              onClick={() => navigate('/enterprise/risks')}
+            >
+              View all <ChevronRight size={12} style={{ display: 'inline', verticalAlign: 'middle' }} />
+            </button>
+          </div>
+          <div className="sr-panel-body">
+            <DataRow 
+              label="Critical/High" 
+              value={displayData.highRisks} 
+              total={displayData.totalRisks}
+              variant={displayData.highRisks > 0 ? 'danger' : 'neutral'} 
+              showBar
+            />
+            <DataRow 
+              label="Medium" 
+              value={displayData.mediumRisks} 
+              total={displayData.totalRisks}
+              variant={displayData.mediumRisks > 0 ? 'warning' : 'neutral'} 
+              showBar
+            />
+            <DataRow 
+              label="Low" 
+              value={displayData.lowRisks} 
+              total={displayData.totalRisks}
+              variant="neutral" 
+              showBar
+            />
 
             {displayData.overdueRisks > 0 && (
-            <div className="pt-2 mt-2 border-t border-border/30 dark:border-border/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <Clock size={14} className="text-destructive" />
-                    <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_COLORS.secondaryStrong)}>Overdue</span>
-                  </div>
-                  <span className={cn(TYPOGRAPHY.secondaryMetric, 'text-destructive')}>
-                    {displayData.overdueRisks}
-                  </span>
+              <div className="sr-panel-row" style={{ borderTop: '1px solid var(--sr-border-light)', marginTop: 'var(--sr-space-2)', paddingTop: 'var(--sr-space-2)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
+                  <Clock size={14} style={{ color: 'var(--sr-status-danger)' }} />
+                  <span className="sr-panel-row-label">Overdue</span>
                 </div>
-              </div>
-            )}
-          </CockpitCard>
-
-          {/* Alignment Gaps Column */}
-          <CockpitCard
-            title="Alignment Gaps"
-            icon={<Target size={14} />}
-            iconColor="text-secondary-bronze"
-            cta={{ label: 'View backlog', onClick: () => navigate('/enterprise/backlog') }}
-          >
-            <div className="space-y-1.5">
-              <DataRow label="Orphan Themes" value={0} variant="neutral" />
-              <DataRow 
-                label="Unlinked Epics" 
-                value={displayData.misalignedEpics} 
-                variant={displayData.misalignedEpics > 0 ? 'bronze' : 'neutral'} 
-              />
-              <DataRow 
-                label="Unlinked Features" 
-                value={displayData.misalignedFeatures} 
-                variant={displayData.misalignedFeatures > 0 ? 'bronze' : 'neutral'} 
-              />
-            </div>
-
-            <div className="pt-2 mt-2 border-t border-border/30 dark:border-border/20">
-              <div className="flex items-center justify-between">
-                <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.secondaryStrong)}>Total gaps</span>
-                <span className={cn(
-                  TYPOGRAPHY.secondaryMetric,
-                  displayData.alignmentGaps > 0 ? 'text-secondary-bronze' : TEXT_COLORS.primary
-                )}>
-                  {displayData.alignmentGaps}
+                <span className="sr-panel-row-value" style={{ color: 'var(--sr-status-danger)' }}>
+                  {displayData.overdueRisks}
                 </span>
               </div>
-            </div>
-          </CockpitCard>
+            )}
+          </div>
+        </div>
 
-          {/* Needs Attention Column */}
-          <CockpitCard
-            title="Needs Attention"
-            icon={<AlertTriangle size={14} />}
-            iconColor="text-status-warning"
-          >
+        {/* Alignment Gaps Panel */}
+        <div className="sr-panel">
+          <div className="sr-panel-header">
+            <div className="sr-panel-title">
+              <Target size={14} style={{ color: 'var(--sr-status-warning)' }} />
+              <span>Alignment Gaps</span>
+            </div>
+            <button 
+              className="sr-panel-action"
+              onClick={() => navigate('/enterprise/backlog')}
+            >
+              View backlog <ChevronRight size={12} style={{ display: 'inline', verticalAlign: 'middle' }} />
+            </button>
+          </div>
+          <div className="sr-panel-body">
+            <DataRow label="Orphan Themes" value={0} variant="neutral" />
+            <DataRow 
+              label="Unlinked Epics" 
+              value={displayData.misalignedEpics} 
+              variant={displayData.misalignedEpics > 0 ? 'warning' : 'neutral'} 
+            />
+            <DataRow 
+              label="Unlinked Features" 
+              value={displayData.misalignedFeatures} 
+              variant={displayData.misalignedFeatures > 0 ? 'warning' : 'neutral'} 
+            />
+
+            <div className="sr-panel-row" style={{ borderTop: '1px solid var(--sr-border-light)', marginTop: 'var(--sr-space-2)', paddingTop: 'var(--sr-space-2)' }}>
+              <span className="sr-panel-row-label" style={{ fontWeight: 'var(--sr-font-semibold)' }}>Total gaps</span>
+              <span className="sr-panel-row-value" style={{ color: displayData.alignmentGaps > 0 ? 'var(--sr-status-warning)' : 'var(--sr-text-primary)' }}>
+                {displayData.alignmentGaps}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Needs Attention Panel */}
+        <div className="sr-panel">
+          <div className="sr-panel-header">
+            <div className="sr-panel-title">
+              <AlertTriangle size={14} style={{ color: 'var(--sr-status-warning)' }} />
+              <span>Needs Attention</span>
+            </div>
+          </div>
+          <div className="sr-panel-body">
             {attentionItems.length === 0 ? (
-              <div className="py-4 text-center">
-                <CheckCircle2 size={20} className="mx-auto mb-1.5 text-primary" />
-                <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.secondaryStrong)}>No items need attention</span>
+              <div style={{ padding: 'var(--sr-space-4)', textAlign: 'center' }}>
+                <CheckCircle2 size={20} style={{ margin: '0 auto var(--sr-space-2)', color: 'var(--sr-status-success)' }} />
+                <span style={{ fontSize: 'var(--sr-text-sm)', color: 'var(--sr-text-secondary)' }}>No items need attention</span>
               </div>
             ) : (
-              <div className="space-y-1.5">
-                {attentionItems.slice(0, 4).map((item, index) => (
-                  <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} index={index} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sr-space-2)' }}>
+                {attentionItems.slice(0, 4).map((item) => (
+                  <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
                 ))}
                 {attentionItems.length > 4 && (
-                  <div className="text-center pt-1.5">
-                    <span className={cn(TYPOGRAPHY.microcopy, 'text-[var(--info-fg)] font-medium')}>
+                  <div style={{ textAlign: 'center', paddingTop: 'var(--sr-space-2)' }}>
+                    <span style={{ fontSize: 'var(--sr-text-xs)', color: 'var(--sr-accent)', fontWeight: 'var(--sr-font-medium)' }}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
                 )}
               </div>
             )}
-          </CockpitCard>
+          </div>
         </div>
       </div>
     </section>
-  );
-}
-
-interface CockpitCardProps {
-  title: string;
-  icon: React.ReactNode;
-  iconColor: string;
-  children: React.ReactNode;
-  cta?: { label: string; onClick: () => void };
-}
-
-function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps) {
-  return (
-    <div className="rounded-md overflow-hidden flex flex-col bg-muted/40 dark:bg-muted/20 min-h-[150px]">
-      {/* Card header - surface separation via subtle background difference */}
-      <div className="px-3 py-2.5 flex items-center gap-2 bg-muted/20 dark:bg-muted/10">
-        <span className={iconColor}>{icon}</span>
-        <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
-          {title}
-        </span>
-      </div>
-      
-      <div className="p-3 flex-1">{children}</div>
-
-      {/* CTA - blue for links */}
-      {cta && (
-        <div className="px-3 pb-2.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              TYPOGRAPHY.ctaButton, 
-              "w-full h-8",
-              "text-[var(--info-fg)]",
-              "transition-[background-color,color] duration-150",
-              "hover:bg-[var(--info-bg)]",
-              "focus-visible:ring-1"
-            )}
-            onClick={cta.onClick}
-          >
-            {cta.label}
-            <ChevronRight size={14} className="ml-1" />
-          </Button>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -318,84 +255,107 @@ interface DataRowProps {
   label: string;
   value: number;
   total?: number;
-  variant?: 'neutral' | 'danger' | 'warning' | 'bronze';
+  variant?: 'neutral' | 'danger' | 'warning';
   showBar?: boolean;
 }
 
 function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: DataRowProps) {
-  const valueColors: Record<string, string> = {
-    neutral: TEXT_COLORS.primary,
-    danger: 'text-destructive',
-    warning: 'text-status-warning',
-    bronze: 'text-secondary-bronze',
-  };
-
-  const barColors: Record<string, string> = {
-    neutral: 'bg-foreground/40',
-    danger: 'bg-destructive',
-    warning: 'bg-status-warning',
-    bronze: 'bg-secondary-bronze',
-  };
-
   const barWidth = total > 0 ? Math.round((value / total) * 100) : 0;
 
+  const getValueColor = () => {
+    switch (variant) {
+      case 'danger': return 'var(--sr-status-danger)';
+      case 'warning': return 'var(--sr-status-warning)';
+      default: return 'var(--sr-text-primary)';
+    }
+  };
+
+  const getBarColor = () => {
+    switch (variant) {
+      case 'danger': return 'var(--sr-status-danger)';
+      case 'warning': return 'var(--sr-status-warning)';
+      default: return 'var(--sr-text-tertiary)';
+    }
+  };
+
   return (
-    <div className="flex items-center gap-2 py-1.5 rounded px-2 -mx-2 transition-[background-color] duration-100 hover:bg-accent/40">
-      {/* Label - readable secondary text */}
-      <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_COLORS.secondaryStrong, 'flex-1')}>{label}</span>
+    <div className="sr-panel-row">
+      <span className="sr-panel-row-label">{label}</span>
       
-      {/* Bar - visually aligned with value, never overpowers */}
-      {showBar && total > 0 && (
-        <div className="w-14 h-1.5 rounded-full overflow-hidden bg-muted/60 dark:bg-muted/40">
-          <div 
-            className={cn("h-full rounded-full", barColors[variant], variant !== 'neutral' ? 'opacity-80' : '')}
-            style={{ width: `${barWidth}%` }}
-          />
-        </div>
-      )}
-      
-      {/* Value - primary anchor for the eye */}
-      <span className={cn(TYPOGRAPHY.dataRowValue, 'w-7 text-right font-medium', valueColors[variant])}>
-        {value}
-      </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
+        {showBar && total > 0 && (
+          <div style={{ 
+            width: '56px', 
+            height: '6px', 
+            borderRadius: 'var(--sr-radius-sm)', 
+            overflow: 'hidden', 
+            backgroundColor: 'var(--sr-surface-muted)' 
+          }}>
+            <div 
+              style={{ 
+                height: '100%', 
+                borderRadius: 'var(--sr-radius-sm)', 
+                backgroundColor: getBarColor(),
+                width: `${barWidth}%`,
+                opacity: variant !== 'neutral' ? 0.8 : 0.5,
+              }}
+            />
+          </div>
+        )}
+        
+        <span className="sr-panel-row-value" style={{ color: getValueColor(), minWidth: '28px', textAlign: 'right' }}>
+          {value}
+        </span>
+      </div>
     </div>
   );
 }
 
-function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void; index: number }) {
-  const severityColors: Record<string, string> = {
-    critical: 'bg-destructive',
-    high: 'bg-status-warning',
-    medium: 'bg-secondary-bronze',
+function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void }) {
+  const getSeverityDotColor = () => {
+    switch (item.severity) {
+      case 'critical': return 'var(--sr-status-danger)';
+      case 'high': return 'var(--sr-status-warning)';
+      default: return 'var(--sr-status-warning)';
+    }
   };
 
-  // Use semantic token colors for visibility
-  const reasonColors: Record<string, string> = {
-    critical: 'text-[var(--danger-fg)] font-medium',
-    high: 'text-[var(--warning-fg)] font-medium',
-    medium: 'text-[var(--warning-fg)]',
+  const getReasonColor = () => {
+    switch (item.severity) {
+      case 'critical': return 'var(--sr-status-danger-text)';
+      case 'high': return 'var(--sr-status-warning-text)';
+      default: return 'var(--sr-status-warning-text)';
+    }
   };
 
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "w-full px-2 py-1.5 rounded text-left flex items-center gap-2",
-        "transition-[background-color] duration-100",
-        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-        "group hover:bg-accent/40"
-      )}
+      className="sr-tree-node"
+      style={{ padding: 'var(--sr-space-2)' }}
     >
-      {/* Severity dot - consistent with DataRow bar dots */}
-      <div className={cn("w-2 h-2 rounded-full flex-shrink-0", severityColors[item.severity])} />
+      {/* Severity dot */}
+      <div style={{ 
+        width: '8px', 
+        height: '8px', 
+        borderRadius: '50%', 
+        flexShrink: 0, 
+        backgroundColor: getSeverityDotColor() 
+      }} />
       
-      {/* Title - matches DataRow label typography */}
-      <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_COLORS.secondaryStrong, 'flex-1 truncate')}>
+      {/* Title */}
+      <span className="sr-tree-label" style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {item.title}
       </span>
       
-      {/* Reason badge - right-aligned like DataRow value */}
-      <span className={cn(TYPOGRAPHY.microcopy, 'whitespace-nowrap flex-shrink-0', reasonColors[item.severity])}>
+      {/* Reason badge */}
+      <span style={{ 
+        fontSize: 'var(--sr-text-xs)', 
+        whiteSpace: 'nowrap', 
+        flexShrink: 0, 
+        color: getReasonColor(),
+        fontWeight: 'var(--sr-font-medium)',
+      }}>
         {item.reason}
       </span>
     </button>

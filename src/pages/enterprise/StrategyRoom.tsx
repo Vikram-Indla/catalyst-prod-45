@@ -2,6 +2,11 @@
  * StrategyRoom V6 — CIO-grade Enterprise Strategy Cockpit
  * Executive read-only view for strategic health and alignment
  * Uses ring-fenced --sr-* design tokens scoped to .strategy-room-content
+ * 
+ * RING-FENCED DESIGN SYSTEM:
+ * - All styling uses sr-* CSS classes from strategy-room.css
+ * - CSS variables prefixed with --sr-* for isolation
+ * - Dark mode overrides via .dark .strategy-room-content
  */
 
 import { useState, useEffect } from 'react';
@@ -229,18 +234,11 @@ export default function StrategyRoomPage() {
             <section className="sr-section">
               <CollapsibleTrigger asChild>
                 <button className="sr-context-trigger">
-                  <div className="flex items-center gap-2">
-                    <Compass size={14} style={{ color: 'var(--sr-accent)' }} />
-                    <div className="text-left">
-                      <h2 
-                        className="text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: 'var(--sr-text-primary)' }}
-                      >
-                        Strategy Context
-                      </h2>
-                      <p className="text-[10px]" style={{ color: 'var(--sr-text-tertiary)' }}>
-                        Mission, vision, and values
-                      </p>
+                  <div className="sr-section-title">
+                    <Compass size={14} className="sr-section-title-icon" />
+                    <div style={{ textAlign: 'left' }}>
+                      <span className="sr-section-title-text">Strategy Context</span>
+                      <p className="sr-section-subtitle">Mission, vision, and values</p>
                     </div>
                   </div>
                   <ChevronDown 
