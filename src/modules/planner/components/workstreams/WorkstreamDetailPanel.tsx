@@ -127,11 +127,11 @@ function useWorkstreamActivity(workstreamId: string | null) {
       if (activityTaskIds.length > 0) {
         const { data: taskData } = await supabase
           .from('planner_tasks')
-          .select('id, key')
+          .select('id, task_key, key')
           .in('id', activityTaskIds);
         
         if (taskData) {
-          taskKeysMap = Object.fromEntries(taskData.map(t => [t.id, t.key]));
+          taskKeysMap = Object.fromEntries(taskData.map(t => [t.id, t.task_key || t.key || `PLN-${t.id.slice(0, 6)}`]));
         }
       }
       
