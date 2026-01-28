@@ -43,6 +43,7 @@ interface WorkstreamDetailPanelProps {
   open: boolean;
   onClose: () => void;
   onEdit?: () => void;
+  onAddMembers?: () => void;
 }
 
 // Fetch recent tasks for this workstream from DB
@@ -208,7 +209,8 @@ export function WorkstreamDetailPanel({
   workstream, 
   open, 
   onClose,
-  onEdit 
+  onEdit,
+  onAddMembers
 }: WorkstreamDetailPanelProps) {
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(true);
@@ -570,7 +572,7 @@ export function WorkstreamDetailPanel({
               View Tasks
             </Button>
             <Button 
-              onClick={onEdit} 
+              onClick={onAddMembers} 
               variant="outline" 
               className="flex-1 gap-2"
             >

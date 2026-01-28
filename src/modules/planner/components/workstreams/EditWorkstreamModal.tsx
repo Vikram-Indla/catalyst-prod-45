@@ -26,6 +26,7 @@ interface EditWorkstreamModalProps {
   workstreamId: string | null;
   open: boolean;
   onClose: () => void;
+  focusOnMembers?: boolean;
 }
 
 const WORKSTREAM_COLORS = [
@@ -41,7 +42,7 @@ const WORKSTREAM_COLORS = [
   '#f97316', // orange
 ];
 
-export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstreamModalProps) {
+export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMembers = false }: EditWorkstreamModalProps) {
   const { data: workstream, isLoading: loadingWorkstream } = useWorkstreamDetails(workstreamId);
   const { data: members = [], isLoading: loadingMembers } = useWorkstreamMembers(workstreamId);
   
@@ -54,6 +55,15 @@ export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstr
   const [color, setColor] = useState('#3b82f6');
   const [memberSearch, setMemberSearch] = useState('');
   const [addMemberOpen, setAddMemberOpen] = useState(false);
+  
+  // Auto-open member popover if focusOnMembers is true
+  useEffect(() => {
+    if (open && focusOnMembers && !loadingWorkstream && !loadingMembers) {
+      // Small delay to allow dialog to render
+      const timer = setTimeout(() => setAddMemberOpen(true), 200);
+      return () => clearTimeout(timer);
+    }
+  }, [open, focusOnMembers, loadingWorkstream, loadingMembers]);
   
   // Get existing member user IDs to exclude from search
   const existingMemberIds = useMemo(() => members.map(m => m.user_id), [members]);
@@ -103,7 +113,9 @@ export function EditWorkstreamModal({ workstreamId, open, onClose }: EditWorkstr
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-lg p-0 gap-0">
         <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-lg font-semibold">Edit Workstream</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            {focusOnMembers ? 'Manage Members' : 'Edit Workstream'}
+          </DialogTitle>
         </DialogHeader>
         
         {isLoading ? (
