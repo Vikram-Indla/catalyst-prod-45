@@ -1,40 +1,9 @@
 /**
  * StrategicPulseSection — CIO Cockpit "Pulse Strip"
- * Unified design: 5 tiles feel like one cohesive system
+ * Ring-fenced design using sr-* CSS classes from strategy-room.css
+ * 
  * Primary: Strategy Health (large left card)
  * Secondary: Progress, At Risk, Gaps, Open Risks (compact right cards)
- * 
- * TYPOGRAPHY LOCK (CIO COCKPIT UX — NON-NEGOTIABLE):
- * ─────────────────────────────────────────────────
- * KPI VALUE:
- *   - Font size: 30px (desktop)
- *   - Font weight: 600-700
- *   - Line height: 1.15
- *   - Color: primary text (NEVER muted, NEVER greyed)
- *   - ⚠️ MUST NEVER become smaller during refresh
- * 
- * KPI LABEL:
- *   - Font size: 14px
- *   - Font weight: 500
- *   - Color: secondary text token
- * 
- * KPI SUBTEXT:
- *   - Font size: 13px
- *   - Font weight: 400
- *   - Color: muted text token
- *   - ⚠️ MUST remain visible during refresh
- * 
- * STATUS TEXT (e.g., "Off Track"):
- *   - Font size: 15px
- *   - Font weight: 600
- *   - Color: semantic (risk/warning/success)
- *   - ⚠️ MUST NEVER fade or shrink
- * 
- * LOADING BEHAVIOR:
- *   - Skeleton allowed ONCE on initial load only
- *   - After first success: NEVER show skeleton again
- *   - During refresh: show "Refreshing…" in header, keep content visible
- *   - NO greying, NO opacity reduction, NO layout shift
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -53,8 +22,6 @@ import {
   Info
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/skeleton';
-import { TYPOGRAPHY, TEXT_COLORS } from './strategyRoomTypography';
 import {
   Tooltip,
   TooltipContent,
@@ -97,43 +64,40 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const overallProgress = displayData.avgProgress;
 
   const statusConfig = {
-    'on-track': { label: 'On Track', bgClass: 'bg-status-success', textClass: 'text-status-success' },
-    'at-risk': { label: 'At Risk', bgClass: 'bg-status-warning', textClass: 'text-status-warning' },
-    'off-track': { label: 'Off Track', bgClass: 'bg-status-danger', textClass: 'text-status-danger' },
-    'no-data': { label: 'No Data', bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
+    'on-track': { label: 'On Track', variant: 'success' as const },
+    'at-risk': { label: 'At Risk', variant: 'warning' as const },
+    'off-track': { label: 'Off Track', variant: 'danger' as const },
+    'no-data': { label: 'No Data', variant: 'muted' as const },
   };
 
   const isNoData = displayData.overallStatus === 'no-data';
-
   const config = statusConfig[displayData.overallStatus];
   const TrendIcon = overallProgress >= 50 ? TrendingUp : overallProgress >= 30 ? Minus : TrendingDown;
   const trendLabel = overallProgress >= 50 ? 'Ahead' : overallProgress >= 30 ? 'On pace' : 'Behind';
 
-  // Skeleton only on first load - matches final layout dimensions
+  // Skeleton only on first load - uses sr-* classes
   if (isLoading && !hasData) {
     return (
-      <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
-        <div className="px-4 py-2.5 bg-muted/30 dark:bg-muted/10">
-          <Skeleton className="h-4 w-32" />
+      <section className="sr-section">
+        <div className="sr-section-header">
+          <div className="sr-skeleton h-4 w-32" />
         </div>
-        <div className="p-3">
-          <div className="flex flex-col lg:flex-row gap-3">
-            {/* Primary card skeleton */}
-            <div className="lg:w-[220px] flex-shrink-0 p-4 rounded-md bg-muted/40 dark:bg-muted/20 min-h-[120px]">
-              <Skeleton className="h-4 w-28 mb-3" />
-              <Skeleton className="h-8 w-24 mb-2" />
-              <Skeleton className="h-4 w-32" />
-            </div>
-            {/* Secondary cards skeleton */}
-            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
-              {['s1', 's2', 's3', 's4'].map((key) => (
-                <div key={key} className="p-3 rounded-md bg-muted/40 dark:bg-muted/20 min-h-[100px]">
-                  <Skeleton className="h-4 w-20 mb-2" />
-                  <Skeleton className="h-8 w-14 mb-1" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              ))}
-            </div>
+        <div className="sr-kpi-grid" style={{ gridTemplateColumns: '240px 1fr' }}>
+          {/* Primary card skeleton */}
+          <div className="sr-kpi-card">
+            <div className="sr-skeleton h-3 w-24 mb-3" />
+            <div className="sr-skeleton h-7 w-20 mb-2" />
+            <div className="sr-skeleton h-2.5 w-28" />
+          </div>
+          {/* Secondary cards skeleton */}
+          <div className="sr-kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="sr-kpi-card" style={{ minHeight: '100px' }}>
+                <div className="sr-skeleton h-2.5 w-14 mb-2" />
+                <div className="sr-skeleton h-5 w-10 mb-1" />
+                <div className="sr-skeleton h-2 w-16" />
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -143,25 +107,21 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const isUpdating = isFetching && hasData;
 
   return (
-    <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
-      {/* Section Header - surface separation via background, not border */}
-      <div className="px-4 py-2.5 flex items-center justify-between bg-muted/30 dark:bg-muted/10">
-        <div className="flex items-center gap-2">
-          <Activity size={14} className="text-primary" />
-          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
-            Strategic Pulse
-          </h2>
+    <section className="sr-section">
+      {/* Section Header */}
+      <div className="sr-section-header">
+        <div className="sr-section-title">
+          <Activity size={14} className="sr-section-title-icon" />
+          <span className="sr-section-title-text">Strategic Pulse</span>
         </div>
-        <div className="flex items-center gap-2">
-          {/* Stale data indicator - CATALYST STANDARD */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)' }}>
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="sr-section-subtitle" style={{ fontStyle: 'italic' }}>
               Data may be stale
             </span>
           )}
-          {/* Refreshing indicator - CATALYST STANDARD: small spinner + text */}
           {isUpdating && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-1)', fontSize: 'var(--sr-text-xs)', color: 'var(--sr-text-tertiary)' }}>
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -170,50 +130,28 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
       </div>
 
       <TooltipProvider>
-        <div className="p-3">
-          <div className="flex flex-col lg:flex-row gap-3">
+        <div style={{ padding: 'var(--sr-space-3)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sr-space-3)' }} className="lg:flex-row">
             {/* PRIMARY CARD: Strategy Health */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <div 
-                  className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between bg-muted/40 dark:bg-muted/20 cursor-help"
-                  style={{
-                    borderLeftWidth: '4px',
-                    borderLeftColor: isNoData 
-                      ? 'var(--border-muted)'
-                      : displayData.overallStatus === 'on-track' 
-                        ? 'var(--status-success)' 
-                        : displayData.overallStatus === 'at-risk' 
-                          ? 'var(--status-warning)' 
-                          : 'var(--status-danger)',
-                    minHeight: '120px',
-                  }}
+                  className={cn("sr-kpi-card cursor-help", config.variant)}
+                  style={{ width: '220px', flexShrink: 0 }}
                 >
                   <div>
-                    {/* Label with info icon */}
-                    <div className="flex items-center justify-between">
-                      <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.secondaryStrong)}>
-                        Strategy Health
-                      </span>
-                      <Info size={14} className="text-muted-foreground opacity-60" />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span className="sr-kpi-label">Strategy Health</span>
+                      <Info size={14} style={{ color: 'var(--sr-text-muted)', opacity: 0.6 }} />
                     </div>
                     
-                    {/* Primary Value: Status badge */}
-                    <div className="flex items-center gap-2 mt-2">
-                      <span 
-                        className={cn(
-                          "inline-flex items-center px-2.5 py-1 rounded font-semibold",
-                          "text-[14px] leading-[18px]",
-                          config.bgClass,
-                          isNoData ? '' : 'text-white dark:text-white',
-                        )}
-                      >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-2)', marginTop: 'var(--sr-space-2)' }}>
+                      <span className={cn("sr-status-badge", config.variant)}>
                         {config.label}
                       </span>
                     </div>
                     
-                    {/* Subtext */}
-                    <p className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.secondaryStrong, 'mt-2')}>
+                    <p className="sr-kpi-trend" style={{ marginTop: 'var(--sr-space-2)' }}>
                       {isNoData 
                         ? 'No data to calculate'
                         : displayData.overallStatus === 'on-track' 
@@ -224,16 +162,22 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
                     </p>
                   </div>
 
-                  {/* Trend indicator */}
-                  <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-border/30 dark:border-border/20">
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 'var(--sr-space-2)', 
+                    marginTop: 'var(--sr-space-3)', 
+                    paddingTop: 'var(--sr-space-2)', 
+                    borderTop: '1px solid var(--sr-border-light)' 
+                  }}>
                     {isNoData ? (
-                      <span className={cn(TYPOGRAPHY.subtext, 'font-medium', 'text-muted-foreground')}>
+                      <span style={{ fontSize: 'var(--sr-text-sm)', fontWeight: 'var(--sr-font-medium)', color: 'var(--sr-text-muted)' }}>
                         — · Add objectives to see trends
                       </span>
                     ) : (
                       <>
-                        <TrendIcon size={16} className={config.textClass} />
-                        <span className={cn(TYPOGRAPHY.subtext, 'font-medium', TEXT_COLORS.secondaryStrong)}>
+                        <TrendIcon size={16} style={{ color: config.variant === 'success' ? 'var(--sr-status-success)' : config.variant === 'warning' ? 'var(--sr-status-warning)' : 'var(--sr-status-danger)' }} />
+                        <span style={{ fontSize: 'var(--sr-text-sm)', fontWeight: 'var(--sr-font-medium)', color: 'var(--sr-text-secondary)' }}>
                           {overallProgress}% · {trendLabel}
                         </span>
                       </>
@@ -247,14 +191,14 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             </Tooltip>
 
             {/* SECONDARY CARDS: Metrics grid */}
-            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--sr-space-2)' }}>
               <CompactKPITile
                 label="Progress"
                 value={displayData.objectivesCount > 0 ? `${overallProgress}%` : '—'}
                 subtext={displayData.objectivesCount > 0 ? `${displayData.objectivesCount} objectives` : 'No objectives'}
                 icon={<BarChart3 size={18} />}
                 onClick={() => navigate('/enterprise/okr-hub')}
-                accentColor={displayData.objectivesCount > 0 ? 'primary' : 'muted'}
+                accentColor={displayData.objectivesCount > 0 ? 'accent' : undefined}
                 showProgress={displayData.objectivesCount > 0}
                 progressValue={overallProgress}
                 tooltip={METRIC_TOOLTIPS.progress}
@@ -266,7 +210,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
                 subtext={displayData.objectivesCount === 0 ? 'No objectives' : atRiskCount === 0 ? 'All healthy' : 'Need attention'}
                 icon={<AlertTriangle size={18} />}
                 onClick={() => navigate('/enterprise/okr-hub')}
-                accentColor={displayData.objectivesCount > 0 && atRiskCount > 0 ? 'warning' : 'muted'}
+                accentColor={displayData.objectivesCount > 0 && atRiskCount > 0 ? 'warning' : undefined}
                 tooltip={METRIC_TOOLTIPS.atRisk}
               />
 
@@ -276,7 +220,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
                 subtext={displayData.alignmentGaps === 0 ? 'Aligned' : 'Unlinked'}
                 icon={<Target size={18} />}
                 onClick={() => navigate('/enterprise/backlog')}
-                accentColor={displayData.alignmentGaps > 0 ? 'bronze' : 'muted'}
+                accentColor={displayData.alignmentGaps > 0 ? 'warning' : undefined}
                 tooltip={METRIC_TOOLTIPS.gaps}
               />
 
@@ -286,7 +230,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
                 subtext={displayData.highRisks > 0 ? `${displayData.highRisks} high` : 'No critical'}
                 icon={<Shield size={18} />}
                 onClick={() => navigate('/enterprise/risks')}
-                accentColor={displayData.highRisks > 0 ? 'danger' : 'muted'}
+                accentColor={displayData.highRisks > 0 ? 'danger' : undefined}
                 tooltip={METRIC_TOOLTIPS.risks}
               />
             </div>
@@ -303,8 +247,7 @@ interface CompactKPITileProps {
   subtext: string;
   icon: React.ReactNode;
   onClick?: () => void;
-  accentColor?: 'primary' | 'warning' | 'danger' | 'bronze' | 'muted';
-  valueColor?: string;
+  accentColor?: 'accent' | 'warning' | 'danger';
   showProgress?: boolean;
   progressValue?: number;
   tooltip?: string;
@@ -316,82 +259,76 @@ function CompactKPITile({
   subtext, 
   icon, 
   onClick, 
-  accentColor = 'muted',
-  valueColor,
+  accentColor,
   showProgress,
   progressValue = 0,
   tooltip
 }: CompactKPITileProps) {
-  const accentBorders: Record<string, string> = {
-    primary: 'var(--primary)',
-    warning: 'var(--status-warning)',
-    danger: 'var(--status-danger)',
-    bronze: 'var(--secondary-bronze)',
-    muted: 'transparent',
-  };
-
-  const iconColors: Record<string, string> = {
-    primary: 'text-primary',
-    warning: 'text-status-warning',
-    danger: 'text-status-danger',
-    bronze: 'text-secondary-bronze',
-    muted: 'text-foreground/60',
-  };
-
   const tileContent = (
     <button
       onClick={onClick}
-      className={cn(
-        "p-3 rounded-md text-left relative group w-full bg-muted/40 dark:bg-muted/20",
-        "transition-colors duration-150 ease-out",
-        "hover:bg-muted/60 dark:hover:bg-muted/30",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-      )}
-      style={{
-        borderLeftWidth: '3px',
-        borderLeftColor: accentBorders[accentColor],
+      className={cn("sr-kpi-card", accentColor)}
+      style={{ 
         minHeight: '100px',
+        textAlign: 'left',
+        width: '100%',
       }}
     >
-      {/* Label row - icon supports, doesn't compete */}
-      <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-1.5">
-          <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.secondaryStrong)}>
-            {label}
-          </span>
-          {tooltip && <Info size={12} className="text-muted-foreground opacity-60" />}
+      {/* Label row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--sr-space-2)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sr-space-1)' }}>
+          <span className="sr-kpi-label">{label}</span>
+          {tooltip && <Info size={12} style={{ color: 'var(--sr-text-muted)', opacity: 0.6 }} />}
         </div>
-        <span className={iconColors[accentColor]}>{icon}</span>
+        <span style={{ color: accentColor ? `var(--sr-status-${accentColor === 'accent' ? 'success' : accentColor})` : 'var(--sr-text-tertiary)' }}>
+          {icon}
+        </span>
       </div>
       
-      {/* Primary Value - strongest visual weight */}
-      <span className={cn(
-        TYPOGRAPHY.primaryMetric, 
-        'block',
-        valueColor || TEXT_COLORS.primary
-      )}>
+      {/* Primary Value */}
+      <span className="sr-kpi-value" style={{ fontSize: 'var(--sr-text-xl)' }}>
         {value}
       </span>
       
-      {/* Subtext - secondary but readable */}
-      <p className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.secondaryStrong, 'mt-1')}>
+      {/* Subtext */}
+      <p className="sr-kpi-trend" style={{ marginTop: 'var(--sr-space-1)' }}>
         {subtext}
       </p>
 
-      {/* Progress bar - secondary signal */}
+      {/* Progress bar */}
       {showProgress && (
-        <div className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden bg-muted/60 dark:bg-muted/40">
+        <div style={{ 
+          width: '100%', 
+          height: '6px', 
+          borderRadius: 'var(--sr-radius-sm)', 
+          marginTop: 'var(--sr-space-3)', 
+          overflow: 'hidden', 
+          backgroundColor: 'var(--sr-surface-muted)' 
+        }}>
           <div 
-            className="h-full rounded-full bg-primary/80"
-            style={{ width: `${progressValue}%` }}
+            style={{ 
+              height: '100%', 
+              borderRadius: 'var(--sr-radius-sm)', 
+              backgroundColor: 'var(--sr-accent)',
+              width: `${progressValue}%`,
+              opacity: 0.8,
+            }}
           />
         </div>
       )}
 
-      {/* Subtle chevron on hover - discoverable but restrained */}
+      {/* Hover chevron */}
       <ChevronRight 
         size={14} 
-        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity duration-150 text-[var(--fg-3)]" 
+        style={{ 
+          position: 'absolute', 
+          top: 'var(--sr-space-3)', 
+          right: 'var(--sr-space-3)', 
+          opacity: 0, 
+          transition: 'opacity var(--sr-transition)',
+          color: 'var(--sr-text-tertiary)',
+        }} 
+        className="group-hover:opacity-60"
       />
     </button>
   );
