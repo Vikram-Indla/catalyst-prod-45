@@ -35,6 +35,9 @@ import { Calendar, ChevronDown, Compass } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 
+// Import ring-fenced Strategy Room CSS
+import '@/styles/strategy-room.css';
+
 type ObjectiveLevel = "OBJECTIVES";
 
 // Debounce delay for snapshot changes (prevents rapid switching flicker)
@@ -244,7 +247,8 @@ export default function StrategyRoomPage() {
 
   return (
     <PageChrome rightActions={snapshotSelector}>
-      <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto bg-background">
+      {/* Ring-fenced Strategy Room container - applies sr-* CSS variables */}
+      <div className="strategy-room-content px-5 py-4 pb-6 max-w-[1400px] mx-auto">
         {/* Executive Cockpit Grid — Tighter vertical rhythm */}
         <div className="space-y-3">
           {/* Section 1: Strategic Pulse — Signal-led health cockpit */}
@@ -268,18 +272,16 @@ export default function StrategyRoomPage() {
 
           {/* Section 5: Strategy Context — Collapsible accordion */}
           <Collapsible open={contextOpen} onOpenChange={setContextOpen}>
-            <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+            <section className="sr-section">
               <CollapsibleTrigger asChild>
-                <button
-                  className="w-full px-4 py-2.5 flex items-center justify-between transition-colors bg-muted/30 dark:bg-muted/10 hover:bg-muted/40 dark:hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-                >
+                <button className="sr-context-trigger">
                   <div className="flex items-center gap-2">
-                    <Compass size={14} className="text-primary" />
+                    <Compass size={14} style={{ color: 'var(--sr-accent)' }} />
                     <div className="text-left">
-                      <h2 className="text-xs font-semibold uppercase tracking-wide text-foreground">
+                      <h2 className="sr-section-title-text">
                         Strategy Context
                       </h2>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="sr-section-subtitle">
                         Mission, vision, and values
                       </p>
                     </div>
@@ -287,14 +289,17 @@ export default function StrategyRoomPage() {
                   <ChevronDown 
                     size={14} 
                     className={cn(
-                      "transition-transform duration-200 text-muted-foreground",
-                      contextOpen && "rotate-180"
+                      "transition-transform duration-200"
                     )}
+                    style={{ 
+                      color: 'var(--sr-text-tertiary)',
+                      transform: contextOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                    }}
                   />
                 </button>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div className="border-t border-border/20 dark:border-border/10">
+                <div style={{ borderTop: '1px solid var(--sr-border-light)' }}>
                   <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
                 </div>
               </CollapsibleContent>
