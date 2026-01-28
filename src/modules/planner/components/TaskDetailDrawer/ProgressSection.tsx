@@ -64,27 +64,19 @@ export function ProgressSection({ task, onUpdate }: ProgressSectionProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Header Row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm font-medium text-foreground">Progress</span>
         </div>
-        <span className={cn("text-lg font-bold tabular-nums", getTextColor(localProgress))}>
+        <span className={cn("text-base font-bold tabular-nums", getTextColor(localProgress))}>
           {localProgress}%
         </span>
       </div>
 
-      {/* Progress Bar */}
-      <div className="h-2 bg-amber-100 rounded-full overflow-hidden">
-        <div 
-          className={cn("h-full rounded-full transition-all duration-300", getProgressColor(localProgress))}
-          style={{ width: `${localProgress}%` }}
-        />
-      </div>
-
-      {/* Slider + Input */}
+      {/* Single Slider with Input (no duplicate progress bar) */}
       <div className="flex items-center gap-4">
         <div className="flex-1">
           <Slider

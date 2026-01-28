@@ -23,6 +23,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
+import { LabelsSelector } from './LabelsSelector';
 
 interface TaskFieldsGridProps {
   task: any;
@@ -136,9 +137,11 @@ export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
           icon={<Tag className="w-4 h-4" />} 
           label="Labels"
         >
-          <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Add labels...
-          </button>
+          <LabelsSelector
+            taskId={task.id}
+            selectedLabels={task.labels || []}
+            onLabelsChange={(labels) => onFieldChange('labels', labels)}
+          />
         </FieldRow>
       </div>
     </div>

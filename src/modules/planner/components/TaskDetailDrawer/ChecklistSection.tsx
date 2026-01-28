@@ -34,20 +34,15 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
   // CONTENT ONLY - no header (CollapsibleSection provides the header)
   return (
     <div className="space-y-1.5">
-      {items?.length === 0 && !isAdding ? (
-        <p className="text-sm text-muted-foreground text-center py-2">
-          No items yet
-        </p>
-      ) : (
-        items?.map(item => (
-          <ChecklistItemRow
-            key={item.id}
-            item={item}
-            onToggle={() => toggleItem.mutate({ id: item.id, is_completed: !item.is_completed })}
-            onDelete={() => deleteItem.mutate(item.id)}
-          />
-        ))
-      )}
+      {/* Existing items */}
+      {items?.map(item => (
+        <ChecklistItemRow
+          key={item.id}
+          item={item}
+          onToggle={() => toggleItem.mutate({ id: item.id, is_completed: !item.is_completed })}
+          onDelete={() => deleteItem.mutate(item.id)}
+        />
+      ))}
       
       {/* Add Item */}
       {isAdding ? (
