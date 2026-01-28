@@ -22,7 +22,7 @@ type HealthFilter = 'all' | 'healthy' | 'at-risk' | 'critical';
 
 export function WorkstreamsPage() {
   const navigate = useNavigate();
-  const { data, isLoading, refetch, isRefetching } = useWorkstreamsSummary();
+  const { data, isLoading, error, refetch, isRefetching } = useWorkstreamsSummary();
   
   // State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -120,6 +120,23 @@ export function WorkstreamsPage() {
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
               <span className="text-sm text-slate-500">Loading workstreams...</span>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="max-w-md text-center">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                Couldn’t load workstreams
+              </h2>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                There was a problem fetching workstreams data. Please try refreshing.
+              </p>
+              <div className="mt-4 flex justify-center">
+                <Button variant="outline" onClick={() => refetch()} className="gap-2">
+                  <RefreshCw className={cn('w-4 h-4', isRefetching && 'animate-spin')} />
+                  Retry
+                </Button>
+              </div>
             </div>
           </div>
         ) : data ? (

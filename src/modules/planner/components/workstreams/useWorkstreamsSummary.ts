@@ -46,7 +46,7 @@ export function useWorkstreamsSummary() {
           due_date,
           assignee_id,
           planner_statuses(slug),
-          profiles(id, full_name)
+          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name)
         `)
         .is('deleted_at', null);
 
@@ -90,14 +90,14 @@ export function useWorkstreamsSummary() {
         if (isBacklog) agg.backlog_count++;
 
         // Track unique members
-        if (task.assignee_id && task.profiles) {
+        if (task.assignee_id && task.assignee) {
           let wsMembers = membersByWorkstream.get(wsId);
           if (!wsMembers) {
             wsMembers = new Map();
             membersByWorkstream.set(wsId, wsMembers);
           }
           if (!wsMembers.has(task.assignee_id)) {
-            const fullName = task.profiles.full_name || 'Unknown';
+            const fullName = task.assignee.full_name || 'Unknown';
             const nameParts = fullName.split(' ');
             const initials = nameParts.length >= 2
               ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
