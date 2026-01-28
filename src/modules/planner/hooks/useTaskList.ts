@@ -70,48 +70,45 @@ export function useTaskList(filters: TaskListFilters = {}, sorting?: TaskListSor
   return useQuery({
     queryKey: ['planner-task-list', filters, sorting, user?.id, canAccessAll],
     queryFn: async () => {
+      // Build filters array for simpler query construction
+      const filterConditions: string[] = [];
+
+      // Apply user-specified filters directly without additional queries
+      if (filters.workstream) {
+        filterConditions.push(`workstream_id.eq.${filters.workstream}`);
+      }
+      if (filters.status) {
+        filterConditions.push(`status_id.eq.${filters.status}`);
+      }
+      if (filters.priority) {
+        filterConditions.push(`priority.eq.${filters.priority}`);
+      }
+      if (filters.assignee) {
+        filterConditions.push(`assignee_id.eq.${filters.assignee}`);
+      }
+      if (filters.overdueOnly) {
+        filterConditions.push(`is_overdue.eq.true`);
+      }
+      if (filters.blockedOnly) {
+        filterConditions.push(`blocked.eq.true`);
+      }
+
+      // Build base query
       let query = supabase
         .from('planner_task_list')
         .select('*');
 
-      // For non-admin users, filter by accessible workstreams
-      // RLS policies will also enforce this at DB level, but frontend filtering
-      // helps prevent empty states and provides better UX
-      if (!canAccessAll && user) {
-        // Get user's workstream memberships
-        const { data: memberships } = await supabase
-          .from('workstream_members')
-          .select('workstream_id')
-          .eq('user_id', user.id);
-        
-        const accessibleIds = (memberships || []).map(m => m.workstream_id);
-        
-        if (accessibleIds.length === 0) {
-          // User has no workstream memberships, only show tasks with null workstream
-          query = query.is('workstream_id', null);
-        } else {
-          // Show tasks from accessible workstreams OR tasks with no workstream
-          query = query.or(`workstream_id.in.(${accessibleIds.join(',')}),workstream_id.is.null`);
-        }
-      }
-
-      // Apply user-specified filters
+      // Apply all filters at once using .and() or individual filters
       if (filters.workstream) {
-        // Support filtering by workstream ID, slug, or code (case-insensitive)
-        const ws = filters.workstream.toLowerCase();
-        query = query.or(`workstream_id.eq.${filters.workstream},workstream_slug.ilike.${ws}`);
+        query = query.eq('workstream_id', filters.workstream);
       }
       if (filters.status) {
-        // Support filtering by status slug or status id
-        query = query.or(`status_id.eq.${filters.status},status_slug.eq.${filters.status}`);
+        query = query.eq('status_id', filters.status);
       }
       if (filters.priority) {
         query = query.eq('priority', filters.priority);
       }
-      if (filters.assignee === null) {
-        // Unassigned tasks
-        query = query.is('assignee_id', null);
-      } else if (filters.assignee) {
+      if (filters.assignee) {
         query = query.eq('assignee_id', filters.assignee);
       }
       if (filters.overdueOnly) {
@@ -127,7 +124,13 @@ export function useTaskList(filters: TaskListFilters = {}, sorting?: TaskListSor
       // Apply sorting
       if (sorting) {
         query = query.order(sorting.field, { ascending: sorting.direction === 'asc' });
+      } else {
+        // Default sort by updated_at desc for fast initial load
+        query = query.order('updated_at', { ascending: false });
       }
+
+      // Limit for initial fast load
+      query = query.limit(200);
 
       const { data, error } = await query;
       
@@ -139,7 +142,9 @@ export function useTaskList(filters: TaskListFilters = {}, sorting?: TaskListSor
       return (data || []) as TaskListTask[];
     },
     enabled: !!user && !roleLoading,
-    staleTime: 30000, // 30 seconds
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+    gcTime: 5 * 60 * 1000, // 5 min cache
   });
 }
 
