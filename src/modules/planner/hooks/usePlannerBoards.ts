@@ -59,6 +59,9 @@ export function useBoardTasks(filters?: BoardFilters) {
       if (filters?.priority) {
         query = query.eq('priority', filters.priority);
       }
+      if (filters?.status) {
+        query = query.eq('status_slug', filters.status);
+      }
       if (filters?.due_status) {
         query = query.eq('due_status', filters.due_status);
       }

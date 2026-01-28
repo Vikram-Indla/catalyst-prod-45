@@ -87,6 +87,7 @@ export interface BoardFilters {
   workstream_id?: string;
   assignee_id?: string;
   priority?: string;
+  status?: string;
   due_status?: string;
   blocked?: boolean;
 }
