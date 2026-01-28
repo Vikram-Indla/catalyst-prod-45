@@ -170,15 +170,28 @@ function getColorFromName(name: string): string {
 function formatActivityAction(action: string, oldValue: any, newValue: any, taskKey: string | null): string {
   const taskRef = taskKey || 'a task';
   
+  // Parse newValue if it's a string (JSON)
+  let parsedValue = newValue;
+  if (typeof newValue === 'string') {
+    try {
+      parsedValue = JSON.parse(newValue);
+    } catch {
+      parsedValue = newValue;
+    }
+  }
+  
   switch (action) {
     case 'created':
       return `created task ${taskRef}`;
+    case 'completed':
+      return `completed ${taskRef}`;
     case 'status_changed':
-      const newStatus = typeof newValue === 'string' ? (JSON.parse(newValue)?.name || newValue) : (newValue?.name || 'unknown');
-      return `moved ${taskRef} to ${newStatus}`;
+      // Handle {from: 'X', to: 'Y'} format or {name: 'X'} format
+      const newStatus = parsedValue?.to || parsedValue?.name || (typeof parsedValue === 'string' ? parsedValue : null);
+      return newStatus ? `moved ${taskRef} to ${newStatus}` : `updated ${taskRef} status`;
     case 'priority_changed':
-      const newPriority = typeof newValue === 'string' ? newValue : 'updated';
-      return `changed ${taskRef} priority to ${newPriority}`;
+      const newPriority = parsedValue?.to || (typeof parsedValue === 'string' ? parsedValue : null);
+      return newPriority ? `changed ${taskRef} priority to ${newPriority}` : `updated ${taskRef} priority`;
     case 'assignee_changed':
       return `reassigned ${taskRef}`;
     case 'title_changed':
@@ -464,12 +477,19 @@ export function WorkstreamDetailPanel({
                 {recentTasks.map((task) => (
                   <div 
                     key={task.id}
+                    onClick={() => navigate(`/planner/task/${task.id}`)}
                     className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 group cursor-pointer transition-colors"
                   >
-                    {/* Task Key - fixed width for alignment */}
-                    <span className="text-xs font-mono text-blue-600 dark:text-blue-400 w-[60px] flex-shrink-0 truncate">
+                    {/* Task Key - clickable */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/planner/task/${task.id}`);
+                      }}
+                      className="text-xs font-mono text-blue-600 dark:text-blue-400 w-[60px] flex-shrink-0 truncate hover:underline hover:text-blue-700 dark:hover:text-blue-300 text-left"
+                    >
                       {task.key}
-                    </span>
+                    </button>
                     {/* Task Title - takes remaining space */}
                     <span className="flex-1 text-sm text-slate-700 dark:text-slate-300 truncate min-w-0">
                       {task.title}
