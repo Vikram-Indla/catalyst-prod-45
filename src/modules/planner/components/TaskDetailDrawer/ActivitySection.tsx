@@ -3,11 +3,13 @@
 // Tabs for All/Comments/History with styled feed
 // ============================================================
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageSquare, Send, History, ListFilter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import type { TaskComment, TaskActivity } from '../../hooks/useTaskDetails';
 import { useAddComment } from '../../hooks/useTaskDetails';
 
@@ -20,16 +22,38 @@ interface ActivitySectionProps {
 export function ActivitySection({ taskId, comments, activity }: ActivitySectionProps) {
   const [activeTab, setActiveTab] = useState<'all' | 'comments' | 'history'>('all');
   const [newComment, setNewComment] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
   const addComment = useAddComment();
 
-  const handleSubmitComment = () => {
+  // Get current user ID
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUserId(data.user?.id || null);
+    });
+  }, []);
+
+  const handleSubmitComment = async () => {
     if (!newComment.trim()) return;
+    
+    if (!userId) {
+      toast.error('You must be logged in to comment');
+      return;
+    }
+    
     addComment.mutate({ 
       taskId, 
       content: newComment.trim(),
-      authorId: ''
+      authorId: userId
+    }, {
+      onSuccess: () => {
+        setNewComment('');
+        toast.success('Comment added');
+      },
+      onError: (err) => {
+        console.error('Failed to add comment:', err);
+        toast.error('Failed to add comment');
+      }
     });
-    setNewComment('');
   };
 
   // Combine and sort all items for "all" tab
@@ -113,7 +137,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 handleSubmitComment();
               }

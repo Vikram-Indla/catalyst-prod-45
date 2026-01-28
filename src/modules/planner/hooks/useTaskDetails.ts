@@ -268,6 +268,52 @@ export function useDeleteAttachment() {
   });
 }
 
+export function useUploadAttachment() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ taskId, file }: { taskId: string; file: File }) => {
+      // Generate unique file name
+      const timestamp = Date.now();
+      const fileName = `${taskId}/${timestamp}-${file.name}`;
+      
+      // Upload to storage bucket
+      const { data: uploadData, error: uploadError } = await supabase
+        .storage
+        .from('attachments')
+        .upload(fileName, file);
+      
+      if (uploadError) throw uploadError;
+      
+      // Get the public URL
+      const { data: { publicUrl } } = supabase
+        .storage
+        .from('attachments')
+        .getPublicUrl(uploadData.path);
+      
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Insert record into task_attachments table
+      const { error: dbError } = await supabase
+        .from('task_attachments')
+        .insert({
+          task_id: taskId,
+          file_name: file.name,
+          file_url: publicUrl,
+          file_size: file.size,
+          file_type: file.type,
+          uploaded_by: user?.id || null,
+        });
+      
+      if (dbError) throw dbError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['task-attachments'] });
+    },
+  });
+}
+
 // ============================================================
 // TASK COMMENTS
 // ============================================================
