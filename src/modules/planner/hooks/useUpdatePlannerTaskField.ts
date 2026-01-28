@@ -43,11 +43,13 @@ export function useUpdatePlannerTaskField() {
       await queryClient.cancelQueries({ queryKey: ['task-detail', taskId] });
       await queryClient.cancelQueries({ queryKey: ['planner-tasks'] });
       await queryClient.cancelQueries({ queryKey: ['kanban-tasks'] });
+      await queryClient.cancelQueries({ queryKey: ['planner-task-list'] });
 
       // Snapshot previous values
       const previousTask = queryClient.getQueryData(['task-detail', taskId]);
       const previousTasks = queryClient.getQueryData(['planner-tasks']);
       const previousKanban = queryClient.getQueryData(['kanban-tasks']);
+      const previousTaskList = queryClient.getQueryData(['planner-task-list']);
 
       // Optimistically update single task
       queryClient.setQueryData(['task-detail', taskId], (old: any) => {
@@ -67,7 +69,7 @@ export function useUpdatePlannerTaskField() {
         return old.map(t => t.id === taskId ? { ...t, [field]: value } : t);
       });
 
-      return { previousTask, previousTasks, previousKanban, taskId };
+      return { previousTask, previousTasks, previousKanban, previousTaskList, taskId };
     },
 
     // Rollback on error
@@ -81,12 +83,17 @@ export function useUpdatePlannerTaskField() {
       if (context?.previousKanban) {
         queryClient.setQueryData(['kanban-tasks'], context.previousKanban);
       }
+      if (context?.previousTaskList) {
+        queryClient.invalidateQueries({ queryKey: ['planner-task-list'] });
+      }
       toast.error('Failed to save changes');
     },
 
     onSuccess: (data, { taskId }) => {
       // Sync with server response
       queryClient.setQueryData(['task-detail', taskId], data);
+      // Invalidate task list so workstream_name is re-fetched from the view
+      queryClient.invalidateQueries({ queryKey: ['planner-task-list'] });
     },
   });
 
