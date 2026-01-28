@@ -26,11 +26,12 @@ import {
   subMonths,
   addWeeks,
   subWeeks,
+  addDays,
+  subDays,
 } from 'date-fns';
 import { 
   CalendarCell,
   CalendarLegend, 
-  CalendarGridV2, 
   CapacityPanel, 
   ActiveFilterChips 
 } from './calendar';
@@ -42,6 +43,8 @@ import { PlannerSearchBar } from './PlannerSearchBar';
 import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { usePlannerSearch } from '../hooks/usePlannerSearch';
+import { usePlannerStatuses } from '../hooks/usePlannerStatuses';
+import { toast } from 'sonner';
 import '../styles/planner-calendar.css';
 
 interface PlannerCalendarProps {
@@ -51,6 +54,7 @@ interface PlannerCalendarProps {
 }
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEKEND_DAYS = [5, 6]; // Friday and Saturday (Saudi weekend)
 
 type CalendarViewType = 'month' | 'week';
 
@@ -58,10 +62,12 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<CalendarViewType>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [focusedDate, setFocusedDate] = useState<Date | null>(null);
   const [quickAddDate, setQuickAddDate] = useState<Date | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [showCapacity, setShowCapacity] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const calendarGridRef = useRef<HTMLDivElement>(null);
 
   // Local state for filters
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
@@ -70,7 +76,23 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   // Data hooks
   const { data: teams = [] } = usePlannerWorkstreams();
   const { data: users = [] } = usePlannerUsers();
+  const { data: statuses = [] } = usePlannerStatuses();
 
+  // Format statuses for context menu
+  const statusesForMenu = useMemo(() => 
+    statuses.map(s => ({ id: s.id, name: s.name, color: s.color })), 
+    [statuses]
+  );
+  
+  // Format users for context menu (PlannerUser has 'name' and 'initials')
+  const usersForMenu = useMemo(() => 
+    users.map(u => ({ 
+      id: u.id, 
+      name: u.name || 'Unknown', 
+      initials: u.initials || '??',
+    })), 
+    [users]
+  );
   // Search and filter
   const {
     filters,
@@ -89,24 +111,83 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
 
   const rescheduleTask = useRescheduleTask();
 
-  // Keyboard shortcuts - T for today, N for new task
+  // Keyboard shortcuts - T for today, N for new task, arrow keys for navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      if (e.key === 't' || e.key === 'T') {
+      const key = e.key.toLowerCase();
+      
+      // Global shortcuts
+      if (key === 't') {
         goToToday();
-      } else if (e.key === 'n' || e.key === 'N') {
-        setIsCreateOpen(true);
-      } else if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        return;
+      }
+      if (key === 'n') {
+        if (focusedDate) {
+          setQuickAddDate(focusedDate);
+        } else {
+          setIsCreateOpen(true);
+        }
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && key === 'k') {
         e.preventDefault();
         searchInputRef.current?.focus();
+        return;
+      }
+      if (key === 'c') {
+        setShowCapacity(prev => !prev);
+        return;
+      }
+      
+      // Arrow key navigation
+      if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown'].includes(key)) {
+        e.preventDefault();
+        const current = focusedDate || selectedDate || new Date();
+        let newDate = current;
+        
+        switch (key) {
+          case 'arrowleft':
+            newDate = subDays(current, 1);
+            break;
+          case 'arrowright':
+            newDate = addDays(current, 1);
+            break;
+          case 'arrowup':
+            newDate = subDays(current, 7);
+            break;
+          case 'arrowdown':
+            newDate = addDays(current, 7);
+            break;
+        }
+        
+        setFocusedDate(newDate);
+        // Ensure the focused date is in view
+        if (!isSameMonth(newDate, currentDate)) {
+          setCurrentDate(newDate);
+        }
+        return;
+      }
+      
+      // Enter to select focused date
+      if (key === 'enter' && focusedDate) {
+        setSelectedDate(focusedDate);
+        onDateClick?.(focusedDate);
+        return;
+      }
+      
+      // Escape to clear focus
+      if (key === 'escape') {
+        setFocusedDate(null);
+        setSelectedDate(null);
+        return;
       }
     };
     
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [focusedDate, selectedDate, currentDate, onDateClick]);
 
   // Calculate date range based on view
   const { startDate, endDate, days } = useMemo(() => {
@@ -186,6 +267,40 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
     rescheduleTask.mutate({ taskId, newDate });
   };
 
+  // Handle context menu actions
+  const handleTaskAction = useCallback((action: string, task: PlannerTask, payload?: any) => {
+    switch (action) {
+      case 'edit':
+        onTaskClick(task);
+        break;
+      case 'copy-link':
+        toast.success('Link copied to clipboard');
+        break;
+      case 'change-status':
+        // Would trigger a mutation here
+        toast.info(`Status change to ${payload} - implement mutation`);
+        break;
+      case 'reassign':
+        toast.info(`Reassign to ${payload} - implement mutation`);
+        break;
+      case 'change-priority':
+        toast.info(`Priority change to ${payload} - implement mutation`);
+        break;
+      case 'reschedule':
+        // Could open a date picker
+        toast.info('Reschedule action - implement date picker');
+        break;
+      case 'duplicate':
+        toast.info('Duplicate task - implement mutation');
+        break;
+      case 'delete':
+        toast.error('Delete task - implement with confirmation');
+        break;
+      default:
+        console.log('Unknown action:', action);
+    }
+  }, [onTaskClick]);
+
   // Get tasks for selected date (side panel)
   const selectedDateTasks = selectedDate 
     ? tasksByDate.get(format(selectedDate, 'yyyy-MM-dd')) || []
@@ -207,6 +322,16 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={goToToday}>
               Today
+            </Button>
+            {/* Capacity Toggle */}
+            <Button 
+              variant={showCapacity ? "default" : "outline"} 
+              size="sm" 
+              onClick={() => setShowCapacity(prev => !prev)}
+              className="gap-1.5"
+            >
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">Workload</span>
             </Button>
             {/* View Toggle */}
             <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-0.5">
@@ -271,9 +396,23 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
         showColumnsButton={false}
       />
 
-      <div className="flex-1 flex overflow-hidden">
-        {/* Calendar Grid */}
-        <div className="flex-1 flex flex-col p-4 overflow-auto">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Capacity Panel */}
+        <CapacityPanel 
+          visible={showCapacity}
+          weekStart={startDate}
+          teamMembers={usersForMenu.map(u => ({ 
+            id: u.id, 
+            name: u.name, 
+            initials: u.initials,
+            avatarColor: '#3b82f6',
+          }))}
+          tasks={filteredTasks}
+        />
+        
+        <div className="flex-1 flex overflow-hidden">
+          {/* Calendar Grid */}
+          <div className="flex-1 flex flex-col p-4 overflow-auto" ref={calendarGridRef}>
           {/* Weekday Headers */}
           <div className="grid grid-cols-7 mb-2">
             {WEEKDAYS.map((day, index) => (
@@ -322,10 +461,14 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
                           isToday={isTodayDate}
                           isWeekend={isWeekend}
                           isSelected={isSelected || false}
+                          isFocused={focusedDate ? isSameDay(date, focusedDate) : false}
                           onTaskClick={onTaskClick}
                           onDateClick={() => handleDateClick(date)}
                           onTaskDrop={(taskId) => handleTaskDrop(taskId, date)}
                           onQuickAdd={() => setQuickAddDate(date)}
+                          onTaskAction={handleTaskAction}
+                          statuses={statusesForMenu}
+                          users={usersForMenu}
                         />
                       </div>
                     }
@@ -380,6 +523,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
             </div>
           </div>
         )}
+        </div>
       </div>
 
       <CalendarLegend workstreams={workstreams} />

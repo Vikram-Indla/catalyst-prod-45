@@ -793,3 +793,51 @@
   border-radius: var(--pln-cal-radius-md);
   pointer-events: none;
 }
+
+/* ==================== DARK MODE ==================== */
+.dark .planner-calendar-content,
+[data-theme="dark"] .planner-calendar-content {
+  /* Surfaces */
+  --pln-cal-surface-page: #0f172a;
+  --pln-cal-surface-card: #1e293b;
+  --pln-cal-surface-hover: #334155;
+  --pln-cal-surface-selected: #1e3a5f;
+  --pln-cal-surface-today: #1e3a5f;
+  --pln-cal-surface-weekend: #1a2432;
+  --pln-cal-surface-adjacent: #0f172a;
+  
+  /* Text */
+  --pln-cal-text-primary: #f8fafc;
+  --pln-cal-text-secondary: #cbd5e1;
+  --pln-cal-text-tertiary: #94a3b8;
+  --pln-cal-text-muted: #64748b;
+  --pln-cal-text-adjacent: #475569;
+  
+  /* Borders */
+  --pln-cal-border: #334155;
+  --pln-cal-border-light: #1e293b;
+  --pln-cal-border-focus: #60a5fa;
+  
+  /* Shadows */
+  --pln-cal-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --pln-cal-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --pln-cal-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --pln-cal-shadow-hover: 0 4px 16px rgba(59, 130, 246, 0.3);
+  
+  /* Accent */
+  --pln-cal-accent: #3b82f6;
+  --pln-cal-accent-light: #1e3a5f;
+}
+
+/* Overdue badge dark mode adjustment */
+.dark .cal-overdue-badge,
+[data-theme="dark"] .cal-overdue-badge {
+  background: rgba(220, 38, 38, 0.2);
+  color: #fca5a5;
+}
+
+/* Context menu dark mode danger item */
+.dark .cal-context-menu-item.danger:hover,
+[data-theme="dark"] .cal-context-menu-item.danger:hover {
+  background: rgba(220, 38, 38, 0.15);
+}
