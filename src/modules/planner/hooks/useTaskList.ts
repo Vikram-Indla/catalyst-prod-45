@@ -1,10 +1,13 @@
 /**
  * Task List Data Hook - Planner V9
  * Fetches from planner_task_list view with filters and sorting
+ * Respects workstream access control (RLS enforced at DB level)
  */
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { useUserRole } from '@/hooks/useUserRole';
 import type { TaskPriority } from '../types';
 
 export interface TaskListFilters {
@@ -58,14 +61,41 @@ export interface TaskListTask {
 }
 
 export function useTaskList(filters: TaskListFilters = {}, sorting?: TaskListSorting) {
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin, isLoading: roleLoading } = useUserRole();
+  
+  // Check if user can access all workstreams
+  const canAccessAll = isAdmin || isSuperAdmin;
+
   return useQuery({
-    queryKey: ['planner-task-list', filters, sorting],
+    queryKey: ['planner-task-list', filters, sorting, user?.id, canAccessAll],
     queryFn: async () => {
       let query = supabase
         .from('planner_task_list')
         .select('*');
 
-      // Apply filters
+      // For non-admin users, filter by accessible workstreams
+      // RLS policies will also enforce this at DB level, but frontend filtering
+      // helps prevent empty states and provides better UX
+      if (!canAccessAll && user) {
+        // Get user's workstream memberships
+        const { data: memberships } = await supabase
+          .from('workstream_members')
+          .select('workstream_id')
+          .eq('user_id', user.id);
+        
+        const accessibleIds = (memberships || []).map(m => m.workstream_id);
+        
+        if (accessibleIds.length === 0) {
+          // User has no workstream memberships, only show tasks with null workstream
+          query = query.is('workstream_id', null);
+        } else {
+          // Show tasks from accessible workstreams OR tasks with no workstream
+          query = query.or(`workstream_id.in.(${accessibleIds.join(',')}),workstream_id.is.null`);
+        }
+      }
+
+      // Apply user-specified filters
       if (filters.workstream) {
         // Support filtering by workstream ID, slug, or code (case-insensitive)
         const ws = filters.workstream.toLowerCase();
@@ -108,6 +138,7 @@ export function useTaskList(filters: TaskListFilters = {}, sorting?: TaskListSor
 
       return (data || []) as TaskListTask[];
     },
+    enabled: !!user && !roleLoading,
     staleTime: 30000, // 30 seconds
   });
 }

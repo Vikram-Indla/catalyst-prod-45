@@ -1,13 +1,15 @@
 /**
  * Workstream Select - Per V4 Spec
- * Dropdown with color indicators - fetches from database
+ * Dropdown with color indicators - fetches accessible workstreams based on user role
  */
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface Workstream {
   id: string;
@@ -25,20 +27,45 @@ interface WorkstreamSelectProps {
 export function WorkstreamSelect({ value, onChange, error, className }: WorkstreamSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin, isLoading: roleLoading } = useUserRole();
+  
+  const canAccessAll = isAdmin || isSuperAdmin;
 
-  // Fetch workstreams from database
+  // Fetch accessible workstreams based on user role
   const { data: workstreams = [], isLoading } = useQuery({
-    queryKey: ['planner-workstreams-select'],
+    queryKey: ['planner-workstreams-select', user?.id, canAccessAll],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('planner_workstreams')
-        .select('id, name, color')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
+      if (!user) return [];
+
+      if (canAccessAll) {
+        // Admin/super_admin: fetch all active workstreams
+        const { data, error } = await supabase
+          .from('planner_workstreams')
+          .select('id, name, color')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true });
+        
+        if (error) throw error;
+        return data as Workstream[];
+      }
+
+      // Regular user: fetch only workstreams they are members of
+      const { data: memberships, error: memberError } = await supabase
+        .from('workstream_members')
+        .select(`
+          workstream_id,
+          workstream:planner_workstreams(id, name, color, is_active)
+        `)
+        .eq('user_id', user.id);
       
-      if (error) throw error;
-      return data as Workstream[];
+      if (memberError) throw memberError;
+
+      return (memberships || [])
+        .filter(m => (m.workstream as any)?.is_active)
+        .map(m => m.workstream as Workstream);
     },
+    enabled: !!user && !roleLoading,
     staleTime: 5 * 60 * 1000,
   });
   

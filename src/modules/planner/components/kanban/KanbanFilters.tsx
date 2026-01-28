@@ -1,6 +1,7 @@
 // ============================================================
 // KANBAN FILTERS COMPONENT
 // Filter bar with search, priority, assignee, workstream + view switcher
+// Workstreams are filtered based on user access (RLS)
 // ============================================================
 
 import { Search, X, LayoutGrid, Rows3 } from 'lucide-react';
@@ -16,6 +17,8 @@ import {
 } from '@/components/ui/select';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
 
 export type SwimlaneGrouping = 'none' | 'assignee' | 'priority' | 'workstream';
@@ -65,21 +68,46 @@ function useProfiles() {
   });
 }
 
-// Fetch workstreams for filter with stable caching
+// Fetch accessible workstreams based on user role
 function useWorkstreams() {
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin, isLoading: roleLoading } = useUserRole();
+  const canAccessAll = isAdmin || isSuperAdmin;
+
   return useQuery({
-    queryKey: ['kanban-workstreams'],
+    queryKey: ['kanban-workstreams', user?.id, canAccessAll],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('planner_workstreams')
-        .select('id, name')
-        .order('name');
+      if (!user) return [];
+
+      if (canAccessAll) {
+        // Admin/super_admin: fetch all workstreams
+        const { data, error } = await supabase
+          .from('planner_workstreams')
+          .select('id, name')
+          .eq('is_active', true)
+          .order('name');
+        if (error) throw error;
+        return data;
+      }
+
+      // Regular user: fetch only workstreams they are members of
+      const { data: memberships, error } = await supabase
+        .from('workstream_members')
+        .select(`
+          workstream_id,
+          workstream:planner_workstreams(id, name, is_active)
+        `)
+        .eq('user_id', user.id);
+      
       if (error) throw error;
-      return data;
+
+      return (memberships || [])
+        .filter(m => (m.workstream as any)?.is_active)
+        .map(m => m.workstream as { id: string; name: string });
     },
-    // GUARDRAIL: Stable caching to prevent flickering
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    enabled: !!user && !roleLoading,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
