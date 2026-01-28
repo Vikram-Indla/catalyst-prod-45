@@ -2,7 +2,12 @@
 // WORKSTREAMS MODULE EXPORTS
 // ============================================================
 
-export { WorkstreamsPage } from './WorkstreamsPage';
+// V10 (new default)
+export { WorkstreamsPageV10 as WorkstreamsPage } from './v10';
+export * from './v10';
+
+// Legacy exports (for backward compatibility)
+export { WorkstreamsPage as WorkstreamsPageLegacy } from './WorkstreamsPage';
 export { WorkstreamCard } from './WorkstreamCard';
 export { WorkstreamsSummaryBar } from './WorkstreamsSummaryBar';
 export { WorkstreamsToolbar } from './WorkstreamsToolbar';
