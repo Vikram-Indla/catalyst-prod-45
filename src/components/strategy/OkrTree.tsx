@@ -42,25 +42,25 @@ function getHealthStatus(progress: number, health?: string): { label: string; co
   const safeProgress = safePercentage(progress);
   
   if (health === 'at_risk' || health === 'poor') {
-    return { label: 'At Risk', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' };
+    return { label: 'At Risk', color: 'var(--sr-status-critical)', bg: 'var(--sr-status-critical-bg)' };
   }
   if (safeProgress >= 70) {
-    return { label: 'On Track', color: 'var(--status-success)', bg: 'var(--status-success-bg)' };
+    return { label: 'On Track', color: 'var(--sr-status-healthy)', bg: 'var(--sr-status-healthy-bg)' };
   }
   if (safeProgress >= 40) {
-    return { label: 'In Progress', color: 'var(--status-warning)', bg: 'var(--status-warning-bg)' };
+    return { label: 'In Progress', color: 'var(--sr-status-at-risk)', bg: 'var(--sr-status-at-risk-bg)' };
   }
   if (safeProgress > 0) {
-    return { label: 'Behind', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' };
+    return { label: 'Behind', color: 'var(--sr-status-critical)', bg: 'var(--sr-status-critical-bg)' };
   }
-  return { label: 'Not Started', color: 'var(--text-secondary)', bg: 'var(--surface-subtle)' };
+  return { label: 'Not Started', color: 'var(--sr-text-secondary)', bg: 'var(--sr-surface-hover)' };
 }
 
 function getProgressBarColor(progress: number): string {
   const safeProgress = safePercentage(progress);
-  if (safeProgress < 30) return 'hsl(var(--danger))';
-  if (safeProgress >= 70) return 'hsl(var(--success))';
-  return 'hsl(var(--brand-primary))';
+  if (safeProgress < 30) return 'var(--sr-status-critical)';
+  if (safeProgress >= 70) return 'var(--sr-status-healthy)';
+  return 'var(--sr-accent)';
 }
 
 // Type config - using centralized WorkItemIcon, no hardcoded Lucide icons
@@ -75,7 +75,7 @@ const typeStyles = {
   theme: {
     label: 'Theme',
     workItemType: 'theme',
-    rowBg: 'var(--surface-subtle)',
+    rowBg: 'var(--sr-surface-hover)',
   },
   objective: {
     label: 'Objective',
@@ -196,16 +196,16 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           style={{
             gridTemplateColumns: '1fr 120px 44px 44px 90px',
             minHeight: isTheme ? '34px' : '30px',
-            borderBottom: '1px solid var(--border-subtle)',
+            borderBottom: '1px solid var(--sr-border-light)',
             backgroundColor: isSelected 
-              ? 'var(--surface-active)' 
+              ? 'var(--sr-surface-selected)' 
               : isTheme 
                 ? typeStyle.rowBg 
                 : 'transparent',
-            ...(isSelected ? { '--tw-ring-color': 'var(--brand-primary)' } as any : {}),
+            ...(isSelected ? { '--tw-ring-color': 'var(--sr-accent)' } as any : {}),
           }}
           onMouseEnter={(e) => {
-            if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--accent) / 0.35)';
+            if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--sr-surface-hover)';
           }}
           onMouseLeave={(e) => {
             if (!isSelected) e.currentTarget.style.backgroundColor = isTheme ? typeStyle.rowBg : 'transparent';
@@ -233,8 +233,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
                   e.stopPropagation();
                   toggleExpand(item.id);
                 }}
-                className="flex items-center justify-center w-4 h-4 flex-shrink-0 rounded transition-colors hover:bg-[var(--surface-hover)] focus-visible:ring-1 focus-visible:ring-ring"
-                style={{ color: 'var(--text-secondary)' }}
+                className="flex items-center justify-center w-4 h-4 flex-shrink-0 rounded transition-colors hover:bg-[var(--sr-surface-hover)] focus-visible:ring-1 focus-visible:ring-ring"
+                style={{ color: 'var(--sr-text-secondary)' }}
                 aria-label={isExpanded ? 'Collapse' : 'Expand'}
               >
                 {isExpanded ? (
@@ -261,7 +261,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
                 "truncate",
                 (isObjective || isTheme) && "font-medium"
               )}
-              style={{ color: 'var(--text-primary)' }}
+              style={{ color: 'var(--sr-text-primary)' }}
             >
               {item.title}
             </span>
@@ -271,7 +271,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <div className="flex items-center gap-1.5 px-2">
             <div
               className="flex-1 h-[4px] rounded-full overflow-hidden"
-              style={{ backgroundColor: 'var(--progress-track)' }}
+              style={{ backgroundColor: 'var(--sr-border)' }}
             >
               <div
                 className="h-full rounded-full"
@@ -288,7 +288,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <div className="text-right pr-2">
             <span
               className={cn(TYPOGRAPHY.progressPercent, 'font-medium')}
-              style={{ color: progressValue > 0 ? 'var(--text-primary)' : 'var(--text-secondary)' }}
+              style={{ color: progressValue > 0 ? 'var(--sr-text-primary)' : 'var(--sr-text-secondary)' }}
             >
               {progressValue > 0 ? `${Math.round(progressValue)}%` : '—'}
             </span>
@@ -312,19 +312,19 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <>
                 <div 
                   className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-semibold flex-shrink-0"
-                  style={{ backgroundColor: 'var(--brand-primary)', color: 'white' }}
+                  style={{ backgroundColor: 'var(--sr-accent)', color: 'white' }}
                 >
                   {item.owner.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <span 
                   className="text-[10px] truncate"
-                  style={{ color: 'var(--text-secondary)' }}
+                  style={{ color: 'var(--sr-text-secondary)' }}
                 >
                   {item.owner.name.split(' ')[0]}
                 </span>
               </>
             ) : (
-              <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>—</span>
+              <span className="text-[10px]" style={{ color: 'var(--sr-text-secondary)' }}>—</span>
             )}
           </div>
         </div>
@@ -364,19 +364,19 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         <div className="flex items-center gap-2">
           <h2 
             className={cn(TYPOGRAPHY.sectionTitle)}
-            style={{ color: 'var(--text-primary)' }}
+            style={{ color: 'var(--sr-text-primary)' }}
           >
             OKR Tree
           </h2>
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="text-[11px] italic" style={{ color: 'var(--sr-text-muted)' }}>
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD */}
           {isRefreshing && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div className="text-[11px] flex items-center gap-1.5" style={{ color: 'var(--sr-text-muted)' }}>
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -399,7 +399,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <div className="relative w-40">
             <Search 
               className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none" 
-              style={{ color: 'var(--text-secondary)' }} 
+              style={{ color: 'var(--sr-text-secondary)' }} 
             />
             <input
               type="text"
@@ -408,16 +408,18 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-6 pl-7 pr-6 text-[11px] rounded-md transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring"
               style={{ 
-                backgroundColor: 'var(--surface-subtle)', 
-                border: '1px solid var(--border-subtle)',
-                color: 'var(--text-primary)',
+                backgroundColor: 'var(--sr-surface-card)', 
+                border: '1px solid var(--sr-border)',
+                color: 'var(--sr-text-primary)',
               }}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-[var(--surface-hover)] transition-colors"
-                style={{ color: 'var(--text-secondary)' }}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded transition-colors"
+                style={{ color: 'var(--sr-text-secondary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--sr-surface-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 aria-label="Clear search"
               >
                 <X className="h-2.5 w-2.5" />
@@ -486,14 +488,14 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <div className="py-8 px-4 text-center">
             <div 
               className="w-8 h-8 rounded-lg mx-auto flex items-center justify-center mb-2"
-              style={{ backgroundColor: 'var(--surface-subtle)' }}
+              style={{ backgroundColor: 'var(--sr-surface-hover)' }}
             >
-              <Search size={14} style={{ color: 'var(--text-secondary)' }} />
+              <Search size={14} style={{ color: 'var(--sr-text-secondary)' }} />
             </div>
-            <p className="text-[12px] font-medium" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-[12px] font-medium" style={{ color: 'var(--sr-text-secondary)' }}>
               No OKRs found
             </p>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--sr-text-muted)' }}>
               OKRs will appear here once created
             </p>
           </div>

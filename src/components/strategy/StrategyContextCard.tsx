@@ -77,8 +77,8 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
       value: snapshot?.mission || '',
       field: 'mission' as const,
       placeholder: 'Lead the industrial and mineral ecosystem...',
-      iconColor: 'var(--brand-primary)',
-      iconBg: 'rgba(92, 124, 92, 0.1)',
+      iconColor: 'var(--sr-accent)',
+      iconBg: 'var(--sr-accent-light)',
     },
     {
       icon: Eye,
@@ -87,8 +87,8 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
       value: snapshot?.vision || '',
       field: 'vision' as const,
       placeholder: 'Make Saudi Arabia a global magnet...',
-      iconColor: 'var(--brand-primary)',
-      iconBg: 'rgba(92, 124, 92, 0.1)',
+      iconColor: 'var(--sr-accent)',
+      iconBg: 'var(--sr-accent-light)',
     },
     {
       icon: Star,
@@ -97,13 +97,13 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
       value: valuesString,
       field: 'values' as const,
       placeholder: 'Ambition, Influence, Confidence...',
-      iconColor: 'var(--secondary-bronze)',
-      iconBg: 'rgba(139, 115, 85, 0.1)',
+      iconColor: 'var(--sr-status-at-risk)',
+      iconBg: 'var(--sr-status-at-risk-bg)',
     },
   ];
 
   return (
-    <div className="p-2.5">
+    <div style={{ padding: 'var(--sr-space-3)' }}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {contextItems.map((item) => {
           const Icon = item.icon;
@@ -112,8 +112,8 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
               key={item.field}
               className="p-2.5 rounded-md transition-all duration-150"
               style={{
-                backgroundColor: 'var(--surface-2)',
-                border: '1px solid var(--border-subtle)',
+                backgroundColor: 'var(--sr-surface-hover)',
+                border: '1px solid var(--sr-border-light)',
               }}
             >
               {/* Label with Icon */}
@@ -129,7 +129,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
                 </div>
                 <span 
                   className="text-[10px] font-semibold"
-                  style={{ color: 'var(--text-secondary)' }}
+                  style={{ color: 'var(--sr-text-secondary)' }}
                 >
                   {item.title}
                 </span>
@@ -138,7 +138,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
               {/* Question */}
               <p 
                 className="text-[9px] italic mb-1"
-                style={{ color: 'var(--text-secondary)' }}
+                style={{ color: 'var(--sr-text-muted)' }}
               >
                 {item.question}
               </p>
