@@ -1,12 +1,12 @@
 // ============================================================
-// PROGRESS SECTION - LINEAR-INSPIRED
-// Horizontal progress bar with percentage and update button
+// PROGRESS SECTION - MATCHES REFERENCE SCREENSHOT
+// Bar chart icon + Progress label, percentage, slider + input
 // ============================================================
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getWorkstreamColor } from '@/lib/workstream-colors';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 
 interface ProgressSectionProps {
@@ -15,89 +15,97 @@ interface ProgressSectionProps {
 }
 
 export function ProgressSection({ task, onUpdate }: ProgressSectionProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [localProgress, setLocalProgress] = useState(task.progress || 0);
-  
   const progress = task.progress || 0;
-  const workstreamName = task.workstream?.name || '';
-  const wsColors = getWorkstreamColor(workstreamName);
+  const [localProgress, setLocalProgress] = useState(progress);
+  const [inputValue, setInputValue] = useState(String(progress));
 
-  const handleSave = () => {
-    onUpdate({ progress: localProgress });
-    setIsEditing(false);
+  // Sync with external changes
+  useEffect(() => {
+    setLocalProgress(progress);
+    setInputValue(String(progress));
+  }, [progress]);
+
+  const handleSliderChange = (values: number[]) => {
+    const newValue = values[0];
+    setLocalProgress(newValue);
+    setInputValue(String(newValue));
+    onUpdate({ progress: newValue });
   };
 
-  const handleCancel = () => {
-    setLocalProgress(progress);
-    setIsEditing(false);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setInputValue(val);
+    
+    const num = parseInt(val, 10);
+    if (!isNaN(num) && num >= 0 && num <= 100) {
+      setLocalProgress(num);
+    }
+  };
+
+  const handleInputBlur = () => {
+    const num = parseInt(inputValue, 10);
+    if (!isNaN(num) && num >= 0 && num <= 100) {
+      onUpdate({ progress: num });
+    } else {
+      setInputValue(String(localProgress));
+    }
   };
 
   const getProgressColor = (value: number) => {
-    if (value >= 100) return '#10b981'; // emerald
-    if (value >= 75) return '#10b981'; // emerald
-    if (value >= 40) return wsColors.hex; // workstream color
-    return '#f59e0b'; // amber
+    if (value >= 75) return 'bg-emerald-500';
+    if (value >= 40) return 'bg-amber-500';
+    return 'bg-amber-400';
+  };
+
+  const getTextColor = (value: number) => {
+    if (value === 0) return 'text-red-500';
+    if (value >= 75) return 'text-emerald-600';
+    return 'text-amber-600';
   };
 
   return (
-    <div className="space-y-3">
-      {/* Header - Sentence case */}
+    <div className="space-y-4">
+      {/* Header Row */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
-          Progress
-        </span>
-        <span 
-          className={cn(
-            "text-sm font-bold tabular-nums",
-            progress >= 75 ? 'text-emerald-600' :
-            progress >= 40 ? 'text-foreground' : 'text-amber-600'
-          )}
-        >
-          {progress}%
+        <div className="flex items-center gap-2">
+          <BarChart3 className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-foreground">Progress</span>
+        </div>
+        <span className={cn("text-lg font-bold tabular-nums", getTextColor(localProgress))}>
+          {localProgress}%
         </span>
       </div>
 
-      {/* Progress Bar - 6px height for better visibility */}
-      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+      {/* Progress Bar */}
+      <div className="h-2 bg-amber-100 rounded-full overflow-hidden">
         <div 
-          className="h-full rounded-full transition-all duration-300"
-          style={{ 
-            width: `${progress}%`,
-            backgroundColor: getProgressColor(progress)
-          }}
+          className={cn("h-full rounded-full transition-all duration-300", getProgressColor(localProgress))}
+          style={{ width: `${localProgress}%` }}
         />
       </div>
 
-      {/* Edit Mode */}
-      {isEditing ? (
-        <div className="space-y-3 p-3 bg-muted/50 rounded-lg">
+      {/* Slider + Input */}
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
           <Slider
             value={[localProgress]}
-            onValueChange={(vals) => setLocalProgress(vals[0])}
+            onValueChange={handleSliderChange}
             max={100}
-            step={5}
+            step={1}
             className="w-full"
           />
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{localProgress}%</span>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save
-              </Button>
-            </div>
-          </div>
         </div>
-      ) : (
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-        >
-          Update Progress
-        </button>
-      )}
+        <div className="flex items-center gap-1">
+          <Input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            className="w-14 h-8 text-center text-sm font-medium"
+          />
+          <span className="text-sm text-muted-foreground">%</span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -223,17 +223,13 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
           <DrawerSkeleton />
         ) : task ? (
           <div className="flex flex-col h-full relative">
-            {/* Saving Indicator - Positioned absolutely in top right */}
-            <div className="absolute top-4 right-14 z-10">
-              <SavingIndicator status={saveStatus} />
-            </div>
-
-            {/* Header */}
+            {/* Header - with save status */}
             <DrawerHeader
               task={task}
               onClose={handleClose}
               onTitleChange={(title) => handleTextFieldUpdate('title', title)}
               onStatusChange={(statusId) => handleFieldUpdate('status_id', statusId)}
+              saveStatus={saveStatus}
             />
             
             {/* Scrollable Content */}
