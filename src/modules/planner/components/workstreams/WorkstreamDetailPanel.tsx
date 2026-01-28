@@ -516,12 +516,7 @@ export function WorkstreamDetailPanel({
                     Assign lead...
                   </button>
                 ) : (
-                  <button
-                    onClick={onAddMembers}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                  >
-                    Add members first...
-                  </button>
+                  <span className="text-sm text-slate-400 dark:text-slate-500">—</span>
                 )}
               </div>
               
