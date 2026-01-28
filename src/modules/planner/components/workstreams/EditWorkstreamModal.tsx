@@ -115,6 +115,7 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
   }, [open]);
   
   // Calculate effective members list (db members - removed + pending)
+  // CRITICAL: Enforce single-lead constraint
   const effectiveMembers = useMemo(() => {
     const filtered = dbMembers
       .filter(m => !removedMemberIds.has(m.id))
@@ -126,7 +127,21 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
         isNew: false,
       }));
     
-    return [...filtered, ...pendingMembers];
+    const allMembers = [...filtered, ...pendingMembers];
+    
+    // Enforce single lead: find the last one set as lead (most recent wins)
+    const leads = allMembers.filter(m => m.role === 'lead');
+    if (leads.length > 1) {
+      // Keep only the first lead, demote others in display
+      const firstLeadId = leads[0].id;
+      return allMembers.map(m => 
+        m.role === 'lead' && m.id !== firstLeadId 
+          ? { ...m, role: 'member' as const } 
+          : m
+      );
+    }
+    
+    return allMembers;
   }, [dbMembers, removedMemberIds, pendingMembers, roleChanges]);
   
   // Check if there are any changes
@@ -186,12 +201,15 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
         return m;
       }));
       
-      // Also demote any existing leads
+      // Also demote ALL existing leads in DB
       if (newRole === 'lead') {
-        const currentDbLead = dbMembers.find(m => m.role === 'lead' && !removedMemberIds.has(m.id));
-        if (currentDbLead) {
-          setRoleChanges(prev => new Map(prev).set(currentDbLead.id, 'member'));
-        }
+        const newRoleChanges = new Map(roleChanges);
+        dbMembers.forEach(m => {
+          if (!removedMemberIds.has(m.id) && (m.role === 'lead' || roleChanges.get(m.id) === 'lead')) {
+            newRoleChanges.set(m.id, 'member');
+          }
+        });
+        setRoleChanges(newRoleChanges);
       }
     } else {
       // If promoting to lead, demote others
