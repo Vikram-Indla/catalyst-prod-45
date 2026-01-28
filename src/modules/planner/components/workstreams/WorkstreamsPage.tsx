@@ -16,6 +16,7 @@ import { WorkstreamsToolbar } from './WorkstreamsToolbar';
 import { WorkstreamCard } from './WorkstreamCard';
 import { WorkstreamDetailPanel } from './WorkstreamDetailPanel';
 import { EditWorkstreamModal } from './EditWorkstreamModal';
+import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import { CreateTaskModal } from '../kanban';
 import { useArchiveWorkstream } from './useWorkstreamMutations';
 import { motion } from 'framer-motion';
@@ -29,7 +30,8 @@ export function WorkstreamsPage() {
   const archiveWorkstream = useArchiveWorkstream();
   
   // State
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
+  const [isCreateWorkstreamOpen, setIsCreateWorkstreamOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [healthFilter, setHealthFilter] = useState<HealthFilter>('all');
   const [selectedWorkstream, setSelectedWorkstream] = useState<WorkstreamData | null>(null);
@@ -82,7 +84,7 @@ export function WorkstreamsPage() {
         title="Workstreams"
         subtitle="Track-level overview and health monitoring"
         showAddTask={true}
-        onAddTask={() => setIsCreateOpen(true)}
+        onAddTask={() => setIsCreateTaskOpen(true)}
         actions={
           <>
             <Button
@@ -102,6 +104,14 @@ export function WorkstreamsPage() {
             >
               <Download className="w-4 h-4" />
               Export
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setIsCreateWorkstreamOpen(true)}
+              className="gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Workstream
             </Button>
           </>
         }
@@ -222,8 +232,15 @@ export function WorkstreamsPage() {
 
       {/* Create Task Modal */}
       <CreateTaskModal
-        open={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
+        open={isCreateTaskOpen}
+        onOpenChange={setIsCreateTaskOpen}
+      />
+
+      {/* Create Workstream Modal */}
+      <CreateWorkstreamModal
+        open={isCreateWorkstreamOpen}
+        onOpenChange={setIsCreateWorkstreamOpen}
+        onSuccess={() => refetch()}
       />
 
       {/* Edit Workstream Modal */}

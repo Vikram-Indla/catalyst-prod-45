@@ -8,8 +8,10 @@ export { WorkstreamsSummaryBar } from './WorkstreamsSummaryBar';
 export { WorkstreamsToolbar } from './WorkstreamsToolbar';
 export { WorkstreamDetailPanel } from './WorkstreamDetailPanel';
 export { EditWorkstreamModal } from './EditWorkstreamModal';
+export { CreateWorkstreamModal } from './CreateWorkstreamModal';
 export { HealthIndicator } from './HealthIndicator';
 export { useWorkstreamsSummary } from './useWorkstreamsSummary';
+export { useCreateWorkstream } from './useCreateWorkstream';
 export { 
   useWorkstreamDetails, 
   useWorkstreamMembers, 
