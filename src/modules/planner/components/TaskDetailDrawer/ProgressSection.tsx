@@ -41,14 +41,14 @@ export function ProgressSection({ task, onUpdate }: ProgressSectionProps) {
 
   return (
     <div className="space-y-3">
-      {/* Header */}
+      {/* Header - Sentence case */}
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+        <span className="text-xs font-medium text-muted-foreground">
           Progress
         </span>
         <span 
           className={cn(
-            "text-sm font-bold",
+            "text-sm font-bold tabular-nums",
             progress >= 75 ? 'text-emerald-600' :
             progress >= 40 ? 'text-foreground' : 'text-amber-600'
           )}
@@ -57,8 +57,8 @@ export function ProgressSection({ task, onUpdate }: ProgressSectionProps) {
         </span>
       </div>
 
-      {/* Progress Bar */}
-      <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+      {/* Progress Bar - 6px height for better visibility */}
+      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
         <div 
           className="h-full rounded-full transition-all duration-300"
           style={{ 

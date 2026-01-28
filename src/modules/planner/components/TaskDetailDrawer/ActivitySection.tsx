@@ -39,14 +39,14 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
 
   return (
     <div className="space-y-4">
-      {/* Header */}
+      {/* Header - Sentence case */}
       <div className="flex items-center gap-2">
-        <MessageSquare className="w-4 h-4 text-gray-400" />
-        <span className="text-sm font-semibold text-gray-700">Activity</span>
+        <MessageSquare className="w-4 h-4 text-muted-foreground" />
+        <span className="text-xs font-medium text-muted-foreground">Activity</span>
       </div>
 
-      {/* Styled Tabs */}
-      <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
+      {/* Styled Tabs - Theme-aware */}
+      <div className="flex gap-1 p-1 bg-muted rounded-lg">
         {([
           { key: 'all', label: 'All', icon: ListFilter },
           { key: 'comments', label: 'Comments', icon: MessageSquare },
@@ -58,8 +58,8 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
             className={cn(
               "flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all",
               activeTab === tab.key 
-                ? "bg-white text-gray-800 shadow-sm" 
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-background text-foreground shadow-sm" 
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
             <tab.icon className="w-3.5 h-3.5" />
@@ -72,9 +72,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
       <div className="space-y-4 max-h-64 overflow-y-auto">
         {activeTab === 'all' && (
           allItems.length === 0 ? (
-            <div className="text-center py-8 text-sm text-gray-400">
-              No activity yet
-            </div>
+            <EmptyState message="No activity yet" />
           ) : (
             allItems.map(item => (
               item.type === 'comment' 
@@ -86,9 +84,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
         
         {activeTab === 'comments' && (
           comments.length === 0 ? (
-            <div className="text-center py-8 text-sm text-gray-400">
-              No comments yet. Be the first to comment!
-            </div>
+            <EmptyState message="No comments yet. Be the first to comment!" />
           ) : (
             comments.map(comment => (
               <CommentItem key={comment.id} comment={comment} />
@@ -98,9 +94,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
         
         {activeTab === 'history' && (
           activity.length === 0 ? (
-            <div className="text-center py-8 text-sm text-gray-400">
-              No activity recorded yet.
-            </div>
+            <EmptyState message="No activity recorded yet." />
           ) : (
             activity.map(item => (
               <ActivityItem key={item.id} activity={item} />
@@ -109,7 +103,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
         )}
       </div>
 
-      {/* Comment Input */}
+      {/* Comment Input - Theme-aware */}
       <div className="flex gap-3">
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground flex-shrink-0">
           U
@@ -126,7 +120,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
             }}
             placeholder="Write a comment... Type @ to mention"
             rows={2}
-            className="w-full px-3 py-2 pr-12 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+            className="w-full px-3 py-2 pr-12 border border-border rounded-lg text-sm resize-none bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
           />
           <Button
             size="icon"
@@ -138,6 +132,23 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
           </Button>
         </div>
       </div>
+      
+      {/* Keyboard hint */}
+      <div className="text-[10px] text-muted-foreground/60 text-center">
+        Press <kbd className="px-1 py-0.5 rounded bg-muted text-muted-foreground font-mono text-[9px]">⌘</kbd> + <kbd className="px-1 py-0.5 rounded bg-muted text-muted-foreground font-mono text-[9px]">Enter</kbd> to send
+      </div>
+    </div>
+  );
+}
+
+// Empty state component for consistent styling
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="text-center py-8">
+      <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
+        <MessageSquare className="w-5 h-5 text-muted-foreground" />
+      </div>
+      <p className="text-sm text-muted-foreground">{message}</p>
     </div>
   );
 }
@@ -153,12 +164,12 @@ function CommentItem({ comment }: { comment: TaskComment }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-700">{authorName}</span>
-          <span className="text-[11px] text-gray-400">
+          <span className="text-sm font-semibold text-foreground">{authorName}</span>
+          <span className="text-[11px] text-muted-foreground">
             {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
           </span>
         </div>
-        <div className="mt-1.5 p-3 bg-gray-50 rounded-lg text-sm text-gray-600 leading-relaxed">
+        <div className="mt-1.5 p-3 bg-muted/50 rounded-lg text-sm text-foreground/80 leading-relaxed">
           {comment.content}
         </div>
       </div>
@@ -191,16 +202,16 @@ function ActivityItem({ activity }: { activity: TaskActivity }) {
   
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-500 flex-shrink-0">
+      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground flex-shrink-0">
         {initials}
       </div>
       <div className="flex-1 min-w-0 py-1">
         <span className="text-sm">
-          <span className="font-semibold text-gray-700">{actorName}</span>
+          <span className="font-semibold text-foreground">{actorName}</span>
           {' '}
-          <span className="text-gray-500">{getActionText()}</span>
+          <span className="text-muted-foreground">{getActionText()}</span>
         </span>
-        <span className="text-[11px] text-gray-400 ml-2">
+        <span className="text-[11px] text-muted-foreground ml-2">
           {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
         </span>
       </div>

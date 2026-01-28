@@ -119,6 +119,15 @@ function StatusSelector({
 export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: DrawerHeaderProps) {
   const workstreamName = task.workstream?.name || '';
   const wsColors = getWorkstreamColor(workstreamName);
+  
+  // Get task key from task_key field or key field
+  const taskKey = task.task_key || task.key || '';
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/planner/task-list?task=${task.id}`;
+    navigator.clipboard.writeText(url);
+    // Toast will be shown by the caller if needed
+  };
 
   return (
     <div className="px-6 pt-5 pb-5 bg-background border-b border-border">
@@ -132,7 +141,7 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: D
         <X className="w-4 h-4" />
       </Button>
 
-      {/* Breadcrumb - Workstream colored */}
+      {/* Breadcrumb with Task ID - Workstream colored */}
       <div className="flex items-center gap-2 text-xs mb-4">
         {workstreamName && (
           <span 
@@ -150,7 +159,19 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: D
           </span>
         )}
         <ChevronRight className="w-3 h-3 text-muted-foreground" />
-        <span className="text-muted-foreground font-mono font-semibold">{task.key}</span>
+        {/* Task ID - Prominent display */}
+        <span className="font-mono font-bold text-foreground text-sm">{taskKey}</span>
+        
+        {/* Copy Link Button */}
+        <button
+          onClick={handleCopyLink}
+          className="ml-1 p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+          title="Copy link (⌘L)"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+        </button>
       </div>
 
       {/* Status Selector - PROMINENT */}
@@ -162,15 +183,21 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange }: D
         />
       </div>
 
-      {/* Title - Clean inline editable */}
+      {/* Title - Click-to-edit with visual feedback */}
       <h1 
         contentEditable
         suppressContentEditableWarning
         onBlur={(e) => onTitleChange(e.currentTarget.textContent || '')}
-        className="text-xl font-bold text-foreground outline-none focus:bg-accent/50 focus:px-2 focus:-mx-2 rounded transition-colors leading-tight"
+        className="text-xl font-bold text-foreground outline-none hover:bg-muted/50 focus:bg-accent/50 focus:px-2 focus:-mx-2 rounded-md transition-colors leading-tight cursor-text py-1"
+        title="Click to edit (E)"
       >
         {task.title}
       </h1>
+      
+      {/* Keyboard hint */}
+      <div className="mt-2 text-[10px] text-muted-foreground/60">
+        Press <kbd className="px-1 py-0.5 rounded bg-muted text-muted-foreground font-mono text-[9px]">E</kbd> to edit
+      </div>
     </div>
   );
 }
