@@ -28860,6 +28860,59 @@ export type Database = {
         }
         Relationships: []
       }
+      workstream_members: {
+        Row: {
+          created_at: string
+          id: string
+          resource_id: string
+          role: string | null
+          workstream_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          resource_id: string
+          role?: string | null
+          workstream_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          resource_id?: string
+          role?: string | null
+          workstream_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workstream_members_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resource_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workstream_members_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_workstream_health"
+            referencedColumns: ["workstream_id"]
+          },
+          {
+            foreignKeyName: "workstream_members_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_workstream_progress"
+            referencedColumns: ["workstream_id"]
+          },
+          {
+            foreignKeyName: "workstream_members_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: false
+            referencedRelation: "planner_workstreams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       license_allocation_totals: {

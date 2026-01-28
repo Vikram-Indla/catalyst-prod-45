@@ -21,6 +21,8 @@ interface WorkstreamCardProps {
   workstream: WorkstreamData;
   onClick: () => void;
   onViewTasks?: () => void;
+  onEdit?: () => void;
+  onArchive?: () => void;
   index: number;
 }
 
@@ -30,7 +32,7 @@ const HEALTH_BORDER_COLORS = {
   critical: '#ef4444',
 };
 
-export function WorkstreamCard({ workstream, onClick, onViewTasks, index }: WorkstreamCardProps) {
+export function WorkstreamCard({ workstream, onClick, onViewTasks, onEdit, onArchive, index }: WorkstreamCardProps) {
   const healthBorderColor = HEALTH_BORDER_COLORS[workstream.health];
 
   return (
@@ -88,12 +90,12 @@ export function WorkstreamCard({ workstream, onClick, onViewTasks, index }: Work
               <List className="w-4 h-4 mr-2" />
               View Tasks
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit?.(); }}>
               <Edit className="w-4 h-4 mr-2" />
               Edit Workstream
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()} className="text-red-600">
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive?.(); }} className="text-red-600">
               <Archive className="w-4 h-4 mr-2" />
               Archive
             </DropdownMenuItem>

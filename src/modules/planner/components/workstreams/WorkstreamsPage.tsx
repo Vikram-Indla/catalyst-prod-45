@@ -14,7 +14,9 @@ import { WorkstreamsSummaryBar } from './WorkstreamsSummaryBar';
 import { WorkstreamsToolbar } from './WorkstreamsToolbar';
 import { WorkstreamCard } from './WorkstreamCard';
 import { WorkstreamDetailPanel } from './WorkstreamDetailPanel';
+import { EditWorkstreamModal } from './EditWorkstreamModal';
 import { CreateTaskModal } from '../kanban';
+import { useArchiveWorkstream } from './useWorkstreamMutations';
 import { motion } from 'framer-motion';
 import type { WorkstreamData } from './types';
 
@@ -23,6 +25,7 @@ type HealthFilter = 'all' | 'healthy' | 'at-risk' | 'critical';
 export function WorkstreamsPage() {
   const navigate = useNavigate();
   const { data, isLoading, error, refetch, isRefetching } = useWorkstreamsSummary();
+  const archiveWorkstream = useArchiveWorkstream();
   
   // State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -30,6 +33,7 @@ export function WorkstreamsPage() {
   const [healthFilter, setHealthFilter] = useState<HealthFilter>('all');
   const [selectedWorkstream, setSelectedWorkstream] = useState<WorkstreamData | null>(null);
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
+  const [editWorkstreamId, setEditWorkstreamId] = useState<string | null>(null);
 
   // Filter workstreams
   const filteredWorkstreams = useMemo(() => {
@@ -51,6 +55,16 @@ export function WorkstreamsPage() {
 
   const handleViewTasks = (workstreamId: string) => {
     navigate(`/planner/task-list?workstream=${encodeURIComponent(workstreamId)}`);
+  };
+
+  const handleEditWorkstream = (workstreamId: string) => {
+    setEditWorkstreamId(workstreamId);
+  };
+
+  const handleArchiveWorkstream = (workstreamId: string) => {
+    if (confirm('Are you sure you want to archive this workstream?')) {
+      archiveWorkstream.mutate(workstreamId);
+    }
   };
 
   const handleCloseDetailPanel = () => {
@@ -171,6 +185,8 @@ export function WorkstreamsPage() {
                       index={index}
                       onClick={() => handleWorkstreamClick(ws)}
                       onViewTasks={() => handleViewTasks(ws.id)}
+                      onEdit={() => handleEditWorkstream(ws.id)}
+                      onArchive={() => handleArchiveWorkstream(ws.id)}
                     />
                   ))}
                 </div>
@@ -220,6 +236,13 @@ export function WorkstreamsPage() {
       <CreateTaskModal
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
+      />
+
+      {/* Edit Workstream Modal */}
+      <EditWorkstreamModal
+        workstreamId={editWorkstreamId}
+        open={!!editWorkstreamId}
+        onClose={() => setEditWorkstreamId(null)}
       />
     </div>
   );
