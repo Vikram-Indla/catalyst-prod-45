@@ -230,6 +230,11 @@ export function WorkstreamsPage() {
         workstream={selectedWorkstream}
         open={isDetailPanelOpen}
         onClose={handleCloseDetailPanel}
+        onEdit={() => {
+          if (selectedWorkstream) {
+            handleEditWorkstream(selectedWorkstream.id);
+          }
+        }}
       />
 
       {/* Create Task Modal */}
