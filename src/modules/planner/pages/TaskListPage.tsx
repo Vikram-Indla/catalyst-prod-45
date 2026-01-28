@@ -7,13 +7,11 @@
 import { useCallback, useState } from 'react';
 import { TaskListPageV3 } from '../components/TaskList';
 import { PlannerCreateModal } from '../components/PlannerCreateModal';
-import { useCreatePlannerTask } from '../hooks/useCreatePlannerTask';
 import type { TaskListTask } from '../hooks/useTaskList';
 import { toast } from 'sonner';
 
 export default function TaskListPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const createTask = useCreatePlannerTask();
 
   const handleTaskClick = useCallback((task: TaskListTask) => {
     // Opens task detail drawer/modal
@@ -24,17 +22,9 @@ export default function TaskListPage() {
     setCreateModalOpen(true);
   }, []);
 
-  const handleCreate = useCallback((data: any) => {
-    createTask.mutate(data, {
-      onSuccess: () => {
-        setCreateModalOpen(false);
-        toast.success('Task created');
-      },
-      onError: () => {
-        toast.error('Failed to create task');
-      },
-    });
-  }, [createTask]);
+  const handleCloseModal = useCallback(() => {
+    setCreateModalOpen(false);
+  }, []);
 
   return (
     <>
@@ -44,8 +34,8 @@ export default function TaskListPage() {
       />
       <PlannerCreateModal 
         isOpen={createModalOpen} 
-        onClose={() => setCreateModalOpen(false)}
-        onCreate={handleCreate}
+        onClose={handleCloseModal}
+        onCreate={() => {}} // Modal handles its own mutation
       />
     </>
   );
