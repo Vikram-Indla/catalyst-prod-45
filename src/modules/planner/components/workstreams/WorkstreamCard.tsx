@@ -63,9 +63,12 @@ export function WorkstreamCard({ workstream, onClick, onViewTasks, onEdit, onArc
           {workstream.name.charAt(0)}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 truncate">
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit?.(); }}
+            className="text-base font-semibold text-slate-900 dark:text-slate-100 truncate block text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors w-full"
+          >
             {workstream.name}
-          </h3>
+          </button>
           <span className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400">
             {workstream.code}
           </span>
