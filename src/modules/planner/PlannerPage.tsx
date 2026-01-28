@@ -413,7 +413,20 @@ export function PlannerPage() {
           />
         );
       case 'task-list':
-        return <PlannerTaskList tasks={viewTasks} onTaskClick={handleTaskClick} onTaskUpdate={handleTaskUpdate} selectedTaskIds={selectedTaskIds} onSelectionChange={setSelectedTaskIds} visibleColumns={visibleColumns} />;
+        return (
+          <PlannerTaskList
+            tasks={viewTasks}
+            onTaskClick={handleTaskClick}
+            onTaskUpdate={handleTaskUpdate}
+            selectedTaskIds={selectedTaskIds}
+            onSelectionChange={setSelectedTaskIds}
+            visibleColumns={visibleColumns}
+            onOpenCreateModal={() => {
+              setCreateDefaultStatus('backlog');
+              setIsCreateModalOpen(true);
+            }}
+          />
+        );
       case 'timeline':
         return <PlannerTimeline tasks={viewTasks} onTaskClick={handleTaskClick} />;
       case 'calendar':
