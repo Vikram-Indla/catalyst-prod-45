@@ -2,6 +2,7 @@
 // WORKSTREAMS SUMMARY HOOK
 // Fetches aggregated workstream data with task counts and health
 // Respects workstream access control - admins see all, others see memberships
+// Members are fetched from workstream_members table (NOT derived from tasks)
 // ============================================================
 
 import { useQuery } from '@tanstack/react-query';
@@ -24,7 +25,6 @@ interface TaskAggregation {
   completed_count: number;
   in_progress_count: number;
   backlog_count: number;
-  members: WorkstreamMember[];
 }
 
 export function useWorkstreamsSummary() {
@@ -68,6 +68,51 @@ export function useWorkstreamsSummary() {
           .map(m => m.workstream as RawWorkstreamRow);
       }
 
+      // Fetch all workstream members with profile data
+      const workstreamIds = workstreamsRaw.map(ws => ws.id);
+      const membersByWorkstream = new Map<string, WorkstreamMember[]>();
+      
+      if (workstreamIds.length > 0) {
+        const { data: membersData } = await supabase
+          .from('workstream_members')
+          .select('id, user_id, workstream_id')
+          .in('workstream_id', workstreamIds)
+          .not('user_id', 'is', null);
+        
+        if (membersData && membersData.length > 0) {
+          // Get profile data for all members
+          const userIds = [...new Set(membersData.map(m => m.user_id).filter(Boolean))];
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, full_name')
+            .in('id', userIds)
+            .eq('approval_status', 'APPROVED');
+          
+          const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+          const colors = ['#2563eb', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316', '#14b8a6', '#6366f1'];
+          
+          membersData.forEach(member => {
+            const profile = profileMap.get(member.user_id);
+            if (!profile) return;
+            
+            const fullName = profile.full_name || 'Unknown';
+            const nameParts = fullName.split(' ');
+            const initials = nameParts.length >= 2
+              ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+              : fullName.slice(0, 2).toUpperCase();
+            const colorIndex = member.user_id.charCodeAt(0) % colors.length;
+            
+            const wsMembers = membersByWorkstream.get(member.workstream_id) || [];
+            wsMembers.push({
+              id: member.user_id,
+              initials,
+              color: colors[colorIndex],
+            });
+            membersByWorkstream.set(member.workstream_id, wsMembers);
+          });
+        }
+      }
+
       // Fetch tasks with aggregations per workstream
       const { data: tasksRaw, error: tasksError } = await supabase
         .from('planner_tasks')
@@ -76,9 +121,7 @@ export function useWorkstreamsSummary() {
           workstream_id,
           status_id,
           due_date,
-          assignee_id,
-          planner_statuses(slug),
-          assignee:profiles!planner_tasks_assignee_id_fkey(id, full_name)
+          planner_statuses(slug)
         `)
         .is('deleted_at', null);
 
@@ -86,8 +129,6 @@ export function useWorkstreamsSummary() {
 
       // Aggregate by workstream
       const aggregations = new Map<string, TaskAggregation>();
-      const membersByWorkstream = new Map<string, Map<string, WorkstreamMember>>();
-
       const today = new Date().toISOString().split('T')[0];
 
       (tasksRaw || []).forEach((task: any) => {
@@ -97,7 +138,7 @@ export function useWorkstreamsSummary() {
         const statusSlug = task.planner_statuses?.slug || 'backlog';
         const isOverdue = task.due_date && task.due_date < today && statusSlug !== 'done';
         const isDone = statusSlug === 'done';
-        const isInProgress = statusSlug === 'in-progress';
+        const isInProgress = statusSlug === 'progress';
         const isBacklog = statusSlug === 'backlog' || statusSlug === 'planned';
 
         // Get or create aggregation
@@ -110,7 +151,6 @@ export function useWorkstreamsSummary() {
             completed_count: 0,
             in_progress_count: 0,
             backlog_count: 0,
-            members: [],
           };
           aggregations.set(wsId, agg);
         }
@@ -120,38 +160,12 @@ export function useWorkstreamsSummary() {
         if (isDone) agg.completed_count++;
         if (isInProgress) agg.in_progress_count++;
         if (isBacklog) agg.backlog_count++;
-
-        // Track unique members
-        if (task.assignee_id && task.assignee) {
-          let wsMembers = membersByWorkstream.get(wsId);
-          if (!wsMembers) {
-            wsMembers = new Map();
-            membersByWorkstream.set(wsId, wsMembers);
-          }
-          if (!wsMembers.has(task.assignee_id)) {
-            const fullName = task.assignee.full_name || 'Unknown';
-            const nameParts = fullName.split(' ');
-            const initials = nameParts.length >= 2
-              ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
-              : fullName.slice(0, 2).toUpperCase();
-            
-            // Generate a color based on the assignee id
-            const colors = ['#2563eb', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316', '#14b8a6', '#6366f1'];
-            const colorIndex = task.assignee_id.charCodeAt(0) % colors.length;
-            
-            wsMembers.set(task.assignee_id, {
-              id: task.assignee_id,
-              initials,
-              color: colors[colorIndex],
-            });
-          }
-        }
       });
 
       // Build workstream data
       const workstreams: WorkstreamData[] = (workstreamsRaw || []).map((ws: RawWorkstreamRow) => {
         const agg = aggregations.get(ws.id);
-        const members = membersByWorkstream.get(ws.id);
+        const members = membersByWorkstream.get(ws.id) || [];
         
         const taskCount = agg?.task_count || 0;
         const overdueCount = agg?.overdue_count || 0;
@@ -165,14 +179,14 @@ export function useWorkstreamsSummary() {
           id: ws.id,
           name: ws.name,
           code: getWorkstreamCode(ws.name),
-          color: ws.color || '#64748b', // Use database color, fallback to slate
+          color: ws.color || '#64748b',
           task_count: taskCount,
           overdue_count: overdueCount,
           completed_count: completedCount,
           in_progress_count: inProgressCount,
           backlog_count: backlogCount,
           progress,
-          members: members ? Array.from(members.values()) : [],
+          members,
           health,
         };
       });
@@ -197,6 +211,6 @@ export function useWorkstreamsSummary() {
       return { workstreams, summary };
     },
     enabled: !!user && !roleLoading,
-    staleTime: 60000,
+    staleTime: 30000, // Shorter stale time for faster updates
   });
 }

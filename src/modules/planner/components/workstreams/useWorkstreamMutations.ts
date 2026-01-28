@@ -127,6 +127,7 @@ export function useUpdateWorkstream() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workstreams'] });
+      queryClient.invalidateQueries({ queryKey: ['workstreams-summary'] });
       queryClient.invalidateQueries({ queryKey: ['workstream-details'] });
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
       toast.success('Workstream updated');
@@ -168,6 +169,7 @@ export function useAddWorkstreamMember() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['workstream-members', variables.workstreamId] });
       queryClient.invalidateQueries({ queryKey: ['workstreams'] });
+      queryClient.invalidateQueries({ queryKey: ['workstreams-summary'] });
       toast.success('Member added');
     },
     onError: (err: any) => {
@@ -202,6 +204,7 @@ export function useRemoveWorkstreamMember() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['workstream-members', variables.workstreamId] });
       queryClient.invalidateQueries({ queryKey: ['workstreams'] });
+      queryClient.invalidateQueries({ queryKey: ['workstreams-summary'] });
       toast.success('Member removed');
     },
     onError: () => {
@@ -225,6 +228,7 @@ export function useArchiveWorkstream() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workstreams'] });
+      queryClient.invalidateQueries({ queryKey: ['workstreams-summary'] });
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
       toast.success('Workstream archived');
     },
