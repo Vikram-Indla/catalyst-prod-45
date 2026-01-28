@@ -162,7 +162,14 @@ export function TaskListToolbar({
         {/* Workstream Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={cn(
+                "h-9 gap-2",
+                filters.workstream && "bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300"
+              )}
+            >
               <Layers className="w-4 h-4" />
               {filters.workstream 
                 ? workstreams.find(w => w.id === filters.workstream)?.name || 'Workstream'
@@ -180,6 +187,7 @@ export function TaskListToolbar({
               <DropdownMenuItem 
                 key={ws.id} 
                 onClick={() => onFiltersChange({ ...filters, workstream: ws.id })}
+                className={cn(filters.workstream === ws.id && "bg-blue-50 dark:bg-blue-950")}
               >
                 <span 
                   className="w-2.5 h-2.5 rounded-full mr-2" 
@@ -194,7 +202,14 @@ export function TaskListToolbar({
         {/* Status Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={cn(
+                "h-9 gap-2",
+                filters.status && "bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300"
+              )}
+            >
               {filters.status 
                 ? statuses.find(s => s.id === filters.status)?.name || 'Status'
                 : 'Status'
@@ -211,6 +226,7 @@ export function TaskListToolbar({
               <DropdownMenuItem 
                 key={s.id} 
                 onClick={() => onFiltersChange({ ...filters, status: s.id })}
+                className={cn(filters.status === s.id && "bg-blue-50 dark:bg-blue-950")}
               >
                 <span 
                   className="w-2.5 h-2.5 rounded-full mr-2" 
@@ -225,7 +241,14 @@ export function TaskListToolbar({
         {/* Priority Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={cn(
+                "h-9 gap-2",
+                filters.priority && "bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300"
+              )}
+            >
               {filters.priority 
                 ? PRIORITY_CONFIG[filters.priority].label
                 : 'Priority'
@@ -244,6 +267,7 @@ export function TaskListToolbar({
                 <DropdownMenuItem 
                   key={p} 
                   onClick={() => onFiltersChange({ ...filters, priority: p })}
+                  className={cn(filters.priority === p && "bg-blue-50 dark:bg-blue-950")}
                 >
                   <span className="mr-2">{config.emoji}</span>
                   <span style={{ color: config.color }}>{config.label}</span>
