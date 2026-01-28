@@ -15,6 +15,7 @@ import { ProductRole, useUsersWithRole, useRolePermissions, PERMISSION_GROUPS } 
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
 import { AddUserToRoleModal } from './AddUserToRoleModal';
+import { RoleModuleAccessGrid } from './RoleModuleAccessGrid';
 
 interface RoleDetailsProps {
   role: ProductRole;
@@ -111,7 +112,7 @@ export function RoleDetails({
           </p>
 
           {/* Chips */}
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap gap-2">
             <Badge variant="secondary" className="text-xs">
               Scope: {role.scope}
             </Badge>
@@ -121,26 +122,11 @@ export function RoleDetails({
               </Badge>
             )}
           </div>
-
-          {/* Permissions Summary */}
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-            Permissions Summary
-          </h3>
-          <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground mb-4">
-            {permissionSummary.map((item, idx) => (
-              <li key={idx}>{item}</li>
-            ))}
-          </ul>
-
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onViewDetailedPermissions}
-          >
-            View detailed permissions
-          </Button>
         </CardContent>
       </Card>
+
+      {/* Module Access Grid */}
+      <RoleModuleAccessGrid roleId={role.id} roleName={role.name} />
 
       {/* Users with this Role */}
       <Card>
