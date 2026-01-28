@@ -1,11 +1,12 @@
 // ============================================================
-// PLANNER CALENDAR VIEW
-// Month/Week calendar with task display, drag-drop, quick add
-// CRITICAL FIX: Shows task TITLE (not assignee name)
+// PLANNER CALENDAR VIEW V2
+// Enterprise-grade calendar with enhanced task visibility,
+// capacity tracking, keyboard navigation, context menus
+// Ring-fenced with --pln-cal-* CSS custom properties
 // ============================================================
 
-import { useState, useMemo, useRef, useCallback } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, CalendarDays, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { PlannerTask, GroupByOption } from '../types';
@@ -26,7 +27,13 @@ import {
   addWeeks,
   subWeeks,
 } from 'date-fns';
-import { CalendarCell, CalendarLegend } from './calendar';
+import { 
+  CalendarCell,
+  CalendarLegend, 
+  CalendarGridV2, 
+  CapacityPanel, 
+  ActiveFilterChips 
+} from './calendar';
 import { QuickAddPopover } from './calendar/QuickAddPopover';
 import { useRescheduleTask } from '../hooks/useRescheduleTask';
 import { useCalendarTasksRealtime } from '../hooks/useCalendarTasksRealtime';
@@ -35,6 +42,7 @@ import { PlannerSearchBar } from './PlannerSearchBar';
 import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { usePlannerSearch } from '../hooks/usePlannerSearch';
+import '../styles/planner-calendar.css';
 
 interface PlannerCalendarProps {
   tasks: PlannerTask[];
@@ -52,6 +60,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [quickAddDate, setQuickAddDate] = useState<Date | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [showCapacity, setShowCapacity] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Local state for filters
@@ -79,6 +88,25 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   } = usePlannerSearch(tasks);
 
   const rescheduleTask = useRescheduleTask();
+
+  // Keyboard shortcuts - T for today, N for new task
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      if (e.key === 't' || e.key === 'T') {
+        goToToday();
+      } else if (e.key === 'n' || e.key === 'N') {
+        setIsCreateOpen(true);
+      } else if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Calculate date range based on view
   const { startDate, endDate, days } = useMemo(() => {
