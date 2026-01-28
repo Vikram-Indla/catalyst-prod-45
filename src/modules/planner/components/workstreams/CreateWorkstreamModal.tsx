@@ -1,6 +1,7 @@
 // ============================================================
 // CREATE WORKSTREAM MODAL
-// Full modal with name, code, color, description, and member assignment
+// Full modal with name, color, description, and member assignment
+// Slug is auto-generated from name (not editable)
 // ============================================================
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -19,7 +20,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -30,7 +30,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useCreateWorkstream } from './useCreateWorkstream';
-import { useSearchProfiles } from './useSearchProfiles';
+import { useSearchProfiles, type SearchableProfile } from './useSearchProfiles';
 
 interface CreateWorkstreamModalProps {
   open: boolean;
@@ -89,30 +89,23 @@ export function CreateWorkstreamModal({
   
   // Form state
   const [name, setName] = useState('');
-  const [slug, setSlug] = useState('');
   const [color, setColor] = useState('#06b6d4');
   const [description, setDescription] = useState('');
   const [members, setMembers] = useState<MemberToAdd[]>([]);
   const [memberSearch, setMemberSearch] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+  // Auto-generated slug (not editable)
+  const slug = useMemo(() => generateSlug(name), [name]);
 
   // Get IDs of already added members to exclude from search
   const excludeIds = useMemo(() => members.map(m => m.userId), [members]);
   
   // Use the search hook - queries profiles table
-  // NOTE: Use isFetching instead of isLoading to track all query states
   const { data: searchResults = [], isFetching: isSearching } = useSearchProfiles(
     memberSearch,
     excludeIds
   );
-
-  // Auto-generate slug from name
-  useEffect(() => {
-    if (name && !slugManuallyEdited) {
-      setSlug(generateSlug(name));
-    }
-  }, [name, slugManuallyEdited]);
   
   // Focus name input on open
   useEffect(() => {
@@ -125,12 +118,10 @@ export function CreateWorkstreamModal({
   useEffect(() => {
     if (!open) {
       setName('');
-      setSlug('');
       setColor('#06b6d4');
       setDescription('');
       setMembers([]);
       setMemberSearch('');
-      setSlugManuallyEdited(false);
       setIsDropdownOpen(false);
     }
   }, [open]);
@@ -146,7 +137,7 @@ export function CreateWorkstreamModal({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
-  const handleAddMember = (user: typeof searchResults[0]) => {
+  const handleAddMember = (user: SearchableProfile) => {
     const newMember: MemberToAdd = {
       userId: user.id,
       fullName: user.full_name,
@@ -157,10 +148,11 @@ export function CreateWorkstreamModal({
       jobTitle: user.job_title,
       role: 'member',
     };
-    setMembers([...members, newMember]);
+    setMembers(prev => [...prev, newMember]);
     setMemberSearch('');
     setIsDropdownOpen(false);
-    searchInputRef.current?.focus();
+    // Refocus the search input for quick additions
+    setTimeout(() => searchInputRef.current?.focus(), 50);
   };
   
   const handleRemoveMember = (userId: string) => {
@@ -206,7 +198,10 @@ export function CreateWorkstreamModal({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[560px] p-0 gap-0 max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent 
+        className="max-w-[560px] p-0 gap-0 flex flex-col"
+        style={{ maxHeight: 'calc(100vh - 48px)' }}
+      >
         <DialogHeader className="px-6 py-5 border-b shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-lg flex items-center justify-center">
@@ -221,37 +216,20 @@ export function CreateWorkstreamModal({
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 min-h-0">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto min-h-0">
           <div className="px-6 py-5 space-y-6">
-            {/* Name & Slug */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="ws-name">Name *</Label>
-                <Input
-                  ref={nameInputRef}
-                  id="ws-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Senaie 3.0"
-                  className="h-10"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="ws-slug">
-                  Slug *
-                  <span className="text-muted-foreground font-normal ml-1">(auto)</span>
-                </Label>
-                <Input
-                  id="ws-slug"
-                  value={slug}
-                  onChange={(e) => {
-                    setSlug(generateSlug(e.target.value));
-                    setSlugManuallyEdited(true);
-                  }}
-                  placeholder="senaie-3"
-                  className="h-10 font-mono text-sm"
-                />
-              </div>
+            {/* Name Field Only */}
+            <div className="space-y-2">
+              <Label htmlFor="ws-name">Name *</Label>
+              <Input
+                ref={nameInputRef}
+                id="ws-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Senaie 3.0"
+                className="h-10"
+              />
             </div>
 
             {/* Color Picker */}
@@ -282,7 +260,7 @@ export function CreateWorkstreamModal({
               </div>
             </div>
 
-            {/* Live Preview */}
+            {/* Live Preview - shows generated code from name */}
             {name && (
               <div className="space-y-2">
                 <Label className="text-muted-foreground">Preview</Label>
@@ -298,7 +276,6 @@ export function CreateWorkstreamModal({
                   </div>
                   <div>
                     <div className="font-medium text-sm">{name || 'Workstream Name'}</div>
-                    <div className="text-xs text-muted-foreground font-mono">{slug || 'slug'}</div>
                   </div>
                 </div>
               </div>
@@ -338,7 +315,7 @@ export function CreateWorkstreamModal({
 
                 {/* Members List */}
                 {members.length > 0 ? (
-                  <div className="space-y-2">
+                  <div className="space-y-2 max-h-[160px] overflow-y-auto">
                     {members.map((member) => (
                       <div
                         key={member.userId}
@@ -393,16 +370,22 @@ export function CreateWorkstreamModal({
 
                 {/* Search Input with Dropdown */}
                 <div className="relative" ref={dropdownRef}>
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
                   <Input
                     ref={searchInputRef}
-                    placeholder="Search by name or email..."
+                    placeholder="Search by name or email (min 2 chars)..."
                     value={memberSearch}
                     onChange={(e) => {
                       setMemberSearch(e.target.value);
-                      setIsDropdownOpen(true);
+                      if (e.target.value.trim().length >= 2) {
+                        setIsDropdownOpen(true);
+                      }
                     }}
-                    onFocus={() => setIsDropdownOpen(true)}
+                    onFocus={() => {
+                      if (memberSearch.trim().length >= 2) {
+                        setIsDropdownOpen(true);
+                      }
+                    }}
                     className="pl-10 border-dashed"
                   />
                   
@@ -410,17 +393,10 @@ export function CreateWorkstreamModal({
                   {isSearching && memberSearch.length >= 2 && (
                     <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
                   )}
-                  
-                  {/* Hint for minimum characters */}
-                  {memberSearch.length > 0 && memberSearch.length < 2 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg p-3 text-xs text-muted-foreground text-center z-50">
-                      Type at least 2 characters to search
-                    </div>
-                  )}
 
                   {/* Search Results Dropdown */}
                   {showDropdown && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto z-[100]">
                       {isSearching ? (
                         <div className="p-4 text-center text-sm text-muted-foreground">
                           <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
@@ -466,7 +442,7 @@ export function CreateWorkstreamModal({
               </div>
             </div>
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Footer */}
         <DialogFooter className="px-6 py-4 border-t bg-muted/30 shrink-0">
