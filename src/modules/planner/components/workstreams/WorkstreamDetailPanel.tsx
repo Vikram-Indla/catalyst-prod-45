@@ -32,7 +32,8 @@ import {
   User,
   Calendar,
   Circle,
-  UserPlus
+  UserPlus,
+  Trash2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -45,7 +46,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { HealthIndicator } from './HealthIndicator';
-import { useWorkstreamMembers } from './useWorkstreamMutations';
+import { useWorkstreamMembers, useRemoveWorkstreamMember } from './useWorkstreamMutations';
 import type { WorkstreamData } from './types';
 import { motion } from 'framer-motion';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -278,11 +279,20 @@ export function WorkstreamDetailPanel({
   
   // Fetch real data
   const { data: wsDetails } = useWorkstreamDescription(workstream?.id || null);
-  const { data: members = [] } = useWorkstreamMembers(workstream?.id || null);
+  const { data: members = [], refetch: refetchMembers } = useWorkstreamMembers(workstream?.id || null);
+  const removeMember = useRemoveWorkstreamMember();
   const memberUserIds = members.map(m => m.user_id);
   const { data: memberTaskCounts = {} } = useMemberTaskCounts(workstream?.id || null, memberUserIds);
   const { data: recentTasks = [] } = useWorkstreamRecentTasks(workstream?.id || null);
   const { data: activity = [] } = useWorkstreamActivity(workstream?.id || null);
+  
+  // Handle member removal
+  const handleRemoveMember = async (memberId: string, memberName: string) => {
+    if (!workstream?.id) return;
+    if (!confirm(`Remove ${memberName} from this workstream?`)) return;
+    
+    await removeMember.mutateAsync({ memberId, workstreamId: workstream.id });
+  };
 
   // Close on escape
   useEffect(() => {
@@ -572,7 +582,7 @@ export function WorkstreamDetailPanel({
                   return (
                     <div 
                       key={member.id}
-                      className="flex items-center gap-3 py-2.5 px-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
+                      className="group flex items-center gap-3 py-2.5 px-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
                     >
                       <div 
                         className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0"
@@ -597,6 +607,14 @@ export function WorkstreamDetailPanel({
                         <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">
                           {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
                         </span>
+                        <button
+                          onClick={() => handleRemoveMember(member.id, member.profile?.full_name || 'this member')}
+                          disabled={removeMember.isPending}
+                          className="opacity-0 group-hover:opacity-100 w-6 h-6 flex items-center justify-center rounded text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                          title="Remove member"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </div>
                   );
