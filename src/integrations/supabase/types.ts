@@ -13162,9 +13162,11 @@ export type Database = {
         Row: {
           color: string
           created_at: string | null
+          description: string | null
           icon: string | null
           id: string
           is_active: boolean | null
+          lead_id: string | null
           name: string
           slug: string
           sort_order: number | null
@@ -13173,9 +13175,11 @@ export type Database = {
         Insert: {
           color?: string
           created_at?: string | null
+          description?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
+          lead_id?: string | null
           name: string
           slug: string
           sort_order?: number | null
@@ -13184,15 +13188,25 @@ export type Database = {
         Update: {
           color?: string
           created_at?: string | null
+          description?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
+          lead_id?: string | null
           name?: string
           slug?: string
           sort_order?: number | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "planner_workstreams_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "resource_inventory"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       portfolio_estimation_settings: {
         Row: {
