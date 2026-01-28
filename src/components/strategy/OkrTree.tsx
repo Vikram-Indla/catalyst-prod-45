@@ -337,20 +337,20 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   // Skeleton only on first load when no LKG data exists
   if (isInitialLoading) {
     return (
-      <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
-        <div className="px-4 py-2 bg-muted/30 dark:bg-muted/10">
-          <div className="h-4 w-20 rounded animate-pulse bg-muted/60 dark:bg-muted/40" />
+      <section className="sr-section" style={{ padding: 0 }}>
+        <div className="px-4 py-2" style={{ background: 'var(--sr-surface-hover)' }}>
+          <div className="h-4 w-20 rounded animate-pulse" style={{ background: 'var(--sr-border)' }} />
         </div>
-        <div className="py-1.5 px-3 bg-muted/20 dark:bg-muted/10">
+        <div className="py-1.5 px-3" style={{ background: 'var(--sr-surface-page)' }}>
           <div className="grid animate-pulse" style={{ gridTemplateColumns: '1fr 120px 44px 44px 90px' }}>
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-2.5 w-10 rounded bg-muted/60 dark:bg-muted/40" />
+              <div key={i} className="h-2.5 w-10 rounded" style={{ background: 'var(--sr-border)' }} />
             ))}
           </div>
         </div>
         <div className="p-2 space-y-1">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-7 rounded animate-pulse bg-muted/40 dark:bg-muted/20" style={{ marginLeft: i % 2 === 0 ? '24px' : '0' }} />
+            <div key={i} className="h-7 rounded animate-pulse" style={{ marginLeft: i % 2 === 0 ? '24px' : '0', background: 'var(--sr-border-light)' }} />
           ))}
         </div>
       </section>
@@ -358,9 +358,9 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   }
 
   return (
-    <section className="rounded-lg overflow-hidden flex flex-col bg-card/50 dark:bg-card/30">
+    <section className="sr-section" style={{ padding: 0 }}>
       {/* Header - surface separation via background */}
-      <div className="px-4 py-2 flex items-center justify-between flex-shrink-0 bg-muted/30 dark:bg-muted/10">
+      <div className="px-4 py-2 flex items-center justify-between flex-shrink-0" style={{ background: 'var(--sr-surface-hover)' }}>
         <div className="flex items-center gap-2">
           <h2 
             className={cn(TYPOGRAPHY.sectionTitle)}
@@ -428,10 +428,10 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6 rounded-md focus-visible:ring-2 focus-visible:ring-ring bg-muted/40 dark:bg-muted/20 hover:bg-muted/60 dark:hover:bg-muted/30"
+            className="h-6 w-6 rounded-md focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => navigate('/enterprise/okr-hub')}
             title="Open OKR Hub"
-            style={{ color: 'var(--text-secondary)' }}
+            style={{ color: 'var(--sr-text-secondary)', background: 'var(--sr-surface-hover)' }}
           >
             <Maximize2 className="h-3 w-3" />
           </Button>
@@ -440,33 +440,39 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
       {/* Sticky Column Headers - surface separation via background */}
       <div
-        className="grid items-center py-1.5 sticky top-0 z-10 flex-shrink-0 bg-muted/20 dark:bg-muted/10"
+        className="grid items-center py-1.5 sticky top-0 z-10 flex-shrink-0"
         style={{
+          background: 'var(--sr-surface-page)',
           gridTemplateColumns: '1fr 120px 44px 44px 90px',
         }}
       >
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider pl-3 text-gray-700 dark:text-gray-300"
+          className="text-[10px] font-semibold uppercase tracking-wider pl-3"
+          style={{ color: 'var(--sr-text-tertiary)' }}
         >
           Item
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider px-2 text-gray-700 dark:text-gray-300"
+          className="text-[10px] font-semibold uppercase tracking-wider px-2"
+          style={{ color: 'var(--sr-text-tertiary)' }}
         >
           Progress
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider text-right pr-2 text-gray-700 dark:text-gray-300"
+          className="text-[10px] font-semibold uppercase tracking-wider text-right pr-2"
+          style={{ color: 'var(--sr-text-tertiary)' }}
         >
           %
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider text-center text-gray-700 dark:text-gray-300"
+          className="text-[10px] font-semibold uppercase tracking-wider text-center"
+          style={{ color: 'var(--sr-text-tertiary)' }}
         >
           Status
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider px-2 text-gray-700 dark:text-gray-300"
+          className="text-[10px] font-semibold uppercase tracking-wider px-2"
+          style={{ color: 'var(--sr-text-tertiary)' }}
         >
           Owner
         </div>

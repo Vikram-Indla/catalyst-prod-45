@@ -116,13 +116,13 @@ interface LayerDetailsData {
 function getStatusColor(status?: string): { bg: string; text: string; border: string } {
   switch (status) {
     case 'On Track':
-      return { bg: 'var(--status-success-bg)', text: 'var(--status-success)', border: 'var(--status-success)' };
+      return { bg: 'var(--sr-status-healthy-bg)', text: 'var(--sr-status-healthy)', border: 'var(--sr-status-healthy)' };
     case 'At Risk':
-      return { bg: 'var(--status-warning-bg)', text: 'var(--status-warning)', border: 'var(--status-warning)' };
+      return { bg: 'var(--sr-status-at-risk-bg)', text: 'var(--sr-status-at-risk)', border: 'var(--sr-status-at-risk)' };
     case 'Behind':
-      return { bg: 'var(--status-danger-bg)', text: 'var(--status-danger)', border: 'var(--status-danger)' };
+      return { bg: 'var(--sr-status-critical-bg)', text: 'var(--sr-status-critical)', border: 'var(--sr-status-critical)' };
     default:
-      return { bg: 'var(--surface-subtle)', text: 'var(--text-secondary)', border: 'var(--border-default)' };
+      return { bg: 'var(--sr-surface-hover)', text: 'var(--sr-text-secondary)', border: 'var(--sr-border)' };
   }
 }
 
@@ -131,19 +131,19 @@ function getCoverageStatus(coverage: number): { color: string; label: string; ba
   // Catalyst V5 thresholds: ≥70% Healthy, 40-69% At Risk, <40% Critical
   const safeCoverage = safePercentage(coverage);
   if (safeCoverage >= 70) return { 
-    color: 'var(--progress-success)', 
+    color: 'var(--sr-status-healthy)', 
     label: 'Healthy',
-    badgeClass: 'bg-[var(--success-bg)] text-[var(--success-fg)] border border-[var(--success-bd)]'
+    badgeClass: ''
   };
   if (safeCoverage >= 40) return { 
-    color: 'var(--progress-warning)', 
+    color: 'var(--sr-status-at-risk)', 
     label: 'At Risk',
-    badgeClass: 'bg-[var(--warning-bg)] text-[var(--warning-fg)] border border-[var(--warning-bd)]'
+    badgeClass: ''
   };
   return { 
-    color: 'var(--progress-danger)', 
+    color: 'var(--sr-status-critical)', 
     label: 'Critical',
-    badgeClass: 'bg-[var(--danger-bg)] text-[var(--danger-fg)] border border-[var(--danger-bd)]'
+    badgeClass: ''
   };
 }
 
@@ -456,21 +456,21 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   // Show skeleton only during initial load when no LKG data exists
   if (isLoading && !hasData) {
     return (
-      <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
-        <div className="px-4 py-2.5 bg-muted/30 dark:bg-muted/10">
-          <Skeleton className="h-4 w-48" />
-          <Skeleton className="h-3 w-64 mt-1" />
+      <section className="sr-section" style={{ padding: 0 }}>
+        <div className="px-4 py-2.5" style={{ background: 'var(--sr-surface-hover)' }}>
+          <div className="h-4 w-48 rounded animate-pulse" style={{ background: 'var(--sr-border)' }} />
+          <div className="h-3 w-64 mt-1 rounded animate-pulse" style={{ background: 'var(--sr-border-light)' }} />
         </div>
-        <div className="py-1.5 px-3 bg-muted/20 dark:bg-muted/10">
+        <div className="py-1.5 px-3" style={{ background: 'var(--sr-surface-page)' }}>
           <div className="grid animate-pulse" style={{ gridTemplateColumns: '1fr 50px 120px 70px 50px 20px' }}>
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-2.5 w-10 rounded bg-muted/60 dark:bg-muted/40" />
+              <div key={i} className="h-2.5 w-10 rounded" style={{ background: 'var(--sr-border)' }} />
             ))}
           </div>
         </div>
         <div className="p-2 space-y-1">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-9 rounded animate-pulse bg-muted/40 dark:bg-muted/20" />
+            <div key={i} className="h-9 rounded animate-pulse" style={{ background: 'var(--sr-border-light)' }} />
           ))}
         </div>
       </section>
@@ -478,20 +478,20 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   }
 
   return (
-    <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+    <section className="sr-section" style={{ padding: 0 }}>
       {/* Header with Refreshing indicator - surface separation via background */}
-      <div className="px-4 py-2.5 flex items-center justify-between bg-muted/30 dark:bg-muted/10">
+      <div className="px-4 py-2.5 flex items-center justify-between" style={{ background: 'var(--sr-surface-hover)' }}>
         <div className="flex items-center gap-2">
           <div>
             <h2 
               className={cn(TYPOGRAPHY.sectionTitle)}
-              style={{ color: 'var(--text-primary-hex)' }}
+              style={{ color: 'var(--sr-text-primary)' }}
             >
               Strategy Coverage & Alignment
             </h2>
             <p 
               className={cn(TYPOGRAPHY.microcopy)}
-              style={{ color: 'var(--text-secondary-hex)' }}
+              style={{ color: 'var(--sr-text-secondary)' }}
             >
               Coverage across strategic layers • Click to expand
             </p>
@@ -500,13 +500,13 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="text-[11px] italic" style={{ color: 'var(--sr-text-muted)' }}>
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD */}
           {isRefreshing && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div className="text-[11px] flex items-center gap-1.5" style={{ color: 'var(--sr-text-muted)' }}>
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -520,29 +520,33 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         <div 
           className={cn(
             "transition-all duration-200",
-            selectedLayer ? "w-[55%] border-r border-border/20 dark:border-border/10" : "w-full"
+            selectedLayer ? "w-[55%]" : "w-full"
           )}
+          style={{
+            borderRight: selectedLayer ? '1px solid var(--sr-border-light)' : 'none'
+          }}
         >
           {/* Sticky Table Header */}
           <div 
-            className="sticky top-0 z-10 grid items-center py-1.5 px-3 bg-muted/20 dark:bg-muted/10"
+            className="sticky top-0 z-10 grid items-center py-1.5 px-3"
             style={{
               gridTemplateColumns: '1fr 50px 120px 70px 50px 20px',
+              background: 'var(--sr-surface-page)',
             }}
           >
-            <div className={cn(TYPOGRAPHY.tableHeader)} style={{ color: 'var(--text-secondary-hex)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader)} style={{ color: 'var(--sr-text-tertiary)' }}>
               Layer
             </div>
-            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--text-secondary-hex)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--sr-text-tertiary)' }}>
               Count
             </div>
-            <div className={cn(TYPOGRAPHY.tableHeader)} style={{ color: 'var(--text-secondary-hex)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader)} style={{ color: 'var(--sr-text-tertiary)' }}>
               Aligned
             </div>
-            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--text-secondary-hex)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--sr-text-tertiary)' }}>
               Coverage
             </div>
-            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--text-secondary-hex)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--sr-text-tertiary)' }}>
               Gap
             </div>
             <div />
@@ -580,13 +584,13 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         }}
                         style={{
                           gridTemplateColumns: '1fr 50px 120px 70px 50px 20px',
-                          borderBottom: isLast ? 'none' : '1px solid var(--border-subtle-hex)',
-                          backgroundColor: isSelected ? 'var(--surface-hover)' : 'transparent',
-                          boxShadow: isSelected ? 'inset 0 0 0 1px var(--brand-primary-hex)' : 'none',
+                          borderBottom: isLast ? 'none' : '1px solid var(--sr-border-light)',
+                          backgroundColor: isSelected ? 'var(--sr-surface-hover)' : 'transparent',
+                          boxShadow: isSelected ? 'inset 0 0 0 1px var(--sr-accent)' : 'none',
                           minHeight: '36px',
                         }}
                         onMouseEnter={(e) => {
-                          if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--accent) / 0.4)';
+                          if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--sr-surface-hover)';
                         }}
                         onMouseLeave={(e) => {
                           if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
@@ -601,18 +605,18 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           />
                           <span 
                             className={cn(TYPOGRAPHY.tableCellEmphasis, 'truncate')}
-                            style={{ color: 'var(--text-primary-hex)' }}
+                            style={{ color: 'var(--sr-text-primary)' }}
                           >
                             {layer.label}
                           </span>
-                          <Info size={12} className="text-muted-foreground opacity-50" />
+                          <Info size={12} style={{ color: 'var(--sr-text-muted)', opacity: 0.5 }} />
                         </div>
                         
                         {/* Count */}
                         <div className="text-center">
                           <span 
                             className={cn(TYPOGRAPHY.tableCell, 'tabular-nums font-medium')}
-                            style={{ color: data.count === 0 ? 'var(--text-secondary-hex)' : 'var(--text-primary-hex)' }}
+                            style={{ color: data.count === 0 ? 'var(--sr-text-secondary)' : 'var(--sr-text-primary)' }}
                           >
                             {isLoading || okrLoading ? '–' : data.count}
                           </span>
@@ -621,7 +625,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         {/* Aligned: Progress Bar + % - Shows "—" when no data */}
                         <div className="flex items-center gap-1.5">
                           {hasNoData ? (
-                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary-hex)' }}>—</span>
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--sr-text-secondary)' }}>—</span>
                           ) : data.count > 0 ? (
                             <>
                               <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: 'var(--progress-track)' }}>
@@ -634,55 +638,64 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                                 />
                               </div>
                               <span 
-                                className={cn(
-                                  TYPOGRAPHY.countBadge, 
-                                  'px-1.5 py-0.5 rounded font-medium',
-                                  coverageStatus.badgeClass
-                                )}
+                                className={cn(TYPOGRAPHY.countBadge, 'px-1.5 py-0.5 rounded font-medium')}
+                                style={{
+                                  backgroundColor: coverageStatus.color === 'var(--sr-status-healthy)' ? 'var(--sr-status-healthy-bg)' :
+                                                   coverageStatus.color === 'var(--sr-status-at-risk)' ? 'var(--sr-status-at-risk-bg)' :
+                                                   'var(--sr-status-critical-bg)',
+                                  color: coverageStatus.color,
+                                }}
                               >
                                 {data.coverage ?? 0}%
                               </span>
                             </>
                           ) : (
-                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary-hex)' }}>—</span>
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--sr-text-secondary)' }}>—</span>
                           )}
                         </div>
                         
                         {/* Coverage Label - Consistent badge styling */}
                         <div className="text-center">
                           {hasNoData ? (
-                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary-hex)' }}>—</span>
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--sr-text-secondary)' }}>—</span>
                           ) : data.count > 0 ? (
                             <span 
-                              className={cn(
-                                'px-2 py-0.5 rounded text-xs font-medium',
-                                coverageStatus.badgeClass
-                              )}
+                              className="px-2 py-0.5 rounded text-xs font-medium"
+                              style={{
+                                backgroundColor: coverageStatus.color === 'var(--sr-status-healthy)' ? 'var(--sr-status-healthy-bg)' :
+                                                 coverageStatus.color === 'var(--sr-status-at-risk)' ? 'var(--sr-status-at-risk-bg)' :
+                                                 'var(--sr-status-critical-bg)',
+                                color: coverageStatus.color,
+                              }}
                             >
                               {coverageStatus.label}
                             </span>
                           ) : (
-                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary-hex)' }}>—</span>
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--sr-text-secondary)' }}>—</span>
                           )}
                         </div>
                         
                         {/* Gap Badge - Amber when gaps exist, grey when zero, "—" when no data */}
                         <div className="text-center">
                           {hasNoData ? (
-                            <span className={cn(TYPOGRAPHY.tableCellSecondary, 'tabular-nums')} style={{ color: 'var(--text-secondary-hex)' }}>—</span>
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary, 'tabular-nums')} style={{ color: 'var(--sr-text-secondary)' }}>—</span>
                           ) : hasGap ? (
                             <span 
                               className={cn(
                                 TYPOGRAPHY.countBadge, 
-                                'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded',
-                                'bg-[var(--warning-bg)] text-[var(--warning-fg)] border border-[var(--warning-bd)]'
+                                'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded'
                               )}
+                              style={{
+                                backgroundColor: 'var(--sr-status-at-risk-bg)',
+                                color: 'var(--sr-status-at-risk)',
+                                border: '1px solid var(--sr-status-at-risk)'
+                              }}
                             >
                               <AlertTriangle size={10} />
                               {data.gap}
                             </span>
                           ) : (
-                            <span className={cn(TYPOGRAPHY.tableCellSecondary, 'tabular-nums')} style={{ color: 'var(--text-secondary-hex)' }}>0</span>
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary, 'tabular-nums')} style={{ color: 'var(--sr-text-secondary)' }}>0</span>
                           )}
                         </div>
                         
@@ -691,7 +704,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           <ChevronRight 
                             size={14} 
                             className={cn("transition-transform", isSelected && "rotate-90")}
-                            style={{ color: 'var(--text-secondary-hex)' }}
+                            style={{ color: 'var(--sr-text-secondary)' }}
                           />
                         </div>
                       </div>
@@ -710,12 +723,12 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         {selectedLayer && selectedLayerDetails && selectedConfig && (
           <div 
             className="w-[45%] flex flex-col"
-            style={{ backgroundColor: 'var(--surface-subtle)' }}
+            style={{ backgroundColor: 'var(--sr-surface-hover)' }}
           >
             {/* Panel Header */}
-            <div 
+            <div
               className="px-3 py-2.5 flex items-center justify-between flex-shrink-0"
-              style={{ borderBottom: '1px solid var(--border-subtle-hex)' }}
+              style={{ borderBottom: '1px solid var(--sr-border-light)' }}
             >
               <div className="flex items-center gap-2">
                 <WorkItemIcon 
@@ -726,11 +739,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 <div>
                   <h3 
                     className={cn(TYPOGRAPHY.cardLabel)}
-                    style={{ color: 'var(--text-primary-hex)' }}
+                    style={{ color: 'var(--sr-text-primary)' }}
                   >
                     {selectedLayerDetails.title}
                   </h3>
-                  <p className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary-hex)' }}>
+                  <p className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--sr-text-secondary)' }}>
                     {selectedLayerData?.count} items • {selectedLayerData?.gap} gaps
                   </p>
                 </div>
@@ -741,8 +754,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   setSelectedLayer(null);
                 }}
                 className="p-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                style={{ color: 'var(--text-secondary-hex)' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
+                style={{ color: 'var(--sr-text-secondary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--sr-surface-hover)'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <X size={14} />
@@ -756,15 +769,15 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 <div 
                   className="p-2 rounded-md"
                   style={{
-                    backgroundColor: 'var(--status-warning-bg)',
-                    border: '1px solid var(--status-warning)',
+                    backgroundColor: 'var(--sr-status-at-risk-bg)',
+                    border: '1px solid var(--sr-status-at-risk)',
                   }}
                 >
                   <div className="flex items-center gap-1 mb-1.5">
-                    <AlertTriangle size={12} style={{ color: 'var(--status-warning)' }} />
+                    <AlertTriangle size={12} style={{ color: 'var(--sr-status-at-risk)' }} />
                     <span 
                       className={cn(TYPOGRAPHY.tableHeader)}
-                      style={{ color: 'var(--status-warning)' }}
+                      style={{ color: 'var(--sr-status-at-risk)' }}
                     >
                       Gaps ({selectedLayerDetails.gapItems.length})
                     </span>
@@ -774,18 +787,18 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                       <div key={i} className="flex items-start gap-1.5">
                         <div 
                           className="w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0"
-                          style={{ backgroundColor: 'var(--status-warning)' }}
+                          style={{ backgroundColor: 'var(--sr-status-at-risk)' }}
                         />
                         <div>
                           <span 
                             className={cn(TYPOGRAPHY.tableCellEmphasis, 'block')}
-                            style={{ color: 'var(--text-primary-hex)' }}
+                            style={{ color: 'var(--sr-text-primary)' }}
                           >
                             {gap.name}
                           </span>
                           <span 
                             className={cn(TYPOGRAPHY.microcopy)}
-                            style={{ color: 'var(--text-secondary-hex)' }}
+                            style={{ color: 'var(--sr-text-secondary)' }}
                           >
                             {gap.reason}
                           </span>
@@ -805,18 +818,18 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                       key={i} 
                       className="p-2 rounded-md transition-colors"
                       style={{
-                        backgroundColor: 'var(--surface-bg)',
-                        border: '1px solid var(--border-subtle-hex)',
+                        backgroundColor: 'var(--sr-surface-card)',
+                        border: '1px solid var(--sr-border-light)',
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--border-default-hex)'}
-                      onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle-hex)'}
+                      onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--sr-border)'}
+                      onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--sr-border-light)'}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <span 
                               className={cn(TYPOGRAPHY.tableCellEmphasis, 'truncate')}
-                              style={{ color: 'var(--text-primary-hex)' }}
+                              style={{ color: 'var(--sr-text-primary)' }}
                             >
                               {item.name}
                             </span>
@@ -830,7 +843,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                             )}
                           </div>
                           {item.linked && (
-                            <p className={cn(TYPOGRAPHY.microcopy, 'truncate')} style={{ color: 'var(--text-secondary-hex)' }}>
+                            <p className={cn(TYPOGRAPHY.microcopy, 'truncate')} style={{ color: 'var(--sr-text-secondary)' }}>
                               → {item.linked}
                             </p>
                           )}
@@ -841,7 +854,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                             <div className="flex items-center gap-1">
                               <div 
                                 className="w-10 h-[3px] rounded-full overflow-hidden"
-                                style={{ backgroundColor: 'var(--progress-bg)' }}
+                                style={{ backgroundColor: 'var(--sr-border)' }}
                               >
                                 <div 
                                   className="h-full rounded-full"
@@ -850,7 +863,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                               </div>
                               <span 
                                 className={cn(TYPOGRAPHY.progressPercent, 'w-7 text-right')}
-                                style={{ color: 'var(--text-secondary-hex)' }}
+                                style={{ color: 'var(--sr-text-secondary)' }}
                               >
                                 {item.progress}%
                               </span>
@@ -859,12 +872,12 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           {item.owner && (
                             <div 
                               className="flex items-center gap-0.5 px-1 py-0.5 rounded"
-                              style={{ backgroundColor: 'var(--surface-subtle)' }}
+                              style={{ backgroundColor: 'var(--sr-surface-hover)' }}
                             >
-                              <User size={10} style={{ color: 'var(--text-secondary-hex)' }} />
+                              <User size={10} style={{ color: 'var(--sr-text-secondary)' }} />
                               <span 
                                 className={cn(TYPOGRAPHY.microcopy, 'font-medium truncate max-w-[50px]')}
-                                style={{ color: 'var(--text-secondary-hex)' }}
+                                style={{ color: 'var(--sr-text-secondary)' }}
                               >
                                 {item.owner.split(' ')[0]}
                               </span>
