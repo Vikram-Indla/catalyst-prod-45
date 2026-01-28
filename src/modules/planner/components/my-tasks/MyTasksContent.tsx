@@ -1,6 +1,7 @@
 // ============================================================
-// MY TASKS CONTENT - V8 Design System (Budget Planner Aligned)
+// MY TASKS CONTENT - V9 Design System (Task List Aligned)
 // Sections: Overdue → Today → This Week → Later
+// Uses planner-task-list-content ring-fenced CSS
 // ============================================================
 
 import { useMemo } from 'react';
@@ -10,6 +11,8 @@ import { useMyTasks } from '../../hooks/useMyTasks';
 import { MyTasksHeader } from './MyTasksHeader';
 import { TaskSection } from './TaskSection';
 import type { FilterConfig, TimeSection, MyTask } from '../../types/my-tasks';
+// Import ring-fenced Task List styles
+import '../../styles/task-list.css';
 
 interface MyTasksContentProps {
   filters: FilterConfig;
@@ -70,18 +73,18 @@ export function MyTasksContent({
   }, [tasksBySection]);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header with Stats and Filters - Budget Planner Style */}
+    <div className="flex flex-col h-full planner-task-list-content">
+      {/* Header with Stats and Filters - Task List V3 Style */}
       <MyTasksHeader
         filters={filters}
         onFilterChange={onFilterChange}
         onOpenCreateModal={onOpenCreateModal}
       />
 
-      {/* Task Sections - Single column scan with Budget Planner content styling */}
+      {/* Task Sections - Single column scan with Task List V3 styling */}
       <div 
         className="flex-1 overflow-y-auto p-6 lg:px-8"
-        style={{ backgroundColor: 'var(--bg)' }}
+        style={{ background: 'var(--pln-tl-surface-page)' }}
       >
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
@@ -89,13 +92,13 @@ export function MyTasksContent({
           </div>
         ) : visibleSections.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
-              <Search className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--pln-tl-surface-hover)' }}>
+              <Search className="w-8 h-8" style={{ color: 'var(--pln-tl-text-muted)' }} />
             </div>
-            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-1">
+            <h3 className="text-lg font-medium mb-1" style={{ color: 'var(--pln-tl-text-primary)' }}>
               No tasks found
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm">
+            <p className="text-sm max-w-sm" style={{ color: 'var(--pln-tl-text-tertiary)' }}>
               {filters.searchQuery
                 ? `No tasks match "${filters.searchQuery}"`
                 : 'You have no tasks yet. Create your first task to get started.'}

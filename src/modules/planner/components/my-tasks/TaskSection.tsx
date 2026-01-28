@@ -1,7 +1,7 @@
 // ============================================================
-// TASK SECTION
+// TASK SECTION - V9 Design System (Task List Aligned)
 // Per Justification Matrix: Simple section grouping by time urgency
-// Per Design Audit: Sentence case headers, no ALL CAPS
+// Uses ring-fenced Task List typography and sizing
 // ============================================================
 
 import { cn } from '@/lib/utils';
@@ -25,28 +25,46 @@ export function TaskSection({
 
   return (
     <div className="mb-4">
-      {/* Section Header - Sentence case per audit (no uppercase) */}
+      {/* Section Header - Task List V3 style typography */}
       <div className="flex items-center gap-2 mb-2 px-2">
         <span
           className="w-2.5 h-2.5 rounded-full"
           style={{ backgroundColor: color }}
         />
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+        <h3 
+          className="text-xs font-semibold uppercase tracking-wide"
+          style={{ color: 'var(--pln-tl-text-tertiary)' }}
+        >
           {title}
         </h3>
-        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+        <span 
+          className="text-xs font-medium"
+          style={{ color: 'var(--pln-tl-text-muted)' }}
+        >
           {tasks.length}
         </span>
       </div>
 
-      {/* Task List */}
-      <div className="border rounded-lg bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-700">
-        {tasks.map((task) => (
-          <TaskRow
+      {/* Task List - Task List V3 style */}
+      <div 
+        className="rounded-lg overflow-hidden"
+        style={{ 
+          background: 'var(--pln-tl-surface-card)',
+          border: '1px solid var(--pln-tl-border)',
+        }}
+      >
+        {tasks.map((task, index) => (
+          <div 
             key={task.id}
-            task={task}
-            onOpenDetail={onOpenDetail}
-          />
+            style={{ 
+              borderTop: index > 0 ? '1px solid var(--pln-tl-border-light)' : 'none' 
+            }}
+          >
+            <TaskRow
+              task={task}
+              onOpenDetail={onOpenDetail}
+            />
+          </div>
         ))}
       </div>
     </div>

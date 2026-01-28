@@ -1,19 +1,17 @@
 // ============================================================
-// MY TASKS HEADER - V8 Design System (Budget Planner Aligned)
-// Matches Budget Planner 2-row header structure
+// MY TASKS HEADER - V9 Design System (Task List Aligned)
+// Matches Task List V3 header structure and typography
 // ============================================================
 
-import { Plus, Search, CheckSquare } from 'lucide-react';
+import { Plus, Search, CheckSquare, List, X, ChevronDown, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { useMyTasksSummary } from '../../hooks/useMyTasks';
 import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { cn } from '@/lib/utils';
@@ -33,151 +31,165 @@ export function MyTasksHeader({
   const { data: summary, isLoading } = useMyTasksSummary();
   const { data: workstreams = [] } = usePlannerWorkstreams();
 
-  // Stats chips per justification: Overdue, Today, Done
-  const statsChips = [
-    { 
-      label: 'Overdue', 
-      value: summary?.overdue_count || 0, 
-      color: '#ef4444',
-      bgColor: '#fef2f2',
-    },
-    { 
-      label: 'Today', 
-      value: summary?.today_count || 0, 
-      color: '#f59e0b',
-      bgColor: '#fffbeb',
-    },
-    { 
-      label: 'Done', 
-      value: summary?.completed_today || 0, 
-      color: '#10b981',
-      bgColor: '#ecfdf5',
-    },
-  ];
+  // Active filter count
+  const activeFilterCount = [
+    filters.workstreams?.length,
+    filters.statuses?.length,
+    filters.searchQuery,
+  ].filter(Boolean).length;
 
   return (
-    <div className="flex-shrink-0 bg-card border-b border-border">
-      {/* ROW 1: Breadcrumb + Title + Stats + Action (matches Budget Planner) */}
-      <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
-        {/* Left: Title + Stats Inline */}
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col gap-0.5">
-            {/* Breadcrumb */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-medium text-slate-500">Planner / Personal</span>
-              <span className="text-xs text-slate-400">•</span>
-              <span className="text-xs font-medium text-blue-600">My Tasks</span>
-            </div>
-            
-            {/* Title */}
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
+    <div className="flex-shrink-0">
+      {/* ROW 1: Header with Stats (Task List V3 Style) */}
+      <div 
+        className="flex items-center justify-between px-6 py-4 border-b" 
+        style={{ 
+          background: 'var(--pln-tl-surface-page)', 
+          borderColor: 'var(--pln-tl-border)' 
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-10 h-10 rounded-lg flex items-center justify-center" 
+            style={{ background: 'rgba(37, 99, 235, 0.1)' }}
+          >
+            <CheckSquare className="w-5 h-5 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold" style={{ color: 'var(--pln-tl-text-primary)' }}>
               My Tasks
             </h1>
-          </div>
-          
-          {/* Stats Chips - Inline with title (Budget Planner style) */}
-          <div className="flex items-center gap-2">
-            {statsChips.map((stat) => (
-              <div
-                key={stat.label}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border"
-                style={{ 
-                  backgroundColor: stat.bgColor,
-                  color: stat.color,
-                  borderColor: `${stat.color}30`,
-                }}
-              >
-                <span 
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: stat.color }}
-                />
-                <span className="font-semibold">{isLoading ? '...' : stat.value}</span>
-                <span className="text-xs opacity-75">{stat.label}</span>
-              </div>
-            ))}
+            <p className="text-sm" style={{ color: 'var(--pln-tl-text-tertiary)' }}>
+              Personal task overview and tracking
+            </p>
           </div>
         </div>
 
-        {/* Right: Add Task Button */}
+        <div className="flex items-center gap-4">
+          {/* Stats chips (Task List V3 Style) */}
+          <div className="tl-stat-chip danger">
+            <span className="label">Overdue</span>
+            <span className="value">{isLoading ? '—' : summary?.overdue_count || 0}</span>
+          </div>
+          <div className="tl-stat-chip warning">
+            <span className="label">Today</span>
+            <span className="value">{isLoading ? '—' : summary?.today_count || 0}</span>
+          </div>
+          <div className="tl-stat-chip success">
+            <span className="label">Done</span>
+            <span className="value">{isLoading ? '—' : summary?.completed_today || 0}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 2: Toolbar (Task List V3 Style) */}
+      <div className="tl-toolbar shrink-0">
+        <div className="flex items-center gap-2 flex-1">
+          {/* Search */}
+          <div className="tl-search">
+            <Search className="w-4 h-4 tl-search-icon" />
+            <input
+              type="text"
+              placeholder="Search tasks... ⌘K"
+              value={filters.searchQuery || ''}
+              onChange={(e) => onFilterChange({ searchQuery: e.target.value || undefined })}
+              className="tl-search-input"
+            />
+            {filters.searchQuery && (
+              <button
+                onClick={() => onFilterChange({ searchQuery: undefined })}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                style={{ color: 'var(--pln-tl-text-muted)' }}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Workstream Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="tl-btn tl-btn-outline">
+                <Layers className="w-4 h-4" />
+                {filters.workstreams?.[0] 
+                  ? workstreams.find(w => w.id === filters.workstreams?.[0])?.name || 'Workstream'
+                  : 'Workstream'
+                }
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="tl-dropdown w-48">
+              <DropdownMenuItem onClick={() => onFilterChange({ workstreams: undefined })}>
+                All Workstreams
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {workstreams.map((ws) => (
+                <DropdownMenuItem 
+                  key={ws.id} 
+                  onClick={() => onFilterChange({ workstreams: [ws.id] })}
+                >
+                  <span className="w-2.5 h-2.5 rounded-full mr-2" style={{ backgroundColor: ws.color }} />
+                  {ws.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Status Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="tl-btn tl-btn-outline">
+                {filters.statuses?.[0] || 'Status'}
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="tl-dropdown w-40">
+              <DropdownMenuItem onClick={() => onFilterChange({ statuses: undefined })}>
+                All Statuses
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['backlog'] })}>
+                Backlog
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['planned'] })}>
+                Planned
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['progress'] })}>
+                In Progress
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['review'] })}>
+                Review
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['done'] })}>
+                Done
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Clear Filters */}
+          {activeFilterCount > 0 && (
+            <button 
+              onClick={() => onFilterChange({ 
+                statuses: undefined, 
+                workstreams: undefined,
+                searchQuery: undefined,
+              })} 
+              className="tl-btn tl-btn-outline"
+            >
+              <X className="w-4 h-4" />
+              Clear ({activeFilterCount})
+            </button>
+          )}
+        </div>
+
+        {/* Add Task Button */}
         <Button 
-          className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md"
+          className="tl-btn tl-btn-primary gap-2"
           onClick={onOpenCreateModal}
         >
           <Plus className="w-4 h-4" />
           Add Task
         </Button>
-      </div>
-
-      {/* ROW 2: Search + Filters (matches Budget Planner style) */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
-        {/* Search - Budget Planner style */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            type="text"
-            placeholder="Search tasks..."
-            value={filters.searchQuery || ''}
-            onChange={(e) => onFilterChange({ searchQuery: e.target.value || undefined })}
-            className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
-          />
-        </div>
-
-        {/* Filter Strip - Right Aligned (matches Budget Planner hero tabs style) */}
-        <div className="flex items-center gap-2 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
-          {/* Workstream Dropdown */}
-          <Select 
-            value={filters.workstreams?.[0] || 'all'}
-            onValueChange={(value) => onFilterChange({ 
-              workstreams: value === 'all' ? undefined : [value] 
-            })}
-          >
-            <SelectTrigger className="w-40 h-9 bg-white border-slate-200 rounded-lg text-sm font-medium">
-              <SelectValue placeholder="All Workstreams" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Workstreams</SelectItem>
-              {workstreams.map((ws) => (
-                <SelectItem key={ws.id} value={ws.id}>
-                  {ws.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Status Dropdown */}
-          <Select 
-            value={filters.statuses?.[0] || 'all'}
-            onValueChange={(value) => onFilterChange({ 
-              statuses: value === 'all' ? undefined : [value] 
-            })}
-          >
-            <SelectTrigger className="w-32 h-9 bg-white border-slate-200 rounded-lg text-sm font-medium">
-              <SelectValue placeholder="All Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="backlog">Backlog</SelectItem>
-              <SelectItem value="planned">Planned</SelectItem>
-              <SelectItem value="progress">In Progress</SelectItem>
-              <SelectItem value="review">Review</SelectItem>
-              <SelectItem value="done">Done</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Clear Filters */}
-          {(filters.statuses || filters.workstreams || filters.searchQuery) && (
-            <button
-              className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white rounded-lg transition-all"
-              onClick={() => onFilterChange({ 
-                statuses: undefined, 
-                workstreams: undefined,
-                searchQuery: undefined,
-              })}
-            >
-              Clear ×
-            </button>
-          )}
-        </div>
       </div>
     </div>
   );
