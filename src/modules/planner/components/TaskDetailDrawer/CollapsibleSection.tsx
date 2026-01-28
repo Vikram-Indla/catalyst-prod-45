@@ -1,11 +1,11 @@
 // ============================================================
 // COLLAPSIBLE SECTION - MATCHES REFERENCE
 // Chevron + icon + title + count on right
+// ALWAYS renders children (which contain add functionality)
 // ============================================================
 
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface CollapsibleSectionProps {
   title: string;
@@ -20,16 +20,16 @@ export function CollapsibleSection({
   count, 
   icon,
   children,
-  defaultOpen = false,
+  defaultOpen = true,
 }: CollapsibleSectionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen || count > 0);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
     <div>
       {/* Header Row */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-3 hover:bg-muted/30 rounded-lg transition-colors"
+        className="w-full flex items-center justify-between py-3 hover:bg-muted/30 rounded-lg transition-colors px-2 -mx-2"
       >
         <div className="flex items-center gap-2">
           {/* Chevron */}
@@ -48,18 +48,14 @@ export function CollapsibleSection({
         
         {/* Count */}
         <span className="text-sm text-muted-foreground">
-          {count} items
+          {count} {count === 1 ? 'item' : 'items'}
         </span>
       </button>
       
-      {/* Content */}
+      {/* Content - ALWAYS render children so add buttons work */}
       {isOpen && (
         <div className="pl-8 pb-2">
-          {count === 0 ? (
-            <p className="text-sm text-muted-foreground py-2">No items yet</p>
-          ) : (
-            children
-          )}
+          {children}
         </div>
       )}
     </div>

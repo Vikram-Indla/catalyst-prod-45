@@ -71,7 +71,7 @@ export function DependenciesSection({ taskId, dependencies }: DependenciesSectio
       )}
 
       {/* Existing Relations - Compact List */}
-      {hasAny ? (
+      {hasAny && (
         <div className="space-y-1">
           {Object.entries(grouped).map(([type, items]) => {
             if (items.length === 0) return null;
@@ -89,11 +89,7 @@ export function DependenciesSection({ taskId, dependencies }: DependenciesSectio
             ));
           })}
         </div>
-      ) : !activeAddType ? (
-        <p className="text-sm text-muted-foreground text-center py-2">
-          No relations
-        </p>
-      ) : null}
+      )}
 
       {/* Add New */}
       {activeAddType ? (

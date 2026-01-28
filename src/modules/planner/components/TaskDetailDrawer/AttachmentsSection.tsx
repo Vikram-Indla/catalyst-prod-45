@@ -36,13 +36,11 @@ export function AttachmentsSection({ taskId, attachments }: AttachmentsSectionPr
     console.log('Files dropped:', e.dataTransfer.files);
   }, []);
 
-  const hasAttachments = attachments && attachments.length > 0;
-
   // CONTENT ONLY - no header (CollapsibleSection provides the header)
   return (
     <div className="space-y-2">
       {/* Attachment List */}
-      {hasAttachments && (
+      {attachments?.length > 0 && (
         <div className="space-y-1.5">
           {attachments.map(att => (
             <AttachmentItem
