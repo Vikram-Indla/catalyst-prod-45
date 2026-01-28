@@ -2,6 +2,7 @@
 // KANBAN CARD COMPONENT
 // Draggable task card for the Kanban board
 // Catalyst V5 semantic colors with WORKSTREAM-based left stripe
+// Delete restricted to workstream leads and admins
 // ============================================================
 
 import { useSortable } from '@dnd-kit/sortable';
@@ -21,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useWorkstreamLeadAccess } from '../../hooks/useWorkstreamLeadAccess';
 
 interface KanbanCardProps {
   task: KanbanTask;
@@ -31,6 +33,8 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: KanbanCardProps) {
+  const { canDeleteTask } = useWorkstreamLeadAccess();
+  
   const {
     attributes,
     listeners,
@@ -50,6 +54,9 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
   
   // Get workstream color for left stripe
   const workstreamColors = getWorkstreamColor(task.workstream?.name);
+  
+  // Check if current user can delete this task
+  const canDelete = canDeleteTask(task.workstream_id);
 
   return (
     <div
@@ -93,12 +100,14 @@ export function KanbanCard({ task, onClick, onEdit, onDelete, isDragging }: Kanb
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit?.(); }}>
               Edit Task
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-              className="text-destructive"
-            >
-              Delete Task
-            </DropdownMenuItem>
+            {canDelete && (
+              <DropdownMenuItem 
+                onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+                className="text-destructive"
+              >
+                Delete Task
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

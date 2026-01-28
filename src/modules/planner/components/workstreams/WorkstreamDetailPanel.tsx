@@ -491,12 +491,16 @@ export function WorkstreamDetailPanel({
                   <span>Lead</span>
                 </div>
                 {leadMember ? (
-                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
-                    {leadMember.profile?.full_name || 'Unknown'}
-                  </span>
+                  <button
+                    onClick={handleEdit}
+                    className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  >
+                    <span>{leadMember.profile?.full_name || 'Unknown'}</span>
+                    <Pencil className="w-3 h-3 opacity-50" />
+                  </button>
                 ) : (
                   <button
-                    onClick={onAddMembers}
+                    onClick={handleEdit}
                     className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     Assign lead...

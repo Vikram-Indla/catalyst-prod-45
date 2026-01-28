@@ -1,17 +1,19 @@
 // ============================================================
 // EDIT WORKSTREAM MODAL
-// Rename workstream, change color, manage members
+// Rename workstream, change color, manage members with lead toggle
 // Members are linked to profiles (APPROVED users only)
+// Lead can be selected from existing members
 // ============================================================
 
 import { useState, useEffect, useMemo } from 'react';
-import { X, Save, Loader2, UserPlus, Trash2, Search, Check } from 'lucide-react';
+import { X, Save, Loader2, UserPlus, Trash2, Search, Check, Crown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import {
   useWorkstreamDetails,
@@ -21,6 +23,7 @@ import {
   useRemoveWorkstreamMember,
 } from './useWorkstreamMutations';
 import { useSearchProfiles } from './useSearchProfiles';
+import { useUpdateMemberRole } from './useUpdateMemberRole';
 
 interface EditWorkstreamModalProps {
   workstreamId: string | null;
@@ -49,6 +52,7 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
   const updateWorkstream = useUpdateWorkstream();
   const addMember = useAddWorkstreamMember();
   const removeMember = useRemoveWorkstreamMember();
+  const updateRole = useUpdateMemberRole();
   
   // Form state
   const [name, setName] = useState('');
@@ -104,6 +108,12 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
   const handleRemoveMember = async (memberId: string) => {
     if (!workstreamId) return;
     await removeMember.mutateAsync({ memberId, workstreamId });
+  };
+
+  const handleToggleLead = async (memberId: string, currentRole: string) => {
+    if (!workstreamId) return;
+    const newRole = currentRole === 'lead' ? 'member' : 'lead';
+    await updateRole.mutateAsync({ memberId, workstreamId, newRole });
   };
   
   const isLoading = loadingWorkstream || loadingMembers;
@@ -235,35 +245,69 @@ export function EditWorkstreamModal({ workstreamId, open, onClose, focusOnMember
                     const initials = profile?.full_name
                       ? profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
                       : '??';
+                    const isLead = member.role === 'lead';
                     
                     return (
                       <div 
                         key={member.id}
-                        className="flex items-center gap-3 px-3 py-2.5"
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2.5",
+                          isLead && "bg-amber-50/50 dark:bg-amber-900/10"
+                        )}
                       >
                         <div 
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold relative"
                           style={{ backgroundColor: color }}
                         >
                           {initials}
+                          {isLead && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center">
+                              <Crown className="w-2.5 h-2.5 text-white" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">
-                            {profile?.full_name || 'Unknown'}
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-medium truncate">
+                              {profile?.full_name || 'Unknown'}
+                            </span>
+                            {isLead && (
+                              <Badge variant="secondary" className="text-[10px] px-1 py-0 h-4 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                                Lead
+                              </Badge>
+                            )}
                           </div>
                           <div className="text-xs text-muted-foreground truncate">
                             {profile?.vendor || profile?.role || profile?.email || 'No role'}
                           </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                          onClick={() => handleRemoveMember(member.id)}
-                          disabled={removeMember.isPending}
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className={cn(
+                              "h-7 px-2 text-xs gap-1",
+                              isLead 
+                                ? "text-amber-600 hover:text-amber-700 hover:bg-amber-50" 
+                                : "text-muted-foreground hover:text-foreground"
+                            )}
+                            onClick={() => handleToggleLead(member.id, member.role)}
+                            disabled={updateRole.isPending}
+                            title={isLead ? 'Remove as lead' : 'Make lead'}
+                          >
+                            <Crown className="w-3.5 h-3.5" />
+                            {isLead ? 'Lead' : 'Set Lead'}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            onClick={() => handleRemoveMember(member.id)}
+                            disabled={removeMember.isPending}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
                       </div>
                     );
                   })
