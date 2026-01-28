@@ -55,6 +55,7 @@ function useWorkstreamRecentTasks(workstreamId: string | null) {
         .from('planner_tasks')
         .select(`
           id,
+          task_key,
           key,
           title,
           status:planner_statuses(slug, name, color)
@@ -64,7 +65,12 @@ function useWorkstreamRecentTasks(workstreamId: string | null) {
         .limit(5);
       
       if (error) throw error;
-      return data || [];
+      
+      // Map to ensure task_key is prioritized over key
+      return (data || []).map(task => ({
+        ...task,
+        key: task.task_key || task.key || `PLN-${task.id.slice(0, 6)}`
+      }));
     },
     enabled: !!workstreamId,
     staleTime: 30 * 1000,
