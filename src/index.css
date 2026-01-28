@@ -9,6 +9,7 @@
 @import './styles/capacity-module.css';
 @import './styles/budget-module.css';
 @import './styles/users-module.css';
+@import './styles/caty.css';
 
 @tailwind base;
 @tailwind components;
