@@ -178,11 +178,13 @@ export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
   // RENDER
   // =========================
   if (error) {
+    const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+    console.error('[Workstreams V10] Error loading workstreams:', error);
     return (
       <div className={cn('p-6', className)}>
         <div className="text-center py-12">
           <p className="text-destructive">Failed to load workstreams</p>
-          <p className="text-sm text-muted-foreground mt-1">{String(error)}</p>
+          <p className="text-sm text-muted-foreground mt-1">{errorMessage}</p>
         </div>
       </div>
     );
