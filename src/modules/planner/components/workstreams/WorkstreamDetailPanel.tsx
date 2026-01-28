@@ -46,7 +46,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { HealthIndicator } from './HealthIndicator';
-import { useWorkstreamMembers, useRemoveWorkstreamMember } from './useWorkstreamMutations';
+import { useWorkstreamMembers, useRemoveWorkstreamMember, useUpdateWorkstream } from './useWorkstreamMutations';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import type { WorkstreamData } from './types';
 import { motion } from 'framer-motion';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -281,10 +282,12 @@ export function WorkstreamDetailPanel({
   const { data: wsDetails } = useWorkstreamDescription(workstream?.id || null);
   const { data: members = [], refetch: refetchMembers } = useWorkstreamMembers(workstream?.id || null);
   const removeMember = useRemoveWorkstreamMember();
+  const updateWorkstream = useUpdateWorkstream();
   const memberUserIds = members.map(m => m.user_id);
   const { data: memberTaskCounts = {} } = useMemberTaskCounts(workstream?.id || null, memberUserIds);
   const { data: recentTasks = [] } = useWorkstreamRecentTasks(workstream?.id || null);
   const { data: activity = [] } = useWorkstreamActivity(workstream?.id || null);
+  const queryClient = useQueryClient();
   
   // Handle member removal
   const handleRemoveMember = async (memberId: string, memberName: string) => {
@@ -526,18 +529,22 @@ export function WorkstreamDetailPanel({
                   <Calendar className="w-4 h-4" />
                   <span>Start Date</span>
                 </div>
-                {wsDetails?.start_date ? (
-                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
-                    {format(new Date(wsDetails.start_date), 'MMM d, yyyy')}
-                  </span>
-                ) : (
-                  <button
-                    onClick={handleEdit}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                  >
-                    Set date...
-                  </button>
-                )}
+                <CatalystDatePicker
+                  value={wsDetails?.start_date || null}
+                  onChange={async (date) => {
+                    if (!workstream?.id) return;
+                    await updateWorkstream.mutateAsync({
+                      id: workstream.id,
+                      start_date: date ? format(date, 'yyyy-MM-dd') : null,
+                    });
+                    queryClient.invalidateQueries({ queryKey: ['workstream-description', workstream.id] });
+                  }}
+                  placeholder="Set date..."
+                  triggerClassName="h-8 w-[130px] text-sm border-0 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-700 justify-end px-2"
+                  dateFormat="MMM d, yyyy"
+                  showClearButton={true}
+                  showTodayButton={true}
+                />
               </div>
               
               {/* Due Date */}
@@ -546,18 +553,23 @@ export function WorkstreamDetailPanel({
                   <Calendar className="w-4 h-4" />
                   <span>Due Date</span>
                 </div>
-                {wsDetails?.due_date ? (
-                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
-                    {format(new Date(wsDetails.due_date), 'MMM d, yyyy')}
-                  </span>
-                ) : (
-                  <button
-                    onClick={handleEdit}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                  >
-                    Set date...
-                  </button>
-                )}
+                <CatalystDatePicker
+                  value={wsDetails?.due_date || null}
+                  onChange={async (date) => {
+                    if (!workstream?.id) return;
+                    await updateWorkstream.mutateAsync({
+                      id: workstream.id,
+                      due_date: date ? format(date, 'yyyy-MM-dd') : null,
+                    });
+                    queryClient.invalidateQueries({ queryKey: ['workstream-description', workstream.id] });
+                  }}
+                  placeholder="Set date..."
+                  minDate={wsDetails?.start_date ? new Date(wsDetails.start_date) : undefined}
+                  triggerClassName="h-8 w-[130px] text-sm border-0 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-700 justify-end px-2"
+                  dateFormat="MMM d, yyyy"
+                  showClearButton={true}
+                  showTodayButton={true}
+                />
               </div>
               
               {/* Created */}
