@@ -1,5 +1,5 @@
 // ============================================================
-// PLANNER SIDEBAR COMPONENT (Workstreams removed)
+// PLANNER SIDEBAR COMPONENT
 // ============================================================
 
 import { 
@@ -10,6 +10,7 @@ import {
   Settings,
   CheckSquare,
   List,
+  Layers,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from '@/components/layout/SidebarBase';
 
@@ -33,6 +34,7 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
           { id: 'task-list', title: 'Task List', path: '/planner/task-list', icon: List, exact: true },
           { id: 'timeline', title: 'Timeline', path: '/planner/timeline', icon: GanttChartSquare, exact: true },
           { id: 'calendar', title: 'Calendar', path: '/planner/calendar', icon: Calendar, exact: true },
+          { id: 'workstreams', title: 'Workstreams', path: '/planner/workstreams', icon: Layers, exact: true },
         ],
       },
     ],
