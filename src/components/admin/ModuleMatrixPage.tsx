@@ -377,49 +377,87 @@ export default function ModuleMatrixPage() {
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(groupedModules).map(([groupName, modules]) => (
-                  <Fragment key={`group-${groupName}`}>
-                    {/* Group Header Row */}
-                    <tr className="bg-muted/80">
-                      <td
-                        colSpan={roleColumns.length + 1}
-                        className="px-3 py-2 font-semibold text-xs text-muted-foreground uppercase tracking-wide"
-                      >
-                        {groupName}
-                      </td>
-                    </tr>
-                    {/* Module Rows */}
-                    {modules.map((module) => (
-                      <tr key={module.key} className="hover:bg-muted/30 border-b border-border/50">
-                        <th className="text-left p-3 font-medium text-foreground sticky left-0 bg-card z-10 border-r">
+                {Object.entries(groupedModules).map(([groupName, modules]) => {
+                  // Calculate group selection state
+                  const groupModuleKeys = modules.map(m => m.key);
+                  const selectedInGroup = groupModuleKeys.filter(k => selectedModules.has(k)).length;
+                  const allSelected = selectedInGroup === groupModuleKeys.length;
+                  const someSelected = selectedInGroup > 0 && !allSelected;
+
+                  const handleGroupSelect = () => {
+                    const next = new Set(selectedModules);
+                    if (allSelected) {
+                      // Unselect all in group
+                      groupModuleKeys.forEach(k => next.delete(k));
+                    } else {
+                      // Select all in group
+                      groupModuleKeys.forEach(k => next.add(k));
+                    }
+                    setSelectedModules(next);
+                  };
+
+                  return (
+                    <Fragment key={`group-${groupName}`}>
+                      {/* Group Header Row */}
+                      <tr className="bg-muted/80">
+                        <td
+                          colSpan={roleColumns.length + 1}
+                          className="px-3 py-2"
+                        >
                           <label className="flex items-center gap-2 cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={selectedModules.has(module.key)}
-                              onChange={(e) => {
-                                const next = new Set(selectedModules);
-                                e.target.checked ? next.add(module.key) : next.delete(module.key);
-                                setSelectedModules(next);
+                              checked={allSelected}
+                              ref={(el) => {
+                                if (el) el.indeterminate = someSelected;
                               }}
+                              onChange={handleGroupSelect}
                               className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                             />
-                            {module.name}
+                            <span className="font-semibold text-xs text-muted-foreground uppercase tracking-wide">
+                              {groupName}
+                            </span>
+                            {selectedInGroup > 0 && (
+                              <span className="text-xs text-muted-foreground font-normal">
+                                ({selectedInGroup}/{groupModuleKeys.length} selected)
+                              </span>
+                            )}
                           </label>
-                        </th>
-                        {roleColumns.map((role) => (
-                          <td key={`${module.key}-${role.code}`} className="p-1 text-center">
-                            <PermissionCell
-                              roleCode={role.code}
-                              moduleKey={module.key}
-                              accessLevel={module.permissions[role.code] || 'hidden'}
-                              isSystemRole={role.isSystem}
-                            />
-                          </td>
-                        ))}
+                        </td>
                       </tr>
-                    ))}
-                  </Fragment>
-                ))}
+                      {/* Module Rows */}
+                      {modules.map((module) => (
+                        <tr key={module.key} className="hover:bg-muted/30 border-b border-border/50">
+                          <th className="text-left p-3 font-medium text-foreground sticky left-0 bg-card z-10 border-r">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedModules.has(module.key)}
+                                onChange={(e) => {
+                                  const next = new Set(selectedModules);
+                                  e.target.checked ? next.add(module.key) : next.delete(module.key);
+                                  setSelectedModules(next);
+                                }}
+                                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                              />
+                              {module.name}
+                            </label>
+                          </th>
+                          {roleColumns.map((role) => (
+                            <td key={`${module.key}-${role.code}`} className="p-1 text-center">
+                              <PermissionCell
+                                roleCode={role.code}
+                                moduleKey={module.key}
+                                accessLevel={module.permissions[role.code] || 'hidden'}
+                                isSystemRole={role.isSystem}
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </Fragment>
+                  );
+                })}
               </tbody>
             </table>
           )}
