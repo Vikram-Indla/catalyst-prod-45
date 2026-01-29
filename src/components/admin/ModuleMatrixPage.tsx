@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { RoleDetailDrawer } from './RoleDetailDrawer';
 
 // ============================================
 // STATS CARDS COMPONENT
@@ -162,6 +163,11 @@ export default function ModuleMatrixPage() {
     accessLevel: null,
     search: '',
   });
+  const [selectedRole, setSelectedRole] = useState<{
+    code: string;
+    name: string;
+    isSystem: boolean;
+  } | null>(null);
   const [selectedModules, setSelectedModules] = useState<Set<string>>(new Set());
 
   // Data hooks
@@ -352,13 +358,20 @@ export default function ModuleMatrixPage() {
                       key={role.code}
                       className="p-2 font-medium text-muted-foreground border-b text-center min-w-[48px] max-w-[56px]"
                     >
-                      <div
-                        className="text-[11px] truncate max-h-[80px]"
+                      <button
+                        onClick={() =>
+                          setSelectedRole({
+                            code: role.code,
+                            name: role.name,
+                            isSystem: role.isSystem,
+                          })
+                        }
+                        className="text-[11px] truncate max-h-[80px] hover:text-primary hover:underline underline-offset-2 transition-colors cursor-pointer"
                         style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
-                        title={role.name}
+                        title={`Click to view ${role.name} permissions`}
                       >
                         {role.name}
-                      </div>
+                      </button>
                     </th>
                   ))}
                 </tr>
@@ -471,6 +484,15 @@ export default function ModuleMatrixPage() {
           </div>
         </div>
       )}
+
+      {/* Role Detail Drawer */}
+      <RoleDetailDrawer
+        open={!!selectedRole}
+        onClose={() => setSelectedRole(null)}
+        roleCode={selectedRole?.code || null}
+        roleName={selectedRole?.name || null}
+        isSystemRole={selectedRole?.isSystem}
+      />
     </div>
   );
 }
