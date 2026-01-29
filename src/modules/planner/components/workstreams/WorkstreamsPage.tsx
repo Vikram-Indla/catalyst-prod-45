@@ -5,11 +5,12 @@
 
 import '@/styles/workstreams.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore } from 'lucide-react';
+import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { usePlannerWorkstreams, Workstream, useArchiveWorkstream } from '../../hooks/usePlannerWorkstreams';
+import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream } from '../../hooks/usePlannerWorkstreams';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
+import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,16 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const WORKSTREAM_COLORS = [
   '#06b6d4', '#8b5cf6', '#6366f1', '#f97316', '#ec4899', '#84cc16', '#14b8a6',
@@ -43,6 +54,11 @@ export function WorkstreamsPage() {
   const showArchived = searchParams.get('archived') === 'true';
   const { data: workstreams = [], isLoading } = usePlannerWorkstreams(showArchived);
   const archiveWorkstream = useArchiveWorkstream();
+  const deleteWorkstream = useDeleteWorkstream();
+
+  const [isQuickEditOpen, setIsQuickEditOpen] = useState(false);
+  const [quickEditWorkstream, setQuickEditWorkstream] = useState<Workstream | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Workstream | null>(null);
 
   // Toggle archive view
   const toggleArchiveView = () => {
@@ -182,6 +198,17 @@ export function WorkstreamsPage() {
     e.stopPropagation();
     archiveWorkstream.mutate({ id: ws.id, archive: !ws.is_archived });
   }, [archiveWorkstream]);
+
+  const handleQuickEdit = useCallback((ws: Workstream, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setQuickEditWorkstream(ws);
+    setIsQuickEditOpen(true);
+  }, []);
+
+  const handleRequestDelete = useCallback((ws: Workstream, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeleteTarget(ws);
+  }, []);
 
   return (
     <div className="ws-page min-h-screen">
@@ -553,10 +580,22 @@ export function WorkstreamsPage() {
                   </button>
                   <button 
                     className="ws-action-btn"
-                    onClick={() => openDrawer(ws)}
-                    title="Edit"
+                    onClick={(e) => handleQuickEdit(ws, e)}
+                    title="Rename / change prefix"
                   >
                     <Pencil className="w-4 h-4" strokeWidth={2} />
+                  </button>
+                  <button
+                    className="ws-action-btn danger"
+                    onClick={(e) => handleRequestDelete(ws, e)}
+                    disabled={(ws.taskCount || 0) > 0}
+                    title={
+                      (ws.taskCount || 0) > 0
+                        ? 'Cannot delete: tasks are linked'
+                        : 'Delete permanently'
+                    }
+                  >
+                    <Trash2 className="w-4 h-4" strokeWidth={2} />
                   </button>
                 </div>
               </div>
@@ -641,6 +680,38 @@ export function WorkstreamsPage() {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       />
+
+      {/* Quick Edit (pencil) */}
+      <WorkstreamQuickEditDialog
+        open={isQuickEditOpen}
+        onOpenChange={setIsQuickEditOpen}
+        workstream={quickEditWorkstream}
+      />
+
+      {/* Delete */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete workstream?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes the workstream. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                if (!deleteTarget) return;
+                await deleteWorkstream.mutateAsync(deleteTarget.id);
+                setDeleteTarget(null);
+              }}
+              disabled={deleteWorkstream.isPending}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Create Modal */}
       <CreateWorkstreamModal
