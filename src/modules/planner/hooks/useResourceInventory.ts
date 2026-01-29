@@ -21,11 +21,20 @@ export function useResourceInventory() {
   return useQuery({
     queryKey: ['resource-inventory'],
     queryFn: async (): Promise<Resource[]> => {
+      // Fetch resource_inventory with profile join to get email from either source
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, name, email, role_name, department_name, default_capacity_percent')
+        .select(`
+          id, 
+          profile_id, 
+          name, 
+          email, 
+          role_name, 
+          department_name, 
+          default_capacity_percent,
+          profiles:profile_id (email)
+        `)
         .eq('is_active', true)
-        .not('email', 'is', null) // Only resources with email IDs
         .order('name');
 
       if (error) {
@@ -33,19 +42,27 @@ export function useResourceInventory() {
         return [];
       }
 
-      // Filter out empty emails as well
+      // Filter for resources with email in either resource_inventory OR linked profile
       return (data || [])
-        .filter(r => r.email && r.email.trim() !== '')
-        .map((r): Resource => ({
-          id: r.id,
-          profile_id: r.profile_id,
-          name: r.name || 'Unknown',
-          email: r.email,
-          role: r.role_name || 'Team Member',
-          department: r.department_name,
-          capacity: r.default_capacity_percent || 100,
-          initials: getInitials(r.name || ''),
-        }));
+        .filter(r => {
+          const inventoryEmail = r.email?.trim();
+          const profileEmail = (r.profiles as any)?.email?.trim();
+          return inventoryEmail || profileEmail;
+        })
+        .map((r): Resource => {
+          // Use email from inventory, fallback to profile email
+          const resolvedEmail = r.email?.trim() || (r.profiles as any)?.email?.trim() || null;
+          return {
+            id: r.id,
+            profile_id: r.profile_id,
+            name: r.name || 'Unknown',
+            email: resolvedEmail,
+            role: r.role_name || 'Team Member',
+            department: r.department_name,
+            capacity: r.default_capacity_percent || 100,
+            initials: getInitials(r.name || ''),
+          };
+        });
     },
     staleTime: 5 * 60 * 1000,
   });
