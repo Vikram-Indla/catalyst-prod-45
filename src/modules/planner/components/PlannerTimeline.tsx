@@ -952,27 +952,28 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                       width: barStyle.width,
                                       top,
                                       height: TASK_BAR_HEIGHT,
-                                      background: statusStyle.gradient,
-                                      color: statusStyle.text,
+                                      // Use workstream color with light tint for background
+                                      background: `linear-gradient(135deg, ${lane.color}20 0%, ${lane.color}35 100%)`,
+                                      color: '#1e293b', // slate-800 for readability
                                     }}
                                     onClick={() => onTaskClick?.(task)}
                                     onMouseEnter={() => setHoveredTaskId(task.id)}
                                     onMouseLeave={() => setHoveredTaskId(null)}
                                     tabIndex={0}
                                   >
-                                    {/* Status stripe on left edge */}
+                                    {/* Status stripe on left edge - uses workstream color */}
                                     <div
                                       className="absolute left-0 inset-y-0 w-1 rounded-l-md"
-                                      style={{ backgroundColor: statusStyle.stripe }}
+                                      style={{ backgroundColor: lane.color }}
                                     />
 
                                     {/* Progress fill for in-progress tasks */}
                                     {task.status_slug === 'progress' && task.progress > 0 && (
                                       <div
-                                        className="absolute left-0 inset-y-0 opacity-25 rounded-l-md"
+                                        className="absolute left-0 inset-y-0 opacity-30 rounded-l-md"
                                         style={{
                                           width: `${task.progress}%`,
-                                          backgroundColor: statusStyle.stripe,
+                                          backgroundColor: lane.color,
                                         }}
                                       />
                                     )}
