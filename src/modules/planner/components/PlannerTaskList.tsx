@@ -3,7 +3,7 @@
 // Wrapper that uses the new TaskListPage component
 // ============================================================
 
-import { TaskListPage } from './TaskList';
+import { TaskListPageV3 } from './TaskList';
 import type { TaskListTask } from '../hooks/useTaskList';
 import type { PlannerTask } from '../types';
 
@@ -57,7 +57,7 @@ export function PlannerTaskList({
   };
 
   return (
-    <TaskListPage
+    <TaskListPageV3
       onTaskClick={handleTaskClick}
       onCreateTask={handleCreateTask}
     />
