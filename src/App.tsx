@@ -160,6 +160,7 @@ import SecuritySettings from "./pages/admin/SecuritySettings";
 import Announcements from "./pages/admin/Announcements";
 import UsersManagement from "./pages/admin/UsersManagement";
 import RolesPermissions from "./pages/admin/RolesPermissions";
+const ModuleMatrixPage = lazy(() => import("./components/admin/ModuleMatrixPage"));
 import ThemeGroups from "./pages/admin/ThemeGroups";
 import Programs from "./pages/admin/Programs";
 import Departments from "./pages/admin/Departments";
@@ -891,6 +892,7 @@ const App = () => (
                 <Route path="user-access" element={<Suspense fallback={<div>Loading...</div>}><UserAccessPage /></Suspense>} />
                 <Route path="users" element={<UsersManagement />} />
                 <Route path="roles-permissions" element={<RolesPermissions />} />
+                <Route path="module-matrix" element={<Suspense fallback={<div>Loading...</div>}><ModuleMatrixPage /></Suspense>} />
                 <Route path="theme-groups" element={<ThemeGroups />} />
                 <Route path="programs" element={<Programs />} />
                 <Route path="portfolios" element={<Portfolios />} />
