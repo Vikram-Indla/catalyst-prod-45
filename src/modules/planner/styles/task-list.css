@@ -215,7 +215,53 @@
   max-width: 280px;
 }
 
-/* === STATUS PILL (spec-compliant) === */
+/* === STATUS BADGE - Enterprise Clean OUTLINE style === */
+.planner-task-list-content .tl-status-badge-enterprise {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--pln-tl-transition-fast);
+  white-space: nowrap;
+}
+
+/* In Progress - subtle yellow tint */
+.planner-task-list-content .tl-status-badge-enterprise[data-status="in-progress"],
+.planner-task-list-content .tl-status-badge-enterprise[data-status="in progress"] {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+/* Done - subtle green tint */
+.planner-task-list-content .tl-status-badge-enterprise[data-status="done"] {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.planner-task-list-content .tl-status-badge-enterprise:hover {
+  background: var(--pln-tl-surface-hover);
+}
+
+.planner-task-list-content .tl-status-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+/* Status label - ALWAYS GRAY text (Enterprise spec) */
+.planner-task-list-content .tl-status-label-gray {
+  font-weight: 500;
+  color: #475569; /* GRAY - never status color */
+}
+
+/* Legacy status pill - keep for backwards compat */
 .planner-task-list-content .tl-status-pill {
   display: inline-flex;
   align-items: center;
@@ -233,13 +279,6 @@
 
 .planner-task-list-content .tl-status-pill:hover {
   background: var(--pln-tl-surface-hover);
-}
-
-.planner-task-list-content .tl-status-dot {
-  width: 0.375rem;
-  height: 0.375rem;
-  border-radius: 9999px;
-  flex-shrink: 0;
 }
 
 .planner-task-list-content .tl-status-label {
@@ -274,6 +313,14 @@
   flex-shrink: 0;
 }
 
+/* Priority label - ALWAYS GRAY (Enterprise Clean spec) */
+.planner-task-list-content .tl-priority-label-gray {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #64748b; /* GRAY - never priority color */
+}
+
+/* Legacy - colored priority label */
 .planner-task-list-content .tl-priority-label {
   font-size: 0.75rem;
   font-weight: 500;
@@ -519,7 +566,41 @@
   color: var(--pln-tl-text-link);
 }
 
-/* === HEADER STATS === */
+/* === KPI CHIPS - Enterprise Clean (dots, not icons) === */
+.planner-task-list-content .tl-kpi-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--pln-tl-border-light);
+  min-width: 70px;
+}
+
+.planner-task-list-content .tl-kpi-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.planner-task-list-content .tl-kpi-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--pln-tl-text-primary);
+  line-height: 1;
+}
+
+.planner-task-list-content .tl-kpi-label {
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pln-tl-text-tertiary);
+  margin-top: 0.25rem;
+}
+
+/* Legacy stat chips - keep for backwards compat */
 .planner-task-list-content .tl-stat-chip {
   display: flex;
   flex-direction: column;
@@ -647,7 +728,21 @@
   background: #2563eb;
 }
 
-/* === TASK KEY LINK === */
+/* === TASK KEY - GRAY monospace (Enterprise Clean spec) === */
+.planner-task-list-content .tl-task-key-gray {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b; /* Gray - NOT blue */
+  transition: color var(--pln-tl-transition-fast);
+}
+
+.planner-task-list-content .tl-task-key-gray:hover {
+  color: #334155;
+  text-decoration: underline;
+}
+
+/* Legacy - keep for backwards compat */
 .planner-task-list-content .tl-task-key {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.75rem;
