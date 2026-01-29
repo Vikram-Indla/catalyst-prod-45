@@ -1,9 +1,9 @@
-import { ReactNode } from 'react';
+import { ReactNode, createContext, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useModuleAccess } from '@/hooks/useModuleAccess';
+import { useModuleAccess, ModuleAccessLevel } from '@/hooks/useModuleAccess';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Lock, Settings, Home, Eye } from 'lucide-react';
+import { Lock, Settings, Home } from 'lucide-react';
 
 interface ModuleGuardProps {
   moduleCode: string;
@@ -16,11 +16,37 @@ interface ModuleGuardProps {
 }
 
 /**
+ * Context to provide module access level to child components
+ * Components can use this to conditionally hide edit buttons, forms, etc.
+ */
+interface ModuleAccessContextValue {
+  moduleCode: string;
+  accessLevel: ModuleAccessLevel;
+  isReadOnly: boolean;
+  hasFullAccess: boolean;
+}
+
+const ModuleAccessContext = createContext<ModuleAccessContextValue | null>(null);
+
+/**
+ * Hook to check if current module is read-only
+ * Use this in components to hide edit buttons, disable forms, etc.
+ */
+export function useModuleReadOnly() {
+  const context = useContext(ModuleAccessContext);
+  return {
+    isReadOnly: context?.isReadOnly ?? false,
+    hasFullAccess: context?.hasFullAccess ?? true,
+    accessLevel: context?.accessLevel ?? 'full',
+  };
+}
+
+/**
  * ModuleGuard - Protects routes based on module enablement AND role-based access
  * 
  * Access Levels:
- * - Full: Can see nav + access content (renders children)
- * - View: Can see nav + NO content access (shows restricted message)
+ * - Full: Can see nav + access content + can edit/modify
+ * - View: Can see nav + access content (READ-ONLY, no edit)
  * - Hidden: Cannot see nav or access content
  * 
  * This component ONLY controls UI access.
@@ -28,7 +54,7 @@ interface ModuleGuardProps {
  */
 export function ModuleGuard({ moduleCode, children, allowLinking = false }: ModuleGuardProps) {
   const navigate = useNavigate();
-  const { getModuleAccess, hasFullAccess, isLoading } = useModuleAccess();
+  const { getModuleAccess, canAccessContent, hasFullAccess, isReadOnly, isLoading } = useModuleAccess();
   const { isAdmin, isSuperAdmin } = useUserRole();
   
   if (isLoading) {
@@ -40,48 +66,27 @@ export function ModuleGuard({ moduleCode, children, allowLinking = false }: Modu
   }
 
   const accessLevel = getModuleAccess(moduleCode);
-  
-  // Full access - render children
-  if (hasFullAccess(moduleCode)) {
-    return <>{children}</>;
-  }
+  const canAccess = canAccessContent(moduleCode);
+  const readOnly = isReadOnly(moduleCode);
+  const fullAccess = hasFullAccess(moduleCode);
   
   // If allowLinking is true, still render children (for linking/search access)
   if (allowLinking) {
     return <>{children}</>;
   }
 
-  // View access - can see nav labels but NOT content
-  if (accessLevel === 'view') {
+  // Full or View access - render children with context
+  // View access users see content but in read-only mode
+  if (canAccess) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 bg-background">
-        <div className="bg-card border rounded-lg p-8 max-w-md text-center space-y-6 shadow-sm">
-          <div className="mx-auto w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-            <Eye className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-          </div>
-          
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">View Only Access</h2>
-            <p className="text-muted-foreground text-sm">
-              You can see this module in navigation, but you don't have permission to access its content.
-            </p>
-            <p className="text-muted-foreground text-xs mt-2">
-              Contact your administrator to request full access.
-            </p>
-          </div>
-          
-          <div className="flex flex-col gap-3">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/for-you')}
-              className="w-full"
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Return to Home
-            </Button>
-          </div>
-        </div>
-      </div>
+      <ModuleAccessContext.Provider value={{ 
+        moduleCode, 
+        accessLevel, 
+        isReadOnly: readOnly, 
+        hasFullAccess: fullAccess 
+      }}>
+        {children}
+      </ModuleAccessContext.Provider>
     );
   }
   
