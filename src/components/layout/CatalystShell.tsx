@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { CatalystHeader } from '@/components/ja/CatalystHeader';
 import { UnifiedSidebar } from './UnifiedSidebar';
 import { EnterpriseSidebar } from './EnterpriseSidebar';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
+import { ProjectSidebar } from './ProjectSidebar';
 import { ReleaseRoomSidebar } from './OperationsSidebar';
 import { TestManagementSidebar } from './TestManagementSidebar';
 import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
@@ -27,21 +30,38 @@ function CatalystShellContent() {
   useRecentPlaceTracker();
   const location = useLocation();
   const navigate = useNavigate();
-  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
+  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
   const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter } = useCatalystContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const { isModuleEnabled } = useEnabledModules();
   
   // Extract IDs from URL params - these take precedence
   const urlProgramId = params.programId || null;
+  const urlProjectId = params.projectId || null;
   
   // Determine which ID to use based on route pattern
   const isProgramRoute = location.pathname.startsWith('/program/');
-  const isProjectRoute = location.pathname.startsWith('/programs/') || location.pathname.startsWith('/project/');
+  const isProjectRoute = location.pathname.startsWith('/projects/') || location.pathname.startsWith('/project/');
 
   // Current active IDs
   const activeProgramId = isProgramRoute ? urlProgramId : contextProgramId;
-  const activeProjectId = isProjectRoute ? urlProgramId : contextProjectId;
+  const activeProjectId = isProjectRoute ? urlProjectId : contextProjectId;
+  
+  // Fetch project details for sidebar
+  const { data: projectData } = useQuery({
+    queryKey: ['project-sidebar', activeProjectId],
+    queryFn: async () => {
+      if (!activeProjectId) return null;
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name, key')
+        .eq('id', activeProjectId)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!activeProjectId && isProjectRoute,
+  });
 
   // Check if on product/industry route
   const isProductRoute = location.pathname.startsWith('/industry') || location.pathname.startsWith('/product');
@@ -167,13 +187,11 @@ function CatalystShellContent() {
       case 'project':
         if (activeProjectId) {
           return (
-            <UnifiedSidebar
-              workspaceType="project"
-              entityId={activeProjectId}
+            <ProjectSidebar
+              projectId={activeProjectId}
+              projectName={projectData?.name}
               expanded={sidebarExpanded}
               onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-              selectedQuarter={selectedQuarter}
-              onQuarterChange={setSelectedQuarter}
             />
           );
         }
