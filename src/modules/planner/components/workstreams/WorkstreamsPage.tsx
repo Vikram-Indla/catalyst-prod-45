@@ -5,7 +5,7 @@
 
 import '@/styles/workstreams.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
+import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore, Trash2, FolderKanban } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount, useUpdateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
 import { InlineLeadSelect } from './InlineLeadSelect';
@@ -220,69 +220,76 @@ export function WorkstreamsPage() {
 
   return (
     <div className="ws-page min-h-screen">
-      {/* Calendar-style Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-1">
+      {/* Dashboard-style Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-text-primary">
+          <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+            <FolderKanban className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+          </div>
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             {showArchived ? 'Archived Workstreams' : 'Workstreams'}
-          </h2>
+          </h1>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* New Workstream Button */}
           {!showArchived && (
             <button 
-              className="ws-btn ws-btn-primary"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
               onClick={() => setIsCreateModalOpen(true)}
             >
               <Plus className="w-4 h-4" strokeWidth={2} />
-              New Workstream
+              <span className="hidden sm:inline">New Workstream</span>
+              <span className="sm:hidden">New</span>
             </button>
           )}
-        </div>
 
-        <div className="flex items-center gap-3">
           {/* Archive Toggle */}
           <button
             onClick={toggleArchiveView}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               showArchived
                 ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
-                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
             {showArchived ? (
               <>
                 <ArchiveRestore className="w-4 h-4" />
-                View Active
+                <span className="hidden sm:inline">View Active</span>
               </>
             ) : (
               <>
                 <Archive className="w-4 h-4" />
-                Archived ({archivedCount})
+                <span className="hidden sm:inline">Archived</span>
+                <span className="text-xs">({archivedCount})</span>
               </>
             )}
           </button>
 
           {/* View Toggle */}
-          <div className="flex items-center rounded-lg border border-border bg-surface-0 p-0.5">
+          <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-0.5">
             <button
               onClick={() => setView('list')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-medium transition-colors ${
                 view === 'list'
-                  ? "bg-surface-2 text-text-primary shadow-sm"
-                  : "text-text-muted hover:text-text-primary"
+                  ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               }`}
             >
               <List className="w-4 h-4" />
-              List
+              <span className="hidden sm:inline">List</span>
             </button>
             <button
               onClick={() => setView('grid')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-medium transition-colors ${
                 view === 'grid'
-                  ? "bg-surface-2 text-text-primary shadow-sm"
-                  : "text-text-muted hover:text-text-primary"
+                  ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
-              Grid
+              <span className="hidden sm:inline">Grid</span>
             </button>
           </div>
         </div>
