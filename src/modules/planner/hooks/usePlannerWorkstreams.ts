@@ -5,7 +5,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface WorkstreamMember {
   id: string;
@@ -196,6 +196,22 @@ export function usePlannerWorkstreams(includeArchived = false) {
   });
 }
 
+// Separate hook to get archived count (always fetches current count regardless of view)
+export function useArchivedWorkstreamsCount() {
+  return useQuery({
+    queryKey: ['planner-workstreams-archived-count'],
+    queryFn: async (): Promise<number> => {
+      const { count, error } = await supabase
+        .from('planner_workstreams')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_archived', true);
+
+      if (error) throw new Error(error.message);
+      return count || 0;
+    },
+  });
+}
+
 function getInitials(name: string): string {
   return name
     .split(' ')
@@ -302,17 +318,10 @@ export function useDeleteWorkstream() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
-      toast({
-        title: 'Workstream deleted',
-        description: 'The workstream has been permanently deleted.',
-      });
+      catalystToast.success('Workstream deleted', 'The workstream has been permanently deleted.');
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Cannot delete workstream',
-        description: error.message,
-        variant: 'destructive',
-      });
+      catalystToast.error('Cannot delete workstream', error.message);
     },
   });
 }
@@ -331,12 +340,12 @@ export function useArchiveWorkstream() {
     },
     onSuccess: (_, { archive }) => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
-      toast({
-        title: archive ? 'Workstream archived' : 'Workstream restored',
-        description: archive 
+      catalystToast.success(
+        archive ? 'Workstream archived' : 'Workstream restored',
+        archive 
           ? 'The workstream has been moved to the archive.' 
-          : 'The workstream has been restored to active.',
-      });
+          : 'The workstream has been restored to active.'
+      );
     },
   });
 }
@@ -382,17 +391,10 @@ export function useAddWorkstreamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
-      toast({
-        title: 'Member added',
-        description: 'The member has been added to the workstream.',
-      });
+      catalystToast.success('Member added', 'The member has been added to the workstream.');
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Failed to add member',
-        description: error.message,
-        variant: 'destructive',
-      });
+      catalystToast.error('Failed to add member', error.message);
     },
   });
 }

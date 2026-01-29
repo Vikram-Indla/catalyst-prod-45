@@ -420,7 +420,7 @@
 .ws-row-actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--ws-space-2);
+  gap: var(--ws-space-3); /* 12px - wider spacing between action buttons */
 }
 
 .ws-action-btn {
