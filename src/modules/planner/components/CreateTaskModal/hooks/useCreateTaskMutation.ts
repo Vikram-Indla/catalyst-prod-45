@@ -125,6 +125,9 @@ export function useCreateTaskMutation() {
       queryClient.invalidateQueries({ queryKey: ['planner-board-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['planner-dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['my-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['timeline-tasks-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['planner-task-list'] });
       
       toast.success(`Task ${result.task_key} created successfully`);
     },
