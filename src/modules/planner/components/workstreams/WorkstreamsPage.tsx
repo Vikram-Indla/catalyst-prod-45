@@ -223,12 +223,15 @@ export function WorkstreamsPage() {
     <div className="ws-page min-h-screen workstreams-enterprise-clean" data-component="workstreams">
       {/* Dashboard-style Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-        <div>
+        <div className="page-header-left">
           <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
             {showArchived ? 'Archived Workstreams' : 'Workstreams'}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {showArchived ? 'Previously archived workstreams' : 'Manage your delivery workstreams'}
+          <p className="page-subtitle text-sm text-slate-500 dark:text-slate-400">
+            {showArchived 
+              ? `${filteredWorkstreams.length} archived workstream${filteredWorkstreams.length !== 1 ? 's' : ''}`
+              : `${summary.total} workstream${summary.total !== 1 ? 's' : ''}${summary.atRisk + summary.critical > 0 ? ` · ${summary.atRisk + summary.critical} need attention` : ''}`
+            }
           </p>
         </div>
 
@@ -263,7 +266,7 @@ export function WorkstreamsPage() {
               <>
                 <Archive className="w-4 h-4" />
                 <span className="hidden sm:inline">Archived</span>
-                <span className="text-xs">({archivedCount})</span>
+                {archivedCount > 0 && <span className="text-xs">({archivedCount})</span>}
               </>
             )}
           </button>
@@ -298,46 +301,51 @@ export function WorkstreamsPage() {
 
       <main className="p-6 max-w-[1600px] mx-auto">
 
-        {/* Summary Bar - only show for active view */}
+        {/* KPI Section - Sentence Case Labels */}
         {!showArchived && (
-          <div className="ws-summary-bar">
-            <div 
-              className={`ws-summary-card ${!healthFilter ? 'active' : ''}`}
-              onClick={() => setHealthFilter(null)}
-            >
-              <div className="ws-summary-value">{summary.total}</div>
-              <div className="ws-summary-label">Workstreams</div>
-            </div>
-            <div className="ws-summary-card">
-              <div className="ws-summary-value">{summary.tasks}</div>
-              <div className="ws-summary-label">Tasks</div>
-            </div>
-            <div 
-              className={`ws-summary-card healthy ${healthFilter === 'healthy' ? 'active' : ''}`}
-              onClick={() => setHealthFilter(healthFilter === 'healthy' ? null : 'healthy')}
-            >
-              <div className="ws-summary-value">
-                {summary.healthy}<span className="ws-summary-icon">✓</span>
+          <div className="kpi-section ws-summary-bar">
+            <div className="kpi-row flex gap-3 flex-wrap">
+              <button 
+                className={`kpi-card ${!healthFilter ? 'selected' : ''}`}
+                onClick={() => setHealthFilter(null)}
+              >
+                <div className="kpi-value">{summary.total}</div>
+                <div className="kpi-label">Workstreams</div>
+              </button>
+              <div className="kpi-card">
+                <div className="kpi-value">{summary.tasks}</div>
+                <div className="kpi-label">Tasks</div>
               </div>
-              <div className="ws-summary-label">On Track</div>
-            </div>
-            <div 
-              className={`ws-summary-card at-risk ${healthFilter === 'at-risk' ? 'active' : ''}`}
-              onClick={() => setHealthFilter(healthFilter === 'at-risk' ? null : 'at-risk')}
-            >
-              <div className="ws-summary-value">
-                {summary.atRisk}<span className="ws-summary-icon">⚠</span>
-              </div>
-              <div className="ws-summary-label">At Risk</div>
-            </div>
-            <div 
-              className={`ws-summary-card critical ${healthFilter === 'critical' ? 'active' : ''}`}
-              onClick={() => setHealthFilter(healthFilter === 'critical' ? null : 'critical')}
-            >
-              <div className="ws-summary-value">
-                {summary.critical}<span className="ws-summary-icon">●</span>
-              </div>
-              <div className="ws-summary-label">Critical</div>
+              <button 
+                className={`kpi-card ${healthFilter === 'healthy' ? 'selected' : ''}`}
+                onClick={() => setHealthFilter(healthFilter === 'healthy' ? null : 'healthy')}
+              >
+                <div className="kpi-value flex items-center gap-2">
+                  {summary.healthy}
+                  <Check className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="kpi-label">On Track</div>
+              </button>
+              <button 
+                className={`kpi-card ${healthFilter === 'at-risk' ? 'selected' : ''}`}
+                onClick={() => setHealthFilter(healthFilter === 'at-risk' ? null : 'at-risk')}
+              >
+                <div className="kpi-value flex items-center gap-2">
+                  {summary.atRisk}
+                  <span className="text-amber-600">⚠</span>
+                </div>
+                <div className="kpi-label">At Risk</div>
+              </button>
+              <button 
+                className={`kpi-card ${healthFilter === 'critical' ? 'selected' : ''}`}
+                onClick={() => setHealthFilter(healthFilter === 'critical' ? null : 'critical')}
+              >
+                <div className="kpi-value flex items-center gap-2">
+                  {summary.critical}
+                  <span className="text-red-600">●</span>
+                </div>
+                <div className="kpi-label">Critical</div>
+              </button>
             </div>
           </div>
         )}
@@ -499,62 +507,43 @@ export function WorkstreamsPage() {
 
         {/* List View */}
         {!isLoading && filteredWorkstreams.length > 0 && view === 'list' && (
-          <div className="ws-list-container">
-            {/* Header */}
-            <div className="ws-list-header">
-              <div className="ws-list-header-cell">
-                <div className="ws-row-checkbox" />
-              </div>
-              <div className="ws-list-header-cell">
-                Name
-                <ChevronsUpDown className="w-3 h-3" strokeWidth={2} />
-              </div>
-              <div className="ws-list-header-cell">Lead</div>
-              <div className="ws-list-header-cell">Health</div>
-              <div className="ws-list-header-cell">Tasks</div>
-              <div className="ws-list-header-cell">Overdue</div>
-              <div className="ws-list-header-cell">
-                <span className="ws-sr-only">Actions</span>
-              </div>
-            </div>
+          <div className="table-container ws-list-container">
+            <table className="w-full">
+              {/* Table Header - Sentence Case */}
+              <thead>
+                <tr>
+                  <th style={{ width: 200 }}>Name</th>
+                  <th style={{ width: 180 }}>Lead</th>
+                  <th style={{ width: 120 }}>Health</th>
+                  <th style={{ width: 80 }}>Tasks</th>
+                  <th style={{ width: 80 }}>Overdue</th>
+                  <th style={{ width: 100 }}><span className="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
 
             {/* Rows */}
             {filteredWorkstreams.map((ws, index) => (
-              <div 
+              <tr 
                 key={ws.id}
-                className={`ws-list-row ${ws.health === 'locked' ? 'locked' : ''} ${selectedIds.has(ws.id) ? 'selected' : ''} ${focusedIndex === index ? 'focused' : ''}`}
+                className={`group cursor-pointer ${ws.health === 'locked' ? 'locked' : ''} ${selectedIds.has(ws.id) ? 'selected' : ''} ${focusedIndex === index ? 'focused' : ''}`}
                 onClick={(e) => {
-                  // Prevent drawer opening if clicking on action buttons
-                  if ((e.target as HTMLElement).closest('.ws-row-actions')) return;
+                  if ((e.target as HTMLElement).closest('.row-actions')) return;
                   openDrawer(ws);
                 }}
               >
-                {/* Checkbox */}
-                <div 
-                  className={`ws-row-checkbox ${selectedIds.has(ws.id) ? 'checked' : ''}`}
-                  onClick={(e) => toggleSelection(ws.id, e)}
-                >
-                  {selectedIds.has(ws.id) && <Check className="w-3 h-3" strokeWidth={3} />}
-                </div>
-
-                {/* Name - color pill and name on same line */}
-                <div className="ws-row-name">
-                  <div 
-                    className="ws-color-dot" 
-                    style={{ background: ws.color }} 
-                  />
-                  <span className="ws-row-title">{ws.name}</span>
-                  <span className="ws-row-subtitle">{ws.code}</span>
-                </div>
+                {/* Name */}
+                <td>
+                  <span className="workstream-name font-medium text-slate-900 dark:text-slate-100">{ws.name}</span>
+                </td>
 
                 {/* Lead - Inline editable when unassigned */}
-                <div className="ws-row-lead" onClick={(e) => e.stopPropagation()}>
+                <td onClick={(e) => e.stopPropagation()}>
                   <InlineLeadSelect
                     workstreamId={ws.id}
                     workstreamColor={ws.color}
                     currentLead={ws.lead}
                     onAssignLead={(userId) => {
-                      // Add member as lead (also updates planner_workstreams.lead_id via hook)
                       addMember.mutate({
                         workstreamId: ws.id,
                         userId,
@@ -562,180 +551,125 @@ export function WorkstreamsPage() {
                       });
                     }}
                   />
-                </div>
+                </td>
 
-                {/* Health */}
-                <div className="ws-row-health">
-                  <span className={`ws-health-badge ${ws.health}`}>
-                    {ws.health === 'healthy' && '✓ On Track'}
-                    {ws.health === 'at-risk' && '△ At Risk'}
-                    {ws.health === 'critical' && '● Critical'}
-                    {ws.health === 'locked' && '🔒 Locked'}
-                    <span className="ws-health-arrow">→</span>
+                {/* Health - DOT + TEXT ONLY */}
+                <td>
+                  <span className={`health-badge health-badge-${ws.health === 'healthy' ? 'success' : ws.health === 'at-risk' ? 'warning' : 'critical'}`}>
+                    <span className="health-dot" />
+                    {ws.health === 'healthy' && 'On Track'}
+                    {ws.health === 'at-risk' && 'At Risk'}
+                    {ws.health === 'critical' && 'Critical'}
+                    {ws.health === 'locked' && 'Locked'}
                   </span>
-                </div>
+                </td>
 
                 {/* Tasks */}
-                <div className="ws-row-stat">{ws.taskCount || 0}</div>
+                <td className="font-medium">{ws.taskCount || 0}</td>
 
                 {/* Overdue */}
-                <div className={`ws-row-stat ${(ws.overdueCount || 0) > 0 ? 'danger' : ''}`}>
+                <td className={`font-medium ${(ws.overdueCount || 0) > 0 ? 'text-red-600' : ''}`}>
                   {ws.overdueCount || 0}
-                </div>
+                </td>
 
-                {/* Actions */}
-                <div
-                  className="ws-row-actions"
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => e.stopPropagation()}
-                >
-                  <button 
-                    className="ws-action-btn"
-                    onClick={(e) => handleQuickArchive(ws, e)}
-                    title={ws.is_archived ? 'Unarchive' : 'Archive'}
+                {/* Actions - Hover reveal */}
+                <td>
+                  <div
+                    className="row-actions flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    {ws.is_archived ? (
-                      <ArchiveRestore className="w-4 h-4" />
-                    ) : (
-                      <Archive className="w-4 h-4" />
-                    )}
-                  </button>
-                  <button 
-                    className="ws-action-btn"
-                    onClick={(e) => handleQuickEdit(ws, e)}
-                    title="Rename / change prefix"
-                  >
-                    <Pencil className="w-4 h-4" strokeWidth={2} />
-                  </button>
-                  <button
-                    className="ws-action-btn danger"
-                    onClick={(e) => handleRequestDelete(ws, e)}
-                    disabled={(ws.taskCount || 0) > 0}
-                    title={
-                      (ws.taskCount || 0) > 0
-                        ? 'Cannot delete: tasks are linked'
-                        : 'Delete permanently'
-                    }
-                  >
-                    <Trash2 className="w-4 h-4" strokeWidth={2} />
-                  </button>
-                </div>
-              </div>
+                    <button 
+                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                      onClick={(e) => handleQuickArchive(ws, e)}
+                      title={ws.is_archived ? 'Unarchive' : 'Archive'}
+                    >
+                      {ws.is_archived ? (
+                        <ArchiveRestore className="w-4 h-4" />
+                      ) : (
+                        <Archive className="w-4 h-4" />
+                      )}
+                    </button>
+                    <button 
+                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                      onClick={(e) => handleQuickEdit(ws, e)}
+                      title="Rename / change prefix"
+                    >
+                      <Pencil className="w-4 h-4" strokeWidth={2} />
+                    </button>
+                    <button
+                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                      onClick={(e) => handleRequestDelete(ws, e)}
+                      disabled={(ws.taskCount || 0) > 0}
+                      title={
+                        (ws.taskCount || 0) > 0
+                          ? 'Cannot delete: tasks are linked'
+                          : 'Delete permanently'
+                      }
+                    >
+                      <Trash2 className="w-4 h-4" strokeWidth={2} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
             ))}
+              </tbody>
+            </table>
           </div>
         )}
 
-        {/* Grid View - GOD-TIER Design */}
+        {/* Grid View - Enterprise Clean */}
         {!isLoading && filteredWorkstreams.length > 0 && view === 'grid' && (
-          <div className="ws-grid-container">
+          <div className="grid-container grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
             {filteredWorkstreams.map((ws) => {
-              const progressPercent = ws.progress || 0;
-              const doneCount = ws.taskCount ? Math.round((progressPercent / 100) * ws.taskCount) : 0;
-              
               return (
                 <div 
                   key={ws.id}
-                  className={`ws-card-v2 ${ws.health === 'locked' ? 'locked' : ''}`}
+                  className={`workstream-card grid-card bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${ws.health === 'locked' ? 'locked' : ''}`}
                   onClick={() => openDrawer(ws)}
                 >
-                  {/* Health Bar - Full width top bar */}
-                  <div 
-                    className={`ws-card-health-bar ${ws.health}`}
-                    style={{ 
-                      background: ws.health === 'critical' ? 'var(--ws-danger)' : 
-                                  ws.health === 'at-risk' ? 'var(--ws-warning)' : 
-                                  ws.health === 'healthy' ? 'var(--ws-success)' : 'var(--ws-slate-300)'
-                    }}
-                  />
+                  {/* Card Header: Name + Health Badge */}
+                  <div className="card-header flex items-start justify-between mb-3">
+                    <span className="card-title font-semibold text-slate-900 dark:text-slate-100">{ws.name}</span>
+                    <span className={`health-badge health-badge-${ws.health === 'healthy' ? 'success' : ws.health === 'at-risk' ? 'warning' : 'critical'}`}>
+                      <span className="health-dot" />
+                      {ws.health === 'healthy' && 'On Track'}
+                      {ws.health === 'at-risk' && 'At Risk'}
+                      {ws.health === 'critical' && 'Critical'}
+                      {ws.health === 'locked' && 'Locked'}
+                    </span>
+                  </div>
                   
-                  {/* Card Content */}
-                  <div className="ws-card-content">
-                    {/* Header: Icon + Name + Badge */}
-                    <div className="ws-card-header-v2">
-                      <div className="ws-card-title-section">
-                        <div 
-                          className="ws-card-icon"
+                  {/* Lead Row */}
+                  <div className="card-lead flex items-center gap-2 py-2.5 border-t border-b border-slate-100 dark:border-slate-700 mb-3">
+                    <span className="text-xs text-slate-400">Lead:</span>
+                    {ws.lead ? (
+                      <div className="lead-cell-assigned flex items-center gap-2">
+                        <span 
+                          className={`lead-avatar w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-semibold text-white avatar-${['blue', 'purple', 'pink', 'orange', 'teal', 'indigo'][ws.lead.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 6]}`}
                           style={{ background: ws.color }}
                         >
-                          {ws.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="ws-card-title-info">
-                          <div className="ws-card-name">{ws.name}</div>
-                          <div className="ws-card-code-v2">{ws.code}</div>
-                        </div>
+                          {ws.lead.initials}
+                        </span>
+                        <span className="text-sm text-slate-700 dark:text-slate-200">{ws.lead.name}</span>
                       </div>
-                      <div className={`ws-card-health-badge ${ws.health}`}>
-                        <span className="ws-health-dot" />
-                        {ws.health === 'healthy' && 'On Track'}
-                        {ws.health === 'at-risk' && 'At Risk'}
-                        {ws.health === 'critical' && 'Critical'}
-                        {ws.health === 'locked' && 'Locked'}
-                      </div>
+                    ) : (
+                      <button className="lead-cell-empty text-slate-400 hover:text-blue-600 text-sm">
+                        — Click to assign
+                      </button>
+                    )}
+                  </div>
+                  
+                  {/* Stats: Tasks + Overdue ONLY (Done and Progress hidden via CSS) */}
+                  <div className="card-stats flex gap-5">
+                    <div className="card-stat text-center">
+                      <div className="card-stat-value text-xl font-bold text-slate-900 dark:text-slate-100">{ws.taskCount || 0}</div>
+                      <div className="card-stat-label text-xs text-slate-500 mt-1">Tasks</div>
                     </div>
-                    
-                    {/* Lead Section */}
-                    <div className="ws-card-lead-section">
-                      {ws.lead ? (
-                        <>
-                          <div 
-                            className="ws-card-lead-avatar"
-                            style={{ background: ws.color }}
-                          >
-                            {ws.lead.initials}
-                          </div>
-                          <div className="ws-card-lead-info">
-                            <div className="ws-card-lead-label">Lead</div>
-                            <div className="ws-card-lead-name">{ws.lead.name}</div>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="ws-card-lead-avatar unassigned">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                              <circle cx="12" cy="7" r="4" />
-                            </svg>
-                          </div>
-                          <div className="ws-card-lead-info">
-                            <div className="ws-card-lead-label">Lead</div>
-                            <div className="ws-card-lead-name unassigned">Unassigned</div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    
-                    {/* Stats Grid - 3 columns */}
-                    <div className="ws-card-stats-grid">
-                      <div className="ws-card-stat-box">
-                        <div className="ws-card-stat-value">{ws.taskCount || 0}</div>
-                        <div className="ws-card-stat-label">Tasks</div>
+                    <div className="card-stat text-center">
+                      <div className={`card-stat-value text-xl font-bold ${(ws.overdueCount || 0) > 0 ? 'text-red-600' : 'text-slate-900 dark:text-slate-100'}`}>
+                        {ws.overdueCount || 0}
                       </div>
-                      <div className="ws-card-stat-box">
-                        <div className={`ws-card-stat-value ${(ws.overdueCount || 0) > 0 ? 'danger' : ''}`}>
-                          {ws.overdueCount || 0}
-                        </div>
-                        <div className="ws-card-stat-label">Overdue</div>
-                      </div>
-                      <div className="ws-card-stat-box">
-                        <div className="ws-card-stat-value">{doneCount}</div>
-                        <div className="ws-card-stat-label">Done</div>
-                      </div>
-                    </div>
-                    
-                    {/* Progress Bar with Percentage */}
-                    <div className="ws-card-progress-section">
-                      <div className="ws-card-progress-bar">
-                        <div 
-                          className="ws-card-progress-fill"
-                          style={{ 
-                            width: `${progressPercent}%`,
-                            background: ws.health === 'critical' ? 'var(--ws-danger)' : 
-                                        ws.health === 'at-risk' ? 'var(--ws-warning)' : ws.color
-                          }}
-                        />
-                      </div>
-                      <div className="ws-card-progress-text">{progressPercent}%</div>
+                      <div className="card-stat-label text-xs text-slate-500 mt-1">Overdue</div>
                     </div>
                   </div>
                 </div>
