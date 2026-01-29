@@ -65,17 +65,17 @@ export function DashboardStatusChartV2({ data }: DashboardStatusChartV2Props) {
         Status Distribution
       </h3>
 
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
         {/* Donut Chart with center total */}
-        <div className="relative w-40 h-40 flex-shrink-0">
+        <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                innerRadius={50}
-                outerRadius={75}
+                innerRadius={40}
+                outerRadius={60}
                 paddingAngle={2}
                 dataKey="value"
                 strokeWidth={0}
@@ -94,7 +94,7 @@ export function DashboardStatusChartV2({ data }: DashboardStatusChartV2Props) {
           
           {/* Center - Total count with "Total" label */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-3xl font-bold text-slate-900 dark:text-slate-100 leading-none">
+            <span className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 leading-none">
               {totalTasks}
             </span>
             <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -103,8 +103,8 @@ export function DashboardStatusChartV2({ data }: DashboardStatusChartV2Props) {
           </div>
         </div>
 
-        {/* Legend - Right side, clean rows */}
-        <div className="flex-1 space-y-2">
+        {/* Legend - Below on mobile, right side on larger screens */}
+        <div className="flex-1 w-full sm:w-auto space-y-1.5 sm:space-y-2">
           {chartData.map((status) => (
             <button
               key={status.slug}

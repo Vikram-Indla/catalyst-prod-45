@@ -149,8 +149,8 @@ export function PlannerDashboard() {
 
   return (
     <div className="planner-v9 flex flex-col h-full bg-slate-50 dark:bg-slate-900">
-      {/* Dashboard Header - Per V2: Workstream filter, NO "This Sprint" */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      {/* Dashboard Header - Responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
             <LayoutDashboard className="w-4 h-4 text-slate-600 dark:text-slate-400" />
@@ -160,7 +160,7 @@ export function PlannerDashboard() {
           </h1>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Workstream filter - Per V2 spec */}
           <DashboardWorkstreamFilter
             workstreams={assignedWorkstreams}
@@ -183,8 +183,8 @@ export function PlannerDashboard() {
             </SelectContent>
           </Select>
           
-          {/* Last updated indicator */}
-          <span className="text-xs text-slate-400 dark:text-slate-500">
+          {/* Last updated indicator - hide on mobile */}
+          <span className="hidden md:inline text-xs text-slate-400 dark:text-slate-500">
             Updated {formatLastUpdated()}
           </span>
           
@@ -196,7 +196,7 @@ export function PlannerDashboard() {
             className="gap-1.5 h-8 text-xs"
           >
             <RefreshCw className={cn("w-3.5 h-3.5", isRefreshing && "animate-spin")} />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </Button>
           
           {/* Add Task Button */}
@@ -205,13 +205,13 @@ export function PlannerDashboard() {
             className="h-8 gap-1.5 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25"
           >
             <Plus className="w-3.5 h-3.5" />
-            Add Task
+            <span className="hidden sm:inline">Add Task</span>
           </Button>
         </div>
       </div>
 
-      {/* Dashboard Content */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-auto p-4 gap-4">
+      {/* Dashboard Content - Responsive padding */}
+      <div className="flex-1 flex flex-col min-h-0 overflow-auto p-3 sm:p-4 gap-3 sm:gap-4">
         {/* KPI Strip with Role Context on right */}
         {metrics && (
           <DashboardKPIStrip 
