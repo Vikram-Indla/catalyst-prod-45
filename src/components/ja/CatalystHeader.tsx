@@ -146,6 +146,7 @@ export function CatalystHeader() {
     { label: "Home", path: "/for-you", moduleKey: "home", visibleToProductOwner: true },
     { label: "Enterprise", path: "/enterprise/strategy-room", moduleKey: "enterprise", requiresEnterpriseAccess: true, visibleToProductOwner: true },
     { label: "Product", hasDropdown: true, moduleKey: "product", visibleToProductOwner: true },
+    { label: "Project", isLabel: true, moduleKey: "project", visibleToProductOwner: true },
     { label: "Releases", path: "/releases/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "Operations", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
     { label: "Planner", path: "/planner/boards", moduleKey: "planner", visibleToProductOwner: true },
@@ -549,6 +550,24 @@ export function CatalystHeader() {
                         />
                       )}
                     </button>
+                  ) : (item as any).isLabel ? (
+                    // Label-only nav item (no interaction, just display)
+                    <span
+                      style={{
+                        height: '36px',
+                        padding: '0 14px',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        color: 'var(--nav-text)',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        opacity: 0.6,
+                        cursor: 'default',
+                      }}
+                    >
+                      {item.label}
+                    </span>
                   ) : (
                     <button
                       style={navButtonStyle}
