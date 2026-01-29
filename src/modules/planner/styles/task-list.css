@@ -73,31 +73,33 @@
 }
 
 /* ============================================================================
-   PAGE HEADER (E1)
+   PAGE HEADER (E1) - Matching Planner Dashboard header style
    ============================================================================ */
 
 .planner-task-list-content .tl-page-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: 1.5rem;
+  padding: 0.75rem 1rem 0.75rem 1.5rem;  /* py-3 px-4/6 - matches dashboard */
   border-bottom: 1px solid var(--tl-border);
   background: var(--tl-surface-card);
+  min-height: 56px;
 }
 
-/* E1.1-E1.3: Page title */
+/* E1.1-E1.3: Page title - matches dashboard text-xl font-bold */
 .planner-task-list-content .tl-page-title {
-  font-size: 1.5rem;       /* 24px (E1.1) */
-  font-weight: 600;        /* semibold (E1.2) */
+  font-size: 1.25rem;      /* 20px - text-xl to match dashboard */
+  font-weight: 700;        /* bold to match dashboard */
   color: var(--tl-text-primary);  /* #0f172a (E1.3) */
   margin: 0;
+  line-height: 1.4;
 }
 
-/* E1.4-E1.5: Subtitle */
+/* E1.4-E1.5: Subtitle - matches dashboard text-sm */
 .planner-task-list-content .tl-page-subtitle {
-  font-size: 0.875rem;     /* 14px (E1.4) */
+  font-size: 0.875rem;     /* 14px (E1.4) - matches dashboard */
   color: var(--tl-text-tertiary);  /* #64748b (E1.5) */
-  margin-top: 0.25rem;
+  margin-top: 0.125rem;
 }
 
 /* ============================================================================
