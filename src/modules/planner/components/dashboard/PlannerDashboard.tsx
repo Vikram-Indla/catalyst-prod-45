@@ -228,22 +228,19 @@ export function PlannerDashboard() {
           />
         )}
 
-        {/* Top Grid - 2-column layout: Status + Workstream Health */}
+        {/* Main Grid - 2-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0 items-start">
-          {/* Status Distribution */}
-          <DashboardStatusChartV2 data={statusDistribution} />
+          {/* Left Column: Status Distribution + Team Workload stacked */}
+          <div className="flex flex-col gap-4">
+            <DashboardStatusChartV2 data={statusDistribution} />
+            <DashboardTeamWorkloadV2 
+              data={teamWorkload} 
+              unassignedCount={unassignedCount} 
+            />
+          </div>
           
-          {/* Workstream Health - filtered */}
+          {/* Right Column: Workstream Health */}
           <DashboardWorkstreamHealthV2 data={filteredWorkstreamHealth} />
-        </div>
-
-        {/* Second row - Team Workload takes half width on large screens */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
-          {/* Team Workload */}
-          <DashboardTeamWorkloadV2 
-            data={teamWorkload} 
-            unassignedCount={unassignedCount} 
-          />
         </div>
 
         {/* Attention Required - Full width */}
