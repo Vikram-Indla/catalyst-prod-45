@@ -40,7 +40,6 @@ import { useRescheduleTask } from '../hooks/useRescheduleTask';
 import { useCalendarTasksRealtime } from '../hooks/useCalendarTasksRealtime';
 import { PlannerViewHeader } from './shared/PlannerViewHeader';
 import { PlannerSearchBar } from './PlannerSearchBar';
-import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { usePlannerSearch } from '../hooks/usePlannerSearch';
 import { usePlannerStatuses } from '../hooks/usePlannerStatuses';
@@ -74,7 +73,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
 
   // Data hooks
-  const { data: teams = [] } = usePlannerWorkstreams();
+  const teams: { id: string; name: string }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
   const { data: statuses = [] } = usePlannerStatuses();
 

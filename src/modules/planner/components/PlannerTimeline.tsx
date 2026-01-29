@@ -11,7 +11,6 @@ import type { PlannerTask, GroupByOption } from '../types';
 import { addDays, startOfWeek, format, differenceInDays, isToday, getDay, subDays, isBefore, startOfDay } from 'date-fns';
 import { PlannerSearchBar } from './PlannerSearchBar';
 import { CreateTaskModal } from './kanban';
-import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { usePlannerSearch } from '../hooks/usePlannerSearch';
 import {
@@ -86,7 +85,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   const gridRef = useRef<HTMLDivElement>(null);
 
   // Data hooks
-  const { data: teams = [] } = usePlannerWorkstreams();
+  const teams: { id: string; name: string }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
 
   // Search and filter

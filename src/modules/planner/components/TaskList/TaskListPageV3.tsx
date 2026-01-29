@@ -33,7 +33,6 @@ import {
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import { useTaskList, useTaskListStats } from '../../hooks/useTaskList';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { usePlannerRealtime } from '../../hooks/usePlannerRealtime';
@@ -113,7 +112,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
   // Data hooks
   const { data: tasks = [], isLoading, refetch } = useTaskList(filters, sorting);
   const { data: stats } = useTaskListStats(filters.workstream, filters.assignee);
-  const { data: workstreams = [] } = usePlannerWorkstreams();
+  const workstreams: { id: string; name: string; slug?: string; color?: string }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
   const { data: statuses = [] } = useKanbanStatuses();
   const updateTask = useUpdatePlannerTask();

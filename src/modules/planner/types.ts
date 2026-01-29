@@ -12,7 +12,6 @@ export type PlannerView =
   | 'weekly-report' 
   | 'workstream-performance' 
   | 'ai-insights'
-  | 'workstreams'
   | 'resources'
   | 'settings';
 

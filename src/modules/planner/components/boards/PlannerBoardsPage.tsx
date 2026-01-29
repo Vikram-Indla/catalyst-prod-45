@@ -12,7 +12,6 @@ import { CreateTaskModal } from '../kanban';
 import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
 import { usePlannerTasks } from '../../hooks/usePlannerTasks';
 import { usePlannerSearch } from '../../hooks/usePlannerSearch';
@@ -48,7 +47,7 @@ export function PlannerBoardsPage({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Data hooks
-  const { data: teams = [] } = usePlannerWorkstreams();
+  const teams: { id: string; name: string; slug?: string }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
 
   // Get workstream ID from URL param (slug/code) or external prop

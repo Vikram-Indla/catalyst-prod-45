@@ -1,7 +1,5 @@
 // ============================================================
-// PLANNER SIDEBAR COMPONENT
-// Uses SidebarBase for consistent styling with other modules
-// Flat menu structure: Dashboard, My Tasks, Boards, Task List, Timeline, Calendar, Workstreams
+// PLANNER SIDEBAR COMPONENT (Workstreams removed)
 // ============================================================
 
 import { 
@@ -9,7 +7,6 @@ import {
   LayoutGrid, 
   Calendar, 
   GanttChartSquare,
-  UsersRound,
   Settings,
   CheckSquare,
   List,
@@ -28,7 +25,7 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
     label: 'Planner',
     sections: [
       {
-        title: '', // No section title for flat list
+        title: '',
         items: [
           { id: 'dashboard', title: 'Dashboard', path: '/planner/dashboard', icon: LayoutDashboard, exact: true },
           { id: 'my-tasks', title: 'My Tasks', path: '/planner/my-tasks', icon: CheckSquare, exact: true },
@@ -36,7 +33,6 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
           { id: 'task-list', title: 'Task List', path: '/planner/task-list', icon: List, exact: true },
           { id: 'timeline', title: 'Timeline', path: '/planner/timeline', icon: GanttChartSquare, exact: true },
           { id: 'calendar', title: 'Calendar', path: '/planner/calendar', icon: Calendar, exact: true },
-          { id: 'workstreams', title: 'Workstreams', path: '/planner/workstreams', icon: UsersRound, exact: true },
         ],
       },
     ],
