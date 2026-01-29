@@ -1,16 +1,25 @@
 // ============================================================
 // MODAL HEADER V2 - ENTERPRISE CLEAN DESIGN
-// 18px title (not 24px), status bar with LABELS, inline fields
+// 18px title, status bar: Status, Priority, Workstream, Assignee
 // ============================================================
 
-import { useState, useMemo } from 'react';
-import { X, ChevronDown, Check, Link2, MoreHorizontal } from 'lucide-react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { X, ChevronDown, Check, Link2, MoreHorizontal, Edit, Copy, Trash2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/auth';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface DrawerHeaderProps {
   task: any;
@@ -19,6 +28,10 @@ interface DrawerHeaderProps {
   onStatusChange: (statusId: string) => void;
   onAssigneeChange?: (assigneeId: string | null) => void;
   onWorkstreamChange?: (workstreamId: string | null) => void;
+  onPriorityChange?: (priority: string) => void;
+  onEdit?: () => void;
+  onDuplicate?: () => void;
+  onDelete?: () => void;
   saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
 }
 
@@ -31,10 +44,11 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   done: { label: 'Done', color: '#16a34a' },
 };
 
-const HEALTH_CONFIG: Record<string, { label: string; color: string }> = {
+const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
   critical: { label: 'Critical', color: '#dc2626' },
-  at_risk: { label: 'At Risk', color: '#ca8a04' },
-  on_track: { label: 'On Track', color: '#16a34a' },
+  high: { label: 'High', color: '#ca8a04' },
+  medium: { label: 'Medium', color: '#2563eb' },
+  low: { label: 'Low', color: '#94a3b8' },
 };
 
 function useStatuses() {
@@ -52,6 +66,62 @@ function useStatuses() {
     gcTime: 30 * 60 * 1000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+  });
+}
+
+function useProfiles() {
+  return useQuery({
+    queryKey: ['drawer-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, email')
+        .order('full_name');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+}
+
+function useWorkstreams() {
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin, isLoading: roleLoading } = useUserRole();
+  const canAccessAll = isAdmin || isSuperAdmin;
+
+  return useQuery({
+    queryKey: ['drawer-workstreams', user?.id, canAccessAll],
+    queryFn: async () => {
+      if (!user) return [];
+
+      if (canAccessAll) {
+        const { data, error } = await supabase
+          .from('planner_workstreams')
+          .select('id, name')
+          .eq('is_active', true)
+          .order('name');
+        if (error) throw error;
+        return data || [];
+      }
+
+      const { data: memberships, error } = await supabase
+        .from('workstream_members')
+        .select(`
+          workstream_id,
+          workstream:planner_workstreams(id, name, is_active)
+        `)
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+
+      return (memberships || [])
+        .filter(m => (m.workstream as any)?.is_active)
+        .map(m => m.workstream as { id: string; name: string });
+    },
+    enabled: !!user && !roleLoading,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
 
@@ -118,47 +188,272 @@ function StatusSelector({
   );
 }
 
+// Priority Selector Dropdown
+function PrioritySelector({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (priority: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const config = PRIORITY_CONFIG[value] || PRIORITY_CONFIG.medium;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className="task-modal__status-value">
+          <span
+            className="task-modal__status-dot"
+            style={{ backgroundColor: config.color }}
+          />
+          <span>{config.label}</span>
+          <span className="task-modal__status-chevron">▾</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-44 p-1.5 z-[500] bg-popover"
+        align="start"
+      >
+        {Object.entries(PRIORITY_CONFIG).map(([key, cfg]) => (
+          <button
+            key={key}
+            onClick={() => {
+              onChange(key);
+              setOpen(false);
+            }}
+            className={cn(
+              "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+              value === key ? 'bg-muted font-semibold' : 'hover:bg-muted/50'
+            )}
+          >
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cfg.color }} />
+            <span>{cfg.label}</span>
+            {value === key && <Check className="w-4 h-4 ml-auto text-primary" />}
+          </button>
+        ))}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// Workstream Selector
+function WorkstreamSelector({
+  value,
+  currentWorkstream,
+  onChange,
+}: {
+  value: string | null;
+  currentWorkstream: any;
+  onChange: (id: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const { data: workstreams = [] } = useWorkstreams();
+
+  const displayWorkstream = workstreams.find((w) => w.id === value) || currentWorkstream || null;
+  const wsColors = getWorkstreamColor(displayWorkstream?.name || '');
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className="task-modal__status-value">
+          <span
+            className="task-modal__status-dot"
+            style={{ backgroundColor: wsColors.hex }}
+          />
+          <span>{displayWorkstream?.name || 'None'}</span>
+          <span className="task-modal__status-chevron">▾</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-56 p-1.5 z-[500] bg-popover max-h-[280px] overflow-y-auto"
+        align="start"
+      >
+        <button
+          onClick={() => { onChange(null); setOpen(false); }}
+          className={cn(
+            "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+            !value ? "bg-muted font-semibold" : "hover:bg-muted/50"
+          )}
+        >
+          <span className="w-2.5 h-2.5 rounded-full bg-gray-400" />
+          <span className="text-muted-foreground">None</span>
+          {!value && <Check className="w-4 h-4 ml-auto text-primary" />}
+        </button>
+        {workstreams.map((ws) => {
+          const colors = getWorkstreamColor(ws.name);
+          return (
+            <button
+              key={ws.id}
+              onClick={() => { onChange(ws.id); setOpen(false); }}
+              className={cn(
+                "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                value === ws.id ? "bg-muted font-semibold" : "hover:bg-muted/50"
+              )}
+            >
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colors.hex }} />
+              <span>{ws.name}</span>
+              {value === ws.id && <Check className="w-4 h-4 ml-auto text-primary" />}
+            </button>
+          );
+        })}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// Assignee Selector with proper avatars
+function AssigneeSelector({
+  value,
+  currentAssignee,
+  workstreamName,
+  onChange,
+}: {
+  value: string | null;
+  currentAssignee: any;
+  workstreamName?: string;
+  onChange: (id: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const { data: profiles = [] } = useProfiles();
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [open]);
+
+  const displayAssignee = profiles.find((p) => p.id === value) || currentAssignee || null;
+  const wsColors = getWorkstreamColor(workstreamName || '');
+
+  const filteredProfiles = useMemo(() => {
+    if (!search.trim()) return profiles;
+    const lower = search.toLowerCase();
+    return profiles.filter(p => 
+      p.full_name?.toLowerCase().includes(lower) || 
+      p.email?.toLowerCase().includes(lower)
+    );
+  }, [profiles, search]);
+
+  const getInitials = (name: string | null) => {
+    if (!name) return '?';
+    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  };
+
+  return (
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(''); }}>
+      <PopoverTrigger asChild>
+        <button className="task-modal__status-value task-modal__assignee-trigger">
+          {displayAssignee ? (
+            <>
+              {displayAssignee.avatar_url ? (
+                <img
+                  src={displayAssignee.avatar_url}
+                  alt={displayAssignee.full_name}
+                  className="w-5 h-5 rounded-full object-cover"
+                />
+              ) : (
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold text-white"
+                  style={{ backgroundColor: wsColors.hex }}
+                >
+                  {getInitials(displayAssignee.full_name)}
+                </div>
+              )}
+              <span>{displayAssignee.full_name}</span>
+            </>
+          ) : (
+            <>
+              <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[9px] text-muted-foreground">
+                ?
+              </div>
+              <span className="text-muted-foreground">Unassigned</span>
+            </>
+          )}
+          <span className="task-modal__status-chevron">▾</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-0 z-[500] bg-popover" align="start">
+        <div className="p-2 border-b border-border">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-2.5 py-1.5 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+        <div className="max-h-[240px] overflow-y-auto p-1.5">
+          <button
+            onClick={() => { onChange(null); setOpen(false); }}
+            className={cn(
+              "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+              !value ? "bg-muted font-semibold" : "hover:bg-muted/50"
+            )}
+          >
+            <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
+              ?
+            </div>
+            <span className="text-muted-foreground">Unassigned</span>
+            {!value && <Check className="w-4 h-4 ml-auto text-primary" />}
+          </button>
+          {filteredProfiles.map((profile) => (
+            <button
+              key={profile.id}
+              onClick={() => { onChange(profile.id); setOpen(false); }}
+              className={cn(
+                "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                value === profile.id ? "bg-muted font-semibold" : "hover:bg-muted/50"
+              )}
+            >
+              {profile.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name}
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+              ) : (
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-white"
+                  style={{ backgroundColor: wsColors.hex }}
+                >
+                  {getInitials(profile.full_name)}
+                </div>
+              )}
+              <span>{profile.full_name || 'Unnamed'}</span>
+              {value === profile.id && <Check className="w-4 h-4 ml-auto text-primary" />}
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function DrawerHeader({ 
   task, 
   onClose, 
   onTitleChange, 
-  onStatusChange, 
+  onStatusChange,
+  onAssigneeChange,
+  onWorkstreamChange,
+  onPriorityChange,
+  onEdit,
+  onDuplicate,
+  onDelete,
   saveStatus = 'idle' 
 }: DrawerHeaderProps) {
   const workstreamName = task.workstream?.name || '';
-  const wsColors = getWorkstreamColor(workstreamName);
   const taskKey = task.task_key || task.key || '';
-  
-  // Determine health status (derive from overdue/blocked status)
-  const health = useMemo(() => {
-    if (task.is_blocked) return 'critical';
-    if (task.due_date) {
-      const dueDate = new Date(task.due_date);
-      const now = new Date();
-      if (dueDate < now) return 'critical';
-      const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      if (daysDiff <= 3) return 'at_risk';
-    }
-    return 'on_track';
-  }, [task.due_date, task.is_blocked]);
-
-  const healthConfig = HEALTH_CONFIG[health];
-  const statusSlug = task.status?.slug || 'backlog';
-  const statusConfig = STATUS_CONFIG[statusSlug] || STATUS_CONFIG.backlog;
 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/planner/task-list?task=${task.id}`;
     navigator.clipboard.writeText(url);
     toast.success('Link copied to clipboard');
   };
-
-  // Get assignee initials
-  const assigneeInitials = task.assignee?.full_name
-    ?.split(' ')
-    .map((n: string) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase() || '?';
 
   return (
     <div className="task-modal__header">
@@ -183,12 +478,34 @@ export function DrawerHeader({
           >
             <Link2 className="w-4 h-4" />
           </button>
-          <button
-            className="task-modal__action-btn"
-            title="More options"
-          >
-            <MoreHorizontal className="w-4 h-4" />
-          </button>
+          
+          {/* Kebab Menu - Functional */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="task-modal__action-btn" title="More options">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-popover z-[600]">
+              <DropdownMenuItem onClick={onEdit}>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Task
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onDuplicate}>
+                <Copy className="w-4 h-4 mr-2" />
+                Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={onDelete}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <button
             onClick={onClose}
             className="task-modal__action-btn task-modal__action-btn--close"
@@ -212,7 +529,7 @@ export function DrawerHeader({
         <span className="task-modal__edit-hint">Click to edit</span>
       </div>
 
-      {/* Status Bar - 4 fields grid with LABELS */}
+      {/* Status Bar - 4 fields: Status, Priority, Workstream, Assignee */}
       <div className="task-modal__status-bar">
         {/* Status */}
         <div className="task-modal__status-field">
@@ -224,34 +541,34 @@ export function DrawerHeader({
           />
         </div>
         
-        {/* Health */}
+        {/* Priority (replaces Health) */}
         <div className="task-modal__status-field">
-          <span className="task-modal__status-label">Health</span>
-          <div className="task-modal__status-value">
-            <span
-              className="task-modal__status-dot"
-              style={{ backgroundColor: healthConfig.color }}
-            />
-            <span>{healthConfig.label}</span>
-          </div>
+          <span className="task-modal__status-label">Priority</span>
+          <PrioritySelector
+            value={task.priority || 'medium'}
+            onChange={(priority) => onPriorityChange?.(priority)}
+          />
         </div>
         
-        {/* Workstream */}
+        {/* Workstream - Now editable */}
         <div className="task-modal__status-field">
           <span className="task-modal__status-label">Workstream</span>
-          <div className="task-modal__status-value">
-            <span>{workstreamName || 'None'}</span>
-          </div>
+          <WorkstreamSelector
+            value={task.workstream_id || task.workstream?.id || null}
+            currentWorkstream={task.workstream}
+            onChange={(id) => onWorkstreamChange?.(id)}
+          />
         </div>
         
-        {/* Assignee */}
+        {/* Assignee - Now editable with proper avatars */}
         <div className="task-modal__status-field">
           <span className="task-modal__status-label">Assignee</span>
-          <div className="task-modal__status-value">
-            <span className="task-modal__assignee-avatar">{assigneeInitials}</span>
-            <span>{task.assignee?.full_name || 'Unassigned'}</span>
-            <span className="task-modal__status-chevron">▾</span>
-          </div>
+          <AssigneeSelector
+            value={task.assignee_id || task.assignee?.id || null}
+            currentAssignee={task.assignee}
+            workstreamName={workstreamName}
+            onChange={(id) => onAssigneeChange?.(id)}
+          />
         </div>
       </div>
     </div>
