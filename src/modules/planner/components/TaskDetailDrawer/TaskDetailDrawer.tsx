@@ -21,6 +21,7 @@ import { DrawerHeader } from './DrawerHeader';
 import { TaskDescription } from './TaskDescription';
 import { TaskFieldsGrid } from './TaskFieldsGrid';
 import { ProgressSection } from './ProgressSection';
+import { LeadNotesTab } from './LeadNotesTab';
 import { ChecklistSection } from './ChecklistSection';
 import { AttachmentsSection } from './AttachmentsSection';
 import { DependenciesSection } from './DependenciesSection';
@@ -37,6 +38,7 @@ import {
 } from '../../hooks/useTaskDetails';
 import { usePlannerTaskRealtime } from '../../hooks/usePlannerTaskRealtime';
 import { useUpdatePlannerTaskField } from '../../hooks/useUpdatePlannerTaskField';
+import { useLeadNotes } from '../../hooks/useLeadNotes';
 
 interface TaskDetailDrawerProps {
   taskId?: string | null;
@@ -85,7 +87,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const saveStatusTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // Tab state for V2 tabbed interface
-  const [activeTab, setActiveTab] = useState<'description' | 'checklist' | 'links' | 'files' | 'activity'>('description');
+  const [activeTab, setActiveTab] = useState<'description' | 'lead-notes' | 'checklist' | 'links' | 'files' | 'activity'>('description');
   
   const handleClose = useCallback(() => {
     // Flush any pending debounced updates before closing
@@ -195,6 +197,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const { data: attachments } = useTaskAttachments(effectiveTaskId);
   const { data: comments } = useTaskComments(effectiveTaskId);
   const { data: activity } = useTaskActivity(effectiveTaskId);
+  const { data: leadNotes } = useLeadNotes(effectiveTaskId);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -208,6 +211,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   if (!effectiveTaskId) return null;
 
   // Tab badge counts
+  const leadNotesCount = leadNotes?.length || 0;
   const checklistCount = checklist?.length || 0;
   const linksCount = dependencies?.length || 0;
   const filesCount = attachments?.length || 0;
@@ -215,6 +219,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   const tabs = [
     { id: 'description' as const, label: 'Description', badge: null },
+    { id: 'lead-notes' as const, label: 'Lead Notes', badge: leadNotesCount || null },
     { id: 'checklist' as const, label: 'Checklist', badge: checklistCount || null },
     { id: 'links' as const, label: 'Links', badge: linksCount || null },
     { id: 'files' as const, label: 'Files', badge: filesCount || null },
@@ -329,6 +334,14 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                       onFieldChange={handleFieldUpdate}
                     />
                   </div>
+                )}
+
+                {/* Lead Notes Tab */}
+                {activeTab === 'lead-notes' && (
+                  <LeadNotesTab
+                    taskId={effectiveTaskId!}
+                    workstreamId={task.workstream_id || task.workstream?.id || null}
+                  />
                 )}
 
                 {/* Checklist Tab */}
