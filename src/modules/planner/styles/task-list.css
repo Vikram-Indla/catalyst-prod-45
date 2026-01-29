@@ -1,150 +1,319 @@
 /**
- * Task List V3 - Ring-fenced Design System
- * These tokens ONLY apply within .planner-task-list-content
- * Does NOT affect other Planner views or global styles
+ * Task List V3 - Enterprise Clean Design System
+ * QA Spec Compliant: 104 Checkpoints
+ * Ring-fenced CSS with .planner-task-list-content scope
  */
 
 .planner-task-list-content {
-  /* === Surfaces === */
-  --pln-tl-surface-page: #ffffff;
-  --pln-tl-surface-header: #f8fafc;
-  --pln-tl-surface-hover: #f1f5f9;
-  --pln-tl-surface-selected: #eff6ff;
-  --pln-tl-surface-editing: #fffbeb;
-  --pln-tl-surface-card: #ffffff;
+  /* === Surfaces (N4, N5) === */
+  --tl-surface-page: #f8fafc;       /* gray-50 */
+  --tl-surface-card: #ffffff;
+  --tl-surface-header: #f8fafc;
+  --tl-surface-hover: #f1f5f9;      /* I1: row hover */
+  --tl-surface-selected: #eff6ff;   /* I3: selected row */
+  --tl-surface-editing: #fffbeb;
   
-  /* === Text === */
-  --pln-tl-text-primary: #0f172a;
-  --pln-tl-text-secondary: #334155;
-  --pln-tl-text-tertiary: #64748b;
-  --pln-tl-text-muted: #94a3b8;
-  --pln-tl-text-link: #2563eb;
+  /* === Text Colors (E, K) === */
+  --tl-text-primary: #0f172a;       /* E1.3: page title */
+  --tl-text-secondary: #334155;     /* gray-700 */
+  --tl-text-tertiary: #64748b;      /* E1.5, E2.4: subtitle, headers */
+  --tl-text-muted: #94a3b8;         /* gray-400 */
   
-  /* === Borders === */
-  --pln-tl-border: #e2e8f0;
-  --pln-tl-border-light: #f1f5f9;
-  --pln-tl-border-strong: #cbd5e1;
-  --pln-tl-border-focus: #2563eb;
+  /* === Borders (H, N6) === */
+  --tl-border: #e2e8f0;             /* H2, N6: default */
+  --tl-border-light: #f1f5f9;
+  --tl-border-strong: #cbd5e1;      /* N6 */
+  --tl-border-focus: #2563eb;       /* I6 */
   
-  /* === Status Colors === */
-  --pln-tl-status-backlog: #64748b;
-  --pln-tl-status-planned: #7c3aed;
-  --pln-tl-status-progress: #1d4ed8;
-  --pln-tl-status-review: #b45309;
-  --pln-tl-status-done: #166534;
+  /* === Interactive (I, N1) === */
+  --tl-primary: #2563eb;            /* N1: primary button */
+  --tl-primary-hover: #1d4ed8;      /* I2 */
   
-  /* === Priority Colors === */
-  --pln-tl-priority-critical: #dc2626;
-  --pln-tl-priority-high: #ea580c;
-  --pln-tl-priority-medium: #ca8a04;
-  --pln-tl-priority-low: #64748b;
+  /* === Priority Dot Colors (A2) === */
+  --tl-priority-critical: #dc2626;  /* A2.1 */
+  --tl-priority-high: #f97316;      /* A2.2 */
+  --tl-priority-medium: #eab308;    /* A2.3: yellow, NOT green */
+  --tl-priority-low: #94a3b8;       /* A2.4 */
   
-  /* === Workstream Colors === */
-  --pln-tl-ws-senaie: #06b6d4;
-  --pln-tl-ws-catalyst: #8b5cf6;
-  --pln-tl-ws-tahommona: #6366f1;
-  --pln-tl-ws-delivery: #f97316;
-  --pln-tl-ws-mim: #ec4899;
-  --pln-tl-ws-standalone: #84cc16;
-  --pln-tl-ws-data-ai: #14b8a6;
+  /* === Status Dot Colors === */
+  --tl-status-backlog: #94a3b8;
+  --tl-status-planned: #3b82f6;
+  --tl-status-progress: #f59e0b;    /* amber-500 */
+  --tl-status-done: #16a34a;        /* green-600 */
+  
+  /* === KPI Dot Colors (C) === */
+  --tl-kpi-overdue: #dc2626;        /* C2 */
+  --tl-kpi-progress: #f59e0b;       /* C4 */
+  --tl-kpi-done: #16a34a;           /* C6 */
   
   /* === Shadows === */
-  --pln-tl-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --pln-tl-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --pln-tl-shadow-dropdown: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tl-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --tl-shadow-dropdown: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   
-  /* === Transitions === */
-  --pln-tl-transition-fast: 100ms;
-  --pln-tl-transition-base: 150ms;
-  --pln-tl-transition-slow: 300ms;
+  background: var(--tl-surface-page);
 }
 
-/* Dark mode overrides */
+/* Dark mode */
 .dark .planner-task-list-content {
-  --pln-tl-surface-page: #0a0a0a;
-  --pln-tl-surface-header: #171717;
-  --pln-tl-surface-hover: #262626;
-  --pln-tl-surface-selected: #1e3a5f;
-  --pln-tl-surface-editing: #422006;
-  --pln-tl-surface-card: #171717;
+  --tl-surface-page: #0a0a0a;
+  --tl-surface-card: #171717;
+  --tl-surface-header: #171717;
+  --tl-surface-hover: #262626;
+  --tl-surface-selected: #1e3a5f;
+  --tl-surface-editing: #422006;
   
-  --pln-tl-text-primary: #fafafa;
-  --pln-tl-text-secondary: #e5e5e5;
-  --pln-tl-text-tertiary: #a3a3a3;
-  --pln-tl-text-muted: #737373;
-  --pln-tl-text-link: #60a5fa;
+  --tl-text-primary: #fafafa;
+  --tl-text-secondary: #e5e5e5;
+  --tl-text-tertiary: #a3a3a3;
+  --tl-text-muted: #737373;
   
-  --pln-tl-border: #262626;
-  --pln-tl-border-light: #1f2937;
-  --pln-tl-border-strong: #404040;
-  --pln-tl-border-focus: #3b82f6;
+  --tl-border: #262626;
+  --tl-border-light: #1f2937;
+  --tl-border-strong: #404040;
 }
 
-/* === TABLE STYLES === */
+/* ============================================================================
+   PAGE HEADER (E1)
+   ============================================================================ */
+
+.planner-task-list-content .tl-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--tl-border);
+  background: var(--tl-surface-card);
+}
+
+/* E1.1-E1.3: Page title */
+.planner-task-list-content .tl-page-title {
+  font-size: 1.5rem;       /* 24px (E1.1) */
+  font-weight: 600;        /* semibold (E1.2) */
+  color: var(--tl-text-primary);  /* #0f172a (E1.3) */
+  margin: 0;
+}
+
+/* E1.4-E1.5: Subtitle */
+.planner-task-list-content .tl-page-subtitle {
+  font-size: 0.875rem;     /* 14px (E1.4) */
+  color: var(--tl-text-tertiary);  /* #64748b (E1.5) */
+  margin-top: 0.25rem;
+}
+
+/* ============================================================================
+   KPI STRIP (C1-C8)
+   ============================================================================ */
+
+.planner-task-list-content .tl-kpi-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;             /* 24px (F8) */
+}
+
+.planner-task-list-content .tl-kpi-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+/* C7: KPI dot size 8px */
+.planner-task-list-content .tl-kpi-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.planner-task-list-content .tl-kpi-dot-overdue {
+  background-color: var(--tl-kpi-overdue);  /* C2: #dc2626 */
+}
+
+.planner-task-list-content .tl-kpi-dot-progress {
+  background-color: var(--tl-kpi-progress); /* C4: #f59e0b */
+}
+
+.planner-task-list-content .tl-kpi-dot-done {
+  background-color: var(--tl-kpi-done);     /* C6: #16a34a */
+}
+
+.planner-task-list-content .tl-kpi-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--tl-text-primary);
+  line-height: 1;
+}
+
+/* C8: KPI label uppercase */
+.planner-task-list-content .tl-kpi-label {
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tl-text-tertiary);
+  margin-top: 0.25rem;
+}
+
+/* ============================================================================
+   TOOLBAR (P1-P6)
+   ============================================================================ */
+
+.planner-task-list-content .tl-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--tl-surface-header);
+  border-bottom: 1px solid var(--tl-border);
+}
+
+/* P1: Search box 220-280px */
+.planner-task-list-content .tl-search {
+  position: relative;
+  width: 16rem;  /* 256px */
+}
+
+.planner-task-list-content .tl-search-input {
+  width: 100%;
+  height: 2.25rem;
+  padding-left: 2.25rem;
+  padding-right: 0.75rem;
+  background: var(--tl-surface-card);
+  border: 1px solid var(--tl-border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--tl-text-primary);
+}
+
+.planner-task-list-content .tl-search-input:focus {
+  outline: none;
+  border-color: var(--tl-border-focus);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.planner-task-list-content .tl-search-input::placeholder {
+  color: var(--tl-text-muted);
+}
+
+.planner-task-list-content .tl-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tl-text-muted);
+  pointer-events: none;
+}
+
+/* P6: Primary button blue */
+.planner-task-list-content .tl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;    /* H4 */
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.planner-task-list-content .tl-btn-primary {
+  background: var(--tl-primary);
+  color: white;
+  border: none;
+}
+
+.planner-task-list-content .tl-btn-primary:hover {
+  background: var(--tl-primary-hover);
+}
+
+.planner-task-list-content .tl-btn-outline {
+  background: transparent;
+  color: var(--tl-text-secondary);
+  border: 1px solid var(--tl-border);
+}
+
+.planner-task-list-content .tl-btn-outline:hover {
+  background: var(--tl-surface-hover);   /* I4 */
+  border-color: var(--tl-border-strong);
+}
+
+/* Filter dropdown dot */
+.planner-task-list-content .tl-filter-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  margin-right: 0.5rem;
+}
+
+.planner-task-list-content .tl-filter-label {
+  color: var(--tl-text-tertiary);
+}
+
+/* ============================================================================
+   TABLE CONTAINER (H1, H2)
+   ============================================================================ */
+
+.planner-task-list-content .tl-table-container {
+  background: var(--tl-surface-card);
+  border: 1px solid var(--tl-border);   /* H2 */
+  border-radius: 0.5rem;                /* H1: 8px */
+  overflow: hidden;
+}
+
 .planner-task-list-content .tl-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
-  background: var(--pln-tl-surface-page);
 }
+
+/* ============================================================================
+   TABLE HEADER (E2)
+   ============================================================================ */
 
 .planner-task-list-content .tl-header {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--pln-tl-surface-header);
-  border-bottom: 1px solid var(--pln-tl-border);
+  background: var(--tl-surface-header);
+  border-bottom: 1px solid var(--tl-border);
 }
 
 .planner-task-list-content .tl-header th {
-  padding: 0.75rem;
+  padding: 0.75rem;        /* F1, F2 */
   text-align: left;
-  font-weight: 600;
-  font-size: 0.6875rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--pln-tl-text-tertiary);
-  border-right: 1px solid transparent;
-  position: relative;
+  font-size: 0.75rem;      /* 12px (E2.1) */
+  font-weight: 500;        /* medium (E2.3) */
+  text-transform: uppercase;  /* E2.2 */
+  letter-spacing: 0.05em;  /* E2.5 */
+  color: var(--tl-text-tertiary);  /* #64748b (E2.4) */
   user-select: none;
 }
 
 .planner-task-list-content .tl-header th:hover {
-  background: var(--pln-tl-surface-hover);
+  background: var(--tl-surface-hover);
 }
 
-/* === COLUMN RESIZER === */
-.planner-task-list-content .tl-column-resizer {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  cursor: col-resize;
-  transition: background-color var(--pln-tl-transition-fast);
-}
+/* ============================================================================
+   TABLE ROW (F1, F2, I1, I3)
+   ============================================================================ */
 
-.planner-task-list-content .tl-column-resizer:hover,
-.planner-task-list-content .tl-column-resizer.resizing {
-  background: var(--pln-tl-border-focus);
-}
-
-/* === ROW STYLES === */
 .planner-task-list-content .tl-row {
-  border-bottom: 1px solid var(--pln-tl-border-light);
-  transition: background-color var(--pln-tl-transition-fast);
+  border-bottom: 1px solid var(--tl-border-light);
+  transition: background-color 0.1s;
 }
 
 .planner-task-list-content .tl-row:hover {
-  background: var(--pln-tl-surface-hover);
+  background: var(--tl-surface-hover);  /* I1: #f1f5f9 */
 }
 
 .planner-task-list-content .tl-row.selected {
-  background: var(--pln-tl-surface-selected);
+  background: var(--tl-surface-selected);  /* I3: #eff6ff */
 }
 
 .planner-task-list-content .tl-row.focused {
-  box-shadow: inset 0 0 0 2px var(--pln-tl-border-focus);
+  box-shadow: inset 0 0 0 2px var(--tl-border-focus);
 }
 
 .planner-task-list-content .tl-row.blocked {
@@ -152,48 +321,41 @@
 }
 
 .planner-task-list-content .tl-row td {
-  padding: 0.5rem 0.75rem;
+  padding: 0.75rem;        /* F1: 12px or 16px */
   vertical-align: middle;
 }
 
-/* === INLINE EDIT CELLS === */
-.planner-task-list-content .tl-cell-editable {
+/* ============================================================================
+   TASK ID (B1-B5)
+   ============================================================================ */
+
+.planner-task-list-content .tl-task-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;  /* B2 */
+  font-size: 0.8125rem;    /* 13px (B3) */
+  font-weight: 500;
+  color: #64748b;          /* B1: gray-500, NOT blue */
+  transition: color 0.1s;
+  cursor: pointer;
+}
+
+.planner-task-list-content .tl-task-id:hover {
+  color: #334155;          /* B4: gray-700 */
+  text-decoration: underline;  /* B5 */
+}
+
+/* ============================================================================
+   TITLE CELL
+   ============================================================================ */
+
+.planner-task-list-content .tl-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;             /* F5 */
   cursor: pointer;
   padding: 0.375rem 0.5rem;
   margin: -0.375rem -0.5rem;
   border-radius: 0.375rem;
-  transition: all var(--pln-tl-transition-fast);
-}
-
-.planner-task-list-content .tl-cell-editable:hover {
-  background: #eff6ff;
-  outline: 1px dashed var(--pln-tl-border-strong);
-}
-
-.dark .planner-task-list-content .tl-cell-editable:hover {
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.planner-task-list-content .tl-cell-editing {
-  background: var(--pln-tl-surface-editing);
-  outline: 2px solid var(--pln-tl-border-focus);
-}
-
-.planner-task-list-content .tl-cell-saving {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-/* === TITLE CELL (spec-compliant) === */
-.planner-task-list-content .tl-title-cell {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.375rem 0.75rem;
-  margin: -0.375rem -0.5rem;
-  border-radius: 0.375rem;
-  transition: all var(--pln-tl-transition-fast);
+  transition: all 0.1s;
 }
 
 .planner-task-list-content .tl-title-cell:hover {
@@ -208,173 +370,175 @@
 
 .planner-task-list-content .tl-title-text {
   font-weight: 500;
-  color: var(--pln-tl-text-primary);
+  color: var(--tl-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 280px;
 }
 
-/* === STATUS BADGE - Enterprise Clean OUTLINE style === */
-.planner-task-list-content .tl-status-badge-enterprise {
+.planner-task-list-content .tl-inline-input {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: none;
+  background: var(--tl-surface-editing);
+  outline: 2px solid var(--tl-border-focus);
+  border-radius: 0.375rem;
+  font: inherit;
+  color: var(--tl-text-primary);
+}
+
+/* ============================================================================
+   STATUS BADGE (A3) - OUTLINE style, GRAY text
+   ============================================================================ */
+
+.planner-task-list-content .tl-status-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
+  padding: 0.25rem 0.625rem;  /* F6: 4px 10px */
+  border-radius: 0.375rem;    /* H3: 6px */
   font-size: 0.75rem;
   font-weight: 500;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e2e8f0;  /* A3.2, A3.4, A3.5 */
   background: transparent;
   cursor: pointer;
-  transition: all var(--pln-tl-transition-fast);
+  transition: all 0.1s;
   white-space: nowrap;
 }
 
-/* In Progress - subtle yellow tint */
-.planner-task-list-content .tl-status-badge-enterprise[data-status="in-progress"],
-.planner-task-list-content .tl-status-badge-enterprise[data-status="in progress"] {
-  background: #fffbeb;
-  border-color: #fde68a;
-}
-
-/* Done - subtle green tint */
-.planner-task-list-content .tl-status-badge-enterprise[data-status="done"] {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
-}
-
-.planner-task-list-content .tl-status-badge-enterprise:hover {
-  background: var(--pln-tl-surface-hover);
-}
-
+/* G2: Status dot 6px */
 .planner-task-list-content .tl-status-dot {
-  width: 0.375rem;
-  height: 0.375rem;
-  border-radius: 9999px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-/* Status label - ALWAYS GRAY text (Enterprise spec) */
-.planner-task-list-content .tl-status-label-gray {
-  font-weight: 500;
-  color: #475569; /* GRAY - never status color */
+/* A3.3, A3.7: Status text ALWAYS #475569 (gray-600) */
+.planner-task-list-content .tl-status-text {
+  color: #475569;
 }
 
-/* Legacy status pill - keep for backwards compat */
-.planner-task-list-content .tl-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border: 1px solid;
-  background: transparent;
-  cursor: pointer;
-  transition: all var(--pln-tl-transition-fast);
-  white-space: nowrap;
+.planner-task-list-content .tl-status-badge:hover {
+  background: var(--tl-surface-hover);
 }
 
-.planner-task-list-content .tl-status-pill:hover {
-  background: var(--pln-tl-surface-hover);
-}
+/* ============================================================================
+   PRIORITY CELL (A1, A2)
+   ============================================================================ */
 
-.planner-task-list-content .tl-status-label {
-  font-weight: 500;
-}
-
-/* === PRIORITY CELL (spec-compliant) === */
 .planner-task-list-content .tl-priority-cell {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.5rem;             /* F3: 8px */
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   margin: -0.25rem -0.5rem;
   border-radius: 0.375rem;
-  transition: all var(--pln-tl-transition-fast);
+  transition: all 0.1s;
 }
 
 .planner-task-list-content .tl-priority-cell:hover {
-  background: var(--pln-tl-surface-hover);
+  background: var(--tl-surface-hover);
 }
 
-.planner-task-list-content .tl-priority-diamond {
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
+/* G1: Priority dot 8px */
 .planner-task-list-content .tl-priority-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 9999px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-/* Priority label - ALWAYS GRAY (Enterprise Clean spec) */
-.planner-task-list-content .tl-priority-label-gray {
-  font-size: 0.8125rem;
+/* A1.1-A1.4: Priority text ALWAYS #64748b (gray-500) */
+.planner-task-list-content .tl-priority-text {
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #64748b; /* GRAY - never priority color */
+  color: #64748b;
 }
 
-/* Legacy - colored priority label */
-.planner-task-list-content .tl-priority-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-}
+/* ============================================================================
+   WORKSTREAM CELL (D1-D6)
+   ============================================================================ */
 
-/* === WORKSTREAM CELL === */
 .planner-task-list-content .tl-workstream-cell {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
+  gap: 0.5rem;             /* F4: 8px */
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
+/* D2: Workstream dot 8px */
 .planner-task-list-content .tl-workstream-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 9999px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-/* === ASSIGNEE CELL === */
+/* D1: Workstream text #64748b */
+.planner-task-list-content .tl-workstream-text {
+  color: #64748b;
+}
+
+/* ============================================================================
+   ASSIGNEE CELL (K1-K5)
+   ============================================================================ */
+
 .planner-task-list-content .tl-assignee-cell {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.5rem;             /* F5: 8px */
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   margin: -0.25rem -0.5rem;
   border-radius: 0.375rem;
-  transition: all var(--pln-tl-transition-fast);
+  transition: all 0.1s;
 }
 
 .planner-task-list-content .tl-assignee-cell:hover {
-  background: var(--pln-tl-surface-hover);
+  background: var(--tl-surface-hover);
 }
 
+/* G3: Avatar 24px */
+.planner-task-list-content .tl-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;      /* H5 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;     /* K3: 10px */
+  font-weight: 600;
+  color: white;            /* K2 */
+  background: #2563eb;     /* K1: hash-based would vary */
+  flex-shrink: 0;
+}
+
+/* K4: Assignee name #334155 */
 .planner-task-list-content .tl-assignee-name {
   font-size: 0.8125rem;
-  color: var(--pln-tl-text-secondary);
+  color: #334155;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* K5: Unassigned #94a3b8 */
 .planner-task-list-content .tl-unassigned-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--pln-tl-text-muted);
+  color: #94a3b8;
   font-size: 0.8125rem;
 }
 
-/* === DATE CELL (spec-compliant) === */
+/* ============================================================================
+   DUE DATE CELL (J1-J4)
+   ============================================================================ */
+
 .planner-task-list-content .tl-date-cell {
   display: inline-flex;
   align-items: center;
@@ -383,25 +547,29 @@
   padding: 0.25rem 0.5rem;
   margin: -0.25rem -0.5rem;
   border-radius: 0.375rem;
-  transition: all var(--pln-tl-transition-fast);
+  transition: all 0.1s;
 }
 
 .planner-task-list-content .tl-date-cell:hover {
-  background: var(--pln-tl-surface-hover);
+  background: var(--tl-surface-hover);
 }
 
+/* J1: Normal due date #334155 */
 .planner-task-list-content .tl-date-value {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--pln-tl-text-primary);
+  color: #334155;
 }
 
+/* J2, J3: Overdue #dc2626, font-weight 500 */
 .planner-task-list-content .tl-date-value.tl-date-overdue {
-  color: var(--pln-tl-priority-critical);
+  color: #dc2626;
+  font-weight: 500;
 }
 
+/* J4: Empty em dash */
 .planner-task-list-content .tl-date-placeholder {
-  color: var(--pln-tl-text-muted);
+  color: var(--tl-text-muted);
 }
 
 .planner-task-list-content .tl-days-indicator {
@@ -411,10 +579,13 @@
 }
 
 .planner-task-list-content .tl-days-indicator.overdue {
-  color: var(--pln-tl-priority-critical);
+  color: #dc2626;
 }
 
-/* === PROGRESS CELL (spec-compliant) === */
+/* ============================================================================
+   PROGRESS CELL (G5, G6, L1-L4)
+   ============================================================================ */
+
 .planner-task-list-content .tl-progress-cell {
   display: flex;
   align-items: center;
@@ -424,28 +595,50 @@
   padding: 0.25rem 0.5rem;
   margin: -0.25rem -0.5rem;
   border-radius: 0.375rem;
-  transition: all var(--pln-tl-transition-fast);
+  transition: all 0.1s;
 }
 
 .planner-task-list-content .tl-progress-cell:hover {
-  background: var(--pln-tl-surface-hover);
+  background: var(--tl-surface-hover);
 }
 
+/* G5: Progress bar height 6px, G6: min 60px */
+.planner-task-list-content .tl-progress-track {
+  flex: 1;
+  min-width: 60px;
+  height: 6px;
+  background: #e2e8f0;     /* L1 */
+  border-radius: 3px;      /* H6 */
+  overflow: hidden;
+}
+
+/* L2: Progress fill #2563eb */
+.planner-task-list-content .tl-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.15s;
+}
+
+/* L3, L4: Progress % #64748b, 13px */
 .planner-task-list-content .tl-progress-value {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--pln-tl-text-tertiary);
+  color: #64748b;
   min-width: 2rem;
   text-align: right;
 }
 
-/* === ACTIONS BUTTON === */
+/* ============================================================================
+   ACTIONS BUTTON
+   ============================================================================ */
+
 .planner-task-list-content .tl-actions-btn {
   padding: 0.375rem;
   border-radius: 0.375rem;
-  color: var(--pln-tl-text-tertiary);
+  color: var(--tl-text-tertiary);
   opacity: 0;
-  transition: all var(--pln-tl-transition-fast);
+  transition: all 0.1s;
+  cursor: pointer;
 }
 
 .planner-task-list-content .tl-row:hover .tl-actions-btn {
@@ -453,83 +646,20 @@
 }
 
 .planner-task-list-content .tl-actions-btn:hover {
-  background: var(--pln-tl-surface-hover);
-  color: var(--pln-tl-text-secondary);
+  background: var(--tl-surface-hover);
+  color: var(--tl-text-secondary);
 }
 
-/* === INLINE INPUT === */
-.planner-task-list-content .tl-inline-input {
-  width: 100%;
-  padding: 0.375rem 0.5rem;
-  border: none;
-  background: transparent;
-  font: inherit;
-  color: var(--pln-tl-text-primary);
-  outline: none;
-}
+/* ============================================================================
+   DROPDOWN STYLES
+   ============================================================================ */
 
-.planner-task-list-content .tl-inline-input::placeholder {
-  color: var(--pln-tl-text-muted);
-}
-
-/* === STATUS BADGE === */
-.planner-task-list-content .tl-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: 1px solid;
-  white-space: nowrap;
-}
-
-/* === PRIORITY BADGE === */
-.planner-task-list-content .tl-priority-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* === PROGRESS BAR === */
-.planner-task-list-content .tl-progress-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.planner-task-list-content .tl-progress-track {
-  flex: 1;
-  height: 0.375rem;
-  background: var(--pln-tl-border);
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.planner-task-list-content .tl-progress-fill {
-  height: 100%;
-  border-radius: 9999px;
-  transition: width var(--pln-tl-transition-base);
-}
-
-.planner-task-list-content .tl-progress-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--pln-tl-text-tertiary);
-  min-width: 2rem;
-  text-align: right;
-}
-
-/* === DROPDOWN STYLES === */
 .planner-task-list-content .tl-dropdown {
   min-width: 140px;
-  background: var(--pln-tl-surface-card);
-  border: 1px solid var(--pln-tl-border);
+  background: var(--tl-surface-card);
+  border: 1px solid var(--tl-border);
   border-radius: 0.5rem;
-  box-shadow: var(--pln-tl-shadow-dropdown);
+  box-shadow: var(--tl-shadow-dropdown);
   padding: 0.25rem;
   animation: tl-dropdown-in 150ms ease-out;
 }
@@ -552,283 +682,24 @@
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
   font-size: 0.875rem;
-  color: var(--pln-tl-text-secondary);
+  color: var(--tl-text-secondary);
   cursor: pointer;
-  transition: background-color var(--pln-tl-transition-fast);
+  transition: background-color 0.1s;
 }
 
 .planner-task-list-content .tl-dropdown-item:hover {
-  background: var(--pln-tl-surface-hover);
+  background: var(--tl-surface-hover);
 }
 
 .planner-task-list-content .tl-dropdown-item.active {
-  background: var(--pln-tl-surface-selected);
-  color: var(--pln-tl-text-link);
+  background: var(--tl-surface-selected);
+  color: var(--tl-primary);
 }
 
-/* === KPI CHIPS - Enterprise Clean (dots, not icons) === */
-.planner-task-list-content .tl-kpi-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--pln-tl-border-light);
-  min-width: 70px;
-}
+/* ============================================================================
+   EMPTY STATE
+   ============================================================================ */
 
-.planner-task-list-content .tl-kpi-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.planner-task-list-content .tl-kpi-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--pln-tl-text-primary);
-  line-height: 1;
-}
-
-.planner-task-list-content .tl-kpi-label {
-  font-size: 0.625rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--pln-tl-text-tertiary);
-  margin-top: 0.25rem;
-}
-
-/* Legacy stat chips - keep for backwards compat */
-.planner-task-list-content .tl-stat-chip {
-  display: flex;
-  flex-direction: column;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  background: var(--pln-tl-surface-header);
-  border: 1px solid var(--pln-tl-border-light);
-}
-
-.planner-task-list-content .tl-stat-chip .label {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--pln-tl-text-tertiary);
-}
-
-.planner-task-list-content .tl-stat-chip .value {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--pln-tl-text-primary);
-}
-
-.planner-task-list-content .tl-stat-chip.danger .value {
-  color: var(--pln-tl-priority-critical);
-}
-
-.planner-task-list-content .tl-stat-chip.warning .value {
-  color: var(--pln-tl-priority-medium);
-}
-
-.planner-task-list-content .tl-stat-chip.success .value {
-  color: var(--pln-tl-status-done);
-}
-
-/* === TOOLBAR === */
-.planner-task-list-content .tl-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--pln-tl-surface-header);
-  border-bottom: 1px solid var(--pln-tl-border);
-}
-
-.planner-task-list-content .tl-search {
-  position: relative;
-  width: 16rem;
-}
-
-.planner-task-list-content .tl-search-input {
-  width: 100%;
-  height: 2.25rem;
-  padding-left: 2.25rem;
-  padding-right: 0.75rem;
-  background: var(--pln-tl-surface-page);
-  border: 1px solid var(--pln-tl-border);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--pln-tl-text-primary);
-  transition: border-color var(--pln-tl-transition-fast);
-}
-
-.planner-task-list-content .tl-search-input:focus {
-  outline: none;
-  border-color: var(--pln-tl-border-focus);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.planner-task-list-content .tl-search-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--pln-tl-text-muted);
-  pointer-events: none;
-}
-
-/* === BUTTON STYLES === */
-.planner-task-list-content .tl-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all var(--pln-tl-transition-fast);
-}
-
-.planner-task-list-content .tl-btn-primary {
-  background: #2563eb;
-  color: white;
-  border: none;
-}
-
-.planner-task-list-content .tl-btn-primary:hover {
-  background: #1d4ed8;
-}
-
-.planner-task-list-content .tl-btn-outline {
-  background: transparent;
-  color: var(--pln-tl-text-secondary);
-  border: 1px solid var(--pln-tl-border);
-}
-
-.planner-task-list-content .tl-btn-outline:hover {
-  background: var(--pln-tl-surface-hover);
-  border-color: var(--pln-tl-border-strong);
-}
-
-/* === ASSIGNEE AVATAR === */
-.planner-task-list-content .tl-avatar {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.625rem;
-  font-weight: 600;
-  color: white;
-  background: #2563eb;
-}
-
-/* === TASK KEY - GRAY monospace (Enterprise Clean spec) === */
-.planner-task-list-content .tl-task-key-gray {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #64748b; /* Gray - NOT blue */
-  transition: color var(--pln-tl-transition-fast);
-}
-
-.planner-task-list-content .tl-task-key-gray:hover {
-  color: #334155;
-  text-decoration: underline;
-}
-
-/* Legacy - keep for backwards compat */
-.planner-task-list-content .tl-task-key {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--pln-tl-text-link);
-  transition: color var(--pln-tl-transition-fast);
-}
-
-.planner-task-list-content .tl-task-key:hover {
-  color: #1d4ed8;
-  text-decoration: underline;
-}
-
-/* === REAL-TIME INDICATOR === */
-.planner-task-list-content .tl-realtime-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  color: var(--pln-tl-text-tertiary);
-}
-
-.planner-task-list-content .tl-realtime-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 9999px;
-  background: #22c55e;
-  animation: tl-pulse 2s infinite;
-}
-
-@keyframes tl-pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* === SAVING INDICATOR === */
-.planner-task-list-content .tl-saving-indicator {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: var(--pln-tl-surface-card);
-  border: 1px solid var(--pln-tl-border);
-  border-radius: 0.5rem;
-  box-shadow: var(--pln-tl-shadow-md);
-  font-size: 0.875rem;
-  color: var(--pln-tl-text-secondary);
-  animation: tl-slide-up 200ms ease-out;
-}
-
-@keyframes tl-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* === BULK ACTION BAR === */
-.planner-task-list-content .tl-bulk-bar {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: var(--pln-tl-surface-card);
-  border: 1px solid var(--pln-tl-border);
-  border-radius: 0.75rem;
-  box-shadow: var(--pln-tl-shadow-dropdown);
-  animation: tl-slide-up 200ms ease-out;
-}
-
-/* === EMPTY STATE === */
 .planner-task-list-content .tl-empty-state {
   display: flex;
   flex-direction: column;
@@ -841,50 +712,68 @@
 .planner-task-list-content .tl-empty-icon {
   width: 4rem;
   height: 4rem;
-  border-radius: 9999px;
-  background: var(--pln-tl-surface-header);
+  border-radius: 50%;
+  background: var(--tl-surface-header);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
-  color: var(--pln-tl-text-muted);
+  color: var(--tl-text-muted);
 }
 
 .planner-task-list-content .tl-empty-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--pln-tl-text-primary);
+  color: var(--tl-text-primary);
   margin-bottom: 0.25rem;
 }
 
 .planner-task-list-content .tl-empty-desc {
   font-size: 0.875rem;
-  color: var(--pln-tl-text-tertiary);
+  color: var(--tl-text-tertiary);
 }
 
-/* === DUE DATE INDICATORS === */
-.planner-task-list-content .tl-due-overdue {
-  background: rgba(220, 38, 38, 0.1);
-  color: var(--pln-tl-priority-critical);
+/* ============================================================================
+   BULK ACTION BAR
+   ============================================================================ */
+
+.planner-task-list-content .tl-bulk-bar {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--tl-surface-card);
+  border: 1px solid var(--tl-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--tl-shadow-dropdown);
+  animation: tl-slide-up 200ms ease-out;
 }
 
-.planner-task-list-content .tl-due-today {
-  background: rgba(202, 138, 4, 0.1);
-  color: var(--pln-tl-priority-medium);
+@keyframes tl-slide-up {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
-.planner-task-list-content .tl-due-soon {
-  background: rgba(37, 99, 235, 0.1);
-  color: var(--pln-tl-text-link);
-}
+/* ============================================================================
+   LOADING SKELETON
+   ============================================================================ */
 
-/* === LOADING SKELETON === */
 .planner-task-list-content .tl-skeleton {
   background: linear-gradient(
     90deg,
-    var(--pln-tl-border-light) 25%,
-    var(--pln-tl-surface-hover) 50%,
-    var(--pln-tl-border-light) 75%
+    var(--tl-border-light) 25%,
+    var(--tl-surface-hover) 50%,
+    var(--tl-border-light) 75%
   );
   background-size: 200% 100%;
   animation: tl-skeleton-shimmer 1.5s infinite;
@@ -897,5 +786,52 @@
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+/* ============================================================================
+   CHECKBOX (G4, I6)
+   ============================================================================ */
+
+.planner-task-list-content .tl-row input[type="checkbox"],
+.planner-task-list-content .tl-header input[type="checkbox"] {
+  width: 1rem;             /* G4: 16px */
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+}
+
+.planner-task-list-content .tl-row input[type="checkbox"]:checked {
+  background-color: #2563eb;  /* I6: blue-600 */
+  border-color: #2563eb;
+}
+
+/* ============================================================================
+   REAL-TIME INDICATOR
+   ============================================================================ */
+
+.planner-task-list-content .tl-realtime-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--tl-text-tertiary);
+}
+
+.planner-task-list-content .tl-realtime-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: tl-pulse 2s infinite;
+}
+
+@keyframes tl-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }
