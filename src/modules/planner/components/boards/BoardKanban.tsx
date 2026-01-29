@@ -1,6 +1,6 @@
 // ============================================================
-// BOARD KANBAN - V9
-// DnD-enabled Kanban board using V9 views and design
+// BOARD KANBAN - V10 Enterprise Clean
+// DnD-enabled Kanban board with V10 enterprise design
 // ============================================================
 
 import { useState, useCallback, useMemo } from 'react';
@@ -22,6 +22,9 @@ import { BoardTaskCard } from './BoardTaskCard';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Loader2 } from 'lucide-react';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
+
+// Import V10 Enterprise Clean styles
+import '@/styles/planner-enterprise-clean.css';
 
 interface BoardKanbanProps {
   filters?: BoardFilters;
@@ -116,7 +119,7 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
   }
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-full planner-enterprise-clean">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
