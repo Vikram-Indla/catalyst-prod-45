@@ -30641,7 +30641,7 @@ export type Database = {
         }
         Returns: undefined
       }
-      bulk_update_permissions_v2: {
+      bulk_update_permissions: {
         Args: {
           p_access_level: string
           p_module_keys: string[]
@@ -31015,14 +31015,14 @@ export type Database = {
         Args: { p_step_result_id: string }
         Returns: Json
       }
-      get_module_groups_v2: {
+      get_module_groups: {
         Args: never
         Returns: {
           group_name: string
           module_count: number
         }[]
       }
-      get_module_matrix_v2: {
+      get_module_matrix: {
         Args: {
           p_access_level?: string
           p_group_name?: string
@@ -31045,7 +31045,7 @@ export type Database = {
         Returns: Json
       }
       get_parallel_run_progress: { Args: { p_run_id: string }; Returns: Json }
-      get_permission_stats_v2: { Args: { p_role_code?: string }; Returns: Json }
+      get_permission_stats: { Args: { p_role_code?: string }; Returns: Json }
       get_queue_items: {
         Args: {
           p_limit?: number
@@ -32043,7 +32043,7 @@ export type Database = {
         Args: { p_new_role: string; p_project_id: string; p_user_id: string }
         Returns: boolean
       }
-      update_module_permission_v2: {
+      update_module_permission: {
         Args: {
           p_access_level: string
           p_module_key: string

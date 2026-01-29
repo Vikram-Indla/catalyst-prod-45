@@ -69,7 +69,7 @@ export function useModuleGroups() {
   return useQuery({
     queryKey: ['module-groups'],
     queryFn: async (): Promise<ModuleGroup[]> => {
-      const { data, error } = await supabase.rpc('get_module_groups_v2');
+      const { data, error } = await supabase.rpc('get_module_groups');
       if (error) throw error;
       return data as ModuleGroup[];
     },
@@ -82,7 +82,7 @@ export function usePermissionStats(roleCode: string | null = null) {
   return useQuery({
     queryKey: ['permission-stats', roleCode],
     queryFn: async (): Promise<PermissionStats> => {
-      const { data, error } = await supabase.rpc('get_permission_stats_v2', {
+      const { data, error } = await supabase.rpc('get_permission_stats', {
         p_role_code: roleCode
       });
       if (error) throw error;
@@ -97,7 +97,7 @@ export function useModuleMatrix(filters: MatrixFilters) {
   return useQuery({
     queryKey: ['module-matrix', filters],
     queryFn: async (): Promise<MatrixCell[]> => {
-      const { data, error } = await supabase.rpc('get_module_matrix_v2', {
+      const { data, error } = await supabase.rpc('get_module_matrix', {
         p_role_code: filters.roleCode,
         p_group_name: filters.groupName,
         p_access_level: filters.accessLevel,
@@ -120,7 +120,7 @@ export function useUpdatePermission() {
       moduleKey: string;
       accessLevel: AccessLevel;
     }) => {
-      const { data, error } = await supabase.rpc('update_module_permission_v2', {
+      const { data, error } = await supabase.rpc('update_module_permission', {
         p_role_code: roleCode,
         p_module_key: moduleKey,
         p_access_level: accessLevel
@@ -145,7 +145,7 @@ export function useBulkUpdate() {
       roleCodes: string[];
       accessLevel: AccessLevel;
     }) => {
-      const { data, error } = await supabase.rpc('bulk_update_permissions_v2', {
+      const { data, error } = await supabase.rpc('bulk_update_permissions', {
         p_module_keys: moduleKeys,
         p_role_codes: roleCodes,
         p_access_level: accessLevel
