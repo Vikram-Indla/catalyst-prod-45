@@ -151,7 +151,7 @@ export function TaskListRowV3({
         />
       </td>
 
-      {/* ID - Task Key */}
+      {/* ID - Task Key (GRAY monospace, not blue) */}
       {visibleColumns.has('key') && (
         <td style={{ width: getWidth('key') }}>
           <button
@@ -159,7 +159,7 @@ export function TaskListRowV3({
               e.stopPropagation();
               onClick(task);
             }}
-            className="tl-task-key"
+            className="tl-task-key-gray"
           >
             {task.task_key}
           </button>
@@ -204,23 +204,21 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Status - Pill-style badge */}
+      {/* Status - OUTLINE badge with gray text (Enterprise Clean spec) */}
       {visibleColumns.has('status') && (
         <td style={{ width: getWidth('status') }} onClick={(e) => e.stopPropagation()}>
           <Popover>
             <PopoverTrigger asChild>
               <button 
-                className="tl-status-pill"
-                style={{
-                  borderColor: task.status_color ? `${task.status_color}40` : 'var(--pln-tl-border)',
-                  color: task.status_color || 'var(--pln-tl-text-tertiary)',
-                }}
+                className="tl-status-badge-enterprise"
+                data-status={task.status_name?.toLowerCase().replace(/\s+/g, '-')}
               >
                 <span
                   className="tl-status-dot"
                   style={{ backgroundColor: task.status_color || '#64748b' }}
                 />
-                <span className="tl-status-label">{task.status_name || 'Unknown'}</span>
+                {/* Gray text - enterprise spec */}
+                <span className="tl-status-label-gray">{task.status_name || 'Unknown'}</span>
               </button>
             </PopoverTrigger>
             <PopoverContent className="tl-dropdown w-40 p-1" align="start">
@@ -233,8 +231,8 @@ export function TaskListRowV3({
                     s.id === task.status_id && 'active'
                   )}
                 >
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                  {s.name}
+                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }} />
+                  <span className="text-gray-600">{s.name}</span>
                   {s.id === task.status_id && <Check className="w-4 h-4 ml-auto" />}
                 </button>
               ))}
@@ -243,21 +241,19 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Priority - Diamond for Critical, dot for others */}
+      {/* Priority - Colored dot + GRAY text (Enterprise Clean spec) */}
       {visibleColumns.has('priority') && (
         <td style={{ width: getWidth('priority') }} onClick={(e) => e.stopPropagation()}>
           <Popover>
             <PopoverTrigger asChild>
               <button className="tl-priority-cell">
-                {task.priority === 'critical' ? (
-                  <span className="tl-priority-diamond" style={{ color: priorityConfig.color }}>◆</span>
-                ) : (
-                  <span 
-                    className="tl-priority-dot" 
-                    style={{ backgroundColor: priorityConfig.color }} 
-                  />
-                )}
-                <span className="tl-priority-label" style={{ color: priorityConfig.color }}>
+                {/* Always use colored dot */}
+                <span 
+                  className="tl-priority-dot" 
+                  style={{ backgroundColor: priorityConfig.color }} 
+                />
+                {/* GRAY text - never colored */}
+                <span className="tl-priority-label-gray">
                   {priorityConfig.label}
                 </span>
               </button>
@@ -274,12 +270,9 @@ export function TaskListRowV3({
                       p === task.priority && 'active'
                     )}
                   >
-                    {p === 'critical' ? (
-                      <span style={{ color: config.color }}>◆</span>
-                    ) : (
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: config.color }} />
-                    )}
-                    <span style={{ color: config.color }}>{config.label}</span>
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: config.color }} />
+                    {/* Gray text in dropdown too */}
+                    <span className="text-gray-500">{config.label}</span>
                     {p === task.priority && <Check className="w-4 h-4 ml-auto" />}
                   </button>
                 );
@@ -289,7 +282,7 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Workstream - Dot + name */}
+      {/* Workstream - Colored dot + GRAY name (Enterprise Clean spec) */}
       {visibleColumns.has('workstream') && (
         <td style={{ width: getWidth('workstream') }}>
           {task.workstream_name ? (
@@ -298,7 +291,8 @@ export function TaskListRowV3({
                 className="tl-workstream-dot"
                 style={{ backgroundColor: workstreamColors.hex }}
               />
-              <span style={{ color: workstreamColors.hex }}>{task.workstream_name}</span>
+              {/* Gray text for workstream name */}
+              <span className="text-gray-600 dark:text-gray-400">{task.workstream_name}</span>
             </span>
           ) : (
             <span style={{ color: 'var(--pln-tl-text-muted)' }}>—</span>

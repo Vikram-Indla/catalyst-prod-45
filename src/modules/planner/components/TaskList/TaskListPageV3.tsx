@@ -265,46 +265,50 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
 
   return (
     <div className="planner-task-list-content h-full flex flex-col overflow-hidden">
-      {/* Header with Stats */}
-      <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b" style={{ 
-        background: 'var(--pln-tl-surface-page)', 
+      {/* Header - Enterprise Clean (no icons, minimalist) */}
+      <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b bg-white dark:bg-slate-900" style={{ 
         borderColor: 'var(--pln-tl-border)' 
       }}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(37, 99, 235, 0.1)' }}>
-            <List className="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold" style={{ color: 'var(--pln-tl-text-primary)' }}>Task List</h1>
-            <p className="text-sm" style={{ color: 'var(--pln-tl-text-tertiary)' }}>
-              All tasks across workstreams
-            </p>
-          </div>
+        <div>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--pln-tl-text-primary)' }}>Task List</h1>
+          <p className="text-sm" style={{ color: 'var(--pln-tl-text-tertiary)' }}>
+            All tasks across workstreams
+          </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Real-time indicator */}
-          <div className="tl-realtime-indicator">
-            <div className="tl-realtime-dot" />
-            <span>Live</span>
+        {/* KPI Chips - Enterprise Clean with dots, not icons */}
+        <div className="flex items-center gap-3">
+          {/* Total - no dot */}
+          <div className="tl-kpi-chip">
+            <span className="tl-kpi-value">{isLoading ? '—' : totalCount}</span>
+            <span className="tl-kpi-label">TOTAL</span>
           </div>
-
-          {/* Stats chips */}
-          <div className="tl-stat-chip">
-            <span className="label">Total</span>
-            <span className="value">{isLoading ? '—' : totalCount}</span>
+          
+          {/* Overdue - red dot */}
+          <div className="tl-kpi-chip">
+            <div className="flex items-center gap-1.5">
+              <span className="tl-kpi-dot" style={{ backgroundColor: '#dc2626' }} />
+              <span className="tl-kpi-value">{isLoading ? '—' : overdueCount}</span>
+            </div>
+            <span className="tl-kpi-label">OVERDUE</span>
           </div>
-          <div className="tl-stat-chip danger">
-            <span className="label">Overdue</span>
-            <span className="value">{isLoading ? '—' : overdueCount}</span>
+          
+          {/* In Progress - amber dot */}
+          <div className="tl-kpi-chip">
+            <div className="flex items-center gap-1.5">
+              <span className="tl-kpi-dot" style={{ backgroundColor: '#f59e0b' }} />
+              <span className="tl-kpi-value">{isLoading ? '—' : inProgressCount}</span>
+            </div>
+            <span className="tl-kpi-label">IN PROGRESS</span>
           </div>
-          <div className="tl-stat-chip warning">
-            <span className="label">In Progress</span>
-            <span className="value">{isLoading ? '—' : inProgressCount}</span>
-          </div>
-          <div className="tl-stat-chip success">
-            <span className="label">Done</span>
-            <span className="value">{isLoading ? '—' : doneCount}</span>
+          
+          {/* Done - green dot */}
+          <div className="tl-kpi-chip">
+            <div className="flex items-center gap-1.5">
+              <span className="tl-kpi-dot" style={{ backgroundColor: '#16a34a' }} />
+              <span className="tl-kpi-value">{isLoading ? '—' : doneCount}</span>
+            </div>
+            <span className="tl-kpi-label">DONE</span>
           </div>
         </div>
       </div>
