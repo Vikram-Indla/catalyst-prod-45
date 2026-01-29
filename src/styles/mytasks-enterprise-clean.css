@@ -300,9 +300,10 @@
   height: 0 !important;
 }
 
-/* Workstream text remains visible */
-.mytasks-enterprise-clean .mt-workstream-name {
-  color: var(--mt-text-muted) !important;
+/* Workstream text remains visible - MEDIUM GRAY */
+.mytasks-enterprise-clean .mt-workstream-name,
+.mytasks-enterprise-clean [class*="workstream"] {
+  color: #64748b !important;  /* Medium gray, not light */
   font-size: 13px !important;
   font-weight: 500 !important;
 }
