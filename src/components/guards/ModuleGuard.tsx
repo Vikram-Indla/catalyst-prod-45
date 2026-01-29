@@ -1,9 +1,9 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useEnabledModules } from '@/hooks/useModules';
+import { useModuleAccess } from '@/hooks/useModuleAccess';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Settings, Home } from 'lucide-react';
+import { AlertTriangle, Lock, Settings, Home, Eye } from 'lucide-react';
 
 interface ModuleGuardProps {
   moduleCode: string;
@@ -16,19 +16,20 @@ interface ModuleGuardProps {
 }
 
 /**
- * ModuleGuard - Protects routes based on module enablement
+ * ModuleGuard - Protects routes based on module enablement AND role-based access
  * 
- * This component ONLY hides UI navigation and pages.
- * It does NOT affect:
- * - Backend APIs
- * - Database queries
- * - Linking functionality (e.g., linking Epics from Demand module)
- * - Search and lookup operations
+ * Access Levels:
+ * - Full: Can see nav + access content (renders children)
+ * - View: Can see nav + NO content access (shows restricted message)
+ * - Hidden: Cannot see nav or access content
+ * 
+ * This component ONLY controls UI access.
+ * It does NOT affect backend APIs, database queries, or linking functionality.
  */
 export function ModuleGuard({ moduleCode, children, allowLinking = false }: ModuleGuardProps) {
   const navigate = useNavigate();
-  const { isModuleEnabled, isLoading } = useEnabledModules();
-  const { isAdmin } = useUserRole();
+  const { getModuleAccess, hasFullAccess, isLoading } = useModuleAccess();
+  const { isAdmin, isSuperAdmin } = useUserRole();
   
   if (isLoading) {
     return (
@@ -37,9 +38,11 @@ export function ModuleGuard({ moduleCode, children, allowLinking = false }: Modu
       </div>
     );
   }
+
+  const accessLevel = getModuleAccess(moduleCode);
   
-  // If module is enabled, render children
-  if (isModuleEnabled(moduleCode)) {
+  // Full access - render children
+  if (hasFullAccess(moduleCode)) {
     return <>{children}</>;
   }
   
@@ -47,43 +50,77 @@ export function ModuleGuard({ moduleCode, children, allowLinking = false }: Modu
   if (allowLinking) {
     return <>{children}</>;
   }
+
+  // View access - can see nav labels but NOT content
+  if (accessLevel === 'view') {
+    return (
+      <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 bg-background">
+        <div className="bg-card border rounded-lg p-8 max-w-md text-center space-y-6 shadow-sm">
+          <div className="mx-auto w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <Eye className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          </div>
+          
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">View Only Access</h2>
+            <p className="text-muted-foreground text-sm">
+              You can see this module in navigation, but you don't have permission to access its content.
+            </p>
+            <p className="text-muted-foreground text-xs mt-2">
+              Contact your administrator to request full access.
+            </p>
+          </div>
+          
+          <div className="flex flex-col gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/for-you')}
+              className="w-full"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Return to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
-  // Module is disabled - show appropriate message
+  // Hidden access - show appropriate message based on role
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 bg-background">
       <div className="bg-card border rounded-lg p-8 max-w-md text-center space-y-6 shadow-sm">
-        <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-          <AlertTriangle className="h-6 w-6 text-amber-600" />
+        <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+          <Lock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-foreground">Module Not Available</h2>
+          <h2 className="text-xl font-semibold text-foreground">Access Restricted</h2>
           
-          {isAdmin ? (
+          {isAdmin || isSuperAdmin ? (
             <p className="text-muted-foreground text-sm">
-              This module is disabled for your organization. Enable it under Administration → Modules & Packages.
+              This module is not enabled for your role. Configure access in Administration → Module Access Matrix.
             </p>
           ) : (
             <p className="text-muted-foreground text-sm">
-              This module is not available for your organization.
+              You don't have permission to access this module. Contact your administrator for access.
             </p>
           )}
         </div>
         
         <div className="flex flex-col gap-3">
-          {isAdmin && (
+          {(isAdmin || isSuperAdmin) && (
             <Button 
-              onClick={() => navigate('/admin/modules-packages')}
+              onClick={() => navigate('/admin/module-matrix')}
               className="w-full bg-brand-primary hover:bg-brand-primary-hover"
             >
               <Settings className="h-4 w-4 mr-2" />
-              Go to Modules & Packages
+              Go to Module Access Matrix
             </Button>
           )}
           
           <Button 
             variant="outline" 
-            onClick={() => navigate('/home')}
+            onClick={() => navigate('/for-you')}
             className="w-full"
           >
             <Home className="h-4 w-4 mr-2" />
@@ -96,6 +133,6 @@ export function ModuleGuard({ moduleCode, children, allowLinking = false }: Modu
 }
 
 /**
- * Helper hook for checking module status in components
+ * Re-export the module access hook for convenience
  */
-export { useEnabledModules } from '@/hooks/useModules';
+export { useModuleAccess } from '@/hooks/useModuleAccess';

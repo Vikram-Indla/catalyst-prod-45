@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEnabledModules } from "@/hooks/useModules";
+import { useModuleAccess } from "@/hooks/useModuleAccess";
 import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
 import { CreateDropdown } from "./CreateDropdown";
@@ -49,6 +50,7 @@ export function CatalystHeader() {
   // Settings access: admin, super_admin, or program_manager (management)
   const canAccessSettings = isAdmin || isSuperAdmin || isProgramManager;
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
+  const { canViewInNav, isLoading: accessLoading } = useModuleAccess();
   const { workspaceType } = useCatalystContext();
   const singleItemNav = useSingleItemNavigation();
   
@@ -139,30 +141,27 @@ export function CatalystHeader() {
     }
   };
 
-  // Define nav items with their module codes - each module has its own code
+  // Define nav items with their module keys (must match admin_nav_modules.module_key)
   const allNavItems = [
-    { label: "Home", path: "/for-you", moduleCode: null, visibleToProductOwner: true }, // Always visible
-    { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE", requiresEnterpriseAccess: true, visibleToProductOwner: true },
-    { label: "Product", hasDropdown: true, moduleCode: "PRODUCT", visibleToProductOwner: true },
-    
-    { label: "Releases", path: "/releases/command-center", moduleCode: null, visibleToProductOwner: false }, // Release & Test Management Module
-    { label: "Operations", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
-    { label: "Planner", path: "/planner/boards", moduleCode: null, visibleToProductOwner: true }, // Always visible - direct navigation
+    { label: "Home", path: "/for-you", moduleKey: "home", visibleToProductOwner: true },
+    { label: "Enterprise", path: "/enterprise/strategy-room", moduleKey: "enterprise", requiresEnterpriseAccess: true, visibleToProductOwner: true },
+    { label: "Product", hasDropdown: true, moduleKey: "product", visibleToProductOwner: true },
+    { label: "Releases", path: "/releases/command-center", moduleKey: "releases", visibleToProductOwner: false },
+    { label: "Operations", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
+    { label: "Planner", path: "/planner/boards", moduleKey: "planner", visibleToProductOwner: true },
   ];
 
-  // Get all nav items with their enabled status
-  // Enterprise requires both module enabled AND role-based access (admin, super_admin)
-  // Product Owner only sees Home, Enterprise, Product, and Planner
+  // Get all nav items with their enabled status based on role-based module access
+  // Uses canViewInNav which returns true for 'full' or 'view' access levels
   const navItems = allNavItems
     .filter(item => !isProductOwnerOnly || item.visibleToProductOwner)
     .map(item => ({
       ...item,
-      isEnabled: item.moduleCode === null 
-        ? true 
-        : item.requiresEnterpriseAccess 
-          ? isModuleEnabled(item.moduleCode) && canAccessEnterprise
-          : isModuleEnabled(item.moduleCode),
-    }));
+      isEnabled: item.requiresEnterpriseAccess 
+        ? canViewInNav(item.moduleKey) && canAccessEnterprise
+        : canViewInNav(item.moduleKey),
+    }))
+    .filter(item => item.isEnabled); // Only show items user can view in nav
 
   
 
