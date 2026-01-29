@@ -29,10 +29,15 @@ interface WorkstreamDrawerProps {
 export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDrawerProps) {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const prefixInputRef = useRef<HTMLInputElement>(null);
   
   // Rename mode
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameName, setRenameName] = useState('');
+  
+  // Key prefix edit mode
+  const [isEditingPrefix, setIsEditingPrefix] = useState(false);
+  const [editPrefix, setEditPrefix] = useState('');
   
   // Add member modal state
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
@@ -52,7 +57,9 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   useEffect(() => {
     if (workstream) {
       setRenameName(workstream.name);
+      setEditPrefix(workstream.key_prefix || workstream.code || '');
       setIsRenaming(false);
+      setIsEditingPrefix(false);
       setIsAddMemberOpen(false);
       setMemberSearch('');
     }
@@ -65,6 +72,14 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
       inputRef.current.select();
     }
   }, [isRenaming]);
+
+  // Focus prefix input when editing starts
+  useEffect(() => {
+    if (isEditingPrefix && prefixInputRef.current) {
+      prefixInputRef.current.focus();
+      prefixInputRef.current.select();
+    }
+  }, [isEditingPrefix]);
 
   if (!workstream) return null;
 
@@ -110,6 +125,32 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
     } else if (e.key === 'Escape') {
       setRenameName(workstream.name);
       setIsRenaming(false);
+    }
+  };
+
+  // Key prefix handlers
+  const handlePrefixStart = () => {
+    setEditPrefix(workstream.key_prefix || workstream.code || '');
+    setIsEditingPrefix(true);
+  };
+
+  const handlePrefixSave = async () => {
+    const cleanPrefix = editPrefix.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
+    if (cleanPrefix && cleanPrefix !== workstream.key_prefix) {
+      await updateWorkstream.mutateAsync({
+        id: workstream.id,
+        updates: { key_prefix: cleanPrefix },
+      });
+    }
+    setIsEditingPrefix(false);
+  };
+
+  const handlePrefixKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handlePrefixSave();
+    } else if (e.key === 'Escape') {
+      setEditPrefix(workstream.key_prefix || workstream.code || '');
+      setIsEditingPrefix(false);
     }
   };
 
@@ -199,8 +240,27 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   </h2>
                 )}
               </div>
-              <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 ml-6">
-                <span className="font-mono">{workstream.code}</span>
+              <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 ml-6 flex items-center gap-1">
+                {isEditingPrefix ? (
+                  <input
+                    ref={prefixInputRef}
+                    type="text"
+                    value={editPrefix}
+                    onChange={(e) => setEditPrefix(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5))}
+                    onBlur={handlePrefixSave}
+                    onKeyDown={handlePrefixKeyDown}
+                    className="w-16 px-1 py-0.5 font-mono text-xs bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    maxLength={5}
+                  />
+                ) : (
+                  <button
+                    onClick={handlePrefixStart}
+                    className="font-mono hover:bg-gray-100 dark:hover:bg-gray-800 px-1 py-0.5 rounded transition-colors"
+                    title="Click to edit task key prefix"
+                  >
+                    {workstream.key_prefix || workstream.code}
+                  </button>
+                )}
                 {' · Created '}
                 {new Date(workstream.created_at).toLocaleDateString('en-US', { 
                   month: 'short', 

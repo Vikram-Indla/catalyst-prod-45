@@ -75,6 +75,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
         description: description.trim() || undefined,
         color,
         leadId: selectedLead?.profile_id || null, // Use profile_id!
+        keyPrefix: code.trim() || undefined, // Pass key_prefix for task keys
       });
 
       // Add members (only those with profile_id)
@@ -179,21 +180,21 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                 />
               </div>
 
-              {/* Code */}
+              {/* Code (Key Prefix) */}
               <div className="ws-form-group">
                 <label className="ws-form-label">
-                  Code
+                  Task Key Prefix
                 </label>
                 <input
                   type="text"
                   className="ws-form-input"
-                  placeholder="e.g., PLT"
+                  placeholder="e.g., CAT"
                   value={code}
-                  onChange={(e) => setCode(e.target.value.toUpperCase().slice(0, 5))}
+                  onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5))}
                   maxLength={5}
                 />
                 <div className="ws-form-hint">
-                  3-5 characters, auto-generated if left blank
+                  Tasks will be created as {code || name.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase() || 'XXX'}-1, {code || name.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase() || 'XXX'}-2, etc.
                 </div>
               </div>
 
