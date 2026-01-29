@@ -35,8 +35,9 @@ export interface Workstream {
   created_at: string;
   updated_at: string;
   created_by?: string | null;
+  key_prefix: string; // 3-letter code for task keys (e.g., CAT, DEL)
   // Computed fields (for UI display)
-  code?: string; // Derived from slug
+  code?: string; // Derived from key_prefix
   members?: WorkstreamMember[];
   memberCount?: number;
   taskCount?: number;
@@ -172,8 +173,9 @@ export function usePlannerWorkstreams(includeArchived = false) {
           due_date: ws.due_date,
           created_at: ws.created_at,
           updated_at: ws.updated_at,
-          // Computed fields
-          code: ws.slug?.slice(0, 3).toUpperCase() || ws.name.slice(0, 3).toUpperCase(),
+          key_prefix: ws.key_prefix || ws.name.slice(0, 3).toUpperCase(),
+          // Computed fields - use key_prefix as the display code
+          code: ws.key_prefix || ws.name.slice(0, 3).toUpperCase(),
           members: wsMembers.map(m => ({
             id: m.id,
             user_id: m.user_id,
@@ -212,8 +214,13 @@ export function useCreateWorkstream() {
       description?: string;
       color: string;
       leadId?: string | null;
+      keyPrefix?: string; // 3-5 letter code for task keys
     }) => {
       const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      // Generate key_prefix from name if not provided
+      const keyPrefix = data.keyPrefix?.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) 
+        || data.name.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase();
+      
       const { data: result, error } = await supabase
         .from('planner_workstreams')
         .insert({
@@ -223,6 +230,7 @@ export function useCreateWorkstream() {
           color: data.color,
           lead_id: data.leadId || null,
           is_archived: false,
+          key_prefix: keyPrefix,
         })
         .select()
         .single();
@@ -252,6 +260,8 @@ export function useUpdateWorkstream() {
       if (updates.start_date !== undefined) updateData.start_date = updates.start_date;
       if (updates.due_date !== undefined) updateData.due_date = updates.due_date;
       if (updates.is_archived !== undefined) updateData.is_archived = updates.is_archived;
+      // key_prefix update - will trigger DB trigger to update all linked task keys
+      if (updates.key_prefix !== undefined) updateData.key_prefix = updates.key_prefix.toUpperCase();
       
       const { error } = await supabase
         .from('planner_workstreams')

@@ -24,9 +24,21 @@ interface CreateTaskResult {
   task_key: string;
 }
 
-// Generate unique task key using database sequence
-async function generateTaskKey(): Promise<string> {
-  // Use database function for guaranteed unique sequential keys
+// Generate unique task key using workstream-based sequence
+async function generateTaskKey(workstreamId?: string): Promise<string> {
+  // Use the new workstream-based key generation function
+  if (workstreamId) {
+    const { data, error } = await supabase.rpc('generate_workstream_task_key', {
+      p_workstream_id: workstreamId,
+    });
+    
+    if (!error && data) {
+      return data;
+    }
+    console.error('Error generating workstream task key:', error);
+  }
+  
+  // Fallback to legacy PLN-based keys for tasks without workstream
   const { data, error } = await supabase.rpc('generate_planner_task_key');
   
   if (error || !data) {
@@ -65,8 +77,8 @@ export function useCreateTaskMutation() {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Generate task key
-      const taskKey = await generateTaskKey();
+      // Generate task key based on workstream (uses workstream's key_prefix)
+      const taskKey = await generateTaskKey(input.workstream_id);
       
       // Get backlog status ID if not provided
       let statusId = input.status_id;

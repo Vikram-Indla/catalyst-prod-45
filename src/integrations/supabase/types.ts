@@ -13175,6 +13175,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_archived: boolean
+          key_prefix: string | null
           lead_id: string | null
           name: string
           slug: string
@@ -13191,6 +13192,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_archived?: boolean
+          key_prefix?: string | null
           lead_id?: string | null
           name: string
           slug: string
@@ -13207,6 +13209,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_archived?: boolean
+          key_prefix?: string | null
           lead_id?: string | null
           name?: string
           slug?: string
@@ -28953,6 +28956,53 @@ export type Database = {
           },
         ]
       }
+      workstream_task_key_sequences: {
+        Row: {
+          last_sequence: number
+          updated_at: string | null
+          workstream_id: string
+        }
+        Insert: {
+          last_sequence?: number
+          updated_at?: string | null
+          workstream_id: string
+        }
+        Update: {
+          last_sequence?: number
+          updated_at?: string | null
+          workstream_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workstream_task_key_sequences_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: true
+            referencedRelation: "my_accessible_workstreams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workstream_task_key_sequences_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: true
+            referencedRelation: "planner_dashboard_workstream_health"
+            referencedColumns: ["workstream_id"]
+          },
+          {
+            foreignKeyName: "workstream_task_key_sequences_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: true
+            referencedRelation: "planner_dashboard_workstream_progress"
+            referencedColumns: ["workstream_id"]
+          },
+          {
+            foreignKeyName: "workstream_task_key_sequences_workstream_id_fkey"
+            columns: ["workstream_id"]
+            isOneToOne: true
+            referencedRelation: "planner_workstreams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       license_allocation_totals: {
@@ -30743,6 +30793,10 @@ export type Database = {
         Args: { p_team_id: string }
         Returns: string
       }
+      generate_workstream_task_key: {
+        Args: { p_workstream_id: string }
+        Returns: string
+      }
       get_accessible_workstreams: {
         Args: { _user_id: string }
         Returns: string[]
@@ -31030,6 +31084,7 @@ export type Database = {
         }
         Returns: Json
       }
+      migrate_tasks_to_workstream_keys: { Args: never; Returns: undefined }
       move_items_to_bottom: {
         Args: { p_item_ids: string[]; p_run_id: string }
         Returns: Json
