@@ -189,6 +189,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
   const [selectedWorkstream, setSelectedWorkstream] = useState<Workstream | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [debugAlign, setDebugAlign] = useState(false);
 
   // Open drawer for workstream
   const openWorkstreamDrawer = useCallback((ws: Workstream) => {
@@ -200,41 +201,33 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
     setIsDrawerOpen(false);
     setSelectedWorkstream(null);
   }, []);
-  const gridRef = useRef<HTMLDivElement>(null);
-  const sidebarRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const scrollSyncSourceRef = useRef<'sidebar' | 'grid' | null>(null);
 
-  // Sync scroll between sidebar and grid
-  const handleSidebarScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
-    if (scrollSyncSourceRef.current === 'grid') return;
-    scrollSyncSourceRef.current = 'sidebar';
-    
-    const target = e.currentTarget;
-    if (gridRef.current) {
-      gridRef.current.scrollTop = target.scrollTop;
-    }
-    
+  // Hard sync architecture:
+  // - ONE shared vertical scroll container for both columns
+  // - Horizontal scroll stays on the grid only, and is mirrored to the date header
+  const verticalScrollRef = useRef<HTMLDivElement>(null);
+  const headerXRef = useRef<HTMLDivElement>(null);
+  const gridXRef = useRef<HTMLDivElement>(null);
+  const hScrollSyncSourceRef = useRef<'header' | 'grid' | null>(null);
+
+  const handleHeaderXScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
+    if (hScrollSyncSourceRef.current === 'grid') return;
+    hScrollSyncSourceRef.current = 'header';
+    const left = e.currentTarget.scrollLeft;
+    if (gridXRef.current) gridXRef.current.scrollLeft = left;
     requestAnimationFrame(() => {
-      if (scrollSyncSourceRef.current === 'sidebar') {
-        scrollSyncSourceRef.current = null;
-      }
+      if (hScrollSyncSourceRef.current === 'header') hScrollSyncSourceRef.current = null;
     });
   }, []);
 
-  const handleGridScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
-    if (scrollSyncSourceRef.current === 'sidebar') return;
-    scrollSyncSourceRef.current = 'grid';
-    
-    const target = e.currentTarget;
-    if (sidebarRef.current) {
-      sidebarRef.current.scrollTop = target.scrollTop;
-    }
-    
+  const handleGridXScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
+    if (hScrollSyncSourceRef.current === 'header') return;
+    hScrollSyncSourceRef.current = 'grid';
+    const left = e.currentTarget.scrollLeft;
+    if (headerXRef.current) headerXRef.current.scrollLeft = left;
     requestAnimationFrame(() => {
-      if (scrollSyncSourceRef.current === 'grid') {
-        scrollSyncSourceRef.current = null;
-      }
+      if (hScrollSyncSourceRef.current === 'grid') hScrollSyncSourceRef.current = null;
     });
   }, []);
 
@@ -397,10 +390,10 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
   const goToToday = useCallback(() => {
     setViewStart(startOfWeek(new Date(), { weekStartsOn: 0 }));
-    if (gridRef.current) {
-      const todayOffset = differenceInDays(new Date(), startOfWeek(new Date(), { weekStartsOn: 0 }));
-      gridRef.current.scrollLeft = Math.max(0, (todayOffset - 3) * columnConfig.width);
-    }
+    const todayOffset = differenceInDays(new Date(), startOfWeek(new Date(), { weekStartsOn: 0 }));
+    const nextLeft = Math.max(0, (todayOffset - 3) * columnConfig.width);
+    if (gridXRef.current) gridXRef.current.scrollLeft = nextLeft;
+    if (headerXRef.current) headerXRef.current.scrollLeft = nextLeft;
   }, [columnConfig.width]);
 
   // Toggle workstream collapse
@@ -438,7 +431,8 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   const showTodayLine = todayOffset >= 0 && todayOffset < columnConfig.days;
 
   // Layout constants
-  const SWIMLANE_HEADER_HEIGHT = 56;
+  // Alignment contract: fixed header height prevents left/right drift caused by wrapped content.
+  const SWIMLANE_HEADER_HEIGHT = 92;
   const TASK_BAR_HEIGHT = 32;
   const TASK_BAR_GAP = 6;
   const SWIMLANE_PADDING = 12;
@@ -456,6 +450,17 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   const totalContentHeight = swimlanes.reduce((acc, lane) => {
     return acc + SWIMLANE_HEADER_HEIGHT + getSwimlineHeight(lane.tasks.length, lane.collapsed);
   }, 0);
+
+  // Dev-only visual debug to make alignment issues obvious.
+  const debugRows = useMemo(() => {
+    let y = 0;
+    return swimlanes.map((lane, index) => {
+      const bodyH = getSwimlineHeight(lane.tasks.length, lane.collapsed);
+      const headerTop = y;
+      y += SWIMLANE_HEADER_HEIGHT + bodyH;
+      return { index, id: lane.id, headerTop };
+    });
+  }, [swimlanes, SWIMLANE_HEADER_HEIGHT]);
 
   // ============================================================
   // KEYBOARD SHORTCUTS
@@ -732,6 +737,17 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             </Button>
           )}
 
+          {import.meta.env.DEV && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setDebugAlign(v => !v)}
+              className="h-9 text-slate-500"
+            >
+              {debugAlign ? 'Hide Debug' : 'Debug'}
+            </Button>
+          )}
+
           {/* Status Legend */}
           <div className="ml-auto flex items-center gap-4 text-xs text-slate-500">
             {['backlog', 'planned', 'progress', 'review', 'done'].map(s => (
@@ -747,159 +763,190 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         </div>
 
         {/* ============================================================
-            TIMELINE CONTENT - Left panel + Gantt Grid
+            TIMELINE CONTENT — One vertical scroll owner (pixel-locked)
             ============================================================ */}
-        <div className="flex-1 overflow-hidden flex">
-          {/* Left Panel - Workstream Swimlane Headers (V2 Spec: Headers ONLY) */}
-          <div
-            ref={sidebarRef}
-            onScroll={handleSidebarScroll}
-            className="flex-shrink-0 bg-white dark:bg-slate-950 overflow-y-auto border-r border-slate-200 dark:border-slate-800"
-            style={{ width: LEFT_PANEL_WIDTH }}
-          >
-            {/* Header */}
+        <div className="flex-1 overflow-hidden flex flex-col">
+          {/* Column headers (not vertically scrollable) */}
+          <div className="flex flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+            {/* Left header */}
             <div
-              className="sticky top-0 z-10 flex items-center px-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 font-medium text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide"
-              style={{ height: DATE_HEADER_HEIGHT }}
+              className="flex items-center px-4 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-medium text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide"
+              style={{ width: LEFT_PANEL_WIDTH, height: DATE_HEADER_HEIGHT }}
             >
               Workstream
             </div>
 
-            {/* Swimlane Headers */}
-            {swimlanes.map(lane => (
-              <div key={lane.id}>
-                {/* Workstream Header (V2 Spec: With lead display + task summary) */}
+            {/* Right date header (horizontal scroll only) */}
+            <div className="flex-1 overflow-hidden" style={{ height: DATE_HEADER_HEIGHT }}>
+              <div
+                ref={headerXRef}
+                onScroll={handleHeaderXScroll}
+                className="h-full overflow-x-auto overflow-y-hidden"
+              >
                 <div
-                  className="w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
-                  style={{ minHeight: SWIMLANE_HEADER_HEIGHT }}
+                  className="flex h-full"
+                  style={{ minWidth: columnConfig.days * columnConfig.width }}
                 >
-                  {/* Collapse Chevron - clickable for expand/collapse */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleCollapse(lane.id);
-                    }}
-                    className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
-                    aria-label={lane.collapsed ? 'Expand' : 'Collapse'}
-                  >
-                    <ChevronDown
-                      className={cn(
-                        "w-4 h-4 text-slate-400 transition-transform",
-                        lane.collapsed && "-rotate-90"
-                      )}
-                    />
-                  </button>
+                  {dateColumns.map((date, i) => {
+                    const isCurrentDay = isToday(date);
+                    const dayOfWeek = getDay(date);
+                    const isWeekend = dayOfWeek === 5 || dayOfWeek === 6; // Saudi weekend (Fri/Sat)
 
-                  {/* Color Dot */}
-                  <div
-                    className="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0"
-                    style={{ backgroundColor: lane.color }}
-                  />
-
-                  {/* Workstream Info - clicking name opens drawer */}
-                  <div className="flex-1 min-w-0">
-                    <button
-                      onClick={() => {
-                        // Find the full workstream object to pass to drawer
-                        const fullWorkstream = workstreams.find(ws => ws.id === lane.id);
-                        if (fullWorkstream) {
-                          openWorkstreamDrawer(fullWorkstream);
-                        }
-                      }}
-                      className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors text-left"
-                    >
-                      {lane.name}
-                    </button>
-
-                    {/* Team Lead (V2 Spec: CRITICAL ADDITION) */}
-                    <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-                      {lane.lead ? (
-                        <>
-                          <div
-                            className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-semibold text-white flex-shrink-0"
-                            style={{ backgroundColor: lane.color }}
-                          >
-                            {lane.lead.initials}
+                    return (
+                      <div
+                        key={i}
+                        className={cn(
+                          "flex-shrink-0 flex flex-col items-center justify-center transition-colors",
+                          isWeekend && !isCurrentDay && "bg-slate-50/80 dark:bg-slate-900/50"
+                        )}
+                        style={{ width: columnConfig.width }}
+                      >
+                        {isCurrentDay ? (
+                          <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full bg-blue-600 text-white">
+                            <span className="text-[9px] font-medium uppercase leading-none">
+                              {format(date, 'EEE')}
+                            </span>
+                            <span className="text-sm font-bold leading-none">
+                              {format(date, 'd')}
+                            </span>
                           </div>
-                          <span>{lane.lead.name}</span>
-                        </>
-                      ) : (
-                        <span className="text-slate-400">No lead assigned</span>
-                      )}
-                    </div>
-
-                    {/* Task Summary */}
-                    <div className="text-[11px] text-slate-500 dark:text-slate-500 mt-1">
-                      {lane.taskCount} tasks
-                      {lane.inProgressCount > 0 && ` · ${lane.inProgressCount} in progress`}
-                      {lane.overdueCount > 0 && (
-                        <span className="text-red-600 font-semibold">
-                          {' · '}{lane.overdueCount} overdue
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                        ) : (
+                          <>
+                            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">
+                              {format(date, 'EEE')}
+                            </span>
+                            <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                              {format(date, 'd')}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-
-                {/* Empty space for collapsed lanes, or task row space */}
-                {!lane.collapsed && (
-                  <div
-                    className="border-b border-slate-100 dark:border-slate-800"
-                    style={{ height: getSwimlineHeight(lane.tasks.length, false) }}
-                  />
-                )}
               </div>
-            ))}
+            </div>
           </div>
 
-          {/* Right Panel - Gantt Chart */}
-          <div className="flex-1 overflow-auto" ref={gridRef} onScroll={handleGridScroll}>
-            <div style={{ minWidth: columnConfig.days * columnConfig.width }}>
-              {/* Date Header Row */}
-              <div
-                className="flex sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950"
-                style={{ height: DATE_HEADER_HEIGHT }}
-              >
-                {dateColumns.map((date, i) => {
-                  const isCurrentDay = isToday(date);
-                  const dayOfWeek = getDay(date);
-                  const isWeekend = dayOfWeek === 5 || dayOfWeek === 6; // Saudi weekend (Fri/Sat)
-
-                  return (
-                    <div
-                      key={i}
-                      className={cn(
-                        "flex-shrink-0 flex flex-col items-center justify-center transition-colors",
-                        isWeekend && !isCurrentDay && "bg-slate-50/80 dark:bg-slate-900/50"
-                      )}
-                      style={{ width: columnConfig.width }}
-                    >
-                      {isCurrentDay ? (
-                        <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full bg-blue-600 text-white">
-                          <span className="text-[9px] font-medium uppercase leading-none">
-                            {format(date, 'EEE')}
-                          </span>
-                          <span className="text-sm font-bold leading-none">
-                            {format(date, 'd')}
-                          </span>
-                        </div>
-                      ) : (
-                        <>
-                          <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">
-                            {format(date, 'EEE')}
-                          </span>
-                          <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
-                            {format(date, 'd')}
-                          </span>
-                        </>
-                      )}
+          {/* Body — shared vertical scroll for both columns */}
+          <div ref={verticalScrollRef} className="flex-1 overflow-y-auto">
+            <div className="relative flex">
+              {/* Dev alignment overlay */}
+              {import.meta.env.DEV && debugAlign && (
+                <div
+                  className="pointer-events-none absolute inset-x-0 top-0 z-30"
+                  style={{ height: totalContentHeight }}
+                >
+                  {debugRows.map((r) => (
+                    <div key={r.id} className="absolute inset-x-0" style={{ top: r.headerTop }}>
+                      <div className="border-t border-dashed border-border/60" />
+                      <div className="absolute top-0 -translate-y-1/2 left-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px]">
+                        {r.index} · {r.id}
+                      </div>
+                      <div className="absolute top-0 -translate-y-1/2" style={{ left: LEFT_PANEL_WIDTH + 8 }}>
+                        <span className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px]">
+                          {r.index} · {r.id}
+                        </span>
+                      </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+              )}
+
+              {/* Left panel (no independent vertical scroll) */}
+              <div
+                className="flex-shrink-0 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800"
+                style={{ width: LEFT_PANEL_WIDTH }}
+              >
+                {swimlanes.map((lane) => (
+                  <div key={lane.id}>
+                    <div
+                      className="w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left overflow-hidden"
+                      style={{ height: SWIMLANE_HEADER_HEIGHT }}
+                    >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCollapse(lane.id);
+                        }}
+                        className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
+                        aria-label={lane.collapsed ? 'Expand' : 'Collapse'}
+                      >
+                        <ChevronDown
+                          className={cn(
+                            "w-4 h-4 text-slate-400 transition-transform",
+                            lane.collapsed && "-rotate-90"
+                          )}
+                        />
+                      </button>
+
+                      <div
+                        className="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0"
+                        style={{ backgroundColor: lane.color }}
+                      />
+
+                      <div className="flex-1 min-w-0">
+                        <button
+                          onClick={() => {
+                            const fullWorkstream = workstreams.find(
+                              (ws) => ws.id === lane.id
+                            );
+                            if (fullWorkstream) openWorkstreamDrawer(fullWorkstream);
+                          }}
+                          className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors text-left truncate block"
+                          title={lane.name}
+                        >
+                          {lane.name}
+                        </button>
+
+                        <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 mt-0.5 min-w-0">
+                          {lane.lead ? (
+                            <>
+                              <div
+                                className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-semibold text-white flex-shrink-0"
+                                style={{ backgroundColor: lane.color }}
+                              >
+                                {lane.lead.initials}
+                              </div>
+                              <span className="truncate">{lane.lead.name}</span>
+                            </>
+                          ) : (
+                            <span className="text-slate-400">No lead assigned</span>
+                          )}
+                        </div>
+
+                        <div className="text-[11px] text-slate-500 dark:text-slate-500 mt-1 truncate">
+                          {lane.taskCount} tasks
+                          {lane.inProgressCount > 0 &&
+                            ` · ${lane.inProgressCount} in progress`}
+                          {lane.overdueCount > 0 && (
+                            <span className="text-red-600 font-semibold">
+                              {' · '}{lane.overdueCount} overdue
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {!lane.collapsed && (
+                      <div
+                        className="border-b border-slate-100 dark:border-slate-800"
+                        style={{ height: getSwimlineHeight(lane.tasks.length, false) }}
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
 
-              {/* Grid Body with Bars */}
-              <div className="relative">
+              {/* Right panel — horizontal scroll only */}
+              <div className="flex-1 overflow-hidden bg-white dark:bg-slate-950">
+                <div
+                  className="overflow-x-auto overflow-y-hidden"
+                  ref={gridXRef}
+                  onScroll={handleGridXScroll}
+                >
+                  <div style={{ minWidth: columnConfig.days * columnConfig.width }}>
+                    <div className="relative">
                 {/* Today Line (V2 Spec: Prominent with label + arrow) */}
                 {showTodayLine && (
                   <div
@@ -1109,6 +1156,9 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                     </div>
                   );
                 })}
+              </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
