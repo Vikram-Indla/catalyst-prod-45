@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useTaskList, useTaskListStats } from '../../hooks/useTaskList';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
+import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { usePlannerRealtime } from '../../hooks/usePlannerRealtime';
 import { useUpdatePlannerTask } from '../../hooks/usePlannerTasks';
@@ -112,7 +113,11 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
   // Data hooks
   const { data: tasks = [], isLoading, refetch } = useTaskList(filters, sorting);
   const { data: stats } = useTaskListStats(filters.workstream, filters.assignee);
-  const workstreams: { id: string; name: string; slug?: string; color?: string }[] = []; // Workstreams removed
+  const { data: workstreamsRaw = [] } = usePlannerWorkstreams(false);
+  const workstreams = useMemo(
+    () => workstreamsRaw.map(ws => ({ id: ws.id, name: ws.name, slug: ws.slug, color: ws.color })),
+    [workstreamsRaw]
+  );
   const { data: users = [] } = usePlannerUsers();
   const { data: statuses = [] } = useKanbanStatuses();
   const updateTask = useUpdatePlannerTask();
@@ -263,21 +268,39 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
     return columnWidths[colId] || ALL_COLUMNS.find(c => c.id === colId)?.width || 100;
   };
 
+  const getPriorityDotColor = (p: TaskPriority) => {
+    // Keep this as a simple lookup into existing configuration to avoid CSS var format issues.
+    return PRIORITY_CONFIG[p]?.color || PRIORITY_CONFIG.medium.color;
+  };
+
+  // URL contract: other modules may navigate using ?workstream={slug};
+  // our DB filter expects workstream_id. Map slug -> id once workstreams are loaded.
+  useEffect(() => {
+    const w = filters.workstream;
+    if (!w || workstreams.length === 0) return;
+
+    const isId = workstreams.some(ws => ws.id === w);
+    if (isId) return;
+
+    const match = workstreams.find(ws => ws.slug === w);
+    if (!match) return;
+
+    setFilters(prev => ({ ...prev, workstream: match.id }));
+  }, [filters.workstream, workstreams]);
+
   return (
     <div className="planner-task-list-content h-full flex flex-col overflow-hidden">
       {/* Header - Enterprise Clean (no icons, minimalist) */}
-      <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b bg-white dark:bg-slate-900" style={{ 
-        borderColor: 'var(--pln-tl-border)' 
-      }}>
+      <div className="tl-page-header shrink-0">
         <div>
-          <h1 className="text-xl font-bold" style={{ color: 'var(--pln-tl-text-primary)' }}>Task List</h1>
-          <p className="text-sm" style={{ color: 'var(--pln-tl-text-tertiary)' }}>
+          <h1 className="tl-page-title">Task List</h1>
+          <p className="tl-page-subtitle">
             All tasks across workstreams
           </p>
         </div>
 
         {/* KPI Chips - Enterprise Clean with dots, not icons */}
-        <div className="flex items-center gap-3">
+        <div className="tl-kpi-strip">
           {/* Total - no dot */}
           <div className="tl-kpi-chip">
             <span className="tl-kpi-value">{isLoading ? '—' : totalCount}</span>
@@ -287,7 +310,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
           {/* Overdue - red dot */}
           <div className="tl-kpi-chip">
             <div className="flex items-center gap-1.5">
-              <span className="tl-kpi-dot" style={{ backgroundColor: '#dc2626' }} />
+              <span className="tl-kpi-dot tl-kpi-dot-overdue" />
               <span className="tl-kpi-value">{isLoading ? '—' : overdueCount}</span>
             </div>
             <span className="tl-kpi-label">OVERDUE</span>
@@ -296,7 +319,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
           {/* In Progress - amber dot */}
           <div className="tl-kpi-chip">
             <div className="flex items-center gap-1.5">
-              <span className="tl-kpi-dot" style={{ backgroundColor: '#f59e0b' }} />
+              <span className="tl-kpi-dot tl-kpi-dot-progress" />
               <span className="tl-kpi-value">{isLoading ? '—' : inProgressCount}</span>
             </div>
             <span className="tl-kpi-label">IN PROGRESS</span>
@@ -305,7 +328,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
           {/* Done - green dot */}
           <div className="tl-kpi-chip">
             <div className="flex items-center gap-1.5">
-              <span className="tl-kpi-dot" style={{ backgroundColor: '#16a34a' }} />
+              <span className="tl-kpi-dot tl-kpi-dot-done" />
               <span className="tl-kpi-value">{isLoading ? '—' : doneCount}</span>
             </div>
             <span className="tl-kpi-label">DONE</span>
@@ -415,8 +438,11 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
                     key={p} 
                     onClick={() => setFilters(prev => ({ ...prev, priority: p }))}
                   >
-                    <span className="mr-2">{config.emoji}</span>
-                    <span style={{ color: config.color }}>{config.label}</span>
+                    <span
+                      className="tl-filter-dot"
+                      style={{ backgroundColor: getPriorityDotColor(p) }}
+                    />
+                    <span className="tl-filter-label">{config.label}</span>
                   </DropdownMenuItem>
                 );
               })}
@@ -479,87 +505,91 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
       </div>
 
       {/* Table */}
-      <div ref={tableRef} className="flex-1 overflow-auto" style={{ background: 'var(--pln-tl-surface-page)' }}>
-        {isLoading ? (
-          <div className="p-8 space-y-3">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-12 tl-skeleton" />
-            ))}
-          </div>
-        ) : tasks.length === 0 ? (
-          <div className="tl-empty-state">
-            <div className="tl-empty-icon">
-              <List className="w-8 h-8" />
-            </div>
-            <h3 className="tl-empty-title">No tasks found</h3>
-            <p className="tl-empty-desc">Try adjusting your filters or create a new task</p>
-          </div>
-        ) : (
-          <table className="tl-table">
-            <thead className="tl-header">
-              <tr>
-                <th style={{ width: 40 }}>
-                  <Checkbox
-                    checked={selectedIds.size === tasks.length && tasks.length > 0}
-                    onCheckedChange={handleSelectAll}
-                  />
-                </th>
-                {visibleColumnDefs.map((col) => (
-                  <th 
-                    key={col.id} 
-                    style={{ width: getColumnWidth(col.id), minWidth: col.minWidth }}
-                  >
-                    {col.label}
-                    <div 
-                      className="tl-column-resizer"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        const startX = e.pageX;
-                        const startWidth = getColumnWidth(col.id);
-                        
-                        const handleMove = (moveE: MouseEvent) => {
-                          const diff = moveE.pageX - startX;
-                          const newWidth = Math.max(col.minWidth, startWidth + diff);
-                          handleColumnResize(col.id, newWidth);
-                        };
-                        
-                        const handleUp = () => {
-                          document.removeEventListener('mousemove', handleMove);
-                          document.removeEventListener('mouseup', handleUp);
-                          document.body.style.cursor = '';
-                          document.body.style.userSelect = '';
-                        };
-                        
-                        document.body.style.cursor = 'col-resize';
-                        document.body.style.userSelect = 'none';
-                        document.addEventListener('mousemove', handleMove);
-                        document.addEventListener('mouseup', handleUp);
-                      }}
-                    />
-                  </th>
+      <div ref={tableRef} className="flex-1 overflow-auto tl-table-scroll">
+        <div className="tl-table-pad">
+          <div className="tl-table-container">
+            {isLoading ? (
+              <div className="p-6 space-y-3">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="h-12 tl-skeleton" />
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {tasks.map((task, index) => (
-                <TaskListRowV3
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  isSelected={selectedIds.has(task.id)}
-                  isFocused={focusedIndex === index}
-                  onSelect={handleSelectOne}
-                  onClick={onTaskClick}
-                  onUpdate={handleTaskUpdate}
-                  visibleColumns={visibleColumns}
-                  columnWidths={columnWidths}
-                  statuses={statuses}
-                  users={users}
-                />
-              ))}
-            </tbody>
-          </table>
-        )}
+              </div>
+            ) : tasks.length === 0 ? (
+              <div className="tl-empty-state">
+                <div className="tl-empty-icon">
+                  <List className="w-8 h-8" />
+                </div>
+                <h3 className="tl-empty-title">No tasks found</h3>
+                <p className="tl-empty-desc">Try adjusting your filters or create a new task</p>
+              </div>
+            ) : (
+              <table className="tl-table">
+                <thead className="tl-header">
+                  <tr>
+                    <th style={{ width: 40 }}>
+                      <Checkbox
+                        checked={selectedIds.size === tasks.length && tasks.length > 0}
+                        onCheckedChange={handleSelectAll}
+                      />
+                    </th>
+                    {visibleColumnDefs.map((col) => (
+                      <th
+                        key={col.id}
+                        style={{ width: getColumnWidth(col.id), minWidth: col.minWidth }}
+                      >
+                        {col.label}
+                        <div
+                          className="tl-column-resizer"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            const startX = e.pageX;
+                            const startWidth = getColumnWidth(col.id);
+
+                            const handleMove = (moveE: MouseEvent) => {
+                              const diff = moveE.pageX - startX;
+                              const newWidth = Math.max(col.minWidth, startWidth + diff);
+                              handleColumnResize(col.id, newWidth);
+                            };
+
+                            const handleUp = () => {
+                              document.removeEventListener('mousemove', handleMove);
+                              document.removeEventListener('mouseup', handleUp);
+                              document.body.style.cursor = '';
+                              document.body.style.userSelect = '';
+                            };
+
+                            document.body.style.cursor = 'col-resize';
+                            document.body.style.userSelect = 'none';
+                            document.addEventListener('mousemove', handleMove);
+                            document.addEventListener('mouseup', handleUp);
+                          }}
+                        />
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {tasks.map((task, index) => (
+                    <TaskListRowV3
+                      key={task.id}
+                      task={task}
+                      index={index}
+                      isSelected={selectedIds.has(task.id)}
+                      isFocused={focusedIndex === index}
+                      onSelect={handleSelectOne}
+                      onClick={onTaskClick}
+                      onUpdate={handleTaskUpdate}
+                      visibleColumns={visibleColumns}
+                      columnWidths={columnWidths}
+                      statuses={statuses}
+                      users={users}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Bulk Actions Bar */}
