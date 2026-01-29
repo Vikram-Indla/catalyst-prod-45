@@ -7,7 +7,7 @@ import '@/styles/workstreams.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount, useUpdateWorkstream } from '../../hooks/usePlannerWorkstreams';
+import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount, useUpdateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
 import { InlineLeadSelect } from './InlineLeadSelect';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
@@ -58,6 +58,7 @@ export function WorkstreamsPage() {
   const archiveWorkstream = useArchiveWorkstream();
   const deleteWorkstream = useDeleteWorkstream();
   const updateWorkstream = useUpdateWorkstream();
+  const addMember = useAddWorkstreamMember();
 
   const [isQuickEditOpen, setIsQuickEditOpen] = useState(false);
   const [quickEditWorkstream, setQuickEditWorkstream] = useState<Workstream | null>(null);
@@ -528,16 +529,14 @@ export function WorkstreamsPage() {
                   {selectedIds.has(ws.id) && <Check className="w-3 h-3" strokeWidth={3} />}
                 </div>
 
-                {/* Name */}
+                {/* Name - color pill and name on same line */}
                 <div className="ws-row-name">
                   <div 
                     className="ws-color-dot" 
                     style={{ background: ws.color }} 
                   />
-                  <div>
-                    <div className="ws-row-title">{ws.name}</div>
-                    <div className="ws-row-subtitle">{ws.code}</div>
-                  </div>
+                  <span className="ws-row-title">{ws.name}</span>
+                  <span className="ws-row-subtitle">{ws.code}</span>
                 </div>
 
                 {/* Lead - Inline editable when unassigned */}
@@ -547,9 +546,11 @@ export function WorkstreamsPage() {
                     workstreamColor={ws.color}
                     currentLead={ws.lead}
                     onAssignLead={(userId) => {
-                      updateWorkstream.mutate({
-                        id: ws.id,
-                        updates: { lead_id: userId }
+                      // Add member as lead (also updates planner_workstreams.lead_id via hook)
+                      addMember.mutate({
+                        workstreamId: ws.id,
+                        userId,
+                        role: 'lead',
                       });
                     }}
                   />

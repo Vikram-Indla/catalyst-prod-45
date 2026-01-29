@@ -543,6 +543,42 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+/* Row-level name cell (color dot + name + code on same line) */
+.ws-row-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.ws-row-title {
+  font-size: var(--ws-text-base);
+  font-weight: 600;
+  color: var(--ws-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-row-subtitle {
+  font-size: var(--ws-text-xs);
+  color: var(--ws-text-tertiary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  flex-shrink: 0;
+}
+
+/* Lead cell */
+.ws-row-lead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ws-row-unassigned {
+  font-size: var(--ws-text-base);
+  color: var(--ws-text-muted);
+}
+
 /* ==========================================================================
    10. LEAD CELL
    ========================================================================== */
