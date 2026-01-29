@@ -5,10 +5,16 @@
 
 import '@/styles/workstreams.css';
 import { useState, useEffect, useRef } from 'react';
-import { Pencil, X, AlertTriangle, Check, LayoutGrid, Columns3, Calendar, UserPlus, Trash2, Search, Archive, ArchiveRestore } from 'lucide-react';
+import { Pencil, X, AlertTriangle, Check, LayoutGrid, Columns3, Calendar, UserPlus, Trash2, Search, Archive, ArchiveRestore, ChevronDown } from 'lucide-react';
 import { Workstream, useUpdateWorkstream, useAddWorkstreamMember, useRemoveWorkstreamMember, useDeleteWorkstream, useArchiveWorkstream } from '../../hooks/usePlannerWorkstreams';
 import { useResourceInventory, Resource } from '../../hooks/useResourceInventory';
 import { useNavigate } from 'react-router-dom';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -102,6 +108,20 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
     !existingMemberIds.has(r.profile_id) &&
     r.name.toLowerCase().includes(memberSearch.toLowerCase())
   );
+
+  const membersForLead = (workstream.members || [])
+    .filter(m => !!m.user_id)
+    .map(m => ({
+      userId: m.user_id,
+      name: m.profile?.full_name || 'Unknown',
+      initials: (m.profile?.full_name || 'U')
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   // Rename handlers
   const handleRenameStart = () => {
@@ -353,6 +373,46 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               <span className="text-xs text-gray-400">
                 {workstream.memberCount || 0} members
               </span>
+            </div>
+
+            {/* Lead Assignment */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Lead
+              </div>
+              {membersForLead.length > 0 ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild disabled={addMember.isPending}>
+                    <button
+                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                      type="button"
+                    >
+                      {workstream.lead ? workstream.lead.name : 'Assign lead...'}
+                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="z-[9999]">
+                    {membersForLead.map((m) => (
+                      <DropdownMenuItem
+                        key={m.userId}
+                        onClick={async () => {
+                          await addMember.mutateAsync({
+                            workstreamId: workstream.id,
+                            userId: m.userId,
+                            role: 'lead',
+                          });
+                        }}
+                        className="gap-2"
+                      >
+                        <span className="font-medium">{m.name}</span>
+                        {workstream.lead?.id === m.userId && <Check className="ml-auto h-4 w-4" />}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <span className="text-xs text-gray-400">—</span>
+              )}
             </div>
 
             {/* Lead Card */}
