@@ -15,6 +15,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================================
+   APP LAYOUT CONTRACT — Header + Safe Area
+   Single source of truth for any fixed drawers/overlays.
+   ============================================================= */
+:root {
+  --app-safe-top: env(safe-area-inset-top, 0px);
+  --app-header-h: 56px;
+  --app-top-offset: calc(var(--app-safe-top) + var(--app-header-h));
+}
+
 /* ════════════════════════════════════════════════════════════════════════════
    CATALYST V5 — BLUE + TEAL ENTERPRISE DESIGN SYSTEM
    CIO-Grade Polish with Blue Primary & Teal Success
