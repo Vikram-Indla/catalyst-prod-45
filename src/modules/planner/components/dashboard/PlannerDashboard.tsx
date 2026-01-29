@@ -229,7 +229,7 @@ export function PlannerDashboard() {
         )}
 
         {/* Top Grid - 2-column layout: Status + Workstream Health */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0 items-start">
           {/* Status Distribution */}
           <DashboardStatusChartV2 data={statusDistribution} />
           

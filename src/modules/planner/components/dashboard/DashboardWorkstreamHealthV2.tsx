@@ -63,9 +63,9 @@ export function DashboardWorkstreamHealthV2({ data }: DashboardWorkstreamHealthV
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-5">
+    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-5 self-start max-h-[400px] flex flex-col">
       {/* Header with count badge */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
           Workstream Health
         </h3>
@@ -74,7 +74,7 @@ export function DashboardWorkstreamHealthV2({ data }: DashboardWorkstreamHealthV
         </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 overflow-y-auto flex-1">
         {data.map((ws) => {
           const healthStatus = calculateHealth(ws);
           const healthBadge = HEALTH_BADGES[healthStatus];
