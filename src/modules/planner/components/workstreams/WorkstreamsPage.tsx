@@ -107,30 +107,51 @@ export function WorkstreamsPage() {
 
   return (
     <div className="ws-page min-h-screen">
-      <main className="p-6 max-w-[1600px] mx-auto">
-        {/* Header */}
-        <header className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div 
-              className="w-12 h-12 rounded-xl flex items-center justify-center"
-              style={{ background: 'var(--ws-primary-light)', color: 'var(--ws-primary)' }}
-            >
-              <LayoutGrid className="w-6 h-6" strokeWidth={2} />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold" style={{ color: 'var(--ws-text-primary)' }}>
-                Workstreams
-              </h1>
-              <p style={{ fontSize: '0.8125rem', color: 'var(--ws-text-secondary)' }}>
-                Organize work into focused tracks with dedicated teams
-              </p>
-            </div>
-          </div>
-          <button className="ws-btn ws-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+      {/* Calendar-style Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-1">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold text-text-primary">
+            Workstreams
+          </h2>
+          <button 
+            className="ws-btn ws-btn-primary"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             <Plus className="w-4 h-4" strokeWidth={2} />
             New Workstream
           </button>
-        </header>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* View Toggle - matching calendar style */}
+          <div className="flex items-center rounded-lg border border-border bg-surface-0 p-0.5">
+            <button
+              onClick={() => setView('list')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                view === 'list'
+                  ? "bg-surface-2 text-text-primary shadow-sm"
+                  : "text-text-muted hover:text-text-primary"
+              }`}
+            >
+              <List className="w-4 h-4" />
+              List
+            </button>
+            <button
+              onClick={() => setView('grid')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                view === 'grid'
+                  ? "bg-surface-2 text-text-primary shadow-sm"
+                  : "text-text-muted hover:text-text-primary"
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              Grid
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <main className="p-6 max-w-[1600px] mx-auto">
 
         {/* Summary Bar */}
         <div className="ws-summary-bar">
@@ -193,23 +214,7 @@ export function WorkstreamsPage() {
             <button className="ws-btn ws-btn-secondary">
               Lead <ChevronDown className="w-4 h-4" strokeWidth={2} />
             </button>
-            <button className="ws-btn ws-btn-ghost">My Workstreams</button>
-          </div>
-          <div className="ws-toolbar-right">
-            <div className="ws-view-toggle">
-              <button 
-                className={`ws-view-toggle-btn ${view === 'list' ? 'active' : ''}`}
-                onClick={() => setView('list')}
-              >
-                <List className="w-[18px] h-[18px]" strokeWidth={2} />
-              </button>
-              <button 
-                className={`ws-view-toggle-btn ${view === 'grid' ? 'active' : ''}`}
-                onClick={() => setView('grid')}
-              >
-                <LayoutGrid className="w-[18px] h-[18px]" strokeWidth={2} />
-              </button>
-            </div>
+          <button className="ws-btn ws-btn-ghost">My Workstreams</button>
           </div>
         </div>
 
