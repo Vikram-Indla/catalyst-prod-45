@@ -1,6 +1,7 @@
 // ============================================================
-// PLANNER TIMELINE V2 — GOD-TIER ENTERPRISE REDESIGN
-// Self-contained bars, workstream swimlanes, working filters
+// PLANNER TIMELINE — ENTERPRISE CLEAN V2
+// Low-saturation workstream bars, proper status dots, overdue borders
+// Following spec from TIMELINE-ENTERPRISE-CLEAN.md
 // ============================================================
 
 import { useState, useMemo, useRef, useCallback, useEffect, UIEvent } from 'react';
@@ -15,6 +16,7 @@ import { WorkstreamDrawer } from './workstreams/WorkstreamDrawer';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getWorkstreamColor, getStatusDotColor } from '@/lib/workstream-colors';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +30,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+
+// Import enterprise CSS overrides
+import '../styles/timeline-enterprise.css';
 
 // ============================================================
 // TYPES
@@ -52,49 +57,25 @@ interface TimelineTask {
 }
 
 interface TimelineFilters {
-  workstream: string; // 'all' or workstream_id
-  status: string; // 'all' or status slug
-  priority: string; // 'all' or priority value
-  assignee: string; // 'all' | 'unassigned' | profile_id
+  workstream: string;
+  status: string;
+  priority: string;
+  assignee: string;
   search: string;
 }
 
 type ViewMode = 'day' | 'week' | 'month';
 
 // ============================================================
-// STATUS STYLES (V2 Spec)
+// STATUS LEGEND CONFIG (Enterprise Clean Spec)
 // ============================================================
-const STATUS_STYLES: Record<string, { gradient: string; text: string; stripe: string }> = {
-  backlog: { 
-    gradient: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)', 
-    text: '#334155', 
-    stripe: '#64748b' 
-  },
-  planned: { 
-    gradient: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', 
-    text: '#1e40af', 
-    stripe: '#3b82f6' 
-  },
-  progress: { 
-    gradient: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', 
-    text: '#92400e', 
-    stripe: '#f59e0b' 
-  },
-  review: { 
-    gradient: 'linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)', 
-    text: '#5b21b6', 
-    stripe: '#8b5cf6' 
-  },
-  done: { 
-    gradient: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', 
-    text: '#065f46', 
-    stripe: '#10b981' 
-  },
-};
-
-function getStatusStyle(slug: string) {
-  return STATUS_STYLES[slug] || STATUS_STYLES.backlog;
-}
+const STATUS_LEGEND = [
+  { key: 'backlog', label: 'Backlog', color: '#94a3b8' },
+  { key: 'planned', label: 'Planned', color: '#3b82f6' },
+  { key: 'progress', label: 'In Progress', color: '#f59e0b' },
+  { key: 'review', label: 'Review', color: '#8b5cf6' },
+  { key: 'done', label: 'Done', color: '#16a34a' },
+];
 
 function getInitials(name: string): string {
   return name
@@ -112,7 +93,6 @@ function useTimelineTasks() {
   return useQuery({
     queryKey: ['timeline-tasks-v2'],
     queryFn: async (): Promise<TimelineTask[]> => {
-      // Fetch tasks with all joins
       const { data: tasks, error } = await supabase
         .from('planner_tasks')
         .select(`
@@ -169,7 +149,7 @@ function useTimelineTasks() {
 // MAIN COMPONENT
 // ============================================================
 interface PlannerTimelineProps {
-  tasks?: any[]; // Unused - we fetch our own
+  tasks?: any[];
   onTaskClick?: (task: any) => void;
 }
 
@@ -189,28 +169,14 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
   const [selectedWorkstream, setSelectedWorkstream] = useState<Workstream | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [debugAlign, setDebugAlign] = useState(false);
 
-  // Open drawer for workstream
-  const openWorkstreamDrawer = useCallback((ws: Workstream) => {
-    setSelectedWorkstream(ws);
-    setIsDrawerOpen(true);
-  }, []);
-
-  const closeWorkstreamDrawer = useCallback(() => {
-    setIsDrawerOpen(false);
-    setSelectedWorkstream(null);
-  }, []);
+  // Refs for scroll sync
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  // Hard sync architecture:
-  // - ONE shared vertical scroll container for both columns
-  // - Horizontal scroll stays on the grid only, and is mirrored to the date header
-  const verticalScrollRef = useRef<HTMLDivElement>(null);
   const headerXRef = useRef<HTMLDivElement>(null);
   const gridXRef = useRef<HTMLDivElement>(null);
   const hScrollSyncSourceRef = useRef<'header' | 'grid' | null>(null);
 
+  // Scroll sync handlers
   const handleHeaderXScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
     if (hScrollSyncSourceRef.current === 'grid') return;
     hScrollSyncSourceRef.current = 'header';
@@ -231,42 +197,47 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
     });
   }, []);
 
+  // Drawer handlers
+  const openWorkstreamDrawer = useCallback((ws: Workstream) => {
+    setSelectedWorkstream(ws);
+    setIsDrawerOpen(true);
+  }, []);
+
+  const closeWorkstreamDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+    setSelectedWorkstream(null);
+  }, []);
+
   // Data
   const { data: allTasks = [], isLoading: tasksLoading } = useTimelineTasks();
   const { data: workstreams = [], isLoading: wsLoading } = usePlannerWorkstreams();
   const { data: users = [] } = usePlannerUsers();
 
   // ============================================================
-  // FILTER LOGIC (V2 Spec: Real-time filtering)
+  // FILTER LOGIC
   // ============================================================
   const filteredTasks = useMemo(() => {
     return allTasks.filter(task => {
-      // Workstream filter
       if (filters.workstream !== 'all' && task.workstream_id !== filters.workstream) return false;
-      // Status filter
       if (filters.status !== 'all' && task.status_slug !== filters.status) return false;
-      // Priority filter
       if (filters.priority !== 'all' && task.priority !== filters.priority) return false;
-      // Assignee filter
       if (filters.assignee !== 'all') {
         if (filters.assignee === 'unassigned' && task.assignee_id) return false;
         if (filters.assignee !== 'unassigned' && task.assignee_id !== filters.assignee) return false;
       }
-      // Search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         if (
           !task.title.toLowerCase().includes(searchLower) &&
           !task.key.toLowerCase().includes(searchLower)
-        )
-          return false;
+        ) return false;
       }
       return true;
     });
   }, [allTasks, filters]);
 
   // ============================================================
-  // GROUP BY WORKSTREAM (V2 Spec: Swimlanes)
+  // GROUP BY WORKSTREAM (Swimlanes)
   // ============================================================
   interface WorkstreamSwimlane {
     id: string;
@@ -281,7 +252,6 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   }
 
   const swimlanes: WorkstreamSwimlane[] = useMemo(() => {
-    // Group tasks by workstream
     const tasksByWorkstream = new Map<string, TimelineTask[]>();
     
     filteredTasks.forEach(task => {
@@ -292,23 +262,20 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
       tasksByWorkstream.get(wsId)!.push(task);
     });
 
-    // Build swimlanes from workstreams
     const lanes: WorkstreamSwimlane[] = [];
 
-    // Add workstream lanes
     workstreams.forEach(ws => {
       const tasks = tasksByWorkstream.get(ws.id) || [];
-      // Skip empty workstreams when filtering
       if (filters.workstream !== 'all' && filters.workstream !== ws.id) return;
       if (tasks.length === 0 && filters.workstream !== 'all') return;
 
-      const inProgressCount = tasks.filter(t => t.status_slug === 'progress' || t.status_slug === 'review').length;
-      const overdueCount = tasks.filter(t => t.is_overdue).length;
+      // Get workstream color from our color system
+      const wsColors = getWorkstreamColor(ws.name);
 
       lanes.push({
         id: ws.id,
         name: ws.name,
-        color: ws.color,
+        color: wsColors.hex,
         lead: ws.lead || null,
         tasks: tasks.sort((a, b) => {
           const aDate = a.start_date ? new Date(a.start_date).getTime() : Infinity;
@@ -316,13 +283,13 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
           return aDate - bDate;
         }),
         taskCount: tasks.length,
-        inProgressCount,
-        overdueCount,
+        inProgressCount: tasks.filter(t => t.status_slug === 'progress' || t.status_slug === 'review').length,
+        overdueCount: tasks.filter(t => t.is_overdue).length,
         collapsed: collapsedWorkstreams.has(ws.id),
       });
     });
 
-    // Add unassigned lane if there are unassigned tasks
+    // Unassigned lane
     const unassignedTasks = tasksByWorkstream.get('unassigned') || [];
     if (unassignedTasks.length > 0) {
       lanes.push({
@@ -377,7 +344,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
     
     const isVisible = startOffset + duration > 0 && startOffset < columnConfig.days;
     
-    return { left, width: Math.max(width, 80), isVisible };
+    return { left, width: Math.max(width, 100), isVisible };
   }, [viewStart, columnConfig]);
 
   // ============================================================
@@ -396,7 +363,6 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
     if (headerXRef.current) headerXRef.current.scrollLeft = nextLeft;
   }, [columnConfig.width]);
 
-  // Toggle workstream collapse
   const toggleCollapse = useCallback((wsId: string) => {
     setCollapsedWorkstreams(prev => {
       const next = new Set(prev);
@@ -406,7 +372,6 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
     });
   }, []);
 
-  // Clear filter
   const clearFilter = useCallback((key: keyof TimelineFilters) => {
     setFilters(prev => ({ ...prev, [key]: key === 'search' ? '' : 'all' }));
   }, []);
@@ -424,43 +389,29 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   }, []);
 
   // ============================================================
-  // TODAY LINE CALCULATION (V2 Spec: Prominent)
+  // TODAY LINE CALCULATION
   // ============================================================
   const todayOffset = differenceInDays(new Date(), viewStart);
   const todayPosition = todayOffset * columnConfig.width + columnConfig.width / 2;
   const showTodayLine = todayOffset >= 0 && todayOffset < columnConfig.days;
 
   // Layout constants
-  // Alignment contract: fixed header height prevents left/right drift caused by wrapped content.
   const SWIMLANE_HEADER_HEIGHT = 92;
-  const TASK_BAR_HEIGHT = 32;
+  const TASK_BAR_HEIGHT = 28;
   const TASK_BAR_GAP = 6;
   const SWIMLANE_PADDING = 12;
   const LEFT_PANEL_WIDTH = 300;
   const DATE_HEADER_HEIGHT = 52;
 
-  // Calculate swimlane row heights
   const getSwimlineHeight = (taskCount: number, isCollapsed: boolean): number => {
     if (isCollapsed) return 0;
     if (taskCount === 0) return 48;
     return (taskCount * TASK_BAR_HEIGHT) + ((taskCount - 1) * TASK_BAR_GAP) + SWIMLANE_PADDING * 2;
   };
 
-  // Total content height for today line
   const totalContentHeight = swimlanes.reduce((acc, lane) => {
     return acc + SWIMLANE_HEADER_HEIGHT + getSwimlineHeight(lane.tasks.length, lane.collapsed);
   }, 0);
-
-  // Dev-only visual debug to make alignment issues obvious.
-  const debugRows = useMemo(() => {
-    let y = 0;
-    return swimlanes.map((lane, index) => {
-      const bodyH = getSwimlineHeight(lane.tasks.length, lane.collapsed);
-      const headerTop = y;
-      y += SWIMLANE_HEADER_HEIGHT + bodyH;
-      return { index, id: lane.id, headerTop };
-    });
-  }, [swimlanes, SWIMLANE_HEADER_HEIGHT]);
 
   // ============================================================
   // KEYBOARD SHORTCUTS
@@ -491,7 +442,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="h-full flex flex-col bg-white dark:bg-slate-950">
+      <div className="timeline-enterprise h-full flex flex-col bg-[#f8fafc] dark:bg-slate-950">
         {/* ============================================================
             TOP BAR - Title, Today, Date Nav, View Mode Toggle
             ============================================================ */}
@@ -509,7 +460,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             {/* Add Task Button */}
             <Button 
               onClick={() => setIsCreateOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25"
+              className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Task
@@ -543,7 +494,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                   className={cn(
                     "px-4 py-1.5 text-sm font-medium rounded-md transition-all capitalize",
                     viewMode === mode
-                      ? "bg-blue-600 text-white shadow-sm"
+                      ? "bg-[#2563eb] text-white shadow-sm"
                       : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                   )}
                 >
@@ -555,7 +506,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         </div>
 
         {/* ============================================================
-            FILTER BAR (V2 Spec: All filters must work)
+            FILTER BAR
             ============================================================ */}
         <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex-shrink-0">
           {/* Search */}
@@ -587,7 +538,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 size="sm"
                 className={cn(
                   "h-9",
-                  filters.workstream !== 'all' && "bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300"
+                  filters.workstream !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
                 {filters.workstream === 'all'
@@ -602,19 +553,22 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 {filters.workstream === 'all' && <Check className="w-4 h-4 ml-auto" />}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {workstreams.map(ws => (
-                <DropdownMenuItem
-                  key={ws.id}
-                  onClick={() => setFilters(prev => ({ ...prev, workstream: ws.id }))}
-                >
-                  <span
-                    className="w-2 h-2 rounded-full mr-2 flex-shrink-0"
-                    style={{ backgroundColor: ws.color }}
-                  />
-                  {ws.name}
-                  {filters.workstream === ws.id && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-              ))}
+              {workstreams.map(ws => {
+                const wsColor = getWorkstreamColor(ws.name);
+                return (
+                  <DropdownMenuItem
+                    key={ws.id}
+                    onClick={() => setFilters(prev => ({ ...prev, workstream: ws.id }))}
+                  >
+                    <span
+                      className="w-2 h-2 rounded-full mr-2 flex-shrink-0"
+                      style={{ backgroundColor: wsColor.hex }}
+                    />
+                    {ws.name}
+                    {filters.workstream === ws.id && <Check className="w-4 h-4 ml-auto" />}
+                  </DropdownMenuItem>
+                );
+              })}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -626,7 +580,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 size="sm"
                 className={cn(
                   "h-9",
-                  filters.status !== 'all' && "bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300"
+                  filters.status !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
                 {filters.status === 'all' ? 'Status' : filters.status.charAt(0).toUpperCase() + filters.status.slice(1)}
@@ -639,17 +593,17 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 {filters.status === 'all' && <Check className="w-4 h-4 ml-auto" />}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {['backlog', 'planned', 'progress', 'review', 'done'].map(s => (
+              {STATUS_LEGEND.map(s => (
                 <DropdownMenuItem
-                  key={s}
-                  onClick={() => setFilters(prev => ({ ...prev, status: s }))}
+                  key={s.key}
+                  onClick={() => setFilters(prev => ({ ...prev, status: s.key }))}
                 >
                   <span
                     className="w-2 h-2 rounded-full mr-2 flex-shrink-0"
-                    style={{ backgroundColor: getStatusStyle(s).stripe }}
+                    style={{ backgroundColor: s.color }}
                   />
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
-                  {filters.status === s && <Check className="w-4 h-4 ml-auto" />}
+                  {s.label}
+                  {filters.status === s.key && <Check className="w-4 h-4 ml-auto" />}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -663,7 +617,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 size="sm"
                 className={cn(
                   "h-9",
-                  filters.priority !== 'all' && "bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300"
+                  filters.priority !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
                 {filters.priority === 'all' ? 'Priority' : filters.priority.charAt(0).toUpperCase() + filters.priority.slice(1)}
@@ -688,47 +642,6 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Assignee Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "h-9",
-                  filters.assignee !== 'all' && "bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300"
-                )}
-              >
-                {filters.assignee === 'all'
-                  ? 'Assignee'
-                  : filters.assignee === 'unassigned'
-                  ? 'Unassigned'
-                  : users.find(u => u.id === filters.assignee)?.name?.split(' ')[0] || 'Unknown'}
-                <ChevronDown className="w-4 h-4 ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48 max-h-64 overflow-y-auto">
-              <DropdownMenuItem onClick={() => setFilters(prev => ({ ...prev, assignee: 'all' }))}>
-                All Assignees
-                {filters.assignee === 'all' && <Check className="w-4 h-4 ml-auto" />}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFilters(prev => ({ ...prev, assignee: 'unassigned' }))}>
-                Unassigned
-                {filters.assignee === 'unassigned' && <Check className="w-4 h-4 ml-auto" />}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {users.slice(0, 20).map(u => (
-                <DropdownMenuItem
-                  key={u.id}
-                  onClick={() => setFilters(prev => ({ ...prev, assignee: u.id }))}
-                >
-                  {u.name}
-                  {filters.assignee === u.id && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           {/* Clear Filters */}
           {hasActiveFilters && (
             <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-9 text-slate-500">
@@ -737,36 +650,25 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             </Button>
           )}
 
-          {import.meta.env.DEV && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setDebugAlign(v => !v)}
-              className="h-9 text-slate-500"
-            >
-              {debugAlign ? 'Hide Debug' : 'Debug'}
-            </Button>
-          )}
-
           {/* Status Legend */}
-          <div className="ml-auto flex items-center gap-4 text-xs text-slate-500">
-            {['backlog', 'planned', 'progress', 'review', 'done'].map(s => (
-              <div key={s} className="flex items-center gap-1.5">
+          <div className="status-legend ml-auto flex items-center gap-4 text-xs text-slate-500">
+            {STATUS_LEGEND.map(s => (
+              <div key={s.key} className="legend-item flex items-center gap-1.5">
                 <span
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: getStatusStyle(s).stripe }}
+                  className="legend-dot w-2 h-2 rounded-full"
+                  style={{ backgroundColor: s.color }}
                 />
-                <span className="capitalize">{s === 'progress' ? 'In Progress' : s}</span>
+                <span className="legend-label">{s.label}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* ============================================================
-            TIMELINE CONTENT — One vertical scroll owner (pixel-locked)
+            TIMELINE CONTENT
             ============================================================ */}
         <div className="flex-1 overflow-hidden flex flex-col">
-          {/* Column headers (not vertically scrollable) */}
+          {/* Column headers */}
           <div className="flex flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
             {/* Left header */}
             <div
@@ -776,7 +678,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
               Workstream
             </div>
 
-            {/* Right date header (horizontal scroll only) */}
+            {/* Date header */}
             <div className="flex-1 overflow-hidden" style={{ height: DATE_HEADER_HEIGHT }}>
               <div
                 ref={headerXRef}
@@ -790,19 +692,20 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                   {dateColumns.map((date, i) => {
                     const isCurrentDay = isToday(date);
                     const dayOfWeek = getDay(date);
-                    const isWeekend = dayOfWeek === 5 || dayOfWeek === 6; // Saudi weekend (Fri/Sat)
+                    const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
 
                     return (
                       <div
                         key={i}
                         className={cn(
-                          "flex-shrink-0 flex flex-col items-center justify-center transition-colors",
-                          isWeekend && !isCurrentDay && "bg-slate-50/80 dark:bg-slate-900/50"
+                          "date-column-header flex-shrink-0 flex flex-col items-center justify-center transition-colors",
+                          isWeekend && !isCurrentDay && "weekend bg-[#f8fafc] dark:bg-slate-900/50",
+                          isCurrentDay && "today bg-[#eff6ff]"
                         )}
                         style={{ width: columnConfig.width }}
                       >
                         {isCurrentDay ? (
-                          <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full bg-blue-600 text-white">
+                          <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full bg-[#3b82f6] text-white">
                             <span className="text-[9px] font-medium uppercase leading-none">
                               {format(date, 'EEE')}
                             </span>
@@ -812,10 +715,10 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                           </div>
                         ) : (
                           <>
-                            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">
+                            <span className="day-name text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">
                               {format(date, 'EEE')}
                             </span>
-                            <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                            <span className="day-number text-sm font-semibold text-slate-600 dark:text-slate-300">
                               {format(date, 'd')}
                             </span>
                           </>
@@ -828,117 +731,93 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             </div>
           </div>
 
-          {/* Body — shared vertical scroll for both columns */}
-          <div ref={verticalScrollRef} className="flex-1 overflow-y-auto">
+          {/* Body */}
+          <div className="flex-1 overflow-y-auto">
             <div className="relative flex">
-              {/* Dev alignment overlay */}
-              {import.meta.env.DEV && debugAlign && (
-                <div
-                  className="pointer-events-none absolute inset-x-0 top-0 z-30"
-                  style={{ height: totalContentHeight }}
-                >
-                  {debugRows.map((r) => (
-                    <div key={r.id} className="absolute inset-x-0" style={{ top: r.headerTop }}>
-                      <div className="border-t border-dashed border-border/60" />
-                      <div className="absolute top-0 -translate-y-1/2 left-2 px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px]">
-                        {r.index} · {r.id}
-                      </div>
-                      <div className="absolute top-0 -translate-y-1/2" style={{ left: LEFT_PANEL_WIDTH + 8 }}>
-                        <span className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px]">
-                          {r.index} · {r.id}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Left panel (no independent vertical scroll) */}
+              {/* Left panel */}
               <div
                 className="flex-shrink-0 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800"
                 style={{ width: LEFT_PANEL_WIDTH }}
               >
-                {swimlanes.map((lane) => (
-                  <div key={lane.id}>
-                    <div
-                      className="w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left overflow-hidden"
-                      style={{ height: SWIMLANE_HEADER_HEIGHT }}
-                    >
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleCollapse(lane.id);
-                        }}
-                        className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
-                        aria-label={lane.collapsed ? 'Expand' : 'Collapse'}
-                      >
-                        <ChevronDown
-                          className={cn(
-                            "w-4 h-4 text-slate-400 transition-transform",
-                            lane.collapsed && "-rotate-90"
-                          )}
-                        />
-                      </button>
-
+                {swimlanes.map((lane) => {
+                  const wsForDrawer = workstreams.find(w => w.id === lane.id);
+                  return (
+                    <div key={lane.id} data-workstream={lane.name}>
+                      {/* Workstream Header */}
                       <div
-                        className="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0"
-                        style={{ backgroundColor: lane.color }}
-                      />
-
-                      <div className="flex-1 min-w-0">
+                        className="workstream-row w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left overflow-hidden"
+                        style={{ height: SWIMLANE_HEADER_HEIGHT }}
+                      >
+                        {/* Expand/Collapse */}
                         <button
-                          onClick={() => {
-                            const fullWorkstream = workstreams.find(
-                              (ws) => ws.id === lane.id
-                            );
-                            if (fullWorkstream) openWorkstreamDrawer(fullWorkstream);
-                          }}
-                          className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors text-left truncate block"
-                          title={lane.name}
+                          onClick={() => toggleCollapse(lane.id)}
+                          className={cn(
+                            "expand-btn mt-0.5 p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-transform flex-shrink-0",
+                            !lane.collapsed && "rotate-90"
+                          )}
                         >
-                          {lane.name}
+                          <ChevronRight className="chevron w-4 h-4 text-slate-400" />
                         </button>
 
-                        <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 mt-0.5 min-w-0">
-                          {lane.lead ? (
-                            <>
-                              <div
-                                className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-semibold text-white flex-shrink-0"
-                                style={{ backgroundColor: lane.color }}
-                              >
-                                {lane.lead.initials}
-                              </div>
-                              <span className="truncate">{lane.lead.name}</span>
-                            </>
-                          ) : (
-                            <span className="text-slate-400">No lead assigned</span>
-                          )}
-                        </div>
+                        {/* Workstream Dot — CORRECT COLOR */}
+                        <span
+                          className="workstream-dot w-2 h-2 rounded-full mt-1.5 flex-shrink-0"
+                          style={{ backgroundColor: lane.color }}
+                          data-workstream={lane.name}
+                        />
 
-                        <div className="text-[11px] text-slate-500 dark:text-slate-500 mt-1 truncate">
-                          {lane.taskCount} tasks
-                          {lane.inProgressCount > 0 &&
-                            ` · ${lane.inProgressCount} in progress`}
-                          {lane.overdueCount > 0 && (
-                            <span className="text-red-600 font-semibold">
-                              {' · '}{lane.overdueCount} overdue
-                            </span>
-                          )}
+                        {/* Workstream Info */}
+                        <div className="workstream-info flex-1 min-w-0">
+                          <button
+                            onClick={() => wsForDrawer && openWorkstreamDrawer(wsForDrawer)}
+                            className="workstream-name font-medium text-sm text-slate-800 dark:text-slate-200 hover:text-[#2563eb] dark:hover:text-blue-400 transition-colors truncate text-left w-full"
+                            title={lane.name}
+                          >
+                            {lane.name}
+                          </button>
+
+                          <div className="workstream-lead flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 mt-0.5 min-w-0">
+                            {lane.lead ? (
+                              <>
+                                <div
+                                  className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-semibold text-white flex-shrink-0"
+                                  style={{ backgroundColor: lane.color }}
+                                >
+                                  {lane.lead.initials}
+                                </div>
+                                <span className="truncate">{lane.lead.name}</span>
+                              </>
+                            ) : (
+                              <span className="text-slate-400">No lead assigned</span>
+                            )}
+                          </div>
+
+                          <div className="workstream-stats text-[11px] text-slate-500 dark:text-slate-500 mt-1 truncate">
+                            {lane.taskCount} tasks
+                            {lane.inProgressCount > 0 &&
+                              ` · ${lane.inProgressCount} in progress`}
+                            {lane.overdueCount > 0 && (
+                              <span className="overdue-count text-red-600 font-semibold">
+                                {' · '}{lane.overdueCount} overdue
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {!lane.collapsed && (
-                      <div
-                        className="border-b border-slate-100 dark:border-slate-800"
-                        style={{ height: getSwimlineHeight(lane.tasks.length, false) }}
-                      />
-                    )}
-                  </div>
-                ))}
+                      {/* Task area placeholder (left side) */}
+                      {!lane.collapsed && (
+                        <div
+                          className="border-b border-slate-100 dark:border-slate-800"
+                          style={{ height: getSwimlineHeight(lane.tasks.length, false) }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
-              {/* Right panel — horizontal scroll only */}
+              {/* Right panel — Grid */}
               <div className="flex-1 overflow-hidden bg-white dark:bg-slate-950">
                 <div
                   className="overflow-x-auto overflow-y-hidden"
@@ -947,216 +826,195 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 >
                   <div style={{ minWidth: columnConfig.days * columnConfig.width }}>
                     <div className="relative">
-                {/* Today Line (V2 Spec: Prominent with label + arrow) */}
-                {showTodayLine && (
-                  <div
-                    className="absolute z-20 pointer-events-none"
-                    style={{ left: todayPosition, top: 0, height: totalContentHeight }}
-                  >
-                    {/* Label */}
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-[9px] font-bold rounded whitespace-nowrap z-30">
-                      TODAY
-                    </div>
-                    {/* Arrow */}
-                    <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-6 border-l-transparent border-r-transparent border-t-blue-500" />
-                    {/* Line */}
-                    <div className="w-0.5 h-full bg-blue-500 mt-6 animate-pulse" style={{ animationDuration: '2s' }} />
-                  </div>
-                )}
-
-                {/* Workstream Swimlanes with Bars */}
-                {swimlanes.map(lane => {
-                  const laneHeight = getSwimlineHeight(lane.tasks.length, lane.collapsed);
-
-                  return (
-                    <div key={lane.id}>
-                      {/* Swimlane Header Row (grid side) */}
-                      <div
-                        className="relative flex bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700"
-                        style={{ height: SWIMLANE_HEADER_HEIGHT }}
-                      >
-                        {/* Weekend shading */}
-                        <div className="absolute inset-0 flex pointer-events-none">
-                          {dateColumns.map((date, i) => {
-                            const isWeekend = getDay(date) === 5 || getDay(date) === 6;
-                            return (
-                              <div
-                                key={i}
-                                className={cn("flex-shrink-0", isWeekend && "bg-slate-100/50 dark:bg-slate-800/30")}
-                                style={{ width: columnConfig.width }}
-                              />
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Task Bars Container */}
-                      {!lane.collapsed && (
+                      {/* Today Line */}
+                      {showTodayLine && (
                         <div
-                          className="relative border-b border-slate-100 dark:border-slate-800"
-                          style={{ height: laneHeight }}
+                          className="today-marker absolute z-20 pointer-events-none"
+                          style={{ left: todayPosition, top: 0, height: totalContentHeight }}
                         >
-                          {/* Weekend shading */}
-                          <div className="absolute inset-0 flex pointer-events-none">
-                            {dateColumns.map((date, i) => {
-                              const isWeekend = getDay(date) === 5 || getDay(date) === 6;
-                              return (
-                                <div
-                                  key={i}
-                                  className={cn("flex-shrink-0", isWeekend && "bg-slate-50/50 dark:bg-slate-800/20")}
-                                  style={{ width: columnConfig.width }}
-                                />
-                              );
-                            })}
+                          <div className="today-label absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#3b82f6] text-white text-[10px] font-semibold rounded uppercase whitespace-nowrap z-30">
+                            TODAY
                           </div>
-
-                          {/* Task Bars (V2 Spec: Self-contained with all info) */}
-                          {lane.tasks.map((task, index) => {
-                            const barStyle = getTaskBarStyle(task);
-                            if (!barStyle.isVisible) return null;
-
-                            const statusStyle = getStatusStyle(task.status_slug);
-                            const isHovered = hoveredTaskId === task.id;
-                            const barWidth = barStyle.width;
-                            const showTitle = barWidth > 200;
-                            const top = SWIMLANE_PADDING + index * (TASK_BAR_HEIGHT + TASK_BAR_GAP);
-
-                            return (
-                              <Tooltip key={task.id}>
-                                <TooltipTrigger asChild>
-                                  <div
-                                    className={cn(
-                                      "absolute flex items-center cursor-pointer rounded-md overflow-hidden transition-all",
-                                      "border-2",
-                                      isHovered && "shadow-lg scale-[1.02]",
-                                      task.is_overdue ? "border-red-500" : "border-transparent"
-                                    )}
-                                    style={{
-                                      left: Math.max(4, barStyle.left),
-                                      width: barStyle.width,
-                                      top,
-                                      height: TASK_BAR_HEIGHT,
-                                      // Use workstream color with light tint for background
-                                      background: `linear-gradient(135deg, ${lane.color}20 0%, ${lane.color}35 100%)`,
-                                      color: '#1e293b', // slate-800 for readability
-                                    }}
-                                    onClick={() => onTaskClick?.(task)}
-                                    onMouseEnter={() => setHoveredTaskId(task.id)}
-                                    onMouseLeave={() => setHoveredTaskId(null)}
-                                    tabIndex={0}
-                                  >
-                                    {/* Status stripe on left edge - uses workstream color */}
-                                    <div
-                                      className="absolute left-0 inset-y-0 w-1 rounded-l-md"
-                                      style={{ backgroundColor: lane.color }}
-                                    />
-
-                                    {/* Progress fill for in-progress tasks */}
-                                    {task.status_slug === 'progress' && task.progress > 0 && (
-                                      <div
-                                        className="absolute left-0 inset-y-0 opacity-30 rounded-l-md"
-                                        style={{
-                                          width: `${task.progress}%`,
-                                          backgroundColor: lane.color,
-                                        }}
-                                      />
-                                    )}
-
-                                    {/* Bar content (V2 Spec: Self-contained) */}
-                                    <div className="flex items-center gap-1.5 flex-1 min-w-0 relative z-10 ml-2 mr-1.5">
-                                      {/* Task Key */}
-                                      <span className="text-[11px] font-bold opacity-90 flex-shrink-0">
-                                        {task.key}
-                                      </span>
-
-                                      {/* Task Title (if space) */}
-                                      {showTitle && (
-                                        <span
-                                          className={cn(
-                                            "text-xs font-medium truncate flex-1",
-                                            task.status_slug === 'done' && "line-through opacity-70"
-                                          )}
-                                        >
-                                          {task.title}
-                                        </span>
-                                      )}
-
-                                      {/* Assignee avatar ON the bar (V2 Spec) */}
-                                      <div
-                                        className={cn(
-                                          "w-5 h-5 rounded-full flex items-center justify-center",
-                                          "text-[9px] font-bold flex-shrink-0 border-2",
-                                          task.assignee_id
-                                            ? "text-white border-white/70"
-                                            : "bg-white/80 text-slate-400 border-slate-200"
-                                        )}
-                                        style={task.assignee_id ? { backgroundColor: task.workstream_color || '#64748b' } : undefined}
-                                      >
-                                        {task.assignee_initials || '—'}
-                                      </div>
-                                    </div>
-
-                                    {/* Overdue badge (V2 Spec: Red circle with !) */}
-                                    {task.is_overdue && (
-                                      <div className="absolute -right-1.5 -top-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center shadow-sm">
-                                        <span className="text-[9px] font-bold text-white">!</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs p-3">
-                                  <div className="space-y-2">
-                                    <div className="font-semibold text-sm">
-                                      {task.key}: {task.title}
-                                    </div>
-                                    <div className="text-xs space-y-1 text-slate-600 dark:text-slate-400">
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-medium">Status:</span>
-                                        <span className="capitalize">{task.status_name}</span>
-                                      </div>
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-medium">Workstream:</span>
-                                        <span>{task.workstream_name || 'Unassigned'}</span>
-                                      </div>
-                                      {task.assignee_name && (
-                                        <div className="flex items-center gap-2">
-                                          <span className="font-medium">Assignee:</span>
-                                          <span>{task.assignee_name}</span>
-                                        </div>
-                                      )}
-                                      {task.start_date && task.due_date && (
-                                        <div className="flex items-center gap-2">
-                                          <span className="font-medium">Duration:</span>
-                                          <span>
-                                            {format(new Date(task.start_date), 'MMM d')} →{' '}
-                                            {format(new Date(task.due_date), 'MMM d')}
-                                          </span>
-                                        </div>
-                                      )}
-                                      {task.progress > 0 && (
-                                        <div className="flex items-center gap-2">
-                                          <span className="font-medium">Progress:</span>
-                                          <span>{task.progress}%</span>
-                                        </div>
-                                      )}
-                                      {task.is_overdue && (
-                                        <div className="text-red-500 font-medium mt-1 flex items-center gap-1">
-                                          <AlertTriangle className="w-3 h-3" />
-                                          Overdue
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            );
-                          })}
+                          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-6 border-l-transparent border-r-transparent border-t-[#3b82f6]" />
+                          <div className="w-0.5 h-full bg-[#3b82f6] mt-7" />
                         </div>
                       )}
+
+                      {/* Workstream Swimlanes with Bars */}
+                      {swimlanes.map(lane => {
+                        const laneHeight = getSwimlineHeight(lane.tasks.length, lane.collapsed);
+                        const wsColors = getWorkstreamColor(lane.name);
+
+                        return (
+                          <div key={lane.id} data-workstream={lane.name}>
+                            {/* Swimlane Header Row (grid side) */}
+                            <div
+                              className="relative flex bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700"
+                              style={{ height: SWIMLANE_HEADER_HEIGHT }}
+                            >
+                              {/* Weekend shading */}
+                              <div className="absolute inset-0 flex pointer-events-none">
+                                {dateColumns.map((date, i) => {
+                                  const isWeekend = getDay(date) === 5 || getDay(date) === 6;
+                                  return (
+                                    <div
+                                      key={i}
+                                      className={cn("flex-shrink-0", isWeekend && "bg-slate-100/50 dark:bg-slate-800/30")}
+                                      style={{ width: columnConfig.width }}
+                                    />
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Task Bars Container */}
+                            {!lane.collapsed && (
+                              <div
+                                className="relative border-b border-slate-100 dark:border-slate-800"
+                                style={{ height: laneHeight }}
+                              >
+                                {/* Weekend shading */}
+                                <div className="absolute inset-0 flex pointer-events-none">
+                                  {dateColumns.map((date, i) => {
+                                    const isWeekend = getDay(date) === 5 || getDay(date) === 6;
+                                    return (
+                                      <div
+                                        key={i}
+                                        className={cn("flex-shrink-0", isWeekend && "bg-[#f8fafc]/50 dark:bg-slate-800/20")}
+                                        style={{ width: columnConfig.width }}
+                                      />
+                                    );
+                                  })}
+                                </div>
+
+                                {/* Task Bars — ENTERPRISE CLEAN STYLING */}
+                                {lane.tasks.map((task, index) => {
+                                  const barStyle = getTaskBarStyle(task);
+                                  if (!barStyle.isVisible) return null;
+
+                                  const statusDotColor = getStatusDotColor(task.status_slug);
+                                  const isHovered = hoveredTaskId === task.id;
+                                  const barWidth = barStyle.width;
+                                  const showTitle = barWidth > 180;
+                                  const top = SWIMLANE_PADDING + index * (TASK_BAR_HEIGHT + TASK_BAR_GAP);
+
+                                  return (
+                                    <Tooltip key={task.id}>
+                                      <TooltipTrigger asChild>
+                                        <div
+                                          className={cn(
+                                            "task-bar absolute flex items-center cursor-pointer transition-all",
+                                            isHovered && "shadow-md -translate-y-0.5",
+                                            task.is_overdue && "overdue"
+                                          )}
+                                          data-workstream={lane.name}
+                                          data-overdue={task.is_overdue}
+                                          data-status={task.status_slug}
+                                          style={{
+                                            left: Math.max(4, barStyle.left),
+                                            width: barStyle.width,
+                                            top,
+                                            height: TASK_BAR_HEIGHT,
+                                            // WORKSTREAM COLOR AT LOW OPACITY (15-20%)
+                                            backgroundColor: wsColors.light,
+                                            border: `1px solid ${wsColors.border}`,
+                                            // OVERDUE: Red left border
+                                            borderLeft: task.is_overdue ? '3px solid #dc2626' : `1px solid ${wsColors.border}`,
+                                            borderRadius: '6px',
+                                            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                                          }}
+                                          onClick={() => onTaskClick?.(task)}
+                                          onMouseEnter={() => setHoveredTaskId(task.id)}
+                                          onMouseLeave={() => setHoveredTaskId(null)}
+                                          tabIndex={0}
+                                        >
+                                          {/* Status dot — small, inside bar */}
+                                          <span
+                                            className="status-dot w-1.5 h-1.5 rounded-full ml-2 flex-shrink-0"
+                                            style={{ backgroundColor: statusDotColor }}
+                                            data-status={task.status_slug}
+                                          />
+
+                                          {/* Task ID — gray monospace */}
+                                          <span className="task-id ml-2 text-[11px] font-medium text-slate-500 font-mono flex-shrink-0">
+                                            {task.key}
+                                          </span>
+
+                                          {/* Task Title */}
+                                          {showTitle && (
+                                            <span
+                                              className={cn(
+                                                "task-title ml-1.5 text-xs font-medium text-slate-700 truncate flex-1",
+                                                task.status_slug === 'done' && "line-through opacity-70"
+                                              )}
+                                            >
+                                              {task.title}
+                                            </span>
+                                          )}
+
+                                          {/* Assignee avatar — right side */}
+                                          {task.assignee_id && (
+                                            <div
+                                              className="assignee-avatar w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white ml-auto mr-2 flex-shrink-0"
+                                              style={{ backgroundColor: wsColors.hex }}
+                                            >
+                                              {task.assignee_initials || '—'}
+                                            </div>
+                                          )}
+
+                                          {/* Overdue indicator dot */}
+                                          {task.is_overdue && (
+                                            <span className="overdue-dot absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white" />
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-xs p-3">
+                                        <div className="space-y-2">
+                                          <div className="font-semibold text-sm">
+                                            {task.key}: {task.title}
+                                          </div>
+                                          <div className="text-xs space-y-1 text-slate-600 dark:text-slate-400">
+                                            <div className="flex items-center gap-2">
+                                              <span className="font-medium">Status:</span>
+                                              <span className="capitalize">{task.status_name}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                              <span className="font-medium">Workstream:</span>
+                                              <span>{task.workstream_name || 'Unassigned'}</span>
+                                            </div>
+                                            {task.assignee_name && (
+                                              <div className="flex items-center gap-2">
+                                                <span className="font-medium">Assignee:</span>
+                                                <span>{task.assignee_name}</span>
+                                              </div>
+                                            )}
+                                            {task.start_date && task.due_date && (
+                                              <div className="flex items-center gap-2">
+                                                <span className="font-medium">Duration:</span>
+                                                <span>
+                                                  {format(new Date(task.start_date), 'MMM d')} →{' '}
+                                                  {format(new Date(task.due_date), 'MMM d')}
+                                                </span>
+                                              </div>
+                                            )}
+                                            {task.is_overdue && (
+                                              <div className="text-red-500 font-medium mt-1 flex items-center gap-1">
+                                                <AlertTriangle className="w-3 h-3" />
+                                                Overdue
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
                   </div>
                 </div>
               </div>
@@ -1194,7 +1052,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-950/80 z-40">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-[#3b82f6] border-t-transparent rounded-full animate-spin" />
               <span className="text-sm text-slate-500">Loading timeline...</span>
             </div>
           </div>
