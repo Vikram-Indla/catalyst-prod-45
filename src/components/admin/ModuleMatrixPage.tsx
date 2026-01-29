@@ -336,8 +336,8 @@ export default function ModuleMatrixPage() {
       </div>
 
       {/* Matrix Table */}
-      <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
-        <div className="overflow-x-auto max-h-[calc(100vh-380px)]">
+      <div className="bg-card rounded-lg border shadow-sm overflow-hidden relative">
+        <div className="overflow-auto max-h-[calc(100vh-380px)]">
           {matrixLoading ? (
             <div className="p-8 text-center text-muted-foreground">Loading matrix...</div>
           ) : (
