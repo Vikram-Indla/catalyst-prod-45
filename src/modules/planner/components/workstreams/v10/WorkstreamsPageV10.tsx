@@ -1,10 +1,11 @@
 // ============================================================
 // WORKSTREAMS V10 MAIN PAGE
-// Integrates all V10 components into unified view
+// GOD-TIER spec: Header with icon, summary bar, toolbar, views
 // ============================================================
 
 import { useState, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { Layers, Plus } from 'lucide-react';
 import { ViewMode, HealthFilter, LeadFilter, WorkstreamDataV10 } from './types';
 import { SkeletonLoader } from './SkeletonLoader';
 import { SummaryBar } from './SummaryBar';
@@ -26,17 +27,19 @@ import {
   useAvailableMembersV10,
 } from './useWorkstreamsV10';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface WorkstreamsPageV10Props {
   className?: string;
 }
 
 export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
+  const navigate = useNavigate();
+  
   // =========================
   // STATE
   // =========================
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [healthFilter, setHealthFilter] = useState<HealthFilter>('all');
   const [leadFilter, setLeadFilter] = useState<LeadFilter>('all');
@@ -153,6 +156,18 @@ export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
     });
   }, [editWorkstream, deleteMutation]);
 
+  const handleViewTasks = useCallback((workstreamId: string) => {
+    navigate(`/planner/task-list?workstream=${workstreamId}`);
+  }, [navigate]);
+
+  const handleViewBoard = useCallback((workstreamId: string) => {
+    navigate(`/planner/boards?workstream=${workstreamId}`);
+  }, [navigate]);
+
+  const handleViewCalendar = useCallback((workstreamId: string) => {
+    navigate(`/planner/calendar?workstream=${workstreamId}`);
+  }, [navigate]);
+
   // =========================
   // KEYBOARD SHORTCUTS
   // =========================
@@ -162,6 +177,10 @@ export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
         e.preventDefault();
         const searchInput = document.querySelector('[data-search-input]') as HTMLInputElement;
         searchInput?.focus();
+      }
+      if (e.shiftKey && e.key === 'W') {
+        e.preventDefault();
+        setShowCreateModal(true);
       }
       if (e.key === 'Escape') {
         if (editWorkstream) setEditWorkstream(null);
@@ -191,9 +210,31 @@ export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
   }
 
   return (
-    <div className={cn('flex flex-col h-full', className)}>
-      {/* Summary Bar */}
-      <div className="px-4 pt-4">
+    <div className={cn('flex flex-col h-full bg-slate-50 dark:bg-slate-900', className)} role="main" aria-label="Workstreams management">
+      {/* Page Header */}
+      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Layers className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold text-foreground">Workstreams</h1>
+              <p className="text-sm text-muted-foreground">
+                Organize work into focused tracks with dedicated teams
+              </p>
+            </div>
+          </div>
+          <Button onClick={() => setShowCreateModal(true)} className="gap-2">
+            <Plus className="w-4 h-4" />
+            New Workstream
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto p-6">
+        {/* Summary Bar */}
         {isLoading ? (
           <SkeletonLoader variant="summary" />
         ) : (
@@ -219,10 +260,8 @@ export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
           onMyWorkstreamsToggle={() => setShowMyWorkstreams(!showMyWorkstreams)}
           totalCount={filteredWorkstreams.length}
         />
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-4">
+        {/* Content */}
         {isLoading ? (
           viewMode === 'list' ? (
             <SkeletonLoader variant="list" count={5} />
@@ -251,17 +290,14 @@ export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
               const ws = workstreams?.find(w => w.id === id);
               if (ws) setEditWorkstream(ws);
             }}
-            onViewTasks={(id) => {
-              // Navigate to task list with workstream filter
-              window.location.href = `/planner/task-list?workstream=${id}`;
-            }}
+            onViewTasks={handleViewTasks}
             onArchive={(id) => {
               archiveMutation.mutate(id);
             }}
             onRequestAccess={() => {}}
           />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filteredWorkstreams.map((ws) => (
               <GridCard
                 key={ws.id}
@@ -269,20 +305,19 @@ export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
                 isSelected={selectedIds.has(ws.id)}
                 onClick={() => handleRowClick(ws)}
                 onDoubleClick={() => setEditWorkstream(ws)}
+                onViewTasks={() => handleViewTasks(ws.id)}
+                onViewBoard={() => handleViewBoard(ws.id)}
+                onManageMembers={() => {
+                  setDetailWorkstream(ws);
+                }}
+                onChangeLead={() => {
+                  setEditWorkstream(ws);
+                }}
               />
             ))}
           </div>
         )}
       </div>
-
-      {/* Create button (floating) */}
-      <Button
-        onClick={() => setShowCreateModal(true)}
-        className="fixed bottom-6 right-6 h-12 px-5 rounded-full shadow-lg gap-2"
-      >
-        <Plus className="w-5 h-5" />
-        New Workstream
-      </Button>
 
       {/* Detail Drawer */}
       <DetailDrawer
@@ -297,6 +332,15 @@ export function WorkstreamsPageV10({ className }: WorkstreamsPageV10Props) {
         onAddMember={() => {
           setEditWorkstream(detailWorkstream);
           setDetailWorkstream(null);
+        }}
+        onViewTasks={() => {
+          if (detailWorkstream) handleViewTasks(detailWorkstream.id);
+        }}
+        onViewBoard={() => {
+          if (detailWorkstream) handleViewBoard(detailWorkstream.id);
+        }}
+        onViewCalendar={() => {
+          if (detailWorkstream) handleViewCalendar(detailWorkstream.id);
         }}
       />
 
