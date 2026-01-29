@@ -89,109 +89,98 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
-          icon_name: string | null
+          group_name: string
           id: string
           is_active: boolean | null
-          key: string
-          label: string
-          parent_key: string | null
-          requires_auth: boolean | null
-          route_path: string | null
-          sort_order: number | null
-          updated_at: string | null
+          module_key: string
+          name: string
+          nav_type: string
+          parent_module: string | null
+          sort_order: number
         }
         Insert: {
           created_at?: string | null
           description?: string | null
-          icon_name?: string | null
+          group_name: string
           id?: string
           is_active?: boolean | null
-          key: string
-          label: string
-          parent_key?: string | null
-          requires_auth?: boolean | null
-          route_path?: string | null
-          sort_order?: number | null
-          updated_at?: string | null
+          module_key: string
+          name: string
+          nav_type?: string
+          parent_module?: string | null
+          sort_order?: number
         }
         Update: {
           created_at?: string | null
           description?: string | null
-          icon_name?: string | null
+          group_name?: string
           id?: string
           is_active?: boolean | null
-          key?: string
-          label?: string
-          parent_key?: string | null
-          requires_auth?: boolean | null
-          route_path?: string | null
-          sort_order?: number | null
-          updated_at?: string | null
+          module_key?: string
+          name?: string
+          nav_type?: string
+          parent_module?: string | null
+          sort_order?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "admin_nav_modules_parent_key_fkey"
-            columns: ["parent_key"]
-            isOneToOne: false
-            referencedRelation: "admin_nav_modules"
-            referencedColumns: ["key"]
-          },
-        ]
+        Relationships: []
       }
       admin_permission_audit: {
         Row: {
-          changed_at: string | null
-          changed_by: string | null
+          admin_user_id: string | null
           id: string
           module_key: string
           new_access_level: string
           old_access_level: string | null
+          reason: string | null
           role_code: string
+          timestamp: string | null
         }
         Insert: {
-          changed_at?: string | null
-          changed_by?: string | null
+          admin_user_id?: string | null
           id?: string
           module_key: string
           new_access_level: string
           old_access_level?: string | null
+          reason?: string | null
           role_code: string
+          timestamp?: string | null
         }
         Update: {
-          changed_at?: string | null
-          changed_by?: string | null
+          admin_user_id?: string | null
           id?: string
           module_key?: string
           new_access_level?: string
           old_access_level?: string | null
+          reason?: string | null
           role_code?: string
+          timestamp?: string | null
         }
         Relationships: []
       }
       admin_role_module_permissions: {
         Row: {
           access_level: string
-          created_at: string | null
           id: string
           module_key: string
           role_code: string
           updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           access_level?: string
-          created_at?: string | null
           id?: string
           module_key: string
           role_code: string
           updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           access_level?: string
-          created_at?: string | null
           id?: string
           module_key?: string
           role_code?: string
           updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -199,7 +188,7 @@ export type Database = {
             columns: ["module_key"]
             isOneToOne: false
             referencedRelation: "admin_nav_modules"
-            referencedColumns: ["key"]
+            referencedColumns: ["module_key"]
           },
         ]
       }
@@ -30652,6 +30641,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      bulk_update_permissions_v2: {
+        Args: {
+          p_access_level: string
+          p_module_keys: string[]
+          p_role_codes: string[]
+        }
+        Returns: Json
+      }
       calculate_objective_score: {
         Args: { objective_uuid: string }
         Returns: number
@@ -30686,14 +30683,6 @@ export type Database = {
           p_blocker_type: string
           p_dependent_id: string
           p_dependent_type: string
-        }
-        Returns: boolean
-      }
-      check_module_access: {
-        Args: {
-          p_module_key: string
-          p_required_level?: string
-          p_user_id: string
         }
         Returns: boolean
       }
@@ -31026,14 +31015,26 @@ export type Database = {
         Args: { p_step_result_id: string }
         Returns: Json
       }
-      get_module_matrix: {
+      get_module_groups_v2: {
         Args: never
         Returns: {
+          group_name: string
+          module_count: number
+        }[]
+      }
+      get_module_matrix_v2: {
+        Args: {
+          p_access_level?: string
+          p_group_name?: string
+          p_role_code?: string
+          p_search?: string
+        }
+        Returns: {
           access_level: string
-          module_description: string
+          group_name: string
+          is_system_role: boolean
           module_key: string
-          module_label: string
-          parent_key: string
+          module_name: string
           role_code: string
           role_name: string
           sort_order: number
@@ -31044,6 +31045,7 @@ export type Database = {
         Returns: Json
       }
       get_parallel_run_progress: { Args: { p_run_id: string }; Returns: Json }
+      get_permission_stats_v2: { Args: { p_role_code?: string }; Returns: Json }
       get_queue_items: {
         Args: {
           p_limit?: number
@@ -32041,13 +32043,13 @@ export type Database = {
         Args: { p_new_role: string; p_project_id: string; p_user_id: string }
         Returns: boolean
       }
-      update_module_permission: {
+      update_module_permission_v2: {
         Args: {
           p_access_level: string
           p_module_key: string
           p_role_code: string
         }
-        Returns: boolean
+        Returns: Json
       }
       update_recent_project: {
         Args: { p_project_id: string }

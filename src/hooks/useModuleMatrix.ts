@@ -1,178 +1,171 @@
+// src/hooks/useModuleMatrix.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
 
-export interface ModuleMatrixEntry {
+// ============================================
+// TYPES
+// ============================================
+export type AccessLevel = 'full' | 'view' | 'hidden';
+
+export interface MatrixCell {
   module_key: string;
-  module_label: string;
-  module_description: string | null;
-  parent_key: string | null;
+  module_name: string;
+  group_name: string;
   sort_order: number;
   role_code: string;
   role_name: string;
-  access_level: 'none' | 'view' | 'full';
+  is_system_role: boolean;
+  access_level: AccessLevel;
 }
 
-export interface NavModule {
-  id: string;
-  key: string;
-  label: string;
-  description: string | null;
-  icon_name: string | null;
-  route_path: string | null;
-  parent_key: string | null;
-  sort_order: number;
-  is_active: boolean;
+export interface ModuleGroup {
+  group_name: string;
+  module_count: number;
 }
 
-export function useModuleMatrix() {
-  const queryClient = useQueryClient();
+export interface PermissionStats {
+  total_modules: number;
+  total_roles: number;
+  full_count: number;
+  view_count: number;
+  hidden_count: number;
+}
 
-  // Fetch the full matrix
-  const { data: matrix, isLoading, error } = useQuery({
-    queryKey: ['module-matrix'],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_module_matrix');
-      if (error) throw new Error(error.message);
-      return data as ModuleMatrixEntry[];
-    },
-  });
+export interface MatrixFilters {
+  roleCode: string | null;
+  groupName: string | null;
+  accessLevel: AccessLevel | null;
+  search: string;
+}
 
-  // Fetch navigation modules for reference
-  const { data: modules } = useQuery({
-    queryKey: ['nav-modules'],
-    queryFn: async () => {
+export interface Role {
+  code: string;
+  name: string;
+}
+
+// ============================================
+// HOOKS
+// ============================================
+
+// Get all roles for dropdown
+export function useRoles() {
+  return useQuery({
+    queryKey: ['roles'],
+    queryFn: async (): Promise<Role[]> => {
       const { data, error } = await supabase
-        .from('admin_nav_modules')
-        .select('*')
+        .from('product_roles')
+        .select('code, name')
         .eq('is_active', true)
-        .order('sort_order');
-      if (error) throw new Error(error.message);
-      return data as NavModule[];
+        .order('name');
+      if (error) throw error;
+      return data;
     },
+    staleTime: 60000,
   });
+}
 
-  // Update permission mutation
-  const updatePermission = useMutation({
-    mutationFn: async ({
-      roleCode,
-      moduleKey,
-      accessLevel,
-    }: {
+// Get module groups for dropdown
+export function useModuleGroups() {
+  return useQuery({
+    queryKey: ['module-groups'],
+    queryFn: async (): Promise<ModuleGroup[]> => {
+      const { data, error } = await supabase.rpc('get_module_groups_v2');
+      if (error) throw error;
+      return data as ModuleGroup[];
+    },
+    staleTime: 60000,
+  });
+}
+
+// Get stats for cards
+export function usePermissionStats(roleCode: string | null = null) {
+  return useQuery({
+    queryKey: ['permission-stats', roleCode],
+    queryFn: async (): Promise<PermissionStats> => {
+      const { data, error } = await supabase.rpc('get_permission_stats_v2', {
+        p_role_code: roleCode
+      });
+      if (error) throw error;
+      return data as unknown as PermissionStats;
+    },
+    staleTime: 10000,
+  });
+}
+
+// Get matrix data
+export function useModuleMatrix(filters: MatrixFilters) {
+  return useQuery({
+    queryKey: ['module-matrix', filters],
+    queryFn: async (): Promise<MatrixCell[]> => {
+      const { data, error } = await supabase.rpc('get_module_matrix_v2', {
+        p_role_code: filters.roleCode,
+        p_group_name: filters.groupName,
+        p_access_level: filters.accessLevel,
+        p_search: filters.search || null
+      });
+      if (error) throw error;
+      return data as MatrixCell[];
+    },
+    staleTime: 10000,
+  });
+}
+
+// Update single permission
+export function useUpdatePermission() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ roleCode, moduleKey, accessLevel }: {
       roleCode: string;
       moduleKey: string;
-      accessLevel: 'none' | 'view' | 'full';
+      accessLevel: AccessLevel;
     }) => {
-      const { data, error } = await supabase.rpc('update_module_permission', {
+      const { data, error } = await supabase.rpc('update_module_permission_v2', {
         p_role_code: roleCode,
         p_module_key: moduleKey,
-        p_access_level: accessLevel,
+        p_access_level: accessLevel
       });
-      if (error) throw new Error(error.message);
+      if (error) throw error;
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['module-matrix'] });
+      queryClient.invalidateQueries({ queryKey: ['permission-stats'] });
     },
   });
-
-  // Real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('module-matrix-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'admin_role_module_permissions',
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['module-matrix'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
-  // Transform matrix into a structured format for the UI
-  const getMatrixByModule = () => {
-    if (!matrix) return {};
-    
-    const byModule: Record<string, Record<string, 'none' | 'view' | 'full'>> = {};
-    
-    matrix.forEach((entry) => {
-      if (!byModule[entry.module_key]) {
-        byModule[entry.module_key] = {};
-      }
-      byModule[entry.module_key][entry.role_code] = entry.access_level;
-    });
-    
-    return byModule;
-  };
-
-  // Get unique roles from matrix
-  const getRoles = () => {
-    if (!matrix) return [];
-    const rolesMap = new Map<string, string>();
-    matrix.forEach((entry) => {
-      rolesMap.set(entry.role_code, entry.role_name);
-    });
-    return Array.from(rolesMap.entries()).map(([code, name]) => ({ code, name }));
-  };
-
-  // Get unique modules from matrix
-  const getModules = () => {
-    if (!matrix) return [];
-    const modulesMap = new Map<string, { key: string; label: string; description: string | null; sortOrder: number }>();
-    matrix.forEach((entry) => {
-      if (!modulesMap.has(entry.module_key)) {
-        modulesMap.set(entry.module_key, {
-          key: entry.module_key,
-          label: entry.module_label,
-          description: entry.module_description,
-          sortOrder: entry.sort_order,
-        });
-      }
-    });
-    return Array.from(modulesMap.values()).sort((a, b) => a.sortOrder - b.sortOrder);
-  };
-
-  return {
-    matrix,
-    modules,
-    isLoading,
-    error,
-    updatePermission,
-    getMatrixByModule,
-    getRoles,
-    getModules,
-  };
 }
 
-// Hook to check current user's module access
-export function useModuleAccess(moduleKey: string, requiredLevel: 'view' | 'full' = 'view') {
-  const { data: hasAccess, isLoading } = useQuery({
-    queryKey: ['module-access', moduleKey, requiredLevel],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-
-      const { data, error } = await supabase.rpc('check_module_access', {
-        p_user_id: user.id,
-        p_module_key: moduleKey,
-        p_required_level: requiredLevel,
+// Bulk update permissions
+export function useBulkUpdate() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ moduleKeys, roleCodes, accessLevel }: {
+      moduleKeys: string[];
+      roleCodes: string[];
+      accessLevel: AccessLevel;
+    }) => {
+      const { data, error } = await supabase.rpc('bulk_update_permissions_v2', {
+        p_module_keys: moduleKeys,
+        p_role_codes: roleCodes,
+        p_access_level: accessLevel
       });
-      if (error) {
-        console.error('Module access check error:', error);
-        return false;
-      }
-      return data ?? false;
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['module-matrix'] });
+      queryClient.invalidateQueries({ queryKey: ['permission-stats'] });
     },
   });
+}
 
-  return { hasAccess: hasAccess ?? false, isLoading };
+// Helper: Cycle to next access level
+export function cycleAccessLevel(current: AccessLevel): AccessLevel {
+  const cycle: Record<AccessLevel, AccessLevel> = {
+    'full': 'view',
+    'view': 'hidden',
+    'hidden': 'full'
+  };
+  return cycle[current];
 }
