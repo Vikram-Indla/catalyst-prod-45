@@ -126,7 +126,6 @@ export function PlannerBoardsPage({
     <div className="planner-v9 flex flex-col h-full bg-slate-50 dark:bg-slate-900">
       {/* V9 Header */}
       <PlannerViewHeader
-        icon={Kanban}
         title="Boards"
         subtitle="Drag and drop tasks across status columns"
         onAddTask={() => setIsCreateOpen(true)}

@@ -222,10 +222,7 @@ export function WorkstreamsPage() {
     <div className="ws-page min-h-screen">
       {/* Dashboard-style Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-            <FolderKanban className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-          </div>
+        <div>
           <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             {showArchived ? 'Archived Workstreams' : 'Workstreams'}
           </h1>

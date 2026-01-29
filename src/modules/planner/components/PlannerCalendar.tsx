@@ -313,7 +313,6 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
     <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-900">
       {/* V9 Header */}
       <PlannerViewHeader
-        icon={CalendarIcon}
         title="Calendar"
         subtitle={title}
         onAddTask={() => setIsCreateOpen(true)}
