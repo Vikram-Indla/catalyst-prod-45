@@ -1,18 +1,19 @@
 // ============================================================
 // WORKSTREAMS V10 - Main Page Component
-// Ring-fenced CSS design system with archive filter
+// Enterprise Clean design with SVG icons per spec
 // ============================================================
 
 import '@/styles/workstreams.css';
 import '@/styles/workstreams-enterprise-clean.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore, Trash2, FolderKanban } from 'lucide-react';
+import { Search, ChevronDown, List, LayoutGrid, Check, X } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount, useUpdateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
 import { InlineLeadSelect } from './InlineLeadSelect';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
+import { ArchivedWorkstreamsView } from './ArchivedWorkstreamsView';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +31,42 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+
+// =====================================================
+// SVG ICON COMPONENTS — Enterprise Style (1.5px stroke)
+// =====================================================
+
+const EditIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+
+const ArchiveBoxIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="4" width="20" height="5" rx="1" />
+    <path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9" />
+    <path d="M10 13h4" />
+  </svg>
+);
+
+const TrashIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6h18" />
+    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
+
+const RestoreIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+  </svg>
+);
 
 const WORKSTREAM_COLORS = [
   '#06b6d4', '#8b5cf6', '#6366f1', '#f97316', '#ec4899', '#84cc16', '#14b8a6',
@@ -219,55 +256,54 @@ export function WorkstreamsPage() {
     setDeleteTarget(ws);
   }, []);
 
+  // Show dedicated Archived view when in archived mode
+  if (showArchived) {
+    return (
+      <ArchivedWorkstreamsView
+        workstreams={filteredWorkstreams}
+        isLoading={isLoading}
+        onBack={toggleArchiveView}
+      />
+    );
+  }
+
   return (
     <div className="ws-page min-h-screen workstreams-enterprise-clean" data-component="workstreams">
       {/* Dashboard-style Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="page-header-left">
           <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            {showArchived ? 'Archived Workstreams' : 'Workstreams'}
+            Workstreams
           </h1>
           <p className="page-subtitle text-sm text-slate-500 dark:text-slate-400">
-            {showArchived 
-              ? `${filteredWorkstreams.length} archived workstream${filteredWorkstreams.length !== 1 ? 's' : ''}`
-              : `${summary.total} workstream${summary.total !== 1 ? 's' : ''}${summary.atRisk + summary.critical > 0 ? ` · ${summary.atRisk + summary.critical} need attention` : ''}`
-            }
+            {summary.total} workstream{summary.total !== 1 ? 's' : ''}{summary.atRisk + summary.critical > 0 ? ` · ${summary.atRisk + summary.critical} need attention` : ''}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* New Workstream Button */}
-          {!showArchived && (
-            <button 
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-              onClick={() => setIsCreateModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" strokeWidth={2} />
-              <span className="hidden sm:inline">New Workstream</span>
-              <span className="sm:hidden">New</span>
-            </button>
-          )}
+          <button 
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span className="hidden sm:inline">New Workstream</span>
+            <span className="sm:hidden">New</span>
+          </button>
 
-          {/* Archive Toggle */}
+          {/* Archived Button with count badge */}
           <button
             onClick={toggleArchiveView}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              showArchived
-                ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
-                : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
           >
-            {showArchived ? (
-              <>
-                <ArchiveRestore className="w-4 h-4" />
-                <span className="hidden sm:inline">View Active</span>
-              </>
-            ) : (
-              <>
-                <Archive className="w-4 h-4" />
-                <span className="hidden sm:inline">Archived</span>
-                {archivedCount > 0 && <span className="text-xs">({archivedCount})</span>}
-              </>
+            <ArchiveBoxIcon className="w-4 h-4" />
+            <span className="hidden sm:inline">Archived</span>
+            {archivedCount > 0 && (
+              <span className="px-1.5 py-0.5 text-xs font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
+                {archivedCount}
+              </span>
             )}
           </button>
 
@@ -484,21 +520,21 @@ export function WorkstreamsPage() {
         {!isLoading && filteredWorkstreams.length === 0 && (
           <div className="ws-empty-state">
             <div className="ws-empty-state-icon">
-              {showArchived ? <Archive className="w-8 h-8" /> : <LayoutGrid className="w-8 h-8" strokeWidth={2} />}
+              <LayoutGrid className="w-8 h-8" strokeWidth={2} />
             </div>
             <div className="ws-empty-state-title">
-              {showArchived ? 'No archived workstreams' : 'No workstreams found'}
+              No workstreams found
             </div>
             <div className="ws-empty-state-text">
-              {showArchived 
-                ? 'Archived workstreams will appear here'
-                : search || healthFilter || leadFilter 
-                  ? 'Try adjusting your filters' 
-                  : 'Create your first workstream to get started'}
+              {search || healthFilter || leadFilter 
+                ? 'Try adjusting your filters' 
+                : 'Create your first workstream to get started'}
             </div>
-            {!search && !healthFilter && !leadFilter && !showArchived && (
+            {!search && !healthFilter && !leadFilter && (
               <button className="ws-btn ws-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-                <Plus className="w-4 h-4" strokeWidth={2} />
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
                 New Workstream
               </button>
             )}
@@ -579,25 +615,25 @@ export function WorkstreamsPage() {
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button 
-                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20"
                       onClick={(e) => handleQuickArchive(ws, e)}
                       title={ws.is_archived ? 'Unarchive' : 'Archive'}
                     >
                       {ws.is_archived ? (
-                        <ArchiveRestore className="w-4 h-4" />
+                        <RestoreIcon className="w-4 h-4" />
                       ) : (
-                        <Archive className="w-4 h-4" />
+                        <ArchiveBoxIcon className="w-4 h-4" />
                       )}
                     </button>
                     <button 
-                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                       onClick={(e) => handleQuickEdit(ws, e)}
                       title="Rename / change prefix"
                     >
-                      <Pencil className="w-4 h-4" strokeWidth={2} />
+                      <EditIcon className="w-4 h-4" />
                     </button>
                     <button
-                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-30 disabled:cursor-not-allowed"
                       onClick={(e) => handleRequestDelete(ws, e)}
                       disabled={(ws.taskCount || 0) > 0}
                       title={
@@ -606,7 +642,7 @@ export function WorkstreamsPage() {
                           : 'Delete permanently'
                       }
                     >
-                      <Trash2 className="w-4 h-4" strokeWidth={2} />
+                      <TrashIcon className="w-4 h-4" />
                     </button>
                   </div>
                 </td>
