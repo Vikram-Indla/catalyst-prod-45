@@ -31,18 +31,35 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
     setNewItemText('');
   };
 
-  // CONTENT ONLY - no header (CollapsibleSection provides the header)
+  // Calculate progress
+  const completed = items?.filter(i => i.is_completed).length || 0;
+  const total = items?.length || 0;
+  const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+
   return (
-    <div className="space-y-1.5">
-      {/* Existing items */}
-      {items?.map(item => (
-        <ChecklistItemRow
-          key={item.id}
-          item={item}
-          onToggle={() => toggleItem.mutate({ id: item.id, is_completed: !item.is_completed })}
-          onDelete={() => deleteItem.mutate(item.id)}
-        />
-      ))}
+    <div>
+      {/* V2 Checklist Header with Progress */}
+      <div className="task-modal__checklist-header">
+        <span className="task-modal__checklist-title">Checklist</span>
+        <span className="task-modal__checklist-progress">
+          {completed} of {total} complete ({progress}%)
+          <span className="task-modal__checklist-bar">
+            <span className="task-modal__checklist-fill" style={{ width: `${progress}%` }} />
+          </span>
+        </span>
+      </div>
+
+      {/* Items */}
+      <div className="task-modal__checklist-items">
+        {items?.map(item => (
+          <ChecklistItemRow
+            key={item.id}
+            item={item}
+            onToggle={() => toggleItem.mutate({ id: item.id, is_completed: !item.is_completed })}
+            onDelete={() => deleteItem.mutate(item.id)}
+          />
+        ))}
+      </div>
       
       {/* Add Item */}
       {isAdding ? (
@@ -77,10 +94,10 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
       ) : (
         <button
           onClick={() => setIsAdding(true)}
-          className="w-full flex items-center gap-2 p-2 border border-dashed border-muted-foreground/30 rounded-lg text-xs text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all"
+          className="task-modal__add-checklist"
         >
           <Plus className="w-4 h-4" />
-          Add item...
+          Add checklist item
         </button>
       )}
     </div>
@@ -98,24 +115,22 @@ function ChecklistItemRow({
 }) {
   return (
     <div 
-      className="group flex items-center gap-2.5 py-1.5 px-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+      className="task-modal__checklist-item group"
       onClick={onToggle}
     >
       <div 
         className={cn(
-          "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
-          item.is_completed 
-            ? "bg-primary border-primary" 
-            : "border-muted-foreground/40 hover:border-primary/50"
+          "task-modal__checkbox",
+          item.is_completed && "task-modal__checkbox--checked"
         )}
       >
-        {item.is_completed && <Check className="w-2.5 h-2.5 text-primary-foreground" />}
+        {item.is_completed && '✓'}
       </div>
       
       <span 
         className={cn(
-          "flex-1 text-sm transition-colors",
-          item.is_completed && "line-through text-muted-foreground"
+          "task-modal__checklist-text",
+          item.is_completed && "task-modal__checklist-text--completed"
         )}
       >
         {item.text}
@@ -123,7 +138,7 @@ function ChecklistItemRow({
       
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(); }}
-        className="w-5 h-5 flex items-center justify-center rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+        className="task-modal__checklist-delete"
       >
         <X className="w-3 h-3" />
       </button>

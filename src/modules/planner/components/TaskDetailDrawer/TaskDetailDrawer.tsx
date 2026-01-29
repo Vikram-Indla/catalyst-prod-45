@@ -1,6 +1,6 @@
 // ============================================================
-// TASK DETAIL DRAWER - LINEAR-INSPIRED REDESIGN
-// Clean single-column layout with real-time sync & saving indicator
+// TASK DETAIL DRAWER V2 - ENTERPRISE CLEAN DESIGN
+// 18px title, status bar, tabs, inline fields
 // ============================================================
 
 import { useCallback, useEffect, useState, useRef } from 'react';
@@ -9,8 +9,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckSquare, Paperclip, GitBranch } from 'lucide-react';
+import { CheckSquare, Paperclip, GitBranch, FileText, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+import '@/styles/task-detail-modal-enterprise.css';
 
 import { DrawerHeader } from './DrawerHeader';
 import { TaskDescription } from './TaskDescription';
@@ -23,6 +24,7 @@ import { DependenciesSection } from './DependenciesSection';
 import { ActivitySection } from './ActivitySection';
 import { DrawerFooter } from './DrawerFooter';
 import { SavingIndicator, SaveStatus } from './SavingIndicator';
+import { cn } from '@/lib/utils';
 
 import {
   useTaskDependencies,
@@ -79,6 +81,9 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   // Save status for indicator
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const saveStatusTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Tab state for V2 tabbed interface - must be before any early returns
+  const [activeTab, setActiveTab] = useState<'description' | 'checklist' | 'links' | 'files' | 'activity'>('description');
   
   const handleClose = useCallback(() => {
     // Flush any pending debounced updates before closing
@@ -213,18 +218,32 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   if (!effectiveTaskId) return null;
 
+  // Tab badge counts
+  const checklistCount = checklist?.length || 0;
+  const linksCount = dependencies?.length || 0;
+  const filesCount = attachments?.length || 0;
+  const activityCount = (comments?.length || 0) + (activity?.length || 0);
+
+  const tabs = [
+    { id: 'description' as const, label: 'Description', badge: null },
+    { id: 'checklist' as const, label: 'Checklist', badge: checklistCount || null },
+    { id: 'links' as const, label: 'Links', badge: linksCount || null },
+    { id: 'files' as const, label: 'Files', badge: filesCount || null },
+    { id: 'activity' as const, label: 'Activity', badge: activityCount || null },
+  ];
+
   return (
     <Sheet open={open} onOpenChange={(o) => !o && handleClose()}>
       <SheetContent 
         side="right" 
-        className="w-full sm:max-w-[540px] p-0 gap-0 overflow-hidden"
+        className="w-full sm:max-w-[800px] p-0 gap-0 overflow-hidden"
         hideClose
       >
         {isLoading ? (
           <DrawerSkeleton />
         ) : task ? (
-          <div className="flex flex-col h-full relative">
-            {/* Header - with save status */}
+          <div className="task-modal task-modal-enterprise flex flex-col h-full relative">
+            {/* Header - V2 with status bar */}
             <DrawerHeader
               task={task}
               onClose={handleClose}
@@ -233,83 +252,96 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
               saveStatus={saveStatus}
             />
             
-            {/* Scrollable Content */}
+            {/* Tab Navigation - V2 */}
+            <nav className="task-modal__tabs">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={cn(
+                    "task-modal__tab",
+                    activeTab === tab.id && "task-modal__tab--active"
+                  )}
+                >
+                  {tab.label}
+                  {tab.badge !== null && tab.badge > 0 && (
+                    <span className="task-modal__tab-badge">{tab.badge}</span>
+                  )}
+                </button>
+              ))}
+            </nav>
+            
+            {/* Tab Content - Scrollable */}
             <ScrollArea className="flex-1">
-              <div className="p-6 space-y-6">
-                {/* Description */}
-                <TaskDescription
-                  value={task.description || ''}
-                  onChange={(desc) => handleTextFieldUpdate('description', desc)}
-                />
-                
-                {/* Details - Single Column */}
-                <TaskFieldsGrid
-                  task={task}
-                  onFieldChange={handleFieldUpdate}
-                />
-                
-                {/* Progress Bar */}
-                <ProgressSection
-                  task={task}
-                  onUpdate={(updates) => handleFieldUpdate('progress', updates.progress)}
-                />
-                
-                {/* Collapsible Sections */}
-                <div className="space-y-2 pt-2 border-t border-border">
-                  {/* Checklist */}
-                  <CollapsibleSection
-                    title="Checklist"
-                    count={checklist?.length || 0}
-                    icon={<CheckSquare className="w-4 h-4" />}
-                  >
-                    <ChecklistSection
-                      taskId={effectiveTaskId!}
-                      items={checklist || []}
+              <div className="task-modal__content">
+                {/* Description Tab */}
+                {activeTab === 'description' && (
+                  <div className="space-y-5">
+                    {/* Description */}
+                    <div className="task-modal__section">
+                      <TaskDescription
+                        value={task.description || ''}
+                        onChange={(desc) => handleTextFieldUpdate('description', desc)}
+                      />
+                    </div>
+                    
+                    {/* Inline Fields Row - V2 style */}
+                    <TaskFieldsGrid
+                      task={task}
+                      onFieldChange={handleFieldUpdate}
                     />
-                  </CollapsibleSection>
+                    
+                    {/* Progress */}
+                    <ProgressSection
+                      task={task}
+                      onUpdate={(updates) => handleFieldUpdate('progress', updates.progress)}
+                    />
+                  </div>
+                )}
 
-                  {/* Relations */}
-                  <CollapsibleSection
-                    title="Relations"
-                    count={dependencies?.length || 0}
-                    icon={<GitBranch className="w-4 h-4" />}
-                  >
-                    <DependenciesSection
-                      taskId={effectiveTaskId!}
-                      dependencies={dependencies || []}
-                    />
-                  </CollapsibleSection>
+                {/* Checklist Tab */}
+                {activeTab === 'checklist' && (
+                  <ChecklistSection
+                    taskId={effectiveTaskId!}
+                    items={checklist || []}
+                  />
+                )}
 
-                  {/* Attachments */}
-                  <CollapsibleSection
-                    title="Attachments"
-                    count={attachments?.length || 0}
-                    icon={<Paperclip className="w-4 h-4" />}
-                  >
-                    <AttachmentsSection
-                      taskId={effectiveTaskId!}
-                      attachments={attachments || []}
-                    />
-                  </CollapsibleSection>
-                </div>
-                
-                {/* Activity */}
-                <div className="pt-4 border-t border-border">
+                {/* Links Tab */}
+                {activeTab === 'links' && (
+                  <DependenciesSection
+                    taskId={effectiveTaskId!}
+                    dependencies={dependencies || []}
+                  />
+                )}
+
+                {/* Files Tab */}
+                {activeTab === 'files' && (
+                  <AttachmentsSection
+                    taskId={effectiveTaskId!}
+                    attachments={attachments || []}
+                  />
+                )}
+
+                {/* Activity Tab */}
+                {activeTab === 'activity' && (
                   <ActivitySection
                     taskId={effectiveTaskId!}
                     comments={comments || []}
                     activity={activity || []}
                   />
-                </div>
+                )}
               </div>
             </ScrollArea>
             
             {/* Footer */}
-            <DrawerFooter
-              task={task}
-              onDelete={handleClose}
-              onDuplicate={() => {}}
-            />
+            <div className="task-modal__footer">
+              <DrawerFooter
+                task={task}
+                onDelete={handleClose}
+                onDuplicate={() => {}}
+              />
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground">

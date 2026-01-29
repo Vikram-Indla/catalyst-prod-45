@@ -1,10 +1,10 @@
 // ============================================================
-// DRAWER HEADER - MATCHES REFERENCE SCREENSHOT EXACTLY
-// Task ID + Workstream inline, action icons row, status pill
+// DRAWER HEADER V2 - ENTERPRISE CLEAN DESIGN
+// 18px title (not 24px), status bar, inline fields
 // ============================================================
 
-import { useState } from 'react';
-import { X, ChevronRight, ChevronDown, Check, Link2, Eye, Pin, MoreHorizontal } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { X, ChevronDown, Check, Link2, Eye, Pin, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -18,16 +18,24 @@ interface DrawerHeaderProps {
   onClose: () => void;
   onTitleChange: (title: string) => void;
   onStatusChange: (statusId: string) => void;
+  onAssigneeChange?: (assigneeId: string | null) => void;
+  onWorkstreamChange?: (workstreamId: string | null) => void;
   saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; text: string }> = {
-  backlog: { label: 'Backlog', color: '#9ca3af', bg: 'bg-gray-100', text: 'text-gray-700' },
-  planned: { label: 'Planned', color: '#3b82f6', bg: 'bg-blue-50', text: 'text-blue-700' },
-  'in-progress': { label: 'In Progress', color: '#f59e0b', bg: 'bg-amber-50', text: 'text-amber-700' },
-  in_progress: { label: 'In Progress', color: '#f59e0b', bg: 'bg-amber-50', text: 'text-amber-700' },
-  review: { label: 'Review', color: '#8b5cf6', bg: 'bg-violet-50', text: 'text-violet-700' },
-  done: { label: 'Done', color: '#10b981', bg: 'bg-emerald-50', text: 'text-emerald-700' },
+const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
+  backlog: { label: 'Backlog', color: '#94a3b8' },
+  planned: { label: 'Planned', color: '#3b82f6' },
+  'in-progress': { label: 'In Progress', color: '#0284c7' },
+  in_progress: { label: 'In Progress', color: '#0284c7' },
+  review: { label: 'Review', color: '#8b5cf6' },
+  done: { label: 'Done', color: '#16a34a' },
+};
+
+const HEALTH_CONFIG: Record<string, { label: string; color: string }> = {
+  critical: { label: 'Critical', color: '#dc2626' },
+  at_risk: { label: 'At Risk', color: '#ca8a04' },
+  on_track: { label: 'On Track', color: '#16a34a' },
 };
 
 function useStatuses() {
@@ -48,6 +56,67 @@ function useStatuses() {
   });
 }
 
+// Status Field Component for Status Bar
+function StatusBarField({
+  label,
+  value,
+  dotColor,
+  onClick,
+  hasChevron = true,
+}: {
+  label: string;
+  value: string;
+  dotColor?: string;
+  onClick?: () => void;
+  hasChevron?: boolean;
+}) {
+  return (
+    <div className="task-modal__status-field">
+      <span className="task-modal__status-label">{label}</span>
+      <button
+        onClick={onClick}
+        className={cn(
+          "task-modal__status-value",
+          !onClick && "cursor-default"
+        )}
+        disabled={!onClick}
+      >
+        {dotColor && (
+          <span
+            className="task-modal__status-dot"
+            style={{ backgroundColor: dotColor }}
+          />
+        )}
+        <span>{value}</span>
+        {hasChevron && onClick && (
+          <span className="task-modal__status-chevron">▾</span>
+        )}
+      </button>
+    </div>
+  );
+}
+
+// Assignee Field for Status Bar
+function AssigneeStatusField({ assignee }: { assignee: any }) {
+  const initials = assignee?.full_name
+    ?.split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || '?';
+
+  return (
+    <div className="task-modal__status-field">
+      <span className="task-modal__status-label">Assignee</span>
+      <div className="task-modal__status-value">
+        <span className="task-modal__assignee-avatar">{initials}</span>
+        <span>{assignee?.full_name || 'Unassigned'}</span>
+      </div>
+    </div>
+  );
+}
+
+// Status Selector Dropdown
 function StatusSelector({
   currentStatus,
   currentStatusId,
@@ -67,20 +136,13 @@ function StatusSelector({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
-          className={cn(
-            "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all",
-            "hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1",
-            config.bg,
-            config.text
-          )}
-        >
+        <button className="task-modal__status-value">
           <span
-            className="w-2 h-2 rounded-full"
+            className="task-modal__status-dot"
             style={{ backgroundColor: config.color }}
           />
-          {resolvedCurrent?.name || config.label}
-          <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+          <span>{resolvedCurrent?.name || config.label}</span>
+          <span className="task-modal__status-chevron">▾</span>
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -107,7 +169,7 @@ function StatusSelector({
               )}
             >
               <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cfg.color }} />
-              <span className={cfg.text}>{status.name}</span>
+              <span>{status.name}</span>
               {isSelected && <Check className="w-4 h-4 ml-auto text-primary" />}
             </button>
           );
@@ -117,12 +179,33 @@ function StatusSelector({
   );
 }
 
-export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange, saveStatus = 'idle' }: DrawerHeaderProps) {
+export function DrawerHeader({ 
+  task, 
+  onClose, 
+  onTitleChange, 
+  onStatusChange, 
+  saveStatus = 'idle' 
+}: DrawerHeaderProps) {
   const workstreamName = task.workstream?.name || '';
   const wsColors = getWorkstreamColor(workstreamName);
-  
-  // Get task key from task_key field or key field
   const taskKey = task.task_key || task.key || '';
+  
+  // Determine health status (derive from overdue/blocked status)
+  const health = useMemo(() => {
+    if (task.is_blocked) return 'critical';
+    if (task.due_date) {
+      const dueDate = new Date(task.due_date);
+      const now = new Date();
+      if (dueDate < now) return 'critical';
+      const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysDiff <= 3) return 'at_risk';
+    }
+    return 'on_track';
+  }, [task.due_date, task.is_blocked]);
+
+  const healthConfig = HEALTH_CONFIG[health];
+  const statusSlug = task.status?.slug || 'backlog';
+  const statusConfig = STATUS_CONFIG[statusSlug] || STATUS_CONFIG.backlog;
 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/planner/task-list?task=${task.id}`;
@@ -131,96 +214,71 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange, sav
   };
 
   return (
-    <div className="px-6 pt-4 pb-4 bg-background border-b border-border">
+    <div className="task-modal__header">
       {/* Top Row: Task ID + Workstream + Action Icons */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-1.5">
-          {/* Task ID */}
-          <span className="font-mono font-semibold text-foreground text-sm">{taskKey}</span>
-          
-          {/* Workstream badge */}
+      <div className="task-modal__header-top">
+        <div className="task-modal__breadcrumb">
+          <span className="task-modal__id">{taskKey}</span>
           {workstreamName && (
             <>
-              <span className="flex items-center gap-1 text-muted-foreground text-sm">
-                <span 
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: wsColors.hex }}
-                />
-                {workstreamName.replace(' Track', '')}
-              </span>
-              <ChevronRight className="w-3 h-3 text-muted-foreground" />
+              <span>·</span>
+              <span className="task-modal__workstream">{workstreamName}</span>
             </>
           )}
         </div>
         
         {/* Action Icons */}
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
+        <div className="task-modal__actions">
+          <button
             onClick={handleCopyLink}
-            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+            className="task-modal__action-btn"
             title="Copy link"
           >
             <Link2 className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+          </button>
+          <button
+            className="task-modal__action-btn"
             title="Watch task"
           >
             <Eye className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+          </button>
+          <button
+            className="task-modal__action-btn"
             title="Pin task"
           >
             <Pin className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+          </button>
+          <button
+            className="task-modal__action-btn"
             title="More options"
           >
             <MoreHorizontal className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
+          </button>
+          <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground"
+            className="task-modal__action-btn task-modal__action-btn--close"
             title="Close"
           >
             <X className="w-4 h-4" />
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Status Pill */}
-      <div className="mb-3">
-        <StatusSelector 
-          currentStatus={task.status}
-          currentStatusId={task.status_id}
-          onChange={onStatusChange} 
-        />
+      {/* Title Row - 18px, EDITABLE */}
+      <div className="task-modal__title-row">
+        <div 
+          contentEditable
+          suppressContentEditableWarning
+          onBlur={(e) => onTitleChange(e.currentTarget.textContent || '')}
+          className="task-modal__title"
+        >
+          {task.title}
+        </div>
+        <span className="task-modal__edit-hint">Click to edit</span>
       </div>
-
-      {/* Title - Inline editable */}
-      <h1 
-        contentEditable
-        suppressContentEditableWarning
-        onBlur={(e) => onTitleChange(e.currentTarget.textContent || '')}
-        className="text-2xl font-bold text-foreground outline-none leading-tight cursor-text"
-      >
-        {task.title}
-      </h1>
       
-      {/* All changes saved indicator */}
-      <div className="mt-2 flex items-center gap-1.5">
+      {/* Saving indicator */}
+      <div className="flex items-center gap-1.5 mb-3">
         {saveStatus === 'saved' ? (
           <>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -237,6 +295,38 @@ export function DrawerHeader({ task, onClose, onTitleChange, onStatusChange, sav
             <span className="text-xs text-emerald-600">All changes saved</span>
           </>
         )}
+      </div>
+
+      {/* Status Bar - 4 fields grid */}
+      <div className="task-modal__status-bar">
+        {/* Status */}
+        <div className="task-modal__status-field">
+          <span className="task-modal__status-label">Status</span>
+          <StatusSelector
+            currentStatus={task.status}
+            currentStatusId={task.status_id}
+            onChange={onStatusChange}
+          />
+        </div>
+        
+        {/* Health */}
+        <StatusBarField
+          label="Health"
+          value={healthConfig.label}
+          dotColor={healthConfig.color}
+          hasChevron={false}
+        />
+        
+        {/* Workstream */}
+        <StatusBarField
+          label="Workstream"
+          value={workstreamName || 'None'}
+          dotColor={wsColors.hex}
+          hasChevron={false}
+        />
+        
+        {/* Assignee */}
+        <AssigneeStatusField assignee={task.assignee} />
       </div>
     </div>
   );

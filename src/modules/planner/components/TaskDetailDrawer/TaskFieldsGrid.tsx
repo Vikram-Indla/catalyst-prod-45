@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   Info,
   Tag,
-  HelpCircle
+  HelpCircle,
+  ChevronDown
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -99,114 +100,51 @@ function useWorkstreams() {
 
 export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
   const { data: profiles = [] } = useProfiles();
-  const workstreamName = task.workstream?.name || '';
-  const wsColors = getWorkstreamColor(workstreamName);
 
   return (
-    <div>
-      {/* Section Header */}
-      <div className="flex items-center gap-2 mb-4">
-        <Info className="w-4 h-4 text-muted-foreground" />
-        <span className="text-sm font-medium text-foreground">Details</span>
-      </div>
-
-      {/* Fields */}
-      <div className="divide-y divide-border">
+    <div className="task-modal__section">
+      {/* Inline Fields Row - 3 columns per V2 spec */}
+      <div className="task-modal__fields-row">
         {/* Priority */}
-        <FieldRow 
-          icon={<Flag className="w-4 h-4" />} 
-          label="Priority"
-        >
+        <div className="task-modal__inline-field">
+          <span className="task-modal__inline-label">Priority</span>
           <PrioritySelect
             value={task.priority}
             onChange={(priority) => onFieldChange('priority', priority)}
           />
-        </FieldRow>
+        </div>
 
-        {/* Assignee */}
-        <FieldRow 
-          icon={<User className="w-4 h-4" />} 
-          label="Assignee"
-        >
-          <AssigneeSelect
-            value={task.assignee_id}
-            currentAssignee={task.assignee}
-            profiles={profiles}
-            onChange={(id) => onFieldChange('assignee_id', id)}
+        {/* Due Date */}
+        <div className="task-modal__inline-field">
+          <span className="task-modal__inline-label">Due Date</span>
+          <DueDatePicker
+            value={task.due_date}
+            onChange={(date) => onFieldChange('due_date', date)}
           />
-        </FieldRow>
-
-        {/* Workstream */}
-        <FieldRow 
-          icon={<Layers className="w-4 h-4" />} 
-          label="Workstream"
-        >
-          <WorkstreamSelect
-            value={task.workstream_id}
-            currentWorkstream={task.workstream}
-            onChange={(id) => onFieldChange('workstream_id', id)}
-          />
-        </FieldRow>
+        </div>
 
         {/* Start Date */}
-        <FieldRow 
-          icon={<Calendar className="w-4 h-4" />} 
-          label="Start Date"
-        >
+        <div className="task-modal__inline-field">
+          <span className="task-modal__inline-label">Start Date</span>
           <DatePicker
             value={task.start_date}
             onChange={(date) => onFieldChange('start_date', date)}
             placeholder="Set start date..."
           />
-        </FieldRow>
+        </div>
+      </div>
 
-        {/* Due Date */}
-        <FieldRow 
-          icon={<Clock className="w-4 h-4" />} 
-          label="Due Date"
-        >
-          <DueDatePicker
-            value={task.due_date}
-            onChange={(date) => onFieldChange('due_date', date)}
-          />
-        </FieldRow>
-
-        {/* Labels */}
-        <FieldRow 
-          icon={<Tag className="w-4 h-4" />} 
-          label="Labels"
-        >
-          <LabelsSelector taskId={task.id} />
-        </FieldRow>
+      {/* Labels Row */}
+      <div className="task-modal__labels-row mt-4">
+        <LabelsSelector taskId={task.id} />
       </div>
     </div>
   );
 }
 
-// Field Row Component
-function FieldRow({ 
-  icon, 
-  label, 
-  children 
-}: { 
-  icon: React.ReactNode; 
-  label: string; 
-  children: React.ReactNode; 
-}) {
-  return (
-    <div className="flex items-center justify-between py-3">
-      <div className="flex items-center gap-3 text-muted-foreground">
-        {icon}
-        <span className="text-sm">{label}</span>
-      </div>
-      <div className="flex-shrink-0">
-        {children}
-      </div>
-    </div>
-  );
-}
+// Field Row Component - REMOVED, using inline fields instead
 
-// Priority Select
+// Priority Select - V2 Inline Style
 function PrioritySelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const config = PRIORITY_CONFIG[value as keyof typeof PRIORITY_CONFIG] || PRIORITY_CONFIG.medium;
@@ -214,17 +152,15 @@ function PrioritySelect({ value, onChange }: { value: string; onChange: (v: stri
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-1.5 hover:bg-muted/50 px-2 py-1 rounded transition-colors">
-          <span className={cn("w-1.5 h-1.5 rounded-full", config.dot)} />
-          <span className={cn("text-sm font-medium", config.color)}>
-            {config.label}
-          </span>
-          <span className="text-muted-foreground">›</span>
+        <button className="task-modal__inline-value">
+          <span className="task-modal__priority-dot" style={{ backgroundColor: config.dot.includes('red') ? '#dc2626' : config.dot.includes('amber') ? '#ca8a04' : config.dot.includes('blue') ? '#2563eb' : '#94a3b8' }} />
+          <span>{config.label}</span>
+          <ChevronDown className="w-3 h-3 ml-auto text-gray-400" />
         </button>
       </PopoverTrigger>
       <PopoverContent
         className="w-40 p-1.5 z-[500] bg-popover"
-        align="end"
+        align="start"
       >
         {Object.entries(PRIORITY_CONFIG).map(([key, cfg]) => (
           <button
@@ -235,7 +171,7 @@ function PrioritySelect({ value, onChange }: { value: string; onChange: (v: stri
               value === key ? "bg-muted" : "hover:bg-muted/50"
             )}
           >
-            <span className={cn("w-2 h-2 rounded-full", cfg.dot)} />
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cfg.dot.includes('red') ? '#dc2626' : cfg.dot.includes('amber') ? '#ca8a04' : cfg.dot.includes('blue') ? '#2563eb' : '#94a3b8' }} />
             <span className={cfg.color}>{cfg.label}</span>
             {value === key && <Check className="w-4 h-4 ml-auto text-primary" />}
           </button>
@@ -345,7 +281,7 @@ function AssigneeSelect({
   );
 }
 
-// Date Picker
+// Date Picker - V2 Inline Style
 function DatePicker({ 
   value, 
   onChange, 
@@ -360,11 +296,12 @@ function DatePicker({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-          {value ? format(new Date(value), 'MMM d, yyyy') : placeholder || 'Not set'}
+        <button className="task-modal__inline-value task-modal__inline-value--readonly">
+          <span>{value ? format(new Date(value), 'MMM d, yyyy') : placeholder || 'Not set'}</span>
+          <ChevronDown className="w-3 h-3 ml-auto text-gray-400" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="end">
+      <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="start">
         <CalendarComponent
           mode="single"
           selected={value ? new Date(value) : undefined}
@@ -379,7 +316,7 @@ function DatePicker({
   );
 }
 
-// Due Date Picker with overdue indicator
+// Due Date Picker with overdue indicator - V2 Inline Style
 function DueDatePicker({ value, onChange }: { value: string | null; onChange: (date: string | null) => void }) {
   const [open, setOpen] = useState(false);
   
@@ -392,25 +329,22 @@ function DueDatePicker({ value, onChange }: { value: string | null; onChange: (d
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-2 hover:bg-muted/50 px-2 py-1 rounded transition-colors">
+        <button className={cn("task-modal__inline-value", overdueDays && "task-modal__overdue")}>
           {value ? (
             <>
-              {overdueDays && <AlertTriangle className="w-4 h-4 text-red-500" />}
-              <span className={cn("text-sm", overdueDays ? "text-red-600 font-medium" : "text-foreground")}>
-                {format(new Date(value), 'MMM d, yyyy')}
-              </span>
+              {overdueDays && <AlertTriangle className="w-4 h-4" />}
+              <span>{format(new Date(value), 'MMM d, yyyy')}</span>
               {overdueDays && (
-                <span className="text-sm text-red-500">
-                  ({overdueDays} days overdue)
-                </span>
+                <span className="text-xs">({overdueDays}d overdue)</span>
               )}
             </>
           ) : (
-            <span className="text-sm text-muted-foreground">Set due date...</span>
+            <span className="text-gray-400">Set due date...</span>
           )}
+          <ChevronDown className="w-3 h-3 ml-auto text-gray-400" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="end">
+      <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="start">
         <CalendarComponent
           mode="single"
           selected={value ? new Date(value) : undefined}
