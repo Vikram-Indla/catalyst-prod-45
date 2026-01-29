@@ -228,14 +228,17 @@ export function PlannerDashboard() {
           />
         )}
 
-        {/* Main Grid - 3-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 shrink-0">
+        {/* Top Grid - 2-column layout: Status + Workstream Health */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
           {/* Status Distribution */}
           <DashboardStatusChartV2 data={statusDistribution} />
           
           {/* Workstream Health - filtered */}
           <DashboardWorkstreamHealthV2 data={filteredWorkstreamHealth} />
-          
+        </div>
+
+        {/* Second row - Team Workload takes half width on large screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0">
           {/* Team Workload */}
           <DashboardTeamWorkloadV2 
             data={teamWorkload} 
@@ -243,7 +246,7 @@ export function PlannerDashboard() {
           />
         </div>
 
-        {/* Attention Required - Full width, filtered */}
+        {/* Attention Required - Full width */}
         <DashboardUpcomingDeadlinesV2 
           data={filteredUpcomingDeadlines} 
           className="flex-1 min-h-[200px]"
