@@ -85,6 +85,124 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_nav_modules: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          key: string
+          label: string
+          parent_key: string | null
+          requires_auth: boolean | null
+          route_path: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          key: string
+          label: string
+          parent_key?: string | null
+          requires_auth?: boolean | null
+          route_path?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          key?: string
+          label?: string
+          parent_key?: string | null
+          requires_auth?: boolean | null
+          route_path?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_nav_modules_parent_key_fkey"
+            columns: ["parent_key"]
+            isOneToOne: false
+            referencedRelation: "admin_nav_modules"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      admin_permission_audit: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          id: string
+          module_key: string
+          new_access_level: string
+          old_access_level: string | null
+          role_code: string
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          module_key: string
+          new_access_level: string
+          old_access_level?: string | null
+          role_code: string
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          module_key?: string
+          new_access_level?: string
+          old_access_level?: string | null
+          role_code?: string
+        }
+        Relationships: []
+      }
+      admin_role_module_permissions: {
+        Row: {
+          access_level: string
+          created_at: string | null
+          id: string
+          module_key: string
+          role_code: string
+          updated_at: string | null
+        }
+        Insert: {
+          access_level?: string
+          created_at?: string | null
+          id?: string
+          module_key: string
+          role_code: string
+          updated_at?: string | null
+        }
+        Update: {
+          access_level?: string
+          created_at?: string | null
+          id?: string
+          module_key?: string
+          role_code?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_role_module_permissions_module_key_fkey"
+            columns: ["module_key"]
+            isOneToOne: false
+            referencedRelation: "admin_nav_modules"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       assignment_license_allocations: {
         Row: {
           allocation_percent: number
@@ -30571,6 +30689,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_module_access: {
+        Args: {
+          p_module_key: string
+          p_required_level?: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       check_permission: {
         Args: {
           _action: Database["public"]["Enums"]["permission_action"]
@@ -30899,6 +31025,19 @@ export type Database = {
       get_linked_defects_for_step: {
         Args: { p_step_result_id: string }
         Returns: Json
+      }
+      get_module_matrix: {
+        Args: never
+        Returns: {
+          access_level: string
+          module_description: string
+          module_key: string
+          module_label: string
+          parent_key: string
+          role_code: string
+          role_name: string
+          sort_order: number
+        }[]
       }
       get_next_test_in_cycle: {
         Args: { p_current_run_id?: string; p_cycle_id: string }
@@ -31900,6 +32039,14 @@ export type Database = {
       }
       update_member_role: {
         Args: { p_new_role: string; p_project_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      update_module_permission: {
+        Args: {
+          p_access_level: string
+          p_module_key: string
+          p_role_code: string
+        }
         Returns: boolean
       }
       update_recent_project: {
