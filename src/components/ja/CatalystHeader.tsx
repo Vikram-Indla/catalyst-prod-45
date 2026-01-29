@@ -34,6 +34,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useAppHeaderOffset } from "@/hooks/useAppHeaderOffset";
 
 export function CatalystHeader() {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export function CatalystHeader() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement | null>(null);
+  const headerRef = useRef<HTMLElement | null>(null);
   const { isAdmin, isSuperAdmin, isProgramManager, canAccessEnterprise, isProductOwnerOnly } = useUserRole();
   
   // Settings access: admin, super_admin, or program_manager (management)
@@ -52,6 +54,9 @@ export function CatalystHeader() {
   
   // Get active nav item based on workspace context
   const activeNavItem = getActiveNavItem(workspaceType);
+
+  // Keep global --app-header-h / --app-top-offset in sync with real header height
+  useAppHeaderOffset(headerRef);
 
   // Create entity dialog states - lifted from dropdowns
   const [createDialogType, setCreateDialogType] = useState<'program' | 'project' | 'product' | null>(null);
@@ -164,12 +169,16 @@ export function CatalystHeader() {
   return (
     <>
       {/* TopNav: 56px fixed height, theme-aware bg, elevation + bottom border for enterprise frame */}
-      <header 
+      <header
+        ref={headerRef}
         className="sticky top-0 z-[100] flex items-center"
-        style={{ 
-          height: '56px', 
+        style={{
+          // Safe-area aware header height contract
+          height: 'calc(56px + var(--app-safe-top))',
+          paddingTop: 'var(--app-safe-top)',
+          paddingLeft: '16px',
+          paddingRight: '16px',
           borderBottom: '1px solid var(--divider)',
-          padding: '0 16px',
           fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
           backgroundColor: 'var(--nav-bg)',
           boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',

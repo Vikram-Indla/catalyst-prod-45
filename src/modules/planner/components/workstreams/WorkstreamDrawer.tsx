@@ -5,6 +5,7 @@
 
 import '@/styles/workstreams.css';
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Pencil, X, AlertTriangle, Check, LayoutGrid, Columns3, Calendar, UserPlus, Trash2, Search, Archive, ArchiveRestore, ChevronDown } from 'lucide-react';
 import { Workstream, useUpdateWorkstream, useAddWorkstreamMember, useRemoveWorkstreamMember, useDeleteWorkstream, useArchiveWorkstream } from '../../hooks/usePlannerWorkstreams';
 import { useResourceInventory, Resource } from '../../hooks/useResourceInventory';
@@ -221,18 +222,26 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
   const canDelete = (workstream.taskCount || 0) === 0;
 
-  return (
+  return createPortal(
     <>
-      {/* Overlay - higher z-index to prevent overlap */}
-      <div 
-        className={`fixed inset-0 bg-black/50 transition-opacity z-[60] ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} 
-        onClick={onClose} 
+      {/* Overlay: starts below the global header and never blocks navbar clicks */}
+      <div
+        style={{
+          top: 'var(--app-top-offset)',
+          height: 'calc(100dvh - var(--app-top-offset))',
+        }}
+        className={`fixed left-0 right-0 bottom-0 bg-black/50 transition-opacity z-[90] ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={onClose}
       />
       
-      {/* Drawer Panel - higher z-index */}
-      <aside 
-        className={`fixed right-0 top-0 h-full w-[420px] bg-white dark:bg-[#1a1a1a] shadow-2xl transform transition-transform duration-300 z-[70] flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`} 
-        role="dialog" 
+      {/* Drawer Panel: viewport-fixed, offset by header */}
+      <aside
+        style={{
+          top: 'var(--app-top-offset)',
+          height: 'calc(100dvh - var(--app-top-offset))',
+        }}
+        className={`fixed right-0 bottom-0 w-[420px] bg-white dark:bg-[#1a1a1a] shadow-2xl transform transition-transform duration-300 z-[91] flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        role="dialog"
         aria-modal="true"
       >
         {/* Header */}
@@ -668,6 +677,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </>,
+    document.body
   );
 }

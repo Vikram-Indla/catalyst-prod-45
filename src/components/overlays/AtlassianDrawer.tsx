@@ -18,11 +18,16 @@ const DrawerClose = SheetPrimitive.Close;
 const DrawerOverlay = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+>(({ className, style, ...props }, ref) => (
   <SheetPrimitive.Overlay
     ref={ref}
+    style={{
+      top: 'var(--app-top-offset)',
+      height: 'calc(100dvh - var(--app-top-offset))',
+      ...style,
+    }}
     className={cn(
-      'fixed inset-0 z-[200] bg-black/40',
+      'fixed left-0 right-0 bottom-0 z-[200] bg-black/40',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',
       'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       className
@@ -59,14 +64,19 @@ interface DrawerContentProps extends React.ComponentPropsWithoutRef<typeof Sheet
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   DrawerContentProps
->(({ className, children, width = 'medium', side = 'right', hideClose = false, ...props }, ref) => (
+>(({ className, children, width = 'medium', side = 'right', hideClose = false, style, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
     <SheetPrimitive.Content
       ref={ref}
       data-ui="Drawer"
+      style={{
+        top: 'var(--app-top-offset)',
+        height: 'calc(100dvh - var(--app-top-offset))',
+        ...style,
+      }}
       className={cn(
-        'fixed top-0 bottom-0 z-[200]',
+        'fixed z-[200]',
         widthClasses[width],
         sideClasses[side],
         'bg-card border-l border-border',
