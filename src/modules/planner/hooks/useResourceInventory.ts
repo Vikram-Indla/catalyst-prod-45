@@ -32,8 +32,7 @@ export function useResourceInventory() {
         default_capacity_percent: number | null;
       };
 
-      // NOTE: resource_inventory.profile_id is NOT FK-constrained, so we can't rely on PostgREST embedding.
-      // We fetch inventory first, then batch-fetch missing emails from profiles.
+      // Step 1: Fetch ALL active resources from resource_inventory
       const { data, error } = await supabase
         .from('resource_inventory')
         .select('id, profile_id, name, email, role_name, department_name, default_capacity_percent')
@@ -47,7 +46,7 @@ export function useResourceInventory() {
 
       const inventoryRows = (data || []) as unknown as InventoryRow[];
 
-      // Collect profile IDs where inventory email is missing
+      // Step 2: Collect profile IDs where inventory email is missing (to batch-fetch from profiles)
       const profileIdsNeedingEmail = Array.from(
         new Set(
           inventoryRows
@@ -75,14 +74,11 @@ export function useResourceInventory() {
         }
       }
 
-      // Only include resources that have an email either in inventory or via linked profile
-      return inventoryRows
-        .map((r) => {
-          const resolvedEmail = r.email?.trim() || (r.profile_id ? profileEmailById.get(r.profile_id) : undefined) || null;
-          return { r, resolvedEmail };
-        })
-        .filter(({ resolvedEmail }) => !!resolvedEmail)
-        .map(({ r, resolvedEmail }): Resource => ({
+      // Step 3: Map ALL resources - include everyone (with or without email)
+      // Resolve email from inventory first, fallback to profiles
+      return inventoryRows.map((r): Resource => {
+        const resolvedEmail = r.email?.trim() || (r.profile_id ? profileEmailById.get(r.profile_id) : undefined) || null;
+        return {
           id: r.id,
           profile_id: r.profile_id,
           name: r.name || 'Unknown',
@@ -91,7 +87,8 @@ export function useResourceInventory() {
           department: r.department_name,
           capacity: r.default_capacity_percent || 100,
           initials: getInitials(r.name || ''),
-        }));
+        };
+      });
     },
     staleTime: 5 * 60 * 1000,
   });
