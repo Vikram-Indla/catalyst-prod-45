@@ -39,7 +39,10 @@ import {
   EyeOff,
   UserPlus,
   Users,
-  Shield
+  Shield,
+  Check,
+  X,
+  Pencil
 } from 'lucide-react';
 
 interface ProductRole {
@@ -71,6 +74,10 @@ export default function UserAccessPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number; errors: string[] } | null>(null);
+  
+  // Inline email editing state
+  const [editingEmailId, setEditingEmailId] = useState<string | null>(null);
+  const [editingEmailValue, setEditingEmailValue] = useState('');
 
   // Fetch product roles for dropdown
   const { data: productRoles = [] } = useQuery({
@@ -318,6 +325,50 @@ export default function UserAccessPage() {
     },
   });
 
+  // Update email mutation - saves to both resource_inventory and profiles
+  const updateEmailMutation = useMutation({
+    mutationFn: async ({ resourceId, profileId, email }: { 
+      resourceId: string; 
+      profileId: string | null; 
+      email: string;
+    }) => {
+      const normalizedEmail = email.trim().toLowerCase();
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (normalizedEmail && !emailRegex.test(normalizedEmail)) {
+        throw new Error('Invalid email format');
+      }
+
+      // Update resource_inventory
+      const { error: inventoryError } = await supabase
+        .from('resource_inventory')
+        .update({ email: normalizedEmail || null })
+        .eq('id', resourceId);
+      
+      if (inventoryError) throw inventoryError;
+
+      // If user has a profile, update profiles table too
+      if (profileId) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ email: normalizedEmail || null })
+          .eq('id', profileId);
+        
+        if (profileError) throw profileError;
+      }
+    },
+    onSuccess: () => {
+      toast.success('Email updated successfully');
+      setEditingEmailId(null);
+      setEditingEmailValue('');
+      queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to update email');
+    },
+  });
+
   // Filter users based on search
   const filteredUsers = useMemo(() => {
     if (!searchQuery.trim()) return users;
@@ -513,13 +564,73 @@ export default function UserAccessPage() {
                     </TableCell>
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {user.email ? (
-                        <span className="flex items-center gap-1.5">
-                          <Mail className="h-3.5 w-3.5 flex-shrink-0" />
-                          <span className="truncate">{user.email}</span>
-                        </span>
+                      {editingEmailId === user.id ? (
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="email"
+                            value={editingEmailValue}
+                            onChange={(e) => setEditingEmailValue(e.target.value)}
+                            placeholder="Enter email..."
+                            className="h-7 text-sm w-[180px]"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                updateEmailMutation.mutate({
+                                  resourceId: user.id,
+                                  profileId: user.profile_id,
+                                  email: editingEmailValue,
+                                });
+                              } else if (e.key === 'Escape') {
+                                setEditingEmailId(null);
+                                setEditingEmailValue('');
+                              }
+                            }}
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => {
+                              updateEmailMutation.mutate({
+                                resourceId: user.id,
+                                profileId: user.profile_id,
+                                email: editingEmailValue,
+                              });
+                            }}
+                            disabled={updateEmailMutation.isPending}
+                          >
+                            <Check className="h-3.5 w-3.5 text-emerald-600" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => {
+                              setEditingEmailId(null);
+                              setEditingEmailValue('');
+                            }}
+                          >
+                            <X className="h-3.5 w-3.5 text-muted-foreground" />
+                          </Button>
+                        </div>
                       ) : (
-                        <span className="text-muted-foreground/50">No email</span>
+                        <div 
+                          className="flex items-center gap-1.5 group cursor-pointer hover:text-foreground transition-colors"
+                          onClick={() => {
+                            setEditingEmailId(user.id);
+                            setEditingEmailValue(user.email || '');
+                          }}
+                        >
+                          {user.email ? (
+                            <>
+                              <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+                              <span className="truncate">{user.email}</span>
+                            </>
+                          ) : (
+                            <span className="text-muted-foreground/50 italic">No email</span>
+                          )}
+                          <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground" />
+                        </div>
                       )}
                     </TableCell>
                     <TableCell>
