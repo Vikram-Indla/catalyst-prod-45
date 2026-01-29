@@ -106,35 +106,27 @@ export function RoleDetailDrawer({
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent className="w-[480px] sm:max-w-[480px] p-0 flex flex-col">
         <SheetHeader className="px-6 py-4 border-b bg-muted/30">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                {isSystemRole ? (
-                  <Shield className="w-5 h-5 text-primary" />
-                ) : (
-                  <Users className="w-5 h-5 text-primary" />
-                )}
-              </div>
-              <div>
-                <SheetTitle className="text-lg font-semibold">
-                  {roleName || 'Role Details'}
-                </SheetTitle>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {roleCode}
-                  {isSystemRole && (
-                    <Badge variant="secondary" className="ml-2 text-[10px]">
-                      System Role
-                    </Badge>
-                  )}
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              {isSystemRole ? (
+                <Shield className="w-5 h-5 text-primary" />
+              ) : (
+                <Users className="w-5 h-5 text-primary" />
+              )}
             </div>
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-md hover:bg-muted transition-colors"
-            >
-              <X className="w-4 h-4 text-muted-foreground" />
-            </button>
+            <div>
+              <SheetTitle className="text-lg font-semibold">
+                {roleName || 'Role Details'}
+              </SheetTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {roleCode}
+                {isSystemRole && (
+                  <Badge variant="secondary" className="ml-2 text-[10px]">
+                    System Role
+                  </Badge>
+                )}
+              </p>
+            </div>
           </div>
         </SheetHeader>
 
