@@ -378,8 +378,8 @@
 
 .ws-list-header {
   display: grid;
-  grid-template-columns: 40px 2fr 1.5fr 120px 80px 80px 50px;
-  gap: 1rem;
+  grid-template-columns: 40px 2fr 1.5fr 120px 80px 80px 120px;
+  gap: 0.75rem;
   padding: 0.75rem 1rem;
   background: var(--ws-bg-secondary);
   border-bottom: 1px solid var(--ws-border-primary);
@@ -404,13 +404,57 @@
 
 .ws-list-row {
   display: grid;
-  grid-template-columns: 40px 2fr 1.5fr 120px 80px 80px 50px;
-  gap: 1rem;
+  grid-template-columns: 40px 2fr 1.5fr 120px 80px 80px 120px;
+  gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--ws-border-secondary);
   align-items: center;
   cursor: pointer;
   transition: background 150ms ease;
+}
+
+/* ==========================================================================
+   ACTIONS CELL (List view)
+   ========================================================================== */
+
+.ws-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ws-space-2);
+}
+
+.ws-action-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ws-radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ws-text-tertiary);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.ws-action-btn:hover {
+  background: var(--ws-bg-tertiary);
+  color: var(--ws-text-primary);
+}
+
+.ws-action-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ws-bg-primary), 0 0 0 4px var(--ws-primary);
+}
+
+.ws-action-btn.danger:hover {
+  background: var(--ws-danger-light);
+  color: var(--ws-danger);
+}
+
+.ws-action-btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .ws-list-row:last-child {
