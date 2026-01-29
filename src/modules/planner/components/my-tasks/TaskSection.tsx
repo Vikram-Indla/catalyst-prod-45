@@ -1,7 +1,6 @@
 // ============================================================
-// TASK SECTION - V9 Design System (Task List Aligned)
-// Per Justification Matrix: Simple section grouping by time urgency
-// Uses ring-fenced Task List typography and sizing
+// TASK SECTION - Enterprise Clean V1
+// Sentence case headers, hidden dots, card-based tasks
 // ============================================================
 
 import { cn } from '@/lib/utils';
@@ -23,48 +22,27 @@ export function TaskSection({
 }: TaskSectionProps) {
   if (tasks.length === 0) return null;
 
+  const isOverdue = title.toLowerCase() === 'overdue';
+
   return (
-    <div className="mb-4">
-      {/* Section Header - Task List V3 style typography */}
-      <div className="flex items-center gap-2 mb-2 px-2">
-        <span
-          className="w-2.5 h-2.5 rounded-full"
-          style={{ backgroundColor: color }}
-        />
-        <h3 
-          className="text-xs font-semibold uppercase tracking-wide"
-          style={{ color: 'var(--pln-tl-text-tertiary)' }}
-        >
-          {title}
-        </h3>
-        <span 
-          className="text-xs font-medium"
-          style={{ color: 'var(--pln-tl-text-muted)' }}
-        >
-          {tasks.length}
-        </span>
+    <div className="mb-6">
+      {/* Section Header - Enterprise Clean: Sentence case, no dots */}
+      <div className={cn('mt-section-header', isOverdue && 'section-overdue')}>
+        {/* Hidden dot for backward compat */}
+        <span className="mt-section-dot" style={{ backgroundColor: color }} />
+        <h3 className="mt-section-title">{title}</h3>
+        <span className="mt-section-count">{tasks.length}</span>
       </div>
 
-      {/* Task List - Task List V3 style */}
-      <div 
-        className="rounded-lg overflow-hidden"
-        style={{ 
-          background: 'var(--pln-tl-surface-card)',
-          border: '1px solid var(--pln-tl-border)',
-        }}
-      >
-        {tasks.map((task, index) => (
-          <div 
+      {/* Task Cards - Enterprise Clean style */}
+      <div className="space-y-0">
+        {tasks.map((task) => (
+          <TaskRow
             key={task.id}
-            style={{ 
-              borderTop: index > 0 ? '1px solid var(--pln-tl-border-light)' : 'none' 
-            }}
-          >
-            <TaskRow
-              task={task}
-              onOpenDetail={onOpenDetail}
-            />
-          </div>
+            task={task}
+            onOpenDetail={onOpenDetail}
+            isOverdueSection={isOverdue}
+          />
         ))}
       </div>
     </div>

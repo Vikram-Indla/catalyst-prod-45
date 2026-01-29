@@ -1,18 +1,17 @@
 // ============================================================
-// MY TASKS CONTENT - V9 Design System (Task List Aligned)
+// MY TASKS CONTENT - Enterprise Clean V1
 // Sections: Overdue → Today → This Week → Later
-// Uses planner-task-list-content ring-fenced CSS
+// Uses mytasks-enterprise-clean CSS override
 // ============================================================
 
 import { useMemo } from 'react';
 import { Search, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useMyTasks } from '../../hooks/useMyTasks';
 import { MyTasksHeader } from './MyTasksHeader';
 import { TaskSection } from './TaskSection';
 import type { FilterConfig, TimeSection, MyTask } from '../../types/my-tasks';
-// Import ring-fenced Task List styles
-import '../../styles/task-list.css';
+// Import Enterprise Clean override styles
+import '@/styles/mytasks-enterprise-clean.css';
 
 interface MyTasksContentProps {
   filters: FilterConfig;
@@ -73,48 +72,43 @@ export function MyTasksContent({
   }, [tasksBySection]);
 
   return (
-    <div className="flex flex-col h-full planner-task-list-content">
-      {/* Header with Stats and Filters - Task List V3 Style */}
+    <div className="mytasks-enterprise-clean flex flex-col h-full" data-component="mytasks">
+      {/* Header with KPIs and Filters */}
       <MyTasksHeader
         filters={filters}
         onFilterChange={onFilterChange}
         onOpenCreateModal={onOpenCreateModal}
       />
 
-      {/* Task Sections - Single column scan with Task List V3 styling */}
-      <div 
-        className="flex-1 overflow-y-auto p-6 lg:px-8"
-        style={{ background: 'var(--pln-tl-surface-page)' }}
-      >
+      {/* Task Sections - Enterprise Clean cards */}
+      <div className="mt-content">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : visibleSections.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-center">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--pln-tl-surface-hover)' }}>
-              <Search className="w-8 h-8" style={{ color: 'var(--pln-tl-text-muted)' }} />
+          <div className="mt-empty-state">
+            <div className="mt-empty-icon">
+              <Search className="w-7 h-7" />
             </div>
-            <h3 className="text-lg font-medium mb-1" style={{ color: 'var(--pln-tl-text-primary)' }}>
-              No tasks found
-            </h3>
-            <p className="text-sm max-w-sm" style={{ color: 'var(--pln-tl-text-tertiary)' }}>
+            <h3 className="mt-empty-title">No tasks found</h3>
+            <p className="mt-empty-text">
               {filters.searchQuery
                 ? `No tasks match "${filters.searchQuery}"`
                 : 'You have no tasks yet. Create your first task to get started.'}
             </p>
             {!filters.searchQuery && (
-              <Button 
+              <button 
                 onClick={onOpenCreateModal} 
-                className="mt-4 gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md"
+                className="mt-btn-primary mt-4"
               >
                 <Plus className="w-4 h-4" />
                 Add Task
-              </Button>
+              </button>
             )}
           </div>
         ) : (
-          <div className="space-y-6">
+          <div>
             {visibleSections.map((section) => (
               <TaskSection
                 key={section}
