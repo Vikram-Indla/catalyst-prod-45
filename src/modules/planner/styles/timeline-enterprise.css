@@ -1,0 +1,322 @@
+/* ============================================================================
+   TIMELINE — ENTERPRISE CLEAN CSS OVERRIDES
+   ============================================================================
+   
+   Import this file LAST in your application to override incorrect colors.
+   
+   FIXES:
+   1. Task bars from saturated to 15-20% opacity
+   2. Workstream dots to correct Planner V9 colors
+   3. Overdue indication via red left border (not bar fill)
+   4. Status via small dots (not bar color)
+   
+   ============================================================================ */
+
+/* ============================================================================
+   SECTION 1: KILL SATURATED BAR COLORS
+   ============================================================================ */
+
+/* Reset ALL task bars to neutral first */
+.task-bar,
+[class*="task-bar"],
+[class*="gantt-bar"],
+[class*="timeline-bar"],
+.timeline-task,
+[class*="bar"][class*="task"] {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Kill specific saturated colors that should NEVER appear */
+[style*="background-color: rgb(14, 165, 233)"],  /* cyan */
+[style*="background-color: rgb(253, 164, 175)"], /* pink/salmon */
+[style*="background-color: rgb(34, 211, 238)"],  /* bright cyan */
+[style*="background-color: rgb(251, 207, 232)"], /* light pink */
+[style*="background: rgb(14, 165, 233)"],
+[style*="background: rgb(253, 164, 175)"] {
+  background-color: #f1f5f9 !important;
+}
+
+/* ============================================================================
+   SECTION 2: WORKSTREAM-COLORED BARS (LOW SATURATION)
+   ============================================================================ */
+
+/* Catalyst — Indigo-50 */
+.task-bar[data-workstream="Catalyst"],
+.task-bar.catalyst,
+[data-workstream="Catalyst"] .task-bar,
+[class*="workstream-catalyst"] .task-bar {
+  background-color: #eef2ff !important;
+  border-color: #a5b4fc !important;
+}
+
+/* Data & AI — Purple-50 */
+.task-bar[data-workstream="Data & AI"],
+.task-bar[data-workstream="Data and AI"],
+.task-bar.data-ai,
+[data-workstream="Data & AI"] .task-bar,
+[class*="workstream-data"] .task-bar {
+  background-color: #f5f3ff !important;
+  border-color: #c4b5fd !important;
+}
+
+/* Delivery — Pink-50 */
+.task-bar[data-workstream="Delivery"],
+.task-bar.delivery,
+[data-workstream="Delivery"] .task-bar,
+[class*="workstream-delivery"] .task-bar {
+  background-color: #fdf2f8 !important;
+  border-color: #f9a8d4 !important;
+}
+
+/* MIM — Gray-100 */
+.task-bar[data-workstream="MIM"],
+.task-bar.mim,
+[data-workstream="MIM"] .task-bar,
+[class*="workstream-mim"] .task-bar {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Senaei — Teal-50 */
+.task-bar[data-workstream="Senaei"],
+.task-bar.senaei,
+[data-workstream="Senaei"] .task-bar,
+[class*="workstream-senaei"] .task-bar {
+  background-color: #f0fdfa !important;
+  border-color: #5eead4 !important;
+}
+
+/* Stand-Alone — Gray-100 */
+.task-bar[data-workstream="Stand-Alone"],
+.task-bar.standalone,
+[data-workstream="Stand-Alone"] .task-bar {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Tahommona — Orange-50 */
+.task-bar[data-workstream="Tahommona"],
+.task-bar.tahommona,
+[data-workstream="Tahommona"] .task-bar {
+  background-color: #fff7ed !important;
+  border-color: #fdba74 !important;
+}
+
+/* ============================================================================
+   SECTION 3: WORKSTREAM DOTS — CORRECT COLORS
+   ============================================================================ */
+
+/* Force correct workstream dot colors */
+
+/* Catalyst — Indigo (NOT blue) */
+.workstream-dot[data-workstream="Catalyst"],
+[data-workstream="Catalyst"] .workstream-dot,
+.workstream-row:has(.workstream-name:contains("Catalyst")) .workstream-dot,
+[class*="catalyst"] .workstream-dot {
+  background-color: #6366f1 !important;
+}
+
+/* Data & AI — Purple (NOT green) */
+.workstream-dot[data-workstream="Data & AI"],
+[data-workstream="Data & AI"] .workstream-dot,
+[class*="data-ai"] .workstream-dot,
+[class*="data_ai"] .workstream-dot {
+  background-color: #8b5cf6 !important;
+}
+
+/* Delivery — Pink (NOT orange) */
+.workstream-dot[data-workstream="Delivery"],
+[data-workstream="Delivery"] .workstream-dot,
+[class*="delivery"] .workstream-dot {
+  background-color: #ec4899 !important;
+}
+
+/* MIM — Gray (NOT green) */
+.workstream-dot[data-workstream="MIM"],
+[data-workstream="MIM"] .workstream-dot,
+[class*="mim"] .workstream-dot {
+  background-color: #64748b !important;
+}
+
+/* Senaei — Teal */
+.workstream-dot[data-workstream="Senaei"],
+[data-workstream="Senaei"] .workstream-dot,
+[class*="senaei"] .workstream-dot {
+  background-color: #14b8a6 !important;
+}
+
+/* Stand-Alone — Gray */
+.workstream-dot[data-workstream="Stand-Alone"],
+[data-workstream="Stand-Alone"] .workstream-dot {
+  background-color: #64748b !important;
+}
+
+/* Tahommona — Orange */
+.workstream-dot[data-workstream="Tahommona"],
+[data-workstream="Tahommona"] .workstream-dot {
+  background-color: #f97316 !important;
+}
+
+/* ============================================================================
+   SECTION 4: OVERDUE INDICATION
+   ============================================================================ */
+
+/* Overdue bars — RED LEFT BORDER, not fill change */
+.task-bar.overdue,
+.task-bar[data-overdue="true"],
+[class*="overdue"] .task-bar,
+.task-bar:has(.overdue-indicator) {
+  border-left: 3px solid #dc2626 !important;
+}
+
+/* Overdue text in workstream panel */
+.overdue-text,
+.overdue-count,
+[class*="overdue"]:not(.task-bar) {
+  color: #dc2626 !important;
+  font-weight: 500 !important;
+}
+
+/* ============================================================================
+   SECTION 5: STATUS DOTS INSIDE BARS
+   ============================================================================ */
+
+.task-bar .status-dot,
+.task-bar [class*="status-dot"] {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+}
+
+.status-dot.backlog,
+.status-dot[data-status="backlog"] {
+  background-color: #94a3b8 !important;
+}
+
+.status-dot.planned,
+.status-dot[data-status="planned"] {
+  background-color: #3b82f6 !important;
+}
+
+.status-dot.in-progress,
+.status-dot[data-status="in-progress"] {
+  background-color: #f59e0b !important;
+}
+
+.status-dot.review,
+.status-dot[data-status="review"] {
+  background-color: #8b5cf6 !important;
+}
+
+.status-dot.done,
+.status-dot[data-status="done"] {
+  background-color: #16a34a !important;
+}
+
+/* ============================================================================
+   SECTION 6: TASK BAR CONTENT
+   ============================================================================ */
+
+/* Task ID — gray monospace */
+.task-bar .task-id,
+.task-bar [class*="task-id"] {
+  font-family: ui-monospace, 'SF Mono', monospace !important;
+  font-size: 11px !important;
+  color: #475569 !important;
+}
+
+/* Task title — gray, truncated */
+.task-bar .task-title,
+.task-bar [class*="task-title"],
+.task-bar [class*="title"] {
+  font-size: 12px !important;
+  color: #334155 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Avatar inside bar */
+.task-bar .avatar,
+.task-bar [class*="avatar"] {
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  font-size: 8px !important;
+}
+
+/* ============================================================================
+   SECTION 7: BAR DIMENSIONS
+   ============================================================================ */
+
+.task-bar,
+[class*="task-bar"],
+[class*="gantt-bar"] {
+  height: 28px !important;
+  border-radius: 6px !important;
+  padding: 0 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* ============================================================================
+   SECTION 8: STATUS LEGEND
+   ============================================================================ */
+
+.status-legend .legend-dot,
+[class*="legend"] [class*="dot"] {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+}
+
+.status-legend .legend-label,
+[class*="legend"] [class*="label"] {
+  font-size: 13px !important;
+  color: #64748b !important;
+}
+
+/* ============================================================================
+   SECTION 9: TODAY MARKER
+   ============================================================================ */
+
+.today-marker,
+[class*="today-line"],
+[class*="current-day"] {
+  background-color: #3b82f6 !important;
+  width: 2px !important;
+}
+
+.today-label,
+[class*="today-label"] {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+}
+
+/* ============================================================================
+   SECTION 10: DATE HEADERS
+   ============================================================================ */
+
+.date-column.today,
+[class*="date"][class*="today"] {
+  background-color: #eff6ff !important;
+}
+
+.date-column.today .day-number,
+[class*="today"] [class*="day-number"] {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  border-radius: 50% !important;
+}
+
+.date-column.weekend,
+[class*="weekend"] {
+  background-color: #f8fafc !important;
+}

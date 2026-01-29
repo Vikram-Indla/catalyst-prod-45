@@ -1,174 +1,197 @@
 // =====================================================
-// WORKSTREAM COLORS (Enterprise Timeline Style)
-// Maps workstream names to color palettes for Gantt bars
+// WORKSTREAM COLORS — Enterprise Clean V2
+// SINGLE SOURCE OF TRUTH — Use across ALL screens
+// Matches spec from TIMELINE-ENTERPRISE-CLEAN.md
 // =====================================================
 
 export const WORKSTREAM_COLORS = {
+  // Catalyst — Indigo palette
   'Catalyst Track': {
-    border: 'border-l-purple-600',
-    bg: 'bg-purple-50',
-    fill: 'bg-purple-400',
-    text: 'text-purple-700',
-    light: 'bg-purple-50',
-    hex: '#9333ea',         // purple-600 (deep violet)
-    hexLight: '#faf5ff',
-    hexFill: '#c084fc',
+    primary: '#6366f1',      // Indigo
+    light: '#eef2ff',        // Indigo-50 (for bar fills)
+    border: '#a5b4fc',       // Indigo-300
+    hex: '#6366f1',
+    hexLight: '#eef2ff',
+    hexFill: '#c7d2fe',
   },
   'Catalyst': {
-    border: 'border-l-purple-600',
-    bg: 'bg-purple-50',
-    fill: 'bg-purple-400',
-    text: 'text-purple-700',
-    light: 'bg-purple-50',
-    hex: '#9333ea',         // purple-600 (deep violet)
-    hexLight: '#faf5ff',
-    hexFill: '#c084fc',
+    primary: '#6366f1',
+    light: '#eef2ff',
+    border: '#a5b4fc',
+    hex: '#6366f1',
+    hexLight: '#eef2ff',
+    hexFill: '#c7d2fe',
   },
-  'Delivery Track': {
-    border: 'border-l-orange-500',
-    bg: 'bg-orange-50',
-    fill: 'bg-orange-400',
-    text: 'text-orange-700',
-    light: 'bg-orange-50',
-    hex: '#f97316',         // orange-500 (vibrant orange)
-    hexLight: '#fff7ed',
-    hexFill: '#fb923c',
-  },
-  'Delivery': {
-    border: 'border-l-orange-500',
-    bg: 'bg-orange-50',
-    fill: 'bg-orange-400',
-    text: 'text-orange-700',
-    light: 'bg-orange-50',
-    hex: '#f97316',         // orange-500 (vibrant orange)
-    hexLight: '#fff7ed',
-    hexFill: '#fb923c',
-  },
-  'MIM Website': {
-    border: 'border-l-pink-500',
-    bg: 'bg-pink-50',
-    fill: 'bg-pink-400',
-    text: 'text-pink-700',
-    light: 'bg-pink-50',
-    hex: '#ec4899',         // pink-500 (vibrant pink)
-    hexLight: '#fdf2f8',
-    hexFill: '#f472b6',
-  },
-  'MIM Website Track': {
-    border: 'border-l-pink-500',
-    bg: 'bg-pink-50',
-    fill: 'bg-pink-400',
-    text: 'text-pink-700',
-    light: 'bg-pink-50',
-    hex: '#ec4899',         // pink-500 (vibrant pink)
-    hexLight: '#fdf2f8',
-    hexFill: '#f472b6',
-  },
-  'Senaie Track': {
-    border: 'border-l-cyan-500',
-    bg: 'bg-cyan-50',
-    fill: 'bg-cyan-400',
-    text: 'text-cyan-700',
-    light: 'bg-cyan-50',
-    hex: '#06b6d4',         // cyan-500 (vibrant cyan)
-    hexLight: '#ecfeff',
-    hexFill: '#22d3ee',
-  },
-  'Senaie': {
-    border: 'border-l-cyan-500',
-    bg: 'bg-cyan-50',
-    fill: 'bg-cyan-400',
-    text: 'text-cyan-700',
-    light: 'bg-cyan-50',
-    hex: '#06b6d4',         // cyan-500 (vibrant cyan)
-    hexLight: '#ecfeff',
-    hexFill: '#22d3ee',
-  },
-  'Tahommona Track': {
-    border: 'border-l-blue-500',
-    bg: 'bg-blue-50',
-    fill: 'bg-blue-400',
-    text: 'text-blue-700',
-    light: 'bg-blue-50',
-    hex: '#3b82f6',         // blue-500 (vibrant blue)
-    hexLight: '#eff6ff',
-    hexFill: '#60a5fa',
-  },
-  'Tahommona': {
-    border: 'border-l-blue-500',
-    bg: 'bg-blue-50',
-    fill: 'bg-blue-400',
-    text: 'text-blue-700',
-    light: 'bg-blue-50',
-    hex: '#3b82f6',         // blue-500 (vibrant blue)
-    hexLight: '#eff6ff',
-    hexFill: '#60a5fa',
-  },
+
+  // Data & AI — Purple palette
   'Data & AI Track': {
-    border: 'border-l-violet-600',
-    bg: 'bg-violet-50',
-    fill: 'bg-violet-400',
-    text: 'text-violet-700',
-    light: 'bg-violet-50',
-    hex: '#7c3aed',         // violet-600 (deep violet)
+    primary: '#8b5cf6',      // Purple
+    light: '#f5f3ff',        // Purple-50
+    border: '#c4b5fd',       // Purple-300
+    hex: '#8b5cf6',
     hexLight: '#f5f3ff',
-    hexFill: '#a78bfa',
+    hexFill: '#ddd6fe',
   },
   'Data & AI': {
-    border: 'border-l-violet-600',
-    bg: 'bg-violet-50',
-    fill: 'bg-violet-400',
-    text: 'text-violet-700',
-    light: 'bg-violet-50',
-    hex: '#7c3aed',         // violet-600 (deep violet)
+    primary: '#8b5cf6',
+    light: '#f5f3ff',
+    border: '#c4b5fd',
+    hex: '#8b5cf6',
     hexLight: '#f5f3ff',
-    hexFill: '#a78bfa',
+    hexFill: '#ddd6fe',
   },
-  'Stand-Alone Projects Track': {
-    border: 'border-l-slate-500',
-    bg: 'bg-slate-50',
-    fill: 'bg-slate-400',
-    text: 'text-slate-700',
-    light: 'bg-slate-50',
-    hex: '#64748b',         // slate-500 (neutral gray)
-    hexLight: '#f8fafc',
-    hexFill: '#94a3b8',
+
+  // Delivery — Pink palette
+  'Delivery Track': {
+    primary: '#ec4899',      // Pink
+    light: '#fdf2f8',        // Pink-50
+    border: '#f9a8d4',       // Pink-300
+    hex: '#ec4899',
+    hexLight: '#fdf2f8',
+    hexFill: '#fbcfe8',
+  },
+  'Delivery': {
+    primary: '#ec4899',
+    light: '#fdf2f8',
+    border: '#f9a8d4',
+    hex: '#ec4899',
+    hexLight: '#fdf2f8',
+    hexFill: '#fbcfe8',
+  },
+
+  // MIM — Gray palette
+  'MIM': {
+    primary: '#64748b',      // Gray
+    light: '#f1f5f9',        // Gray-100
+    border: '#cbd5e1',       // Gray-300
+    hex: '#64748b',
+    hexLight: '#f1f5f9',
+    hexFill: '#e2e8f0',
+  },
+  'MIM Website': {
+    primary: '#64748b',
+    light: '#f1f5f9',
+    border: '#cbd5e1',
+    hex: '#64748b',
+    hexLight: '#f1f5f9',
+    hexFill: '#e2e8f0',
+  },
+  'MIM Website Track': {
+    primary: '#64748b',
+    light: '#f1f5f9',
+    border: '#cbd5e1',
+    hex: '#64748b',
+    hexLight: '#f1f5f9',
+    hexFill: '#e2e8f0',
+  },
+
+  // Senaei — Teal palette
+  'Senaei': {
+    primary: '#14b8a6',      // Teal
+    light: '#f0fdfa',        // Teal-50
+    border: '#5eead4',       // Teal-300
+    hex: '#14b8a6',
+    hexLight: '#f0fdfa',
+    hexFill: '#99f6e4',
+  },
+  'Senaei Track': {
+    primary: '#14b8a6',
+    light: '#f0fdfa',
+    border: '#5eead4',
+    hex: '#14b8a6',
+    hexLight: '#f0fdfa',
+    hexFill: '#99f6e4',
+  },
+  'Senaie': {
+    primary: '#14b8a6',
+    light: '#f0fdfa',
+    border: '#5eead4',
+    hex: '#14b8a6',
+    hexLight: '#f0fdfa',
+    hexFill: '#99f6e4',
+  },
+  'Senaie Track': {
+    primary: '#14b8a6',
+    light: '#f0fdfa',
+    border: '#5eead4',
+    hex: '#14b8a6',
+    hexLight: '#f0fdfa',
+    hexFill: '#99f6e4',
+  },
+
+  // Stand-Alone — Gray palette
+  'Stand-Alone': {
+    primary: '#64748b',      // Gray
+    light: '#f1f5f9',        // Gray-100
+    border: '#cbd5e1',       // Gray-300
+    hex: '#64748b',
+    hexLight: '#f1f5f9',
+    hexFill: '#e2e8f0',
   },
   'Stand-Alone Projects': {
-    border: 'border-l-slate-500',
-    bg: 'bg-slate-50',
-    fill: 'bg-slate-400',
-    text: 'text-slate-700',
-    light: 'bg-slate-50',
-    hex: '#64748b',         // slate-500 (neutral gray)
-    hexLight: '#f8fafc',
-    hexFill: '#94a3b8',
+    primary: '#64748b',
+    light: '#f1f5f9',
+    border: '#cbd5e1',
+    hex: '#64748b',
+    hexLight: '#f1f5f9',
+    hexFill: '#e2e8f0',
+  },
+  'Stand-Alone Projects Track': {
+    primary: '#64748b',
+    light: '#f1f5f9',
+    border: '#cbd5e1',
+    hex: '#64748b',
+    hexLight: '#f1f5f9',
+    hexFill: '#e2e8f0',
+  },
+
+  // Tahommona — Orange palette
+  'Tahommona': {
+    primary: '#f97316',      // Orange
+    light: '#fff7ed',        // Orange-50
+    border: '#fdba74',       // Orange-300
+    hex: '#f97316',
+    hexLight: '#fff7ed',
+    hexFill: '#fed7aa',
+  },
+  'Tahommona Track': {
+    primary: '#f97316',
+    light: '#fff7ed',
+    border: '#fdba74',
+    hex: '#f97316',
+    hexLight: '#fff7ed',
+    hexFill: '#fed7aa',
   },
 } as const;
 
-// Default for unknown workstreams
+// Default for unknown workstreams — Gray
 export const DEFAULT_WORKSTREAM_COLOR = {
-  border: 'border-l-gray-400',
-  bg: 'bg-gray-50',
-  fill: 'bg-gray-300',
-  text: 'text-gray-800',
-  light: 'bg-gray-50',
-  hex: '#9ca3af',
-  hexLight: '#f9fafb',
-  hexFill: '#d1d5db',
+  primary: '#64748b',
+  light: '#f1f5f9',
+  border: '#cbd5e1',
+  hex: '#64748b',
+  hexLight: '#f1f5f9',
+  hexFill: '#e2e8f0',
 };
 
-// Status colors (for completed tasks)
+// Status colors (dot indicators — NOT bar fills)
+export const STATUS_DOT_COLORS = {
+  backlog: '#94a3b8',     // Gray
+  planned: '#3b82f6',     // Blue
+  progress: '#f59e0b',    // Amber
+  review: '#8b5cf6',      // Purple
+  done: '#16a34a',        // Green
+} as const;
+
+// Status colors for completed tasks (legacy - for bar stripe)
 export const STATUS_COLORS = {
   completed: {
-    border: 'border-l-emerald-500',
-    bg: 'bg-emerald-50',
-    fill: 'bg-emerald-300',
-    text: 'text-emerald-800',
-    light: 'bg-emerald-50',
-    hex: '#10b981',
-    hexLight: '#ecfdf5',
-    hexFill: '#6ee7b7',
+    primary: '#16a34a',
+    light: '#f0fdf4',
+    border: '#86efac',
+    hex: '#16a34a',
+    hexLight: '#f0fdf4',
+    hexFill: '#bbf7d0',
   },
 };
 
@@ -184,4 +207,9 @@ export function getTaskColor(status: string, workstream: string | undefined) {
     return STATUS_COLORS.completed;
   }
   return getWorkstreamColor(workstream);
+}
+
+// Get status dot color
+export function getStatusDotColor(status: string): string {
+  return STATUS_DOT_COLORS[status as keyof typeof STATUS_DOT_COLORS] || STATUS_DOT_COLORS.backlog;
 }
