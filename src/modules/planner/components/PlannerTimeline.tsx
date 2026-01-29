@@ -3,7 +3,7 @@
 // Self-contained bars, workstream swimlanes, working filters
 // ============================================================
 
-import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect, UIEvent } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, CalendarDays, Plus, Search, Check, X, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -201,7 +201,38 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
     setSelectedWorkstream(null);
   }, []);
   const gridRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const isScrollSyncingRef = useRef(false); // Prevent infinite scroll loop
+
+  // Sync scroll between sidebar and grid
+  const handleSidebarScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
+    if (isScrollSyncingRef.current) return;
+    isScrollSyncingRef.current = true;
+    
+    const target = e.currentTarget;
+    if (gridRef.current) {
+      gridRef.current.scrollTop = target.scrollTop;
+    }
+    
+    requestAnimationFrame(() => {
+      isScrollSyncingRef.current = false;
+    });
+  }, []);
+
+  const handleGridScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
+    if (isScrollSyncingRef.current) return;
+    isScrollSyncingRef.current = true;
+    
+    const target = e.currentTarget;
+    if (sidebarRef.current) {
+      sidebarRef.current.scrollTop = target.scrollTop;
+    }
+    
+    requestAnimationFrame(() => {
+      isScrollSyncingRef.current = false;
+    });
+  }, []);
 
   // Data
   const { data: allTasks = [], isLoading: tasksLoading } = useTimelineTasks();
@@ -717,6 +748,8 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         <div className="flex-1 overflow-hidden flex">
           {/* Left Panel - Workstream Swimlane Headers (V2 Spec: Headers ONLY) */}
           <div
+            ref={sidebarRef}
+            onScroll={handleSidebarScroll}
             className="flex-shrink-0 bg-white dark:bg-slate-950 overflow-y-auto border-r border-slate-200 dark:border-slate-800"
             style={{ width: LEFT_PANEL_WIDTH }}
           >
@@ -816,7 +849,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
           </div>
 
           {/* Right Panel - Gantt Chart */}
-          <div className="flex-1 overflow-auto" ref={gridRef}>
+          <div className="flex-1 overflow-auto" ref={gridRef} onScroll={handleGridScroll}>
             <div style={{ minWidth: columnConfig.days * columnConfig.width }}>
               {/* Date Header Row */}
               <div
