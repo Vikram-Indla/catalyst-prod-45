@@ -1,10 +1,10 @@
 /**
- * Task List Row V3 - Inline Editing Row
- * Matches markdown spec: hover states, inline editing, proper indicators
+ * Task List Row V3 - Enterprise Clean Implementation
+ * Matches QA spec: gray priority text, outline status badges, gray ID
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2, Check, ChevronDown, Calendar as CalendarIcon, Plus } from 'lucide-react';
+import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2, Check, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
@@ -27,6 +27,54 @@ import type { TaskListTask } from '../../hooks/useTaskList';
 import type { TaskPriority } from '../../types';
 import { format, differenceInDays } from 'date-fns';
 import { toast } from 'sonner';
+
+// Enterprise Clean spec colors
+const STATUS_CONFIG = {
+  'backlog': { 
+    label: 'Backlog', 
+    dotColor: '#94a3b8', 
+    bgColor: 'transparent', 
+    borderColor: '#e2e8f0' 
+  },
+  'planned': { 
+    label: 'Planned', 
+    dotColor: '#3b82f6', 
+    bgColor: 'transparent', 
+    borderColor: '#e2e8f0' 
+  },
+  'in-progress': { 
+    label: 'In Progress', 
+    dotColor: '#f59e0b', 
+    bgColor: '#fffbeb', 
+    borderColor: '#fde68a' 
+  },
+  'in progress': { 
+    label: 'In Progress', 
+    dotColor: '#f59e0b', 
+    bgColor: '#fffbeb', 
+    borderColor: '#fde68a' 
+  },
+  'review': { 
+    label: 'Review', 
+    dotColor: '#8b5cf6', 
+    bgColor: 'transparent', 
+    borderColor: '#e2e8f0' 
+  },
+  'done': { 
+    label: 'Done', 
+    dotColor: '#16a34a', 
+    bgColor: '#f0fdf4', 
+    borderColor: '#bbf7d0' 
+  },
+};
+
+// Priority dot colors (spec A2)
+const PRIORITY_DOT_COLORS: Record<TaskPriority, string> = {
+  critical: '#dc2626', // red-600
+  high: '#f97316',     // orange-500
+  medium: '#eab308',   // yellow-500 (NOT green)
+  low: '#94a3b8',      // gray-400
+};
 
 interface TaskListRowV3Props {
   task: TaskListTask;
@@ -55,7 +103,6 @@ export function TaskListRowV3({
   statuses,
   users,
 }: TaskListRowV3Props) {
-  // Inline editing states
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -63,7 +110,6 @@ export function TaskListRowV3({
   const workstreamColors = getWorkstreamColor(task.workstream_name);
   const priorityConfig = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium;
 
-  // Focus input when editing starts
   useEffect(() => {
     if (editingField === 'title' && inputRef.current) {
       inputRef.current.focus();
@@ -107,7 +153,6 @@ export function TaskListRowV3({
     return format(new Date(dateStr), 'MMM d');
   };
 
-  // Calculate days overdue/until due
   const getDaysIndicator = (): { text: string; isOverdue: boolean } | null => {
     if (!task.due_date) return null;
     const dueDate = new Date(task.due_date);
@@ -123,15 +168,21 @@ export function TaskListRowV3({
   };
 
   const daysIndicator = getDaysIndicator();
-
   const getWidth = (colId: string) => columnWidths[colId] || 'auto';
 
-  // Get progress bar color based on value
   const getProgressColor = (progress: number) => {
-    if (progress >= 100) return '#22c55e'; // green
-    if (progress >= 50) return '#3b82f6'; // blue
-    return '#94a3b8'; // gray
+    if (progress >= 100) return '#22c55e';
+    if (progress >= 50) return '#3b82f6';
+    return '#94a3b8';
   };
+
+  // Get status config for styling
+  const getStatusConfig = () => {
+    const slug = task.status_name?.toLowerCase().replace(/\s+/g, '-') || 'backlog';
+    return STATUS_CONFIG[slug as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.backlog;
+  };
+
+  const statusConfig = getStatusConfig();
 
   return (
     <tr
@@ -143,15 +194,16 @@ export function TaskListRowV3({
         task.blocked && 'blocked'
       )}
     >
-      {/* Checkbox */}
+      {/* Checkbox - G4: 16px */}
       <td style={{ width: 40 }} onClick={(e) => e.stopPropagation()}>
         <Checkbox
           checked={isSelected}
           onCheckedChange={() => onSelect(task.id)}
+          className="w-4 h-4"
         />
       </td>
 
-      {/* ID - Task Key (GRAY monospace, not blue) */}
+      {/* ID - GRAY monospace (B1-B5) */}
       {visibleColumns.has('key') && (
         <td style={{ width: getWidth('key') }}>
           <button
@@ -159,14 +211,14 @@ export function TaskListRowV3({
               e.stopPropagation();
               onClick(task);
             }}
-            className="tl-task-key-gray"
+            className="tl-task-id"
           >
             {task.task_key}
           </button>
         </td>
       )}
 
-      {/* Title - Inline Edit with hover effect */}
+      {/* Title - Inline Edit */}
       {visibleColumns.has('title') && (
         <td style={{ width: getWidth('title') }} onClick={(e) => e.stopPropagation()}>
           {editingField === 'title' ? (
@@ -178,11 +230,6 @@ export function TaskListRowV3({
               onBlur={() => saveEdit('title', editValue)}
               onKeyDown={(e) => handleKeyDown(e, 'title')}
               className="tl-inline-input"
-              style={{ 
-                background: 'var(--pln-tl-surface-editing)',
-                outline: '2px solid var(--pln-tl-border-focus)',
-                borderRadius: '0.375rem',
-              }}
             />
           ) : (
             <div 
@@ -194,7 +241,7 @@ export function TaskListRowV3({
               }}
             >
               {task.blocked && (
-                <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--pln-tl-priority-critical)' }} />
+                <Lock className="w-3.5 h-3.5 flex-shrink-0 text-red-600" />
               )}
               <span className="tl-title-text">
                 {task.title}
@@ -204,21 +251,25 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Status - OUTLINE badge with gray text (Enterprise Clean spec) */}
+      {/* Status - OUTLINE badge with GRAY text (A3, spec) */}
       {visibleColumns.has('status') && (
         <td style={{ width: getWidth('status') }} onClick={(e) => e.stopPropagation()}>
           <Popover>
             <PopoverTrigger asChild>
               <button 
-                className="tl-status-badge-enterprise"
-                data-status={task.status_name?.toLowerCase().replace(/\s+/g, '-')}
+                className="tl-status-badge"
+                style={{
+                  backgroundColor: statusConfig.bgColor,
+                  borderColor: statusConfig.borderColor,
+                }}
               >
+                {/* Status dot - 6px (G2) */}
                 <span
                   className="tl-status-dot"
-                  style={{ backgroundColor: task.status_color || '#64748b' }}
+                  style={{ backgroundColor: statusConfig.dotColor }}
                 />
-                {/* Gray text - enterprise spec */}
-                <span className="tl-status-label-gray">{task.status_name || 'Unknown'}</span>
+                {/* GRAY text - #475569 (A3.3, A3.7) */}
+                <span className="tl-status-text">{task.status_name || 'Unknown'}</span>
               </button>
             </PopoverTrigger>
             <PopoverContent className="tl-dropdown w-40 p-1" align="start">
@@ -231,9 +282,12 @@ export function TaskListRowV3({
                     s.id === task.status_id && 'active'
                   )}
                 >
-                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }} />
-                  <span className="text-gray-600">{s.name}</span>
-                  {s.id === task.status_id && <Check className="w-4 h-4 ml-auto" />}
+                  <span 
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
+                    style={{ backgroundColor: s.color }} 
+                  />
+                  <span className="text-slate-600">{s.name}</span>
+                  {s.id === task.status_id && <Check className="w-4 h-4 ml-auto text-blue-600" />}
                 </button>
               ))}
             </PopoverContent>
@@ -241,19 +295,19 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Priority - Colored dot + GRAY text (Enterprise Clean spec) */}
+      {/* Priority - Colored dot + GRAY text (A1, A2) */}
       {visibleColumns.has('priority') && (
         <td style={{ width: getWidth('priority') }} onClick={(e) => e.stopPropagation()}>
           <Popover>
             <PopoverTrigger asChild>
               <button className="tl-priority-cell">
-                {/* Always use colored dot */}
+                {/* Priority dot - 8px (G1) */}
                 <span 
                   className="tl-priority-dot" 
-                  style={{ backgroundColor: priorityConfig.color }} 
+                  style={{ backgroundColor: PRIORITY_DOT_COLORS[task.priority] }} 
                 />
-                {/* GRAY text - never colored */}
-                <span className="tl-priority-label-gray">
+                {/* GRAY text - #64748b (A1.1-A1.4) */}
+                <span className="tl-priority-text">
                   {priorityConfig.label}
                 </span>
               </button>
@@ -270,10 +324,12 @@ export function TaskListRowV3({
                       p === task.priority && 'active'
                     )}
                   >
-                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: config.color }} />
-                    {/* Gray text in dropdown too */}
-                    <span className="text-gray-500">{config.label}</span>
-                    {p === task.priority && <Check className="w-4 h-4 ml-auto" />}
+                    <span 
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
+                      style={{ backgroundColor: PRIORITY_DOT_COLORS[p] }} 
+                    />
+                    <span className="text-slate-500">{config.label}</span>
+                    {p === task.priority && <Check className="w-4 h-4 ml-auto text-blue-600" />}
                   </button>
                 );
               })}
@@ -282,25 +338,26 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Workstream - Colored dot + GRAY name (Enterprise Clean spec) */}
+      {/* Workstream - Colored dot + GRAY name (D1-D6) */}
       {visibleColumns.has('workstream') && (
         <td style={{ width: getWidth('workstream') }}>
           {task.workstream_name ? (
             <span className="tl-workstream-cell">
+              {/* Workstream dot - 8px (D2) */}
               <span
                 className="tl-workstream-dot"
                 style={{ backgroundColor: workstreamColors.hex }}
               />
-              {/* Gray text for workstream name */}
-              <span className="text-gray-600 dark:text-gray-400">{task.workstream_name}</span>
+              {/* GRAY text - #64748b (D1) */}
+              <span className="tl-workstream-text">{task.workstream_name}</span>
             </span>
           ) : (
-            <span style={{ color: 'var(--pln-tl-text-muted)' }}>—</span>
+            <span className="text-slate-400">—</span>
           )}
         </td>
       )}
 
-      {/* Assignee - Avatar or "+ Unassigned" button */}
+      {/* Assignee - Avatar + name (K1-K5) */}
       {visibleColumns.has('assignee') && (
         <td style={{ width: getWidth('assignee') }} onClick={(e) => e.stopPropagation()}>
           <Popover>
@@ -308,12 +365,15 @@ export function TaskListRowV3({
               <button className="tl-assignee-cell">
                 {task.assignee_name ? (
                   <>
+                    {/* Avatar - 24px (G3) */}
                     <div className="tl-avatar">
                       {task.assignee_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </div>
+                    {/* Assignee name - #334155 (K4) */}
                     <span className="tl-assignee-name">{task.assignee_name}</span>
                   </>
                 ) : (
+                  /* Unassigned - #94a3b8 (K5) */
                   <span className="tl-unassigned-btn">
                     <Plus className="w-3 h-3" />
                     Unassigned
@@ -326,8 +386,8 @@ export function TaskListRowV3({
                 onClick={() => onUpdate(task.id, 'assignee_id', null)}
                 className={cn('tl-dropdown-item w-full', !task.assignee_id && 'active')}
               >
-                <span style={{ color: 'var(--pln-tl-text-muted)' }}>Unassigned</span>
-                {!task.assignee_id && <Check className="w-4 h-4 ml-auto" />}
+                <span className="text-slate-400">Unassigned</span>
+                {!task.assignee_id && <Check className="w-4 h-4 ml-auto text-blue-600" />}
               </button>
               {users.map((user) => (
                 <button
@@ -340,7 +400,7 @@ export function TaskListRowV3({
                 >
                   <div className="tl-avatar">{user.initials}</div>
                   <span className="truncate">{user.name}</span>
-                  {user.id === task.assignee_id && <Check className="w-4 h-4 ml-auto" />}
+                  {user.id === task.assignee_id && <Check className="w-4 h-4 ml-auto text-blue-600" />}
                 </button>
               ))}
             </PopoverContent>
@@ -348,7 +408,7 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Due Date - With overdue indicator */}
+      {/* Due Date - Red if overdue (J1-J4) */}
       {visibleColumns.has('dueDate') && (
         <td style={{ width: getWidth('dueDate') }} onClick={(e) => e.stopPropagation()}>
           <Popover>
@@ -356,6 +416,7 @@ export function TaskListRowV3({
               <button className="tl-date-cell">
                 {task.due_date ? (
                   <>
+                    {/* Normal: #334155, Overdue: #dc2626 (J1, J2) */}
                     <span className={cn(
                       'tl-date-value',
                       daysIndicator?.isOverdue && 'tl-date-overdue'
@@ -372,6 +433,7 @@ export function TaskListRowV3({
                     )}
                   </>
                 ) : (
+                  /* Empty: em dash (J4) */
                   <span className="tl-date-placeholder">—</span>
                 )}
               </button>
@@ -390,12 +452,13 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Progress - Track bar with inline percentage */}
+      {/* Progress - 6px bar (G5, G6, L1-L4) */}
       {visibleColumns.has('progress') && (
         <td style={{ width: getWidth('progress') }} onClick={(e) => e.stopPropagation()}>
           <Popover>
             <PopoverTrigger asChild>
               <button className="tl-progress-cell">
+                {/* Progress bar - 6px height, 60px min width */}
                 <div className="tl-progress-track">
                   <div
                     className="tl-progress-fill"
@@ -405,14 +468,15 @@ export function TaskListRowV3({
                     }}
                   />
                 </div>
+                {/* Progress % - #64748b (L3) */}
                 <span className="tl-progress-value">{task.progress}%</span>
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-56 p-3" align="start">
               <div className="space-y-3">
-                <div className="flex justify-between text-xs" style={{ color: 'var(--pln-tl-text-tertiary)' }}>
+                <div className="flex justify-between text-xs text-slate-500">
                   <span>Progress</span>
-                  <span className="font-semibold" style={{ color: 'var(--pln-tl-text-primary)' }}>{task.progress}%</span>
+                  <span className="font-semibold text-slate-900">{task.progress}%</span>
                 </div>
                 <Slider
                   value={[task.progress]}
@@ -429,12 +493,8 @@ export function TaskListRowV3({
                         "flex-1 py-1.5 text-xs font-medium rounded transition-colors",
                         task.progress === val
                           ? "bg-blue-600 text-white"
-                          : "hover:bg-slate-100"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                       )}
-                      style={{
-                        background: task.progress === val ? undefined : 'var(--pln-tl-surface-header)',
-                        color: task.progress === val ? 'white' : 'var(--pln-tl-text-tertiary)',
-                      }}
                     >
                       {val}%
                     </button>

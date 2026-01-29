@@ -505,90 +505,88 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
       </div>
 
       {/* Table */}
-      <div ref={tableRef} className="flex-1 overflow-auto tl-table-scroll">
-        <div className="tl-table-pad">
-          <div className="tl-table-container">
-            {isLoading ? (
-              <div className="p-6 space-y-3">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="h-12 tl-skeleton" />
-                ))}
+      <div ref={tableRef} className="flex-1 overflow-auto p-4 px-6">
+        <div className="tl-table-container">
+          {isLoading ? (
+            <div className="p-6 space-y-3">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-12 tl-skeleton" />
+              ))}
+            </div>
+          ) : tasks.length === 0 ? (
+            <div className="tl-empty-state">
+              <div className="tl-empty-icon">
+                <List className="w-8 h-8" />
               </div>
-            ) : tasks.length === 0 ? (
-              <div className="tl-empty-state">
-                <div className="tl-empty-icon">
-                  <List className="w-8 h-8" />
-                </div>
-                <h3 className="tl-empty-title">No tasks found</h3>
-                <p className="tl-empty-desc">Try adjusting your filters or create a new task</p>
-              </div>
-            ) : (
-              <table className="tl-table">
-                <thead className="tl-header">
-                  <tr>
-                    <th style={{ width: 40 }}>
-                      <Checkbox
-                        checked={selectedIds.size === tasks.length && tasks.length > 0}
-                        onCheckedChange={handleSelectAll}
+              <h3 className="tl-empty-title">No tasks found</h3>
+              <p className="tl-empty-desc">Try adjusting your filters or create a new task</p>
+            </div>
+          ) : (
+            <table className="tl-table">
+              <thead className="tl-header">
+                <tr>
+                  <th style={{ width: 40 }}>
+                    <Checkbox
+                      checked={selectedIds.size === tasks.length && tasks.length > 0}
+                      onCheckedChange={handleSelectAll}
+                    />
+                  </th>
+                  {visibleColumnDefs.map((col) => (
+                    <th
+                      key={col.id}
+                      style={{ width: getColumnWidth(col.id), minWidth: col.minWidth }}
+                    >
+                      {col.label}
+                      <div
+                        className="tl-column-resizer"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          const startX = e.pageX;
+                          const startWidth = getColumnWidth(col.id);
+
+                          const handleMove = (moveE: MouseEvent) => {
+                            const diff = moveE.pageX - startX;
+                            const newWidth = Math.max(col.minWidth, startWidth + diff);
+                            handleColumnResize(col.id, newWidth);
+                          };
+
+                          const handleUp = () => {
+                            document.removeEventListener('mousemove', handleMove);
+                            document.removeEventListener('mouseup', handleUp);
+                            document.body.style.cursor = '';
+                            document.body.style.userSelect = '';
+                          };
+
+                          document.body.style.cursor = 'col-resize';
+                          document.body.style.userSelect = 'none';
+                          document.addEventListener('mousemove', handleMove);
+                          document.addEventListener('mouseup', handleUp);
+                        }}
                       />
                     </th>
-                    {visibleColumnDefs.map((col) => (
-                      <th
-                        key={col.id}
-                        style={{ width: getColumnWidth(col.id), minWidth: col.minWidth }}
-                      >
-                        {col.label}
-                        <div
-                          className="tl-column-resizer"
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            const startX = e.pageX;
-                            const startWidth = getColumnWidth(col.id);
-
-                            const handleMove = (moveE: MouseEvent) => {
-                              const diff = moveE.pageX - startX;
-                              const newWidth = Math.max(col.minWidth, startWidth + diff);
-                              handleColumnResize(col.id, newWidth);
-                            };
-
-                            const handleUp = () => {
-                              document.removeEventListener('mousemove', handleMove);
-                              document.removeEventListener('mouseup', handleUp);
-                              document.body.style.cursor = '';
-                              document.body.style.userSelect = '';
-                            };
-
-                            document.body.style.cursor = 'col-resize';
-                            document.body.style.userSelect = 'none';
-                            document.addEventListener('mousemove', handleMove);
-                            document.addEventListener('mouseup', handleUp);
-                          }}
-                        />
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {tasks.map((task, index) => (
-                    <TaskListRowV3
-                      key={task.id}
-                      task={task}
-                      index={index}
-                      isSelected={selectedIds.has(task.id)}
-                      isFocused={focusedIndex === index}
-                      onSelect={handleSelectOne}
-                      onClick={onTaskClick}
-                      onUpdate={handleTaskUpdate}
-                      visibleColumns={visibleColumns}
-                      columnWidths={columnWidths}
-                      statuses={statuses}
-                      users={users}
-                    />
                   ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map((task, index) => (
+                  <TaskListRowV3
+                    key={task.id}
+                    task={task}
+                    index={index}
+                    isSelected={selectedIds.has(task.id)}
+                    isFocused={focusedIndex === index}
+                    onSelect={handleSelectOne}
+                    onClick={onTaskClick}
+                    onUpdate={handleTaskUpdate}
+                    visibleColumns={visibleColumns}
+                    columnWidths={columnWidths}
+                    statuses={statuses}
+                    users={users}
+                  />
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
