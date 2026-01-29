@@ -352,14 +352,16 @@ export function useAddWorkstreamMember() {
     }) => {
       // If adding a lead, demote existing leads first
       if (role === 'lead') {
-        await supabase
+        const { error: demoteError } = await supabase
           .from('workstream_members')
           .update({ role: 'member' })
           .eq('workstream_id', workstreamId)
           .eq('role', 'lead');
+
+        if (demoteError) throw new Error(demoteError.message);
       }
 
-      const { error } = await supabase
+      const { error: upsertError } = await supabase
         .from('workstream_members')
         .upsert({
           workstream_id: workstreamId,
@@ -367,7 +369,16 @@ export function useAddWorkstreamMember() {
           role,
         });
 
-      if (error) throw new Error(error.message);
+      if (upsertError) throw new Error(upsertError.message);
+
+      // Keep planner_workstreams.lead_id in sync for filtering & list views
+      if (role === 'lead') {
+        const { error: leadIdError } = await supabase
+          .from('planner_workstreams')
+          .update({ lead_id: userId })
+          .eq('id', workstreamId);
+        if (leadIdError) throw new Error(leadIdError.message);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
@@ -391,13 +402,21 @@ export function useRemoveWorkstreamMember() {
   
   return useMutation({
     mutationFn: async ({ workstreamId, userId }: { workstreamId: string; userId: string }) => {
-      const { error } = await supabase
+      const { error: deleteError } = await supabase
         .from('workstream_members')
         .delete()
         .eq('workstream_id', workstreamId)
         .eq('user_id', userId);
 
-      if (error) throw new Error(error.message);
+      if (deleteError) throw new Error(deleteError.message);
+
+      // If the removed member was the current lead, clear the lead_id
+      const { error: clearLeadError } = await supabase
+        .from('planner_workstreams')
+        .update({ lead_id: null })
+        .eq('id', workstreamId)
+        .eq('lead_id', userId);
+      if (clearLeadError) throw new Error(clearLeadError.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });

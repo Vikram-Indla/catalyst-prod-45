@@ -196,17 +196,22 @@ export function WorkstreamsPage() {
   // Quick archive/unarchive from list
   const handleQuickArchive = useCallback((ws: Workstream, e: React.MouseEvent) => {
     e.stopPropagation();
+    // Ensure row click does not leave/open the drawer when using row actions
+    setIsDrawerOpen(false);
     archiveWorkstream.mutate({ id: ws.id, archive: !ws.is_archived });
   }, [archiveWorkstream]);
 
   const handleQuickEdit = useCallback((ws: Workstream, e: React.MouseEvent) => {
     e.stopPropagation();
+    // Prevent any accidental row-click drawer open and ensure dialog is visible
+    setIsDrawerOpen(false);
     setQuickEditWorkstream(ws);
     setIsQuickEditOpen(true);
   }, []);
 
   const handleRequestDelete = useCallback((ws: Workstream, e: React.MouseEvent) => {
     e.stopPropagation();
+    setIsDrawerOpen(false);
     setDeleteTarget(ws);
   }, []);
 
@@ -566,7 +571,12 @@ export function WorkstreamsPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="ws-row-actions" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="ws-row-actions"
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
                   <button 
                     className="ws-action-btn"
                     onClick={(e) => handleQuickArchive(ws, e)}
