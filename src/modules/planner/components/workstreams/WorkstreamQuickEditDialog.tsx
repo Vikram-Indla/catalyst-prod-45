@@ -50,7 +50,7 @@ export function WorkstreamQuickEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px] z-[120]">
+      <DialogContent className="sm:max-w-[520px]" style={{ zIndex: 9999 }}>
         <DialogHeader>
           <DialogTitle>Edit workstream</DialogTitle>
         </DialogHeader>

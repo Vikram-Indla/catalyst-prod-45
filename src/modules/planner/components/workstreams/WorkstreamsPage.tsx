@@ -512,7 +512,11 @@ export function WorkstreamsPage() {
               <div 
                 key={ws.id}
                 className={`ws-list-row ${ws.health === 'locked' ? 'locked' : ''} ${selectedIds.has(ws.id) ? 'selected' : ''} ${focusedIndex === index ? 'focused' : ''}`}
-                onClick={() => openDrawer(ws)}
+                onClick={(e) => {
+                  // Prevent drawer opening if clicking on action buttons
+                  if ((e.target as HTMLElement).closest('.ws-row-actions')) return;
+                  openDrawer(ws);
+                }}
               >
                 {/* Checkbox */}
                 <div 
