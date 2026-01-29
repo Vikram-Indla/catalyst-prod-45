@@ -342,9 +342,9 @@ export default function ModuleMatrixPage() {
             <div className="p-8 text-center text-muted-foreground">Loading matrix...</div>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-muted/50 sticky top-0 z-20">
+              <thead className="bg-muted/50 sticky top-0 z-[5]">
                 <tr>
-                  <th className="text-left p-3 font-semibold text-foreground sticky left-0 bg-muted/50 z-30 min-w-[200px] border-b border-r">
+                  <th className="text-left p-3 font-semibold text-foreground sticky left-0 bg-muted/50 z-[6] min-w-[200px] border-b border-r">
                     Module
                   </th>
                   {roleColumns.map((role) => (
