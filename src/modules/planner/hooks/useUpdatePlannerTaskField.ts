@@ -92,8 +92,11 @@ export function useUpdatePlannerTaskField() {
     onSuccess: (data, { taskId }) => {
       // Sync with server response
       queryClient.setQueryData(['task-detail', taskId], data);
-      // Invalidate task list so workstream_name is re-fetched from the view
+      // Invalidate related views for real-time sync
       queryClient.invalidateQueries({ queryKey: ['planner-task-list'] });
+      queryClient.invalidateQueries({ queryKey: ['timeline-tasks-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['planner-dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['my-tasks'] });
     },
   });
 
