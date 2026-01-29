@@ -7,7 +7,15 @@
  */
 
 import { CreateTaskModal as NewCreateTaskModal } from './CreateTaskModal/CreateTaskModal';
-import type { TaskPriority, TaskStatus, PlannerUser, PlannerTeam } from '../types';
+import type { TaskPriority, TaskStatus, PlannerUser } from '../types';
+
+// Simplified team type for modal (workstreams removed)
+interface SimpleTeam {
+  id: string;
+  name: string;
+  color?: string;
+  memberCount?: number;
+}
 
 interface CreateTaskData {
   title: string;
@@ -31,7 +39,7 @@ interface PlannerCreateModalProps {
   defaultStatus?: TaskStatus;
   defaultTeamId?: string;
   users?: PlannerUser[];
-  teams?: PlannerTeam[];
+  teams?: SimpleTeam[];
   currentUserId?: string;
 }
 

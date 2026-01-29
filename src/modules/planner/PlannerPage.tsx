@@ -48,7 +48,6 @@ const VIEW_TITLES: Record<PlannerView, string> = {
   'weekly-report': 'Weekly Summary',
   'workstream-performance': 'Daily Scorecard',
   'ai-insights': 'Monthly Chronicle',
-  'workstreams': 'Workstreams',
   'resources': 'Resources',
   'settings': 'Settings',
 };
@@ -456,7 +455,7 @@ export function PlannerPage() {
       {/* Right column: header + search + view content */}
       <div className="flex flex-col flex-1 min-w-0 min-h-0">
         {/* Header with breadcrumb - hidden on dashboard, boards, task-list, timeline, calendar (all have their own V9 headers) */}
-        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && (
+        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && (
           <div className="shrink-0" style={{ backgroundColor: 'var(--bg)', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
             <div
               className="flex items-center justify-between px-6"
@@ -557,7 +556,7 @@ export function PlannerPage() {
         )}
 
         {/* Search Bar - hidden on views that have their own integrated filter bars */}
-        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && activeView !== 'settings' && !isInsightView(activeView) && (
+        {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'settings' && !isInsightView(activeView) && (
           <PlannerSearchBar
             filters={filters}
             onSearchChange={setSearch}

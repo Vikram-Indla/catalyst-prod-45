@@ -29,7 +29,7 @@ export function MyTasksPage() {
   // Hooks
   useMyTasksRealtime();
   const createTask = useCreatePlannerTask();
-  const teams: { id: string; name: string }[] = []; // Workstreams removed
+  const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
 
   // Handler for creating task

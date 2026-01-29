@@ -87,7 +87,7 @@ export function TaskListToolbar({
   const [searchValue, setSearchValue] = useState(filters.search || '');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const workstreams: { id: string; name: string; slug?: string }[] = []; // Workstreams removed
+  const workstreams: { id: string; name: string; slug?: string; color?: string }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
   const { data: statuses = [] } = useKanbanStatuses();
 
