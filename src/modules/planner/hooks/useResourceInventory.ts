@@ -25,6 +25,7 @@ export function useResourceInventory() {
         .from('resource_inventory')
         .select('id, profile_id, name, email, role_name, department_name, default_capacity_percent')
         .eq('is_active', true)
+        .not('email', 'is', null) // Only resources with email IDs
         .order('name');
 
       if (error) {
@@ -32,16 +33,19 @@ export function useResourceInventory() {
         return [];
       }
 
-      return (data || []).map((r): Resource => ({
-        id: r.id,
-        profile_id: r.profile_id,
-        name: r.name || 'Unknown',
-        email: r.email,
-        role: r.role_name || 'Team Member',
-        department: r.department_name,
-        capacity: r.default_capacity_percent || 100,
-        initials: getInitials(r.name || ''),
-      }));
+      // Filter out empty emails as well
+      return (data || [])
+        .filter(r => r.email && r.email.trim() !== '')
+        .map((r): Resource => ({
+          id: r.id,
+          profile_id: r.profile_id,
+          name: r.name || 'Unknown',
+          email: r.email,
+          role: r.role_name || 'Team Member',
+          department: r.department_name,
+          capacity: r.default_capacity_percent || 100,
+          initials: getInitials(r.name || ''),
+        }));
     },
     staleTime: 5 * 60 * 1000,
   });
