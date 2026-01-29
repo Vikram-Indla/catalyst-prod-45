@@ -19,6 +19,7 @@ import { DashboardUpcomingDeadlinesV2 } from './DashboardUpcomingDeadlinesV2';
 import { DashboardTeamWorkloadV2 } from './DashboardTeamWorkloadV2';
 import { DashboardSkeleton } from './DashboardSkeleton';
 import { CreateTaskModal } from '../kanban';
+import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, LayoutDashboard, Calendar, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -85,7 +86,15 @@ export function PlannerDashboard() {
   const [workstreamFilter, setWorkstreamFilter] = useState<'my' | 'all' | string>('my');
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
+  const handleTaskClick = (taskId: string) => {
+    setSelectedTaskId(taskId);
+  };
+
+  const handleCloseDrawer = () => {
+    setSelectedTaskId(null);
+  };
   // Get user role from profile
   const userRole = userProfile?.role || 'member';
   
@@ -237,7 +246,8 @@ export function PlannerDashboard() {
         {/* Attention Required - Full width, filtered */}
         <DashboardUpcomingDeadlinesV2 
           data={filteredUpcomingDeadlines} 
-          className="flex-1 min-h-[200px]" 
+          className="flex-1 min-h-[200px]"
+          onTaskClick={handleTaskClick}
         />
       </div>
 
@@ -245,6 +255,13 @@ export function PlannerDashboard() {
       <CreateTaskModal
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
+      />
+
+      {/* Task Detail Drawer */}
+      <TaskDetailDrawer
+        taskId={selectedTaskId}
+        open={!!selectedTaskId}
+        onClose={handleCloseDrawer}
       />
     </div>
   );
