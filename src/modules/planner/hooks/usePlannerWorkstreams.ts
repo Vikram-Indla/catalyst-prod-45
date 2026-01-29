@@ -1,9 +1,11 @@
 // ============================================================
 // WORKSTREAMS V10 - Data Hook
+// Includes archive support and task count for delete protection
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 export interface WorkstreamMember {
   id: string;
@@ -26,6 +28,7 @@ export interface Workstream {
   icon: string | null;
   sort_order: number | null;
   is_active: boolean | null;
+  is_archived: boolean;
   lead_id: string | null;
   start_date: string | null;
   due_date: string | null;
@@ -49,15 +52,22 @@ export interface Workstream {
   };
 }
 
-export function usePlannerWorkstreams() {
+export function usePlannerWorkstreams(includeArchived = false) {
   return useQuery({
-    queryKey: ['planner-workstreams'],
+    queryKey: ['planner-workstreams', includeArchived],
     queryFn: async (): Promise<Workstream[]> => {
       // Fetch workstreams
-      const { data: workstreams, error } = await supabase
+      let query = supabase
         .from('planner_workstreams')
         .select('*')
         .order('name');
+
+      // Filter archived unless explicitly requested
+      if (!includeArchived) {
+        query = query.eq('is_archived', false);
+      }
+
+      const { data: workstreams, error } = await query;
 
       if (error) throw new Error(error.message);
       if (!workstreams) return [];
@@ -156,6 +166,7 @@ export function usePlannerWorkstreams() {
           icon: ws.icon,
           sort_order: ws.sort_order,
           is_active: ws.is_active,
+          is_archived: ws.is_archived ?? false,
           lead_id: ws.lead_id,
           start_date: ws.start_date,
           due_date: ws.due_date,
@@ -202,9 +213,6 @@ export function useCreateWorkstream() {
       color: string;
       leadId?: string | null;
     }) => {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
       const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       const { data: result, error } = await supabase
         .from('planner_workstreams')
@@ -214,6 +222,7 @@ export function useCreateWorkstream() {
           description: data.description,
           color: data.color,
           lead_id: data.leadId || null,
+          is_archived: false,
         })
         .select()
         .single();
@@ -242,6 +251,7 @@ export function useUpdateWorkstream() {
       if (updates.lead_id !== undefined) updateData.lead_id = updates.lead_id;
       if (updates.start_date !== undefined) updateData.start_date = updates.start_date;
       if (updates.due_date !== undefined) updateData.due_date = updates.due_date;
+      if (updates.is_archived !== undefined) updateData.is_archived = updates.is_archived;
       
       const { error } = await supabase
         .from('planner_workstreams')
@@ -261,6 +271,18 @@ export function useDeleteWorkstream() {
   
   return useMutation({
     mutationFn: async (id: string) => {
+      // Check if workstream has linked tasks
+      const { count, error: countError } = await supabase
+        .from('planner_tasks')
+        .select('id', { count: 'exact', head: true })
+        .eq('workstream_id', id);
+      
+      if (countError) throw new Error(countError.message);
+      
+      if (count && count > 0) {
+        throw new Error(`Cannot delete workstream: ${count} task(s) are linked to it. Remove or reassign tasks first.`);
+      }
+      
       const { error } = await supabase
         .from('planner_workstreams')
         .delete()
@@ -270,6 +292,41 @@ export function useDeleteWorkstream() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      toast({
+        title: 'Workstream deleted',
+        description: 'The workstream has been permanently deleted.',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Cannot delete workstream',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+}
+
+export function useArchiveWorkstream() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ id, archive }: { id: string; archive: boolean }) => {
+      const { error } = await supabase
+        .from('planner_workstreams')
+        .update({ is_archived: archive })
+        .eq('id', id);
+
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_, { archive }) => {
+      queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      toast({
+        title: archive ? 'Workstream archived' : 'Workstream restored',
+        description: archive 
+          ? 'The workstream has been moved to the archive.' 
+          : 'The workstream has been restored to active.',
+      });
     },
   });
 }
@@ -304,6 +361,17 @@ export function useAddWorkstreamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      toast({
+        title: 'Member added',
+        description: 'The member has been added to the workstream.',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Failed to add member',
+        description: error.message,
+        variant: 'destructive',
+      });
     },
   });
 }

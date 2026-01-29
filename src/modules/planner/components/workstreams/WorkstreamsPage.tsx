@@ -1,14 +1,13 @@
 // ============================================================
 // WORKSTREAMS V10 - Main Page Component
-// Ring-fenced CSS design system
-// FIXES: #3/#4 Filters, #7 Card click, #9-12 Navigation
+// Ring-fenced CSS design system with archive filter
 // ============================================================
 
 import '@/styles/workstreams.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Filter } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { usePlannerWorkstreams, Workstream } from '../../hooks/usePlannerWorkstreams';
+import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { usePlannerWorkstreams, Workstream, useArchiveWorkstream } from '../../hooks/usePlannerWorkstreams';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import {
@@ -26,6 +25,8 @@ const WORKSTREAM_COLORS = [
 
 export function WorkstreamsPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   const [view, setView] = useState<'list' | 'grid'>('list');
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -34,11 +35,24 @@ export function WorkstreamsPage() {
   const [activeWorkstream, setActiveWorkstream] = useState<Workstream | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
-  // BUG #3 & #4 FIX: Add filter state
+  // Filter state
   const [healthFilter, setHealthFilter] = useState<string | null>(null);
   const [leadFilter, setLeadFilter] = useState<string | null>(null);
+  
+  // Archive filter - check URL param
+  const showArchived = searchParams.get('archived') === 'true';
+  const { data: workstreams = [], isLoading } = usePlannerWorkstreams(showArchived);
+  const archiveWorkstream = useArchiveWorkstream();
 
-  const { data: workstreams = [], isLoading } = usePlannerWorkstreams();
+  // Toggle archive view
+  const toggleArchiveView = () => {
+    if (showArchived) {
+      searchParams.delete('archived');
+    } else {
+      searchParams.set('archived', 'true');
+    }
+    setSearchParams(searchParams);
+  };
 
   // Get unique leads for filter dropdown
   const uniqueLeads = useMemo(() => {
@@ -51,9 +65,13 @@ export function WorkstreamsPage() {
     return Array.from(leads.values());
   }, [workstreams]);
 
-  // BUG #3 & #4 FIX: Filter workstreams
+  // Filter workstreams
   const filteredWorkstreams = useMemo(() => {
     return workstreams.filter(ws => {
+      // Archive filter
+      if (!showArchived && ws.is_archived) return false;
+      if (showArchived && !ws.is_archived) return false;
+      
       // Search filter
       if (search && !ws.name.toLowerCase().includes(search.toLowerCase())) return false;
       // Health filter
@@ -65,16 +83,20 @@ export function WorkstreamsPage() {
       }
       return true;
     });
-  }, [workstreams, search, healthFilter, leadFilter]);
+  }, [workstreams, search, healthFilter, leadFilter, showArchived]);
 
-  // Compute summary stats
-  const summary = {
-    total: workstreams.length,
-    tasks: workstreams.reduce((sum, ws) => sum + (ws.taskCount || 0), 0),
-    healthy: workstreams.filter(ws => ws.health === 'healthy').length,
-    atRisk: workstreams.filter(ws => ws.health === 'at-risk').length,
-    critical: workstreams.filter(ws => ws.health === 'critical').length,
-  };
+  // Compute summary stats (only for active workstreams)
+  const summary = useMemo(() => {
+    const activeWorkstreams = workstreams.filter(ws => !ws.is_archived);
+    return {
+      total: activeWorkstreams.length,
+      tasks: activeWorkstreams.reduce((sum, ws) => sum + (ws.taskCount || 0), 0),
+      healthy: activeWorkstreams.filter(ws => ws.health === 'healthy').length,
+      atRisk: activeWorkstreams.filter(ws => ws.health === 'at-risk').length,
+      critical: activeWorkstreams.filter(ws => ws.health === 'critical').length,
+      archived: workstreams.filter(ws => ws.is_archived).length,
+    };
+  }, [workstreams]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -121,7 +143,7 @@ export function WorkstreamsPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [focusedIndex, filteredWorkstreams, isDrawerOpen, isCreateModalOpen]);
 
-  // BUG #7 FIX: Card click opens drawer
+  // Card click opens drawer
   const openDrawer = useCallback((ws: Workstream) => {
     if (ws.health !== 'locked') {
       setActiveWorkstream(ws);
@@ -139,21 +161,27 @@ export function WorkstreamsPage() {
     });
   }, []);
 
-  // BUG #9-11 FIX: Navigation handlers
+  // Navigation handlers with workstream filter
   const navigateToTasks = useCallback((ws: Workstream, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/planner/task-list?workstream=${ws.slug || ws.id}`);
+    navigate(`/planner/task-list?workstream=${encodeURIComponent(ws.slug || ws.id)}`);
   }, [navigate]);
 
   const navigateToBoard = useCallback((ws: Workstream, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/planner/boards?workstream=${ws.slug || ws.id}`);
+    navigate(`/planner/boards?workstream=${encodeURIComponent(ws.slug || ws.id)}`);
   }, [navigate]);
 
   const navigateToCalendar = useCallback((ws: Workstream, e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/planner/calendar?workstream=${ws.slug || ws.id}`);
+    navigate(`/planner/calendar?workstream=${encodeURIComponent(ws.slug || ws.id)}`);
   }, [navigate]);
+
+  // Quick archive/unarchive from list
+  const handleQuickArchive = useCallback((ws: Workstream, e: React.MouseEvent) => {
+    e.stopPropagation();
+    archiveWorkstream.mutate({ id: ws.id, archive: !ws.is_archived });
+  }, [archiveWorkstream]);
 
   return (
     <div className="ws-page min-h-screen">
@@ -161,19 +189,43 @@ export function WorkstreamsPage() {
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-1">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-text-primary">
-            Workstreams
+            {showArchived ? 'Archived Workstreams' : 'Workstreams'}
           </h2>
-          <button 
-            className="ws-btn ws-btn-primary"
-            onClick={() => setIsCreateModalOpen(true)}
-          >
-            <Plus className="w-4 h-4" strokeWidth={2} />
-            New Workstream
-          </button>
+          {!showArchived && (
+            <button 
+              className="ws-btn ws-btn-primary"
+              onClick={() => setIsCreateModalOpen(true)}
+            >
+              <Plus className="w-4 h-4" strokeWidth={2} />
+              New Workstream
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
-          {/* View Toggle - matching calendar style */}
+          {/* Archive Toggle */}
+          <button
+            onClick={toggleArchiveView}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              showArchived
+                ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+            }`}
+          >
+            {showArchived ? (
+              <>
+                <ArchiveRestore className="w-4 h-4" />
+                View Active
+              </>
+            ) : (
+              <>
+                <Archive className="w-4 h-4" />
+                Archived ({summary.archived})
+              </>
+            )}
+          </button>
+
+          {/* View Toggle */}
           <div className="flex items-center rounded-lg border border-border bg-surface-0 p-0.5">
             <button
               onClick={() => setView('list')}
@@ -203,47 +255,49 @@ export function WorkstreamsPage() {
 
       <main className="p-6 max-w-[1600px] mx-auto">
 
-        {/* Summary Bar */}
-        <div className="ws-summary-bar">
-          <div 
-            className={`ws-summary-card ${!healthFilter ? 'active' : ''}`}
-            onClick={() => setHealthFilter(null)}
-          >
-            <div className="ws-summary-value">{summary.total}</div>
-            <div className="ws-summary-label">Workstreams</div>
-          </div>
-          <div className="ws-summary-card">
-            <div className="ws-summary-value">{summary.tasks}</div>
-            <div className="ws-summary-label">Tasks</div>
-          </div>
-          <div 
-            className={`ws-summary-card healthy ${healthFilter === 'healthy' ? 'active' : ''}`}
-            onClick={() => setHealthFilter(healthFilter === 'healthy' ? null : 'healthy')}
-          >
-            <div className="ws-summary-value">
-              {summary.healthy}<span className="ws-summary-icon">✓</span>
+        {/* Summary Bar - only show for active view */}
+        {!showArchived && (
+          <div className="ws-summary-bar">
+            <div 
+              className={`ws-summary-card ${!healthFilter ? 'active' : ''}`}
+              onClick={() => setHealthFilter(null)}
+            >
+              <div className="ws-summary-value">{summary.total}</div>
+              <div className="ws-summary-label">Workstreams</div>
             </div>
-            <div className="ws-summary-label">On Track</div>
-          </div>
-          <div 
-            className={`ws-summary-card at-risk ${healthFilter === 'at-risk' ? 'active' : ''}`}
-            onClick={() => setHealthFilter(healthFilter === 'at-risk' ? null : 'at-risk')}
-          >
-            <div className="ws-summary-value">
-              {summary.atRisk}<span className="ws-summary-icon">⚠</span>
+            <div className="ws-summary-card">
+              <div className="ws-summary-value">{summary.tasks}</div>
+              <div className="ws-summary-label">Tasks</div>
             </div>
-            <div className="ws-summary-label">At Risk</div>
-          </div>
-          <div 
-            className={`ws-summary-card critical ${healthFilter === 'critical' ? 'active' : ''}`}
-            onClick={() => setHealthFilter(healthFilter === 'critical' ? null : 'critical')}
-          >
-            <div className="ws-summary-value">
-              {summary.critical}<span className="ws-summary-icon">●</span>
+            <div 
+              className={`ws-summary-card healthy ${healthFilter === 'healthy' ? 'active' : ''}`}
+              onClick={() => setHealthFilter(healthFilter === 'healthy' ? null : 'healthy')}
+            >
+              <div className="ws-summary-value">
+                {summary.healthy}<span className="ws-summary-icon">✓</span>
+              </div>
+              <div className="ws-summary-label">On Track</div>
             </div>
-            <div className="ws-summary-label">Critical</div>
+            <div 
+              className={`ws-summary-card at-risk ${healthFilter === 'at-risk' ? 'active' : ''}`}
+              onClick={() => setHealthFilter(healthFilter === 'at-risk' ? null : 'at-risk')}
+            >
+              <div className="ws-summary-value">
+                {summary.atRisk}<span className="ws-summary-icon">⚠</span>
+              </div>
+              <div className="ws-summary-label">At Risk</div>
+            </div>
+            <div 
+              className={`ws-summary-card critical ${healthFilter === 'critical' ? 'active' : ''}`}
+              onClick={() => setHealthFilter(healthFilter === 'critical' ? null : 'critical')}
+            >
+              <div className="ws-summary-value">
+                {summary.critical}<span className="ws-summary-icon">●</span>
+              </div>
+              <div className="ws-summary-label">Critical</div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Toolbar */}
         <div className="ws-toolbar">
@@ -259,7 +313,7 @@ export function WorkstreamsPage() {
               <span className="ws-search-shortcut">⌘K</span>
             </div>
             
-            {/* BUG #3 FIX: Health Filter Dropdown */}
+            {/* Health Filter Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="ws-btn ws-btn-secondary">
@@ -303,7 +357,7 @@ export function WorkstreamsPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* BUG #4 FIX: Lead Filter Dropdown */}
+            {/* Lead Filter Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="ws-btn ws-btn-secondary">
@@ -379,15 +433,19 @@ export function WorkstreamsPage() {
         {!isLoading && filteredWorkstreams.length === 0 && (
           <div className="ws-empty-state">
             <div className="ws-empty-state-icon">
-              <LayoutGrid className="w-8 h-8" strokeWidth={2} />
+              {showArchived ? <Archive className="w-8 h-8" /> : <LayoutGrid className="w-8 h-8" strokeWidth={2} />}
             </div>
-            <div className="ws-empty-state-title">No workstreams found</div>
+            <div className="ws-empty-state-title">
+              {showArchived ? 'No archived workstreams' : 'No workstreams found'}
+            </div>
             <div className="ws-empty-state-text">
-              {search || healthFilter || leadFilter 
-                ? 'Try adjusting your filters' 
-                : 'Create your first workstream to get started'}
+              {showArchived 
+                ? 'Archived workstreams will appear here'
+                : search || healthFilter || leadFilter 
+                  ? 'Try adjusting your filters' 
+                  : 'Create your first workstream to get started'}
             </div>
-            {!search && !healthFilter && !leadFilter && (
+            {!search && !healthFilter && !leadFilter && !showArchived && (
               <button className="ws-btn ws-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
                 <Plus className="w-4 h-4" strokeWidth={2} />
                 New Workstream
@@ -428,86 +486,85 @@ export function WorkstreamsPage() {
                 <div 
                   className={`ws-row-checkbox ${selectedIds.has(ws.id) ? 'checked' : ''}`}
                   onClick={(e) => toggleSelection(ws.id, e)}
-                  style={{ opacity: ws.health === 'locked' ? 0.5 : 1 }}
                 >
                   {selectedIds.has(ws.id) && <Check className="w-3 h-3" strokeWidth={3} />}
                 </div>
 
                 {/* Name */}
-                <div className="ws-name-cell">
-                  <div className="ws-color-dot" style={{ background: ws.color }} />
-                  <div className="ws-info">
-                    <div className="ws-title">{ws.name}</div>
-                    <div className="ws-code">{ws.code}</div>
+                <div className="ws-row-name">
+                  <div 
+                    className="ws-color-dot" 
+                    style={{ background: ws.color }} 
+                  />
+                  <div>
+                    <div className="ws-row-title">{ws.name}</div>
+                    <div className="ws-row-subtitle">{ws.code}</div>
                   </div>
                 </div>
 
                 {/* Lead */}
-                <div className="ws-lead-cell">
+                <div className="ws-row-lead">
                   {ws.lead ? (
                     <>
-                      <div className="ws-avatar" style={{ background: ws.color }}>
+                      <div 
+                        className="ws-avatar ws-avatar-sm" 
+                        style={{ background: ws.color }}
+                      >
                         {ws.lead.initials}
                       </div>
-                      <span className="ws-lead-name">{ws.lead.name}</span>
+                      <span>{ws.lead.name}</span>
                     </>
                   ) : (
-                    <span className="ws-lead-empty">Unassigned</span>
+                    <span className="ws-row-unassigned">Unassigned</span>
                   )}
                 </div>
 
-                {/* Health with Trend */}
-                <div>
+                {/* Health */}
+                <div className="ws-row-health">
                   <span className={`ws-health-badge ${ws.health}`}>
                     {ws.health === 'healthy' && '✓ On Track'}
-                    {ws.health === 'at-risk' && '⚠ At Risk'}
+                    {ws.health === 'at-risk' && '△ At Risk'}
                     {ws.health === 'critical' && '● Critical'}
                     {ws.health === 'locked' && '🔒 Locked'}
-                    {ws.health !== 'locked' && (
-                      <span className={`ws-trend-indicator ws-trend-${ws.trend}`}>
-                        {ws.trend === 'up' && '↑'}
-                        {ws.trend === 'down' && '↓'}
-                        {ws.trend === 'stable' && '→'}
-                      </span>
-                    )}
+                    <span className="ws-health-arrow">→</span>
                   </span>
                 </div>
 
                 {/* Tasks */}
-                <div className="ws-stat-cell" style={{ opacity: ws.health === 'locked' ? 0.5 : 1 }}>
-                  {ws.taskCount || 0}
-                </div>
+                <div className="ws-row-stat">{ws.taskCount || 0}</div>
 
                 {/* Overdue */}
-                <div 
-                  className={`ws-stat-cell ${(ws.overdueCount || 0) > 0 ? 'overdue' : ''}`}
-                  style={{ opacity: ws.health === 'locked' ? 0.5 : 1 }}
-                >
+                <div className={`ws-row-stat ${(ws.overdueCount || 0) > 0 ? 'danger' : ''}`}>
                   {ws.overdueCount || 0}
                 </div>
 
                 {/* Actions */}
-                <div className="flex justify-end">
-                  {ws.health === 'locked' ? (
-                    <button className="ws-btn ws-btn-ghost ws-btn-sm">Request</button>
-                  ) : (
-                    <button 
-                      className="ws-btn ws-btn-ghost ws-btn-icon ws-btn-sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openDrawer(ws);
-                      }}
-                    >
-                      <Pencil className="w-[14px] h-[14px]" strokeWidth={2} />
-                    </button>
-                  )}
+                <div className="ws-row-actions" onClick={(e) => e.stopPropagation()}>
+                  <button 
+                    className="ws-action-btn"
+                    onClick={(e) => handleQuickArchive(ws, e)}
+                    title={ws.is_archived ? 'Unarchive' : 'Archive'}
+                  >
+                    {ws.is_archived ? (
+                      <ArchiveRestore className="w-4 h-4" />
+                    ) : (
+                      <Archive className="w-4 h-4" />
+                    )}
+                  </button>
+                  <button 
+                    className="ws-action-btn"
+                    onClick={() => openDrawer(ws)}
+                    title="Edit"
+                  >
+                    <Pencil className="w-4 h-4" strokeWidth={2} />
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Grid View - BUG #7 FIX: Cards are clickable */}
+        {/* Grid View */}
         {!isLoading && filteredWorkstreams.length > 0 && view === 'grid' && (
           <div className="ws-grid-container">
             {filteredWorkstreams.map((ws) => (
@@ -516,94 +573,61 @@ export function WorkstreamsPage() {
                 className={`ws-grid-card ${ws.health === 'locked' ? 'locked' : ''}`}
                 onClick={() => openDrawer(ws)}
               >
-                <div className="ws-card-header">
-                  <div>
-                    <div className="ws-card-title-row">
-                      <div className="ws-color-dot" style={{ background: ws.color }} />
-                      <span className="ws-card-title">{ws.name}</span>
-                    </div>
-                    <div className="ws-card-code">{ws.code}</div>
+                <div className="ws-grid-card-header">
+                  <div className="ws-color-dot" style={{ background: ws.color }} />
+                  <div className="flex-1 min-w-0">
+                    <div className="ws-grid-card-title">{ws.name}</div>
+                    <div className="ws-grid-card-code">{ws.code}</div>
                   </div>
-                  <span className={`ws-health-badge ${ws.health}`}>
+                  <span className={`ws-health-badge ${ws.health} compact`}>
                     {ws.health === 'healthy' && '✓'}
-                    {ws.health === 'at-risk' && '⚠'}
+                    {ws.health === 'at-risk' && '△'}
                     {ws.health === 'critical' && '●'}
-                    {ws.health === 'locked' && '🔒'}
                   </span>
                 </div>
-                <div className="ws-card-body">
-                  <div className="ws-card-stats">
-                    <div className="ws-card-stat">
-                      <div className="ws-card-stat-value">{ws.taskCount || 0}</div>
-                      <div className="ws-card-stat-label">Tasks</div>
-                    </div>
-                    <div className="ws-card-stat">
-                      <div className={`ws-card-stat-value ${(ws.overdueCount || 0) > 0 ? 'danger' : ''}`}>
-                        {ws.overdueCount || 0}
-                      </div>
-                      <div className="ws-card-stat-label">Overdue</div>
-                    </div>
-                    <div className="ws-card-stat">
-                      <div className="ws-card-stat-value">{ws.memberCount || 0}</div>
-                      <div className="ws-card-stat-label">Members</div>
-                    </div>
-                  </div>
 
-                  {/* Lead */}
-                  <div className="ws-lead-cell">
-                    {ws.lead ? (
-                      <>
-                        <div className="ws-avatar ws-avatar-sm" style={{ background: ws.color }}>
-                          {ws.lead.initials}
-                        </div>
-                        <span className="ws-lead-name">{ws.lead.name}</span>
-                      </>
-                    ) : (
-                      <span className="ws-lead-empty">No lead assigned</span>
-                    )}
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="mt-3">
-                    <div className="ws-progress-bar">
+                <div className="ws-grid-card-lead">
+                  {ws.lead ? (
+                    <>
                       <div 
-                        className="ws-progress-fill" 
-                        style={{ 
-                          width: `${ws.progress || 0}%`, 
-                          background: ws.health === 'critical' ? 'var(--ws-danger)' :
-                                     ws.health === 'at-risk' ? 'var(--ws-warning)' : 'var(--ws-primary)'
-                        }} 
-                      />
-                    </div>
-                    <div 
-                      className="text-right mt-1"
-                      style={{ fontSize: '0.6875rem', color: 'var(--ws-text-tertiary)' }}
-                    >
-                      {ws.progress || 0}% complete
-                    </div>
+                        className="ws-avatar ws-avatar-sm" 
+                        style={{ background: ws.color }}
+                      >
+                        {ws.lead.initials}
+                      </div>
+                      <span>{ws.lead.name}</span>
+                    </>
+                  ) : (
+                    <span className="ws-row-unassigned">Unassigned</span>
+                  )}
+                </div>
+
+                <div className="ws-grid-card-stats">
+                  <div className="ws-grid-stat">
+                    <span className="ws-grid-stat-value">{ws.taskCount || 0}</span>
+                    <span className="ws-grid-stat-label">Tasks</span>
+                  </div>
+                  <div className="ws-grid-stat">
+                    <span className={`ws-grid-stat-value ${(ws.overdueCount || 0) > 0 ? 'danger' : ''}`}>
+                      {ws.overdueCount || 0}
+                    </span>
+                    <span className="ws-grid-stat-label">Overdue</span>
+                  </div>
+                  <div className="ws-grid-stat">
+                    <span className="ws-grid-stat-value">{ws.progress || 0}%</span>
+                    <span className="ws-grid-stat-label">Complete</span>
                   </div>
                 </div>
-                
-                {/* BUG #9-11 FIX: Card footer with navigation */}
-                <div className="ws-card-footer">
-                  <button 
-                    className="ws-btn ws-btn-secondary ws-btn-sm"
-                    onClick={(e) => navigateToTasks(ws, e)}
-                  >
-                    Tasks
-                  </button>
-                  <button 
-                    className="ws-btn ws-btn-secondary ws-btn-sm"
-                    onClick={(e) => navigateToBoard(ws, e)}
-                  >
-                    Board
-                  </button>
-                  <button 
-                    className="ws-btn ws-btn-secondary ws-btn-sm"
-                    onClick={(e) => navigateToCalendar(ws, e)}
-                  >
-                    Calendar
-                  </button>
+
+                <div className="ws-progress-bar">
+                  <div 
+                    className="ws-progress-fill" 
+                    style={{ 
+                      width: `${ws.progress || 0}%`,
+                      background: ws.health === 'critical' ? 'var(--ws-danger)' : 
+                                  ws.health === 'at-risk' ? 'var(--ws-warning)' : 'var(--ws-success)'
+                    }} 
+                  />
                 </div>
               </div>
             ))}
@@ -611,15 +635,15 @@ export function WorkstreamsPage() {
         )}
       </main>
 
-      {/* Drawer - BUG #5 FIX: proper height */}
-      <WorkstreamDrawer 
+      {/* Drawer */}
+      <WorkstreamDrawer
         workstream={activeWorkstream}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       />
 
       {/* Create Modal */}
-      <CreateWorkstreamModal 
+      <CreateWorkstreamModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />
