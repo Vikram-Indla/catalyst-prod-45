@@ -20,6 +20,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { 
@@ -31,8 +38,15 @@ import {
   Eye,
   EyeOff,
   UserPlus,
-  Users
+  Users,
+  Shield
 } from 'lucide-react';
+
+interface ProductRole {
+  id: string;
+  name: string;
+  code: string;
+}
 
 interface ResourceUser {
   id: string;
@@ -41,6 +55,8 @@ interface ResourceUser {
   email: string | null;
   rid: string | null;
   is_active: boolean;
+  role_id: string | null;
+  role_name: string | null;
 }
 
 export default function UserAccessPage() {
@@ -56,9 +72,46 @@ export default function UserAccessPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number; errors: string[] } | null>(null);
 
+  // Fetch product roles for dropdown
+  const { data: productRoles = [] } = useQuery({
+    queryKey: ['product-roles'],
+    queryFn: async (): Promise<ProductRole[]> => {
+      const { data, error } = await supabase
+        .from('product_roles')
+        .select('id, name, code')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 60000,
+  });
+
+  // Fetch user role assignments
+  const { data: userRoleAssignments = [] } = useQuery({
+    queryKey: ['user-role-assignments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_product_roles')
+        .select('user_id, role_id');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 30000,
+  });
+
+  // Create a map of user_id to role_id
+  const userRoleMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    userRoleAssignments.forEach((assignment) => {
+      map[assignment.user_id] = assignment.role_id;
+    });
+    return map;
+  }, [userRoleAssignments]);
+
   // Fetch resource inventory with profiles, auto-linking by RID when profile_id is null
   const { data: users = [], isLoading } = useQuery({
-    queryKey: ['user-access-resources'],
+    queryKey: ['user-access-resources', userRoleMap],
     queryFn: async () => {
       // First, get all resources
       const { data: resources, error: resourceError } = await supabase
@@ -143,6 +196,10 @@ export default function UserAccessPage() {
           email = item.email || null;
         }
 
+        // Get role info for this user
+        const roleId = linkedProfileId ? userRoleMap[linkedProfileId] : null;
+        const role = roleId ? productRoles.find(r => r.id === roleId) : null;
+
         mappedUsers.push({
           id: item.id,
           profile_id: linkedProfileId,
@@ -150,6 +207,8 @@ export default function UserAccessPage() {
           email,
           rid: item.rid,
           is_active: item.is_active ?? true,
+          role_id: roleId || null,
+          role_name: role?.name || null,
         });
       }
 
@@ -160,6 +219,7 @@ export default function UserAccessPage() {
 
       return mappedUsers;
     },
+    enabled: productRoles.length > 0,
   });
 
   // Change password mutation
@@ -228,6 +288,36 @@ export default function UserAccessPage() {
     },
   });
 
+  // Assign role mutation
+  const assignRoleMutation = useMutation({
+    mutationFn: async ({ userId, roleId }: { userId: string; roleId: string | null }) => {
+      // First, delete existing role assignment
+      const { error: deleteError } = await supabase
+        .from('user_product_roles')
+        .delete()
+        .eq('user_id', userId);
+      
+      if (deleteError) throw deleteError;
+
+      // If a new role is being assigned, insert it
+      if (roleId) {
+        const { error: insertError } = await supabase
+          .from('user_product_roles')
+          .insert({ user_id: userId, role_id: roleId });
+        
+        if (insertError) throw insertError;
+      }
+    },
+    onSuccess: () => {
+      toast.success('Role updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['user-role-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to update role');
+    },
+  });
+
   // Filter users based on search
   const filteredUsers = useMemo(() => {
     if (!searchQuery.trim()) return users;
@@ -236,7 +326,8 @@ export default function UserAccessPage() {
       (user) =>
         user.name?.toLowerCase().includes(query) ||
         user.email?.toLowerCase().includes(query) ||
-        user.rid?.toLowerCase().includes(query)
+        user.rid?.toLowerCase().includes(query) ||
+        user.role_name?.toLowerCase().includes(query)
     );
   }, [users, searchQuery]);
 
@@ -376,7 +467,7 @@ export default function UserAccessPage() {
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search by name, email, or RID..."
+            placeholder="Search by name, email, RID, or role..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -396,6 +487,7 @@ export default function UserAccessPage() {
                 <TableHead className="w-[80px]">RID</TableHead>
                 <TableHead className="min-w-[150px]">Name</TableHead>
                 <TableHead className="min-w-[200px]">Email</TableHead>
+                <TableHead className="min-w-[180px]">Role</TableHead>
                 <TableHead className="w-[80px]">Status</TableHead>
                 <TableHead className="w-[220px] text-right">Actions</TableHead>
               </TableRow>
@@ -403,13 +495,13 @@ export default function UserAccessPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     Loading resources...
                   </TableCell>
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No resources found
                   </TableCell>
                 </TableRow>
@@ -428,6 +520,42 @@ export default function UserAccessPage() {
                         </span>
                       ) : (
                         <span className="text-muted-foreground/50">No email</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {user.profile_id ? (
+                        <Select
+                          value={user.role_id || 'none'}
+                          onValueChange={(value) => {
+                            assignRoleMutation.mutate({
+                              userId: user.profile_id!,
+                              roleId: value === 'none' ? null : value,
+                            });
+                          }}
+                          disabled={assignRoleMutation.isPending}
+                        >
+                          <SelectTrigger className="w-full h-8 text-sm">
+                            <div className="flex items-center gap-1.5">
+                              <Shield className="h-3.5 w-3.5 text-muted-foreground" />
+                              <SelectValue placeholder="Select role" />
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent className="z-[9999]">
+                            <SelectItem value="none">
+                              <span className="text-muted-foreground">No role</span>
+                            </SelectItem>
+                            {productRoles.map((role) => (
+                              <SelectItem key={role.id} value={role.id}>
+                                {role.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic flex items-center gap-1">
+                          <Shield className="h-3 w-3" />
+                          No account
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
