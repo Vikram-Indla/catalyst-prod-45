@@ -227,6 +227,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
         size="lg"
         hideClose
         className="task-modal task-modal-enterprise p-0 gap-0 overflow-hidden max-h-[85vh] flex flex-col"
+        style={{ maxWidth: '900px', width: '90vw' }}
       >
         {isLoading ? (
           <ModalSkeleton />
@@ -238,6 +239,56 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
               onClose={handleClose}
               onTitleChange={(title) => handleTextFieldUpdate('title', title)}
               onStatusChange={(statusId) => handleFieldUpdate('status_id', statusId)}
+              onAssigneeChange={(assigneeId) => handleFieldUpdate('assignee_id', assigneeId)}
+              onWorkstreamChange={(workstreamId) => handleFieldUpdate('workstream_id', workstreamId)}
+              onPriorityChange={(priority) => handleFieldUpdate('priority', priority)}
+              onEdit={() => {
+                toast.info('Edit mode - changes save automatically');
+              }}
+              onDuplicate={async () => {
+                try {
+                  // Generate a new task_key
+                  const timestamp = Date.now().toString(36).toUpperCase();
+                  const newTaskKey = `TSK-${timestamp}`;
+                  
+                  const { error } = await supabase
+                    .from('planner_tasks')
+                    .insert([{
+                      task_key: newTaskKey,
+                      title: `${task.title} (Copy)`,
+                      description: task.description || null,
+                      priority: task.priority || 'medium',
+                      status_id: task.status_id || null,
+                      workstream_id: task.workstream_id || task.workstream?.id || null,
+                      assignee_id: task.assignee_id || task.assignee?.id || null,
+                      due_date: task.due_date || null,
+                      start_date: task.start_date || null,
+                    }]);
+                  
+                  if (error) throw error;
+                  toast.success('Task duplicated successfully');
+                  queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+                  onTaskUpdated?.();
+                } catch (err) {
+                  console.error('Duplicate error:', err);
+                  toast.error('Failed to duplicate task');
+                }
+              }}
+              onDelete={async () => {
+                try {
+                  const { error } = await supabase
+                    .from('planner_tasks')
+                    .delete()
+                    .eq('id', effectiveTaskId);
+                  
+                  if (error) throw error;
+                  toast.success('Task deleted');
+                  queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+                  handleClose();
+                } catch (err) {
+                  toast.error('Failed to delete task');
+                }
+              }}
               saveStatus={saveStatus}
             />
             
@@ -266,14 +317,11 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                 {/* Description Tab */}
                 {activeTab === 'description' && (
                   <div className="space-y-5">
-                    {/* Description */}
-                    <div className="task-modal__section">
-                      <span className="task-modal__section-label">Description</span>
-                      <TaskDescription
-                        value={task.description || ''}
-                        onChange={(desc) => handleTextFieldUpdate('description', desc)}
-                      />
-                    </div>
+                    {/* Description - Single label only */}
+                    <TaskDescription
+                      value={task.description || ''}
+                      onChange={(desc) => handleTextFieldUpdate('description', desc)}
+                    />
                     
                     {/* Inline Fields Row - V2 style */}
                     <TaskFieldsGrid
@@ -318,16 +366,13 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
               </div>
             </ScrollArea>
             
-            {/* Footer */}
+            {/* Footer - No "?" button */}
             <div className="task-modal__footer">
               <DrawerFooter
                 task={task}
                 onDelete={handleClose}
                 onDuplicate={() => {}}
               />
-              <button className="task-modal__action-btn">
-                ?
-              </button>
             </div>
           </>
         ) : (
