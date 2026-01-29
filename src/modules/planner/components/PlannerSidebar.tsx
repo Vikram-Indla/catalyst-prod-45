@@ -29,12 +29,12 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
         title: '',
         items: [
           { id: 'dashboard', title: 'Dashboard', path: '/planner/dashboard', icon: LayoutDashboard, exact: true },
+          { id: 'workstreams', title: 'Workstreams', path: '/planner/workstreams', icon: Layers, exact: true },
           { id: 'my-tasks', title: 'My Tasks', path: '/planner/my-tasks', icon: CheckSquare, exact: true },
           { id: 'boards', title: 'Boards', path: '/planner/boards', icon: LayoutGrid, exact: true },
           { id: 'task-list', title: 'Task List', path: '/planner/task-list', icon: List, exact: true },
           { id: 'timeline', title: 'Timeline', path: '/planner/timeline', icon: GanttChartSquare, exact: true },
           { id: 'calendar', title: 'Calendar', path: '/planner/calendar', icon: Calendar, exact: true },
-          { id: 'workstreams', title: 'Workstreams', path: '/planner/workstreams', icon: Layers, exact: true },
         ],
       },
     ],
