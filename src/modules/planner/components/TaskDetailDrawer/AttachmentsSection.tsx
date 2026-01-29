@@ -120,11 +120,28 @@ function AttachmentItem({
   onDelete: () => void;
 }) {
   const isImage = attachment.file_type?.startsWith('image/');
+
+  const handleDownload = () => {
+    if (!attachment.file_url) return;
+    
+    // Create a temporary anchor element for download
+    const link = document.createElement('a');
+    link.href = attachment.file_url;
+    link.download = attachment.file_name;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   
   return (
-    <div className="group flex items-center gap-2 px-2 py-1.5 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
+    <div 
+      className="group flex items-center gap-2 px-3 py-2.5 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+      onClick={handleDownload}
+      title={`Click to download ${attachment.file_name}`}
+    >
       {/* Thumbnail or Icon */}
-      <div className="w-8 h-8 rounded bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+      <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
         {isImage && attachment.file_url ? (
           <img 
             src={attachment.file_url} 
@@ -132,24 +149,24 @@ function AttachmentItem({
             className="w-full h-full object-cover"
           />
         ) : (
-          <FileText className="w-4 h-4 text-muted-foreground" />
+          <FileText className="w-5 h-5 text-muted-foreground" />
         )}
       </div>
       
       {/* File Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-foreground truncate">{attachment.file_name}</p>
-        <p className="text-[10px] text-muted-foreground">
-          {formatFileSize(attachment.file_size)}
+        <p className="text-sm font-medium text-foreground truncate">{attachment.file_name}</p>
+        <p className="text-xs text-muted-foreground">
+          {formatFileSize(attachment.file_size)} · Click to download
         </p>
       </div>
       
       {/* Delete */}
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(); }}
-        className="w-5 h-5 flex items-center justify-center rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+        className="w-6 h-6 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
       >
-        <X className="w-3 h-3" />
+        <X className="w-4 h-4" />
       </button>
     </div>
   );
