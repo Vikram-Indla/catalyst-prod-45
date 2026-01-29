@@ -13,6 +13,7 @@ import { format, parseISO, isToday, isTomorrow, isPast, differenceInDays } from 
 interface DashboardUpcomingDeadlinesV2Props {
   data: UpcomingDeadline[];
   className?: string;
+  onTaskClick?: (taskId: string) => void;
 }
 
 type DueStatus = 'overdue' | 'today' | 'tomorrow' | 'this-week' | 'upcoming';
@@ -97,7 +98,7 @@ const PRIORITY_SHAPES: Record<string, string> = {
   low: '○',
 };
 
-export function DashboardUpcomingDeadlinesV2({ data, className }: DashboardUpcomingDeadlinesV2Props) {
+export function DashboardUpcomingDeadlinesV2({ data, className, onTaskClick }: DashboardUpcomingDeadlinesV2Props) {
   const navigate = useNavigate();
 
   // Count overdue for header
@@ -150,7 +151,7 @@ export function DashboardUpcomingDeadlinesV2({ data, className }: DashboardUpcom
           return (
             <button
               key={task.id}
-              onClick={() => navigate(`/planner/task-list?task=${task.id}`)}
+              onClick={() => onTaskClick ? onTaskClick(task.id) : navigate(`/planner/task-list?taskId=${task.id}`)}
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left',
                 'hover:bg-slate-50 dark:hover:bg-slate-700/50',
