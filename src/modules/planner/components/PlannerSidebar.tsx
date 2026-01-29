@@ -22,8 +22,8 @@ interface PlannerSidebarProps {
 
 export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebarProps) {
   const plannerSidebarConfig: SidebarConfig = {
-    badge: 'PL',
-    label: 'Planner',
+    badge: 'TB',
+    label: 'Taskboard',
     sections: [
       {
         title: '',
