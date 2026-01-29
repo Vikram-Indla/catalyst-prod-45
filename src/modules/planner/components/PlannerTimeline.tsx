@@ -203,12 +203,12 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const isScrollSyncingRef = useRef(false); // Prevent infinite scroll loop
+  const scrollSyncSourceRef = useRef<'sidebar' | 'grid' | null>(null);
 
   // Sync scroll between sidebar and grid
   const handleSidebarScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
-    if (isScrollSyncingRef.current) return;
-    isScrollSyncingRef.current = true;
+    if (scrollSyncSourceRef.current === 'grid') return;
+    scrollSyncSourceRef.current = 'sidebar';
     
     const target = e.currentTarget;
     if (gridRef.current) {
@@ -216,13 +216,15 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
     }
     
     requestAnimationFrame(() => {
-      isScrollSyncingRef.current = false;
+      if (scrollSyncSourceRef.current === 'sidebar') {
+        scrollSyncSourceRef.current = null;
+      }
     });
   }, []);
 
   const handleGridScroll = useCallback((e: UIEvent<HTMLDivElement>) => {
-    if (isScrollSyncingRef.current) return;
-    isScrollSyncingRef.current = true;
+    if (scrollSyncSourceRef.current === 'sidebar') return;
+    scrollSyncSourceRef.current = 'grid';
     
     const target = e.currentTarget;
     if (sidebarRef.current) {
@@ -230,7 +232,9 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
     }
     
     requestAnimationFrame(() => {
-      isScrollSyncingRef.current = false;
+      if (scrollSyncSourceRef.current === 'grid') {
+        scrollSyncSourceRef.current = null;
+      }
     });
   }, []);
 
