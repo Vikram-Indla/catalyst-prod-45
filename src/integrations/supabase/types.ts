@@ -13174,6 +13174,7 @@ export type Database = {
           icon: string | null
           id: string
           is_active: boolean | null
+          is_archived: boolean
           lead_id: string | null
           name: string
           slug: string
@@ -13189,6 +13190,7 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean | null
+          is_archived?: boolean
           lead_id?: string | null
           name: string
           slug: string
@@ -13204,6 +13206,7 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean | null
+          is_archived?: boolean
           lead_id?: string | null
           name?: string
           slug?: string
