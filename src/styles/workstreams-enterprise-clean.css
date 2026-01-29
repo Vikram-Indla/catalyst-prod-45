@@ -1,0 +1,410 @@
+/* ============================================================================
+   WORKSTREAMS — ENTERPRISE CLEAN OVERRIDE
+   
+   ⚠️  INVASIVE: This stylesheet FORCEFULLY overrides all existing styles
+   
+   OVERRIDE STRATEGY:
+   1. @layer workstreams-enterprise — Highest cascade priority
+   2. .workstreams-enterprise-clean wrapper — Scopes all overrides
+   3. !important — Forces override of any existing styles
+   4. display: none !important — Hides legacy colored elements
+   5. High specificity — 3+ class selectors beat single class
+   
+   BENCHMARK: Linear, Notion, Asana, Jira (25-company enterprise standard)
+   ============================================================================ */
+
+/* ======================== CSS LAYER (Highest Priority) ======================== */
+@layer workstreams-enterprise {
+
+/* ======================== ROOT VARIABLES ======================== */
+:root,
+.workstreams-enterprise-clean {
+  /* Neutrals */
+  --wec-surface-page: #f8fafc;
+  --wec-surface-card: #ffffff;
+  --wec-surface-hover: #f1f5f9;
+  --wec-surface-selected: #eff6ff;
+  
+  --wec-border-default: #e2e8f0;
+  --wec-border-subtle: #f1f5f9;
+  
+  --wec-text-primary: #0f172a;
+  --wec-text-secondary: #334155;
+  --wec-text-muted: #64748b;
+  --wec-text-light: #94a3b8;
+  
+  /* Accent */
+  --wec-accent-primary: #2563eb;
+  
+  /* Status (Functional colors only) */
+  --wec-status-success: #16a34a;
+  --wec-status-warning: #ca8a04;
+  --wec-status-critical: #dc2626;
+}
+
+/* Dark mode */
+.dark .workstreams-enterprise-clean,
+[data-theme="dark"] .workstreams-enterprise-clean {
+  --wec-surface-page: #0f172a;
+  --wec-surface-card: #1e293b;
+  --wec-surface-hover: #334155;
+  --wec-surface-selected: #1e3a5f;
+  
+  --wec-border-default: #334155;
+  --wec-border-subtle: #1e293b;
+  
+  --wec-text-primary: #f1f5f9;
+  --wec-text-secondary: #cbd5e1;
+  --wec-text-muted: #94a3b8;
+  --wec-text-light: #64748b;
+  
+  --wec-status-success: #22c55e;
+  --wec-status-warning: #eab308;
+  --wec-status-critical: #ef4444;
+}
+
+/* ======================== WRAPPER SCOPE ======================== */
+.workstreams-enterprise-clean {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif !important;
+}
+
+/* ======================== PAGE BACKGROUND ======================== */
+.workstreams-enterprise-clean.ws-page {
+  background: var(--wec-surface-page) !important;
+}
+
+/* ======================== KPI CARDS — LARGER ======================== */
+.workstreams-enterprise-clean .ws-summary-bar {
+  gap: 16px !important;
+}
+
+.workstreams-enterprise-clean .ws-summary-card {
+  padding: 20px 24px !important;
+  min-width: 120px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--wec-border-default) !important;
+  background: var(--wec-surface-card) !important;
+}
+
+/* KPI Numbers — LARGER */
+.workstreams-enterprise-clean .ws-summary-value {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: var(--wec-text-primary) !important;
+  line-height: 1 !important;
+}
+
+/* KPI Labels — Sentence case */
+.workstreams-enterprise-clean .ws-summary-label {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: var(--wec-text-muted) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  margin-top: 6px !important;
+}
+
+/* KPI Selected State */
+.workstreams-enterprise-clean .ws-summary-card.active {
+  background: var(--wec-surface-selected) !important;
+  border-color: var(--wec-accent-primary) !important;
+}
+
+/* Health status icons in KPI - muted colors */
+.workstreams-enterprise-clean .ws-summary-card.healthy .ws-summary-icon {
+  color: var(--wec-status-success) !important;
+}
+
+.workstreams-enterprise-clean .ws-summary-card.at-risk .ws-summary-icon {
+  color: var(--wec-status-warning) !important;
+}
+
+.workstreams-enterprise-clean .ws-summary-card.critical .ws-summary-icon {
+  color: var(--wec-status-critical) !important;
+}
+
+/* ======================== TABLE — GENERAL ======================== */
+.workstreams-enterprise-clean .ws-list-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: var(--wec-surface-card) !important;
+}
+
+/* ======================== TABLE HEADERS — SENTENCE CASE ======================== */
+.workstreams-enterprise-clean .ws-list-table th,
+.workstreams-enterprise-clean .ws-table-header,
+.workstreams-enterprise-clean [class*="ws-"] th {
+  text-align: left !important;
+  padding: 12px 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--wec-text-muted) !important;
+  text-transform: none !important;  /* OVERRIDE UPPERCASE */
+  letter-spacing: normal !important;
+  border-bottom: 1px solid var(--wec-border-default) !important;
+  background: transparent !important;
+}
+
+/* ======================== TABLE ROWS — LARGER HEIGHT ======================== */
+.workstreams-enterprise-clean .ws-list-table tr,
+.workstreams-enterprise-clean .ws-list-row {
+  height: auto !important;
+  min-height: 56px !important;
+}
+
+.workstreams-enterprise-clean .ws-list-table td,
+.workstreams-enterprise-clean .ws-list-cell {
+  padding: 16px !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid var(--wec-border-subtle) !important;
+  font-size: 14px !important;
+}
+
+/* Row Hover */
+.workstreams-enterprise-clean .ws-list-table tr:hover,
+.workstreams-enterprise-clean .ws-list-row:hover {
+  background: var(--wec-surface-hover) !important;
+}
+
+/* ======================== 🚨 HIDE RAINBOW DOTS — CRITICAL ======================== */
+.workstreams-enterprise-clean .ws-dot,
+.workstreams-enterprise-clean .ws-color-dot,
+.workstreams-enterprise-clean [class*="ws-dot"],
+.workstreams-enterprise-clean [class*="workstream-dot"],
+.workstreams-enterprise-clean [class*="color-indicator"],
+.workstreams-enterprise-clean .ws-list-row .ws-name-cell > span[style*="background"],
+.workstreams-enterprise-clean .ws-list-row > td:first-child span[style*="background-color"],
+.workstreams-enterprise-clean .ws-card-v2 .ws-card-header > span[style*="background"] {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Also hide any inline-styled colored dot elements in rows */
+.workstreams-enterprise-clean .ws-list-row td:first-child > div > span:first-child:not(.ws-name),
+.workstreams-enterprise-clean .ws-name-cell > span:first-child[style*="background"] {
+  display: none !important;
+}
+
+/* ======================== 🚨 HIDE WORKSTREAM CODES — CRITICAL ======================== */
+.workstreams-enterprise-clean .ws-code,
+.workstreams-enterprise-clean [class*="ws-code"],
+.workstreams-enterprise-clean [class*="workstream-code"],
+.workstreams-enterprise-clean .ws-name-cell small,
+.workstreams-enterprise-clean .ws-list-row .ws-name-secondary,
+.workstreams-enterprise-clean .ws-card-v2 .ws-card-code {
+  display: none !important;
+  visibility: hidden !important;
+  font-size: 0 !important;
+  opacity: 0 !important;
+}
+
+/* ======================== WORKSTREAM NAME — CLEAN ======================== */
+.workstreams-enterprise-clean .ws-name,
+.workstreams-enterprise-clean .ws-name-text,
+.workstreams-enterprise-clean [class*="ws-name"] {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: var(--wec-text-primary) !important;
+}
+
+/* ======================== 🚨 HEALTH BADGES — MUTED ======================== */
+.workstreams-enterprise-clean .ws-health-badge,
+.workstreams-enterprise-clean [class*="ws-health"],
+.workstreams-enterprise-clean [class*="health-badge"],
+.workstreams-enterprise-clean .ws-status-badge {
+  /* Remove colored backgrounds */
+  background: transparent !important;
+  background-color: transparent !important;
+  
+  /* Simple styling */
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* On Track / Healthy — Green */
+.workstreams-enterprise-clean .ws-health-badge.healthy,
+.workstreams-enterprise-clean [class*="health"][class*="healthy"],
+.workstreams-enterprise-clean [class*="on-track"],
+.workstreams-enterprise-clean .ws-health-badge--healthy {
+  color: var(--wec-status-success) !important;
+  background: transparent !important;
+}
+
+/* At Risk — Amber */
+.workstreams-enterprise-clean .ws-health-badge.at-risk,
+.workstreams-enterprise-clean [class*="health"][class*="at-risk"],
+.workstreams-enterprise-clean [class*="atrisk"],
+.workstreams-enterprise-clean .ws-health-badge--at-risk {
+  color: var(--wec-status-warning) !important;
+  background: transparent !important;
+}
+
+/* Critical — Red */
+.workstreams-enterprise-clean .ws-health-badge.critical,
+.workstreams-enterprise-clean [class*="health"][class*="critical"],
+.workstreams-enterprise-clean .ws-health-badge--critical {
+  color: var(--wec-status-critical) !important;
+  background: transparent !important;
+}
+
+/* ======================== LEAD/ASSIGNEE — EM DASH ======================== */
+.workstreams-enterprise-clean .ws-unassigned,
+.workstreams-enterprise-clean [class*="unassigned"],
+.workstreams-enterprise-clean .ws-lead-cell:empty::after {
+  color: var(--wec-text-light) !important;
+}
+
+/* Hide user icons for unassigned */
+.workstreams-enterprise-clean .ws-unassigned svg,
+.workstreams-enterprise-clean [class*="unassigned"] svg:not(.lucide-user-plus) {
+  display: none !important;
+}
+
+/* ======================== ACTION ICONS — HOVER REVEAL ======================== */
+.workstreams-enterprise-clean .ws-actions,
+.workstreams-enterprise-clean .ws-row-actions,
+.workstreams-enterprise-clean [class*="ws-actions"] {
+  opacity: 0 !important;
+  transition: opacity 0.15s ease !important;
+}
+
+.workstreams-enterprise-clean .ws-list-row:hover .ws-actions,
+.workstreams-enterprise-clean .ws-list-row:hover .ws-row-actions,
+.workstreams-enterprise-clean tr:hover .ws-actions {
+  opacity: 1 !important;
+}
+
+/* Larger action buttons */
+.workstreams-enterprise-clean .ws-actions button,
+.workstreams-enterprise-clean .ws-row-actions button,
+.workstreams-enterprise-clean .ws-action-btn {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--wec-text-muted) !important;
+  cursor: pointer !important;
+}
+
+.workstreams-enterprise-clean .ws-actions button:hover,
+.workstreams-enterprise-clean .ws-action-btn:hover {
+  background: var(--wec-surface-hover) !important;
+  color: var(--wec-text-primary) !important;
+}
+
+.workstreams-enterprise-clean .ws-actions svg,
+.workstreams-enterprise-clean .ws-action-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* ======================== GRID CARD OVERRIDES ======================== */
+.workstreams-enterprise-clean .ws-card-v2 {
+  border: 1px solid var(--wec-border-default) !important;
+  background: var(--wec-surface-card) !important;
+  box-shadow: none !important;
+}
+
+.workstreams-enterprise-clean .ws-card-v2:hover {
+  border-color: var(--wec-accent-primary) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Hide top health bar in grid cards */
+.workstreams-enterprise-clean .ws-card-v2::before,
+.workstreams-enterprise-clean .ws-card-v2 .ws-card-health-bar {
+  display: none !important;
+  height: 0 !important;
+}
+
+/* ======================== TAILWIND CLASS OVERRIDES ======================== */
+.workstreams-enterprise-clean .uppercase {
+  text-transform: none !important;
+}
+
+.workstreams-enterprise-clean .text-xs {
+  font-size: 12px !important;
+}
+
+.workstreams-enterprise-clean .text-sm {
+  font-size: 14px !important;
+}
+
+.workstreams-enterprise-clean .tracking-wide,
+.workstreams-enterprise-clean .tracking-wider {
+  letter-spacing: normal !important;
+}
+
+/* Override Tailwind background colors on badges */
+.workstreams-enterprise-clean .bg-yellow-100,
+.workstreams-enterprise-clean .bg-yellow-50,
+.workstreams-enterprise-clean .bg-amber-100,
+.workstreams-enterprise-clean .bg-amber-50,
+.workstreams-enterprise-clean .bg-red-100,
+.workstreams-enterprise-clean .bg-red-50,
+.workstreams-enterprise-clean .bg-rose-100,
+.workstreams-enterprise-clean .bg-green-100,
+.workstreams-enterprise-clean .bg-green-50,
+.workstreams-enterprise-clean .bg-emerald-100 {
+  background: transparent !important;
+}
+
+/* Override Tailwind text colors to our muted versions */
+.workstreams-enterprise-clean .text-yellow-700,
+.workstreams-enterprise-clean .text-yellow-800,
+.workstreams-enterprise-clean .text-amber-700,
+.workstreams-enterprise-clean .text-amber-600 {
+  color: var(--wec-status-warning) !important;
+}
+
+.workstreams-enterprise-clean .text-red-700,
+.workstreams-enterprise-clean .text-red-600,
+.workstreams-enterprise-clean .text-rose-700 {
+  color: var(--wec-status-critical) !important;
+}
+
+.workstreams-enterprise-clean .text-green-700,
+.workstreams-enterprise-clean .text-green-600,
+.workstreams-enterprise-clean .text-emerald-700,
+.workstreams-enterprise-clean .text-emerald-600 {
+  color: var(--wec-status-success) !important;
+}
+
+} /* END @layer workstreams-enterprise */
+
+/* ======================== FALLBACK: Non-layered overrides ======================== */
+/* In case @layer is not supported, these provide backup overrides */
+
+.workstreams-enterprise-clean [class*="dot"]:not([class*="health"]):not(.ws-summary-icon) {
+  display: none !important;
+}
+
+.workstreams-enterprise-clean .ws-code,
+.workstreams-enterprise-clean [class*="-code"]:not([class*="search"]) {
+  display: none !important;
+}
+
+.workstreams-enterprise-clean [class*="health-badge"],
+.workstreams-enterprise-clean [class*="ws-health"] {
+  background: transparent !important;
+}
+
+.workstreams-enterprise-clean th {
+  text-transform: none !important;
+}
