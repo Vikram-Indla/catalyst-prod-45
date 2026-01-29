@@ -7,7 +7,7 @@ import '@/styles/workstreams.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream } from '../../hooks/usePlannerWorkstreams';
+import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount } from '../../hooks/usePlannerWorkstreams';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
@@ -53,6 +53,7 @@ export function WorkstreamsPage() {
   // Archive filter - check URL param
   const showArchived = searchParams.get('archived') === 'true';
   const { data: workstreams = [], isLoading } = usePlannerWorkstreams(showArchived);
+  const { data: archivedCount = 0 } = useArchivedWorkstreamsCount();
   const archiveWorkstream = useArchiveWorkstream();
   const deleteWorkstream = useDeleteWorkstream();
 
@@ -110,7 +111,6 @@ export function WorkstreamsPage() {
       healthy: activeWorkstreams.filter(ws => ws.health === 'healthy').length,
       atRisk: activeWorkstreams.filter(ws => ws.health === 'at-risk').length,
       critical: activeWorkstreams.filter(ws => ws.health === 'critical').length,
-      archived: workstreams.filter(ws => ws.is_archived).length,
     };
   }, [workstreams]);
 
@@ -252,7 +252,7 @@ export function WorkstreamsPage() {
             ) : (
               <>
                 <Archive className="w-4 h-4" />
-                Archived ({summary.archived})
+                Archived ({archivedCount})
               </>
             )}
           </button>
