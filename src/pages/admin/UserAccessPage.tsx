@@ -203,8 +203,10 @@ export default function UserAccessPage() {
           email = item.email || null;
         }
 
-        // Get role info for this user
-        const roleId = linkedProfileId ? userRoleMap[linkedProfileId] : null;
+        // Get role info for this user - check by profile_id first, then by resource id
+        const roleId = linkedProfileId 
+          ? userRoleMap[linkedProfileId] 
+          : userRoleMap[item.id] || null;
         const role = roleId ? productRoles.find(r => r.id === roleId) : null;
 
         mappedUsers.push({
@@ -295,7 +297,7 @@ export default function UserAccessPage() {
     },
   });
 
-  // Assign role mutation
+  // Assign role mutation - uses resource_id as user_id when no profile exists
   const assignRoleMutation = useMutation({
     mutationFn: async ({ userId, roleId }: { userId: string; roleId: string | null }) => {
       // First, delete existing role assignment
@@ -382,9 +384,9 @@ export default function UserAccessPage() {
     );
   }, [users, searchQuery]);
 
-  // Users without profile but with email (candidates for bulk account creation)
+  // Users with email + role but no profile (authorized but need login accounts)
   const usersNeedingAccounts = useMemo(() => {
-    return users.filter(u => !u.profile_id && u.email);
+    return users.filter(u => !u.profile_id && u.email && u.role_id);
   }, [users]);
 
   const handleChangePassword = () => {
@@ -634,12 +636,15 @@ export default function UserAccessPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {user.profile_id ? (
+                      {/* Role dropdown enabled when email exists (user can be authorized with email+role) */}
+                      {user.email ? (
                         <Select
                           value={user.role_id || 'none'}
                           onValueChange={(value) => {
+                            // Use profile_id if available, otherwise use resource id
+                            const userId = user.profile_id || user.id;
                             assignRoleMutation.mutate({
-                              userId: user.profile_id!,
+                              userId,
                               roleId: value === 'none' ? null : value,
                             });
                           }}
@@ -665,7 +670,7 @@ export default function UserAccessPage() {
                       ) : (
                         <span className="text-xs text-muted-foreground italic flex items-center gap-1">
                           <Shield className="h-3 w-3" />
-                          No account
+                          No email
                         </span>
                       )}
                     </TableCell>
@@ -679,6 +684,7 @@ export default function UserAccessPage() {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
+                      {/* User has profile = show password management */}
                       {user.profile_id ? (
                         <div className="flex items-center justify-end gap-2">
                           <Button
@@ -700,16 +706,27 @@ export default function UserAccessPage() {
                             Reset
                           </Button>
                         </div>
+                      ) : user.email && user.role_id ? (
+                        /* Email + Role = Authorized, just needs account creation for password mgmt */
+                        <div className="flex items-center justify-end gap-2">
+                          <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                            Authorized
+                          </Badge>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openCreateAccount(user)}
+                            className="gap-1.5 whitespace-nowrap"
+                          >
+                            <UserPlus className="h-3.5 w-3.5" />
+                            Create Login
+                          </Button>
+                        </div>
                       ) : user.email ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openCreateAccount(user)}
-                          className="gap-1.5 whitespace-nowrap"
-                        >
-                          <UserPlus className="h-3.5 w-3.5" />
-                          Create Account
-                        </Button>
+                        /* Email but no role = needs role assignment first */
+                        <span className="text-xs text-muted-foreground italic">
+                          Assign role to authorize
+                        </span>
                       ) : (
                         <span className="text-xs text-muted-foreground italic">
                           No email
