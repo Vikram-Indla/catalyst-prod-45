@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEnabledModules } from '@/hooks/useModules';
+import { useModuleAccess } from '@/hooks/useModuleAccess';
 import { ENTERPRISE_NAV_ICONS } from '@/components/icons/EnterpriseNavIcons';
 import {
   Select,
@@ -101,8 +102,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     snapshotId,
     setSnapshotId,
   } = useCatalystContext();
-
   const { isModuleEnabled } = useEnabledModules();
+  const { canViewInNav } = useModuleAccess();
   
   // Fetch snapshots from database
   const { data: snapshotsData } = useStrategicSnapshots(false);
@@ -128,14 +129,14 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
   // More items sub-menu for Enterprise - simplified to only Risks and Capacity & Planning
   const allMoreItemsSubMenu = [
-    { id: 'risks', label: 'Risks', path: '/risks', moduleCode: 'PORTFOLIO' },
-    { id: 'capacity-planning', label: 'Capacity & Planning', path: '/capacity-planning', moduleCode: 'ENTERPRISE' },
+    { id: 'risks', label: 'Risks', path: '/risks', moduleKey: 'risks' },
+    { id: 'capacity-planning', label: 'Capacity & Planning', path: '/capacity-planning', moduleKey: 'capacity_planner' },
   ];
 
-  // Filter items based on enabled modules
+  // Filter items based on role-based module access (canViewInNav returns true for 'full' or 'view')
   const moreItemsSubMenu = useMemo(() => 
-    allMoreItemsSubMenu.filter(item => isModuleEnabled(item.moduleCode)),
-    [isModuleEnabled]
+    allMoreItemsSubMenu.filter(item => canViewInNav(item.moduleKey)),
+    [canViewInNav]
   );
 
   // Reports sub-menu for Enterprise
