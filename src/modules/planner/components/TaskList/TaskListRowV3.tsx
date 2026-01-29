@@ -27,6 +27,7 @@ import type { TaskListTask } from '../../hooks/useTaskList';
 import type { TaskPriority } from '../../types';
 import { format, differenceInDays } from 'date-fns';
 import { toast } from 'sonner';
+import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 
 // Enterprise Clean spec colors - inline styles to ensure specificity
 const STATUS_CONFIG: Record<string, { 
@@ -213,6 +214,176 @@ function AssigneeDropdown({ task, users, workstreamColor, width, onUpdate }: Ass
               </button>
             ))}
           </div>
+        </PopoverContent>
+      </Popover>
+    </td>
+  );
+}
+
+// ============================================================
+// STATUS DROPDOWN - Modal-style with colored dots
+// ============================================================
+interface StatusDropdownProps {
+  task: TaskListTask;
+  statuses: Array<{ id: string; name: string; slug?: string; color?: string }>;
+  statusConfig: { bgColor: string; borderColor: string; dotColor: string };
+  width: number | string;
+  onUpdate: (taskId: string, field: string, value: any) => void;
+}
+
+function StatusDropdown({ task, statuses, statusConfig, width, onUpdate }: StatusDropdownProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <td style={{ width }} onClick={(e) => e.stopPropagation()}>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-medium cursor-pointer border-0"
+            style={{
+              backgroundColor: statusConfig.bgColor,
+              border: `1px solid ${statusConfig.borderColor}`,
+            }}
+          >
+            <span
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ backgroundColor: statusConfig.dotColor }}
+            />
+            <span style={{ color: '#475569' }}>{task.status_name || 'Unknown'}</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-48 p-1.5 z-[500] bg-popover border border-border shadow-lg" align="start">
+          {statuses.map((status) => {
+            const isSelected = status.id === task.status_id;
+            return (
+              <button
+                key={status.id}
+                onClick={() => { onUpdate(task.id, 'status_id', status.id); setOpen(false); }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                  isSelected ? "bg-muted font-semibold" : "hover:bg-muted/50"
+                )}
+              >
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: status.color || '#94a3b8' }} />
+                <span>{status.name}</span>
+                {isSelected && <Check className="w-4 h-4 ml-auto text-primary" />}
+              </button>
+            );
+          })}
+        </PopoverContent>
+      </Popover>
+    </td>
+  );
+}
+
+// ============================================================
+// PRIORITY DROPDOWN - Modal-style with colored dots
+// ============================================================
+interface PriorityDropdownProps {
+  task: TaskListTask;
+  width: number | string;
+  onUpdate: (taskId: string, field: string, value: any) => void;
+}
+
+function PriorityDropdown({ task, width, onUpdate }: PriorityDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const currentConfig = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium;
+
+  return (
+    <td style={{ width }} onClick={(e) => e.stopPropagation()}>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button className="inline-flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer bg-transparent border-0 hover:bg-muted/50 transition-colors">
+            <span
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: PRIORITY_DOT_COLORS[task.priority] }}
+            />
+            <span className="text-sm font-medium" style={{ color: '#334155' }}>{currentConfig.label}</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-44 p-1.5 z-[500] bg-popover border border-border shadow-lg" align="start">
+          {(['critical', 'high', 'medium', 'low'] as TaskPriority[]).map((priority) => {
+            const config = PRIORITY_CONFIG[priority];
+            const isSelected = priority === task.priority;
+            return (
+              <button
+                key={priority}
+                onClick={() => { onUpdate(task.id, 'priority', priority); setOpen(false); }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                  isSelected ? "bg-muted font-semibold" : "hover:bg-muted/50"
+                )}
+              >
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: PRIORITY_DOT_COLORS[priority] }} />
+                <span>{config.label}</span>
+                {isSelected && <Check className="w-4 h-4 ml-auto text-primary" />}
+              </button>
+            );
+          })}
+        </PopoverContent>
+      </Popover>
+    </td>
+  );
+}
+
+// ============================================================
+// WORKSTREAM DROPDOWN - Modal-style with colored dots
+// ============================================================
+interface WorkstreamDropdownProps {
+  task: TaskListTask;
+  workstreamColors: { hex: string };
+  width: number | string;
+  onUpdate: (taskId: string, field: string, value: any) => void;
+}
+
+function WorkstreamDropdown({ task, workstreamColors, width, onUpdate }: WorkstreamDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const { data: workstreams = [] } = usePlannerWorkstreams();
+
+  return (
+    <td style={{ width }} onClick={(e) => e.stopPropagation()}>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button className="inline-flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer bg-transparent border-0 hover:bg-muted/50 transition-colors">
+            <span
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: task.workstream_name ? workstreamColors.hex : '#9ca3af' }}
+            />
+            <span className="text-sm font-medium" style={{ color: '#334155' }}>
+              {task.workstream_name || 'None'}
+            </span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-56 p-1.5 z-[500] bg-popover border border-border shadow-lg max-h-[280px] overflow-y-auto" align="start">
+          <button
+            onClick={() => { onUpdate(task.id, 'workstream_id', null); setOpen(false); }}
+            className={cn(
+              "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+              !task.workstream_id ? "bg-muted font-semibold" : "hover:bg-muted/50"
+            )}
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-gray-400 flex-shrink-0" />
+            <span className="text-muted-foreground">None</span>
+            {!task.workstream_id && <Check className="w-4 h-4 ml-auto text-primary" />}
+          </button>
+          {workstreams.map((ws) => {
+            const colors = getWorkstreamColor(ws.name);
+            const isSelected = ws.id === task.workstream_id;
+            return (
+              <button
+                key={ws.id}
+                onClick={() => { onUpdate(task.id, 'workstream_id', ws.id); setOpen(false); }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                  isSelected ? "bg-muted font-semibold" : "hover:bg-muted/50"
+                )}
+              >
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: colors.hex }} />
+                <span>{ws.name}</span>
+                {isSelected && <Check className="w-4 h-4 ml-auto text-primary" />}
+              </button>
+            );
+          })}
         </PopoverContent>
       </Popover>
     </td>
@@ -413,154 +584,34 @@ export function TaskListRowV3({
         </td>
       )}
 
-      {/* Status - OUTLINE badge with GRAY text (A3, spec) */}
+      {/* Status - Modal-style dropdown with colored dots */}
       {visibleColumns.has('status') && (
-        <td style={{ width: getWidth('status') }} onClick={(e) => e.stopPropagation()}>
-          <Popover>
-            <PopoverTrigger asChild>
-              <button 
-                className="tl-status-badge"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '4px 10px',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  backgroundColor: statusConfig.bgColor,
-                  border: `1px solid ${statusConfig.borderColor}`,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {/* Status dot - 6px (G2) */}
-                <span
-                  style={{
-                    width: '6px',
-                    height: '6px',
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    backgroundColor: statusConfig.dotColor,
-                  }}
-                />
-                {/* GRAY text - #475569 (A3.3, A3.7) */}
-                <span style={{ color: '#475569' }}>{task.status_name || 'Unknown'}</span>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="tl-dropdown w-40 p-1" align="start">
-              {statuses.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => onUpdate(task.id, 'status_id', s.id)}
-                  className={cn(
-                    'tl-dropdown-item w-full',
-                    s.id === task.status_id && 'active'
-                  )}
-                >
-                  <span 
-                    className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
-                    style={{ backgroundColor: s.color }} 
-                  />
-                  <span style={{ color: '#64748b' }}>{s.name}</span>
-                  {s.id === task.status_id && <Check className="w-4 h-4 ml-auto text-blue-600" />}
-                </button>
-              ))}
-            </PopoverContent>
-          </Popover>
-        </td>
+        <StatusDropdown
+          task={task}
+          statuses={statuses}
+          statusConfig={statusConfig}
+          width={getWidth('status')}
+          onUpdate={onUpdate}
+        />
       )}
 
-      {/* Priority - Colored dot + GRAY text (A1, A2) */}
+      {/* Priority - Modal-style dropdown with colored dots */}
       {visibleColumns.has('priority') && (
-        <td style={{ width: getWidth('priority') }} onClick={(e) => e.stopPropagation()}>
-          <Popover>
-            <PopoverTrigger asChild>
-              <button 
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '4px 8px',
-                  margin: '-4px -8px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  background: 'transparent',
-                  border: 'none',
-                }}
-              >
-                {/* Priority dot - 8px (G1) */}
-                <span 
-                  style={{ 
-                    width: '8px', 
-                    height: '8px', 
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    backgroundColor: PRIORITY_DOT_COLORS[task.priority],
-                  }} 
-                />
-                {/* GRAY text - #64748b (A1.1-A1.4) */}
-                <span style={{ fontSize: '14px', fontWeight: 500, color: '#64748b' }}>
-                  {priorityConfig.label}
-                </span>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="tl-dropdown w-36 p-1" align="start">
-              {(['critical', 'high', 'medium', 'low'] as TaskPriority[]).map((p) => {
-                const config = PRIORITY_CONFIG[p];
-                return (
-                  <button
-                    key={p}
-                    onClick={() => onUpdate(task.id, 'priority', p)}
-                    className={cn(
-                      'tl-dropdown-item w-full',
-                      p === task.priority && 'active'
-                    )}
-                  >
-                    <span 
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
-                      style={{ backgroundColor: PRIORITY_DOT_COLORS[p] }} 
-                    />
-                    <span style={{ color: '#64748b' }}>{config.label}</span>
-                    {p === task.priority && <Check className="w-4 h-4 ml-auto text-blue-600" />}
-                  </button>
-                );
-              })}
-            </PopoverContent>
-          </Popover>
-        </td>
+        <PriorityDropdown
+          task={task}
+          width={getWidth('priority')}
+          onUpdate={onUpdate}
+        />
       )}
 
-      {/* Workstream - Colored dot + GRAY name (D1-D6) */}
+      {/* Workstream - Modal-style dropdown with colored dots */}
       {visibleColumns.has('workstream') && (
-        <td style={{ width: getWidth('workstream') }}>
-          {task.workstream_name ? (
-            <span 
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '14px',
-                fontWeight: 500,
-              }}
-            >
-              {/* Workstream dot - 8px (D2) */}
-              <span
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  flexShrink: 0,
-                  backgroundColor: workstreamColors.hex,
-                }}
-              />
-              {/* GRAY text - #64748b (D1) */}
-              <span style={{ color: '#64748b' }}>{task.workstream_name}</span>
-            </span>
-          ) : (
-            <span style={{ color: '#94a3b8' }}>—</span>
-          )}
-        </td>
+        <WorkstreamDropdown
+          task={task}
+          workstreamColors={workstreamColors}
+          width={getWidth('workstream')}
+          onUpdate={onUpdate}
+        />
       )}
 
       {/* Assignee - Avatar + name with searchable dropdown (K1-K5) */}
