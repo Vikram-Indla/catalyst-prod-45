@@ -347,16 +347,16 @@ export default function ModuleMatrixPage() {
           {matrixLoading ? (
             <div className="p-8 text-center text-muted-foreground">Loading matrix...</div>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 sticky top-0 z-[5]">
-                <tr>
-                  <th className="text-left p-3 font-semibold text-foreground sticky left-0 bg-muted/50 z-[6] min-w-[200px] border-b border-r">
+            <table className="w-full text-sm border-collapse">
+              <thead className="sticky top-0 z-[10]">
+                <tr className="bg-muted dark:bg-muted">
+                  <th className="text-left p-3 font-semibold text-foreground sticky left-0 z-[11] min-w-[200px] border-b border-r bg-muted dark:bg-muted">
                     Module
                   </th>
                   {roleColumns.map((role) => (
                     <th
                       key={role.code}
-                      className="p-2 font-medium text-muted-foreground border-b text-center min-w-[48px] max-w-[56px]"
+                      className="p-2 font-medium text-muted-foreground border-b text-center min-w-[48px] max-w-[56px] bg-muted dark:bg-muted"
                     >
                       <button
                         onClick={() =>
