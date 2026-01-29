@@ -326,20 +326,22 @@
 }
 
 /* ============================================================================
-   TASK ID (B1-B5)
+   TASK ID (B1-B5) - GRAY monospace, single line
    ============================================================================ */
 
 .planner-task-list-content .tl-task-id {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;  /* B2 */
-  font-size: 0.8125rem;    /* 13px (B3) */
-  font-weight: 500;
-  color: #64748b;          /* B1: gray-500, NOT blue */
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;  /* B2 */
+  font-size: 0.8125rem !important;    /* 13px (B3) */
+  font-weight: 500 !important;
+  color: #64748b !important;          /* B1: gray-500, NOT blue */
   transition: color 0.1s;
   cursor: pointer;
+  white-space: nowrap !important;  /* Prevent wrapping */
+  display: inline-block;
 }
 
 .planner-task-list-content .tl-task-id:hover {
-  color: #334155;          /* B4: gray-700 */
+  color: #334155 !important;          /* B4: gray-700 */
   text-decoration: underline;  /* B5 */
 }
 
@@ -390,42 +392,58 @@
 
 /* ============================================================================
    STATUS BADGE (A3) - OUTLINE style, GRAY text
+   CRITICAL: These use !important to override any other styling
    ============================================================================ */
 
 .planner-task-list-content .tl-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.625rem;  /* F6: 4px 10px */
-  border-radius: 0.375rem;    /* H3: 6px */
-  font-size: 0.75rem;
-  font-weight: 500;
-  border: 1px solid #e2e8f0;  /* A3.2, A3.4, A3.5 */
-  background: transparent;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.375rem !important;
+  padding: 0.25rem 0.625rem !important;  /* F6: 4px 10px */
+  border-radius: 0.375rem !important;    /* H3: 6px */
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  border: 1px solid #e2e8f0 !important;  /* A3.2, A3.4, A3.5 */
+  background: transparent !important;
   cursor: pointer;
   transition: all 0.1s;
   white-space: nowrap;
 }
 
+/* Status badge backgrounds - use data attribute or class for variants */
+.planner-task-list-content .tl-status-badge[data-status="in-progress"],
+.planner-task-list-content .tl-status-badge[data-status="in progress"],
+.planner-task-list-content .tl-status-badge.status-in-progress {
+  background: #fffbeb !important;  /* A3.1: subtle yellow tint */
+  border-color: #fde68a !important; /* A3.2 */
+}
+
+.planner-task-list-content .tl-status-badge[data-status="done"],
+.planner-task-list-content .tl-status-badge.status-done {
+  background: #f0fdf4 !important;  /* A3.6: subtle green tint */
+  border-color: #bbf7d0 !important;
+}
+
 /* G2: Status dot 6px */
 .planner-task-list-content .tl-status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
   flex-shrink: 0;
 }
 
-/* A3.3, A3.7: Status text ALWAYS #475569 (gray-600) */
+/* A3.3, A3.7: Status text ALWAYS #475569 (gray-600) - NEVER colored */
 .planner-task-list-content .tl-status-text {
-  color: #475569;
+  color: #475569 !important;
 }
 
 .planner-task-list-content .tl-status-badge:hover {
-  background: var(--tl-surface-hover);
+  filter: brightness(0.98);
 }
 
 /* ============================================================================
-   PRIORITY CELL (A1, A2)
+   PRIORITY CELL (A1, A2) - GRAY TEXT ONLY
+   CRITICAL: Priority text must ALWAYS be gray, only dot is colored
    ============================================================================ */
 
 .planner-task-list-content .tl-priority-cell {
@@ -445,21 +463,22 @@
 
 /* G1: Priority dot 8px */
 .planner-task-list-content .tl-priority-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
   flex-shrink: 0;
 }
 
-/* A1.1-A1.4: Priority text ALWAYS #64748b (gray-500) */
+/* A1.1-A1.4: Priority text ALWAYS #64748b (gray-500) - NEVER colored */
 .planner-task-list-content .tl-priority-text {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #64748b;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
 }
 
 /* ============================================================================
-   WORKSTREAM CELL (D1-D6)
+   WORKSTREAM CELL (D1-D6) - GRAY TEXT ONLY
+   CRITICAL: Workstream text must ALWAYS be gray, only dot is colored
    ============================================================================ */
 
 .planner-task-list-content .tl-workstream-cell {
@@ -472,15 +491,15 @@
 
 /* D2: Workstream dot 8px */
 .planner-task-list-content .tl-workstream-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
   flex-shrink: 0;
 }
 
-/* D1: Workstream text #64748b */
+/* D1: Workstream text ALWAYS #64748b - NEVER colored */
 .planner-task-list-content .tl-workstream-text {
-  color: #64748b;
+  color: #64748b !important;
 }
 
 /* ============================================================================
@@ -834,4 +853,57 @@
   50% {
     opacity: 0.5;
   }
+}
+
+/* ============================================================================
+   ENTERPRISE CLEAN OVERRIDES - Maximum specificity (must be last)
+   These ensure the design spec colors are never overridden
+   ============================================================================ */
+
+/* Force all priority text to gray - override any colored text classes */
+.planner-task-list-content .tl-priority-cell .tl-priority-text,
+.planner-task-list-content .tl-priority-cell span:last-child,
+.planner-task-list-content td .tl-priority-text {
+  color: #64748b !important;
+}
+
+/* Force all status badge text to gray */
+.planner-task-list-content .tl-status-badge .tl-status-text,
+.planner-task-list-content .tl-status-badge span:last-child:not(.tl-status-dot) {
+  color: #475569 !important;
+}
+
+/* Force all workstream text to gray */
+.planner-task-list-content .tl-workstream-cell .tl-workstream-text,
+.planner-task-list-content .tl-workstream-cell span:last-child {
+  color: #64748b !important;
+}
+
+/* Force status badge outline style - no filled backgrounds */
+.planner-task-list-content .tl-status-badge {
+  background-color: transparent !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Only "in-progress" gets subtle amber tint */
+.planner-task-list-content .tl-status-badge[data-status="in-progress"],
+.planner-task-list-content .tl-status-badge[data-status="in progress"] {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+
+/* Only "done" gets subtle green tint */
+.planner-task-list-content .tl-status-badge[data-status="done"] {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+
+/* Task ID - ensure no wrapping and gray color */
+.planner-task-list-content td .tl-task-id {
+  color: #64748b !important;
+  white-space: nowrap !important;
+}
+
+.planner-task-list-content td .tl-task-id:hover {
+  color: #334155 !important;
 }
