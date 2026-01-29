@@ -62,44 +62,30 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
       </div>
       
       {/* Add Item */}
-      {isAdding ? (
-        <div className="flex items-center gap-2 p-2 border border-primary/50 bg-primary/5 rounded-lg">
-          <Plus className="w-4 h-4 text-primary" />
-          <input
-            autoFocus
-            value={newItemText}
-            onChange={(e) => setNewItemText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleAddItem();
-              if (e.key === 'Escape') {
-                setIsAdding(false);
-                setNewItemText('');
-              }
-            }}
-            onBlur={() => {
-              if (!newItemText.trim()) setIsAdding(false);
-            }}
-            placeholder="Add checklist item..."
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-          />
+      {/* Add Item - Always visible input */}
+      <div className="flex items-center gap-3 mt-3 py-2.5 px-3 bg-muted/20 rounded-lg hover:bg-muted/30 transition-colors">
+        <Plus className="w-4 h-4 text-primary flex-shrink-0" />
+        <input
+          value={newItemText}
+          onChange={(e) => setNewItemText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && newItemText.trim()) handleAddItem();
+          }}
+          onFocus={() => setIsAdding(true)}
+          placeholder="Add checklist item..."
+          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60 min-w-0"
+        />
+        {newItemText.trim() && (
           <Button 
             size="sm" 
             variant="ghost" 
-            className="h-6 w-6 p-0"
+            className="h-7 w-7 p-0 hover:bg-primary/10"
             onClick={handleAddItem}
           >
-            <Check className="w-3.5 h-3.5 text-primary" />
+            <Check className="w-4 h-4 text-primary" />
           </Button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setIsAdding(true)}
-          className="task-modal__add-checklist"
-        >
-          <Plus className="w-4 h-4" />
-          Add checklist item
-        </button>
-      )}
+        )}
+      </div>
     </div>
   );
 }
