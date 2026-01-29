@@ -996,6 +996,51 @@
 
 
 /* ============================================================
+   SECTION 8: ARCHIVED VIEW STYLING
+   ============================================================ */
+
+/* Archived header cream background */
+.workstreams-enterprise-clean [class*="archived"] header,
+.workstreams-enterprise-clean.archived-view header {
+  background: #fffbeb !important;
+  border-bottom-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+/* Action button hover colors */
+.workstreams-enterprise-clean .action-btn[title*="Edit"]:hover,
+.workstreams-enterprise-clean button[title*="Edit"]:hover {
+  color: #2563eb !important;
+  background: #eff6ff !important;
+}
+
+.workstreams-enterprise-clean .action-btn[title*="Archive"]:hover,
+.workstreams-enterprise-clean button[title*="Archive"]:hover {
+  color: #d97706 !important;
+  background: #fffbeb !important;
+}
+
+.workstreams-enterprise-clean .action-btn[title*="Delete"]:hover,
+.workstreams-enterprise-clean button[title*="Delete"]:hover {
+  color: #dc2626 !important;
+  background: #fef2f2 !important;
+}
+
+.workstreams-enterprise-clean .action-btn[title*="Restore"]:hover,
+.workstreams-enterprise-clean button[title*="Restore"]:hover {
+  color: #16a34a !important;
+  background: #f0fdf4 !important;
+}
+
+/* Ensure SVG icons in action buttons are properly sized */
+.workstreams-enterprise-clean .action-btn svg,
+.workstreams-enterprise-clean .row-actions button svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 1.5 !important;
+}
+
+
+/* ============================================================
    FALLBACK OVERRIDES (Outside layer for maximum specificity)
    ============================================================ */
 
@@ -1012,7 +1057,7 @@
 }
 
 /* Force hide workstream codes */
-.workstreams-enterprise-clean [class*="code"] {
+.workstreams-enterprise-clean [class*="code"]:not(.health-badge):not(.stat):not([class*="prefix"]) {
   display: none !important;
 }
 
