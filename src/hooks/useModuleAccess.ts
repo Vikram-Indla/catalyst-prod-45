@@ -97,6 +97,13 @@ export function useUserModulePermissions() {
  * Primary hook for checking module access.
  * Combines org module enablement with role-based access control.
  */
+// Core navigation modules that should NOT be blocked by org_modules
+// These are controlled purely by role-based access in admin_role_module_permissions
+const CORE_NAV_MODULES = new Set([
+  'home', 'enterprise', 'product', 'releases', 'operations', 'planner',
+  'settings', 'create', 'notifications', 'global_search'
+]);
+
 export function useModuleAccess() {
   const { permissions, isLoading: permissionsLoading } = useUserModulePermissions();
   const { enabledModules, isLoading: modulesLoading } = useEnabledModules();
@@ -106,7 +113,8 @@ export function useModuleAccess() {
 
   /**
    * Get access level for a specific module
-   * Returns 'hidden' if module is disabled at org level
+   * - Core nav modules: Only checks role-based permissions (not org_modules)
+   * - Feature modules: Checks org_modules first, then role-based permissions
    * Handles case-insensitive module key matching
    */
   const getModuleAccess = (moduleKey: string): ModuleAccessLevel => {
@@ -116,8 +124,11 @@ export function useModuleAccess() {
     // Super Admin always gets full access
     if (isSuperAdmin) return 'full';
 
-    // Check if module is enabled at org level first (org modules use uppercase)
-    if (!enabledModules.includes(moduleKey.toUpperCase())) {
+    // Core nav modules bypass org_modules check - controlled purely by role permissions
+    const isCoreModule = CORE_NAV_MODULES.has(normalizedKey);
+    
+    // For non-core modules, check if module is enabled at org level (org modules use uppercase)
+    if (!isCoreModule && !enabledModules.includes(moduleKey.toUpperCase())) {
       return 'hidden';
     }
 
