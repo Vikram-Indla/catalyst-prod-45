@@ -11,7 +11,6 @@ import { useMyTasksRealtime } from '../hooks/useMyTasksRealtime';
 import { TaskDetailDrawer } from '../components/TaskDetailDrawer/TaskDetailDrawer';
 import { PlannerCreateModal } from '../components/PlannerCreateModal';
 import { useCreatePlannerTask } from '../hooks/useCreatePlannerTask';
-import { usePlannerWorkstreams } from '../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import type { FilterConfig } from '../types/my-tasks';
 import type { TaskStatus, TaskPriority } from '../types';
@@ -30,7 +29,7 @@ export function MyTasksPage() {
   // Hooks
   useMyTasksRealtime();
   const createTask = useCreatePlannerTask();
-  const { data: teams = [] } = usePlannerWorkstreams();
+  const teams: { id: string; name: string }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
 
   // Handler for creating task

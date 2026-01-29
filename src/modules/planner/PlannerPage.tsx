@@ -17,7 +17,6 @@ import { WeeklySummaryView, DailyScorecardView, MonthlyChronicleView } from './c
 import { PlannerSettings } from './components/PlannerSettings';
 import { PlannerDashboard } from './components/dashboard';
 import { PlannerBoardsPage } from './components/boards';
-import { WorkstreamsPage } from './components/workstreams';
 
 import { PlannerCreateModal } from './components/PlannerCreateModal';
 import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
@@ -27,7 +26,6 @@ import { PlannerBulkDeleteModal } from './components/PlannerBulkDeleteModal';
 
 import { PlannerSearchBar } from './components/PlannerSearchBar';
 import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/usePlannerTasks';
-import { usePlannerWorkstreams } from './hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from './hooks/usePlannerUsers';
 import { useCreatePlannerTask } from './hooks/useCreatePlannerTask';
 import { usePlannerSearch } from './hooks/usePlannerSearch';
@@ -118,7 +116,6 @@ export function PlannerPage() {
 
   // Data hooks
   const { data: tasks = [], isLoading } = usePlannerTasks(selectedTeamId);
-  const { data: teams = [] } = usePlannerWorkstreams();
   const { data: users = [] } = usePlannerUsers();
   
   // Online users from real users data (add color for avatar)
@@ -437,8 +434,6 @@ export function PlannerPage() {
         return <DailyScorecardView />;
       case 'ai-insights':
         return <MonthlyChronicleView />;
-      case 'workstreams':
-        return <WorkstreamsPage />;
       case 'settings':
         return <PlannerSettings />;
       default:
@@ -576,7 +571,7 @@ export function PlannerPage() {
             filteredCount={filteredCount}
             totalCount={totalCount}
             inputRef={searchInputRef}
-            teams={teams}
+            teams={[]}
             users={users}
             selectedTeamId={selectedTeamId}
             onTeamChange={setSelectedTeamId}
@@ -620,7 +615,7 @@ export function PlannerPage() {
           defaultStatus={createDefaultStatus}
           defaultTeamId={selectedTeamId || undefined}
           users={users}
-          teams={teams}
+          teams={[]}
         />
 
 

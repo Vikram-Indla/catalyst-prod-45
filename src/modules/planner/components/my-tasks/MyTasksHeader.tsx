@@ -13,7 +13,6 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { useMyTasksSummary } from '../../hooks/useMyTasks';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { cn } from '@/lib/utils';
 import type { FilterConfig } from '../../types/my-tasks';
 
@@ -29,7 +28,7 @@ export function MyTasksHeader({
   onOpenCreateModal,
 }: MyTasksHeaderProps) {
   const { data: summary, isLoading } = useMyTasksSummary();
-  const { data: workstreams = [] } = usePlannerWorkstreams();
+  const workstreams: { id: string; name: string }[] = []; // Workstreams removed
 
   // Active filter count
   const activeFilterCount = [

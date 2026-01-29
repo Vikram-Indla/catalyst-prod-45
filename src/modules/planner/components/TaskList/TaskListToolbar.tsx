@@ -31,7 +31,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { PRIORITY_CONFIG } from '../../types';
@@ -88,7 +87,7 @@ export function TaskListToolbar({
   const [searchValue, setSearchValue] = useState(filters.search || '');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: workstreams = [] } = usePlannerWorkstreams();
+  const workstreams: { id: string; name: string; slug?: string }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
   const { data: statuses = [] } = useKanbanStatuses();
 
