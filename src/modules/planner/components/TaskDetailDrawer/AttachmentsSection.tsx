@@ -7,6 +7,7 @@ import { useState, useCallback, useRef } from 'react';
 import { Upload, FileText, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 import type { TaskAttachment } from '../../hooks/useTaskDetails';
 import { useDeleteAttachment, useUploadAttachment } from '../../hooks/useTaskDetails';
 
@@ -25,6 +26,22 @@ function formatFileSize(bytes: number | null): string {
     unitIndex++;
   }
   return `${size.toFixed(1)} ${units[unitIndex]}`;
+}
+
+function getStoragePathFromUrl(fileUrl: string): string | null {
+  // We store a public URL, but downloads are more reliable via storage.download().
+  // Extract the object path after the bucket segment: /.../attachments/<path>
+  try {
+    const safeUrl = fileUrl.replace(/ /g, '%20');
+    const url = new URL(safeUrl);
+    const segments = url.pathname.split('/').filter(Boolean);
+    const bucketIndex = segments.findIndex((s) => s === 'attachments');
+    if (bucketIndex === -1) return null;
+    const path = segments.slice(bucketIndex + 1).join('/');
+    return decodeURIComponent(path);
+  } catch {
+    return null;
+  }
 }
 
 export function AttachmentsSection({ taskId, attachments }: AttachmentsSectionProps) {
@@ -121,17 +138,40 @@ function AttachmentItem({
 }) {
   const isImage = attachment.file_type?.startsWith('image/');
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!attachment.file_url) return;
-    
-    // Create a temporary anchor element for download
-    const link = document.createElement('a');
-    link.href = attachment.file_url;
-    link.download = attachment.file_name;
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+    // Prefer authenticated download (works even when browsers block cross-origin download attr)
+    const storagePath = getStoragePathFromUrl(attachment.file_url);
+    if (!storagePath) {
+      window.open(attachment.file_url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.storage
+        .from('attachments')
+        .download(storagePath);
+
+      if (error) throw new Error(error.message);
+
+      const objectUrl = URL.createObjectURL(data);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = attachment.file_name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Cleanup
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch (err) {
+      console.error('Download error:', err);
+      toast.error(`Failed to download ${attachment.file_name}`);
+
+      // Last-resort fallback
+      window.open(attachment.file_url, '_blank', 'noopener,noreferrer');
+    }
   };
   
   return (
