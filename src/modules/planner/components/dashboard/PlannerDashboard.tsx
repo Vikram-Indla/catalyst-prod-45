@@ -10,7 +10,6 @@ import { useDashboardData } from '../../hooks/usePlannerDashboard';
 import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { DashboardRoleBanner } from './DashboardRoleBanner';
 import { DashboardWorkstreamFilter } from './DashboardWorkstreamFilter';
 import { DashboardKPIStrip } from './DashboardKPIStrip';
 import { DashboardStatusChartV2 } from './DashboardStatusChartV2';
@@ -213,18 +212,14 @@ export function PlannerDashboard() {
 
       {/* Dashboard Content */}
       <div className="flex-1 flex flex-col min-h-0 overflow-auto p-4 gap-4">
-        {/* Role Banner - Per V2 spec: Shows role and workstream context */}
-        <DashboardRoleBanner
-          userRole={userRole}
-          assignedWorkstreams={assignedWorkstreams}
-          isViewingAll={isViewingAll}
-        />
-        
-        {/* KPI Strip */}
+        {/* KPI Strip with Role Context on right */}
         {metrics && (
           <DashboardKPIStrip 
             metrics={metrics} 
             unassignedCount={unassignedCount}
+            userRole={userRole}
+            assignedWorkstreams={assignedWorkstreams}
+            isViewingAll={isViewingAll}
           />
         )}
 
