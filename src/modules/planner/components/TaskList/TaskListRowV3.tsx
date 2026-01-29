@@ -28,8 +28,13 @@ import type { TaskPriority } from '../../types';
 import { format, differenceInDays } from 'date-fns';
 import { toast } from 'sonner';
 
-// Enterprise Clean spec colors
-const STATUS_CONFIG = {
+// Enterprise Clean spec colors - inline styles to ensure specificity
+const STATUS_CONFIG: Record<string, { 
+  label: string; 
+  dotColor: string; 
+  bgColor: string;
+  borderColor: string;
+}> = {
   'backlog': { 
     label: 'Backlog', 
     dotColor: '#94a3b8', 
@@ -45,13 +50,13 @@ const STATUS_CONFIG = {
   'in-progress': { 
     label: 'In Progress', 
     dotColor: '#f59e0b', 
-    bgColor: '#fffbeb', 
+    bgColor: '#fffbeb',  // Subtle amber tint
     borderColor: '#fde68a' 
   },
   'in progress': { 
     label: 'In Progress', 
     dotColor: '#f59e0b', 
-    bgColor: '#fffbeb', 
+    bgColor: '#fffbeb',  // Subtle amber tint
     borderColor: '#fde68a' 
   },
   'review': { 
@@ -63,7 +68,7 @@ const STATUS_CONFIG = {
   'done': { 
     label: 'Done', 
     dotColor: '#16a34a', 
-    bgColor: '#f0fdf4', 
+    bgColor: '#f0fdf4',  // Subtle green tint
     borderColor: '#bbf7d0' 
   },
 };
@@ -211,7 +216,26 @@ export function TaskListRowV3({
               e.stopPropagation();
               onClick(task);
             }}
-            className="tl-task-id"
+            style={{
+              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#64748b',
+              whiteSpace: 'nowrap',
+              display: 'inline-block',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.color = '#334155';
+              e.currentTarget.style.textDecoration = 'underline';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = '#64748b';
+              e.currentTarget.style.textDecoration = 'none';
+            }}
           >
             {task.task_key}
           </button>
@@ -259,17 +283,31 @@ export function TaskListRowV3({
               <button 
                 className="tl-status-badge"
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: 500,
                   backgroundColor: statusConfig.bgColor,
-                  borderColor: statusConfig.borderColor,
+                  border: `1px solid ${statusConfig.borderColor}`,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {/* Status dot - 6px (G2) */}
                 <span
-                  className="tl-status-dot"
-                  style={{ backgroundColor: statusConfig.dotColor }}
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    backgroundColor: statusConfig.dotColor,
+                  }}
                 />
                 {/* GRAY text - #475569 (A3.3, A3.7) */}
-                <span className="tl-status-text">{task.status_name || 'Unknown'}</span>
+                <span style={{ color: '#475569' }}>{task.status_name || 'Unknown'}</span>
               </button>
             </PopoverTrigger>
             <PopoverContent className="tl-dropdown w-40 p-1" align="start">
@@ -286,7 +324,7 @@ export function TaskListRowV3({
                     className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
                     style={{ backgroundColor: s.color }} 
                   />
-                  <span className="text-slate-600">{s.name}</span>
+                  <span style={{ color: '#64748b' }}>{s.name}</span>
                   {s.id === task.status_id && <Check className="w-4 h-4 ml-auto text-blue-600" />}
                 </button>
               ))}
@@ -300,14 +338,31 @@ export function TaskListRowV3({
         <td style={{ width: getWidth('priority') }} onClick={(e) => e.stopPropagation()}>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="tl-priority-cell">
+              <button 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '4px 8px',
+                  margin: '-4px -8px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  background: 'transparent',
+                  border: 'none',
+                }}
+              >
                 {/* Priority dot - 8px (G1) */}
                 <span 
-                  className="tl-priority-dot" 
-                  style={{ backgroundColor: PRIORITY_DOT_COLORS[task.priority] }} 
+                  style={{ 
+                    width: '8px', 
+                    height: '8px', 
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    backgroundColor: PRIORITY_DOT_COLORS[task.priority],
+                  }} 
                 />
                 {/* GRAY text - #64748b (A1.1-A1.4) */}
-                <span className="tl-priority-text">
+                <span style={{ fontSize: '14px', fontWeight: 500, color: '#64748b' }}>
                   {priorityConfig.label}
                 </span>
               </button>
@@ -328,7 +383,7 @@ export function TaskListRowV3({
                       className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
                       style={{ backgroundColor: PRIORITY_DOT_COLORS[p] }} 
                     />
-                    <span className="text-slate-500">{config.label}</span>
+                    <span style={{ color: '#64748b' }}>{config.label}</span>
                     {p === task.priority && <Check className="w-4 h-4 ml-auto text-blue-600" />}
                   </button>
                 );
@@ -342,17 +397,30 @@ export function TaskListRowV3({
       {visibleColumns.has('workstream') && (
         <td style={{ width: getWidth('workstream') }}>
           {task.workstream_name ? (
-            <span className="tl-workstream-cell">
+            <span 
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '14px',
+                fontWeight: 500,
+              }}
+            >
               {/* Workstream dot - 8px (D2) */}
               <span
-                className="tl-workstream-dot"
-                style={{ backgroundColor: workstreamColors.hex }}
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  flexShrink: 0,
+                  backgroundColor: workstreamColors.hex,
+                }}
               />
               {/* GRAY text - #64748b (D1) */}
-              <span className="tl-workstream-text">{task.workstream_name}</span>
+              <span style={{ color: '#64748b' }}>{task.workstream_name}</span>
             </span>
           ) : (
-            <span className="text-slate-400">—</span>
+            <span style={{ color: '#94a3b8' }}>—</span>
           )}
         </td>
       )}
