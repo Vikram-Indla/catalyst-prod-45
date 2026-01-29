@@ -5,3 +5,4 @@
 export { WorkstreamsPage } from './WorkstreamsPage';
 export { WorkstreamDrawer } from './WorkstreamDrawer';
 export { CreateWorkstreamModal } from './CreateWorkstreamModal';
+export { InlineLeadSelect } from './InlineLeadSelect';
