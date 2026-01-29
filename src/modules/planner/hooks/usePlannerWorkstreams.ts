@@ -372,11 +372,14 @@ export function useAddWorkstreamMember() {
 
       const { error: upsertError } = await supabase
         .from('workstream_members')
-        .upsert({
-          workstream_id: workstreamId,
-          user_id: userId,
-          role,
-        });
+        .upsert(
+          {
+            workstream_id: workstreamId,
+            user_id: userId,
+            role,
+          },
+          { onConflict: 'workstream_id,user_id' }
+        );
 
       if (upsertError) throw new Error(upsertError.message);
 
