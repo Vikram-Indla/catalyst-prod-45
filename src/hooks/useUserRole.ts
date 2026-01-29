@@ -72,17 +72,19 @@ export function useUserRole() {
   const isAdmin = role === 'admin';
   const isSuperAdmin = hasProductRole('super_admin');
   const isProductOwner = hasProductRole('product_owner');
-  const isProgramManager = role === 'admin' || role === 'program_manager';
-  const isTeamLead = role === 'admin' || role === 'program_manager' || role === 'team_lead';
+  // Check for management product role OR legacy program_manager user role
+  const isManagement = hasProductRole('management' as any);
+  const isProgramManager = role === 'admin' || role === 'program_manager' || isManagement;
+  const isTeamLead = role === 'admin' || role === 'program_manager' || role === 'team_lead' || isManagement;
   
-  // Enterprise access: admin, super_admin, or product_owner
-  const canAccessEnterprise = isAdmin || isSuperAdmin || isProductOwner;
+  // Enterprise access: admin, super_admin, product_owner, or management
+  const canAccessEnterprise = isAdmin || isSuperAdmin || isProductOwner || isManagement;
   // Capacity Planning access: same as enterprise access
   const canAccessCapacityPlanning = canAccessEnterprise;
   
   // Product Owner only role check - user has ONLY product_owner role and no other elevated roles
   const isProductOwnerOnly = isProductOwner && 
-    !isAdmin && !isSuperAdmin && !isProgramManager;
+    !isAdmin && !isSuperAdmin && !isProgramManager && !isManagement;
 
   // isLoading is already declared from the combined query above
 
@@ -96,6 +98,7 @@ export function useUserRole() {
     isSuperAdmin,
     isProductOwner,
     isProductOwnerOnly,
+    isManagement,
     isProgramManager,
     isTeamLead,
     canAccessEnterprise,
