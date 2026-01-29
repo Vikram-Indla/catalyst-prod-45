@@ -13,6 +13,7 @@ export type PlannerView =
   | 'workstream-performance' 
   | 'ai-insights'
   | 'resources'
+  | 'workstreams'
   | 'settings';
 
 export type TaskStatus = 'backlog' | 'planned' | 'in-progress' | 'review' | 'done';
