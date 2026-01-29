@@ -78,14 +78,15 @@ export function useBusinessRequests(searchQuery?: string) {
   return useQuery({
     queryKey: ['business-requests', searchQuery],
     queryFn: async () => {
+      // Performance optimization: limit to 200 rows for fast initial load
       let query = (supabase as any)
         .from('business_requests')
         .select('*')
-        .is('deleted_at', null) // Filter out soft-deleted items
-        .order('created_at', { ascending: false });
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(200);
 
       if (searchQuery && searchQuery.trim()) {
-        // Search in both title and request_key for partial matches
         query = query.or(`title.ilike.%${searchQuery}%,request_key.ilike.%${searchQuery}%`);
       }
 
@@ -93,11 +94,11 @@ export function useBusinessRequests(searchQuery?: string) {
       if (error) throw error;
       
       const dataTyped = (data || []) as any[];
+      if (dataTyped.length === 0) return [];
       
       // Collect unique user IDs from requestor and assignee fields
       const userIds = new Set<string>();
       dataTyped.forEach((row: any) => {
-        // Only add if it looks like a UUID (contains dashes and is 36 chars)
         if (row.requestor && row.requestor.length === 36 && row.requestor.includes('-')) {
           userIds.add(row.requestor);
         }
@@ -106,7 +107,7 @@ export function useBusinessRequests(searchQuery?: string) {
         }
       });
       
-      // Fetch profile names for all user IDs
+      // Batch fetch profile names (single query)
       let profileMap: Record<string, string> = {};
       if (userIds.size > 0) {
         const { data: profiles } = await supabase
@@ -124,7 +125,6 @@ export function useBusinessRequests(searchQuery?: string) {
       // Transform rows and resolve user IDs to names
       return dataTyped.map((row: any) => {
         const transformed = transformRow(row);
-        // Resolve requestor/assignee UUIDs to names
         if (row.requestor && profileMap[row.requestor]) {
           transformed.requestor_name = profileMap[row.requestor];
         }
@@ -134,6 +134,7 @@ export function useBusinessRequests(searchQuery?: string) {
         return transformed;
       });
     },
+    staleTime: 30000, // Cache for 30 seconds to reduce re-fetches
   });
 }
 
