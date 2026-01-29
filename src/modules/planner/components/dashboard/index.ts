@@ -1,5 +1,5 @@
 // ============================================================
-// PLANNER V9 DASHBOARD COMPONENTS - REDESIGNED
+// PLANNER V9 DASHBOARD COMPONENTS - V2 REDESIGNED
 // Per Design Audit: Compact, logical, no decoration
 // ============================================================
 
@@ -13,6 +13,8 @@ export { DashboardWorkstreamHealthV2 } from './DashboardWorkstreamHealthV2';
 export { DashboardUpcomingDeadlinesV2 } from './DashboardUpcomingDeadlinesV2';
 export { DashboardTeamWorkloadV2 } from './DashboardTeamWorkloadV2';
 export { DashboardSkeleton } from './DashboardSkeleton';
+export { DashboardRoleBanner } from './DashboardRoleBanner';
+export { DashboardWorkstreamFilter } from './DashboardWorkstreamFilter';
 
 // Legacy exports for backwards compatibility
 export { DashboardMetricCards } from './DashboardMetricCards';

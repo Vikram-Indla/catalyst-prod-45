@@ -1,11 +1,17 @@
 // ============================================================
-// PLANNER V9 DASHBOARD - FULL REDESIGN
-// Per Design Audit: Compact, logical, no decoration
-// Layout: KPI Strip → 3-column grid → Attention list
+// PLANNER V9 DASHBOARD - V2 REDESIGN
+// Per V2 Spec: Role banner, workstream filter, NO "This Sprint"
+// Layout: Role Banner → KPI Strip → 3-column grid → Attention
 // ============================================================
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useDashboardData } from '../../hooks/usePlannerDashboard';
+import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { DashboardRoleBanner } from './DashboardRoleBanner';
+import { DashboardWorkstreamFilter } from './DashboardWorkstreamFilter';
 import { DashboardKPIStrip } from './DashboardKPIStrip';
 import { DashboardStatusChartV2 } from './DashboardStatusChartV2';
 import { DashboardWorkstreamHealthV2 } from './DashboardWorkstreamHealthV2';
@@ -25,6 +31,7 @@ import {
 } from '@/components/ui/select';
 
 export function PlannerDashboard() {
+  const { user } = useAuth();
   const {
     metrics,
     statusDistribution,
@@ -35,11 +42,82 @@ export function PlannerDashboard() {
     isLoading,
     refetchAll,
   } = useDashboardData();
+  
+  const { data: workstreams = [] } = usePlannerWorkstreams();
+
+  // Check if user can access all workstreams via RPC
+  const { data: canViewAll = false } = useQuery({
+    queryKey: ['can-access-all-workstreams', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return false;
+      const { data, error } = await supabase.rpc('can_access_all_workstreams', {
+        _user_id: user.id
+      });
+      if (error) {
+        console.error('Error checking workstream access:', error);
+        return false;
+      }
+      return data === true;
+    },
+    enabled: !!user?.id,
+    staleTime: 60000, // Cache for 1 minute
+  });
+
+  // Get user role from profile table
+  const { data: userProfile } = useQuery({
+    queryKey: ['user-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role, full_name')
+        .eq('id', user.id)
+        .single();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 60000,
+  });
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [dateRange, setDateRange] = useState('this-week');
+  const [workstreamFilter, setWorkstreamFilter] = useState<'my' | 'all' | string>('my');
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  // Get user role from profile
+  const userRole = userProfile?.role || 'member';
+  
+  // Get user's assigned workstreams
+  const assignedWorkstreams = useMemo(() => {
+    return workstreams.map(ws => ({
+      id: ws.id,
+      name: ws.name,
+      color: ws.color || '#64748b',
+    }));
+  }, [workstreams]);
+
+  // Determine if viewing all based on filter and role
+  const isViewingAll = workstreamFilter === 'all' && canViewAll;
+
+  // Filter dashboard data based on workstream filter
+  const filteredWorkstreamHealth = useMemo(() => {
+    if (workstreamFilter === 'all' || workstreamFilter === 'my') {
+      return workstreamHealth;
+    }
+    return workstreamHealth.filter(ws => ws.workstream_id === workstreamFilter);
+  }, [workstreamHealth, workstreamFilter]);
+
+  const filteredUpcomingDeadlines = useMemo(() => {
+    if (workstreamFilter === 'all' || workstreamFilter === 'my') {
+      return upcomingDeadlines;
+    }
+    // Filter by workstream
+    const selectedWs = workstreams.find(ws => ws.id === workstreamFilter);
+    if (!selectedWs) return upcomingDeadlines;
+    return upcomingDeadlines.filter(d => d.workstream_name === selectedWs.name);
+  }, [upcomingDeadlines, workstreamFilter, workstreams]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -63,7 +141,7 @@ export function PlannerDashboard() {
 
   return (
     <div className="planner-v9 flex flex-col h-full bg-slate-50 dark:bg-slate-900">
-      {/* Dashboard Header - Per audit: Compact, with date selector */}
+      {/* Dashboard Header - Per V2: Workstream filter, NO "This Sprint" */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
@@ -75,21 +153,29 @@ export function PlannerDashboard() {
         </div>
         
         <div className="flex items-center gap-3">
-          {/* Date range selector - Per audit: Missing enterprise feature */}
+          {/* Workstream filter - Per V2 spec */}
+          <DashboardWorkstreamFilter
+            workstreams={assignedWorkstreams}
+            selectedFilter={workstreamFilter}
+            onFilterChange={setWorkstreamFilter}
+            canViewAll={canViewAll}
+          />
+          
+          {/* Date range selector - Per V2: NO "This Sprint" option */}
           <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-32 h-8 text-xs">
+            <SelectTrigger className="w-28 h-8 text-xs">
               <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="today">Today</SelectItem>
               <SelectItem value="this-week">This Week</SelectItem>
-              <SelectItem value="this-sprint">This Sprint</SelectItem>
               <SelectItem value="this-month">This Month</SelectItem>
+              {/* NO "This Sprint" per V2 spec */}
             </SelectContent>
           </Select>
           
-          {/* Last updated indicator - Per audit: Missing enterprise feature */}
+          {/* Last updated indicator */}
           <span className="text-xs text-slate-400 dark:text-slate-500">
             Updated {formatLastUpdated()}
           </span>
@@ -116,9 +202,16 @@ export function PlannerDashboard() {
         </div>
       </div>
 
-      {/* Dashboard Content - Flex layout to expand Attention Required */}
+      {/* Dashboard Content */}
       <div className="flex-1 flex flex-col min-h-0 overflow-auto p-4 gap-4">
-        {/* KPI Strip - Per audit: Single row, inline stats */}
+        {/* Role Banner - Per V2 spec: Shows role and workstream context */}
+        <DashboardRoleBanner
+          userRole={userRole}
+          assignedWorkstreams={assignedWorkstreams}
+          isViewingAll={isViewingAll}
+        />
+        
+        {/* KPI Strip */}
         {metrics && (
           <DashboardKPIStrip 
             metrics={metrics} 
@@ -126,13 +219,13 @@ export function PlannerDashboard() {
           />
         )}
 
-        {/* Main Grid - Per audit: 3-column layout */}
+        {/* Main Grid - 3-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 shrink-0">
           {/* Status Distribution */}
           <DashboardStatusChartV2 data={statusDistribution} />
           
-          {/* Workstream Health */}
-          <DashboardWorkstreamHealthV2 data={workstreamHealth} />
+          {/* Workstream Health - filtered */}
+          <DashboardWorkstreamHealthV2 data={filteredWorkstreamHealth} />
           
           {/* Team Workload */}
           <DashboardTeamWorkloadV2 
@@ -141,8 +234,11 @@ export function PlannerDashboard() {
           />
         </div>
 
-        {/* Attention Required - Full width, expands to fill remaining space */}
-        <DashboardUpcomingDeadlinesV2 data={upcomingDeadlines} className="flex-1 min-h-[200px]" />
+        {/* Attention Required - Full width, filtered */}
+        <DashboardUpcomingDeadlinesV2 
+          data={filteredUpcomingDeadlines} 
+          className="flex-1 min-h-[200px]" 
+        />
       </div>
 
       {/* Create Task Modal */}
