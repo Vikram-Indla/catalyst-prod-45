@@ -73,7 +73,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
 
   // Data hooks
-  const teams: { id: string; name: string }[] = []; // Workstreams removed
+  const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
   const { data: statuses = [] } = usePlannerStatuses();
 

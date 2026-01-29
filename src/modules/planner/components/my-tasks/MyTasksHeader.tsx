@@ -28,7 +28,7 @@ export function MyTasksHeader({
   onOpenCreateModal,
 }: MyTasksHeaderProps) {
   const { data: summary, isLoading } = useMyTasksSummary();
-  const workstreams: { id: string; name: string }[] = []; // Workstreams removed
+  const workstreams: { id: string; name: string; color?: string }[] = []; // Workstreams removed
 
   // Active filter count
   const activeFilterCount = [

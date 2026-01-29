@@ -47,7 +47,7 @@ export function PlannerBoardsPage({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Data hooks
-  const teams: { id: string; name: string; slug?: string }[] = []; // Workstreams removed
+  const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
 
   // Get workstream ID from URL param (slug/code) or external prop
@@ -56,11 +56,8 @@ export function PlannerBoardsPage({
     if (externalWorkstreamId) return externalWorkstreamId;
     if (!urlWorkstream) return null;
     
-    // Match by slug (case-insensitive) or by ID
-    const match = teams.find(t => 
-      t.slug?.toLowerCase() === urlWorkstream.toLowerCase() ||
-      t.id === urlWorkstream
-    );
+    // Match by ID only (workstreams removed)
+    const match = teams.find(t => t.id === urlWorkstream);
     return match?.id || null;
   }, [externalWorkstreamId, urlWorkstream, teams]);
 

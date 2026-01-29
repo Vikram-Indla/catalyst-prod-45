@@ -85,7 +85,7 @@ export function PlannerTimeline({ tasks, onTaskClick }: PlannerTimelineProps) {
   const gridRef = useRef<HTMLDivElement>(null);
 
   // Data hooks
-  const teams: { id: string; name: string }[] = []; // Workstreams removed
+  const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
 
   // Search and filter

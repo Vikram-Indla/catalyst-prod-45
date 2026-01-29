@@ -8,7 +8,7 @@ import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight, Column
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';
-import type { TaskStatus, TaskPriority, PlannerTeam, GroupByOption, PlannerUser } from '../types';
+import type { TaskStatus, TaskPriority, GroupByOption, PlannerUser } from '../types';
 import { COLUMN_CONFIG, PRIORITY_CONFIG } from '../types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -53,6 +53,14 @@ export const ALL_COLUMNS: ColumnDef[] = [
   { id: 'progress', label: 'Progress' },
 ];
 
+// Simplified team type for search bar (workstreams removed)
+interface SimpleTeam {
+  id: string;
+  name: string;
+  color?: string;
+  memberCount?: number;
+}
+
 interface PlannerSearchBarProps {
   filters: PlannerFilters;
   onSearchChange: (search: string) => void;
@@ -66,7 +74,7 @@ interface PlannerSearchBarProps {
   filteredCount: number;
   totalCount: number;
   inputRef?: React.RefObject<HTMLInputElement>;
-  teams?: PlannerTeam[];
+  teams?: SimpleTeam[];
   users?: PlannerUser[];
   selectedTeamId: string | null;
   onTeamChange: (teamId: string | null) => void;
