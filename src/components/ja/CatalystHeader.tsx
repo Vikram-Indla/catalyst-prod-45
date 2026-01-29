@@ -149,7 +149,7 @@ export function CatalystHeader() {
     { label: "Project", isLabel: true, moduleKey: "project", visibleToProductOwner: true },
     { label: "Releases", path: "/releases/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "Operations", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
-    { label: "Planner", path: "/planner/boards", moduleKey: "planner", visibleToProductOwner: true },
+    { label: "Taskboard", path: "/planner/boards", moduleKey: "planner", visibleToProductOwner: true },
   ];
 
   // Get all nav items with their enabled status based on role-based module access
@@ -494,8 +494,8 @@ export function CatalystHeader() {
                         )}
                       </Popover>
                     )
-                  ) : item.label === "Planner" ? (
-                    // Planner: Direct navigation to planner boards
+                  ) : item.label === "Taskboard" ? (
+                    // Taskboard: Direct navigation to planner boards
                     <button
                       style={{
                         ...navButtonStyle,
