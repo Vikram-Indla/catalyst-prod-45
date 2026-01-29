@@ -99,7 +99,7 @@ export function InlineLeadSelect({
         </button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-72 p-0" 
+        className="w-72 p-0 z-[9999] bg-popover text-popover-foreground border border-border shadow-lg" 
         align="start"
         onClick={(e) => e.stopPropagation()}
       >
@@ -168,7 +168,7 @@ export function InlineLeadSelect({
         </div>
 
         {/* Footer hint */}
-        <div className="px-3 py-2 border-t border-border bg-muted/30">
+        <div className="px-3 py-2 border-t border-border bg-muted">
           <p className="text-xs text-muted-foreground">
             Select a resource to assign as lead
           </p>

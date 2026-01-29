@@ -5,6 +5,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 
 export interface Resource {
   id: string;
@@ -21,19 +22,21 @@ export function useResourceInventory() {
   return useQuery({
     queryKey: ['resource-inventory'],
     queryFn: async (): Promise<Resource[]> => {
-      // Fetch resource_inventory with profile join to get email from either source
+      type InventoryRow = {
+        id: string;
+        profile_id: string | null;
+        name: string | null;
+        email: string | null;
+        role_name: string | null;
+        department_name: string | null;
+        default_capacity_percent: number | null;
+      };
+
+      // NOTE: resource_inventory.profile_id is NOT FK-constrained, so we can't rely on PostgREST embedding.
+      // We fetch inventory first, then batch-fetch missing emails from profiles.
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select(`
-          id, 
-          profile_id, 
-          name, 
-          email, 
-          role_name, 
-          department_name, 
-          default_capacity_percent,
-          profiles:profile_id (email)
-        `)
+        .select('id, profile_id, name, email, role_name, department_name, default_capacity_percent')
         .eq('is_active', true)
         .order('name');
 
@@ -42,27 +45,53 @@ export function useResourceInventory() {
         return [];
       }
 
-      // Filter for resources with email in either resource_inventory OR linked profile
-      return (data || [])
-        .filter(r => {
-          const inventoryEmail = r.email?.trim();
-          const profileEmail = (r.profiles as any)?.email?.trim();
-          return inventoryEmail || profileEmail;
+      const inventoryRows = (data || []) as unknown as InventoryRow[];
+
+      // Collect profile IDs where inventory email is missing
+      const profileIdsNeedingEmail = Array.from(
+        new Set(
+          inventoryRows
+            .filter(r => !(r.email && r.email.trim()))
+            .map(r => r.profile_id)
+            .filter((id): id is string => isValidUUID(id))
+        )
+      );
+
+      const profileEmailById = new Map<string, string>();
+      if (profileIdsNeedingEmail.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, email')
+          .in('id', profileIdsNeedingEmail);
+
+        if (profilesError) {
+          console.error('Error fetching profile emails:', profilesError);
+        } else {
+          for (const p of profiles || []) {
+            if (p?.id && p?.email && p.email.trim()) {
+              profileEmailById.set(p.id, p.email.trim());
+            }
+          }
+        }
+      }
+
+      // Only include resources that have an email either in inventory or via linked profile
+      return inventoryRows
+        .map((r) => {
+          const resolvedEmail = r.email?.trim() || (r.profile_id ? profileEmailById.get(r.profile_id) : undefined) || null;
+          return { r, resolvedEmail };
         })
-        .map((r): Resource => {
-          // Use email from inventory, fallback to profile email
-          const resolvedEmail = r.email?.trim() || (r.profiles as any)?.email?.trim() || null;
-          return {
-            id: r.id,
-            profile_id: r.profile_id,
-            name: r.name || 'Unknown',
-            email: resolvedEmail,
-            role: r.role_name || 'Team Member',
-            department: r.department_name,
-            capacity: r.default_capacity_percent || 100,
-            initials: getInitials(r.name || ''),
-          };
-        });
+        .filter(({ resolvedEmail }) => !!resolvedEmail)
+        .map(({ r, resolvedEmail }): Resource => ({
+          id: r.id,
+          profile_id: r.profile_id,
+          name: r.name || 'Unknown',
+          email: resolvedEmail,
+          role: r.role_name || 'Team Member',
+          department: r.department_name,
+          capacity: r.default_capacity_percent || 100,
+          initials: getInitials(r.name || ''),
+        }));
     },
     staleTime: 5 * 60 * 1000,
   });
