@@ -74,19 +74,19 @@ export function DashboardKPIStrip({
     );
   };
 
-  return (
-    <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+    return (
+    <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
       {/* Left side - KPI metrics */}
       <div className="flex items-center divide-x divide-slate-200 dark:divide-slate-700">
         {/* Total Tasks */}
         <button
           onClick={() => navigate('/planner/task-list')}
-          className="flex items-center gap-2 px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
-          <span className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
+          <span className="text-xl font-bold text-slate-900 dark:text-slate-100 tabular-nums leading-none">
             {metrics.total_tasks}
           </span>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
+          <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Tasks
           </span>
         </button>
@@ -94,18 +94,18 @@ export function DashboardKPIStrip({
         {/* Overdue - with warning icon */}
         <button
           onClick={() => navigate('/planner/task-list?filter=overdue')}
-          className="flex items-center gap-2 px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           {metrics.overdue_count > 0 && (
-            <AlertTriangle className="w-4 h-4 text-red-500" />
+            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
           )}
           <span className={cn(
-            "text-2xl font-bold tabular-nums",
+            "text-xl font-bold tabular-nums leading-none",
             metrics.overdue_count > 0 ? "text-red-600 dark:text-red-400" : "text-slate-900 dark:text-slate-100"
           )}>
             {metrics.overdue_count}
           </span>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
+          <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Overdue
           </span>
         </button>
@@ -113,15 +113,15 @@ export function DashboardKPIStrip({
         {/* Blocked */}
         <button
           onClick={() => navigate('/planner/task-list?filter=blocked')}
-          className="flex items-center gap-2 px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           <span className={cn(
-            "text-2xl font-bold tabular-nums",
+            "text-xl font-bold tabular-nums leading-none",
             metrics.blocked_count > 0 ? "text-amber-600 dark:text-amber-400" : "text-slate-900 dark:text-slate-100"
           )}>
             {metrics.blocked_count}
           </span>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
+          <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Blocked
           </span>
         </button>
@@ -129,12 +129,12 @@ export function DashboardKPIStrip({
         {/* Done (7d) */}
         <button
           onClick={() => navigate('/planner/task-list?status=done')}
-          className="flex items-center gap-2 px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
-          <span className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
+          <span className="text-xl font-bold text-slate-900 dark:text-slate-100 tabular-nums leading-none">
             {metrics.completed_this_week}
           </span>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
+          <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Done (7d)
           </span>
         </button>
@@ -142,19 +142,19 @@ export function DashboardKPIStrip({
         {/* Unassigned - with users icon */}
         <button
           onClick={() => navigate('/planner/task-list?assignee=unassigned')}
-          className="flex items-center gap-2 px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           <Users className={cn(
-            "w-5 h-5",
+            "w-4 h-4",
             unassignedCount > 0 ? "text-amber-600 dark:text-amber-400" : "text-slate-400"
           )} />
           <span className={cn(
-            "text-2xl font-bold tabular-nums",
+            "text-xl font-bold tabular-nums leading-none",
             unassignedCount > 0 ? "text-amber-600 dark:text-amber-400" : "text-slate-900 dark:text-slate-100"
           )}>
             {unassignedCount}
           </span>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
+          <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Unassigned
           </span>
         </button>
@@ -162,18 +162,18 @@ export function DashboardKPIStrip({
 
       {/* Right side - Role badge + context */}
       {userRole && (
-        <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex items-center gap-3 px-4 py-2.5">
           {/* Role badge - pill with border */}
           <span className={cn(
-            'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border-2 bg-white dark:bg-slate-900',
+            'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-semibold uppercase tracking-wide border-2 bg-white dark:bg-slate-900',
             roleConfig.className
           )}>
-            <Users className="w-3.5 h-3.5" />
+            <Users className="w-3 h-3" />
             {roleConfig.label}
           </span>
           
           {/* Context text */}
-          <span className="text-sm text-slate-600 dark:text-slate-400">
+          <span className="text-[0.8125rem] text-slate-600 dark:text-slate-400">
             {getContextText()}
           </span>
         </div>

@@ -44,14 +44,14 @@ export function DashboardStatusChartV2({ data }: DashboardStatusChartV2Props) {
   // Empty state
   if (totalTasks === 0) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-5">
-        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+        <h3 className="text-[0.9375rem] font-semibold text-slate-900 dark:text-slate-100 mb-4 leading-snug">
           Status Distribution
         </h3>
         <div className="flex items-center justify-center py-12">
           <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center">
             <span className="text-3xl font-bold text-slate-300 dark:text-slate-600">0</span>
-            <span className="text-xs text-slate-400">Total</span>
+            <span className="text-[0.6875rem] text-slate-400">Total</span>
           </div>
         </div>
       </div>
@@ -59,9 +59,9 @@ export function DashboardStatusChartV2({ data }: DashboardStatusChartV2Props) {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-5">
-      {/* Header */}
-      <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+      {/* Header - V5: 15px card title */}
+      <h3 className="text-[0.9375rem] font-semibold text-slate-900 dark:text-slate-100 mb-4 leading-snug">
         Status Distribution
       </h3>
 
@@ -97,7 +97,7 @@ export function DashboardStatusChartV2({ data }: DashboardStatusChartV2Props) {
             <span className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 leading-none">
               {totalTasks}
             </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 mt-0.5">
               Total
             </span>
           </div>
@@ -117,14 +117,14 @@ export function DashboardStatusChartV2({ data }: DashboardStatusChartV2Props) {
             >
               <div className="flex items-center gap-2.5">
                 <div 
-                  className="w-2.5 h-2.5 rounded-full"
+                  className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: status.color }}
                 />
-                <span className="text-sm text-slate-700 dark:text-slate-300">
+                <span className="text-[0.8125rem] text-slate-700 dark:text-slate-300">
                   {status.name}
                 </span>
               </div>
-              <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 tabular-nums">
+              <span className="text-[0.8125rem] font-semibold text-slate-900 dark:text-slate-100 tabular-nums">
                 {status.value}
               </span>
             </button>

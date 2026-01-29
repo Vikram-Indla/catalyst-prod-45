@@ -70,22 +70,22 @@ export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
             key={card.id}
             onClick={card.onClick}
             className={cn(
-              'group relative flex flex-col p-5 rounded-xl border-l-4',
-              'bg-white dark:bg-slate-800',
+              'group relative flex flex-col p-4 rounded-xl border-l-4',
+              'bg-white dark:bg-slate-800 shadow-sm',
               'border border-slate-200 dark:border-slate-700',
               card.borderClass,
-              'hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200',
+              'hover:shadow-md hover:-translate-y-0.5 transition-all duration-150',
               'text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
             )}
           >
             {/* Icon */}
-            <div className={cn('p-2.5 rounded-lg w-fit mb-3', card.colorClass)}>
-              <Icon className="w-5 h-5" />
+            <div className={cn('p-2 rounded-md w-fit mb-2.5', card.colorClass)}>
+              <Icon className="w-4 h-4" />
             </div>
             
             {/* Value */}
             <span className={cn(
-              "text-3xl font-bold font-mono tabular-nums",
+              "text-2xl font-bold font-mono tabular-nums leading-none",
               card.value === 0 && isEmpty
                 ? "text-slate-300 dark:text-slate-600"
                 : "text-slate-900 dark:text-slate-100"
@@ -93,14 +93,14 @@ export function DashboardMetricCards({ metrics }: DashboardMetricCardsProps) {
               {card.value.toLocaleString()}
             </span>
             
-            {/* Label */}
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+            {/* Label - V5: 11px uppercase */}
+            <span className="text-[0.6875rem] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 mt-1.5">
               {card.label}
             </span>
             
             {/* Empty hint for zero values when dashboard is empty */}
             {card.value === 0 && isEmpty && (
-              <span className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+              <span className="text-[0.6875rem] text-slate-400 dark:text-slate-500 mt-0.5">
                 {card.emptyText}
               </span>
             )}
