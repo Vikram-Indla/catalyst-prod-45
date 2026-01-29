@@ -4,6 +4,7 @@
 // ============================================================
 
 import '@/styles/workstreams.css';
+import '@/styles/workstreams-enterprise-clean.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore, Trash2, FolderKanban } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -219,7 +220,7 @@ export function WorkstreamsPage() {
   }, []);
 
   return (
-    <div className="ws-page min-h-screen">
+    <div className="ws-page min-h-screen workstreams-enterprise-clean" data-component="workstreams">
       {/* Dashboard-style Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div>
