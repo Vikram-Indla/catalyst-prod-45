@@ -618,73 +618,121 @@ export function WorkstreamsPage() {
           </div>
         )}
 
-        {/* Grid View */}
+        {/* Grid View - GOD-TIER Design */}
         {!isLoading && filteredWorkstreams.length > 0 && view === 'grid' && (
           <div className="ws-grid-container">
-            {filteredWorkstreams.map((ws) => (
-              <div 
-                key={ws.id}
-                className={`ws-grid-card ${ws.health === 'locked' ? 'locked' : ''}`}
-                onClick={() => openDrawer(ws)}
-              >
-                <div className="ws-grid-card-header">
-                  <div className="ws-color-dot" style={{ background: ws.color }} />
-                  <div className="flex-1 min-w-0">
-                    <div className="ws-grid-card-title">{ws.name}</div>
-                    <div className="ws-grid-card-code">{ws.code}</div>
-                  </div>
-                  <span className={`ws-health-badge ${ws.health} compact`}>
-                    {ws.health === 'healthy' && '✓'}
-                    {ws.health === 'at-risk' && '△'}
-                    {ws.health === 'critical' && '●'}
-                  </span>
-                </div>
-
-                <div className="ws-grid-card-lead">
-                  {ws.lead ? (
-                    <>
-                      <div 
-                        className="ws-avatar ws-avatar-sm" 
-                        style={{ background: ws.color }}
-                      >
-                        {ws.lead.initials}
-                      </div>
-                      <span>{ws.lead.name}</span>
-                    </>
-                  ) : (
-                    <span className="ws-row-unassigned">Unassigned</span>
-                  )}
-                </div>
-
-                <div className="ws-grid-card-stats">
-                  <div className="ws-grid-stat">
-                    <span className="ws-grid-stat-value">{ws.taskCount || 0}</span>
-                    <span className="ws-grid-stat-label">Tasks</span>
-                  </div>
-                  <div className="ws-grid-stat">
-                    <span className={`ws-grid-stat-value ${(ws.overdueCount || 0) > 0 ? 'danger' : ''}`}>
-                      {ws.overdueCount || 0}
-                    </span>
-                    <span className="ws-grid-stat-label">Overdue</span>
-                  </div>
-                  <div className="ws-grid-stat">
-                    <span className="ws-grid-stat-value">{ws.progress || 0}%</span>
-                    <span className="ws-grid-stat-label">Complete</span>
-                  </div>
-                </div>
-
-                <div className="ws-progress-bar">
+            {filteredWorkstreams.map((ws) => {
+              const progressPercent = ws.progress || 0;
+              const doneCount = ws.taskCount ? Math.round((progressPercent / 100) * ws.taskCount) : 0;
+              
+              return (
+                <div 
+                  key={ws.id}
+                  className={`ws-card-v2 ${ws.health === 'locked' ? 'locked' : ''}`}
+                  onClick={() => openDrawer(ws)}
+                >
+                  {/* Health Bar - Full width top bar */}
                   <div 
-                    className="ws-progress-fill" 
+                    className={`ws-card-health-bar ${ws.health}`}
                     style={{ 
-                      width: `${ws.progress || 0}%`,
                       background: ws.health === 'critical' ? 'var(--ws-danger)' : 
-                                  ws.health === 'at-risk' ? 'var(--ws-warning)' : 'var(--ws-success)'
-                    }} 
+                                  ws.health === 'at-risk' ? 'var(--ws-warning)' : 
+                                  ws.health === 'healthy' ? 'var(--ws-success)' : 'var(--ws-slate-300)'
+                    }}
                   />
+                  
+                  {/* Card Content */}
+                  <div className="ws-card-content">
+                    {/* Header: Icon + Name + Badge */}
+                    <div className="ws-card-header-v2">
+                      <div className="ws-card-title-section">
+                        <div 
+                          className="ws-card-icon"
+                          style={{ background: ws.color }}
+                        >
+                          {ws.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="ws-card-title-info">
+                          <div className="ws-card-name">{ws.name}</div>
+                          <div className="ws-card-code-v2">{ws.code}</div>
+                        </div>
+                      </div>
+                      <div className={`ws-card-health-badge ${ws.health}`}>
+                        <span className="ws-health-dot" />
+                        {ws.health === 'healthy' && 'On Track'}
+                        {ws.health === 'at-risk' && 'At Risk'}
+                        {ws.health === 'critical' && 'Critical'}
+                        {ws.health === 'locked' && 'Locked'}
+                      </div>
+                    </div>
+                    
+                    {/* Lead Section */}
+                    <div className="ws-card-lead-section">
+                      {ws.lead ? (
+                        <>
+                          <div 
+                            className="ws-card-lead-avatar"
+                            style={{ background: ws.color }}
+                          >
+                            {ws.lead.initials}
+                          </div>
+                          <div className="ws-card-lead-info">
+                            <div className="ws-card-lead-label">Lead</div>
+                            <div className="ws-card-lead-name">{ws.lead.name}</div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="ws-card-lead-avatar unassigned">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                              <circle cx="12" cy="7" r="4" />
+                            </svg>
+                          </div>
+                          <div className="ws-card-lead-info">
+                            <div className="ws-card-lead-label">Lead</div>
+                            <div className="ws-card-lead-name unassigned">Unassigned</div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* Stats Grid - 3 columns */}
+                    <div className="ws-card-stats-grid">
+                      <div className="ws-card-stat-box">
+                        <div className="ws-card-stat-value">{ws.taskCount || 0}</div>
+                        <div className="ws-card-stat-label">Tasks</div>
+                      </div>
+                      <div className="ws-card-stat-box">
+                        <div className={`ws-card-stat-value ${(ws.overdueCount || 0) > 0 ? 'danger' : ''}`}>
+                          {ws.overdueCount || 0}
+                        </div>
+                        <div className="ws-card-stat-label">Overdue</div>
+                      </div>
+                      <div className="ws-card-stat-box">
+                        <div className="ws-card-stat-value">{doneCount}</div>
+                        <div className="ws-card-stat-label">Done</div>
+                      </div>
+                    </div>
+                    
+                    {/* Progress Bar with Percentage */}
+                    <div className="ws-card-progress-section">
+                      <div className="ws-card-progress-bar">
+                        <div 
+                          className="ws-card-progress-fill"
+                          style={{ 
+                            width: `${progressPercent}%`,
+                            background: ws.health === 'critical' ? 'var(--ws-danger)' : 
+                                        ws.health === 'at-risk' ? 'var(--ws-warning)' : ws.color
+                          }}
+                        />
+                      </div>
+                      <div className="ws-card-progress-text">{progressPercent}%</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
