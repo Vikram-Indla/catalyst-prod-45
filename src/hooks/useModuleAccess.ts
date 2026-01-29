@@ -1,6 +1,6 @@
 // src/hooks/useModuleAccess.ts
 // Role-based module access control hook
-// Enforces: Full (nav + content), View (nav only), Hidden (no visibility)
+// Enforces: Full (nav + content + edit), View (nav + content read-only), Hidden (no visibility)
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -136,11 +136,28 @@ export function useModuleAccess() {
   };
 
   /**
-   * Check if user has full access to module content
+   * Check if user can access module content (view or full)
+   * True for 'full' or 'view' access - both can see content
+   */
+  const canAccessContent = (moduleKey: string): boolean => {
+    const access = getModuleAccess(moduleKey);
+    return access === 'full' || access === 'view';
+  };
+
+  /**
+   * Check if user has full access (can edit/modify)
    * True only for 'full' access
    */
   const hasFullAccess = (moduleKey: string): boolean => {
     return getModuleAccess(moduleKey) === 'full';
+  };
+
+  /**
+   * Check if user has read-only access (can view but not edit)
+   * True only for 'view' access
+   */
+  const isReadOnly = (moduleKey: string): boolean => {
+    return getModuleAccess(moduleKey) === 'view';
   };
 
   /**
@@ -154,7 +171,9 @@ export function useModuleAccess() {
     isLoading,
     getModuleAccess,
     canViewInNav,
+    canAccessContent,
     hasFullAccess,
+    isReadOnly,
     isHidden,
     permissions,
   };
@@ -164,12 +183,14 @@ export function useModuleAccess() {
  * Hook for a single module access check
  */
 export function useModuleAccessLevel(moduleKey: string) {
-  const { getModuleAccess, canViewInNav, hasFullAccess, isHidden, isLoading } = useModuleAccess();
+  const { getModuleAccess, canViewInNav, canAccessContent, hasFullAccess, isReadOnly, isHidden, isLoading } = useModuleAccess();
 
   return {
     accessLevel: getModuleAccess(moduleKey),
     canViewInNav: canViewInNav(moduleKey),
+    canAccessContent: canAccessContent(moduleKey),
     hasFullAccess: hasFullAccess(moduleKey),
+    isReadOnly: isReadOnly(moduleKey),
     isHidden: isHidden(moduleKey),
     isLoading,
   };
