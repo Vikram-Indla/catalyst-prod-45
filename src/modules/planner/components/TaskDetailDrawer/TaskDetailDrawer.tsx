@@ -1,29 +1,31 @@
 // ============================================================
-// TASK DETAIL DRAWER V2 - ENTERPRISE CLEAN DESIGN
+// TASK DETAIL MODAL V2 - ENTERPRISE CLEAN DESIGN
+// CRITICAL: This is a MODAL, not a drawer!
 // 18px title, status bar, tabs, inline fields
 // ============================================================
 
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckSquare, Paperclip, GitBranch, FileText, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+import { X, Link2, MoreHorizontal } from 'lucide-react';
+import {
+  Modal,
+  ModalContent,
+} from '@/components/overlays/AtlassianModal';
 import '@/styles/task-detail-modal-enterprise.css';
 
 import { DrawerHeader } from './DrawerHeader';
 import { TaskDescription } from './TaskDescription';
 import { TaskFieldsGrid } from './TaskFieldsGrid';
 import { ProgressSection } from './ProgressSection';
-import { CollapsibleSection } from './CollapsibleSection';
 import { ChecklistSection } from './ChecklistSection';
 import { AttachmentsSection } from './AttachmentsSection';
 import { DependenciesSection } from './DependenciesSection';
 import { ActivitySection } from './ActivitySection';
 import { DrawerFooter } from './DrawerFooter';
-import { SavingIndicator, SaveStatus } from './SavingIndicator';
 import { cn } from '@/lib/utils';
 
 import {
@@ -79,10 +81,10 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const lastUpdatedAtRef = useRef<string | null>(null);
   
   // Save status for indicator
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const saveStatusTimerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Tab state for V2 tabbed interface - must be before any early returns
+  // Tab state for V2 tabbed interface
   const [activeTab, setActiveTab] = useState<'description' | 'checklist' | 'links' | 'files' | 'activity'>('description');
   
   const handleClose = useCallback(() => {
@@ -103,7 +105,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     
     // Detect if update came from another source
     if (lastUpdatedAtRef.current && lastUpdatedAtRef.current !== serverTask.updated_at) {
-      // Only show toast if drawer is open and it wasn't our update
+      // Only show toast if modal is open and it wasn't our update
       if (open && saveStatus === 'idle') {
         toast.info('Task updated by another user', { duration: 2000 });
       }
@@ -121,7 +123,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   // Real-time subscription for this specific task
   usePlannerTaskRealtime({
     taskId: effectiveTaskId,
-    onUpdate: (updatedTask) => {
+    onUpdate: () => {
       // Cache will be updated by the hook, draft will sync via the useEffect above
     },
     onDelete: () => {
@@ -194,19 +196,6 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const { data: comments } = useTaskComments(effectiveTaskId);
   const { data: activity } = useTaskActivity(effectiveTaskId);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.key === 'Escape') handleClose();
-    };
-    
-    if (open) {
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }
-  }, [open, handleClose]);
-
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
@@ -233,16 +222,16 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   ];
 
   return (
-    <Sheet open={open} onOpenChange={(o) => !o && handleClose()}>
-      <SheetContent 
-        side="right" 
-        className="w-full sm:max-w-[800px] p-0 gap-0 overflow-hidden"
+    <Modal open={open} onOpenChange={(o) => !o && handleClose()}>
+      <ModalContent 
+        size="lg"
         hideClose
+        className="task-modal task-modal-enterprise p-0 gap-0 overflow-hidden max-h-[85vh] flex flex-col"
       >
         {isLoading ? (
-          <DrawerSkeleton />
+          <ModalSkeleton />
         ) : task ? (
-          <div className="task-modal task-modal-enterprise flex flex-col h-full relative">
+          <>
             {/* Header - V2 with status bar */}
             <DrawerHeader
               task={task}
@@ -272,13 +261,14 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
             </nav>
             
             {/* Tab Content - Scrollable */}
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 min-h-0">
               <div className="task-modal__content">
                 {/* Description Tab */}
                 {activeTab === 'description' && (
                   <div className="space-y-5">
                     {/* Description */}
                     <div className="task-modal__section">
+                      <span className="task-modal__section-label">Description</span>
                       <TaskDescription
                         value={task.description || ''}
                         onChange={(desc) => handleTextFieldUpdate('description', desc)}
@@ -289,12 +279,6 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                     <TaskFieldsGrid
                       task={task}
                       onFieldChange={handleFieldUpdate}
-                    />
-                    
-                    {/* Progress */}
-                    <ProgressSection
-                      task={task}
-                      onUpdate={(updates) => handleFieldUpdate('progress', updates.progress)}
                     />
                   </div>
                 )}
@@ -341,19 +325,22 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                 onDelete={handleClose}
                 onDuplicate={() => {}}
               />
+              <button className="task-modal__action-btn">
+                ?
+              </button>
             </div>
-          </div>
+          </>
         ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
+          <div className="flex items-center justify-center h-64 text-muted-foreground">
             Task not found
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </ModalContent>
+    </Modal>
   );
 }
 
-function DrawerSkeleton() {
+function ModalSkeleton() {
   return (
     <div className="p-6 space-y-6">
       <Skeleton className="h-20 w-full rounded-xl" />
