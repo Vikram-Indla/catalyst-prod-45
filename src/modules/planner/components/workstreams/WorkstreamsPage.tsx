@@ -7,7 +7,8 @@ import '@/styles/workstreams.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, Search, ChevronDown, List, LayoutGrid, ChevronsUpDown, Pencil, Check, X, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount } from '../../hooks/usePlannerWorkstreams';
+import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount, useUpdateWorkstream } from '../../hooks/usePlannerWorkstreams';
+import { InlineLeadSelect } from './InlineLeadSelect';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
@@ -56,6 +57,7 @@ export function WorkstreamsPage() {
   const { data: archivedCount = 0 } = useArchivedWorkstreamsCount();
   const archiveWorkstream = useArchiveWorkstream();
   const deleteWorkstream = useDeleteWorkstream();
+  const updateWorkstream = useUpdateWorkstream();
 
   const [isQuickEditOpen, setIsQuickEditOpen] = useState(false);
   const [quickEditWorkstream, setQuickEditWorkstream] = useState<Workstream | null>(null);
@@ -538,21 +540,19 @@ export function WorkstreamsPage() {
                   </div>
                 </div>
 
-                {/* Lead */}
-                <div className="ws-row-lead">
-                  {ws.lead ? (
-                    <>
-                      <div 
-                        className="ws-avatar ws-avatar-sm" 
-                        style={{ background: ws.color }}
-                      >
-                        {ws.lead.initials}
-                      </div>
-                      <span>{ws.lead.name}</span>
-                    </>
-                  ) : (
-                    <span className="ws-row-unassigned">Unassigned</span>
-                  )}
+                {/* Lead - Inline editable when unassigned */}
+                <div className="ws-row-lead" onClick={(e) => e.stopPropagation()}>
+                  <InlineLeadSelect
+                    workstreamId={ws.id}
+                    workstreamColor={ws.color}
+                    currentLead={ws.lead}
+                    onAssignLead={(userId) => {
+                      updateWorkstream.mutate({
+                        id: ws.id,
+                        updates: { lead_id: userId }
+                      });
+                    }}
+                  />
                 </div>
 
                 {/* Health */}
