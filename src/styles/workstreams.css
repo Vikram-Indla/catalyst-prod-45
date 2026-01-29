@@ -1306,7 +1306,259 @@
 }
 
 /* ==========================================================================
-   25. UTILITIES
+   25. GOD-TIER CARD V2 DESIGN
+   ========================================================================== */
+
+.ws-card-v2 {
+  background: var(--ws-bg-primary);
+  border: 1px solid var(--ws-border-primary);
+  border-radius: var(--ws-radius-xl);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.ws-card-v2:hover {
+  border-color: var(--ws-primary);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  transform: translateY(-2px);
+}
+
+.ws-card-v2.locked {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Health Bar - Top colored strip */
+.ws-card-health-bar {
+  height: 4px;
+  width: 100%;
+}
+
+.ws-card-health-bar.healthy { background: var(--ws-success); }
+.ws-card-health-bar.at-risk { background: var(--ws-warning); }
+.ws-card-health-bar.critical { background: var(--ws-danger); }
+.ws-card-health-bar.locked { background: var(--ws-slate-300); }
+
+/* Card Content Area */
+.ws-card-content {
+  padding: 1rem;
+}
+
+/* Header: Icon + Title + Health Badge */
+.ws-card-header-v2 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.875rem;
+}
+
+.ws-card-title-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ws-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ws-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ws-card-title-info {
+  min-width: 0;
+}
+
+.ws-card-name {
+  font-size: var(--ws-text-lg);
+  font-weight: 600;
+  color: var(--ws-text-primary);
+  line-height: 1.3;
+}
+
+.ws-card-code-v2 {
+  font-size: var(--ws-text-xs);
+  color: var(--ws-text-tertiary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin-top: 2px;
+}
+
+/* Health Badge */
+.ws-card-health-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--ws-radius-md);
+  font-size: var(--ws-text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ws-card-health-badge .ws-health-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.ws-card-health-badge.healthy {
+  background: var(--ws-success-light);
+  color: var(--ws-success);
+}
+.ws-card-health-badge.healthy .ws-health-dot {
+  background: var(--ws-success);
+}
+
+.ws-card-health-badge.at-risk {
+  background: var(--ws-warning-light);
+  color: var(--ws-warning);
+}
+.ws-card-health-badge.at-risk .ws-health-dot {
+  background: var(--ws-warning);
+}
+
+.ws-card-health-badge.critical {
+  background: var(--ws-danger-light);
+  color: var(--ws-danger);
+}
+.ws-card-health-badge.critical .ws-health-dot {
+  background: var(--ws-danger);
+}
+
+.ws-card-health-badge.locked {
+  background: var(--ws-bg-tertiary);
+  color: var(--ws-text-muted);
+}
+.ws-card-health-badge.locked .ws-health-dot {
+  background: var(--ws-text-muted);
+}
+
+/* Lead Section */
+.ws-card-lead-section {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--ws-border-secondary);
+}
+
+.ws-card-lead-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ws-card-lead-avatar.unassigned {
+  background: var(--ws-slate-400);
+  color: white;
+}
+
+.ws-card-lead-info {
+  min-width: 0;
+}
+
+.ws-card-lead-label {
+  font-size: var(--ws-text-xs);
+  color: var(--ws-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  line-height: 1.2;
+}
+
+.ws-card-lead-name {
+  font-size: var(--ws-text-base);
+  font-weight: 500;
+  color: var(--ws-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-card-lead-name.unassigned {
+  font-style: italic;
+  color: var(--ws-text-muted);
+}
+
+/* Stats Grid */
+.ws-card-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+}
+
+.ws-card-stat-box {
+  text-align: center;
+  padding: 0.625rem 0.5rem;
+  background: var(--ws-bg-secondary);
+  border-radius: var(--ws-radius-md);
+}
+
+.ws-card-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ws-text-primary);
+  line-height: 1.2;
+}
+
+.ws-card-stat-value.danger {
+  color: var(--ws-danger);
+}
+
+.ws-card-stat-label {
+  font-size: 0.625rem;
+  color: var(--ws-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-top: 0.125rem;
+}
+
+/* Progress Section */
+.ws-card-progress-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ws-card-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--ws-bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ws-card-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 300ms ease;
+}
+
+.ws-card-progress-text {
+  font-size: var(--ws-text-base);
+  font-weight: 600;
+  color: var(--ws-text-primary);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* ==========================================================================
+   26. UTILITIES
    ========================================================================== */
 
 .ws-sr-only {
