@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { RolesList } from '@/components/admin/roles-permissions/RolesList';
 import { RoleDetails } from '@/components/admin/roles-permissions/RoleDetails';
-import { PermissionsMatrix } from '@/components/admin/roles-permissions/PermissionsMatrix';
 import { UserOverridesModal } from '@/components/admin/roles-permissions/UserOverridesModal';
 import { AddEditRoleModal } from '@/components/admin/roles-permissions/AddEditRoleModal';
 import { RoleDetailPermissionsModal } from '@/components/admin/roles-permissions/RoleDetailPermissionsModal';
@@ -104,9 +103,6 @@ export default function RolesPermissions() {
             )}
           </div>
         </div>
-
-        {/* Permissions Matrix */}
-        <PermissionsMatrix roles={roles || []} />
 
         {/* User Overrides Modal */}
         <UserOverridesModal
