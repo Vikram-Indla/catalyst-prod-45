@@ -156,17 +156,17 @@ function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
   const config = {
     pending: { 
       label: 'Pending', 
-      className: 'bg-[#78350f] text-[#fcd34d] border-[#92400e] dark:bg-[#78350f] dark:text-[#fcd34d] dark:border-[#92400e]', 
+      className: 'bg-amber-100 text-amber-700 border-amber-200', 
       icon: Clock 
     },
     approved: { 
       label: 'Approved', 
-      className: 'bg-teal-500/10 text-teal-600 dark:bg-[#134e4a] dark:text-[#5eead4] border-teal-500/20 dark:border-[#0d9488]', 
+      className: 'bg-teal-100 text-teal-700 border-teal-200', 
       icon: CheckCircle 
     },
     vetoed: { 
       label: 'Vetoed', 
-      className: 'bg-rose-500/10 text-rose-600 dark:bg-[#7f1d1d] dark:text-[#fca5a5] border-rose-500/20 dark:border-[#991b1b]', 
+      className: 'bg-rose-100 text-rose-700 border-rose-200', 
       icon: XCircle 
     },
   } as const;
@@ -182,10 +182,10 @@ function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
 
 function SeverityBadge({ severity }: { severity: string }) {
   const config: Record<string, { bg: string; text: string; dot: string }> = {
-    SEV1: { bg: 'dark:bg-[#7f1d1d] bg-rose-100', text: 'dark:text-[#fca5a5] text-rose-700', dot: 'bg-[#ef4444]' },
-    SEV2: { bg: 'dark:bg-[#78350f] bg-amber-100', text: 'dark:text-[#fcd34d] text-amber-700', dot: 'bg-[#d97706]' },
-    SEV3: { bg: 'dark:bg-[#1e3a5f] bg-sky-100', text: 'dark:text-[#7dd3fc] text-sky-700', dot: 'bg-[#0ea5e9]' },
-    SEV4: { bg: 'dark:bg-[#262626] bg-slate-100', text: 'dark:text-[#a3a3a3] text-slate-600', dot: 'bg-[#737373]' },
+    SEV1: { bg: 'bg-rose-100', text: 'text-rose-700', dot: 'bg-rose-500' },
+    SEV2: { bg: 'bg-amber-100', text: 'text-amber-700', dot: 'bg-amber-500' },
+    SEV3: { bg: 'bg-sky-100', text: 'text-sky-700', dot: 'bg-sky-500' },
+    SEV4: { bg: 'bg-slate-100', text: 'text-slate-600', dot: 'bg-slate-400' },
   };
 
   const { bg, text, dot } = config[severity] || config.SEV4;
@@ -204,16 +204,16 @@ function ProgressBar({ completed, total }: { completed: number; total: number })
   
   return (
     <div className="flex items-center gap-2 w-full">
-      <div className="flex-1 h-1.5 bg-[#333] dark:bg-[#333] rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
         <div 
           className={cn(
             "h-full rounded-full transition-all",
-            isComplete ? "bg-[#0d9488]" : "bg-[#0d9488]"
+            isComplete ? "bg-teal-500" : "bg-teal-500"
           )}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-[11px] font-medium text-[#a3a3a3] tabular-nums whitespace-nowrap">
+      <span className="text-[11px] font-medium text-muted-foreground tabular-nums whitespace-nowrap">
         {completed}/{total}
       </span>
     </div>
@@ -225,9 +225,9 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
   const remaining = approvers.length - 3;
 
   const decisionStyles: Record<CommitteeDecisionStatus, string> = {
-    pending: 'bg-[#404040] text-[#d4d4d4]',
-    approved: 'bg-[#134e4a] text-[#5eead4]',
-    vetoed: 'bg-[#7f1d1d] text-[#fca5a5]',
+    pending: 'bg-slate-200 text-slate-600',
+    approved: 'bg-teal-100 text-teal-700',
+    vetoed: 'bg-rose-100 text-rose-700',
   };
 
   return (
@@ -237,20 +237,20 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
         return (
           <Tooltip key={a.id}>
             <TooltipTrigger asChild>
-              <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold border-2 border-[#0f0f0f] dark:border-[#0f0f0f]", styleClass)}>
+              <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold border-2 border-white", styleClass)}>
                 {a.userInitials || a.userName.charAt(0)}
               </div>
             </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs bg-popover">
+            <TooltipContent side="top" className="text-xs">
               <div className="font-medium">{a.userName}</div>
               <div className="capitalize text-muted-foreground">{a.decision}</div>
-              {a.hasVeto && <div className="text-amber-500">Veto power</div>}
+              {a.hasVeto && <div className="text-amber-600">Veto power</div>}
             </TooltipContent>
           </Tooltip>
         );
       })}
       {remaining > 0 && (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border-2 border-[#0f0f0f] dark:border-[#0f0f0f] bg-[#333] text-[#a3a3a3]">
+        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border-2 border-white bg-slate-100 text-slate-500">
           +{remaining}
         </div>
       )}
@@ -260,9 +260,9 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
 
 function LoadingSkeleton({ gridTemplate }: { gridTemplate: string }) {
   return (
-    <div className="rounded-md border border-[#333] dark:border-[#333] overflow-hidden bg-[#0f0f0f] dark:bg-[#0f0f0f] flex-1">
+    <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
       <div
-        className="grid items-center h-8 bg-[#1a1a1a] dark:bg-[#1a1a1a] border-b border-[#333] dark:border-[#333]"
+        className="grid items-center h-8 bg-muted border-b border-border"
         style={{ gridTemplateColumns: gridTemplate }}
       >
         {COLUMN_ORDER.map((col) => (
@@ -275,8 +275,8 @@ function LoadingSkeleton({ gridTemplate }: { gridTemplate: string }) {
         <div
           key={i}
           className={cn(
-            "grid items-center h-9 border-b border-[#262626] dark:border-[#262626] last:border-b-0",
-            i % 2 === 0 ? "bg-[#0f0f0f] dark:bg-[#0f0f0f]" : "bg-[#141414] dark:bg-[#141414]"
+            "grid items-center h-9 border-b border-border last:border-b-0",
+            i % 2 === 0 ? "bg-card" : "bg-muted/30"
           )}
           style={{ gridTemplateColumns: gridTemplate }}
         >
@@ -404,12 +404,12 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
-        <div ref={containerRef} className="rounded-lg border border-[#333] dark:border-[#333] overflow-hidden bg-[#0f0f0f] dark:bg-[#0f0f0f] flex-1 min-h-0">
+        <div ref={containerRef} className="rounded-lg border border-border overflow-hidden bg-card flex-1 min-h-0">
           <div className="overflow-x-auto w-full h-full">
             <div style={{ minWidth: `${totalTableWidth}px`, width: '100%' }}>
               {/* Header row - 32px height */}
               <div
-                className="grid items-center h-8 sticky top-0 z-20 bg-[#1a1a1a] dark:bg-[#1a1a1a] border-b border-[#333] dark:border-[#333]"
+                className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
                 {COLUMN_ORDER.map((col, idx) => {
@@ -427,7 +427,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                       centered={isCentered}
                       className={cn(GRID_CELL_BASE, isFirst ? "pl-3 pr-2" : "px-2")}
                     >
-                      <span className="text-[11px] font-semibold text-[#737373] uppercase tracking-wide">{COLUMN_LABELS[col]}</span>
+                      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{COLUMN_LABELS[col]}</span>
                     </ResizableHeader>
                   );
                 })}
@@ -441,9 +441,9 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                   <div
                     key={item.incident.id}
                     className={cn(
-                      'grid items-center h-9 cursor-pointer border-b border-[#262626] dark:border-[#262626] last:border-b-0 transition-colors',
-                      index % 2 === 0 ? 'bg-[#0f0f0f] dark:bg-[#0f0f0f]' : 'bg-[#141414] dark:bg-[#141414]',
-                      hoveredId === item.incident.id && 'bg-[#1a1a1a] dark:bg-[#1a1a1a]'
+                      'grid items-center h-9 cursor-pointer border-b border-border last:border-b-0 transition-colors',
+                      index % 2 === 0 ? 'bg-card' : 'bg-muted/30',
+                      hoveredId === item.incident.id && 'bg-muted'
                     )}
                     style={{ gridTemplateColumns: gridTemplate }}
                     onClick={(e) => handleRowClick(item, e)}
@@ -454,7 +454,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
                       <Link
                         to={`/release/incidents/${item.incident.id}`}
-                        className="font-medium text-[#60a5fa] hover:underline truncate text-[12px]"
+                        className="font-medium text-blue-600 hover:underline truncate text-[12px]"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {item.incident.incident_key}
@@ -464,23 +464,28 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <span className="text-[12px] text-[#fafafa] truncate">{item.incident.title}</span>
+                          <span className="text-[12px] text-foreground truncate">{item.incident.title}</span>
                         </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-sm text-xs bg-popover">
+                        <TooltipContent side="top" className="max-w-sm text-xs">
                           {item.incident.title}
                         </TooltipContent>
                       </Tooltip>
                     </div>
-                    {/* SEV */}
+                    {/* SEVERITY */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                      <SeverityBadge severity={item.incident.severity} />
+                      <SeverityBadge severity={item.incident.severity || 'SEV4'} />
                     </div>
-                    {/* MAJ */}
+                    {/* MAJOR */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                      {item.incident.is_major_incident ? (
-                        <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+                      {item.incident.severity === 'SEV1' ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <AlertTriangle className="h-4 w-4 text-amber-500" />
+                          </TooltipTrigger>
+                          <TooltipContent>Major Incident</TooltipContent>
+                        </Tooltip>
                       ) : (
-                        <span className={cn(CELL_META, 'text-[11px]')}>—</span>
+                        <span className="text-muted-foreground">—</span>
                       )}
                     </div>
                     {/* STATUS */}
@@ -488,8 +493,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                       <StatusBadge status={item.committeeStatus} />
                     </div>
                     {/* PROGRESS */}
-                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
-                      <ProgressBar completed={item.approvalsCompletedCount} total={item.approvalsRequiredCount} />
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+                      <ProgressBar completed={item.approvalsCompletedCount} total={item.approvalsTotalCount} />
                     </div>
                     {/* APPROVERS */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
@@ -497,31 +502,31 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     </div>
                     {/* LAST ACTION */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
-                      <span className={cn(CELL_SECONDARY, 'truncate text-[11px]')}>
-                        {item.lastAction?.type === 'vetoed' && `Veto by ${item.lastAction.by}`}
-                        {item.lastAction?.type === 'approved' && `${item.lastAction.by}`}
-                        {item.lastAction?.type === 'sent_to_committee' && 'Sent'}
-                        {item.lastAction?.type === 'approver_added' && `Added by ${item.lastAction.by}`}
+                      <span className="text-[11px] text-muted-foreground truncate capitalize">
+                        {item.lastAction?.type || 'Sent'}
                       </span>
                     </div>
                     {/* TIME */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                      {item.lastAction?.at ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className={CELL_META}>
-                              {formatDistanceToNow(new Date(item.lastAction.at), { addSuffix: false })}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>{format(new Date(item.lastAction.at), 'PPp')}</TooltipContent>
-                        </Tooltip>
-                      ) : (
-                        <span className={CELL_META}>—</span>
-                      )}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="text-[11px] text-muted-foreground tabular-nums whitespace-nowrap">
+                            {item.committeeSentAt ? formatDistanceToNow(new Date(item.committeeSentAt), { addSuffix: false }) : '—'}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {item.committeeSentAt ? format(new Date(item.committeeSentAt), 'PPpp') : 'N/A'}
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
-                    {/* AGE */}
+                    {/* AGING */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                      <span className={cn('text-[11px] tabular-nums font-medium', item.agingDays >= 7 ? 'text-[#d97706]' : 'text-[#a3a3a3]')}>
+                      <span className={cn(
+                        "text-[11px] font-medium tabular-nums",
+                        item.agingDays > 7 ? "text-rose-600" : 
+                        item.agingDays > 3 ? "text-amber-600" : 
+                        "text-muted-foreground"
+                      )}>
                         {item.agingDays}d
                       </span>
                     </div>
@@ -532,26 +537,43 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
           </div>
         </div>
 
-        {/* Pagination */}
-        {items.length > 0 && (
-          <div className="flex items-center justify-between py-2">
+        {/* Pagination footer */}
+        {items.length > PAGE_SIZE_OPTIONS[0] && (
+          <div className="flex items-center justify-between py-2 px-1 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Rows:</span>
-              <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-                <SelectTrigger className="h-7 w-16 text-xs"><SelectValue /></SelectTrigger>
+              <span className="text-muted-foreground">Show</span>
+              <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                <SelectTrigger className="w-16 h-7 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {PAGE_SIZE_OPTIONS.map(s => <SelectItem key={s} value={s.toString()}>{s}</SelectItem>)}
+                  {PAGE_SIZE_OPTIONS.map(opt => (
+                    <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
+
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {startIndex + 1}–{Math.min(startIndex + pageSize, items.length)} of {items.length}
               </span>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                disabled={page === 1}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+              >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                disabled={page >= totalPages}
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>

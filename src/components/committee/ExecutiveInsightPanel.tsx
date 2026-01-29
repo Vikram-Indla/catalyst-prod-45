@@ -27,18 +27,18 @@ function KPIBlock({ label, value, icon, highlight }: KPIBlockProps) {
     <div className="flex items-center gap-3 px-4 py-2">
       <div className={cn(
         "flex items-center justify-center w-8 h-8 rounded-md",
-        highlight === 'danger' && "bg-[#7f1d1d] dark:bg-[#7f1d1d] text-[#fca5a5] dark:text-[#fca5a5]",
-        highlight === 'warning' && "bg-[#78350f] dark:bg-[#78350f] text-[#fcd34d] dark:text-[#fcd34d]",
-        highlight === 'success' && "bg-[#134e4a] dark:bg-[#134e4a] text-[#5eead4] dark:text-[#5eead4]",
-        !highlight && "bg-[#262626] dark:bg-[#262626] text-[#a3a3a3] dark:text-[#a3a3a3]"
+        highlight === 'danger' && "bg-rose-100 text-rose-600",
+        highlight === 'warning' && "bg-amber-100 text-amber-600",
+        highlight === 'success' && "bg-teal-100 text-teal-600",
+        !highlight && "bg-slate-100 text-slate-500"
       )}>
         {icon}
       </div>
       <div className="flex flex-col">
-        <span className="text-lg font-semibold text-[#fafafa] dark:text-[#fafafa] tabular-nums leading-tight">
+        <span className="text-lg font-semibold text-foreground tabular-nums leading-tight">
           {value}
         </span>
-        <span className="text-xs font-medium text-[#a3a3a3] dark:text-[#a3a3a3] leading-tight">
+        <span className="text-xs font-medium text-muted-foreground leading-tight">
           {label}
         </span>
       </div>
@@ -90,11 +90,11 @@ export function ExecutiveInsightPanel({ items, isHistoryMode }: ExecutiveInsight
   // Empty state for queue mode
   if (!isHistoryMode && queueMetrics.pendingCount === 0) {
     return (
-      <div className="border border-[#333] dark:border-[#333] rounded-lg bg-[#0f0f0f] dark:bg-[#0f0f0f] px-4 py-3 mb-4">
-        <h3 className="text-xs font-bold text-[#d97706] dark:text-[#d97706] uppercase tracking-wide mb-1">
+      <div className="border border-border rounded-lg bg-card px-4 py-3 mb-4">
+        <h3 className="text-xs font-bold text-amber-600 uppercase tracking-wide mb-1">
           EXECUTIVE COMMITTEE UPDATE
         </h3>
-        <p className="text-sm text-[#a3a3a3] dark:text-[#a3a3a3]">
+        <p className="text-sm text-muted-foreground">
           No pending committee decisions.
         </p>
       </div>
@@ -104,11 +104,11 @@ export function ExecutiveInsightPanel({ items, isHistoryMode }: ExecutiveInsight
   // Empty state for history mode
   if (isHistoryMode && historyMetrics.totalClosed === 0) {
     return (
-      <div className="border border-[#333] dark:border-[#333] rounded-lg bg-[#0f0f0f] dark:bg-[#0f0f0f] px-4 py-3 mb-4">
-        <h3 className="text-xs font-bold text-[#d97706] dark:text-[#d97706] uppercase tracking-wide mb-1">
+      <div className="border border-border rounded-lg bg-card px-4 py-3 mb-4">
+        <h3 className="text-xs font-bold text-amber-600 uppercase tracking-wide mb-1">
           COMMITTEE DECISION SUMMARY
         </h3>
-        <p className="text-sm text-[#a3a3a3] dark:text-[#a3a3a3]">
+        <p className="text-sm text-muted-foreground">
           No committee decisions in selected range.
         </p>
       </div>
@@ -118,13 +118,13 @@ export function ExecutiveInsightPanel({ items, isHistoryMode }: ExecutiveInsight
   if (isHistoryMode) {
     // HISTORY MODE
     return (
-      <div className="border border-[#333] dark:border-[#333] rounded-lg bg-[#0f0f0f] dark:bg-[#0f0f0f] mb-4">
-        <div className="px-4 py-2 border-b border-[#333] dark:border-[#333]">
-          <h3 className="text-xs font-bold text-[#d97706] dark:text-[#d97706] uppercase tracking-wide">
+      <div className="border border-border rounded-lg bg-card mb-4">
+        <div className="px-4 py-2 border-b border-border">
+          <h3 className="text-xs font-bold text-amber-600 uppercase tracking-wide">
             COMMITTEE DECISION SUMMARY
           </h3>
         </div>
-        <div className="flex flex-wrap items-center divide-x divide-[#333] dark:divide-[#333]">
+        <div className="flex flex-wrap items-center divide-x divide-border">
           <KPIBlock
             label="Approved"
             value={historyMetrics.approvedCount}
@@ -155,13 +155,13 @@ export function ExecutiveInsightPanel({ items, isHistoryMode }: ExecutiveInsight
 
   // QUEUE MODE
   return (
-    <div className="border border-[#333] dark:border-[#333] border-l-4 border-l-[#0d9488] dark:border-l-[#0d9488] rounded-lg bg-[#0f0f0f] dark:bg-[#0f0f0f] mb-4">
-      <div className="px-4 py-2 border-b border-[#333] dark:border-[#333]">
-        <h3 className="text-xs font-bold text-[#d97706] dark:text-[#d97706] uppercase tracking-wide">
+    <div className="border border-border border-l-4 border-l-teal-500 rounded-lg bg-card mb-4">
+      <div className="px-4 py-2 border-b border-border">
+        <h3 className="text-xs font-bold text-amber-600 uppercase tracking-wide">
           EXECUTIVE COMMITTEE UPDATE
         </h3>
       </div>
-      <div className="flex flex-wrap items-center divide-x divide-[#333] dark:divide-[#333]">
+      <div className="flex flex-wrap items-center divide-x divide-border">
         <KPIBlock
           label="Pending decisions"
           value={queueMetrics.pendingCount}
@@ -187,13 +187,13 @@ export function ExecutiveInsightPanel({ items, isHistoryMode }: ExecutiveInsight
         />
       </div>
       {/* Risk line */}
-      <div className="px-4 py-2 border-t border-[#333] dark:border-[#333]">
+      <div className="px-4 py-2 border-t border-border">
         {queueMetrics.agingBreachCount > 0 ? (
-          <p className="text-xs font-medium text-[#d97706] dark:text-[#d97706]">
+          <p className="text-xs font-medium text-amber-600">
             Risk: {queueMetrics.agingBreachCount} item{queueMetrics.agingBreachCount > 1 ? 's' : ''} exceed governance decision target (3 days).
           </p>
         ) : (
-          <p className="text-xs font-medium text-[#0d9488] dark:text-[#0d9488]">
+          <p className="text-xs font-medium text-teal-600">
             No governance breaches in queue.
           </p>
         )}
