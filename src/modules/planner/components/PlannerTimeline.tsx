@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { addDays, startOfWeek, format, differenceInDays, isToday, getDay, subDays, isBefore, startOfDay } from 'date-fns';
 import { CreateTaskModal } from './kanban';
 import { usePlannerWorkstreams, Workstream } from '../hooks/usePlannerWorkstreams';
+import { WorkstreamDrawer } from './workstreams/WorkstreamDrawer';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -186,6 +187,19 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   const [collapsedWorkstreams, setCollapsedWorkstreams] = useState<Set<string>>(new Set());
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
+  const [selectedWorkstream, setSelectedWorkstream] = useState<Workstream | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Open drawer for workstream
+  const openWorkstreamDrawer = useCallback((ws: Workstream) => {
+    setSelectedWorkstream(ws);
+    setIsDrawerOpen(true);
+  }, []);
+
+  const closeWorkstreamDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+    setSelectedWorkstream(null);
+  }, []);
   const gridRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -718,18 +732,26 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             {swimlanes.map(lane => (
               <div key={lane.id}>
                 {/* Workstream Header (V2 Spec: With lead display + task summary) */}
-                <button
-                  onClick={() => toggleCollapse(lane.id)}
-                  className="w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-left"
+                <div
+                  className="w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
                   style={{ minHeight: SWIMLANE_HEADER_HEIGHT }}
                 >
-                  {/* Collapse Chevron */}
-                  <ChevronDown
-                    className={cn(
-                      "w-4 h-4 text-slate-400 transition-transform mt-0.5 flex-shrink-0",
-                      lane.collapsed && "-rotate-90"
-                    )}
-                  />
+                  {/* Collapse Chevron - clickable for expand/collapse */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleCollapse(lane.id);
+                    }}
+                    className="p-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
+                    aria-label={lane.collapsed ? 'Expand' : 'Collapse'}
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 text-slate-400 transition-transform",
+                        lane.collapsed && "-rotate-90"
+                      )}
+                    />
+                  </button>
 
                   {/* Color Dot */}
                   <div
@@ -737,11 +759,20 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                     style={{ backgroundColor: lane.color }}
                   />
 
-                  {/* Workstream Info */}
+                  {/* Workstream Info - clicking name opens drawer */}
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    <button
+                      onClick={() => {
+                        // Find the full workstream object to pass to drawer
+                        const fullWorkstream = workstreams.find(ws => ws.id === lane.id);
+                        if (fullWorkstream) {
+                          openWorkstreamDrawer(fullWorkstream);
+                        }
+                      }}
+                      className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors text-left"
+                    >
                       {lane.name}
-                    </div>
+                    </button>
 
                     {/* Team Lead (V2 Spec: CRITICAL ADDITION) */}
                     <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 mt-0.5">
@@ -771,7 +802,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                       )}
                     </div>
                   </div>
-                </button>
+                </div>
 
                 {/* Empty space for collapsed lanes, or task row space */}
                 {!lane.collapsed && (
@@ -1083,6 +1114,13 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
         {/* Create Task Modal */}
         <CreateTaskModal open={isCreateOpen} onOpenChange={setIsCreateOpen} />
+
+        {/* Workstream Drawer */}
+        <WorkstreamDrawer
+          workstream={selectedWorkstream}
+          isOpen={isDrawerOpen}
+          onClose={closeWorkstreamDrawer}
+        />
       </div>
     </TooltipProvider>
   );
