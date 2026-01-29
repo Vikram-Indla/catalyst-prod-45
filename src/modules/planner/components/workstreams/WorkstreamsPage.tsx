@@ -3,10 +3,21 @@
 // Enterprise Clean design with SVG icons per spec
 // ============================================================
 
-import '@/styles/workstreams.css';
-import '@/styles/workstreams-enterprise-clean.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, ChevronDown, List, LayoutGrid, Check, X } from 'lucide-react';
+import {
+  Search,
+  ChevronDown,
+  List,
+  LayoutGrid,
+  Check,
+  X,
+  Plus,
+  AlertTriangle,
+  Archive,
+  ArchiveRestore,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount, useUpdateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
 import { InlineLeadSelect } from './InlineLeadSelect';
@@ -32,46 +43,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-// =====================================================
-// SVG ICON COMPONENTS — Enterprise Style (1.5px stroke)
-// =====================================================
-
-const EditIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-  </svg>
-);
-
-const ArchiveBoxIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="4" width="20" height="5" rx="1" />
-    <path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9" />
-    <path d="M10 13h4" />
-  </svg>
-);
-
-const TrashIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 6h18" />
-    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-    <line x1="10" y1="11" x2="10" y2="17" />
-    <line x1="14" y1="11" x2="14" y2="17" />
-  </svg>
-);
-
-const RestoreIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-    <path d="M3 3v5h5" />
-  </svg>
-);
-
-const WORKSTREAM_COLORS = [
-  '#06b6d4', '#8b5cf6', '#6366f1', '#f97316', '#ec4899', '#84cc16', '#14b8a6',
-  '#2563eb', '#ef4444', '#10b981', '#f59e0b', '#0d9488'
-];
+const iconProps = { className: 'w-4 h-4', strokeWidth: 1.5 } as const;
 
 export function WorkstreamsPage() {
   const navigate = useNavigate();
@@ -268,273 +240,289 @@ export function WorkstreamsPage() {
   }
 
   return (
-    <div className="ws-page min-h-screen workstreams-enterprise-clean" data-component="workstreams">
-      {/* Dashboard-style Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-        <div className="page-header-left">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Workstreams
-          </h1>
-          <p className="page-subtitle text-sm text-slate-500 dark:text-slate-400">
-            {summary.total} workstream{summary.total !== 1 ? 's' : ''}{summary.atRisk + summary.critical > 0 ? ` · ${summary.atRisk + summary.critical} need attention` : ''}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          {/* New Workstream Button */}
-          <button 
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-            onClick={() => setIsCreateModalOpen(true)}
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-            <span className="hidden sm:inline">New Workstream</span>
-            <span className="sm:hidden">New</span>
-          </button>
-
-          {/* Archived Button with count badge */}
-          <button
-            onClick={toggleArchiveView}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-          >
-            <ArchiveBoxIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">Archived</span>
-            {archivedCount > 0 && (
-              <span className="px-1.5 py-0.5 text-xs font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
-                {archivedCount}
-              </span>
-            )}
-          </button>
-
-          {/* View Toggle */}
-          <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-0.5">
-            <button
-              onClick={() => setView('list')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-medium transition-colors ${
-                view === 'list'
-                  ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-              }`}
-            >
-              <List className="w-4 h-4" />
-              <span className="hidden sm:inline">List</span>
-            </button>
-            <button
-              onClick={() => setView('grid')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-medium transition-colors ${
-                view === 'grid'
-                  ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-              }`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-              <span className="hidden sm:inline">Grid</span>
-            </button>
+    <div className="min-h-screen bg-surface-1" data-component="workstreams">
+      <header className="bg-surface-0 border-b border-border-subtle">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-text-primary">Workstreams</h1>
+            <p className="text-sm text-text-muted">
+              {summary.total} workstream{summary.total !== 1 ? 's' : ''}
+              {summary.atRisk + summary.critical > 0
+                ? ` · ${summary.atRisk + summary.critical} need attention`
+                : ''}
+            </p>
           </div>
-        </div>
-      </div>
 
-      <main className="p-6 max-w-[1600px] mx-auto">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <button
+              className="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-brand-primary text-brand-primary-foreground text-sm font-medium hover:bg-brand-primary-hover transition-colors"
+              onClick={() => setIsCreateModalOpen(true)}
+            >
+              <Plus {...iconProps} />
+              <span className="hidden sm:inline">New Workstream</span>
+              <span className="sm:hidden">New</span>
+            </button>
 
-        {/* KPI Section - Sentence Case Labels */}
-        {!showArchived && (
-          <div className="kpi-section ws-summary-bar">
-            <div className="kpi-row flex gap-3 flex-wrap">
-              <button 
-                className={`kpi-card ${!healthFilter ? 'selected' : ''}`}
-                onClick={() => setHealthFilter(null)}
+            <button
+              onClick={toggleArchiveView}
+              className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border-default bg-surface-0 text-text-secondary text-sm hover:bg-surface-2 transition-colors"
+            >
+              <Archive {...iconProps} />
+              <span className="hidden sm:inline">Archived</span>
+              {archivedCount > 0 && (
+                <span className="px-1.5 py-0.5 text-xs font-medium rounded bg-surface-2 text-text-muted">
+                  {archivedCount}
+                </span>
+              )}
+            </button>
+
+            <div className="flex items-center rounded-lg border border-border-default bg-surface-2 p-0.5">
+              <button
+                onClick={() => setView('list')}
+                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  view === 'list'
+                    ? 'bg-surface-0 text-text-primary shadow-xs'
+                    : 'text-text-muted hover:text-text-secondary'
+                }`}
+                aria-pressed={view === 'list'}
               >
-                <div className="kpi-value">{summary.total}</div>
-                <div className="kpi-label">Workstreams</div>
+                <List {...iconProps} />
+                <span className="hidden sm:inline">List</span>
               </button>
-              <div className="kpi-card">
-                <div className="kpi-value">{summary.tasks}</div>
-                <div className="kpi-label">Tasks</div>
-              </div>
-              <button 
-                className={`kpi-card ${healthFilter === 'healthy' ? 'selected' : ''}`}
-                onClick={() => setHealthFilter(healthFilter === 'healthy' ? null : 'healthy')}
+              <button
+                onClick={() => setView('grid')}
+                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  view === 'grid'
+                    ? 'bg-surface-0 text-text-primary shadow-xs'
+                    : 'text-text-muted hover:text-text-secondary'
+                }`}
+                aria-pressed={view === 'grid'}
               >
-                <div className="kpi-value flex items-center gap-2">
-                  {summary.healthy}
-                  <Check className="w-5 h-5 text-green-600" />
-                </div>
-                <div className="kpi-label">On Track</div>
-              </button>
-              <button 
-                className={`kpi-card ${healthFilter === 'at-risk' ? 'selected' : ''}`}
-                onClick={() => setHealthFilter(healthFilter === 'at-risk' ? null : 'at-risk')}
-              >
-                <div className="kpi-value flex items-center gap-2">
-                  {summary.atRisk}
-                  <span className="text-amber-600">⚠</span>
-                </div>
-                <div className="kpi-label">At Risk</div>
-              </button>
-              <button 
-                className={`kpi-card ${healthFilter === 'critical' ? 'selected' : ''}`}
-                onClick={() => setHealthFilter(healthFilter === 'critical' ? null : 'critical')}
-              >
-                <div className="kpi-value flex items-center gap-2">
-                  {summary.critical}
-                  <span className="text-red-600">●</span>
-                </div>
-                <div className="kpi-label">Critical</div>
+                <LayoutGrid {...iconProps} />
+                <span className="hidden sm:inline">Grid</span>
               </button>
             </div>
           </div>
-        )}
+        </div>
+      </header>
+
+      <main className="px-4 sm:px-6 py-5 space-y-5 max-w-[1600px] mx-auto">
+        {/* KPI Bar */}
+        <section className="bg-surface-0 border border-border-subtle rounded-xl p-4">
+          <div className="flex flex-wrap gap-3">
+            <button
+              className={`min-w-[120px] rounded-xl border px-5 py-4 text-left transition-colors ${
+                !healthFilter
+                  ? 'border-brand-primary bg-brand-primary-light'
+                  : 'border-border-default bg-surface-0 hover:bg-surface-2'
+              }`}
+              onClick={() => setHealthFilter(null)}
+            >
+              <div className="text-kpi-sm font-bold text-text-primary leading-none">{summary.total}</div>
+              <div className="mt-2 text-sm text-text-muted">Workstreams</div>
+            </button>
+
+            <div className="min-w-[120px] rounded-xl border border-border-default bg-surface-0 px-5 py-4">
+              <div className="text-kpi-sm font-bold text-text-primary leading-none">{summary.tasks}</div>
+              <div className="mt-2 text-sm text-text-muted">Tasks</div>
+            </div>
+
+            <button
+              className={`min-w-[120px] rounded-xl border px-5 py-4 text-left transition-colors ${
+                healthFilter === 'healthy'
+                  ? 'border-brand-primary bg-brand-primary-light'
+                  : 'border-border-default bg-surface-0 hover:bg-surface-2'
+              }`}
+              onClick={() => setHealthFilter(healthFilter === 'healthy' ? null : 'healthy')}
+            >
+              <div className="flex items-center gap-2 text-kpi-sm font-bold text-text-primary leading-none">
+                {summary.healthy}
+                <Check {...iconProps} className="w-5 h-5 text-success" />
+              </div>
+              <div className="mt-2 text-sm text-text-muted">On Track</div>
+            </button>
+
+            <button
+              className={`min-w-[120px] rounded-xl border px-5 py-4 text-left transition-colors ${
+                healthFilter === 'at-risk'
+                  ? 'border-brand-primary bg-brand-primary-light'
+                  : 'border-border-default bg-surface-0 hover:bg-surface-2'
+              }`}
+              onClick={() => setHealthFilter(healthFilter === 'at-risk' ? null : 'at-risk')}
+            >
+              <div className="flex items-center gap-2 text-kpi-sm font-bold text-text-primary leading-none">
+                {summary.atRisk}
+                <AlertTriangle {...iconProps} className="w-5 h-5 text-warning" />
+              </div>
+              <div className="mt-2 text-sm text-text-muted">At Risk</div>
+            </button>
+
+            <button
+              className={`min-w-[120px] rounded-xl border px-5 py-4 text-left transition-colors ${
+                healthFilter === 'critical'
+                  ? 'border-brand-primary bg-brand-primary-light'
+                  : 'border-border-default bg-surface-0 hover:bg-surface-2'
+              }`}
+              onClick={() => setHealthFilter(healthFilter === 'critical' ? null : 'critical')}
+            >
+              <div className="flex items-center gap-2 text-kpi-sm font-bold text-text-primary leading-none">
+                {summary.critical}
+                <span className="inline-block w-3.5 h-3.5 rounded-full bg-danger" aria-hidden />
+              </div>
+              <div className="mt-2 text-sm text-text-muted">Critical</div>
+            </button>
+          </div>
+        </section>
 
         {/* Toolbar */}
-        <div className="ws-toolbar">
-          <div className="ws-toolbar-left">
-            <div className="ws-search-input">
-              <Search className="ws-search-icon w-4 h-4" strokeWidth={2} />
-              <input 
+        <section className="bg-surface-0 border border-border-subtle rounded-xl p-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="relative max-w-md w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" strokeWidth={1.5} />
+              <input
                 type="search"
                 placeholder="Search workstreams..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 rounded-lg border border-border-default bg-surface-0 pl-10 pr-14 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring/20"
               />
-              <span className="ws-search-shortcut">⌘K</span>
+              <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-border-default bg-surface-2 px-2 py-0.5 text-2xs text-text-muted">
+                ⌘K
+              </kbd>
             </div>
-            
-            {/* Health Filter Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="ws-btn ws-btn-secondary">
-                  {healthFilter ? (
-                    <>
-                      <span className={`w-2 h-2 rounded-full ${
-                        healthFilter === 'healthy' ? 'bg-green-500' :
-                        healthFilter === 'at-risk' ? 'bg-amber-500' : 'bg-red-500'
-                      }`} />
-                      {healthFilter === 'healthy' ? 'On Track' : 
-                       healthFilter === 'at-risk' ? 'At Risk' : 'Critical'}
-                    </>
-                  ) : (
-                    'Health'
-                  )}
-                  <ChevronDown className="w-4 h-4" strokeWidth={2} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-40">
-                <DropdownMenuItem onClick={() => setHealthFilter(null)}>
-                  <span className="w-2 h-2 rounded-full bg-gray-400 mr-2" />
-                  All
-                  {!healthFilter && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setHealthFilter('healthy')}>
-                  <span className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                  On Track
-                  {healthFilter === 'healthy' && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setHealthFilter('at-risk')}>
-                  <span className="w-2 h-2 rounded-full bg-amber-500 mr-2" />
-                  At Risk
-                  {healthFilter === 'at-risk' && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setHealthFilter('critical')}>
-                  <span className="w-2 h-2 rounded-full bg-red-500 mr-2" />
-                  Critical
-                  {healthFilter === 'critical' && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
 
-            {/* Lead Filter Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="ws-btn ws-btn-secondary">
-                  {leadFilter ? (
-                    leadFilter === 'unassigned' 
-                      ? 'Unassigned' 
-                      : uniqueLeads.find(l => l.id === leadFilter)?.name || 'Lead'
-                  ) : (
-                    'Lead'
-                  )}
-                  <ChevronDown className="w-4 h-4" strokeWidth={2} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-48">
-                <DropdownMenuItem onClick={() => setLeadFilter(null)}>
-                  All Leads
-                  {!leadFilter && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLeadFilter('unassigned')}>
-                  Unassigned
-                  {leadFilter === 'unassigned' && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-                {uniqueLeads.length > 0 && <DropdownMenuSeparator />}
-                {uniqueLeads.map(lead => (
-                  <DropdownMenuItem key={lead.id} onClick={() => setLeadFilter(lead.id)}>
-                    {lead.name}
-                    {leadFilter === lead.id && <Check className="w-4 h-4 ml-auto" />}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Health Filter Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="inline-flex items-center gap-2 h-10 px-3 rounded-lg border border-border-default bg-surface-0 text-sm text-text-secondary hover:bg-surface-2 transition-colors">
+                    {healthFilter ? (
+                      <>
+                        <span
+                          className={
+                            `w-2 h-2 rounded-full ` +
+                            (healthFilter === 'healthy'
+                              ? 'bg-success'
+                              : healthFilter === 'at-risk'
+                                ? 'bg-warning'
+                                : 'bg-danger')
+                          }
+                        />
+                        {healthFilter === 'healthy'
+                          ? 'On Track'
+                          : healthFilter === 'at-risk'
+                            ? 'At Risk'
+                            : 'Critical'}
+                      </>
+                    ) : (
+                      'Health'
+                    )}
+                    <ChevronDown {...iconProps} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-40">
+                  <DropdownMenuItem onClick={() => setHealthFilter(null)}>
+                    <span className="w-2 h-2 rounded-full bg-text-muted mr-2" />
+                    All
+                    {!healthFilter && <Check {...iconProps} className="ml-auto" />}
                   </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setHealthFilter('healthy')}>
+                    <span className="w-2 h-2 rounded-full bg-success mr-2" />
+                    On Track
+                    {healthFilter === 'healthy' && <Check {...iconProps} className="ml-auto" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setHealthFilter('at-risk')}>
+                    <span className="w-2 h-2 rounded-full bg-warning mr-2" />
+                    At Risk
+                    {healthFilter === 'at-risk' && <Check {...iconProps} className="ml-auto" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setHealthFilter('critical')}>
+                    <span className="w-2 h-2 rounded-full bg-danger mr-2" />
+                    Critical
+                    {healthFilter === 'critical' && <Check {...iconProps} className="ml-auto" />}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            {/* Clear Filters */}
-            {(healthFilter || leadFilter) && (
-              <button 
-                className="ws-btn ws-btn-ghost"
-                onClick={() => {
-                  setHealthFilter(null);
-                  setLeadFilter(null);
-                }}
-              >
-                <X className="w-4 h-4" strokeWidth={2} />
-                Clear
-              </button>
-            )}
+              {/* Lead Filter Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="inline-flex items-center gap-2 h-10 px-3 rounded-lg border border-border-default bg-surface-0 text-sm text-text-secondary hover:bg-surface-2 transition-colors">
+                    {leadFilter ? (
+                      leadFilter === 'unassigned'
+                        ? 'Unassigned'
+                        : uniqueLeads.find(l => l.id === leadFilter)?.name || 'Lead'
+                    ) : (
+                      'Lead'
+                    )}
+                    <ChevronDown {...iconProps} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuItem onClick={() => setLeadFilter(null)}>
+                    All Leads
+                    {!leadFilter && <Check {...iconProps} className="ml-auto" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setLeadFilter('unassigned')}>
+                    Unassigned
+                    {leadFilter === 'unassigned' && <Check {...iconProps} className="ml-auto" />}
+                  </DropdownMenuItem>
+                  {uniqueLeads.length > 0 && <DropdownMenuSeparator />}
+                  {uniqueLeads.map(lead => (
+                    <DropdownMenuItem key={lead.id} onClick={() => setLeadFilter(lead.id)}>
+                      {lead.name}
+                      {leadFilter === lead.id && <Check {...iconProps} className="ml-auto" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {(healthFilter || leadFilter) && (
+                <button
+                  className="inline-flex items-center gap-2 h-10 px-3 rounded-lg border border-border-default bg-surface-0 text-sm text-text-secondary hover:bg-surface-2 transition-colors"
+                  onClick={() => {
+                    setHealthFilter(null);
+                    setLeadFilter(null);
+                  }}
+                >
+                  <X {...iconProps} />
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        </section>
 
         {/* Loading State */}
         {isLoading && (
-          <div className="ws-list-container">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="ws-skeleton-row">
-                <div className="ws-skeleton ws-skeleton-checkbox" />
-                <div>
-                  <div className="ws-skeleton ws-skeleton-text" style={{ width: '120px' }} />
-                  <div className="ws-skeleton ws-skeleton-text-sm" style={{ width: '60px' }} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="ws-skeleton ws-skeleton-avatar" />
-                  <div className="ws-skeleton ws-skeleton-text" style={{ width: '100px' }} />
-                </div>
-                <div className="ws-skeleton ws-skeleton-badge" />
-                <div className="ws-skeleton ws-skeleton-text" style={{ width: '30px' }} />
-                <div className="ws-skeleton ws-skeleton-text" style={{ width: '30px' }} />
-                <div />
-              </div>
-            ))}
+          <div className="bg-surface-0 border border-border-subtle rounded-xl p-6">
+            <div className="animate-pulse space-y-3">
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} className="h-14 rounded-lg bg-surface-2" />
+              ))}
+            </div>
           </div>
         )}
 
         {/* Empty State */}
         {!isLoading && filteredWorkstreams.length === 0 && (
-          <div className="ws-empty-state">
-            <div className="ws-empty-state-icon">
-              <LayoutGrid className="w-8 h-8" strokeWidth={2} />
+          <div className="bg-surface-0 border border-border-subtle rounded-xl p-10 text-center">
+            <div className="mx-auto mb-3 w-10 h-10 rounded-xl bg-surface-2 flex items-center justify-center">
+              <LayoutGrid className="w-5 h-5 text-text-muted" strokeWidth={1.5} />
             </div>
-            <div className="ws-empty-state-title">
-              No workstreams found
-            </div>
-            <div className="ws-empty-state-text">
-              {search || healthFilter || leadFilter 
-                ? 'Try adjusting your filters' 
+            <div className="text-sm font-medium text-text-primary">No workstreams found</div>
+            <div className="mt-1 text-sm text-text-muted">
+              {search || healthFilter || leadFilter
+                ? 'Try adjusting your filters'
                 : 'Create your first workstream to get started'}
             </div>
             {!search && !healthFilter && !leadFilter && (
-              <button className="ws-btn ws-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
+              <button
+                className="mt-4 inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-brand-primary text-brand-primary-foreground text-sm font-medium hover:bg-brand-primary-hover transition-colors"
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                <Plus {...iconProps} />
                 New Workstream
               </button>
             )}
@@ -543,111 +531,121 @@ export function WorkstreamsPage() {
 
         {/* List View */}
         {!isLoading && filteredWorkstreams.length > 0 && view === 'list' && (
-          <div className="table-container ws-list-container">
+          <div className="bg-surface-0 border border-border-subtle rounded-xl overflow-hidden">
             <table className="w-full">
-              {/* Table Header - Sentence Case */}
               <thead>
-                <tr>
-                  <th style={{ width: 200 }}>Name</th>
-                  <th style={{ width: 180 }}>Lead</th>
-                  <th style={{ width: 120 }}>Health</th>
-                  <th style={{ width: 80 }}>Tasks</th>
-                  <th style={{ width: 80 }}>Overdue</th>
-                  <th style={{ width: 100 }}><span className="sr-only">Actions</span></th>
+                <tr className="h-12 bg-surface-2 border-b border-border-default">
+                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 260 }}>Name</th>
+                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 220 }}>Lead</th>
+                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 160 }}>Health</th>
+                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 100 }}>Tasks</th>
+                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 110 }}>Overdue</th>
+                  <th className="px-6 text-right" style={{ width: 120 }}>
+                    <span className="sr-only">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
+                {filteredWorkstreams.map((ws, index) => {
+                  const healthLabel =
+                    ws.health === 'healthy'
+                      ? 'On Track'
+                      : ws.health === 'at-risk'
+                        ? 'At Risk'
+                        : ws.health === 'critical'
+                          ? 'Critical'
+                          : 'Locked';
+                  const healthClass =
+                    ws.health === 'healthy'
+                      ? 'text-success'
+                      : ws.health === 'at-risk'
+                        ? 'text-warning'
+                        : ws.health === 'critical'
+                          ? 'text-danger'
+                          : 'text-text-muted';
 
-            {/* Rows */}
-            {filteredWorkstreams.map((ws, index) => (
-              <tr 
-                key={ws.id}
-                className={`group cursor-pointer ${ws.health === 'locked' ? 'locked' : ''} ${selectedIds.has(ws.id) ? 'selected' : ''} ${focusedIndex === index ? 'focused' : ''}`}
-                onClick={(e) => {
-                  if ((e.target as HTMLElement).closest('.row-actions')) return;
-                  openDrawer(ws);
-                }}
-              >
-                {/* Name */}
-                <td>
-                  <span className="workstream-name font-medium text-slate-900 dark:text-slate-100">{ws.name}</span>
-                </td>
-
-                {/* Lead - Inline editable when unassigned */}
-                <td onClick={(e) => e.stopPropagation()}>
-                  <InlineLeadSelect
-                    workstreamId={ws.id}
-                    workstreamColor={ws.color}
-                    currentLead={ws.lead}
-                    onAssignLead={(userId) => {
-                      addMember.mutate({
-                        workstreamId: ws.id,
-                        userId,
-                        role: 'lead',
-                      });
-                    }}
-                  />
-                </td>
-
-                {/* Health - DOT + TEXT ONLY */}
-                <td>
-                  <span className={`health-badge health-badge-${ws.health === 'healthy' ? 'success' : ws.health === 'at-risk' ? 'warning' : 'critical'}`}>
-                    <span className="health-dot" />
-                    {ws.health === 'healthy' && 'On Track'}
-                    {ws.health === 'at-risk' && 'At Risk'}
-                    {ws.health === 'critical' && 'Critical'}
-                    {ws.health === 'locked' && 'Locked'}
-                  </span>
-                </td>
-
-                {/* Tasks */}
-                <td className="font-medium">{ws.taskCount || 0}</td>
-
-                {/* Overdue */}
-                <td className={`font-medium ${(ws.overdueCount || 0) > 0 ? 'text-red-600' : ''}`}>
-                  {ws.overdueCount || 0}
-                </td>
-
-                {/* Actions - Hover reveal */}
-                <td>
-                  <div
-                    className="row-actions flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button 
-                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                      onClick={(e) => handleQuickArchive(ws, e)}
-                      title={ws.is_archived ? 'Unarchive' : 'Archive'}
+                  return (
+                    <tr
+                      key={ws.id}
+                      className={`group h-14 border-b border-border-subtle last:border-b-0 cursor-pointer transition-colors ${
+                        selectedIds.has(ws.id) ? 'bg-brand-primary-light' : 'hover:bg-surface-2'
+                      } ${focusedIndex === index ? 'ring-1 ring-focus-ring/30' : ''} ${ws.health === 'locked' ? 'opacity-70' : ''}`}
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('[data-row-actions]')) return;
+                        openDrawer(ws);
+                      }}
                     >
-                      {ws.is_archived ? (
-                        <RestoreIcon className="w-4 h-4" />
-                      ) : (
-                        <ArchiveBoxIcon className="w-4 h-4" />
-                      )}
-                    </button>
-                    <button 
-                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                      onClick={(e) => handleQuickEdit(ws, e)}
-                      title="Rename / change prefix"
-                    >
-                      <EditIcon className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="action-btn w-8 h-8 flex items-center justify-center rounded text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-30 disabled:cursor-not-allowed"
-                      onClick={(e) => handleRequestDelete(ws, e)}
-                      disabled={(ws.taskCount || 0) > 0}
-                      title={
-                        (ws.taskCount || 0) > 0
-                          ? 'Cannot delete: tasks are linked'
-                          : 'Delete permanently'
-                      }
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      <td className="px-6">
+                        <span className="text-sm font-medium text-text-primary">{ws.name}</span>
+                      </td>
+
+                      <td className="px-6" onClick={(e) => e.stopPropagation()}>
+                        <InlineLeadSelect
+                          workstreamId={ws.id}
+                          workstreamColor={ws.color}
+                          currentLead={ws.lead}
+                          onAssignLead={(userId) => {
+                            addMember.mutate({
+                              workstreamId: ws.id,
+                              userId,
+                              role: 'lead',
+                            });
+                          }}
+                        />
+                      </td>
+
+                      <td className="px-6">
+                        <span className={`inline-flex items-center gap-2 text-sm ${healthClass}`}>
+                          <span className="w-2 h-2 rounded-full bg-current" aria-hidden />
+                          <span className="text-sm text-text-secondary">{healthLabel}</span>
+                        </span>
+                      </td>
+
+                      <td className="px-6">
+                        <span className="text-sm font-medium text-text-primary">{ws.taskCount || 0}</span>
+                      </td>
+
+                      <td className="px-6">
+                        <span
+                          className={`text-sm font-medium ${(ws.overdueCount || 0) > 0 ? 'text-danger' : 'text-text-primary'}`}
+                        >
+                          {ws.overdueCount || 0}
+                        </span>
+                      </td>
+
+                      <td className="px-6">
+                        <div
+                          data-row-actions
+                          className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            className="w-8 h-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-warning hover:bg-warning-bg transition-colors"
+                            onClick={(e) => handleQuickArchive(ws, e)}
+                            title={ws.is_archived ? 'Restore' : 'Archive'}
+                          >
+                            {ws.is_archived ? <ArchiveRestore {...iconProps} /> : <Archive {...iconProps} />}
+                          </button>
+                          <button
+                            className="w-8 h-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-brand-primary hover:bg-brand-primary-light transition-colors"
+                            onClick={(e) => handleQuickEdit(ws, e)}
+                            title="Edit"
+                          >
+                            <Pencil {...iconProps} />
+                          </button>
+                          <button
+                            className="w-8 h-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-danger-bg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            onClick={(e) => handleRequestDelete(ws, e)}
+                            disabled={(ws.taskCount || 0) > 0}
+                            title={(ws.taskCount || 0) > 0 ? 'Cannot delete: tasks are linked' : 'Delete permanently'}
+                          >
+                            <Trash2 {...iconProps} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -655,57 +653,64 @@ export function WorkstreamsPage() {
 
         {/* Grid View - Enterprise Clean */}
         {!isLoading && filteredWorkstreams.length > 0 && view === 'grid' && (
-          <div className="grid-container grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+          <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
             {filteredWorkstreams.map((ws) => {
               return (
                 <div 
                   key={ws.id}
-                  className={`workstream-card grid-card bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${ws.health === 'locked' ? 'locked' : ''}`}
+                  className={`bg-surface-0 border border-border-subtle rounded-xl p-4 cursor-pointer transition-all hover:shadow-sm hover:-translate-y-0.5 ${ws.health === 'locked' ? 'opacity-70' : ''}`}
                   onClick={() => openDrawer(ws)}
                 >
                   {/* Card Header: Name + Health Badge */}
-                  <div className="card-header flex items-start justify-between mb-3">
-                    <span className="card-title font-semibold text-slate-900 dark:text-slate-100">{ws.name}</span>
-                    <span className={`health-badge health-badge-${ws.health === 'healthy' ? 'success' : ws.health === 'at-risk' ? 'warning' : 'critical'}`}>
-                      <span className="health-dot" />
-                      {ws.health === 'healthy' && 'On Track'}
-                      {ws.health === 'at-risk' && 'At Risk'}
-                      {ws.health === 'critical' && 'Critical'}
-                      {ws.health === 'locked' && 'Locked'}
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <span className="font-semibold text-text-primary">{ws.name}</span>
+                    <span
+                      className={`inline-flex items-center gap-2 text-sm ${
+                        ws.health === 'healthy'
+                          ? 'text-success'
+                          : ws.health === 'at-risk'
+                            ? 'text-warning'
+                            : ws.health === 'critical'
+                              ? 'text-danger'
+                              : 'text-text-muted'
+                      }`}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-current" aria-hidden />
+                      <span className="text-sm text-text-secondary">
+                        {ws.health === 'healthy' && 'On Track'}
+                        {ws.health === 'at-risk' && 'At Risk'}
+                        {ws.health === 'critical' && 'Critical'}
+                        {ws.health === 'locked' && 'Locked'}
+                      </span>
                     </span>
                   </div>
                   
                   {/* Lead Row */}
-                  <div className="card-lead flex items-center gap-2 py-2.5 border-t border-b border-slate-100 dark:border-slate-700 mb-3">
-                    <span className="text-xs text-slate-400">Lead:</span>
+                  <div className="flex items-center gap-2 py-2.5 border-t border-b border-border-subtle mb-3">
+                    <span className="text-xs text-text-muted">Lead</span>
                     {ws.lead ? (
-                      <div className="lead-cell-assigned flex items-center gap-2">
-                        <span 
-                          className={`lead-avatar w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-semibold text-white avatar-${['blue', 'purple', 'pink', 'orange', 'teal', 'indigo'][ws.lead.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 6]}`}
-                          style={{ background: ws.color }}
-                        >
+                      <div className="flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-lg bg-surface-2 text-text-primary flex items-center justify-center text-2xs font-semibold">
                           {ws.lead.initials}
                         </span>
-                        <span className="text-sm text-slate-700 dark:text-slate-200">{ws.lead.name}</span>
+                        <span className="text-sm text-text-secondary">{ws.lead.name}</span>
                       </div>
                     ) : (
-                      <button className="lead-cell-empty text-slate-400 hover:text-blue-600 text-sm">
-                        — Click to assign
-                      </button>
+                      <span className="text-sm text-text-muted">Unassigned</span>
                     )}
                   </div>
                   
                   {/* Stats: Tasks + Overdue ONLY (Done and Progress hidden via CSS) */}
-                  <div className="card-stats flex gap-5">
-                    <div className="card-stat text-center">
-                      <div className="card-stat-value text-xl font-bold text-slate-900 dark:text-slate-100">{ws.taskCount || 0}</div>
-                      <div className="card-stat-label text-xs text-slate-500 mt-1">Tasks</div>
+                  <div className="flex gap-6">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-text-primary">{ws.taskCount || 0}</div>
+                      <div className="text-xs text-text-muted mt-1">Tasks</div>
                     </div>
-                    <div className="card-stat text-center">
-                      <div className={`card-stat-value text-xl font-bold ${(ws.overdueCount || 0) > 0 ? 'text-red-600' : 'text-slate-900 dark:text-slate-100'}`}>
+                    <div className="text-center">
+                      <div className={`text-xl font-bold ${(ws.overdueCount || 0) > 0 ? 'text-danger' : 'text-text-primary'}`}>
                         {ws.overdueCount || 0}
                       </div>
-                      <div className="card-stat-label text-xs text-slate-500 mt-1">Overdue</div>
+                      <div className="text-xs text-text-muted mt-1">Overdue</div>
                     </div>
                   </div>
                 </div>
