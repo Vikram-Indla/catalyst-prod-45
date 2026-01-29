@@ -1,11 +1,10 @@
 // ============================================================
-// DRAWER HEADER V2 - ENTERPRISE CLEAN DESIGN
-// 18px title (not 24px), status bar, inline fields
+// MODAL HEADER V2 - ENTERPRISE CLEAN DESIGN
+// 18px title (not 24px), status bar with LABELS, inline fields
 // ============================================================
 
 import { useState, useMemo } from 'react';
-import { X, ChevronDown, Check, Link2, Eye, Pin, MoreHorizontal } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { X, ChevronDown, Check, Link2, MoreHorizontal } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
@@ -54,66 +53,6 @@ function useStatuses() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
-}
-
-// Status Field Component for Status Bar
-function StatusBarField({
-  label,
-  value,
-  dotColor,
-  onClick,
-  hasChevron = true,
-}: {
-  label: string;
-  value: string;
-  dotColor?: string;
-  onClick?: () => void;
-  hasChevron?: boolean;
-}) {
-  return (
-    <div className="task-modal__status-field">
-      <span className="task-modal__status-label">{label}</span>
-      <button
-        onClick={onClick}
-        className={cn(
-          "task-modal__status-value",
-          !onClick && "cursor-default"
-        )}
-        disabled={!onClick}
-      >
-        {dotColor && (
-          <span
-            className="task-modal__status-dot"
-            style={{ backgroundColor: dotColor }}
-          />
-        )}
-        <span>{value}</span>
-        {hasChevron && onClick && (
-          <span className="task-modal__status-chevron">▾</span>
-        )}
-      </button>
-    </div>
-  );
-}
-
-// Assignee Field for Status Bar
-function AssigneeStatusField({ assignee }: { assignee: any }) {
-  const initials = assignee?.full_name
-    ?.split(' ')
-    .map((n: string) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase() || '?';
-
-  return (
-    <div className="task-modal__status-field">
-      <span className="task-modal__status-label">Assignee</span>
-      <div className="task-modal__status-value">
-        <span className="task-modal__assignee-avatar">{initials}</span>
-        <span>{assignee?.full_name || 'Unassigned'}</span>
-      </div>
-    </div>
-  );
 }
 
 // Status Selector Dropdown
@@ -213,6 +152,14 @@ export function DrawerHeader({
     toast.success('Link copied to clipboard');
   };
 
+  // Get assignee initials
+  const assigneeInitials = task.assignee?.full_name
+    ?.split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || '?';
+
   return (
     <div className="task-modal__header">
       {/* Top Row: Task ID + Workstream + Action Icons */}
@@ -235,18 +182,6 @@ export function DrawerHeader({
             title="Copy link"
           >
             <Link2 className="w-4 h-4" />
-          </button>
-          <button
-            className="task-modal__action-btn"
-            title="Watch task"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
-          <button
-            className="task-modal__action-btn"
-            title="Pin task"
-          >
-            <Pin className="w-4 h-4" />
           </button>
           <button
             className="task-modal__action-btn"
@@ -276,28 +211,8 @@ export function DrawerHeader({
         </div>
         <span className="task-modal__edit-hint">Click to edit</span>
       </div>
-      
-      {/* Saving indicator */}
-      <div className="flex items-center gap-1.5 mb-3">
-        {saveStatus === 'saved' ? (
-          <>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span className="text-xs text-emerald-600">All changes saved</span>
-          </>
-        ) : saveStatus === 'saving' ? (
-          <>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-            <span className="text-xs text-amber-600">Saving...</span>
-          </>
-        ) : (
-          <>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span className="text-xs text-emerald-600">All changes saved</span>
-          </>
-        )}
-      </div>
 
-      {/* Status Bar - 4 fields grid */}
+      {/* Status Bar - 4 fields grid with LABELS */}
       <div className="task-modal__status-bar">
         {/* Status */}
         <div className="task-modal__status-field">
@@ -310,23 +225,34 @@ export function DrawerHeader({
         </div>
         
         {/* Health */}
-        <StatusBarField
-          label="Health"
-          value={healthConfig.label}
-          dotColor={healthConfig.color}
-          hasChevron={false}
-        />
+        <div className="task-modal__status-field">
+          <span className="task-modal__status-label">Health</span>
+          <div className="task-modal__status-value">
+            <span
+              className="task-modal__status-dot"
+              style={{ backgroundColor: healthConfig.color }}
+            />
+            <span>{healthConfig.label}</span>
+          </div>
+        </div>
         
         {/* Workstream */}
-        <StatusBarField
-          label="Workstream"
-          value={workstreamName || 'None'}
-          dotColor={wsColors.hex}
-          hasChevron={false}
-        />
+        <div className="task-modal__status-field">
+          <span className="task-modal__status-label">Workstream</span>
+          <div className="task-modal__status-value">
+            <span>{workstreamName || 'None'}</span>
+          </div>
+        </div>
         
         {/* Assignee */}
-        <AssigneeStatusField assignee={task.assignee} />
+        <div className="task-modal__status-field">
+          <span className="task-modal__status-label">Assignee</span>
+          <div className="task-modal__status-value">
+            <span className="task-modal__assignee-avatar">{assigneeInitials}</span>
+            <span>{task.assignee?.full_name || 'Unassigned'}</span>
+            <span className="task-modal__status-chevron">▾</span>
+          </div>
+        </div>
       </div>
     </div>
   );
