@@ -31,12 +31,15 @@ export interface Workstream {
   due_date: string | null;
   created_at: string;
   updated_at: string;
+  created_by?: string | null;
   // Computed fields (for UI display)
   code?: string; // Derived from slug
   members?: WorkstreamMember[];
   memberCount?: number;
   taskCount?: number;
   overdueCount?: number;
+  doneCount?: number;
+  progress?: number;
   health?: 'healthy' | 'at-risk' | 'critical' | 'locked';
   trend?: 'up' | 'down' | 'stable';
   lead?: {
@@ -88,6 +91,24 @@ export function usePlannerWorkstreams() {
       
       const doneStatusId = statuses?.[0]?.id;
 
+      // Fetch lead profiles from resource_inventory or profiles
+      const leadIds = workstreams.map(ws => ws.lead_id).filter(Boolean) as string[];
+      let leadProfilesMap = new Map<string, { name: string; initials: string }>();
+      
+      if (leadIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', leadIds);
+        
+        (profiles || []).forEach(p => {
+          leadProfilesMap.set(p.id, {
+            name: p.full_name || 'Unknown',
+            initials: getInitials(p.full_name || ''),
+          });
+        });
+      }
+
       // Map workstreams with computed data
       return workstreams.map((ws): Workstream => {
         const wsMembers = members?.filter(m => m.workstream_id === ws.id) || [];
@@ -103,16 +124,28 @@ export function usePlannerWorkstreams() {
           return dueDate < today;
         }).length;
 
-        // Calculate health based on overdue ratio
+        const doneCount = wsTasks.filter(t => t.status_id === doneStatusId).length;
         const taskCount = wsTasks.length;
+
+        // Calculate health based on overdue ratio
         const overdueRatio = taskCount > 0 ? overdueCount / taskCount : 0;
         let health: Workstream['health'] = 'healthy';
         if (overdueRatio > 0.3) health = 'critical';
         else if (overdueRatio > 0.15) health = 'at-risk';
 
-        // Find lead
+        // Calculate progress
+        const progress = taskCount > 0 ? Math.round((doneCount / taskCount) * 100) : 0;
+
+        // Find lead from members or from lead_id
         const leadMember = wsMembers.find(m => m.role === 'lead');
         const leadProfile = leadMember?.profiles as any;
+        
+        // Use lead_id to fetch from profiles if no member has lead role
+        let leadInfo = leadProfile 
+          ? { id: leadProfile.id, name: leadProfile.full_name || 'Unknown', initials: getInitials(leadProfile.full_name || '') }
+          : ws.lead_id && leadProfilesMap.has(ws.lead_id)
+            ? { id: ws.lead_id, ...leadProfilesMap.get(ws.lead_id)! }
+            : undefined;
         
         return {
           id: ws.id,
@@ -139,13 +172,11 @@ export function usePlannerWorkstreams() {
           memberCount: wsMembers.length,
           taskCount,
           overdueCount,
+          doneCount,
+          progress,
           health,
           trend: 'stable' as const,
-          lead: leadProfile ? {
-            id: leadProfile.id,
-            name: leadProfile.full_name || 'Unknown',
-            initials: getInitials(leadProfile.full_name || ''),
-          } : undefined,
+          lead: leadInfo,
         };
       });
     },
@@ -169,8 +200,11 @@ export function useCreateWorkstream() {
       name: string;
       description?: string;
       color: string;
-      leadId?: string;
+      leadId?: string | null;
     }) => {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       const { data: result, error } = await supabase
         .from('planner_workstreams')
@@ -179,7 +213,7 @@ export function useCreateWorkstream() {
           slug,
           description: data.description,
           color: data.color,
-          lead_id: data.leadId,
+          lead_id: data.leadId || null,
         })
         .select()
         .single();

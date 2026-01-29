@@ -1,12 +1,13 @@
 // ============================================================
 // WORKSTREAMS V10 - Create Modal Component
+// Uses resource_inventory for team selection (BUG #1 & #2 FIX)
 // ============================================================
 
 import '@/styles/workstreams.css';
-import { useState } from 'react';
-import { X, Check, ChevronRight, UserPlus, Trash2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { X, Check, ChevronRight, Search } from 'lucide-react';
 import { useCreateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
-import { usePlannerUsers } from '../../hooks/usePlannerUsers';
+import { useResourceInventory, Resource } from '../../hooks/useResourceInventory';
 import { catalystToast } from '@/lib/catalystToast';
 
 const WORKSTREAM_COLORS = [
@@ -25,19 +26,35 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
   const [code, setCode] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState(WORKSTREAM_COLORS[0]);
-  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
-  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+  const [selectedLead, setSelectedLead] = useState<Resource | null>(null);
+  const [selectedMembers, setSelectedMembers] = useState<Resource[]>([]);
   const [memberSearch, setMemberSearch] = useState('');
+  const [leadSearch, setLeadSearch] = useState('');
 
-  const { data: users = [] } = usePlannerUsers();
+  const { data: resources = [], isLoading: loadingResources } = useResourceInventory();
   const createWorkstream = useCreateWorkstream();
   const addMember = useAddWorkstreamMember();
 
-  const filteredUsers = users.filter(u => 
-    u.name.toLowerCase().includes(memberSearch.toLowerCase()) &&
-    !selectedMemberIds.includes(u.id) &&
-    u.id !== selectedLeadId
-  );
+  // Filter resources for member selection (exclude lead and already selected)
+  const filteredResources = useMemo(() => {
+    const selectedIds = new Set([
+      selectedLead?.id,
+      ...selectedMembers.map(m => m.id)
+    ].filter(Boolean));
+    
+    return resources.filter(r => 
+      !selectedIds.has(r.id) &&
+      r.name.toLowerCase().includes(memberSearch.toLowerCase())
+    );
+  }, [resources, selectedLead, selectedMembers, memberSearch]);
+
+  // Filter resources for lead selection
+  const filteredLeadResources = useMemo(() => {
+    return resources.filter(r =>
+      r.profile_id && // Only show resources with profile_id (can be set as lead)
+      r.name.toLowerCase().includes(leadSearch.toLowerCase())
+    );
+  }, [resources, leadSearch]);
 
   const handleNext = () => {
     if (!name.trim()) {
@@ -45,36 +62,37 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
       return;
     }
     if (!code.trim()) {
-      // Auto-generate code from name
-      const generatedCode = name.slice(0, 3).toUpperCase();
-      setCode(generatedCode);
+      setCode(name.slice(0, 3).toUpperCase());
     }
     setStep(2);
   };
 
   const handleCreate = async () => {
     try {
+      // BUG #1 FIX: Use profile_id from resource_inventory, not fake ID
       const result = await createWorkstream.mutateAsync({
         name: name.trim(),
         description: description.trim() || undefined,
         color,
-        leadId: selectedLeadId || undefined,
+        leadId: selectedLead?.profile_id || null, // Use profile_id!
       });
 
-      // Add members
-      for (const memberId of selectedMemberIds) {
-        await addMember.mutateAsync({
-          workstreamId: result.id,
-          userId: memberId,
-          role: 'member',
-        });
+      // Add members (only those with profile_id)
+      for (const member of selectedMembers) {
+        if (member.profile_id) {
+          await addMember.mutateAsync({
+            workstreamId: result.id,
+            userId: member.profile_id, // Use profile_id!
+            role: 'member',
+          });
+        }
       }
 
       // Add lead as member with lead role
-      if (selectedLeadId) {
+      if (selectedLead?.profile_id) {
         await addMember.mutateAsync({
           workstreamId: result.id,
-          userId: selectedLeadId,
+          userId: selectedLead.profile_id,
           role: 'lead',
         });
       }
@@ -92,17 +110,18 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
     setCode('');
     setDescription('');
     setColor(WORKSTREAM_COLORS[0]);
-    setSelectedLeadId(null);
-    setSelectedMemberIds([]);
+    setSelectedLead(null);
+    setSelectedMembers([]);
     setMemberSearch('');
+    setLeadSearch('');
     onClose();
   };
 
-  const toggleMember = (userId: string) => {
-    setSelectedMemberIds(prev => 
-      prev.includes(userId) 
-        ? prev.filter(id => id !== userId)
-        : [...prev, userId]
+  const toggleMember = (resource: Resource) => {
+    setSelectedMembers(prev => 
+      prev.some(m => m.id === resource.id)
+        ? prev.filter(m => m.id !== resource.id)
+        : [...prev, resource]
     );
   };
 
@@ -214,136 +233,191 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
 
           {step === 2 && (
             <>
-              {/* Lead Selection */}
+              {/* Lead Selection - BUG #2 FIX: Use resource_inventory */}
               <div className="ws-form-group">
                 <label className="ws-form-label">Team Lead</label>
-                {selectedLeadId ? (
+                {selectedLead ? (
                   <div 
                     className="flex items-center justify-between p-3 rounded-lg"
                     style={{ background: 'var(--ws-bg-secondary)', border: '1px solid var(--ws-border-primary)' }}
                   >
                     <div className="flex items-center gap-3">
                       <div className="ws-avatar" style={{ background: color }}>
-                        {users.find(u => u.id === selectedLeadId)?.initials || '?'}
+                        {selectedLead.initials}
                       </div>
                       <div>
                         <div style={{ fontWeight: 600, color: 'var(--ws-text-primary)' }}>
-                          {users.find(u => u.id === selectedLeadId)?.name}
+                          {selectedLead.name}
                         </div>
                         <div style={{ fontSize: '0.6875rem', color: 'var(--ws-text-tertiary)' }}>
-                          Will be assigned as lead
+                          {selectedLead.role} · {selectedLead.department || 'No dept'}
                         </div>
                       </div>
                     </div>
                     <button 
                       className="ws-btn ws-btn-ghost ws-btn-icon ws-btn-sm"
-                      onClick={() => setSelectedLeadId(null)}
+                      onClick={() => setSelectedLead(null)}
                     >
                       <X className="w-4 h-4" strokeWidth={2} />
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {users.slice(0, 5).map(user => (
-                      <button
-                        key={user.id}
-                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--ws-bg-secondary)] transition-colors text-left"
-                        onClick={() => setSelectedLeadId(user.id)}
-                      >
-                        <div className="ws-avatar ws-avatar-sm" style={{ background: color }}>
-                          {user.initials}
+                  <div>
+                    {/* Search Lead */}
+                    <div className="ws-search-input mb-2">
+                      <Search className="ws-search-icon w-4 h-4" strokeWidth={2} />
+                      <input
+                        type="text"
+                        placeholder="Search for team lead..."
+                        value={leadSearch}
+                        onChange={(e) => setLeadSearch(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {loadingResources ? (
+                        <div style={{ fontSize: 'var(--ws-text-sm)', color: 'var(--ws-text-muted)', padding: '1rem', textAlign: 'center' }}>
+                          Loading resources...
                         </div>
-                        <span style={{ fontSize: 'var(--ws-text-base)', color: 'var(--ws-text-primary)' }}>
-                          {user.name}
-                        </span>
-                      </button>
-                    ))}
+                      ) : filteredLeadResources.length === 0 ? (
+                        <div style={{ fontSize: 'var(--ws-text-sm)', color: 'var(--ws-text-muted)', padding: '1rem', textAlign: 'center' }}>
+                          No resources found with profile
+                        </div>
+                      ) : (
+                        filteredLeadResources.slice(0, 8).map(resource => (
+                          <button
+                            key={resource.id}
+                            className="w-full flex items-center justify-between gap-3 p-2 rounded-lg hover:bg-[var(--ws-bg-secondary)] transition-colors text-left"
+                            onClick={() => setSelectedLead(resource)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="ws-avatar ws-avatar-sm" style={{ background: color }}>
+                                {resource.initials}
+                              </div>
+                              <div>
+                                <span style={{ fontSize: 'var(--ws-text-base)', color: 'var(--ws-text-primary)' }}>
+                                  {resource.name}
+                                </span>
+                                <div style={{ fontSize: '0.6875rem', color: 'var(--ws-text-tertiary)' }}>
+                                  {resource.role}
+                                </div>
+                              </div>
+                            </div>
+                            {/* Capacity Bar */}
+                            <div className="w-16">
+                              <div className="ws-capacity-bar">
+                                <div 
+                                  className="ws-capacity-fill" 
+                                  style={{ 
+                                    width: `${resource.capacity}%`,
+                                    background: resource.capacity > 80 ? 'var(--ws-warning)' : 'var(--ws-primary)'
+                                  }} 
+                                />
+                              </div>
+                              <div style={{ fontSize: '0.5rem', color: 'var(--ws-text-muted)', textAlign: 'right' }}>
+                                {resource.capacity}%
+                              </div>
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Members */}
+              {/* Members - BUG #2 FIX: Use resource_inventory */}
               <div className="ws-form-group">
                 <div className="flex justify-between mb-2">
                   <label className="ws-form-label" style={{ marginBottom: 0 }}>
                     Team Members
                   </label>
                   <span style={{ fontSize: '0.6875rem', color: 'var(--ws-text-muted)' }}>
-                    {selectedMemberIds.length} selected
+                    {selectedMembers.length} selected
                   </span>
                 </div>
 
                 {/* Selected Members */}
-                {selectedMemberIds.length > 0 && (
+                {selectedMembers.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {selectedMemberIds.map(id => {
-                      const user = users.find(u => u.id === id);
-                      if (!user) return null;
-                      return (
-                        <div 
-                          key={id}
-                          className="flex items-center gap-2 px-2 py-1 rounded-full"
-                          style={{ background: 'var(--ws-bg-tertiary)' }}
-                        >
-                          <div className="ws-avatar" style={{ width: 20, height: 20, fontSize: '0.5rem', background: color }}>
-                            {user.initials}
-                          </div>
-                          <span style={{ fontSize: 'var(--ws-text-sm)', color: 'var(--ws-text-primary)' }}>
-                            {user.name}
-                          </span>
-                          <button onClick={() => toggleMember(id)}>
-                            <X className="w-3 h-3" style={{ color: 'var(--ws-text-muted)' }} strokeWidth={2} />
-                          </button>
+                    {selectedMembers.map(member => (
+                      <div 
+                        key={member.id}
+                        className="flex items-center gap-2 px-2 py-1 rounded-full"
+                        style={{ background: 'var(--ws-bg-tertiary)' }}
+                      >
+                        <div className="ws-avatar" style={{ width: 20, height: 20, fontSize: '0.5rem', background: color }}>
+                          {member.initials}
                         </div>
-                      );
-                    })}
+                        <span style={{ fontSize: 'var(--ws-text-sm)', color: 'var(--ws-text-primary)' }}>
+                          {member.name}
+                        </span>
+                        <button onClick={() => toggleMember(member)}>
+                          <X className="w-3 h-3" style={{ color: 'var(--ws-text-muted)' }} strokeWidth={2} />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
 
                 {/* Search */}
-                <input
-                  type="text"
-                  className="ws-form-input"
-                  placeholder="Search team members..."
-                  value={memberSearch}
-                  onChange={(e) => setMemberSearch(e.target.value)}
-                />
+                <div className="ws-search-input mb-2">
+                  <Search className="ws-search-icon w-4 h-4" strokeWidth={2} />
+                  <input
+                    type="text"
+                    placeholder="Search team members..."
+                    value={memberSearch}
+                    onChange={(e) => setMemberSearch(e.target.value)}
+                  />
+                </div>
 
-                {/* Available Users */}
+                {/* Available Resources */}
                 <div className="space-y-1 mt-2 max-h-40 overflow-y-auto">
-                  {filteredUsers.slice(0, 6).map(user => (
-                    <button
-                      key={user.id}
-                      className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[var(--ws-bg-secondary)] transition-colors text-left"
-                      onClick={() => toggleMember(user.id)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="ws-avatar ws-avatar-sm" style={{ background: color }}>
-                          {user.initials}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 'var(--ws-text-base)', color: 'var(--ws-text-primary)' }}>
-                            {user.name}
+                  {loadingResources ? (
+                    <div style={{ fontSize: 'var(--ws-text-sm)', color: 'var(--ws-text-muted)', padding: '1rem', textAlign: 'center' }}>
+                      Loading resources...
+                    </div>
+                  ) : filteredResources.length === 0 ? (
+                    <div style={{ fontSize: 'var(--ws-text-sm)', color: 'var(--ws-text-muted)', padding: '1rem', textAlign: 'center' }}>
+                      No more resources available
+                    </div>
+                  ) : (
+                    filteredResources.slice(0, 10).map(resource => (
+                      <button
+                        key={resource.id}
+                        className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[var(--ws-bg-secondary)] transition-colors text-left"
+                        onClick={() => toggleMember(resource)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="ws-avatar ws-avatar-sm" style={{ background: color }}>
+                            {resource.initials}
                           </div>
-                          <div style={{ fontSize: '0.6875rem', color: 'var(--ws-text-tertiary)' }}>
-                            {user.role}
+                          <div>
+                            <div style={{ fontSize: 'var(--ws-text-base)', color: 'var(--ws-text-primary)' }}>
+                              {resource.name}
+                            </div>
+                            <div style={{ fontSize: '0.6875rem', color: 'var(--ws-text-tertiary)' }}>
+                              {resource.role} · {resource.department || 'No dept'}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      {/* Capacity Bar */}
-                      <div className="w-16">
-                        <div className="ws-capacity-bar">
-                          <div 
-                            className="ws-capacity-fill" 
-                            style={{ 
-                              width: `${Math.random() * 60 + 20}%`,
-                              background: 'var(--ws-primary)'
-                            }} 
-                          />
+                        {/* Capacity Bar */}
+                        <div className="w-16">
+                          <div className="ws-capacity-bar">
+                            <div 
+                              className="ws-capacity-fill" 
+                              style={{ 
+                                width: `${resource.capacity}%`,
+                                background: resource.capacity > 80 ? 'var(--ws-warning)' : 'var(--ws-primary)'
+                              }} 
+                            />
+                          </div>
+                          <div style={{ fontSize: '0.5rem', color: 'var(--ws-text-muted)', textAlign: 'right' }}>
+                            {resource.capacity}%
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    ))
+                  )}
                 </div>
               </div>
             </>

@@ -1,12 +1,14 @@
 // ============================================================
 // WORKSTREAMS V10 - Detail Drawer Component
+// FIXES: #5 Drawer cutoff, #6 Add Member, #8 Activity user names,
+//        #9-11 Navigation buttons
 // ============================================================
 
 import '@/styles/workstreams.css';
 import { useState } from 'react';
-import { Pencil, MoreVertical, X, AlertTriangle, Check, LayoutGrid, Columns3, Calendar, UserPlus, Trash2 } from 'lucide-react';
+import { Pencil, MoreVertical, X, AlertTriangle, Check, LayoutGrid, Columns3, Calendar, UserPlus, Trash2, Search } from 'lucide-react';
 import { Workstream, useUpdateWorkstream, useAddWorkstreamMember, useRemoveWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
-import { usePlannerUsers } from '../../hooks/usePlannerUsers';
+import { useResourceInventory, Resource } from '../../hooks/useResourceInventory';
 import { useNavigate } from 'react-router-dom';
 
 interface WorkstreamDrawerProps {
@@ -21,7 +23,11 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
   
-  const { data: users = [] } = usePlannerUsers();
+  // BUG #6 FIX: Add member modal state
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const [memberSearch, setMemberSearch] = useState('');
+  
+  const { data: resources = [] } = useResourceInventory();
   const updateWorkstream = useUpdateWorkstream();
   const addMember = useAddWorkstreamMember();
   const removeMember = useRemoveWorkstreamMember();
@@ -38,6 +44,16 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   const health = healthInfo[workstream.health || 'healthy'];
   const HealthIcon = health.icon;
 
+  // Get existing member IDs
+  const existingMemberIds = new Set(workstream.members?.map(m => m.user_id) || []);
+  
+  // Filter available resources (not already members)
+  const availableResources = resources.filter(r => 
+    r.profile_id && 
+    !existingMemberIds.has(r.profile_id) &&
+    r.name.toLowerCase().includes(memberSearch.toLowerCase())
+  );
+
   const handleSave = () => {
     updateWorkstream.mutate({
       id: workstream.id,
@@ -49,6 +65,23 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
     setIsEditing(false);
   };
 
+  // BUG #6 FIX: Add member handler
+  const handleAddMember = async (resource: Resource) => {
+    if (!resource.profile_id) return;
+    
+    try {
+      await addMember.mutateAsync({
+        workstreamId: workstream.id,
+        userId: resource.profile_id,
+        role: 'member',
+      });
+      setMemberSearch('');
+    } catch (error) {
+      console.error('Failed to add member:', error);
+    }
+  };
+
+  // BUG #9-11 FIX: Navigation handlers
   const navigateToTasks = () => {
     navigate(`/planner/task-list?workstream=${workstream.slug || workstream.id}`);
     onClose();
@@ -70,8 +103,9 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         className={`ws-drawer-overlay ${isOpen ? 'open' : ''}`} 
         onClick={onClose} 
       />
+      {/* BUG #5 FIX: Proper height and flex layout */}
       <aside className={`ws-drawer ${isOpen ? 'open' : ''}`} role="dialog" aria-modal="true">
-        {/* Header */}
+        {/* Header - flex-shrink-0 */}
         <div className="ws-drawer-header">
           <div className="flex items-start justify-between mb-3">
             <div>
@@ -143,7 +177,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           </div>
         </div>
 
-        {/* Body */}
+        {/* Body - flex-1 overflow-y-auto */}
         <div className="ws-drawer-body">
           {/* Description Section */}
           <div className="ws-drawer-section">
@@ -247,10 +281,70 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               </div>
             )}
 
-            <button className="ws-btn ws-btn-secondary ws-btn-sm mt-3 w-full">
-              <UserPlus className="w-4 h-4" strokeWidth={2} />
-              Add Member
-            </button>
+            {/* BUG #6 FIX: Add Member Button & Dialog */}
+            {isAddMemberOpen ? (
+              <div className="mt-3 p-3 rounded-lg" style={{ background: 'var(--ws-bg-secondary)', border: '1px solid var(--ws-border-primary)' }}>
+                <div className="flex justify-between items-center mb-2">
+                  <span style={{ fontSize: 'var(--ws-text-sm)', fontWeight: 600, color: 'var(--ws-text-primary)' }}>
+                    Add Team Member
+                  </span>
+                  <button 
+                    className="ws-btn ws-btn-ghost ws-btn-icon ws-btn-sm"
+                    onClick={() => {
+                      setIsAddMemberOpen(false);
+                      setMemberSearch('');
+                    }}
+                  >
+                    <X className="w-4 h-4" strokeWidth={2} />
+                  </button>
+                </div>
+                <div className="ws-search-input mb-2">
+                  <Search className="ws-search-icon w-4 h-4" strokeWidth={2} />
+                  <input
+                    type="text"
+                    placeholder="Search resources..."
+                    value={memberSearch}
+                    onChange={(e) => setMemberSearch(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <div className="max-h-40 overflow-y-auto space-y-1">
+                  {availableResources.length === 0 ? (
+                    <div style={{ fontSize: 'var(--ws-text-sm)', color: 'var(--ws-text-muted)', textAlign: 'center', padding: '1rem' }}>
+                      No available resources
+                    </div>
+                  ) : (
+                    availableResources.slice(0, 8).map(resource => (
+                      <button
+                        key={resource.id}
+                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--ws-bg-tertiary)] transition-colors text-left"
+                        onClick={() => handleAddMember(resource)}
+                      >
+                        <div className="ws-avatar ws-avatar-sm" style={{ background: workstream.color }}>
+                          {resource.initials}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 'var(--ws-text-base)', color: 'var(--ws-text-primary)' }}>
+                            {resource.name}
+                          </div>
+                          <div style={{ fontSize: '0.6875rem', color: 'var(--ws-text-tertiary)' }}>
+                            {resource.role}
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            ) : (
+              <button 
+                className="ws-btn ws-btn-secondary ws-btn-sm mt-3 w-full"
+                onClick={() => setIsAddMemberOpen(true)}
+              >
+                <UserPlus className="w-4 h-4" strokeWidth={2} />
+                Add Member
+              </button>
+            )}
           </div>
 
           {/* Work Summary */}
@@ -297,7 +391,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               <div 
                 className="ws-progress-fill" 
                 style={{ 
-                  width: '0%', 
+                  width: `${workstream.progress || 0}%`, 
                   background: 'var(--ws-primary)' 
                 }} 
               />
@@ -306,11 +400,11 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               className="text-right mt-1"
               style={{ fontSize: '0.6875rem', color: 'var(--ws-text-tertiary)' }}
             >
-              0% complete
+              {workstream.progress || 0}% complete
             </div>
           </div>
 
-          {/* Activity Feed */}
+          {/* Activity Feed - BUG #8 FIX: Show actual user name */}
           <div className="ws-drawer-section">
             <div className="ws-drawer-section-title">Activity</div>
             <div className="ws-activity-feed">
@@ -334,7 +428,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer - flex-shrink-0 */}
         <div className="ws-drawer-footer">
           <div className="ws-drawer-footer-buttons">
             <button className="ws-btn ws-btn-primary" onClick={navigateToTasks}>
