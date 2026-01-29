@@ -59,7 +59,7 @@ export function DashboardStatusChartV2({ data }: DashboardStatusChartV2Props) {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-5 self-start">
+    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-5">
       {/* Header */}
       <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">
         Status Distribution
