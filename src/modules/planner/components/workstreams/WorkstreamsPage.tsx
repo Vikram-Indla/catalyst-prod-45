@@ -20,7 +20,8 @@ import {
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount, useUpdateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
-import { InlineLeadSelect } from './InlineLeadSelect';
+import { LeadPicker } from './LeadPicker';
+import { WorkstreamCard } from './WorkstreamCard';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
@@ -580,17 +581,21 @@ export function WorkstreamsPage() {
                       </td>
 
                       <td className="px-6" onClick={(e) => e.stopPropagation()}>
-                        <InlineLeadSelect
-                          workstreamId={ws.id}
+                        <LeadPicker
+                          value={ws.lead_id || null}
+                          currentLeadInfo={ws.lead}
                           workstreamColor={ws.color}
-                          currentLead={ws.lead}
-                          onAssignLead={(userId) => {
-                            addMember.mutate({
-                              workstreamId: ws.id,
-                              userId,
-                              role: 'lead',
-                            });
+                          onChange={(leadId) => {
+                            if (leadId) {
+                              addMember.mutate({
+                                workstreamId: ws.id,
+                                userId: leadId,
+                                role: 'lead',
+                              });
+                            }
                           }}
+                          size="md"
+                          showRole={false}
                         />
                       </td>
 
@@ -651,71 +656,44 @@ export function WorkstreamsPage() {
           </div>
         )}
 
-        {/* Grid View - Enterprise Clean */}
+        {/* Grid View - Enterprise Clean with WorkstreamCard */}
         {!isLoading && filteredWorkstreams.length > 0 && view === 'grid' && (
-          <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-            {filteredWorkstreams.map((ws) => {
-              return (
-                <div 
-                  key={ws.id}
-                  className={`bg-surface-0 border border-border-subtle rounded-xl p-4 cursor-pointer transition-all hover:shadow-sm hover:-translate-y-0.5 ${ws.health === 'locked' ? 'opacity-70' : ''}`}
-                  onClick={() => openDrawer(ws)}
-                >
-                  {/* Card Header: Name + Health Badge */}
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <span className="font-semibold text-text-primary">{ws.name}</span>
-                    <span
-                      className={`inline-flex items-center gap-2 text-sm ${
-                        ws.health === 'healthy'
-                          ? 'text-success'
-                          : ws.health === 'at-risk'
-                            ? 'text-warning'
-                            : ws.health === 'critical'
-                              ? 'text-danger'
-                              : 'text-text-muted'
-                      }`}
-                    >
-                      <span className="w-2 h-2 rounded-full bg-current" aria-hidden />
-                      <span className="text-sm text-text-secondary">
-                        {ws.health === 'healthy' && 'On Track'}
-                        {ws.health === 'at-risk' && 'At Risk'}
-                        {ws.health === 'critical' && 'Critical'}
-                        {ws.health === 'locked' && 'Locked'}
-                      </span>
-                    </span>
-                  </div>
-                  
-                  {/* Lead Row */}
-                  <div className="flex items-center gap-2 py-2.5 border-t border-b border-border-subtle mb-3">
-                    <span className="text-xs text-text-muted">Lead</span>
-                    {ws.lead ? (
-                      <div className="flex items-center gap-2">
-                        <span className="w-7 h-7 rounded-lg bg-surface-2 text-text-primary flex items-center justify-center text-2xs font-semibold">
-                          {ws.lead.initials}
-                        </span>
-                        <span className="text-sm text-text-secondary">{ws.lead.name}</span>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-text-muted">Unassigned</span>
-                    )}
-                  </div>
-                  
-                  {/* Stats: Tasks + Overdue ONLY (Done and Progress hidden via CSS) */}
-                  <div className="flex gap-6">
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-text-primary">{ws.taskCount || 0}</div>
-                      <div className="text-xs text-text-muted mt-1">Tasks</div>
-                    </div>
-                    <div className="text-center">
-                      <div className={`text-xl font-bold ${(ws.overdueCount || 0) > 0 ? 'text-danger' : 'text-text-primary'}`}>
-                        {ws.overdueCount || 0}
-                      </div>
-                      <div className="text-xs text-text-muted mt-1">Overdue</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+            {filteredWorkstreams.map((ws) => (
+              <WorkstreamCard
+                key={ws.id}
+                workstream={ws}
+                onLeadChange={(workstreamId, leadId) => {
+                  if (leadId) {
+                    addMember.mutate({
+                      workstreamId,
+                      userId: leadId,
+                      role: 'lead',
+                    });
+                  }
+                }}
+                onEdit={(id) => {
+                  const target = workstreams.find(w => w.id === id);
+                  if (target) {
+                    setQuickEditWorkstream(target);
+                    setIsQuickEditOpen(true);
+                  }
+                }}
+                onArchive={(id) => {
+                  const target = workstreams.find(w => w.id === id);
+                  if (target) {
+                    archiveWorkstream.mutate({ id, archive: !target.is_archived });
+                  }
+                }}
+                onDelete={(id) => {
+                  const target = workstreams.find(w => w.id === id);
+                  if (target) {
+                    setDeleteTarget(target);
+                  }
+                }}
+                onOpenDrawer={openDrawer}
+              />
+            ))}
           </div>
         )}
       </main>
