@@ -453,37 +453,13 @@ export function CreateTaskModal({
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'flex-end',
                 padding: '16px 24px',
                 borderTop: `1px solid ${COLORS.borderLight}`,
                 backgroundColor: COLORS.surfacePage,
+                position: 'relative',
+                zIndex: 1,
               }}>
-                <div style={{
-                  fontSize: '12px',
-                  color: COLORS.textMuted,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}>
-                  <kbd style={{
-                    padding: '2px 6px',
-                    backgroundColor: COLORS.surfaceCard,
-                    border: `1px solid ${COLORS.borderLight}`,
-                    borderRadius: '4px',
-                    fontSize: '10px',
-                    fontWeight: 500,
-                  }}>⌘</kbd>
-                  <span>+</span>
-                  <kbd style={{
-                    padding: '2px 6px',
-                    backgroundColor: COLORS.surfaceCard,
-                    border: `1px solid ${COLORS.borderLight}`,
-                    borderRadius: '4px',
-                    fontSize: '10px',
-                    fontWeight: 500,
-                  }}>Enter</kbd>
-                  <span style={{ marginLeft: '4px' }}>to add</span>
-                </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <button
                     type="button"
@@ -1048,13 +1024,13 @@ function DateDropdown({ label, value, placeholder = 'Set date...', onChange }: D
         <div
           style={{
             position: 'absolute',
-            top: 'calc(100% + 4px)',
+            bottom: 'calc(100% + 4px)',
             left: 0,
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-            zIndex: 99999,
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.25)',
+            zIndex: 100001,
             padding: '16px',
             width: '300px'
           }}
