@@ -152,6 +152,14 @@ export function WorkstreamsPage() {
   const [allUsers, setAllUsers] = useState<TeamMember[]>([]);
   const [leads, setLeads] = useState<Record<string, TeamMember | null>>({});
 
+  // Toolbar filter dropdowns
+  const [showHealthFilter, setShowHealthFilter] = useState(false);
+  const [showLeadFilter, setShowLeadFilter] = useState(false);
+  const [healthFilter, setHealthFilter] = useState<string | null>(null);
+  const [leadFilter, setLeadFilter] = useState<string | null>(null);
+  const healthFilterRef = useRef<HTMLDivElement>(null);
+  const leadFilterRef = useRef<HTMLDivElement>(null);
+
   // Drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeWorkstream, setActiveWorkstream] = useState<Workstream | null>(null);
@@ -167,6 +175,20 @@ export function WorkstreamsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Workstream | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close filter dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (healthFilterRef.current && !healthFilterRef.current.contains(e.target as Node)) {
+        setShowHealthFilter(false);
+      }
+      if (leadFilterRef.current && !leadFilterRef.current.contains(e.target as Node)) {
+        setShowLeadFilter(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Archive filter - check URL param
   const showArchived = searchParams.get('archived') === 'true';
@@ -256,9 +278,20 @@ export function WorkstreamsPage() {
       if (!showArchived && ws.is_archived) return false;
       if (showArchived && !ws.is_archived) return false;
       if (searchQuery && !ws.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      // Health filter
+      if (healthFilter) {
+        if (healthFilter === 'healthy' && ws.health !== 'healthy') return false;
+        if (healthFilter === 'at-risk' && ws.health !== 'at-risk') return false;
+        if (healthFilter === 'critical' && ws.health !== 'critical') return false;
+      }
+      // Lead filter
+      if (leadFilter) {
+        if (leadFilter === 'unassigned' && ws.lead) return false;
+        if (leadFilter === 'assigned' && !ws.lead) return false;
+      }
       return true;
     });
-  }, [workstreams, searchQuery, showArchived]);
+  }, [workstreams, searchQuery, showArchived, healthFilter, leadFilter]);
 
   const filteredUsers = allUsers.filter(
     (u) =>
@@ -491,9 +524,187 @@ export function WorkstreamsPage() {
           </div>
 
           {/* Filters + View Toggle */}
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <FilterButton label="Health" />
-            <FilterButton label="Lead" />
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* Health Filter Dropdown */}
+            <div ref={healthFilterRef} style={{ position: 'relative' }}>
+              <button
+                onClick={() => {
+                  setShowHealthFilter(!showHealthFilter);
+                  setShowLeadFilter(false);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 14px',
+                  backgroundColor: healthFilter ? '#eff6ff' : COLORS.surfaceWhite,
+                  border: `1px solid ${healthFilter ? '#3b82f6' : COLORS.borderLight}`,
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: healthFilter ? '#2563eb' : COLORS.textSecondary,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Health
+                {healthFilter && (
+                  <span style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: '#2563eb',
+                  }} />
+                )}
+                <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
+              </button>
+
+              {showHealthFilter && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 4px)',
+                    right: 0,
+                    width: '180px',
+                    backgroundColor: '#ffffff',
+                    border: `1px solid ${COLORS.borderDefault}`,
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                    zIndex: 9999,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div style={{ padding: '4px' }}>
+                    {[
+                      { value: null, label: 'All', color: COLORS.textMuted },
+                      { value: 'healthy', label: 'On Track', color: COLORS.success },
+                      { value: 'at-risk', label: 'At Risk', color: COLORS.warning },
+                      { value: 'critical', label: 'Critical', color: COLORS.danger },
+                    ].map((option) => (
+                      <button
+                        key={option.label}
+                        onClick={() => {
+                          setHealthFilter(option.value);
+                          setShowHealthFilter(false);
+                        }}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          padding: '10px 12px',
+                          backgroundColor: healthFilter === option.value ? COLORS.surfaceHover : 'transparent',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          color: COLORS.textPrimary,
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          textAlign: 'left',
+                        }}
+                      >
+                        {option.value && (
+                          <span style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            backgroundColor: option.color,
+                          }} />
+                        )}
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Lead Filter Dropdown */}
+            <div ref={leadFilterRef} style={{ position: 'relative' }}>
+              <button
+                onClick={() => {
+                  setShowLeadFilter(!showLeadFilter);
+                  setShowHealthFilter(false);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 14px',
+                  backgroundColor: leadFilter ? '#eff6ff' : COLORS.surfaceWhite,
+                  border: `1px solid ${leadFilter ? '#3b82f6' : COLORS.borderLight}`,
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: leadFilter ? '#2563eb' : COLORS.textSecondary,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Lead
+                {leadFilter && (
+                  <span style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: '#2563eb',
+                  }} />
+                )}
+                <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
+              </button>
+
+              {showLeadFilter && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 4px)',
+                    right: 0,
+                    width: '180px',
+                    backgroundColor: '#ffffff',
+                    border: `1px solid ${COLORS.borderDefault}`,
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                    zIndex: 9999,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div style={{ padding: '4px' }}>
+                    {[
+                      { value: null, label: 'All' },
+                      { value: 'assigned', label: 'Assigned' },
+                      { value: 'unassigned', label: 'Unassigned' },
+                    ].map((option) => (
+                      <button
+                        key={option.label}
+                        onClick={() => {
+                          setLeadFilter(option.value);
+                          setShowLeadFilter(false);
+                        }}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          padding: '10px 12px',
+                          backgroundColor: leadFilter === option.value ? COLORS.surfaceHover : 'transparent',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          color: COLORS.textPrimary,
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          textAlign: 'left',
+                        }}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div
               style={{
@@ -712,28 +923,6 @@ const SummaryCard: React.FC<{
       <div style={{ fontSize: '13px', color: COLORS.textMuted, marginTop: '2px' }}>{label}</div>
     </div>
   </div>
-);
-
-const FilterButton: React.FC<{ label: string }> = ({ label }) => (
-  <button
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '8px 14px',
-      backgroundColor: COLORS.surfaceWhite,
-      border: `1px solid ${COLORS.borderLight}`,
-      borderRadius: '8px',
-      fontSize: '13px',
-      fontWeight: 500,
-      color: COLORS.textSecondary,
-      cursor: 'pointer',
-      fontFamily: 'inherit',
-    }}
-  >
-    {label}
-    <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
-  </button>
 );
 
 const ViewToggleButton: React.FC<{
