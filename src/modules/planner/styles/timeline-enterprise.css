@@ -1,186 +1,258 @@
 /* ============================================================================
-   TIMELINE — ENTERPRISE CLEAN CSS OVERRIDES V2
+   TIMELINE — REFINED ENTERPRISE CSS
    ============================================================================
    
-   QA AUDIT SPECIFICATION COMPLIANCE:
-   - Section A: Workstream Dot Colors (8 checkpoints)
-   - Section B: Task Bar Fill Colors (10 checkpoints)
-   - Section C: Saturation Test (5 checkpoints)
-   - Section D: Overdue Indication (5 checkpoints)
-   - Section E: Status Indication (6 checkpoints)
-   - Section F: Status Legend (6 checkpoints)
-   - Section G: Color Density Audit (5 checkpoints)
-   - Section H: Task Bar Content (8 checkpoints)
-   - Section I: Workstream Panel (6 checkpoints)
-   - Section J: Date Headers (6 checkpoints)
-   - Section K: Today Marker (4 checkpoints)
-   - Section L: Interactive States (5 checkpoints)
-   - Section M: Consistency with Planner V9 (6 checkpoints)
+   PROBLEM SOLVED:
+   - Version 1 was too saturated (80%)
+   - Version 2 was too light (5%)
+   - This version is BALANCED (20-30%)
+   
+   Uses -200 shade for fills (not -50 which was too light)
+   Uses -700/-800 shade for text (readable)
    
    ============================================================================ */
 
 /* ============================================================================
-   SECTION A: WORKSTREAM DOT COLORS (8-10px dots)
+   SECTION 1: TASK BAR BASE STYLES
    ============================================================================ */
 
-/* A1: Catalyst — Indigo #6366f1 */
-.workstream-dot[data-workstream*="Catalyst"],
-[data-workstream*="Catalyst"] .workstream-dot {
-  background-color: #6366f1 !important;
-  width: 8px !important;
-  height: 8px !important;
+.task-bar,
+[class*="task-bar"],
+[class*="gantt-bar"],
+[class*="timeline-bar"],
+.timeline-task {
+  height: 32px !important;
+  border-radius: 6px !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.15s ease !important;
 }
 
-/* A2: Data & AI — Purple #8b5cf6 */
-.workstream-dot[data-workstream*="Data"],
-[data-workstream*="Data"] .workstream-dot {
-  background-color: #8b5cf6 !important;
-  width: 8px !important;
-  height: 8px !important;
+.task-bar:hover,
+[class*="task-bar"]:hover,
+[class*="gantt-bar"]:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-1px) !important;
 }
 
-/* A3: Delivery — Pink #ec4899 */
-.workstream-dot[data-workstream*="Delivery"],
-[data-workstream*="Delivery"] .workstream-dot {
-  background-color: #ec4899 !important;
-  width: 8px !important;
-  height: 8px !important;
+/* ============================================================================
+   SECTION 2: WORKSTREAM BAR COLORS — REFINED (20-30% saturation)
+   Uses -200 shades for fills (visible but professional)
+   ============================================================================ */
+
+/* === CATALYST — Indigo === */
+.task-bar[data-workstream*="Catalyst"],
+[data-workstream*="Catalyst"] .task-bar {
+  background-color: #e0e7ff !important;  /* indigo-200 */
+  border: 1px solid #a5b4fc !important;  /* indigo-300 */
 }
 
-/* A4: MIM — Gray #64748b */
-.workstream-dot[data-workstream*="MIM"],
-[data-workstream*="MIM"] .workstream-dot {
-  background-color: #64748b !important;
-  width: 8px !important;
-  height: 8px !important;
+.task-bar[data-workstream*="Catalyst"] .task-id {
+  color: #4338ca !important;  /* indigo-700 - DARK */
 }
 
-/* A5: Senaei — Teal #14b8a6 */
-.workstream-dot[data-workstream*="Senaei"],
-.workstream-dot[data-workstream*="Senaie"],
-[data-workstream*="Senaei"] .workstream-dot,
-[data-workstream*="Senaie"] .workstream-dot {
-  background-color: #14b8a6 !important;
-  width: 8px !important;
-  height: 8px !important;
+.task-bar[data-workstream*="Catalyst"] .task-title {
+  color: #3730a3 !important;  /* indigo-800 - DARKER */
 }
 
-/* A6: Stand-Alone — Gray #64748b */
-.workstream-dot[data-workstream*="Stand-Alone"],
-[data-workstream*="Stand-Alone"] .workstream-dot {
-  background-color: #64748b !important;
-  width: 8px !important;
-  height: 8px !important;
+/* === DATA & AI — Purple === */
+.task-bar[data-workstream*="Data"],
+[data-workstream*="Data"] .task-bar {
+  background-color: #ede9fe !important;  /* violet-200 */
+  border: 1px solid #c4b5fd !important;  /* violet-300 */
 }
 
-/* A7: Tahommona — Orange #f97316 */
-.workstream-dot[data-workstream*="Tahommona"],
-[data-workstream*="Tahommona"] .workstream-dot {
-  background-color: #f97316 !important;
-  width: 8px !important;
-  height: 8px !important;
+.task-bar[data-workstream*="Data"] .task-id {
+  color: #6d28d9 !important;  /* violet-700 - DARK */
 }
 
-/* A8: Default dot size 8px */
-.workstream-dot {
+.task-bar[data-workstream*="Data"] .task-title {
+  color: #5b21b6 !important;  /* violet-800 - DARKER */
+}
+
+/* === DELIVERY — Pink === */
+.task-bar[data-workstream*="Delivery"],
+[data-workstream*="Delivery"] .task-bar {
+  background-color: #fce7f3 !important;  /* pink-200 */
+  border: 1px solid #f9a8d4 !important;  /* pink-300 */
+}
+
+.task-bar[data-workstream*="Delivery"] .task-id {
+  color: #be185d !important;  /* pink-700 - DARK */
+}
+
+.task-bar[data-workstream*="Delivery"] .task-title {
+  color: #9d174d !important;  /* pink-800 - DARKER */
+}
+
+/* === MIM — Gray === */
+.task-bar[data-workstream*="MIM"],
+[data-workstream*="MIM"] .task-bar {
+  background-color: #e2e8f0 !important;  /* slate-200 */
+  border: 1px solid #94a3b8 !important;  /* slate-400 */
+}
+
+.task-bar[data-workstream*="MIM"] .task-id {
+  color: #475569 !important;  /* slate-600 - DARK */
+}
+
+.task-bar[data-workstream*="MIM"] .task-title {
+  color: #334155 !important;  /* slate-700 - DARKER */
+}
+
+/* === SENAEI — Teal === */
+.task-bar[data-workstream*="Senaei"],
+.task-bar[data-workstream*="Senaie"],
+[data-workstream*="Senaei"] .task-bar,
+[data-workstream*="Senaie"] .task-bar {
+  background-color: #ccfbf1 !important;  /* teal-200 */
+  border: 1px solid #5eead4 !important;  /* teal-300 */
+}
+
+.task-bar[data-workstream*="Senaei"] .task-id,
+.task-bar[data-workstream*="Senaie"] .task-id {
+  color: #0f766e !important;  /* teal-700 - DARK */
+}
+
+.task-bar[data-workstream*="Senaei"] .task-title,
+.task-bar[data-workstream*="Senaie"] .task-title {
+  color: #115e59 !important;  /* teal-800 - DARKER */
+}
+
+/* === STAND-ALONE — Gray === */
+.task-bar[data-workstream*="Stand-Alone"],
+[data-workstream*="Stand-Alone"] .task-bar {
+  background-color: #e2e8f0 !important;
+  border: 1px solid #94a3b8 !important;
+}
+
+.task-bar[data-workstream*="Stand-Alone"] .task-id {
+  color: #475569 !important;
+}
+
+.task-bar[data-workstream*="Stand-Alone"] .task-title {
+  color: #334155 !important;
+}
+
+/* === TAHOMMONA — Orange === */
+.task-bar[data-workstream*="Tahommona"],
+[data-workstream*="Tahommona"] .task-bar {
+  background-color: #ffedd5 !important;  /* orange-200 */
+  border: 1px solid #fdba74 !important;  /* orange-300 */
+}
+
+.task-bar[data-workstream*="Tahommona"] .task-id {
+  color: #c2410c !important;  /* orange-700 */
+}
+
+.task-bar[data-workstream*="Tahommona"] .task-title {
+  color: #9a3412 !important;  /* orange-800 */
+}
+
+/* ============================================================================
+   SECTION 3: FALLBACK — Default bar styling
+   ============================================================================ */
+
+.task-bar:not([data-workstream]) {
+  background-color: #e2e8f0 !important;
+  border: 1px solid #94a3b8 !important;
+}
+
+.task-bar:not([data-workstream]) .task-id {
+  color: #475569 !important;
+}
+
+.task-bar:not([data-workstream]) .task-title {
+  color: #334155 !important;
+}
+
+/* ============================================================================
+   SECTION 4: TASK ID — Monospace, dark for readability
+   ============================================================================ */
+
+.task-bar .task-id,
+.task-bar [class*="task-id"] {
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Consolas', monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+/* ============================================================================
+   SECTION 5: TASK TITLE — Dark, readable
+   ============================================================================ */
+
+.task-bar .task-title,
+.task-bar [class*="title"] {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex: 1 !important;
+}
+
+/* ============================================================================
+   SECTION 6: STATUS DOTS — 8px visible dots
+   ============================================================================ */
+
+.task-bar .status-dot,
+.task-bar [class*="status-dot"] {
   width: 8px !important;
   height: 8px !important;
+  min-width: 8px !important;
   border-radius: 50% !important;
   flex-shrink: 0 !important;
 }
 
-/* ============================================================================
-   SECTION B: TASK BAR FILL COLORS (15-20% opacity fills)
-   ============================================================================ */
-
-/* Reset ALL task bars to neutral first */
-.task-bar {
-  background-color: #f1f5f9 !important;
-  border: 1px solid #e2e8f0 !important;
+/* Status colors */
+.status-dot[data-status="backlog"] {
+  background-color: #94a3b8 !important;
 }
 
-/* B1: Catalyst bar — Indigo-50 #eef2ff, border Indigo-300 #a5b4fc */
-.task-bar[data-workstream*="Catalyst"] {
-  background-color: #eef2ff !important;
-  border: 1px solid #a5b4fc !important;
+.status-dot[data-status="planned"] {
+  background-color: #3b82f6 !important;
 }
 
-/* B2: Data & AI bar — Purple-50 #f5f3ff, border Purple-300 #c4b5fd */
-.task-bar[data-workstream*="Data"] {
-  background-color: #f5f3ff !important;
-  border: 1px solid #c4b5fd !important;
+.status-dot[data-status="progress"],
+.status-dot[data-status="in-progress"] {
+  background-color: #f59e0b !important;
 }
 
-/* B3: Delivery bar — Pink-50 #fdf2f8, border Pink-300 #f9a8d4 */
-.task-bar[data-workstream*="Delivery"] {
-  background-color: #fdf2f8 !important;
-  border: 1px solid #f9a8d4 !important;
+.status-dot[data-status="review"] {
+  background-color: #8b5cf6 !important;
 }
 
-/* B4: MIM bar — Gray-100 #f1f5f9, border Gray-300 #cbd5e1 */
-.task-bar[data-workstream*="MIM"] {
-  background-color: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-}
-
-/* B5: Senaei bar — Teal-50 #f0fdfa, border Teal-300 #5eead4 */
-.task-bar[data-workstream*="Senaei"],
-.task-bar[data-workstream*="Senaie"] {
-  background-color: #f0fdfa !important;
-  border: 1px solid #5eead4 !important;
-}
-
-/* Stand-Alone — Gray-100 */
-.task-bar[data-workstream*="Stand-Alone"] {
-  background-color: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-}
-
-/* Tahommona — Orange-50 #fff7ed */
-.task-bar[data-workstream*="Tahommona"] {
-  background-color: #fff7ed !important;
-  border: 1px solid #fdba74 !important;
+.status-dot[data-status="done"] {
+  background-color: #16a34a !important;
 }
 
 /* ============================================================================
-   SECTION C: KILL SATURATED COLORS (AUTOMATIC FAIL CONDITIONS)
+   SECTION 7: OVERDUE — Red left border (NOT changing entire fill)
    ============================================================================ */
 
-/* Kill specific saturated colors that should NEVER appear */
-[style*="background-color: rgb(14, 165, 233)"],  /* cyan */
-[style*="background-color: rgb(253, 164, 175)"], /* pink/salmon */
-[style*="background-color: rgb(34, 211, 238)"],  /* bright cyan */
-[style*="background-color: rgb(251, 207, 232)"], /* light pink */
-[style*="background: rgb(14, 165, 233)"],
-[style*="background: rgb(253, 164, 175)"] {
-  background-color: #f1f5f9 !important;
-}
-
-/* ============================================================================
-   SECTION D: OVERDUE INDICATION
-   D1: Red left border 3px solid #dc2626
-   D2: Red 8px dot top-right
-   D3: Overdue text red #dc2626
-   D4: Does NOT change entire bar color
-   D5: Red ONLY for overdue, not status
-   ============================================================================ */
-
-/* D1: Overdue bars — RED LEFT BORDER 3px */
 .task-bar.overdue,
 .task-bar[data-overdue="true"] {
-  border-left: 3px solid #dc2626 !important;
+  border-left: 4px solid #dc2626 !important;
 }
 
-/* D2: Overdue dot indicator */
+/* Overdue indicator dot - top right */
+.task-bar .overdue-dot,
 .overdue-dot {
-  width: 8px !important;
-  height: 8px !important;
-  background-color: #dc2626 !important;
-  border: 2px solid white !important;
+  position: absolute !important;
+  top: -4px !important;
+  right: -4px !important;
+  width: 10px !important;
+  height: 10px !important;
+  background: #dc2626 !important;
   border-radius: 50% !important;
+  border: 2px solid white !important;
 }
 
-/* D3: Overdue text in workstream panel */
+/* Overdue text in panel */
 .overdue-text,
 .overdue-count {
   color: #dc2626 !important;
@@ -188,141 +260,88 @@
 }
 
 /* ============================================================================
-   SECTION E: STATUS INDICATION (6px dots inside bars)
+   SECTION 8: AVATAR — Proper sizing
    ============================================================================ */
 
-/* E1: Status dot size 6px */
-.task-bar .status-dot {
-  width: 6px !important;
-  height: 6px !important;
+.task-bar .avatar,
+.task-bar [class*="avatar"],
+.task-bar .assignee-avatar {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  border-radius: 50% !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 0 0 2px white !important;
+}
+
+/* ============================================================================
+   SECTION 9: WORKSTREAM PANEL DOTS — CORRECT COLORS
+   ============================================================================ */
+
+.workstream-dot {
+  width: 10px !important;
+  height: 10px !important;
   border-radius: 50% !important;
   flex-shrink: 0 !important;
 }
 
-/* E2: Backlog — Gray #94a3b8 */
-.status-dot[data-status="backlog"] {
-  background-color: #94a3b8 !important;
+/* Catalyst — INDIGO */
+.workstream-dot[data-workstream*="Catalyst"],
+[data-workstream*="Catalyst"] .workstream-dot {
+  background-color: #6366f1 !important;
 }
 
-/* E3: Planned — Blue #3b82f6 */
-.status-dot[data-status="planned"] {
-  background-color: #3b82f6 !important;
-}
-
-/* E4: In Progress — Amber #f59e0b */
-.status-dot[data-status="progress"],
-.status-dot[data-status="in-progress"] {
-  background-color: #f59e0b !important;
-}
-
-/* E5: Review — Purple #8b5cf6 */
-.status-dot[data-status="review"] {
+/* Data & AI — PURPLE (not blue) */
+.workstream-dot[data-workstream*="Data"],
+[data-workstream*="Data"] .workstream-dot {
   background-color: #8b5cf6 !important;
 }
 
-/* E6: Done — Green #16a34a */
-.status-dot[data-status="done"] {
-  background-color: #16a34a !important;
+/* Delivery — PINK */
+.workstream-dot[data-workstream*="Delivery"],
+[data-workstream*="Delivery"] .workstream-dot {
+  background-color: #ec4899 !important;
+}
+
+/* MIM — GRAY (not blue) */
+.workstream-dot[data-workstream*="MIM"],
+[data-workstream*="MIM"] .workstream-dot {
+  background-color: #64748b !important;
+}
+
+/* Senaei — TEAL */
+.workstream-dot[data-workstream*="Senaei"],
+.workstream-dot[data-workstream*="Senaie"],
+[data-workstream*="Senaei"] .workstream-dot,
+[data-workstream*="Senaie"] .workstream-dot {
+  background-color: #14b8a6 !important;
+}
+
+/* Stand-Alone — GRAY */
+.workstream-dot[data-workstream*="Stand-Alone"],
+[data-workstream*="Stand-Alone"] .workstream-dot {
+  background-color: #64748b !important;
+}
+
+/* Tahommona — ORANGE */
+.workstream-dot[data-workstream*="Tahommona"],
+[data-workstream*="Tahommona"] .workstream-dot {
+  background-color: #f97316 !important;
 }
 
 /* ============================================================================
-   SECTION F: STATUS LEGEND (Top right of toolbar)
+   SECTION 10: WORKSTREAM PANEL TEXT — Dark, readable
    ============================================================================ */
 
-/* F1: Legend positioned in toolbar */
-.status-legend {
-  display: flex !important;
-  align-items: center !important;
-  gap: 16px !important;
-  margin-left: auto !important;
-}
-
-/* Legend dot size 8px */
-.status-legend .legend-dot {
-  width: 8px !important;
-  height: 8px !important;
-  border-radius: 50% !important;
-}
-
-/* Legend label styling */
-.status-legend .legend-label {
-  font-size: 12px !important;
-  color: #64748b !important;
-}
-
-/* F2-F6: Legend dot colors */
-.legend-dot[data-status="backlog"] { background-color: #94a3b8 !important; }
-.legend-dot[data-status="planned"] { background-color: #3b82f6 !important; }
-.legend-dot[data-status="progress"] { background-color: #f59e0b !important; }
-.legend-dot[data-status="review"] { background-color: #8b5cf6 !important; }
-.legend-dot[data-status="done"] { background-color: #16a34a !important; }
-
-/* ============================================================================
-   SECTION H: TASK BAR CONTENT
-   ============================================================================ */
-
-/* H1-H2: Task ID — Monospace, Gray #475569 */
-.task-bar .task-id {
-  font-family: ui-monospace, 'SF Mono', 'Menlo', monospace !important;
-  font-size: 11px !important;
-  color: #475569 !important;
-  font-weight: 500 !important;
-}
-
-/* H3-H4: Task title — Gray #334155, truncated with ellipsis */
-.task-bar .task-title {
-  font-size: 12px !important;
-  color: #334155 !important;
-  font-weight: 500 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-/* H5-H6: Avatar — 18-20px, right side */
-.task-bar .assignee-avatar {
-  width: 18px !important;
-  height: 18px !important;
-  border-radius: 50% !important;
-  font-size: 8px !important;
-  font-weight: 700 !important;
-  margin-left: auto !important;
-}
-
-/* H7: Bar height 28-32px */
-.task-bar {
-  height: 28px !important;
-  min-height: 28px !important;
-  max-height: 32px !important;
-}
-
-/* H8: Bar border radius 6px */
-.task-bar {
-  border-radius: 6px !important;
-  padding: 0 10px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-}
-
-/* ============================================================================
-   SECTION I: WORKSTREAM PANEL
-   ============================================================================ */
-
-/* I1: Panel width ~240px (handled in JS, but enforce min) */
-.workstream-panel,
-.left-panel {
-  min-width: 240px !important;
-}
-
-/* I2: Workstream name font weight 500 (medium) */
 .workstream-name {
-  font-weight: 500 !important;
   font-size: 14px !important;
-}
-
-/* I3: Workstream name color #0f172a */
-.workstream-name {
+  font-weight: 600 !important;
   color: #0f172a !important;
 }
 
@@ -330,59 +349,92 @@
   color: #f1f5f9 !important;
 }
 
-/* I4: "No lead assigned" color Gray #64748b */
-.workstream-lead .no-lead,
-.workstream-lead:empty::after {
-  color: #64748b !important;
-}
-
-/* I5: Task stats color Gray #64748b */
-.workstream-stats {
-  color: #64748b !important;
-  font-size: 11px !important;
-}
-
-/* I6: Expand/collapse chevron */
-.expand-btn .chevron {
-  transition: transform 150ms ease !important;
-}
-
-/* ============================================================================
-   SECTION J: DATE HEADERS
-   ============================================================================ */
-
-/* J1: Day name size 10-11px uppercase */
-.day-name {
-  font-size: 10px !important;
-  text-transform: uppercase !important;
-  font-weight: 500 !important;
-  color: #94a3b8 !important;
-}
-
-/* J2: Day number size 13-14px */
-.day-number {
+.workstream-lead {
   font-size: 13px !important;
-  font-weight: 600 !important;
   color: #475569 !important;
 }
 
-.dark .day-number {
+.dark .workstream-lead {
+  color: #94a3b8 !important;
+}
+
+.workstream-stats {
+  font-size: 13px !important;
+  color: #475569 !important;
+}
+
+.dark .workstream-stats {
+  color: #94a3b8 !important;
+}
+
+/* ============================================================================
+   SECTION 11: STATUS LEGEND — Darker text
+   ============================================================================ */
+
+.status-legend .legend-label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #334155 !important;
+}
+
+.dark .status-legend .legend-label {
   color: #cbd5e1 !important;
 }
 
-/* J3: Today column highlight Blue-50 #eff6ff */
+.status-legend .legend-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+}
+
+/* Legend dot colors */
+.legend-dot[data-status="backlog"] { background-color: #94a3b8 !important; }
+.legend-dot[data-status="planned"] { background-color: #3b82f6 !important; }
+.legend-dot[data-status="progress"] { background-color: #f59e0b !important; }
+.legend-dot[data-status="review"] { background-color: #8b5cf6 !important; }
+.legend-dot[data-status="done"] { background-color: #16a34a !important; }
+
+/* ============================================================================
+   SECTION 12: DATE HEADERS — More contrast
+   ============================================================================ */
+
+.day-name {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  text-transform: uppercase !important;
+}
+
+.dark .day-name {
+  color: #94a3b8 !important;
+}
+
+.day-number {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+}
+
+.dark .day-number {
+  color: #e2e8f0 !important;
+}
+
+/* Today column highlight */
 .date-column-header.today {
   background-color: #eff6ff !important;
 }
 
-/* J4: Today number style — Blue circle badge */
-.date-column-header.today .today-badge {
-  background-color: #3b82f6 !important;
-  color: white !important;
-  border-radius: 50% !important;
+.dark .date-column-header.today {
+  background-color: rgba(59, 130, 246, 0.15) !important;
 }
 
-/* J5: Weekend columns — Subtle gray bg */
+/* Today badge */
+.today-badge {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Weekend columns */
 .date-column-header.weekend {
   background-color: #f8fafc !important;
 }
@@ -391,19 +443,15 @@
   background-color: rgba(51, 65, 85, 0.3) !important;
 }
 
-/* J6: Column width ~40px (handled in JS) */
-
 /* ============================================================================
-   SECTION K: TODAY MARKER
+   SECTION 13: TODAY MARKER
    ============================================================================ */
 
-/* K1-K2: Today line — Blue #3b82f6, 2px width */
 .today-marker > div:last-child {
   background-color: #3b82f6 !important;
   width: 2px !important;
 }
 
-/* K3: TODAY label — Blue bg, white text */
 .today-label {
   background-color: #3b82f6 !important;
   color: white !important;
@@ -416,10 +464,9 @@
 }
 
 /* ============================================================================
-   SECTION L: INTERACTIVE STATES
+   SECTION 14: INTERACTIVE STATES
    ============================================================================ */
 
-/* L1-L2: Bar hover effect — Subtle shadow + lift, pointer cursor */
 .task-bar {
   cursor: pointer !important;
   transition: transform 150ms ease, box-shadow 150ms ease !important;
@@ -430,17 +477,7 @@
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12) !important;
 }
 
-/* L3: Resize handle visible on hover (if applicable) */
-.task-bar .resize-handle {
-  opacity: 0 !important;
-  transition: opacity 150ms ease !important;
-}
-
-.task-bar:hover .resize-handle {
-  opacity: 1 !important;
-}
-
-/* L4: Workstream row hover — Subtle highlight */
+/* Workstream row hover */
 .workstream-row {
   transition: background-color 150ms ease !important;
 }
@@ -453,16 +490,19 @@
   background-color: #1e293b !important;
 }
 
-/* L5: Filter button hover — Gray-100 bg */
+/* Filter button hover */
 .filter-btn:hover {
   background-color: #f1f5f9 !important;
 }
 
+.dark .filter-btn:hover {
+  background-color: #1e293b !important;
+}
+
 /* ============================================================================
-   SECTION M: CONSISTENCY WITH PLANNER V9
+   SECTION 15: CONSISTENCY WITH PLANNER V9
    ============================================================================ */
 
-/* M3: Primary button color #2563eb */
 .timeline-enterprise .btn-primary,
 .timeline-enterprise [class*="bg-blue-600"],
 .timeline-enterprise [class*="bg-primary"] {
@@ -473,7 +513,6 @@
   background-color: #1d4ed8 !important;
 }
 
-/* M4: Page background #f8fafc */
 .timeline-enterprise {
   background-color: #f8fafc !important;
 }
@@ -482,7 +521,6 @@
   background-color: #020617 !important;
 }
 
-/* M5: Container background #ffffff */
 .timeline-enterprise .container-bg {
   background-color: #ffffff !important;
 }
@@ -491,44 +529,30 @@
   background-color: #0f172a !important;
 }
 
-/* M6: Border color #e2e8f0 */
-.timeline-enterprise {
-  --timeline-border: #e2e8f0;
-}
+/* ============================================================================
+   SECTION 16: KILL SATURATED COLORS (AUTOMATIC FAIL CONDITIONS)
+   These colors should NEVER appear on task bars
+   ============================================================================ */
 
-.dark .timeline-enterprise {
-  --timeline-border: #334155;
+[style*="background-color: rgb(14, 165, 233)"],  /* cyan */
+[style*="background-color: rgb(253, 164, 175)"], /* pink/salmon */
+[style*="background-color: rgb(34, 211, 238)"],  /* bright cyan */
+[style*="background-color: rgb(251, 207, 232)"], /* light pink */
+[style*="background: rgb(14, 165, 233)"],
+[style*="background: rgb(253, 164, 175)"] {
+  background-color: #e2e8f0 !important;
 }
 
 /* ============================================================================
-   ACCESSIBILITY & FOCUS STATES
+   SECTION 17: WORKSTREAM PANEL SIZING
    ============================================================================ */
 
-.task-bar:focus {
-  outline: 2px solid #3b82f6 !important;
-  outline-offset: 2px !important;
+.workstream-panel,
+.left-panel {
+  min-width: 240px !important;
 }
 
-.task-bar:focus:not(:focus-visible) {
-  outline: none !important;
-}
-
-/* ============================================================================
-   DARK MODE OVERRIDES
-   ============================================================================ */
-
-.dark .task-bar .task-id {
-  color: #94a3b8 !important;
-}
-
-.dark .task-bar .task-title {
-  color: #e2e8f0 !important;
-}
-
-.dark .workstream-name {
-  color: #f1f5f9 !important;
-}
-
-.dark .day-name {
-  color: #64748b !important;
+/* Expand/collapse chevron */
+.expand-btn .chevron {
+  transition: transform 150ms ease !important;
 }

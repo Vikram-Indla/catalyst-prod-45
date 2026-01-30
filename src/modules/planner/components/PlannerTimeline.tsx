@@ -977,25 +977,29 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                           onMouseLeave={() => setHoveredTaskId(null)}
                                           tabIndex={0}
                                         >
-                                          {/* E1: Status dot — 6px, inside bar */}
+                                          {/* E1: Status dot — 8px, inside bar (REFINED) */}
                                           <span
-                                            className="status-dot w-1.5 h-1.5 rounded-full ml-2 flex-shrink-0"
+                                            className="status-dot w-2 h-2 rounded-full ml-2 flex-shrink-0"
                                             style={{ backgroundColor: statusDotColor }}
                                             data-status={task.status_slug}
                                           />
 
-                                          {/* H1-H2: Task ID — gray monospace #475569 */}
-                                          <span className="task-id ml-2 text-[11px] font-medium text-[#475569] font-mono flex-shrink-0">
+                                          {/* H1-H2: Task ID — workstream-colored monospace */}
+                                          <span 
+                                            className="task-id ml-2 text-[12px] font-semibold font-mono flex-shrink-0"
+                                            style={{ color: wsColors.textPrimary || '#475569' }}
+                                          >
                                             {task.key}
                                           </span>
 
-                                          {/* H3-H4: Task Title — gray #334155, truncated */}
+                                          {/* H3-H4: Task Title — workstream-colored, truncated */}
                                           {showTitle && (
                                             <span
                                               className={cn(
-                                                "task-title ml-1.5 text-xs font-medium text-[#334155] truncate flex-1",
+                                                "task-title ml-1.5 text-[13px] font-medium truncate flex-1",
                                                 task.status_slug === 'done' && "line-through opacity-70"
                                               )}
+                                              style={{ color: wsColors.textDark || '#334155' }}
                                             >
                                               {task.title}
                                             </span>
