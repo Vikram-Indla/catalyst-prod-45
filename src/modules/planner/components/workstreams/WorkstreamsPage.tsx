@@ -594,8 +594,6 @@ export function WorkstreamsPage() {
                               });
                             }
                           }}
-                          size="md"
-                          showRole={false}
                         />
                       </td>
 
