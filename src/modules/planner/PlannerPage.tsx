@@ -20,6 +20,7 @@ import { PlannerBoardsPage } from './components/boards';
 import { WorkstreamsPage } from './components/workstreams';
 
 import { PlannerCreateModal } from './components/PlannerCreateModal';
+import { TaskDetailModal } from './components/TaskDetailModal';
 import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
 import { PlannerBulkActionBar } from './components/PlannerBulkActionBar';
 import { PlannerBulkDeleteModal } from './components/PlannerBulkDeleteModal';
@@ -600,8 +601,15 @@ export function PlannerPage() {
           </main>
         </div>
 
-        {/* Task Detail Drawer - DISABLED - awaiting new implementation */}
-
+        {/* Task Detail Modal - V3 with real-time subscription */}
+        <TaskDetailModal
+          taskId={selectedKanbanTask?.id || null}
+          isOpen={isKanbanDrawerOpen}
+          onClose={() => {
+            setIsKanbanDrawerOpen(false);
+            setSelectedKanbanTask(null);
+          }}
+        />
         {/* Create Modal */}
         <PlannerCreateModal
           isOpen={isCreateModalOpen}

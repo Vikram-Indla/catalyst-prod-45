@@ -9,7 +9,7 @@ import { Kanban } from 'lucide-react';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
-import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
+import { TaskDetailModal } from '../TaskDetailModal';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
@@ -170,15 +170,12 @@ export function PlannerBoardsPage({
         defaultStatusId={createStatusId}
       />
 
-      {/* Task Detail Modal - DISABLED - awaiting new implementation */}
-      {/* 
-      <TaskDetailDrawer
+      {/* Task Detail Modal - V3 with real-time subscription */}
+      <TaskDetailModal
         taskId={selectedTaskId}
-        open={isDrawerOpen}
-        onOpenChange={setIsDrawerOpen}
+        isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
       />
-      */}
     </div>
   );
 }
