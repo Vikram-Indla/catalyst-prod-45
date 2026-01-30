@@ -1,38 +1,42 @@
-// ============================================================
+// ============================================================================
 // WORKSTREAMS V10 - Main Page Component
-// Enterprise Clean design with SVG icons per spec
-// ============================================================
+// Enterprise Clean design with INLINE STYLES per spec
+// ============================================================================
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
+  Plus,
   Search,
   ChevronDown,
   List,
   LayoutGrid,
-  Check,
-  X,
-  Plus,
-  AlertTriangle,
   Archive,
   ArchiveRestore,
-  Pencil,
+  Edit2,
   Trash2,
+  User,
+  Check,
+  X,
+  AlertCircle,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { usePlannerWorkstreams, Workstream, useArchiveWorkstream, useDeleteWorkstream, useArchivedWorkstreamsCount, useUpdateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
-import { LeadPicker } from './LeadPicker';
-import { WorkstreamCard } from './WorkstreamCard';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  usePlannerWorkstreams,
+  Workstream,
+  useArchiveWorkstream,
+  useDeleteWorkstream,
+  useArchivedWorkstreamsCount,
+  useUpdateWorkstream,
+  useAddWorkstreamMember,
+} from '../../hooks/usePlannerWorkstreams';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
 import { ArchivedWorkstreamsView } from './ArchivedWorkstreamsView';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
+import { WorkstreamCard } from './WorkstreamCard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,24 +48,126 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-const iconProps = { className: 'w-4 h-4', strokeWidth: 1.5 } as const;
+// ============================================================================
+// COLOR CONSTANTS — CATALYST V5 DESIGN SYSTEM
+// ============================================================================
+
+const COLORS = {
+  // Text
+  textPrimary: '#0f172a',
+  textSecondary: '#334155',
+  textMuted: '#64748b',
+  textLight: '#94a3b8',
+
+  // Surfaces
+  surfaceWhite: '#ffffff',
+  surfacePage: '#f8fafc',
+  surfaceHover: '#f1f5f9',
+  surfaceSelected: '#dbeafe',
+
+  // Borders
+  borderLight: '#e2e8f0',
+  borderDefault: '#cbd5e1',
+
+  // Brand
+  accent: '#2563eb',
+  accentHover: '#1d4ed8',
+  accentLight: '#dbeafe',
+  accentLighter: '#eff6ff',
+
+  // Status
+  success: '#16a34a',
+  successBg: '#f0fdf4',
+
+  warning: '#f59e0b',
+  warningText: '#b45309',
+  warningBg: '#fffbeb',
+
+  danger: '#dc2626',
+  dangerBg: '#fef2f2',
+  dangerBorder: '#fecaca',
+};
+
+// ============================================================================
+// ICON COLORS (Gradient backgrounds for workstream avatars)
+// ============================================================================
+
+const ICON_COLORS = [
+  'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+  'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+  'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
+  'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+  'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+  'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+  'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+];
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+const getInitials = (name: string): string => {
+  if (!name) return 'U';
+  const parts = name.trim().split(' ');
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
+};
+
+const getIconColor = (index: number): string => {
+  return ICON_COLORS[index % ICON_COLORS.length];
+};
+
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+interface TeamMember {
+  id: string;
+  name: string;
+  initials: string;
+  role: string;
+  avatarColor: string;
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 
 export function WorkstreamsPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
-  const [view, setView] = useState<'list' | 'grid'>('list');
-  const [search, setSearch] = useState('');
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [focusedIndex, setFocusedIndex] = useState(-1);
+
+  // State
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
+  const [leadSearchQuery, setLeadSearchQuery] = useState('');
+  const [allUsers, setAllUsers] = useState<TeamMember[]>([]);
+  const [leads, setLeads] = useState<Record<string, TeamMember | null>>({});
+
+  // Drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeWorkstream, setActiveWorkstream] = useState<Workstream | null>(null);
+
+  // Create modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  
-  // Filter state
-  const [healthFilter, setHealthFilter] = useState<string | null>(null);
-  const [leadFilter, setLeadFilter] = useState<string | null>(null);
-  
+
+  // Quick edit dialog
+  const [isQuickEditOpen, setIsQuickEditOpen] = useState(false);
+  const [quickEditWorkstream, setQuickEditWorkstream] = useState<Workstream | null>(null);
+
+  // Delete dialog
+  const [deleteTarget, setDeleteTarget] = useState<Workstream | null>(null);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   // Archive filter - check URL param
   const showArchived = searchParams.get('archived') === 'true';
   const { data: workstreams = [], isLoading } = usePlannerWorkstreams(showArchived);
@@ -70,10 +176,6 @@ export function WorkstreamsPage() {
   const deleteWorkstream = useDeleteWorkstream();
   const updateWorkstream = useUpdateWorkstream();
   const addMember = useAddWorkstreamMember();
-
-  const [isQuickEditOpen, setIsQuickEditOpen] = useState(false);
-  const [quickEditWorkstream, setQuickEditWorkstream] = useState<Workstream | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Workstream | null>(null);
 
   // Toggle archive view
   const toggleArchiveView = () => {
@@ -85,139 +187,134 @@ export function WorkstreamsPage() {
     setSearchParams(searchParams);
   };
 
-  // Get unique leads for filter dropdown
-  const uniqueLeads = useMemo(() => {
-    const leads = new Map<string, { id: string; name: string }>();
-    workstreams.forEach(ws => {
-      if (ws.lead?.id && ws.lead?.name) {
-        leads.set(ws.lead.id, { id: ws.lead.id, name: ws.lead.name });
-      }
-    });
-    return Array.from(leads.values());
-  }, [workstreams]);
+  // Fetch all users for lead picker
+  const fetchAllUsers = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .order('full_name');
 
-  // Filter workstreams
-  const filteredWorkstreams = useMemo(() => {
-    return workstreams.filter(ws => {
-      // Archive filter
-      if (!showArchived && ws.is_archived) return false;
-      if (showArchived && !ws.is_archived) return false;
-      
-      // Search filter
-      if (search && !ws.name.toLowerCase().includes(search.toLowerCase())) return false;
-      // Health filter
-      if (healthFilter && ws.health !== healthFilter) return false;
-      // Lead filter
-      if (leadFilter) {
-        if (leadFilter === 'unassigned' && ws.lead_id) return false;
-        if (leadFilter !== 'unassigned' && ws.lead?.id !== leadFilter) return false;
-      }
-      return true;
-    });
-  }, [workstreams, search, healthFilter, leadFilter, showArchived]);
+      if (error) throw error;
 
-  // Compute summary stats (only for active workstreams)
-  const summary = useMemo(() => {
-    const activeWorkstreams = workstreams.filter(ws => !ws.is_archived);
-    return {
-      total: activeWorkstreams.length,
-      tasks: activeWorkstreams.reduce((sum, ws) => sum + (ws.taskCount || 0), 0),
-      healthy: activeWorkstreams.filter(ws => ws.health === 'healthy').length,
-      atRisk: activeWorkstreams.filter(ws => ws.health === 'at-risk').length,
-      critical: activeWorkstreams.filter(ws => ws.health === 'critical').length,
-    };
-  }, [workstreams]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
-      if (isDrawerOpen || isCreateModalOpen) return;
-
-      switch (e.key) {
-        case 'j':
-          e.preventDefault();
-          setFocusedIndex(prev => Math.min(prev + 1, filteredWorkstreams.length - 1));
-          break;
-        case 'k':
-          e.preventDefault();
-          setFocusedIndex(prev => Math.max(prev - 1, 0));
-          break;
-        case 'Enter':
-          if (focusedIndex >= 0 && filteredWorkstreams[focusedIndex]?.health !== 'locked') {
-            e.preventDefault();
-            setActiveWorkstream(filteredWorkstreams[focusedIndex]);
-            setIsDrawerOpen(true);
-          }
-          break;
-        case 'x':
-          if (focusedIndex >= 0 && filteredWorkstreams[focusedIndex]?.health !== 'locked') {
-            e.preventDefault();
-            const id = filteredWorkstreams[focusedIndex].id;
-            setSelectedIds(prev => {
-              const next = new Set(prev);
-              if (next.has(id)) next.delete(id);
-              else next.add(id);
-              return next;
-            });
-          }
-          break;
-        case 'Escape':
-          setIsDrawerOpen(false);
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [focusedIndex, filteredWorkstreams, isDrawerOpen, isCreateModalOpen]);
-
-  // Card click opens drawer
-  const openDrawer = useCallback((ws: Workstream) => {
-    if (ws.health !== 'locked') {
-      setActiveWorkstream(ws);
-      setIsDrawerOpen(true);
+      setAllUsers(
+        (data || []).map((u) => ({
+          id: u.id,
+          name: u.full_name || 'Unknown',
+          initials: getInitials(u.full_name || 'U'),
+          role: 'Team Member',
+          avatarColor: COLORS.accent,
+        }))
+      );
+    } catch (error) {
+      console.error('Error fetching users:', error);
     }
   }, []);
 
-  const toggleSelection = useCallback((id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
+  // Build leads map from workstreams
+  useEffect(() => {
+    const leadsMap: Record<string, TeamMember> = {};
+    workstreams.forEach((ws) => {
+      if (ws.lead?.id && ws.lead?.name) {
+        leadsMap[ws.lead.id] = {
+          id: ws.lead.id,
+          name: ws.lead.name,
+          initials: getInitials(ws.lead.name),
+          role: 'Lead',
+          avatarColor: COLORS.accent,
+        };
+      }
     });
+    setLeads(leadsMap);
+  }, [workstreams]);
+
+  useEffect(() => {
+    fetchAllUsers();
+  }, [fetchAllUsers]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setActiveDropdownId(null);
+        setLeadSearchQuery('');
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Navigation handlers with workstream filter
-  const navigateToTasks = useCallback((ws: Workstream, e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate(`/planner/task-list?workstream=${encodeURIComponent(ws.slug || ws.id)}`);
-  }, [navigate]);
+  // Assign lead
+  const handleAssignLead = async (workstreamId: string, user: TeamMember | null) => {
+    try {
+      if (user) {
+        await addMember.mutateAsync({
+          workstreamId,
+          userId: user.id,
+          role: 'lead',
+        });
+        setLeads((prev) => ({ ...prev, [user.id]: user }));
+      } else {
+        // Remove lead by updating directly
+        await updateWorkstream.mutateAsync({
+          id: workstreamId,
+          updates: { lead_id: null },
+        });
+      }
 
-  const navigateToBoard = useCallback((ws: Workstream, e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate(`/planner/boards?workstream=${encodeURIComponent(ws.slug || ws.id)}`);
-  }, [navigate]);
+      setActiveDropdownId(null);
+      setLeadSearchQuery('');
+    } catch (error) {
+      console.error('Error assigning lead:', error);
+    }
+  };
 
-  const navigateToCalendar = useCallback((ws: Workstream, e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate(`/planner/calendar?workstream=${encodeURIComponent(ws.slug || ws.id)}`);
-  }, [navigate]);
+  // Filtered workstreams
+  const filteredWorkstreams = useMemo(() => {
+    return workstreams.filter((ws) => {
+      if (!showArchived && ws.is_archived) return false;
+      if (showArchived && !ws.is_archived) return false;
+      if (searchQuery && !ws.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      return true;
+    });
+  }, [workstreams, searchQuery, showArchived]);
 
-  // Quick archive/unarchive from list
-  const handleQuickArchive = useCallback((ws: Workstream, e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Ensure row click does not leave/open the drawer when using row actions
-    setIsDrawerOpen(false);
-    archiveWorkstream.mutate({ id: ws.id, archive: !ws.is_archived });
-  }, [archiveWorkstream]);
+  const filteredUsers = allUsers.filter(
+    (u) =>
+      u.name.toLowerCase().includes(leadSearchQuery.toLowerCase()) ||
+      u.role.toLowerCase().includes(leadSearchQuery.toLowerCase())
+  );
+
+  // Compute summary stats (only for active workstreams)
+  const stats = useMemo(() => {
+    const activeWorkstreams = workstreams.filter((ws) => !ws.is_archived);
+    return {
+      total: activeWorkstreams.length,
+      tasks: activeWorkstreams.reduce((sum, ws) => sum + (ws.taskCount || 0), 0),
+      onTrack: activeWorkstreams.filter((ws) => ws.health === 'healthy').length,
+      atRisk: activeWorkstreams.filter((ws) => ws.health === 'at-risk').length,
+      critical: activeWorkstreams.filter((ws) => ws.health === 'critical').length,
+    };
+  }, [workstreams]);
+
+  // Open drawer
+  const openDrawer = useCallback((ws: Workstream) => {
+    setActiveWorkstream(ws);
+    setIsDrawerOpen(true);
+  }, []);
+
+  // Quick actions
+  const handleQuickArchive = useCallback(
+    (ws: Workstream, e: React.MouseEvent) => {
+      e.stopPropagation();
+      setIsDrawerOpen(false);
+      archiveWorkstream.mutate({ id: ws.id, archive: !ws.is_archived });
+    },
+    [archiveWorkstream]
+  );
 
   const handleQuickEdit = useCallback((ws: Workstream, e: React.MouseEvent) => {
     e.stopPropagation();
-    // Prevent any accidental row-click drawer open and ensure dialog is visible
     setIsDrawerOpen(false);
     setQuickEditWorkstream(ws);
     setIsQuickEditOpen(true);
@@ -240,423 +337,284 @@ export function WorkstreamsPage() {
     );
   }
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
-    <div className="flex flex-col min-h-screen bg-surface-1" data-component="workstreams">
-      <header className="bg-surface-0 border-b border-border-subtle">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3">
-          <div>
-            <h1 className="text-xl font-bold text-text-primary">Workstreams</h1>
-            <p className="text-sm text-text-muted">
-              {summary.total} workstream{summary.total !== 1 ? 's' : ''}
-              {summary.atRisk + summary.critical > 0
-                ? ` · ${summary.atRisk + summary.critical} need attention`
-                : ''}
-            </p>
+    <div
+      style={{
+        padding: '32px 40px',
+        backgroundColor: COLORS.surfacePage,
+        minHeight: '100vh',
+      }}
+    >
+      {/* PAGE HEADER */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          marginBottom: '24px',
+        }}
+      >
+        <div>
+          <h1
+            style={{
+              fontSize: '24px',
+              fontWeight: 700,
+              color: COLORS.textPrimary,
+              margin: 0,
+            }}
+          >
+            Workstreams
+          </h1>
+          <p
+            style={{
+              fontSize: '14px',
+              color: COLORS.textMuted,
+              marginTop: '4px',
+              margin: 0,
+            }}
+          >
+            {stats.total} workstreams · {stats.critical + stats.atRisk} need attention
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            onClick={toggleArchiveView}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 16px',
+              backgroundColor: COLORS.surfaceWhite,
+              border: `1px solid ${COLORS.borderLight}`,
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: COLORS.textSecondary,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            <Archive size={16} />
+            Archived
+          </button>
+
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 16px',
+              backgroundColor: COLORS.accent,
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#ffffff',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            <Plus size={16} />
+            New Workstream
+          </button>
+        </div>
+      </div>
+
+      {/* SUMMARY CARDS */}
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+        <SummaryCard value={stats.total} label="Workstreams" isActive />
+        <SummaryCard value={stats.tasks} label="Tasks" />
+        <SummaryCard
+          value={stats.onTrack}
+          label="On Track"
+          icon={<CheckCircle2 size={20} style={{ color: COLORS.success }} />}
+        />
+        <SummaryCard
+          value={stats.atRisk}
+          label="At Risk"
+          icon={<AlertTriangle size={20} style={{ color: COLORS.warning }} />}
+        />
+        <SummaryCard
+          value={stats.critical}
+          label="Critical"
+          icon={<AlertCircle size={20} style={{ color: COLORS.danger }} />}
+        />
+      </div>
+
+      {/* TABLE CONTAINER */}
+      <div
+        style={{
+          backgroundColor: COLORS.surfaceWhite,
+          border: `1px solid ${COLORS.borderLight}`,
+          borderRadius: '16px',
+          overflow: 'hidden',
+        }}
+      >
+        {/* TOOLBAR */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 24px',
+            borderBottom: `1px solid ${COLORS.borderLight}`,
+          }}
+        >
+          {/* Search */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '10px 14px',
+              backgroundColor: COLORS.surfacePage,
+              border: `1px solid ${COLORS.borderLight}`,
+              borderRadius: '10px',
+              width: '320px',
+            }}
+          >
+            <Search size={16} style={{ color: COLORS.textLight }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search workstreams..."
+              style={{
+                flex: 1,
+                border: 'none',
+                backgroundColor: 'transparent',
+                fontSize: '14px',
+                color: COLORS.textPrimary,
+                outline: 'none',
+                fontFamily: 'inherit',
+              }}
+            />
+            <span
+              style={{
+                padding: '4px 8px',
+                backgroundColor: COLORS.borderLight,
+                borderRadius: '4px',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: COLORS.textMuted,
+              }}
+            >
+              ⌘K
+            </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <button
-              className="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-brand-primary text-brand-primary-foreground text-sm font-medium hover:bg-brand-primary-hover transition-colors"
-              onClick={() => setIsCreateModalOpen(true)}
-            >
-              <Plus {...iconProps} />
-              <span className="hidden sm:inline">New Workstream</span>
-              <span className="sm:hidden">New</span>
-            </button>
+          {/* Filters + View Toggle */}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <FilterButton label="Health" />
+            <FilterButton label="Lead" />
 
-            <button
-              onClick={toggleArchiveView}
-              className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border-default bg-surface-0 text-text-secondary text-sm hover:bg-surface-2 transition-colors"
+            <div
+              style={{
+                display: 'flex',
+                backgroundColor: COLORS.surfaceHover,
+                borderRadius: '8px',
+                padding: '4px',
+              }}
             >
-              <Archive {...iconProps} />
-              <span className="hidden sm:inline">Archived</span>
-              {archivedCount > 0 && (
-                <span className="px-1.5 py-0.5 text-xs font-medium rounded bg-surface-2 text-text-muted">
-                  {archivedCount}
-                </span>
-              )}
-            </button>
-
-            <div className="flex items-center rounded-lg border border-border-default bg-surface-2 p-0.5">
-              <button
-                onClick={() => setView('list')}
-                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  view === 'list'
-                    ? 'bg-surface-0 text-text-primary shadow-xs'
-                    : 'text-text-muted hover:text-text-secondary'
-                }`}
-                aria-pressed={view === 'list'}
-              >
-                <List {...iconProps} />
-                <span className="hidden sm:inline">List</span>
-              </button>
-              <button
-                onClick={() => setView('grid')}
-                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  view === 'grid'
-                    ? 'bg-surface-0 text-text-primary shadow-xs'
-                    : 'text-text-muted hover:text-text-secondary'
-                }`}
-                aria-pressed={view === 'grid'}
-              >
-                <LayoutGrid {...iconProps} />
-                <span className="hidden sm:inline">Grid</span>
-              </button>
+              <ViewToggleButton
+                icon={<List size={16} />}
+                label="List"
+                isActive={viewMode === 'list'}
+                onClick={() => setViewMode('list')}
+              />
+              <ViewToggleButton
+                icon={<LayoutGrid size={16} />}
+                label="Grid"
+                isActive={viewMode === 'grid'}
+                onClick={() => setViewMode('grid')}
+              />
             </div>
           </div>
         </div>
-      </header>
 
-      <main className="flex-1 flex flex-col px-4 sm:px-6 py-5 space-y-5 max-w-[1600px] mx-auto w-full">
-        {/* KPI Bar */}
-        <section className="bg-surface-0 border border-border-subtle rounded-xl p-4">
-          <div className="flex flex-wrap gap-3">
-            <button
-              className={`min-w-[120px] rounded-xl border px-5 py-4 text-left transition-colors ${
-                !healthFilter
-                  ? 'border-brand-primary bg-brand-primary-light'
-                  : 'border-border-default bg-surface-0 hover:bg-surface-2'
-              }`}
-              onClick={() => setHealthFilter(null)}
-            >
-              <div className="text-kpi-sm font-bold text-text-primary leading-none">{summary.total}</div>
-              <div className="mt-2 text-sm text-text-muted">Workstreams</div>
-            </button>
-
-            <div className="min-w-[120px] rounded-xl border border-border-default bg-surface-0 px-5 py-4">
-              <div className="text-kpi-sm font-bold text-text-primary leading-none">{summary.tasks}</div>
-              <div className="mt-2 text-sm text-text-muted">Tasks</div>
-            </div>
-
-            <button
-              className={`min-w-[120px] rounded-xl border px-5 py-4 text-left transition-colors ${
-                healthFilter === 'healthy'
-                  ? 'border-brand-primary bg-brand-primary-light'
-                  : 'border-border-default bg-surface-0 hover:bg-surface-2'
-              }`}
-              onClick={() => setHealthFilter(healthFilter === 'healthy' ? null : 'healthy')}
-            >
-              <div className="flex items-center gap-2 text-kpi-sm font-bold text-text-primary leading-none">
-                {summary.healthy}
-                <Check {...iconProps} className="w-5 h-5 text-success" />
-              </div>
-              <div className="mt-2 text-sm text-text-muted">On Track</div>
-            </button>
-
-            <button
-              className={`min-w-[120px] rounded-xl border px-5 py-4 text-left transition-colors ${
-                healthFilter === 'at-risk'
-                  ? 'border-brand-primary bg-brand-primary-light'
-                  : 'border-border-default bg-surface-0 hover:bg-surface-2'
-              }`}
-              onClick={() => setHealthFilter(healthFilter === 'at-risk' ? null : 'at-risk')}
-            >
-              <div className="flex items-center gap-2 text-kpi-sm font-bold text-text-primary leading-none">
-                {summary.atRisk}
-                <AlertTriangle {...iconProps} className="w-5 h-5 text-warning" />
-              </div>
-              <div className="mt-2 text-sm text-text-muted">At Risk</div>
-            </button>
-
-            <button
-              className={`min-w-[120px] rounded-xl border px-5 py-4 text-left transition-colors ${
-                healthFilter === 'critical'
-                  ? 'border-brand-primary bg-brand-primary-light'
-                  : 'border-border-default bg-surface-0 hover:bg-surface-2'
-              }`}
-              onClick={() => setHealthFilter(healthFilter === 'critical' ? null : 'critical')}
-            >
-              <div className="flex items-center gap-2 text-kpi-sm font-bold text-text-primary leading-none">
-                {summary.critical}
-                <span className="inline-block w-3.5 h-3.5 rounded-full bg-danger" aria-hidden />
-              </div>
-              <div className="mt-2 text-sm text-text-muted">Critical</div>
-            </button>
+        {/* TABLE */}
+        {isLoading ? (
+          <div style={{ padding: '60px', textAlign: 'center', color: COLORS.textMuted }}>
+            Loading workstreams...
           </div>
-        </section>
-
-        {/* Toolbar */}
-        <section className="bg-surface-0 border border-border-subtle rounded-xl p-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div className="relative max-w-md w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" strokeWidth={1.5} />
-              <input
-                type="search"
-                placeholder="Search workstreams..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 rounded-lg border border-border-default bg-surface-0 pl-10 pr-14 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring/20"
-              />
-              <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-border-default bg-surface-2 px-2 py-0.5 text-2xs text-text-muted">
-                ⌘K
-              </kbd>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Health Filter Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="inline-flex items-center gap-2 h-10 px-3 rounded-lg border border-border-default bg-surface-0 text-sm text-text-secondary hover:bg-surface-2 transition-colors">
-                    {healthFilter ? (
-                      <>
-                        <span
-                          className={
-                            `w-2 h-2 rounded-full ` +
-                            (healthFilter === 'healthy'
-                              ? 'bg-success'
-                              : healthFilter === 'at-risk'
-                                ? 'bg-warning'
-                                : 'bg-danger')
-                          }
-                        />
-                        {healthFilter === 'healthy'
-                          ? 'On Track'
-                          : healthFilter === 'at-risk'
-                            ? 'At Risk'
-                            : 'Critical'}
-                      </>
-                    ) : (
-                      'Health'
-                    )}
-                    <ChevronDown {...iconProps} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-40">
-                  <DropdownMenuItem onClick={() => setHealthFilter(null)}>
-                    <span className="w-2 h-2 rounded-full bg-text-muted mr-2" />
-                    All
-                    {!healthFilter && <Check {...iconProps} className="ml-auto" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setHealthFilter('healthy')}>
-                    <span className="w-2 h-2 rounded-full bg-success mr-2" />
-                    On Track
-                    {healthFilter === 'healthy' && <Check {...iconProps} className="ml-auto" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setHealthFilter('at-risk')}>
-                    <span className="w-2 h-2 rounded-full bg-warning mr-2" />
-                    At Risk
-                    {healthFilter === 'at-risk' && <Check {...iconProps} className="ml-auto" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setHealthFilter('critical')}>
-                    <span className="w-2 h-2 rounded-full bg-danger mr-2" />
-                    Critical
-                    {healthFilter === 'critical' && <Check {...iconProps} className="ml-auto" />}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Lead Filter Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="inline-flex items-center gap-2 h-10 px-3 rounded-lg border border-border-default bg-surface-0 text-sm text-text-secondary hover:bg-surface-2 transition-colors">
-                    {leadFilter ? (
-                      leadFilter === 'unassigned'
-                        ? 'Unassigned'
-                        : uniqueLeads.find(l => l.id === leadFilter)?.name || 'Lead'
-                    ) : (
-                      'Lead'
-                    )}
-                    <ChevronDown {...iconProps} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  <DropdownMenuItem onClick={() => setLeadFilter(null)}>
-                    All Leads
-                    {!leadFilter && <Check {...iconProps} className="ml-auto" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setLeadFilter('unassigned')}>
-                    Unassigned
-                    {leadFilter === 'unassigned' && <Check {...iconProps} className="ml-auto" />}
-                  </DropdownMenuItem>
-                  {uniqueLeads.length > 0 && <DropdownMenuSeparator />}
-                  {uniqueLeads.map(lead => (
-                    <DropdownMenuItem key={lead.id} onClick={() => setLeadFilter(lead.id)}>
-                      {lead.name}
-                      {leadFilter === lead.id && <Check {...iconProps} className="ml-auto" />}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {(healthFilter || leadFilter) && (
-                <button
-                  className="inline-flex items-center gap-2 h-10 px-3 rounded-lg border border-border-default bg-surface-0 text-sm text-text-secondary hover:bg-surface-2 transition-colors"
-                  onClick={() => {
-                    setHealthFilter(null);
-                    setLeadFilter(null);
-                  }}
-                >
-                  <X {...iconProps} />
-                  Clear
-                </button>
-              )}
-            </div>
+        ) : filteredWorkstreams.length === 0 ? (
+          <div style={{ padding: '60px', textAlign: 'center', color: COLORS.textMuted }}>
+            {searchQuery ? 'No workstreams match your search' : 'No workstreams yet'}
           </div>
-        </section>
-
-        {/* Loading State */}
-        {isLoading && (
-          <div className="bg-surface-0 border border-border-subtle rounded-xl p-6">
-            <div className="animate-pulse space-y-3">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="h-14 rounded-lg bg-surface-2" />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && filteredWorkstreams.length === 0 && (
-          <div className="bg-surface-0 border border-border-subtle rounded-xl p-10 text-center">
-            <div className="mx-auto mb-3 w-10 h-10 rounded-xl bg-surface-2 flex items-center justify-center">
-              <LayoutGrid className="w-5 h-5 text-text-muted" strokeWidth={1.5} />
-            </div>
-            <div className="text-sm font-medium text-text-primary">No workstreams found</div>
-            <div className="mt-1 text-sm text-text-muted">
-              {search || healthFilter || leadFilter
-                ? 'Try adjusting your filters'
-                : 'Create your first workstream to get started'}
-            </div>
-            {!search && !healthFilter && !leadFilter && (
-              <button
-                className="mt-4 inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-brand-primary text-brand-primary-foreground text-sm font-medium hover:bg-brand-primary-hover transition-colors"
-                onClick={() => setIsCreateModalOpen(true)}
+        ) : viewMode === 'list' ? (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr
+                style={{
+                  backgroundColor: COLORS.surfacePage,
+                  borderBottom: `1px solid ${COLORS.borderLight}`,
+                }}
               >
-                <Plus {...iconProps} />
-                New Workstream
-              </button>
-            )}
-          </div>
-        )}
+                <TableHeader width="35%">WORKSTREAM</TableHeader>
+                <TableHeader width="20%">LEAD</TableHeader>
+                <TableHeader width="15%">HEALTH</TableHeader>
+                <TableHeader width="10%" center>
+                  TASKS
+                </TableHeader>
+                <TableHeader width="10%" center>
+                  OVERDUE
+                </TableHeader>
+                <TableHeader width="10%" />
+              </tr>
+            </thead>
+            <tbody>
+              {filteredWorkstreams.map((workstream, index) => {
+                const lead = workstream.lead
+                  ? {
+                      id: workstream.lead.id,
+                      name: workstream.lead.name,
+                      initials: getInitials(workstream.lead.name),
+                      role: 'Lead',
+                      avatarColor: COLORS.accent,
+                    }
+                  : null;
 
-        {/* List View */}
-        {!isLoading && filteredWorkstreams.length > 0 && view === 'list' && (
-          <div className="flex-1 bg-surface-0 border border-border-subtle rounded-xl overflow-hidden flex flex-col">
-            <table className="w-full">
-              <thead>
-                <tr className="h-12 bg-surface-2 border-b border-border-default">
-                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 260 }}>Workstream name</th>
-                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 220 }}>Lead</th>
-                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 160 }}>Health</th>
-                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 100 }}>Tasks</th>
-                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 110 }}>Overdue</th>
-                  <th className="px-6 text-right" style={{ width: 120 }}>
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredWorkstreams.map((ws, index) => {
-                  const healthLabel =
-                    ws.health === 'healthy'
-                      ? 'On Track'
-                      : ws.health === 'at-risk'
-                        ? 'At Risk'
-                        : ws.health === 'critical'
-                          ? 'Critical'
-                          : 'Locked';
-                  const healthClass =
-                    ws.health === 'healthy'
-                      ? 'text-success'
-                      : ws.health === 'at-risk'
-                        ? 'text-warning'
-                        : ws.health === 'critical'
-                          ? 'text-danger'
-                          : 'text-text-muted';
-
-                  return (
-                    <tr
-                      key={ws.id}
-                      className={`group h-14 border-b border-border-subtle last:border-b-0 cursor-pointer transition-colors ${
-                        selectedIds.has(ws.id) ? 'bg-brand-primary-light' : 'hover:bg-surface-2'
-                      } ${focusedIndex === index ? 'ring-1 ring-focus-ring/30' : ''} ${ws.health === 'locked' ? 'opacity-70' : ''}`}
-                      onClick={(e) => {
-                        if ((e.target as HTMLElement).closest('[data-row-actions]')) return;
-                        openDrawer(ws);
-                      }}
-                    >
-                      <td className="px-6">
-                        <span className="text-sm font-medium text-text-primary">{ws.name}</span>
-                      </td>
-
-                      <td className="px-6" onClick={(e) => e.stopPropagation()}>
-                        <LeadPicker
-                          value={ws.lead_id || null}
-                          currentLeadInfo={ws.lead}
-                          workstreamColor={ws.color}
-                          onChange={(leadId) => {
-                            if (leadId) {
-                              addMember.mutate({
-                                workstreamId: ws.id,
-                                userId: leadId,
-                                role: 'lead',
-                              });
-                            }
-                          }}
-                        />
-                      </td>
-
-                      <td className="px-6">
-                        <span className={`inline-flex items-center gap-2 text-sm ${healthClass}`}>
-                          <span className="w-2 h-2 rounded-full bg-current" aria-hidden />
-                          <span className="text-sm text-text-secondary">{healthLabel}</span>
-                        </span>
-                      </td>
-
-                      <td className="px-6">
-                        <span className="text-sm font-medium text-text-primary">{ws.taskCount || 0}</span>
-                      </td>
-
-                      <td className="px-6">
-                        <span
-                          className={`text-sm font-medium ${(ws.overdueCount || 0) > 0 ? 'text-danger' : 'text-text-primary'}`}
-                        >
-                          {ws.overdueCount || 0}
-                        </span>
-                      </td>
-
-                      <td className="px-6">
-                        <div
-                          data-row-actions
-                          className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <button
-                            className="w-8 h-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-warning hover:bg-warning-bg transition-colors"
-                            onClick={(e) => handleQuickArchive(ws, e)}
-                            title={ws.is_archived ? 'Restore' : 'Archive'}
-                          >
-                            {ws.is_archived ? <ArchiveRestore {...iconProps} /> : <Archive {...iconProps} />}
-                          </button>
-                          <button
-                            className="w-8 h-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-brand-primary hover:bg-brand-primary-light transition-colors"
-                            onClick={(e) => handleQuickEdit(ws, e)}
-                            title="Edit"
-                          >
-                            <Pencil {...iconProps} />
-                          </button>
-                          <button
-                            className="w-8 h-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-danger-bg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                            onClick={(e) => handleRequestDelete(ws, e)}
-                            disabled={(ws.taskCount || 0) > 0}
-                            title={(ws.taskCount || 0) > 0 ? 'Cannot delete: tasks are linked' : 'Delete permanently'}
-                          >
-                            <Trash2 {...iconProps} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Grid View - Enterprise Clean with WorkstreamCard */}
-        {!isLoading && filteredWorkstreams.length > 0 && view === 'grid' && (
-          <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+                return (
+                  <WorkstreamRow
+                    key={workstream.id}
+                    workstream={workstream}
+                    lead={lead}
+                    iconColor={getIconColor(index)}
+                    allUsers={filteredUsers}
+                    isDropdownOpen={activeDropdownId === workstream.id}
+                    leadSearchQuery={leadSearchQuery}
+                    onToggleDropdown={() => {
+                      setActiveDropdownId(activeDropdownId === workstream.id ? null : workstream.id);
+                      setLeadSearchQuery('');
+                    }}
+                    onLeadSearchChange={setLeadSearchQuery}
+                    onAssignLead={(user) => handleAssignLead(workstream.id, user)}
+                    dropdownRef={activeDropdownId === workstream.id ? dropdownRef : undefined}
+                    onRowClick={() => openDrawer(workstream)}
+                    onArchive={(e) => handleQuickArchive(workstream, e)}
+                    onEdit={(e) => handleQuickEdit(workstream, e)}
+                    onDelete={(e) => handleRequestDelete(workstream, e)}
+                  />
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          // Grid View
+          <div
+            style={{
+              padding: '24px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gap: '20px',
+            }}
+          >
             {filteredWorkstreams.map((ws) => (
               <WorkstreamCard
                 key={ws.id}
@@ -671,20 +629,20 @@ export function WorkstreamsPage() {
                   }
                 }}
                 onEdit={(id) => {
-                  const target = workstreams.find(w => w.id === id);
+                  const target = workstreams.find((w) => w.id === id);
                   if (target) {
                     setQuickEditWorkstream(target);
                     setIsQuickEditOpen(true);
                   }
                 }}
                 onArchive={(id) => {
-                  const target = workstreams.find(w => w.id === id);
+                  const target = workstreams.find((w) => w.id === id);
                   if (target) {
                     archiveWorkstream.mutate({ id, archive: !target.is_archived });
                   }
                 }}
                 onDelete={(id) => {
-                  const target = workstreams.find(w => w.id === id);
+                  const target = workstreams.find((w) => w.id === id);
                   if (target) {
                     setDeleteTarget(target);
                   }
@@ -694,7 +652,7 @@ export function WorkstreamsPage() {
             ))}
           </div>
         )}
-      </main>
+      </div>
 
       {/* Drawer */}
       <WorkstreamDrawer
@@ -736,10 +694,567 @@ export function WorkstreamsPage() {
       </AlertDialog>
 
       {/* Create Modal */}
-      <CreateWorkstreamModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-      />
+      <CreateWorkstreamModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </div>
   );
 }
+
+// ============================================================================
+// SUB-COMPONENTS
+// ============================================================================
+
+const SummaryCard: React.FC<{
+  value: number;
+  label: string;
+  icon?: React.ReactNode;
+  isActive?: boolean;
+}> = ({ value, label, icon, isActive }) => (
+  <div
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      padding: '16px 20px',
+      backgroundColor: isActive ? COLORS.accentLighter : COLORS.surfaceWhite,
+      border: `1px solid ${isActive ? COLORS.accent : COLORS.borderLight}`,
+      borderRadius: '12px',
+      minWidth: '140px',
+    }}
+  >
+    {icon}
+    <div>
+      <div
+        style={{
+          fontSize: '28px',
+          fontWeight: 700,
+          color: isActive ? COLORS.accent : COLORS.textPrimary,
+          lineHeight: 1,
+        }}
+      >
+        {value}
+      </div>
+      <div style={{ fontSize: '13px', color: COLORS.textMuted, marginTop: '2px' }}>{label}</div>
+    </div>
+  </div>
+);
+
+const FilterButton: React.FC<{ label: string }> = ({ label }) => (
+  <button
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      padding: '8px 14px',
+      backgroundColor: COLORS.surfaceWhite,
+      border: `1px solid ${COLORS.borderLight}`,
+      borderRadius: '8px',
+      fontSize: '13px',
+      fontWeight: 500,
+      color: COLORS.textSecondary,
+      cursor: 'pointer',
+      fontFamily: 'inherit',
+    }}
+  >
+    {label}
+    <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
+  </button>
+);
+
+const ViewToggleButton: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}> = ({ icon, label, isActive, onClick }) => (
+  <button
+    onClick={onClick}
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      padding: '8px 14px',
+      backgroundColor: isActive ? COLORS.surfaceWhite : 'transparent',
+      border: 'none',
+      borderRadius: '6px',
+      fontSize: '13px',
+      fontWeight: 500,
+      color: isActive ? COLORS.textPrimary : COLORS.textMuted,
+      cursor: 'pointer',
+      fontFamily: 'inherit',
+      boxShadow: isActive ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
+    }}
+  >
+    {icon}
+    {label}
+  </button>
+);
+
+const TableHeader: React.FC<{
+  children?: React.ReactNode;
+  width: string;
+  center?: boolean;
+}> = ({ children, width, center }) => (
+  <th
+    style={{
+      padding: '14px 20px',
+      textAlign: center ? 'center' : 'left',
+      fontSize: '11px',
+      fontWeight: 600,
+      color: COLORS.textMuted,
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      width,
+    }}
+  >
+    {children}
+  </th>
+);
+
+const WorkstreamRow: React.FC<{
+  workstream: Workstream;
+  lead: TeamMember | null;
+  iconColor: string;
+  allUsers: TeamMember[];
+  isDropdownOpen: boolean;
+  leadSearchQuery: string;
+  onToggleDropdown: () => void;
+  onLeadSearchChange: (query: string) => void;
+  onAssignLead: (user: TeamMember | null) => void;
+  dropdownRef?: React.RefObject<HTMLDivElement>;
+  onRowClick: () => void;
+  onArchive: (e: React.MouseEvent) => void;
+  onEdit: (e: React.MouseEvent) => void;
+  onDelete: (e: React.MouseEvent) => void;
+}> = ({
+  workstream,
+  lead,
+  iconColor,
+  allUsers,
+  isDropdownOpen,
+  leadSearchQuery,
+  onToggleDropdown,
+  onLeadSearchChange,
+  onAssignLead,
+  dropdownRef,
+  onRowClick,
+  onArchive,
+  onEdit,
+  onDelete,
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const healthConfig = {
+    healthy: { label: 'On Track', bg: COLORS.successBg, color: COLORS.success },
+    'at-risk': { label: 'At Risk', bg: COLORS.warningBg, color: COLORS.warningText },
+    critical: { label: 'Critical', bg: COLORS.dangerBg, color: COLORS.danger },
+    locked: { label: 'Locked', bg: COLORS.surfaceHover, color: COLORS.textMuted },
+  }[workstream.health || 'healthy'] || { label: 'On Track', bg: COLORS.successBg, color: COLORS.success };
+
+  return (
+    <tr
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onRowClick}
+      style={{
+        borderBottom: `1px solid ${COLORS.surfaceHover}`,
+        backgroundColor: isHovered ? COLORS.surfacePage : 'transparent',
+        cursor: 'pointer',
+      }}
+    >
+      {/* NAME CELL */}
+      <td style={{ padding: '16px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '10px',
+              background: iconColor,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '16px',
+              fontWeight: 700,
+              color: '#ffffff',
+            }}
+          >
+            {workstream.name.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: 600, color: COLORS.textPrimary }}>
+              {workstream.name}
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '12px',
+                color: COLORS.textMuted,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: '"SF Mono", Monaco, monospace',
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  backgroundColor: COLORS.surfaceHover,
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                }}
+              >
+                {workstream.code || workstream.key_prefix || workstream.name.substring(0, 3).toUpperCase()}
+              </span>
+              <span>·</span>
+              <span>Created {formatDate(workstream.created_at || new Date().toISOString())}</span>
+            </div>
+          </div>
+        </div>
+      </td>
+
+      {/* LEAD CELL */}
+      <td style={{ padding: '16px 20px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+        <div ref={dropdownRef}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleDropdown();
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '6px 10px',
+              backgroundColor: 'transparent',
+              border: `1px solid ${isHovered || isDropdownOpen ? COLORS.borderDefault : 'transparent'}`,
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            {lead ? (
+              <>
+                <div
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    backgroundColor: lead.avatarColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: '#ffffff',
+                  }}
+                >
+                  {lead.initials}
+                </div>
+                <span
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    color: COLORS.textPrimary,
+                    maxWidth: '120px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {lead.name}
+                </span>
+              </>
+            ) : (
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '13px',
+                  color: COLORS.textLight,
+                }}
+              >
+                <User size={18} />
+                Unassigned
+              </span>
+            )}
+            <ChevronDown
+              size={14}
+              style={{ color: COLORS.textLight, opacity: isHovered || isDropdownOpen ? 1 : 0 }}
+            />
+          </button>
+
+          {isDropdownOpen && (
+            <LeadPickerDropdown
+              users={allUsers}
+              selectedId={lead?.id}
+              searchQuery={leadSearchQuery}
+              onSearchChange={onLeadSearchChange}
+              onSelect={onAssignLead}
+              showRemove={!!lead}
+            />
+          )}
+        </div>
+      </td>
+
+      {/* HEALTH CELL */}
+      <td style={{ padding: '16px 20px' }}>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 10px',
+            backgroundColor: healthConfig.bg,
+            borderRadius: '6px',
+            fontSize: '12px',
+            fontWeight: 500,
+            color: healthConfig.color,
+          }}
+        >
+          <span
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: healthConfig.color,
+            }}
+          />
+          {healthConfig.label}
+        </span>
+      </td>
+
+      {/* TASKS CELL */}
+      <td
+        style={{
+          padding: '16px 20px',
+          textAlign: 'center',
+          fontSize: '14px',
+          fontWeight: 500,
+          color: COLORS.textSecondary,
+        }}
+      >
+        {workstream.taskCount || 0}
+      </td>
+
+      {/* OVERDUE CELL */}
+      <td
+        style={{
+          padding: '16px 20px',
+          textAlign: 'center',
+          fontSize: '14px',
+          fontWeight: 600,
+          color: (workstream.overdueCount || 0) > 0 ? COLORS.danger : COLORS.textLight,
+        }}
+      >
+        {workstream.overdueCount || 0}
+      </td>
+
+      {/* ACTIONS CELL */}
+      <td style={{ padding: '16px 20px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '4px',
+            opacity: isHovered ? 1 : 0,
+          }}
+        >
+          <ActionButton icon={<Archive size={16} />} title="Archive" onClick={onArchive} />
+          <ActionButton icon={<Edit2 size={16} />} title="Edit" onClick={onEdit} />
+          <ActionButton
+            icon={<Trash2 size={16} />}
+            title="Delete"
+            danger
+            onClick={onDelete}
+            disabled={(workstream.taskCount || 0) > 0}
+          />
+        </div>
+      </td>
+    </tr>
+  );
+};
+
+const ActionButton: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  danger?: boolean;
+  onClick: (e: React.MouseEvent) => void;
+  disabled?: boolean;
+}> = ({ icon, title, danger, onClick, disabled }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!disabled) onClick(e);
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      title={title}
+      disabled={disabled}
+      style={{
+        width: '32px',
+        height: '32px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: isHovered && !disabled ? (danger ? COLORS.dangerBg : COLORS.surfaceHover) : 'transparent',
+        border: `1px solid ${isHovered && !disabled ? (danger ? COLORS.dangerBorder : COLORS.borderLight) : 'transparent'}`,
+        borderRadius: '6px',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        color: isHovered && !disabled ? (danger ? COLORS.danger : COLORS.textSecondary) : COLORS.textMuted,
+        opacity: disabled ? 0.4 : 1,
+      }}
+    >
+      {icon}
+    </button>
+  );
+};
+
+const LeadPickerDropdown: React.FC<{
+  users: TeamMember[];
+  selectedId?: string;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  onSelect: (user: TeamMember | null) => void;
+  showRemove: boolean;
+}> = ({ users, selectedId, searchQuery, onSearchChange, onSelect, showRemove }) => (
+  <div
+    style={{
+      position: 'absolute',
+      top: 'calc(100% + 4px)',
+      left: 0,
+      width: '280px',
+      backgroundColor: COLORS.surfaceWhite,
+      border: `1px solid ${COLORS.borderLight}`,
+      borderRadius: '12px',
+      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
+      zIndex: 100,
+      overflow: 'hidden',
+    }}
+    onClick={(e) => e.stopPropagation()}
+  >
+    {/* Search */}
+    <div style={{ padding: '12px', borderBottom: `1px solid ${COLORS.surfaceHover}` }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 12px',
+          backgroundColor: COLORS.surfacePage,
+          borderRadius: '8px',
+        }}
+      >
+        <Search size={16} style={{ color: COLORS.textLight }} />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          placeholder="Search members..."
+          autoFocus
+          style={{
+            flex: 1,
+            border: 'none',
+            backgroundColor: 'transparent',
+            fontSize: '13px',
+            color: COLORS.textPrimary,
+            outline: 'none',
+            fontFamily: 'inherit',
+          }}
+        />
+      </div>
+    </div>
+
+    {/* List */}
+    <div style={{ maxHeight: '240px', overflowY: 'auto', padding: '8px' }}>
+      {users.length === 0 ? (
+        <div style={{ padding: '16px', textAlign: 'center', color: COLORS.textMuted, fontSize: '13px' }}>
+          No members found
+        </div>
+      ) : (
+        users.map((user) => (
+          <DropdownItem key={user.id} user={user} isSelected={selectedId === user.id} onClick={() => onSelect(user)} />
+        ))
+      )}
+    </div>
+
+    {/* Remove */}
+    {showRemove && (
+      <div style={{ padding: '8px 12px', borderTop: `1px solid ${COLORS.surfaceHover}` }}>
+        <button
+          onClick={() => onSelect(null)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            width: '100%',
+            padding: '10px 12px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '13px',
+            color: COLORS.danger,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          <X size={16} />
+          Remove assignment
+        </button>
+      </div>
+    )}
+  </div>
+);
+
+const DropdownItem: React.FC<{
+  user: TeamMember;
+  isSelected: boolean;
+  onClick: () => void;
+}> = ({ user, isSelected, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '8px 10px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        backgroundColor: isSelected ? COLORS.surfaceSelected : isHovered ? COLORS.surfaceHover : 'transparent',
+        marginBottom: '2px',
+      }}
+    >
+      <div
+        style={{
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          backgroundColor: user.avatarColor,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '12px',
+          fontWeight: 600,
+          color: '#ffffff',
+        }}
+      >
+        {user.initials}
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>{user.name}</div>
+        <div style={{ fontSize: '11px', color: COLORS.textMuted }}>{user.role}</div>
+      </div>
+      {isSelected && <Check size={16} style={{ color: COLORS.accent }} />}
+    </div>
+  );
+};
+
+export default WorkstreamsPage;
