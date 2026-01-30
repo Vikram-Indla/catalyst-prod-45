@@ -1,12 +1,11 @@
 /**
  * Styled Workstream Select - TaskBoardModal Style
- * Uses Radix Select with position="popper" for proper anchoring
+ * Portal-based dropdown with collision avoidance
  */
 
-import * as React from 'react';
-import * as SelectPrimitive from '@radix-ui/react-select';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Check, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
@@ -37,6 +36,9 @@ interface StyledWorkstreamSelectProps {
 }
 
 export function StyledWorkstreamSelect({ value, onChange, error }: StyledWorkstreamSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { isAdmin, isSuperAdmin, isLoading: roleLoading } = useUserRole();
   
@@ -79,135 +81,206 @@ export function StyledWorkstreamSelect({ value, onChange, error }: StyledWorkstr
 
   const selected = workstreams.find(w => w.id === value);
 
+  // Get trigger position for portal
+  const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(null);
+
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width
+      });
+    }
+  }, [isOpen]);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (triggerRef.current && !triggerRef.current.contains(target)) {
+        const portalContent = document.querySelector('[data-styled-workstream-dropdown]');
+        if (portalContent && portalContent.contains(target)) return;
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside, true);
+    return () => document.removeEventListener('mousedown', handleClickOutside, true);
+  }, [isOpen]);
+
+  // Close on escape
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+
+  const handleSelect = useCallback((ws: Workstream) => {
+    onChange(ws.id);
+    setIsOpen(false);
+  }, [onChange]);
+
   return (
-    <div className="flex flex-col gap-1.5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {/* LABEL */}
-      <span 
-        className="text-[11px] font-semibold uppercase tracking-wider"
-        style={{ color: COLORS.textLight }}
-      >
-        Workstream <span className="text-red-500">*</span>
+      <span style={{
+        fontSize: '11px',
+        fontWeight: 600,
+        color: COLORS.textLight,
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em'
+      }}>
+        Workstream <span style={{ color: '#ef4444' }}>*</span>
       </span>
 
-      {/* RADIX SELECT */}
-      <SelectPrimitive.Root 
-        value={value} 
-        onValueChange={onChange}
-        disabled={isLoading}
+      {/* TRIGGER */}
+      <div
+        ref={triggerRef}
+        onClick={() => !isLoading && setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '10px 14px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${error ? '#ef4444' : (isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight))}`,
+          borderRadius: '10px',
+          cursor: isLoading ? 'wait' : 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+          opacity: isLoading ? 0.6 : 1
+        }}
       >
-        <SelectPrimitive.Trigger
-          className={cn(
-            "flex items-center gap-2.5 px-3.5 py-2.5 w-full",
-            "bg-white border rounded-[10px] cursor-pointer",
-            "transition-all duration-150 outline-none",
-            "hover:border-slate-300",
-            "focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/15",
-            "data-[state=open]:border-blue-500 data-[state=open]:ring-[3px] data-[state=open]:ring-blue-500/15",
-            "disabled:opacity-50 disabled:cursor-wait",
-            error && "border-red-500"
-          )}
-          style={{ borderColor: error ? '#ef4444' : COLORS.borderLight }}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 size={16} className="animate-spin text-slate-400" />
-              <span className="flex-1 text-sm text-slate-400 text-left">Loading...</span>
-            </>
-          ) : selected ? (
-            <>
-              {/* Color dot */}
-              <span 
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
-                style={{ backgroundColor: selected.color }}
-              />
-              <SelectPrimitive.Value>
-                <span className="flex-1 text-sm font-medium text-slate-900">
-                  {selected.name}
-                </span>
-              </SelectPrimitive.Value>
-            </>
-          ) : (
-            <SelectPrimitive.Value>
-              <span className="flex-1 text-sm text-slate-400 text-left">
-                Select workstream...
-              </span>
-            </SelectPrimitive.Value>
-          )}
-          
-          {/* Icon */}
-          <SelectPrimitive.Icon asChild>
-            <ChevronDown 
-              size={16} 
-              className="text-slate-400 transition-transform duration-200 ml-auto" 
+        {isLoading ? (
+          <>
+            <Loader2 size={16} style={{ color: COLORS.textLight, animation: 'spin 1s linear infinite' }} />
+            <span style={{ flex: 1, fontSize: '14px', color: COLORS.textLight }}>Loading...</span>
+          </>
+        ) : selected ? (
+          <>
+            <span 
+              style={{ 
+                width: '10px', 
+                height: '10px', 
+                borderRadius: '50%', 
+                backgroundColor: selected.color,
+                flexShrink: 0
+              }} 
             />
-          </SelectPrimitive.Icon>
-        </SelectPrimitive.Trigger>
-
-        {/* Error message */}
-        {error && (
-          <span className="text-xs text-red-500 font-medium mt-1">{error}</span>
+            <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: COLORS.textPrimary }}>
+              {selected.name}
+            </span>
+          </>
+        ) : (
+          <span style={{ flex: 1, fontSize: '14px', color: COLORS.textLight }}>
+            Select workstream...
+          </span>
         )}
+        <ChevronDown 
+          size={16} 
+          style={{ 
+            color: COLORS.textLight,
+            transition: 'transform 0.2s ease',
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+          }} 
+        />
+      </div>
 
-        {/* PORTAL + CONTENT with position="popper" */}
-        <SelectPrimitive.Portal>
-          <SelectPrimitive.Content
-            position="popper"
-            side="bottom"
-            align="start"
-            sideOffset={4}
-            avoidCollisions={true}
-            collisionPadding={{ top: 8, right: 8, bottom: 68, left: 8 }}
-            className={cn(
-              "bg-white border rounded-xl shadow-xl overflow-hidden",
-              "min-w-[var(--radix-select-trigger-width)]",
-              "animate-in fade-in-0 zoom-in-95 slide-in-from-top-2",
-              "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
-            )}
-            style={{ 
-              borderColor: COLORS.borderDefault,
-              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.25)',
-              zIndex: 'var(--z-modal-popover, 500)'
-            }}
-          >
-            <SelectPrimitive.Viewport className="p-1.5 max-h-[280px] overflow-y-auto">
-              {workstreams.length === 0 ? (
-                <div className="px-3 py-4 text-center text-sm text-slate-400">
-                  No workstreams available
-                </div>
-              ) : (
-                workstreams.map((ws) => (
-                  <SelectPrimitive.Item
-                    key={ws.id}
-                    value={ws.id}
-                    className={cn(
-                      "flex items-center gap-2.5 px-3 py-2.5 rounded-lg cursor-pointer outline-none",
-                      "transition-colors duration-100",
-                      "data-[highlighted]:bg-slate-100",
-                      "data-[state=checked]:bg-blue-50"
-                    )}
-                  >
-                    {/* Color dot */}
-                    <span 
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
-                      style={{ backgroundColor: ws.color }}
-                    />
-                    
-                    {/* Label */}
-                    <SelectPrimitive.ItemText>
-                      <span className="flex-1 text-sm text-slate-900">{ws.name}</span>
-                    </SelectPrimitive.ItemText>
-                    
-                    {/* Check */}
-                    <SelectPrimitive.ItemIndicator>
-                      <Check size={16} className="text-blue-600" />
-                    </SelectPrimitive.ItemIndicator>
-                  </SelectPrimitive.Item>
-                ))
-              )}
-            </SelectPrimitive.Viewport>
-          </SelectPrimitive.Content>
-        </SelectPrimitive.Portal>
-      </SelectPrimitive.Root>
+      {error && (
+        <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 500 }}>{error}</span>
+      )}
+
+      {/* PORTAL DROPDOWN */}
+      {isOpen && position && createPortal(
+        <div
+          data-styled-workstream-dropdown
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            top: position.top,
+            left: position.left,
+            width: Math.max(position.width, 200),
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '12px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.25)',
+            zIndex: 500,
+            padding: '6px',
+            maxHeight: '280px',
+            overflowY: 'auto'
+          }}
+        >
+          {workstreams.length === 0 ? (
+            <div style={{ padding: '16px', textAlign: 'center', fontSize: '14px', color: COLORS.textLight }}>
+              No workstreams available
+            </div>
+          ) : (
+            workstreams.map((ws) => (
+              <DropdownItem
+                key={ws.id}
+                name={ws.name}
+                color={ws.color}
+                isSelected={ws.id === value}
+                onClick={() => handleSelect(ws)}
+              />
+            ))
+          )}
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
+
+// Sub-component
+function DropdownItem({ name, color, isSelected, onClick }: {
+  name: string;
+  color: string;
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 12px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        backgroundColor: isSelected 
+          ? COLORS.accentLight 
+          : (isHovered ? COLORS.surfaceHover : 'transparent'),
+        transition: 'background-color 0.1s ease'
+      }}
+    >
+      <span 
+        style={{ 
+          width: '10px', 
+          height: '10px', 
+          borderRadius: '50%', 
+          backgroundColor: color,
+          flexShrink: 0
+        }} 
+      />
+      <span style={{ flex: 1, fontSize: '14px', color: COLORS.textPrimary }}>{name}</span>
+      {isSelected && <Check size={16} style={{ color: '#2563eb' }} />}
     </div>
   );
 }
