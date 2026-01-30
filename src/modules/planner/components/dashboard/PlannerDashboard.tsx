@@ -153,7 +153,7 @@ export function PlannerDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-            Planner Dashboard
+            Task Dashboard
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Overview of tasks, workload, and team progress
