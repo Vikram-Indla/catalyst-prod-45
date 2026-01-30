@@ -1,11 +1,12 @@
 /**
  * Styled Assignee Select - TaskBoardModal Style
- * Portal-based searchable dropdown with avatars
+ * Uses Radix Popover with position="popper" for proper anchoring
  */
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { createPortal } from 'react-dom';
+import * as React from 'react';
+import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { ChevronDown, Check, Search, User, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -51,11 +52,9 @@ interface StyledAssigneeSelectProps {
 }
 
 export function StyledAssigneeSelect({ value, onChange }: StyledAssigneeSelectProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [search, setSearch] = useState('');
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState('');
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   // Fetch users from profiles
   const { data: users = [] } = useQuery({
@@ -75,7 +74,7 @@ export function StyledAssigneeSelect({ value, onChange }: StyledAssigneeSelectPr
 
   const selected = users.find(u => u.id === value);
 
-  const filteredUsers = useMemo(() => {
+  const filteredUsers = React.useMemo(() => {
     if (!search) return users;
     const lower = search.toLowerCase();
     return users.filter(u => 
@@ -84,262 +83,174 @@ export function StyledAssigneeSelect({ value, onChange }: StyledAssigneeSelectPr
     );
   }, [users, search]);
 
-  // Get trigger position for portal
-  const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(null);
-
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + 4,
-        left: rect.left,
-        width: rect.width
-      });
+  // Focus search on open
+  React.useEffect(() => {
+    if (open) {
       setTimeout(() => searchInputRef.current?.focus(), 50);
+    } else {
+      setSearch('');
     }
-  }, [isOpen]);
+  }, [open]);
 
-  // Close on outside click
-  useEffect(() => {
-    if (!isOpen) return;
-    
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (triggerRef.current && !triggerRef.current.contains(target)) {
-        const portalContent = document.querySelector('[data-styled-assignee-dropdown]');
-        if (portalContent && portalContent.contains(target)) return;
-        setIsOpen(false);
-        setSearch('');
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside, true);
-    return () => document.removeEventListener('mousedown', handleClickOutside, true);
-  }, [isOpen]);
-
-  // Close on escape
-  useEffect(() => {
-    if (!isOpen) return;
-    
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsOpen(false);
-        setSearch('');
-      }
-    };
-    
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
-
-  const handleSelect = useCallback((user: Assignee) => {
+  const handleSelect = React.useCallback((user: Assignee) => {
     onChange(user.id);
-    setIsOpen(false);
+    setOpen(false);
     setSearch('');
   }, [onChange]);
 
-  const handleClear = useCallback((e: React.MouseEvent) => {
+  const handleClear = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     onChange('');
   }, [onChange]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+    <div className="flex flex-col gap-1.5">
       {/* LABEL */}
-      <span style={{
-        fontSize: '11px',
-        fontWeight: 600,
-        color: COLORS.textLight,
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em'
-      }}>
+      <span 
+        className="text-[11px] font-semibold uppercase tracking-wider"
+        style={{ color: COLORS.textLight }}
+      >
         Assignee
       </span>
 
-      {/* TRIGGER */}
-      <div
-        ref={triggerRef}
-        onClick={() => setIsOpen(!isOpen)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '10px 14px',
-          backgroundColor: COLORS.surfaceCard,
-          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
-          borderRadius: '10px',
-          cursor: 'pointer',
-          transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
-        }}
-      >
-        {selected ? (
-          <>
-            <div 
-              style={{
-                width: '24px',
-                height: '24px',
-                borderRadius: '50%',
-                backgroundColor: getAvatarColor(selected.full_name || ''),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontSize: '10px',
-                fontWeight: 700,
-                flexShrink: 0
-              }}
-            >
-              {getInitials(selected.full_name || '')}
-            </div>
-            <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: COLORS.textPrimary }}>
-              {selected.full_name}
-            </span>
-            <X 
-              size={16} 
-              style={{ color: COLORS.textLight, cursor: 'pointer' }} 
-              onClick={handleClear}
-            />
-          </>
-        ) : (
-          <>
-            <User size={18} style={{ color: COLORS.textLight }} />
-            <span style={{ flex: 1, fontSize: '14px', color: COLORS.textLight }}>
-              Unassigned
-            </span>
-          </>
-        )}
-        <ChevronDown 
-          size={16} 
-          style={{ 
-            color: COLORS.textLight,
-            transition: 'transform 0.2s ease',
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-          }} 
-        />
-      </div>
-
-      {/* PORTAL DROPDOWN */}
-      {isOpen && position && createPortal(
-        <div
-          data-styled-assignee-dropdown
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            position: 'fixed',
-            top: position.top,
-            left: position.left,
-            width: Math.max(position.width, 240),
-            backgroundColor: COLORS.surfaceCard,
-            border: `1px solid ${COLORS.borderDefault}`,
-            borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.25)',
-            zIndex: 500,
-            overflow: 'hidden'
-          }}
-        >
-          {/* SEARCH */}
-          <div style={{ padding: '8px', borderBottom: `1px solid ${COLORS.borderLight}` }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: COLORS.textLight }} />
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search people..."
-                style={{
-                  width: '100%',
-                  padding: '8px 12px 8px 36px',
-                  fontSize: '14px',
-                  color: COLORS.textPrimary,
-                  backgroundColor: COLORS.surfaceHover,
-                  border: `1px solid ${COLORS.borderLight}`,
-                  borderRadius: '8px',
-                  outline: 'none'
-                }}
-              />
-            </div>
-          </div>
-
-          {/* OPTIONS */}
-          <div style={{ maxHeight: '240px', overflowY: 'auto', padding: '6px' }}>
-            {filteredUsers.length === 0 ? (
-              <div style={{ padding: '16px', textAlign: 'center', fontSize: '14px', color: COLORS.textLight }}>
-                No results found
-              </div>
-            ) : (
-              filteredUsers.map((user) => (
-                <AssigneeItem
-                  key={user.id}
-                  user={user}
-                  isSelected={user.id === value}
-                  onClick={() => handleSelect(user)}
-                />
-              ))
+      {/* RADIX POPOVER */}
+      <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+        <PopoverPrimitive.Trigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-2.5 px-3.5 py-2.5 w-full",
+              "bg-white border rounded-[10px] cursor-pointer",
+              "transition-all duration-150 outline-none text-left",
+              "hover:border-slate-300",
+              "focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/15",
+              "data-[state=open]:border-blue-500 data-[state=open]:ring-[3px] data-[state=open]:ring-blue-500/15"
             )}
-          </div>
-        </div>,
-        document.body
-      )}
-    </div>
-  );
-}
+            style={{ borderColor: COLORS.borderLight }}
+          >
+            {selected ? (
+              <>
+                {/* Avatar */}
+                <div 
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
+                  style={{ backgroundColor: getAvatarColor(selected.full_name || '') }}
+                >
+                  {getInitials(selected.full_name || '')}
+                </div>
+                <span className="flex-1 text-sm font-medium text-slate-900">
+                  {selected.full_name}
+                </span>
+                <X 
+                  size={16} 
+                  className="text-slate-400 hover:text-slate-600 cursor-pointer" 
+                  onClick={handleClear}
+                />
+              </>
+            ) : (
+              <>
+                <User size={18} className="text-slate-400" />
+                <span className="flex-1 text-sm text-slate-400">
+                  Unassigned
+                </span>
+              </>
+            )}
+            <ChevronDown 
+              size={16} 
+              className="text-slate-400 transition-transform duration-200 data-[state=open]:rotate-180" 
+            />
+          </button>
+        </PopoverPrimitive.Trigger>
 
-// Sub-component
-function AssigneeItem({ user, isSelected, onClick }: {
-  user: Assignee;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
-  const [isHovered, setIsHovered] = useState(false);
-  const initials = getInitials(user.full_name || '');
+        {/* PORTAL + CONTENT */}
+        <PopoverPrimitive.Portal>
+          <PopoverPrimitive.Content
+            side="bottom"
+            align="start"
+            sideOffset={4}
+            avoidCollisions={true}
+            collisionPadding={{ top: 8, right: 8, bottom: 68, left: 8 }}
+            className={cn(
+              "bg-white border rounded-xl shadow-xl overflow-hidden",
+              "min-w-[240px] w-[var(--radix-popover-trigger-width)]",
+              "animate-in fade-in-0 zoom-in-95 slide-in-from-top-2",
+              "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+            )}
+            style={{ 
+              borderColor: COLORS.borderDefault,
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.25)',
+              zIndex: 'var(--z-modal-popover, 500)'
+            }}
+          >
+            {/* SEARCH */}
+            <div className="p-2 border-b border-slate-200">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search people..."
+                  className={cn(
+                    "w-full py-2 pl-9 pr-3",
+                    "text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-lg",
+                    "placeholder:text-slate-400",
+                    "focus:outline-none focus:border-blue-500"
+                  )}
+                />
+              </div>
+            </div>
 
-  return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        padding: '10px 12px',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        backgroundColor: isSelected 
-          ? COLORS.accentLight 
-          : (isHovered ? COLORS.surfaceHover : 'transparent'),
-        transition: 'background-color 0.1s ease'
-      }}
-    >
-      <div 
-        style={{
-          width: '28px',
-          height: '28px',
-          borderRadius: '50%',
-          backgroundColor: getAvatarColor(user.full_name || ''),
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          fontSize: '11px',
-          fontWeight: 700,
-          flexShrink: 0
-        }}
-      >
-        {initials}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: '14px', fontWeight: 500, color: COLORS.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {user.full_name}
-        </div>
-        <div style={{ fontSize: '12px', color: COLORS.textLight, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {user.email}
-        </div>
-      </div>
-      {isSelected && <Check size={16} style={{ color: COLORS.accent, flexShrink: 0 }} />}
+            {/* OPTIONS */}
+            <div className="max-h-[240px] overflow-y-auto p-1.5">
+              {filteredUsers.length === 0 ? (
+                <div className="px-3 py-4 text-center text-sm text-slate-400">
+                  No results found
+                </div>
+              ) : (
+                filteredUsers.map((user) => (
+                  <button
+                    key={user.id}
+                    type="button"
+                    onClick={() => handleSelect(user)}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left",
+                      "transition-colors duration-100",
+                      user.id === value 
+                        ? "bg-blue-50" 
+                        : "hover:bg-slate-100"
+                    )}
+                  >
+                    {/* Avatar */}
+                    <div 
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
+                      style={{ backgroundColor: getAvatarColor(user.full_name || '') }}
+                    >
+                      {getInitials(user.full_name || '')}
+                    </div>
+                    
+                    {/* Name + Email */}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-slate-900 truncate">
+                        {user.full_name}
+                      </div>
+                      <div className="text-xs text-slate-500 truncate">
+                        {user.email}
+                      </div>
+                    </div>
+                    
+                    {/* Check */}
+                    {user.id === value && (
+                      <Check size={16} className="text-blue-600 flex-shrink-0" />
+                    )}
+                  </button>
+                ))
+              )}
+            </div>
+          </PopoverPrimitive.Content>
+        </PopoverPrimitive.Portal>
+      </PopoverPrimitive.Root>
     </div>
   );
 }
