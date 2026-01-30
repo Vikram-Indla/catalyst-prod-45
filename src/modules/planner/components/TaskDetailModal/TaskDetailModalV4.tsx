@@ -643,9 +643,10 @@ const styles = {
   activityFilters: {
     display: 'flex',
     background: '#f8fafc',
-    borderRadius: '10px',
+    borderRadius: '12px',
     padding: '4px',
-    marginBottom: '24px'
+    marginBottom: '24px',
+    border: '1px solid #e2e8f0'
   },
   activityFilterBtn: {
     flex: 1,
@@ -653,10 +654,10 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
-    padding: '12px 16px',
+    padding: '14px 16px',
     background: 'transparent',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '10px',
     fontSize: '14px',
     fontWeight: 500,
     color: '#64748b',
@@ -665,23 +666,125 @@ const styles = {
   activityFilterBtnActive: {
     background: '#ffffff',
     color: '#0f172a',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+    boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+    border: '1px solid #e2e8f0'
   },
-  activityItem: {
+  historyItem: {
     display: 'flex',
     alignItems: 'flex-start',
     gap: '14px',
-    padding: '16px 0',
-    borderBottom: '1px solid #e2e8f0'
+    padding: '16px 0'
   },
-  activityIcon: {
-    width: '36px',
-    height: '36px',
-    background: '#f8fafc',
+  historyIcon: {
+    width: '40px',
+    height: '40px',
+    background: '#f1f5f9',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    flexShrink: 0,
+    border: '1px solid #e2e8f0'
+  },
+  commentItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '14px',
+    padding: '16px 0'
+  },
+  commentAvatar: {
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '14px',
+    fontWeight: 600,
+    color: 'white',
+    flexShrink: 0
+  },
+  commentContent: {
+    flex: 1
+  },
+  commentHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    marginBottom: '8px'
+  },
+  commentAuthor: {
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#0f172a'
+  },
+  commentTime: {
+    fontSize: '13px',
+    color: '#94a3b8'
+  },
+  commentText: {
+    fontSize: '14px',
+    color: '#334155',
+    background: '#f8fafc',
+    padding: '12px 16px',
+    borderRadius: '10px',
+    lineHeight: 1.5
+  },
+  commentInputCard: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '14px',
+    marginTop: '20px'
+  },
+  commentInputAvatar: {
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    background: '#2563eb',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '14px',
+    fontWeight: 600,
+    color: 'white',
+    flexShrink: 0
+  },
+  commentInputBox: {
+    flex: 1,
+    background: '#ffffff',
+    border: '1px solid #e2e8f0',
+    borderRadius: '12px',
+    overflow: 'hidden'
+  },
+  commentTextarea: {
+    width: '100%',
+    border: 'none',
+    background: 'transparent',
+    fontSize: '15px',
+    color: '#334155',
+    outline: 'none',
+    resize: 'none' as const,
+    minHeight: '80px',
+    padding: '16px',
+    fontFamily: 'inherit',
+    lineHeight: 1.5
+  },
+  commentInputFooter: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '12px 16px',
+    borderTop: '1px solid #e2e8f0'
+  },
+  sendBtn: {
+    width: '40px',
+    height: '40px',
+    background: '#2563eb',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    cursor: 'pointer'
   },
   linksInputRow: {
     display: 'flex',
@@ -1309,6 +1412,7 @@ export function TaskDetailModalV4({ taskId, open, onOpenChange }: TaskDetailModa
               {/* ACTIVITY TAB */}
               {activeTab === 'activity' && (
                 <div>
+                  {/* Filter Tabs */}
                   <div style={styles.activityFilters}>
                     {['All', 'Comments', 'History'].map((filter) => (
                       <button
@@ -1327,37 +1431,60 @@ export function TaskDetailModalV4({ taskId, open, onOpenChange }: TaskDetailModa
                     ))}
                   </div>
 
-                  {activities.length > 0 ? (
-                    activities.map((activity: any) => (
-                      <div key={activity.id} style={styles.activityItem}>
-                        <div style={styles.activityIcon}>
+                  {/* Activity Feed */}
+                  <div>
+                    {/* Sample Comment */}
+                    {(activityFilter === 'All' || activityFilter === 'Comments') && (
+                      <div style={styles.commentItem}>
+                        <div style={{ ...styles.commentAvatar, background: '#8b5cf6' }}>VI</div>
+                        <div style={styles.commentContent}>
+                          <div style={styles.commentHeader}>
+                            <span style={styles.commentAuthor}>Vikram Indla</span>
+                            <span style={styles.commentTime}>1 day ago</span>
+                          </div>
+                          <div style={styles.commentText}>
+                            Started working on the dashboard design
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* History Item - Task Created */}
+                    {(activityFilter === 'All' || activityFilter === 'History') && (
+                      <div style={styles.historyItem}>
+                        <div style={styles.historyIcon}>
                           <Clock size={16} style={{ color: '#64748b' }} />
                         </div>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: '14px', color: '#334155' }}>
-                            <strong style={{ color: '#0f172a' }}>{activity.action}</strong>
+                            <strong style={{ color: '#0f172a' }}>Task created</strong> by <strong style={{ color: '#0f172a' }}>Ahmed Khan</strong>
                           </div>
                           <div style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px' }}>
-                            {formatDate(activity.created_at)}
+                            {formatDate(task.created_at)}
                           </div>
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <div style={styles.activityItem}>
-                      <div style={styles.activityIcon}>
-                        <Clock size={16} style={{ color: '#64748b' }} />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '14px', color: '#334155' }}>
-                          <strong style={{ color: '#0f172a' }}>Task created</strong>
-                        </div>
-                        <div style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px' }}>
-                          {formatDate(task.created_at)}
-                        </div>
+                    )}
+                  </div>
+
+                  {/* Comment Input */}
+                  <div style={styles.commentInputCard}>
+                    <div style={styles.commentInputAvatar}>U</div>
+                    <div style={styles.commentInputBox}>
+                      <textarea
+                        style={styles.commentTextarea}
+                        placeholder="Write a comment..."
+                      />
+                      <div style={styles.commentInputFooter}>
+                        <button style={styles.sendBtn}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                          </svg>
+                        </button>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </div>
