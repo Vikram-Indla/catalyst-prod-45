@@ -8,7 +8,8 @@ export { KanbanCard } from './KanbanCard';
 export { KanbanFilters } from './KanbanFilters';
 export { AddColumnButton } from './AddColumnButton';
 export { CreateTaskModal } from './CreateTaskModal';
-// TaskDetailDrawer removed - awaiting new implementation
+// Export the new detailed TaskDetailDrawer from TaskDetailDrawer folder
+export { TaskDetailDrawer } from '../TaskDetailDrawer';
 export { PriorityBadge } from './PriorityBadge';
 export { DueDateBadge } from './DueDateBadge';
 export { AssigneeAvatar } from './AssigneeAvatar';

@@ -16,7 +16,6 @@ import {
   ModalContent,
 } from '@/components/overlays/AtlassianModal';
 import '@/styles/task-detail-modal-enterprise.css';
-import '@/styles/task-detail-modal-invasive.css';
 
 import { DrawerHeader } from './DrawerHeader';
 import { TaskDescription } from './TaskDescription';
@@ -26,8 +25,6 @@ import { LeadNotesTab } from './LeadNotesTab';
 import { ChecklistSection } from './ChecklistSection';
 import { AttachmentsSection } from './AttachmentsSection';
 import { DependenciesSection } from './DependenciesSection';
-import { LinksSection } from './LinksSection';
-import { FilesSection } from './FilesSection';
 import { ActivitySection } from './ActivitySection';
 import { DrawerFooter } from './DrawerFooter';
 import { cn } from '@/lib/utils';
@@ -42,24 +39,6 @@ import {
 import { usePlannerTaskRealtime } from '../../hooks/usePlannerTaskRealtime';
 import { useUpdatePlannerTaskField } from '../../hooks/useUpdatePlannerTaskField';
 import { useLeadNotes } from '../../hooks/useLeadNotes';
-
-// Hook to fetch external links count
-function useExternalLinksCount(taskId: string | null) {
-  return useQuery({
-    queryKey: ['task-links-count', taskId],
-    queryFn: async () => {
-      if (!taskId) return 0;
-      const { data, error } = await (supabase as any)
-        .from('task_external_links')
-        .select('id', { count: 'exact', head: true })
-        .eq('task_id', taskId);
-      
-      if (error) return 0;
-      return data?.length || 0;
-    },
-    enabled: !!taskId,
-  });
-}
 
 interface TaskDetailDrawerProps {
   taskId?: string | null;
@@ -214,7 +193,6 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   // Fetch related data
   const { data: dependencies } = useTaskDependencies(effectiveTaskId);
-  const { data: externalLinksCount = 0 } = useExternalLinksCount(effectiveTaskId);
   const { data: checklist } = useTaskChecklist(effectiveTaskId);
   const { data: attachments } = useTaskAttachments(effectiveTaskId);
   const { data: comments } = useTaskComments(effectiveTaskId);
@@ -235,7 +213,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   // Tab badge counts
   const leadNotesCount = leadNotes?.length || 0;
   const checklistCount = checklist?.length || 0;
-  const linksCount = (dependencies?.length || 0) + (externalLinksCount || 0);
+  const linksCount = dependencies?.length || 0;
   const filesCount = attachments?.length || 0;
   const activityCount = (comments?.length || 0) + (activity?.length || 0);
 
@@ -374,22 +352,20 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                   />
                 )}
 
-                {/* Links Tab - Now with External Links + Task Dependencies */}
+                {/* Links Tab */}
                 {activeTab === 'links' && (
-                  <div className="space-y-6">
-                    <LinksSection taskId={effectiveTaskId!} />
-                    <div className="border-t border-border pt-6">
-                      <DependenciesSection
-                        taskId={effectiveTaskId!}
-                        dependencies={dependencies || []}
-                      />
-                    </div>
-                  </div>
+                  <DependenciesSection
+                    taskId={effectiveTaskId!}
+                    dependencies={dependencies || []}
+                  />
                 )}
 
                 {/* Files Tab */}
                 {activeTab === 'files' && (
-                  <FilesSection taskId={effectiveTaskId!} />
+                  <AttachmentsSection
+                    taskId={effectiveTaskId!}
+                    attachments={attachments || []}
+                  />
                 )}
 
                 {/* Activity Tab */}

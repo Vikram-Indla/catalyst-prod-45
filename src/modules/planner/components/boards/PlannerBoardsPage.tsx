@@ -5,10 +5,11 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Kanban } from 'lucide-react';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
-import { TaskDetailModal } from '../TaskDetailModal';
+import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
@@ -17,6 +18,7 @@ import { usePlannerSearch } from '../../hooks/usePlannerSearch';
 import type { GroupByOption } from '../../types';
 
 export interface PlannerBoardsPageProps {
+  // Parent filters from PlannerPage
   externalSearch?: string;
   externalWorkstreamId?: string | null;
   externalStatusSlug?: string | null;
@@ -40,24 +42,30 @@ export function PlannerBoardsPage({
   const [createStatusId, setCreateStatusId] = useState<string | undefined>();
   const searchInputRef = useRef<HTMLInputElement>(null);
   
-  // Task detail modal state
-  const [selectedTask, setSelectedTask] = useState<BoardTask | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Task detail drawer state
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const teams: { id: string; name: string; color?: string; memberCount?: number }[] = [];
+  // Data hooks
+  const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
 
+  // Get workstream ID from URL param (slug/code) or external prop
   const urlWorkstream = searchParams.get('workstream');
   const resolvedWorkstreamId = useMemo(() => {
     if (externalWorkstreamId) return externalWorkstreamId;
     if (!urlWorkstream) return null;
+    
+    // Match by ID only (workstreams removed)
     const match = teams.find(t => t.id === urlWorkstream);
     return match?.id || null;
   }, [externalWorkstreamId, urlWorkstream, teams]);
 
+  // Local state for filters
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(resolvedWorkstreamId);
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
 
+  // Sync selected team when URL changes
   useEffect(() => {
     if (resolvedWorkstreamId !== null) {
       setSelectedTeamId(resolvedWorkstreamId);
@@ -66,6 +74,7 @@ export function PlannerBoardsPage({
 
   const { data: tasks = [] } = usePlannerTasks(selectedTeamId);
 
+  // Search and filter
   const {
     filters,
     filteredTasks,
@@ -81,21 +90,31 @@ export function PlannerBoardsPage({
     filteredCount,
   } = usePlannerSearch(tasks);
 
+  // Map parent filters to V9 BoardFilters
   const boardFilters = useMemo<BoardFilters>(() => {
     const mapped: BoardFilters = {};
+    
     if (filters.search) mapped.search = filters.search;
     if (selectedTeamId) mapped.workstream_id = selectedTeamId;
     if (filters.assigneeId) mapped.assignee_id = filters.assigneeId;
     if (filters.priority) mapped.priority = filters.priority;
     if (filters.blocked) mapped.blocked = true;
     if (filters.status) mapped.status = filters.status;
+    
+    // Map overdue to due_status filter
     if (filters.overdue) mapped.due_status = 'overdue';
+    
     return mapped;
   }, [filters, selectedTeamId]);
 
   const handleTaskClick = useCallback((task: BoardTask) => {
-    setSelectedTask(task);
-    setIsModalOpen(true);
+    setSelectedTaskId(task.id);
+    setIsDrawerOpen(true);
+  }, []);
+
+  const handleCloseDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+    setSelectedTaskId(null);
   }, []);
 
   const handleAddTask = useCallback((statusId?: string) => {
@@ -105,12 +124,14 @@ export function PlannerBoardsPage({
 
   return (
     <div className="planner-v9 flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+      {/* V9 Header */}
       <PlannerViewHeader
         title="Boards"
         subtitle="Drag and drop tasks across status columns"
         onAddTask={() => setIsCreateOpen(true)}
       />
 
+      {/* Filter Bar - positioned below header */}
       <PlannerSearchBar
         filters={filters}
         onSearchChange={setSearch}
@@ -133,6 +154,7 @@ export function PlannerBoardsPage({
         showColumnsButton={false}
       />
 
+      {/* Kanban Board */}
       <div className="flex-1 min-h-0 overflow-auto">
         <BoardKanban
           filters={boardFilters}
@@ -141,38 +163,20 @@ export function PlannerBoardsPage({
         />
       </div>
 
+      {/* Create Task Modal */}
       <CreateTaskModal
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         defaultStatusId={createStatusId}
       />
 
-      {selectedTask && (
-        <TaskDetailModal
-          task={{
-            id: selectedTask.id,
-            taskId: selectedTask.key,
-            title: selectedTask.title,
-            description: selectedTask.description || '',
-            status: selectedTask.status_name || 'Backlog',
-            priority: selectedTask.priority?.charAt(0).toUpperCase() + selectedTask.priority?.slice(1) || 'Medium',
-            workstream: selectedTask.workstream_name || 'Unassigned',
-            assignee: selectedTask.assignee_name ? {
-              name: selectedTask.assignee_name,
-              initials: selectedTask.assignee_name.split(' ').map(n => n[0]).join('').slice(0, 2),
-              color: '#8b5cf6'
-            } : undefined,
-            dueDate: selectedTask.due_date || undefined,
-            createdAt: selectedTask.created_at,
-            updatedAt: selectedTask.updated_at
-          }}
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedTask(null);
-          }}
-        />
-      )}
+      {/* Task Detail Drawer */}
+      <TaskDetailDrawer
+        taskId={selectedTaskId}
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+        onClose={handleCloseDrawer}
+      />
     </div>
   );
 }

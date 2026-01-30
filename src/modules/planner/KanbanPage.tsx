@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { Plus } from 'lucide-react';
-import { KanbanBoard, CreateTaskModal } from './components/kanban';
+import { KanbanBoard, CreateTaskModal, TaskDetailDrawer } from './components/kanban';
 import type { KanbanTask } from './types/kanban';
 import { useDeleteKanbanTask } from './hooks/useKanbanTasks';
 import { Button } from '@/components/ui/button';
@@ -68,7 +68,12 @@ export function KanbanPage() {
         />
       </div>
 
-      {/* Task Detail Drawer - DISABLED - awaiting new implementation */}
+      {/* Task Detail Drawer - uses new GOD-TIER drawer */}
+      <TaskDetailDrawer
+        task={selectedTask}
+        open={isDetailOpen}
+        onClose={handleDrawerClose}
+      />
 
       {/* Create Task Modal */}
       <CreateTaskModal
