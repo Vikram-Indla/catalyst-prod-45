@@ -9,13 +9,63 @@ import { Kanban } from 'lucide-react';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
-import { TaskDetailDrawer } from '../TaskDetailDrawer/TaskDetailDrawer';
+import { TaskDetailModal, useTaskModal } from '@/components/planner/task-modal';
+import type { Task } from '@/components/planner/task-modal/types';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
 import { usePlannerTasks } from '../../hooks/usePlannerTasks';
 import { usePlannerSearch } from '../../hooks/usePlannerSearch';
 import type { GroupByOption } from '../../types';
+
+// Convert BoardTask to V10 Task modal type
+function boardTaskToModalTask(task: BoardTask): Task {
+  // Map priority (lowercase to Title Case)
+  const priorityMap: Record<string, 'Critical' | 'High' | 'Medium' | 'Low'> = {
+    critical: 'Critical',
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+  };
+
+  // Map status slug to status label
+  const statusMap: Record<string, 'Backlog' | 'Planned' | 'In Progress' | 'In Review' | 'Done'> = {
+    backlog: 'Backlog',
+    planned: 'Planned',
+    progress: 'In Progress',
+    review: 'In Review',
+    done: 'Done',
+  };
+
+  // Map workstream to allowed types (fallback to Catalyst)
+  const workstreamMap: Record<string, 'Catalyst' | 'Data & AI' | 'Delivery' | 'MIM' | 'Senaei'> = {
+    catalyst: 'Catalyst',
+    'data-ai': 'Data & AI',
+    'data & ai': 'Data & AI',
+    delivery: 'Delivery',
+    mim: 'MIM',
+    senaei: 'Senaei',
+  };
+
+  return {
+    id: task.id,
+    taskId: task.key,
+    title: task.title,
+    description: task.description || undefined,
+    status: statusMap[task.status_slug] || 'Backlog',
+    priority: priorityMap[task.priority] || 'Medium',
+    workstream: workstreamMap[task.workstream_slug?.toLowerCase() || ''] || 'Catalyst',
+    assignee: task.assignee_id && task.assignee_name ? {
+      id: task.assignee_id,
+      name: task.assignee_name,
+      initials: task.assignee_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+      color: '#3b82f6',
+    } : undefined,
+    dueDate: task.due_date || undefined,
+    createdAt: task.created_at,
+    updatedAt: task.updated_at,
+  };
+}
 
 export interface PlannerBoardsPageProps {
   // Parent filters from PlannerPage
@@ -42,10 +92,9 @@ export function PlannerBoardsPage({
   const [createStatusId, setCreateStatusId] = useState<string | undefined>();
   const searchInputRef = useRef<HTMLInputElement>(null);
   
-  // Task detail drawer state
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
+  // V10 Task Detail Modal state
+  const { isOpen: isModalOpen, selectedTask, openModal, closeModal } = useTaskModal();
+  const [selectedBoardTask, setSelectedBoardTask] = useState<BoardTask | null>(null);
   // Data hooks
   const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
   const { data: users = [] } = usePlannerUsers();
@@ -108,13 +157,18 @@ export function PlannerBoardsPage({
   }, [filters, selectedTeamId]);
 
   const handleTaskClick = useCallback((task: BoardTask) => {
-    setSelectedTaskId(task.id);
-    setIsDrawerOpen(true);
-  }, []);
+    setSelectedBoardTask(task);
+    openModal(boardTaskToModalTask(task));
+  }, [openModal]);
 
-  const handleCloseDrawer = useCallback(() => {
-    setIsDrawerOpen(false);
-    setSelectedTaskId(null);
+  const handleCloseModal = useCallback(() => {
+    closeModal();
+    setSelectedBoardTask(null);
+  }, [closeModal]);
+
+  const handleTaskSave = useCallback((updatedTask: Task) => {
+    // Handle save - can be wired to mutation later
+    console.log('Task updated:', updatedTask);
   }, []);
 
   const handleAddTask = useCallback((statusId?: string) => {
@@ -170,13 +224,15 @@ export function PlannerBoardsPage({
         defaultStatusId={createStatusId}
       />
 
-      {/* Task Detail Drawer */}
-      <TaskDetailDrawer
-        taskId={selectedTaskId}
-        open={isDrawerOpen}
-        onOpenChange={setIsDrawerOpen}
-        onClose={handleCloseDrawer}
-      />
+      {/* V10 Task Detail Modal */}
+      {selectedTask && (
+        <TaskDetailModal
+          task={selectedTask}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSave={handleTaskSave}
+        />
+      )}
     </div>
   );
 }
