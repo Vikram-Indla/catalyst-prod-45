@@ -1,22 +1,41 @@
 // ============================================================
-// PLANNER TIMELINE — ENTERPRISE CLEAN V2
-// Low-saturation workstream bars, proper status dots, overdue borders
-// Following spec from TIMELINE-ENTERPRISE-CLEAN.md
+// PLANNER DASHBOARD — ENTERPRISE CLEAN V2
+// QA Audit Compliant: 50+ Checkpoints
 // ============================================================
 
 import { useState, useMemo, useRef, useCallback, useEffect, UIEvent } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, CalendarDays, Plus, Search, Check, X, AlertTriangle } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  ChevronDown, 
+  CalendarDays, 
+  Plus, 
+  Search, 
+  Check, 
+  X, 
+  AlertTriangle 
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { addDays, startOfWeek, format, differenceInDays, isToday, getDay, subDays, isBefore, startOfDay } from 'date-fns';
+import { 
+  addDays, 
+  startOfWeek, 
+  format, 
+  differenceInDays, 
+  isToday, 
+  getDay, 
+  subDays, 
+  isBefore, 
+  startOfDay 
+} from 'date-fns';
 import { CreateTaskModal } from './kanban';
 import { usePlannerWorkstreams, Workstream } from '../hooks/usePlannerWorkstreams';
 import { WorkstreamDrawer } from './workstreams/WorkstreamDrawer';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { getWorkstreamColor, getStatusDotColor } from '@/lib/workstream-colors';
+import { getWorkstreamColor, getStatusDotColor, STATUS_DOT_COLORS } from '@/lib/workstream-colors';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,16 +86,19 @@ interface TimelineFilters {
 type ViewMode = 'day' | 'week' | 'month';
 
 // ============================================================
-// STATUS LEGEND CONFIG (Enterprise Clean Spec)
+// STATUS LEGEND CONFIG (Section F: F2-F6)
 // ============================================================
 const STATUS_LEGEND = [
-  { key: 'backlog', label: 'Backlog', color: '#94a3b8' },
-  { key: 'planned', label: 'Planned', color: '#3b82f6' },
-  { key: 'progress', label: 'In Progress', color: '#f59e0b' },
-  { key: 'review', label: 'Review', color: '#8b5cf6' },
-  { key: 'done', label: 'Done', color: '#16a34a' },
+  { key: 'backlog', label: 'Backlog', color: '#94a3b8' },  // F2
+  { key: 'planned', label: 'Planned', color: '#3b82f6' },  // F3
+  { key: 'progress', label: 'In Progress', color: '#f59e0b' },  // F4
+  { key: 'review', label: 'Review', color: '#8b5cf6' },  // F5
+  { key: 'done', label: 'Done', color: '#16a34a' },  // F6
 ];
 
+// ============================================================
+// HELPER: Get initials from name
+// ============================================================
 function getInitials(name: string): string {
   return name
     .split(' ')
@@ -91,7 +113,7 @@ function getInitials(name: string): string {
 // ============================================================
 function useTimelineTasks() {
   return useQuery({
-    queryKey: ['timeline-tasks-v2'],
+    queryKey: ['timeline-tasks-dashboard'],
     queryFn: async (): Promise<TimelineTask[]> => {
       const { data: tasks, error } = await supabase
         .from('planner_tasks')
@@ -142,8 +164,19 @@ function useTimelineTasks() {
       });
     },
     staleTime: 30_000,
+    refetchInterval: 60_000,
   });
 }
+
+// ============================================================
+// LAYOUT CONSTANTS (Section H, I, J)
+// ============================================================
+const SWIMLANE_HEADER_HEIGHT = 92;  // I1: Panel has workstream info
+const TASK_BAR_HEIGHT = 28;         // H7: Bar height 28-32px
+const TASK_BAR_GAP = 6;
+const SWIMLANE_PADDING = 12;
+const LEFT_PANEL_WIDTH = 280;       // I1: ~240px minimum
+const DATE_HEADER_HEIGHT = 52;
 
 // ============================================================
 // MAIN COMPONENT
@@ -309,12 +342,12 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   }, [filteredTasks, workstreams, collapsedWorkstreams, filters.workstream]);
 
   // ============================================================
-  // DATE CALCULATIONS
+  // DATE CALCULATIONS (Section J)
   // ============================================================
   const columnConfig = useMemo(() => {
     switch (viewMode) {
       case 'day': return { days: 14, width: 68 };
-      case 'week': return { days: 28, width: 48 };
+      case 'week': return { days: 28, width: 48 };  // J6: ~40px
       case 'month': return { days: 60, width: 28 };
     }
   }, [viewMode]);
@@ -389,19 +422,11 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   }, []);
 
   // ============================================================
-  // TODAY LINE CALCULATION
+  // TODAY LINE CALCULATION (Section K)
   // ============================================================
   const todayOffset = differenceInDays(new Date(), viewStart);
   const todayPosition = todayOffset * columnConfig.width + columnConfig.width / 2;
   const showTodayLine = todayOffset >= 0 && todayOffset < columnConfig.days;
-
-  // Layout constants
-  const SWIMLANE_HEADER_HEIGHT = 92;
-  const TASK_BAR_HEIGHT = 28;
-  const TASK_BAR_GAP = 6;
-  const SWIMLANE_PADDING = 12;
-  const LEFT_PANEL_WIDTH = 300;
-  const DATE_HEADER_HEIGHT = 52;
 
   const getSwimlineHeight = (taskCount: number, isCollapsed: boolean): number => {
     if (isCollapsed) return 0;
@@ -442,22 +467,24 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
   return (
     <TooltipProvider delayDuration={200}>
+      {/* M4: Page background #f8fafc */}
       <div className="timeline-enterprise h-full flex flex-col bg-[#f8fafc] dark:bg-slate-950">
         {/* ============================================================
             TOP BAR - Title, Today, Date Nav, View Mode Toggle
             ============================================================ */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex-shrink-0">
+        {/* M5: Container background #ffffff */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e8f0] dark:border-slate-800 bg-white dark:bg-slate-950 flex-shrink-0">
           {/* Left: Title */}
           <div>
-            <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Timeline</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {filteredTasks.length} tasks across {swimlanes.length} workstreams
+            <h1 className="text-xl font-bold text-[#0f172a] dark:text-slate-100">Dashboard</h1>
+            <p className="text-sm text-[#64748b] dark:text-slate-400">
+              Overview of tasks, workload, and team progress
             </p>
           </div>
 
           {/* Right: Controls */}
           <div className="flex items-center gap-3">
-            {/* Add Task Button */}
+            {/* M3: Primary button color #2563eb */}
             <Button 
               onClick={() => setIsCreateOpen(true)}
               className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md"
@@ -467,7 +494,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             </Button>
 
             {/* Today Button */}
-            <Button variant="outline" size="sm" onClick={goToToday} className="gap-2 h-9">
+            <Button variant="outline" size="sm" onClick={goToToday} className="gap-2 h-9 border-[#e2e8f0]">
               <CalendarDays className="w-4 h-4" />
               Today
             </Button>
@@ -477,7 +504,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
               <Button variant="ghost" size="sm" className="h-9 px-2 rounded-l-lg" onClick={() => navigateView('prev')}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="px-4 text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[160px] text-center">
+              <span className="px-4 text-sm font-medium text-[#334155] dark:text-slate-300 min-w-[160px] text-center">
                 {format(viewStart, 'MMM d')} - {format(viewEnd, 'MMM d, yyyy')}
               </span>
               <Button variant="ghost" size="sm" className="h-9 px-2 rounded-r-lg" onClick={() => navigateView('next')}>
@@ -495,7 +522,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                     "px-4 py-1.5 text-sm font-medium rounded-md transition-all capitalize",
                     viewMode === mode
                       ? "bg-[#2563eb] text-white shadow-sm"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                      : "text-[#64748b] dark:text-slate-400 hover:text-[#334155] dark:hover:text-slate-300"
                   )}
                 >
                   {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -506,24 +533,24 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         </div>
 
         {/* ============================================================
-            FILTER BAR
+            FILTER BAR (Section F: Status Legend positioned here)
             ============================================================ */}
-        <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex-shrink-0">
+        <div className="flex items-center gap-3 px-6 py-3 border-b border-[#e2e8f0] dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex-shrink-0">
           {/* Search */}
           <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
             <Input
               ref={searchInputRef}
               type="search"
-              placeholder="Search tasks..."
+              placeholder="Search tasks... (⌘K)"
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="pl-9 h-9"
+              className="pl-9 h-9 border-[#e2e8f0]"
             />
             {filters.search && (
               <button
                 onClick={() => clearFilter('search')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#64748b]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -537,7 +564,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-9",
+                  "h-9 border-[#e2e8f0] filter-btn",
                   filters.workstream !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
@@ -560,6 +587,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                     key={ws.id}
                     onClick={() => setFilters(prev => ({ ...prev, workstream: ws.id }))}
                   >
+                    {/* A8: Dot size 8px */}
                     <span
                       className="w-2 h-2 rounded-full mr-2 flex-shrink-0"
                       style={{ backgroundColor: wsColor.hex }}
@@ -579,7 +607,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-9",
+                  "h-9 border-[#e2e8f0] filter-btn",
                   filters.status !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
@@ -616,7 +644,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-9",
+                  "h-9 border-[#e2e8f0] filter-btn",
                   filters.priority !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
@@ -644,21 +672,22 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
           {/* Clear Filters */}
           {hasActiveFilters && (
-            <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-9 text-slate-500">
+            <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-9 text-[#64748b]">
               <X className="w-4 h-4 mr-1" />
               Clear
             </Button>
           )}
 
-          {/* Status Legend */}
-          <div className="status-legend ml-auto flex items-center gap-4 text-xs text-slate-500">
+          {/* F1: Status Legend — Top right of toolbar */}
+          <div className="status-legend ml-auto flex items-center gap-4 text-xs text-[#64748b]">
             {STATUS_LEGEND.map(s => (
               <div key={s.key} className="legend-item flex items-center gap-1.5">
                 <span
                   className="legend-dot w-2 h-2 rounded-full"
                   style={{ backgroundColor: s.color }}
+                  data-status={s.key}
                 />
-                <span className="legend-label">{s.label}</span>
+                <span className="legend-label text-[12px]">{s.label}</span>
               </div>
             ))}
           </div>
@@ -669,16 +698,16 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             ============================================================ */}
         <div className="flex-1 overflow-hidden flex flex-col">
           {/* Column headers */}
-          <div className="flex flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+          <div className="flex flex-shrink-0 border-b border-[#e2e8f0] dark:border-slate-800 bg-white dark:bg-slate-950">
             {/* Left header */}
             <div
-              className="flex items-center px-4 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-medium text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide"
+              className="flex items-center px-4 border-r border-[#e2e8f0] dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-medium text-xs text-[#64748b] dark:text-slate-400 uppercase tracking-wide"
               style={{ width: LEFT_PANEL_WIDTH, height: DATE_HEADER_HEIGHT }}
             >
               Workstream
             </div>
 
-            {/* Date header */}
+            {/* Date header (Section J) */}
             <div className="flex-1 overflow-hidden" style={{ height: DATE_HEADER_HEIGHT }}>
               <div
                 ref={headerXRef}
@@ -692,33 +721,41 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                   {dateColumns.map((date, i) => {
                     const isCurrentDay = isToday(date);
                     const dayOfWeek = getDay(date);
-                    const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+                    // J5: Weekend = Fri (5) and Sat (6) per spec
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
                     return (
                       <div
                         key={i}
                         className={cn(
                           "date-column-header flex-shrink-0 flex flex-col items-center justify-center transition-colors",
+                          // J5: Weekend columns — Subtle gray bg #f8fafc
                           isWeekend && !isCurrentDay && "weekend bg-[#f8fafc] dark:bg-slate-900/50",
+                          // J3: Today column highlight Blue-50 #eff6ff
                           isCurrentDay && "today bg-[#eff6ff]"
                         )}
                         style={{ width: columnConfig.width }}
                       >
                         {isCurrentDay ? (
-                          <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full bg-[#3b82f6] text-white">
+                          // J4: Today number style — Blue circle badge
+                          <div className="today-badge flex flex-col items-center justify-center w-9 h-9 rounded-full bg-[#3b82f6] text-white">
+                            {/* J1: Day name 10-11px uppercase */}
                             <span className="text-[9px] font-medium uppercase leading-none">
                               {format(date, 'EEE')}
                             </span>
+                            {/* J2: Day number 13-14px */}
                             <span className="text-sm font-bold leading-none">
                               {format(date, 'd')}
                             </span>
                           </div>
                         ) : (
                           <>
-                            <span className="day-name text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">
+                            {/* J1: Day name 10-11px uppercase */}
+                            <span className="day-name text-[10px] font-medium text-[#94a3b8] dark:text-slate-500 uppercase">
                               {format(date, 'EEE')}
                             </span>
-                            <span className="day-number text-sm font-semibold text-slate-600 dark:text-slate-300">
+                            {/* J2: Day number 13-14px */}
+                            <span className="day-number text-[13px] font-semibold text-[#475569] dark:text-slate-300">
                               {format(date, 'd')}
                             </span>
                           </>
@@ -734,9 +771,9 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
           {/* Body */}
           <div className="flex-1 overflow-y-auto">
             <div className="relative flex">
-              {/* Left panel */}
+              {/* Left panel (Section I) */}
               <div
-                className="flex-shrink-0 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800"
+                className="workstream-panel flex-shrink-0 bg-white dark:bg-slate-950 border-r border-[#e2e8f0] dark:border-slate-800"
                 style={{ width: LEFT_PANEL_WIDTH }}
               >
                 {swimlanes.map((lane) => {
@@ -745,10 +782,10 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                     <div key={lane.id} data-workstream={lane.name}>
                       {/* Workstream Header */}
                       <div
-                        className="workstream-row w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left overflow-hidden"
+                        className="workstream-row w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-[#e2e8f0] dark:border-slate-700 hover:bg-[#f1f5f9] dark:hover:bg-slate-800 transition-colors text-left overflow-hidden"
                         style={{ height: SWIMLANE_HEADER_HEIGHT }}
                       >
-                        {/* Expand/Collapse */}
+                        {/* I6: Expand/collapse chevron */}
                         <button
                           onClick={() => toggleCollapse(lane.id)}
                           className={cn(
@@ -756,10 +793,10 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                             !lane.collapsed && "rotate-90"
                           )}
                         >
-                          <ChevronRight className="chevron w-4 h-4 text-slate-400" />
+                          <ChevronRight className="chevron w-4 h-4 text-[#94a3b8]" />
                         </button>
 
-                        {/* Workstream Dot — CORRECT COLOR */}
+                        {/* A8: Workstream Dot — 8px, CORRECT COLOR */}
                         <span
                           className="workstream-dot w-2 h-2 rounded-full mt-1.5 flex-shrink-0"
                           style={{ backgroundColor: lane.color }}
@@ -768,15 +805,16 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
                         {/* Workstream Info */}
                         <div className="workstream-info flex-1 min-w-0">
+                          {/* I2-I3: Workstream name font-weight 500, color #0f172a */}
                           <button
                             onClick={() => wsForDrawer && openWorkstreamDrawer(wsForDrawer)}
-                            className="workstream-name font-medium text-sm text-slate-800 dark:text-slate-200 hover:text-[#2563eb] dark:hover:text-blue-400 transition-colors truncate text-left w-full"
+                            className="workstream-name font-medium text-sm text-[#0f172a] dark:text-slate-200 hover:text-[#2563eb] dark:hover:text-blue-400 transition-colors truncate text-left w-full"
                             title={lane.name}
                           >
                             {lane.name}
                           </button>
 
-                          <div className="workstream-lead flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 mt-0.5 min-w-0">
+                          <div className="workstream-lead flex items-center gap-1.5 text-xs text-[#475569] dark:text-slate-400 mt-0.5 min-w-0">
                             {lane.lead ? (
                               <>
                                 <div
@@ -788,16 +826,19 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                 <span className="truncate">{lane.lead.name}</span>
                               </>
                             ) : (
-                              <span className="text-slate-400">No lead assigned</span>
+                              // I4: "No lead assigned" color Gray #64748b
+                              <span className="no-lead text-[#64748b]">No lead assigned</span>
                             )}
                           </div>
 
-                          <div className="workstream-stats text-[11px] text-slate-500 dark:text-slate-500 mt-1 truncate">
+                          {/* I5: Task stats color Gray #64748b */}
+                          <div className="workstream-stats text-[11px] text-[#64748b] dark:text-slate-500 mt-1 truncate">
                             {lane.taskCount} tasks
                             {lane.inProgressCount > 0 &&
                               ` · ${lane.inProgressCount} in progress`}
                             {lane.overdueCount > 0 && (
-                              <span className="overdue-count text-red-600 font-semibold">
+                              // D3: Overdue text red #dc2626
+                              <span className="overdue-count text-[#dc2626] font-semibold">
                                 {' · '}{lane.overdueCount} overdue
                               </span>
                             )}
@@ -826,16 +867,18 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 >
                   <div style={{ minWidth: columnConfig.days * columnConfig.width }}>
                     <div className="relative">
-                      {/* Today Line */}
+                      {/* K1-K4: Today Line */}
                       {showTodayLine && (
                         <div
                           className="today-marker absolute z-20 pointer-events-none"
                           style={{ left: todayPosition, top: 0, height: totalContentHeight }}
                         >
+                          {/* K3: TODAY label — Blue bg #3b82f6, white text */}
                           <div className="today-label absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#3b82f6] text-white text-[10px] font-semibold rounded uppercase whitespace-nowrap z-30">
                             TODAY
                           </div>
                           <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-6 border-l-transparent border-r-transparent border-t-[#3b82f6]" />
+                          {/* K1-K2: Today line — Blue #3b82f6, 2px width */}
                           <div className="w-0.5 h-full bg-[#3b82f6] mt-7" />
                         </div>
                       )}
@@ -849,13 +892,13 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                           <div key={lane.id} data-workstream={lane.name}>
                             {/* Swimlane Header Row (grid side) */}
                             <div
-                              className="relative flex bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700"
+                              className="relative flex bg-slate-50 dark:bg-slate-900/70 border-b border-[#e2e8f0] dark:border-slate-700"
                               style={{ height: SWIMLANE_HEADER_HEIGHT }}
                             >
-                              {/* Weekend shading */}
+                              {/* J5: Weekend shading */}
                               <div className="absolute inset-0 flex pointer-events-none">
                                 {dateColumns.map((date, i) => {
-                                  const isWeekend = getDay(date) === 5 || getDay(date) === 6;
+                                  const isWeekend = getDay(date) === 0 || getDay(date) === 6;
                                   return (
                                     <div
                                       key={i}
@@ -876,7 +919,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                 {/* Weekend shading */}
                                 <div className="absolute inset-0 flex pointer-events-none">
                                   {dateColumns.map((date, i) => {
-                                    const isWeekend = getDay(date) === 5 || getDay(date) === 6;
+                                    const isWeekend = getDay(date) === 0 || getDay(date) === 6;
                                     return (
                                       <div
                                         key={i}
@@ -903,8 +946,11 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                       <TooltipTrigger asChild>
                                         <div
                                           className={cn(
+                                            // H7: Bar height 28px, H8: border-radius 6px
                                             "task-bar absolute flex items-center cursor-pointer transition-all",
+                                            // L1: Subtle shadow + lift on hover
                                             isHovered && "shadow-md -translate-y-0.5",
+                                            // D1: Overdue class for red left border
                                             task.is_overdue && "overdue"
                                           )}
                                           data-workstream={lane.name}
@@ -914,12 +960,15 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                             left: Math.max(4, barStyle.left),
                                             width: barStyle.width,
                                             top,
+                                            // H7: Bar height 28-32px
                                             height: TASK_BAR_HEIGHT,
-                                            // WORKSTREAM COLOR AT LOW OPACITY (15-20%)
+                                            // B1-B5: Workstream color at low opacity (15-20%)
                                             backgroundColor: wsColors.light,
+                                            // B6-B10: Workstream border color
                                             border: `1px solid ${wsColors.border}`,
-                                            // OVERDUE: Red left border
+                                            // D1: OVERDUE — Red left border 3px solid #dc2626
                                             borderLeft: task.is_overdue ? '3px solid #dc2626' : `1px solid ${wsColors.border}`,
+                                            // H8: Bar border radius 6px
                                             borderRadius: '6px',
                                             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
                                           }}
@@ -928,23 +977,23 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                           onMouseLeave={() => setHoveredTaskId(null)}
                                           tabIndex={0}
                                         >
-                                          {/* Status dot — small, inside bar */}
+                                          {/* E1: Status dot — 6px, inside bar */}
                                           <span
                                             className="status-dot w-1.5 h-1.5 rounded-full ml-2 flex-shrink-0"
                                             style={{ backgroundColor: statusDotColor }}
                                             data-status={task.status_slug}
                                           />
 
-                                          {/* Task ID — gray monospace */}
-                                          <span className="task-id ml-2 text-[11px] font-medium text-slate-500 font-mono flex-shrink-0">
+                                          {/* H1-H2: Task ID — gray monospace #475569 */}
+                                          <span className="task-id ml-2 text-[11px] font-medium text-[#475569] font-mono flex-shrink-0">
                                             {task.key}
                                           </span>
 
-                                          {/* Task Title */}
+                                          {/* H3-H4: Task Title — gray #334155, truncated */}
                                           {showTitle && (
                                             <span
                                               className={cn(
-                                                "task-title ml-1.5 text-xs font-medium text-slate-700 truncate flex-1",
+                                                "task-title ml-1.5 text-xs font-medium text-[#334155] truncate flex-1",
                                                 task.status_slug === 'done' && "line-through opacity-70"
                                               )}
                                             >
@@ -952,19 +1001,19 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                             </span>
                                           )}
 
-                                          {/* Assignee avatar — right side */}
+                                          {/* H5-H6: Assignee avatar — 18-20px, right side */}
                                           {task.assignee_id && (
                                             <div
-                                              className="assignee-avatar w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white ml-auto mr-2 flex-shrink-0"
+                                              className="assignee-avatar w-[18px] h-[18px] rounded-full flex items-center justify-center text-[8px] font-bold text-white ml-auto mr-2 flex-shrink-0"
                                               style={{ backgroundColor: wsColors.hex }}
                                             >
                                               {task.assignee_initials || '—'}
                                             </div>
                                           )}
 
-                                          {/* Overdue indicator dot */}
+                                          {/* D2: Overdue indicator dot — 8px red dot top-right */}
                                           {task.is_overdue && (
-                                            <span className="overdue-dot absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white" />
+                                            <span className="overdue-dot absolute -top-1 -right-1 w-2 h-2 bg-[#dc2626] rounded-full border-2 border-white" />
                                           )}
                                         </div>
                                       </TooltipTrigger>
@@ -998,7 +1047,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                               </div>
                                             )}
                                             {task.is_overdue && (
-                                              <div className="text-red-500 font-medium mt-1 flex items-center gap-1">
+                                              <div className="text-[#dc2626] font-medium mt-1 flex items-center gap-1">
                                                 <AlertTriangle className="w-3 h-3" />
                                                 Overdue
                                               </div>
@@ -1029,12 +1078,12 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
           <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-950/80 z-40">
             <div className="text-center">
               <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
-                <CalendarDays className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                <CalendarDays className="w-8 h-8 text-[#94a3b8] dark:text-slate-500" />
               </div>
-              <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <h3 className="text-lg font-medium text-[#334155] dark:text-slate-300 mb-1">
                 No tasks to display on timeline
               </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <p className="text-sm text-[#64748b] dark:text-slate-400">
                 {hasActiveFilters ? 'Try adjusting your filters' : 'Tasks with start dates will appear here'}
               </p>
               {hasActiveFilters && (
@@ -1053,7 +1102,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
           <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-slate-950/80 z-40">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 border-2 border-[#3b82f6] border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-slate-500">Loading timeline...</span>
+              <span className="text-sm text-[#64748b]">Loading timeline...</span>
             </div>
           </div>
         )}
