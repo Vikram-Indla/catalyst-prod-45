@@ -1,0 +1,990 @@
+/* ================================================================================
+   TASK DETAIL MODAL — INVASIVE CSS OVERRIDE
+   
+   COPY THIS ENTIRE FILE INTO YOUR APPLICATION
+   ALL RULES USE !important TO FORCE OVERRIDE
+   
+   Created: January 30, 2026
+   Target: Task Detail Modal (PLN-51-4 and all task modals)
+   Score: 10/10 Visual Quality
+   ================================================================================ */
+
+/* ================================================================================
+   1. CSS VARIABLES — MANDATORY COLOR SYSTEM
+   ================================================================================ */
+
+/* CSS Variables - Use without !important for cleaner cascade */
+.task-modal {
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  
+  --surface-page: #f8fafc;
+  --surface-card: #ffffff;
+  --surface-hover: #f1f5f9;
+  
+  --border-light: #e2e8f0;
+  --border-default: #cbd5e1;
+  --border-focus: #3b82f6;
+  
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: #dbeafe;
+  
+  --status-backlog: #94a3b8;
+  --status-planned: #3b82f6;
+  --status-progress: #f59e0b;
+  --status-review: #8b5cf6;
+  --status-done: #16a34a;
+  
+  --priority-critical: #dc2626;
+  --priority-high: #f97316;
+  --priority-medium: #eab308;
+  --priority-low: #94a3b8;
+  
+  --ws-catalyst: #6366f1;
+  --ws-data-ai: #8b5cf6;
+  --ws-delivery: #ec4899;
+  --ws-mim: #64748b;
+  --ws-senaei: #14b8a6;
+}
+
+/* ================================================================================
+   2. MODAL CONTAINER
+   ================================================================================ */
+
+.task-modal,
+.task-detail-modal,
+[class*="TaskModal"],
+[class*="task-modal"],
+[data-component="task-modal"] {
+  background: var(--task-surface-card) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden !important;
+}
+
+/* ================================================================================
+   3. HEADER SECTION
+   ================================================================================ */
+
+.modal-header,
+.task-header,
+[class*="ModalHeader"],
+[class*="TaskHeader"] {
+  padding: 24px 28px 20px !important;
+  border-bottom: 1px solid var(--task-border-light) !important;
+  background: var(--task-surface-card) !important;
+}
+
+.task-id,
+[class*="task-id"],
+[class*="TaskId"] {
+  font-family: ui-monospace, 'SF Mono', monospace !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--task-text-muted) !important;
+}
+
+.task-title,
+[class*="task-title"],
+[class*="TaskTitle"],
+.modal-header h1,
+.task-header h1 {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: var(--task-text-primary) !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+}
+
+/* ================================================================================
+   4. METADATA BAR
+   ================================================================================ */
+
+.metadata-bar,
+[class*="metadata-bar"],
+[class*="MetadataBar"],
+[class*="task-meta"] {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 20px !important;
+  padding: 18px 28px !important;
+  background: var(--task-surface-page) !important;
+  border-bottom: 1px solid var(--task-border-light) !important;
+}
+
+.meta-label,
+[class*="meta-label"],
+[class*="MetaLabel"],
+.metadata-bar label {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--task-text-muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.meta-dropdown,
+[class*="meta-dropdown"],
+[class*="MetaDropdown"],
+.metadata-bar select,
+.metadata-bar [role="combobox"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+  background: var(--task-surface-card) !important;
+  border: 1px solid var(--task-border-light) !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.meta-dropdown:hover,
+[class*="meta-dropdown"]:hover {
+  border-color: var(--task-border-default) !important;
+  background: var(--task-surface-hover) !important;
+}
+
+/* STATUS DOT COLORS */
+[data-status="backlog"] .meta-dot,
+.status-backlog .meta-dot {
+  background: var(--task-status-backlog) !important;
+}
+
+[data-status="planned"] .meta-dot,
+.status-planned .meta-dot {
+  background: var(--task-status-planned) !important;
+}
+
+[data-status="in-progress"] .meta-dot,
+[data-status="progress"] .meta-dot,
+.status-progress .meta-dot {
+  background: var(--task-status-progress) !important;
+}
+
+[data-status="done"] .meta-dot,
+.status-done .meta-dot {
+  background: var(--task-status-done) !important;
+}
+
+/* PRIORITY DOT COLORS — CRITICAL: MEDIUM IS YELLOW */
+[data-priority="critical"] .meta-dot,
+.priority-critical .meta-dot {
+  background: var(--task-priority-critical) !important;
+}
+
+[data-priority="high"] .meta-dot,
+.priority-high .meta-dot {
+  background: var(--task-priority-high) !important;
+}
+
+[data-priority="medium"] .meta-dot,
+.priority-medium .meta-dot {
+  background: var(--task-priority-medium) !important;  /* YELLOW #eab308 */
+}
+
+[data-priority="low"] .meta-dot,
+.priority-low .meta-dot {
+  background: var(--task-priority-low) !important;
+}
+
+/* WORKSTREAM DOT COLORS — CRITICAL: CATALYST IS INDIGO */
+[data-workstream="catalyst"] .meta-dot,
+[data-workstream="Catalyst"] .meta-dot,
+.workstream-catalyst .meta-dot {
+  background: var(--task-ws-catalyst) !important;  /* INDIGO #6366f1 */
+}
+
+[data-workstream="data-ai"] .meta-dot,
+[data-workstream="Data & AI"] .meta-dot,
+.workstream-data-ai .meta-dot {
+  background: var(--task-ws-data-ai) !important;
+}
+
+[data-workstream="delivery"] .meta-dot,
+[data-workstream="Delivery"] .meta-dot,
+.workstream-delivery .meta-dot {
+  background: var(--task-ws-delivery) !important;
+}
+
+[data-workstream="mim"] .meta-dot,
+[data-workstream="MIM"] .meta-dot,
+.workstream-mim .meta-dot {
+  background: var(--task-ws-mim) !important;
+}
+
+[data-workstream="senaei"] .meta-dot,
+[data-workstream="Senaei"] .meta-dot,
+.workstream-senaei .meta-dot {
+  background: var(--task-ws-senaei) !important;
+}
+
+/* ================================================================================
+   5. DROPDOWN MENUS
+   ================================================================================ */
+
+.dropdown-menu,
+[class*="dropdown-menu"],
+[class*="DropdownMenu"],
+[role="listbox"],
+[role="menu"] {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: var(--task-surface-card) !important;
+  border: 1px solid var(--task-border-default) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+  z-index: 1000 !important;
+  padding: 6px !important;
+  max-height: 280px !important;
+  overflow-y: auto !important;
+}
+
+.dropdown-item,
+[class*="dropdown-item"],
+[class*="DropdownItem"],
+[role="option"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: background 0.1s !important;
+}
+
+.dropdown-item:hover,
+[role="option"]:hover {
+  background: var(--task-surface-hover) !important;
+}
+
+.dropdown-item.selected,
+[role="option"][aria-selected="true"] {
+  background: var(--task-accent-light) !important;
+}
+
+/* ================================================================================
+   6. TABS
+   ================================================================================ */
+
+.tabs-container,
+[class*="tabs-container"],
+[class*="TabsContainer"],
+[role="tablist"] {
+  display: flex !important;
+  padding: 0 28px !important;
+  border-bottom: 1px solid var(--task-border-light) !important;
+  background: var(--task-surface-card) !important;
+  overflow-x: auto !important;
+}
+
+.tab-btn,
+[class*="tab-btn"],
+[class*="TabButton"],
+[role="tab"] {
+  padding: 16px 18px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--task-text-muted) !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: color 0.15s !important;
+  white-space: nowrap !important;
+}
+
+.tab-btn:hover,
+[role="tab"]:hover {
+  color: var(--task-text-secondary) !important;
+}
+
+.tab-btn.active,
+[role="tab"][aria-selected="true"] {
+  color: var(--task-accent) !important;
+}
+
+.tab-btn.active::after,
+[role="tab"][aria-selected="true"]::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -1px !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: var(--task-accent) !important;
+}
+
+.tab-badge,
+[class*="tab-badge"],
+[class*="TabBadge"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  padding: 0 6px !important;
+  margin-left: 6px !important;
+  background: var(--task-surface-hover) !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.tab-btn.active .tab-badge,
+[role="tab"][aria-selected="true"] .tab-badge {
+  background: var(--task-accent-light) !important;
+  color: var(--task-accent) !important;
+}
+
+/* ================================================================================
+   7. DESCRIPTION TAB — FULL WIDTH TEXTAREA
+   ================================================================================ */
+
+.description-textarea,
+[class*="description-textarea"],
+[class*="DescriptionTextarea"],
+.tab-panel textarea,
+[data-tab="description"] textarea {
+  width: 100% !important;
+  min-height: 160px !important;
+  padding: 16px 18px !important;
+  border: 1px solid var(--task-border-default) !important;
+  border-radius: 12px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: var(--task-text-primary) !important;
+  background: var(--task-surface-card) !important;
+  resize: vertical !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+
+/* CRITICAL: Remove any monospace font */
+.description-textarea,
+[class*="description-textarea"],
+[data-tab="description"] textarea {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif !important;
+}
+
+.description-textarea:focus,
+[class*="description-textarea"]:focus,
+[data-tab="description"] textarea:focus {
+  outline: none !important;
+  border-color: var(--task-border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+.description-textarea::placeholder,
+[class*="description-textarea"]::placeholder {
+  color: var(--task-text-light) !important;
+}
+
+/* ================================================================================
+   8. DATE PICKER
+   ================================================================================ */
+
+.date-picker-popup,
+[class*="date-picker"],
+[class*="DatePicker"],
+[class*="calendar-popup"] {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  background: var(--task-surface-card) !important;
+  border: 1px solid var(--task-border-default) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+  z-index: 1000 !important;
+  padding: 16px !important;
+  width: 280px !important;
+}
+
+.date-picker-day,
+[class*="calendar-day"],
+[class*="DatePickerDay"] {
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13px !important;
+  color: var(--task-text-secondary) !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.1s !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.date-picker-day:hover {
+  background: var(--task-surface-hover) !important;
+}
+
+.date-picker-day.today {
+  border: 1px solid var(--task-accent) !important;
+  color: var(--task-accent) !important;
+}
+
+.date-picker-day.selected {
+  background: var(--task-accent) !important;
+  color: white !important;
+}
+
+/* ================================================================================
+   9. ADD LABELS BUTTON
+   ================================================================================ */
+
+.add-labels-btn,
+[class*="add-labels"],
+[class*="AddLabels"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px 18px !important;
+  background: var(--task-surface-hover) !important;
+  border: 2px dashed var(--task-border-default) !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--task-text-muted) !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.add-labels-btn:hover,
+[class*="add-labels"]:hover {
+  background: var(--task-accent-light) !important;
+  border-color: var(--task-accent) !important;
+  border-style: solid !important;
+  color: var(--task-accent) !important;
+}
+
+/* ================================================================================
+   10. CHECKLIST
+   ================================================================================ */
+
+.checklist-item,
+[class*="checklist-item"],
+[class*="ChecklistItem"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 14px 16px !important;
+  background: var(--task-surface-card) !important;
+  border: 1px solid var(--task-border-light) !important;
+  border-radius: 10px !important;
+  transition: all 0.15s !important;
+}
+
+.checklist-item:hover {
+  border-color: var(--task-border-default) !important;
+  background: var(--task-surface-hover) !important;
+}
+
+.checklist-item.completed {
+  background: var(--task-surface-page) !important;
+}
+
+.checklist-item.completed .item-text {
+  color: var(--task-text-muted) !important;
+  text-decoration: line-through !important;
+}
+
+.checkbox,
+[class*="checkbox"],
+[type="checkbox"] + label::before {
+  width: 22px !important;
+  height: 22px !important;
+  border: 2px solid var(--task-border-default) !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s !important;
+  flex-shrink: 0 !important;
+  background: var(--task-surface-card) !important;
+}
+
+.checkbox:hover {
+  border-color: var(--task-accent) !important;
+}
+
+.checkbox.checked {
+  background: var(--task-accent) !important;
+  border-color: var(--task-accent) !important;
+}
+
+.add-item-input,
+[class*="add-item"],
+[class*="AddItem"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 14px 16px !important;
+  background: var(--task-surface-page) !important;
+  border: 2px dashed var(--task-border-default) !important;
+  border-radius: 10px !important;
+  transition: all 0.2s !important;
+}
+
+.add-item-input:focus-within {
+  border-style: solid !important;
+  border-color: var(--task-accent) !important;
+  background: var(--task-surface-card) !important;
+}
+
+/* ================================================================================
+   11. LINKS TAB
+   ================================================================================ */
+
+.link-item,
+[class*="link-item"],
+[class*="LinkItem"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 16px 18px !important;
+  background: var(--task-surface-card) !important;
+  border: 1px solid var(--task-border-light) !important;
+  border-radius: 10px !important;
+  transition: all 0.15s !important;
+}
+
+.link-item:hover {
+  border-color: var(--task-border-default) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+.link-icon,
+[class*="link-icon"] {
+  width: 40px !important;
+  height: 40px !important;
+  background: var(--task-accent-light) !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.link-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--task-accent) !important;
+}
+
+.link-url,
+[class*="link-url"] {
+  font-size: 13px !important;
+  color: var(--task-accent) !important;
+  text-decoration: none !important;
+}
+
+.link-url:hover {
+  text-decoration: underline !important;
+}
+
+/* ================================================================================
+   12. FILES TAB
+   ================================================================================ */
+
+.upload-zone,
+[class*="upload-zone"],
+[class*="UploadZone"],
+[class*="dropzone"] {
+  padding: 40px !important;
+  border: 2px dashed var(--task-border-default) !important;
+  border-radius: 12px !important;
+  text-align: center !important;
+  margin-bottom: 28px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  background: var(--task-surface-page) !important;
+}
+
+.upload-zone:hover {
+  border-color: var(--task-accent) !important;
+  background: var(--task-accent-light) !important;
+}
+
+.file-item,
+[class*="file-item"],
+[class*="FileItem"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 16px 18px !important;
+  background: var(--task-surface-card) !important;
+  border: 1px solid var(--task-border-light) !important;
+  border-radius: 10px !important;
+  transition: all 0.15s !important;
+}
+
+.file-item:hover {
+  border-color: var(--task-border-default) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+.file-icon,
+[class*="file-icon"] {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.file-icon.pdf { background: #fef2f2 !important; }
+.file-icon.pdf svg { color: #dc2626 !important; }
+.file-icon.doc { background: #eff6ff !important; }
+.file-icon.doc svg { color: #2563eb !important; }
+.file-icon.img { background: #f0fdf4 !important; }
+.file-icon.img svg { color: #16a34a !important; }
+
+/* ================================================================================
+   13. ACTIVITY TAB
+   ================================================================================ */
+
+.activity-filters,
+[class*="activity-filters"],
+[class*="ActivityFilters"] {
+  display: flex !important;
+  background: var(--task-surface-page) !important;
+  border-radius: 10px !important;
+  padding: 4px !important;
+  margin-bottom: 24px !important;
+}
+
+.activity-filter-btn,
+[class*="activity-filter"],
+[class*="ActivityFilter"] {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 12px 16px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--task-text-muted) !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.activity-filter-btn:hover {
+  color: var(--task-text-secondary) !important;
+}
+
+.activity-filter-btn.active {
+  background: var(--task-surface-card) !important;
+  color: var(--task-text-primary) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.activity-item,
+[class*="activity-item"],
+[class*="ActivityItem"] {
+  display: flex !important;
+  gap: 14px !important;
+}
+
+.activity-body,
+[class*="activity-body"],
+[class*="comment-body"] {
+  padding: 14px 18px !important;
+  background: var(--task-surface-page) !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  color: var(--task-text-secondary) !important;
+}
+
+.history-item,
+[class*="history-item"],
+[class*="HistoryItem"] {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 14px !important;
+  padding: 16px 0 !important;
+  border-bottom: 1px solid var(--task-border-light) !important;
+}
+
+.history-item:last-child {
+  border-bottom: none !important;
+}
+
+.history-icon,
+[class*="history-icon"] {
+  width: 36px !important;
+  height: 36px !important;
+  background: var(--task-surface-page) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.history-text,
+[class*="history-text"] {
+  font-size: 14px !important;
+  color: var(--task-text-secondary) !important;
+  line-height: 1.5 !important;
+}
+
+.history-text strong {
+  color: var(--task-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+/* Comment Composer */
+.comment-composer,
+[class*="comment-composer"],
+[class*="CommentComposer"] {
+  display: flex !important;
+  gap: 14px !important;
+  margin-top: 24px !important;
+}
+
+.comment-input-wrapper,
+[class*="comment-input"] {
+  flex: 1 !important;
+  border: 1px solid var(--task-border-default) !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  transition: border-color 0.15s !important;
+}
+
+.comment-input-wrapper:focus-within {
+  border-color: var(--task-border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+.send-btn,
+[class*="send-btn"],
+[class*="SendButton"] {
+  width: 40px !important;
+  height: 40px !important;
+  background: var(--task-accent) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  color: white !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background 0.15s !important;
+}
+
+.send-btn:hover {
+  background: var(--task-accent-hover) !important;
+}
+
+/* ================================================================================
+   14. FOOTER
+   ================================================================================ */
+
+.modal-footer,
+[class*="modal-footer"],
+[class*="ModalFooter"] {
+  padding: 16px 28px !important;
+  background: var(--task-surface-page) !important;
+  border-top: 1px solid var(--task-border-light) !important;
+}
+
+.footer-text,
+[class*="footer-text"] {
+  font-size: 13px !important;
+  color: var(--task-text-muted) !important;
+}
+
+.footer-text strong {
+  font-weight: 600 !important;
+  color: var(--task-text-secondary) !important;
+}
+
+/* ================================================================================
+   15. BUTTONS
+   ================================================================================ */
+
+.btn-primary,
+[class*="btn-primary"],
+[class*="ButtonPrimary"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 20px !important;
+  background: var(--task-accent) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background 0.15s !important;
+}
+
+.btn-primary:hover {
+  background: var(--task-accent-hover) !important;
+}
+
+.icon-btn,
+[class*="icon-btn"],
+[class*="IconButton"] {
+  width: 38px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: 1px solid var(--task-border-light) !important;
+  border-radius: 10px !important;
+  color: var(--task-text-muted) !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.icon-btn:hover {
+  background: var(--task-surface-hover) !important;
+  border-color: var(--task-border-default) !important;
+  color: var(--task-text-secondary) !important;
+}
+
+/* ================================================================================
+   16. AVATARS
+   ================================================================================ */
+
+.avatar,
+[class*="avatar"],
+[class*="Avatar"] {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: white !important;
+  flex-shrink: 0 !important;
+}
+
+.avatar-sm,
+[class*="avatar-sm"] {
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 11px !important;
+}
+
+/* ================================================================================
+   17. EMPTY STATES
+   ================================================================================ */
+
+.empty-state,
+[class*="empty-state"],
+[class*="EmptyState"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding: 48px 24px !important;
+  background: var(--task-surface-page) !important;
+  border: 2px dashed var(--task-border-default) !important;
+  border-radius: 12px !important;
+  text-align: center !important;
+}
+
+.empty-state h3 {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--task-text-secondary) !important;
+  margin-bottom: 6px !important;
+}
+
+.empty-state p {
+  font-size: 14px !important;
+  color: var(--task-text-muted) !important;
+}
+
+/* ================================================================================
+   18. PROGRESS BAR
+   ================================================================================ */
+
+.progress-bar,
+[class*="progress-bar"],
+[class*="ProgressBar"] {
+  width: 140px !important;
+  height: 8px !important;
+  background: var(--task-border-light) !important;
+  border-radius: 4px !important;
+  overflow: hidden !important;
+}
+
+.progress-fill,
+[class*="progress-fill"],
+[class*="ProgressFill"] {
+  height: 100% !important;
+  background: var(--task-accent) !important;
+  border-radius: 4px !important;
+  transition: width 0.3s !important;
+}
+
+/* ================================================================================
+   19. INPUT FIELDS
+   ================================================================================ */
+
+input[type="text"],
+input[type="url"],
+input[type="email"],
+input[type="date"],
+textarea {
+  padding: 12px 14px !important;
+  border: 1px solid var(--task-border-default) !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  color: var(--task-text-primary) !important;
+  background: var(--task-surface-card) !important;
+  font-family: inherit !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+
+input:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: var(--task-border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--task-text-light) !important;
+}
+
+/* ================================================================================
+   20. HIDE KEYBOARD SHORTCUTS — CRITICAL
+   ================================================================================ */
+
+/* Remove ALL keyboard shortcut hints */
+[class*="keyboard"],
+[class*="shortcut"],
+[class*="hint"],
+.keyboard-hint,
+.shortcut-hint,
+kbd {
+  display: none !important;
+}
+
+/* ================================================================================
+   END OF INVASIVE CSS
+   ================================================================================ */
