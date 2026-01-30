@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
-import { TaskDetailModalV4 } from '../TaskDetailModal';
+import { TaskDetailModal } from '../TaskDetailModal';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
@@ -41,7 +41,7 @@ export function PlannerBoardsPage({
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Task detail modal state
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<BoardTask | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const teams: { id: string; name: string; color?: string; memberCount?: number }[] = [];
@@ -94,7 +94,7 @@ export function PlannerBoardsPage({
   }, [filters, selectedTeamId]);
 
   const handleTaskClick = useCallback((task: BoardTask) => {
-    setSelectedTaskId(task.id);
+    setSelectedTask(task);
     setIsModalOpen(true);
   }, []);
 
@@ -147,11 +147,32 @@ export function PlannerBoardsPage({
         defaultStatusId={createStatusId}
       />
 
-      <TaskDetailModalV4
-        taskId={selectedTaskId}
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-      />
+      {selectedTask && (
+        <TaskDetailModal
+          task={{
+            id: selectedTask.id,
+            taskId: selectedTask.key,
+            title: selectedTask.title,
+            description: selectedTask.description || '',
+            status: selectedTask.status_name || 'Backlog',
+            priority: selectedTask.priority?.charAt(0).toUpperCase() + selectedTask.priority?.slice(1) || 'Medium',
+            workstream: selectedTask.workstream_name || 'Unassigned',
+            assignee: selectedTask.assignee_name ? {
+              name: selectedTask.assignee_name,
+              initials: selectedTask.assignee_name.split(' ').map(n => n[0]).join('').slice(0, 2),
+              color: '#8b5cf6'
+            } : undefined,
+            dueDate: selectedTask.due_date || undefined,
+            createdAt: selectedTask.created_at,
+            updatedAt: selectedTask.updated_at
+          }}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedTask(null);
+          }}
+        />
+      )}
     </div>
   );
 }
