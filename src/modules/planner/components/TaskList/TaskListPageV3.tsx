@@ -38,8 +38,10 @@ import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { usePlannerRealtime } from '../../hooks/usePlannerRealtime';
 import { useUpdatePlannerTask } from '../../hooks/usePlannerTasks';
+import { useTaskLabelsMap } from '../../hooks/useTaskLabelsMap';
 import { TaskListRowV3 } from './TaskListRowV3';
 import { BulkActionBar } from '../task-list/BulkActionBar';
+import { LabelsFilter } from '@/components/planner/shared/LabelsFilter';
 import { PRIORITY_CONFIG } from '../../types';
 import type { TaskListFilters, TaskListSorting, TaskListTask } from '../../hooks/useTaskList';
 import type { TaskPriority, GroupByOption } from '../../types';
@@ -55,7 +57,7 @@ interface TaskListPageV3Props {
 }
 
 const DEFAULT_COLUMNS = new Set([
-  'key', 'title', 'status', 'priority', 'workstream', 'assignee', 'dueDate', 'progress', 'actions'
+  'key', 'title', 'status', 'priority', 'workstream', 'labels', 'assignee', 'dueDate', 'progress', 'actions'
 ]);
 
 const ALL_COLUMNS = [
@@ -64,6 +66,7 @@ const ALL_COLUMNS = [
   { id: 'status', label: 'Status', width: 120, minWidth: 100 },
   { id: 'priority', label: 'Priority', width: 100, minWidth: 80 },
   { id: 'workstream', label: 'Workstream', width: 140, minWidth: 100 },
+  { id: 'labels', label: 'Labels', width: 180, minWidth: 120 },
   { id: 'assignee', label: 'Assignee', width: 150, minWidth: 100 },
   { id: 'dueDate', label: 'Due Date', width: 110, minWidth: 90 },
   { id: 'progress', label: 'Progress', width: 100, minWidth: 80 },
@@ -121,6 +124,24 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
   const { data: users = [] } = usePlannerUsers();
   const { data: statuses = [] } = useKanbanStatuses();
   const updateTask = useUpdatePlannerTask();
+
+  // Fetch labels for all visible tasks
+  const taskIds = useMemo(() => tasks.map(t => t.id), [tasks]);
+  const { data: labelsMap = {} } = useTaskLabelsMap(taskIds);
+
+  // Label filter state
+  const [selectedLabelFilters, setSelectedLabelFilters] = useState<string[]>([]);
+
+  // Filter tasks by labels (client-side)
+  const filteredTasks = useMemo(() => {
+    if (selectedLabelFilters.length === 0) return tasks;
+    
+    return tasks.filter(task => {
+      const taskLabels = labelsMap[task.id] || [];
+      const taskLabelIds = taskLabels.map(l => l.id);
+      return selectedLabelFilters.some(filterId => taskLabelIds.includes(filterId));
+    });
+  }, [tasks, labelsMap, selectedLabelFilters]);
 
   // Real-time subscription
   usePlannerRealtime(null);
@@ -237,6 +258,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
   const handleClearFilters = useCallback(() => {
     setFilters({});
     setSearchValue('');
+    setSelectedLabelFilters([]);
   }, []);
 
   const toggleColumn = useCallback((columnId: string) => {
@@ -260,6 +282,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
     filters.priority,
     filters.assignee,
     filters.overdueOnly,
+    selectedLabelFilters.length > 0,
   ].filter(Boolean).length;
 
   const visibleColumnDefs = ALL_COLUMNS.filter(col => visibleColumns.has(col.id));
@@ -449,6 +472,12 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {/* Labels Filter */}
+          <LabelsFilter
+            selectedLabels={selectedLabelFilters}
+            onChange={setSelectedLabelFilters}
+          />
+
           {/* Clear Filters */}
           {activeFilterCount > 0 && (
             <button onClick={handleClearFilters} className="tl-btn tl-btn-outline">
@@ -568,7 +597,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task, index) => (
+                {filteredTasks.map((task, index) => (
                   <TaskListRowV3
                     key={task.id}
                     task={task}
@@ -582,6 +611,7 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
                     columnWidths={columnWidths}
                     statuses={statuses}
                     users={users}
+                    labels={labelsMap[task.id] || []}
                   />
                 ))}
               </tbody>

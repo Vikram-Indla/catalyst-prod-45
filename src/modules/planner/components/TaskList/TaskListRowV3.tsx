@@ -25,6 +25,8 @@ import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { PRIORITY_CONFIG } from '../../types';
 import type { TaskListTask } from '../../hooks/useTaskList';
 import type { TaskPriority } from '../../types';
+import type { Label } from '@/components/planner/task-modal/types/labels';
+import { LabelsCell } from '@/components/planner/shared/LabelsCell';
 import { format, differenceInDays } from 'date-fns';
 import { toast } from 'sonner';
 import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
@@ -402,6 +404,7 @@ interface TaskListRowV3Props {
   columnWidths: Record<string, number>;
   statuses: Array<{ id: string; name: string; color?: string }>;
   users: Array<{ id: string; name: string; initials: string }>;
+  labels?: Label[];
 }
 
 export function TaskListRowV3({
@@ -416,6 +419,7 @@ export function TaskListRowV3({
   columnWidths,
   statuses,
   users,
+  labels = [],
 }: TaskListRowV3Props) {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>('');
@@ -612,6 +616,13 @@ export function TaskListRowV3({
           width={getWidth('workstream')}
           onUpdate={onUpdate}
         />
+      )}
+
+      {/* Labels - Display assigned labels */}
+      {visibleColumns.has('labels') && (
+        <td style={{ width: getWidth('labels') }}>
+          <LabelsCell labels={labels} maxVisible={2} />
+        </td>
       )}
 
       {/* Assignee - Avatar + name with searchable dropdown (K1-K5) */}

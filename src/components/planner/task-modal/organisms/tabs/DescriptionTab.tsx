@@ -5,8 +5,10 @@
 
 import React, { useState } from 'react';
 import { COLORS, PRIORITY_COLORS, PRIORITIES } from '../../colors';
-import { FieldDropdown, DateDropdown, AddLabelsButton } from '../../molecules';
+import { FieldDropdown, DateDropdown } from '../../molecules';
+import { LabelsManager } from '../../molecules/LabelsManager';
 import { Task, TaskPriority } from '../../types';
+import { Label } from '../../types/labels';
 
 interface DescriptionTabProps {
   task: Task;
@@ -14,7 +16,7 @@ interface DescriptionTabProps {
   onPriorityChange: (priority: TaskPriority) => void;
   onDueDateChange: (date: string) => void;
   onStartDateChange: (date: string) => void;
-  onAddLabels?: () => void;
+  onLabelsChange?: (labels: Label[]) => void;
 }
 
 export const DescriptionTab: React.FC<DescriptionTabProps> = ({
@@ -23,7 +25,7 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
   onPriorityChange,
   onDueDateChange,
   onStartDateChange,
-  onAddLabels
+  onLabelsChange
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -98,9 +100,25 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
         />
       </div>
 
-      {/* ADD LABELS BUTTON */}
+      {/* LABELS SECTION */}
       <div style={{ marginTop: '28px' }}>
-        <AddLabelsButton onClick={onAddLabels} />
+        <label
+          style={{
+            display: 'block',
+            fontSize: '12px',
+            fontWeight: 600,
+            color: '#64748b',
+            textTransform: 'uppercase',
+            letterSpacing: '0.03em',
+            marginBottom: '12px'
+          }}
+        >
+          Labels
+        </label>
+        <LabelsManager 
+          taskId={task.id} 
+          onLabelsChange={onLabelsChange}
+        />
       </div>
     </div>
   );
