@@ -170,13 +170,15 @@ export function PlannerBoardsPage({
         defaultStatusId={createStatusId}
       />
 
-      {/* Task Detail Drawer */}
+      {/* Task Detail Modal - DISABLED - awaiting new implementation */}
+      {/* 
       <TaskDetailDrawer
         taskId={selectedTaskId}
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
         onClose={handleCloseDrawer}
       />
+      */}
     </div>
   );
 }
