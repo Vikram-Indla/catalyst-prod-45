@@ -1,5 +1,5 @@
 // ============================================================================
-// ORGANISM: ModalHeader — Task modal header with title and actions
+// ORGANISM: ModalHeader — Task modal header with actions (FIX 6: Kebab menu)
 // ============================================================================
 
 import React, { useState } from 'react';
@@ -7,6 +7,8 @@ import { X, Link2, MoreHorizontal, Edit2, Trash2, Copy, Archive, Star } from 'lu
 import { COLORS } from '../colors';
 import { IconButton } from '../atoms';
 import { Task } from '../types';
+import { useTaskActions } from '../hooks/useTaskActions';
+import { useToast } from '@/hooks/use-toast';
 
 interface ModalHeaderProps {
   task: Task;
@@ -15,6 +17,8 @@ interface ModalHeaderProps {
   onEdit?: () => void;
   onDelete?: () => void;
   onArchive?: () => void;
+  onTaskUpdated?: (task: Task) => void;
+  onTaskDeleted?: (taskId: string) => void;
 }
 
 export const ModalHeader: React.FC<ModalHeaderProps> = ({
@@ -23,14 +27,48 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
   onCopyLink,
   onEdit,
   onDelete,
-  onArchive
+  onArchive,
+  onTaskUpdated,
+  onTaskDeleted
 }) => {
   const [showKebabMenu, setShowKebabMenu] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { duplicateTask, archiveTask, deleteTask, isLoading } = useTaskActions();
+  const { toast } = useToast();
 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/task/${task.id}`;
     navigator.clipboard.writeText(url);
+    toast({ title: 'Link copied', description: 'Task link copied to clipboard' });
     if (onCopyLink) onCopyLink();
+  };
+
+  const handleDuplicate = async () => {
+    const newTask = await duplicateTask(task);
+    if (newTask && onTaskUpdated) {
+      onTaskUpdated(newTask);
+    }
+    setShowKebabMenu(false);
+  };
+
+  const handleArchive = async () => {
+    const success = await archiveTask(task.id);
+    if (success) {
+      if (onArchive) onArchive();
+      onClose();
+    }
+    setShowKebabMenu(false);
+  };
+
+  const handleDelete = async () => {
+    const success = await deleteTask(task.id);
+    if (success) {
+      if (onTaskDeleted) onTaskDeleted(task.id);
+      if (onDelete) onDelete();
+      onClose();
+    }
+    setShowDeleteConfirm(false);
+    setShowKebabMenu(false);
   };
 
   return (
@@ -99,13 +137,15 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               title="More options"
             />
             
-            {/* KEBAB DROPDOWN */}
+            {/* KEBAB DROPDOWN - FIX 6: Wired to Supabase */}
             {showKebabMenu && (
               <KebabMenu
                 onEdit={onEdit}
-                onDelete={onDelete}
-                onArchive={onArchive}
+                onDuplicate={handleDuplicate}
+                onArchive={handleArchive}
+                onDeleteClick={() => setShowDeleteConfirm(true)}
                 onClose={() => setShowKebabMenu(false)}
+                isLoading={isLoading}
               />
             )}
           </div>
@@ -132,6 +172,81 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
       >
         {task.title}
       </h1>
+
+      {/* DELETE CONFIRMATION DIALOG - FIX 6 */}
+      {showDeleteConfirm && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={() => setShowDeleteConfirm(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.6)',
+              zIndex: 100000
+            }}
+          />
+          {/* Dialog */}
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#ffffff',
+              borderRadius: '16px',
+              padding: '24px',
+              width: '400px',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3)',
+              zIndex: 100001
+            }}
+          >
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>
+              Delete Task
+            </h3>
+            <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>
+              Are you sure you want to delete "{task.title}"? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#f1f5f9',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#334155',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isLoading}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#dc2626',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#ffffff',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLoading ? 0.7 : 1
+                }}
+              >
+                {isLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -139,23 +254,26 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
 // Sub-component: KebabMenu
 const KebabMenu: React.FC<{
   onEdit?: () => void;
-  onDelete?: () => void;
-  onArchive?: () => void;
+  onDuplicate: () => void;
+  onArchive: () => void;
+  onDeleteClick: () => void;
   onClose: () => void;
-}> = ({ onEdit, onDelete, onArchive, onClose }) => {
+  isLoading: boolean;
+}> = ({ onEdit, onDuplicate, onArchive, onDeleteClick, onClose, isLoading }) => {
   const MenuItem: React.FC<{
     icon: React.ReactNode;
     label: string;
     onClick?: () => void;
     danger?: boolean;
-  }> = ({ icon, label, onClick, danger }) => {
+    disabled?: boolean;
+  }> = ({ icon, label, onClick, danger, disabled }) => {
     const [isHovered, setIsHovered] = useState(false);
     
     return (
       <div
         onClick={() => {
+          if (disabled) return;
           if (onClick) onClick();
-          onClose();
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -165,11 +283,12 @@ const KebabMenu: React.FC<{
           gap: '10px',
           padding: '10px 14px',
           borderRadius: '8px',
-          cursor: 'pointer',
-          backgroundColor: isHovered ? (danger ? '#fef2f2' : COLORS.surfaceHover) : 'transparent',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          backgroundColor: isHovered && !disabled ? (danger ? '#fef2f2' : COLORS.surfaceHover) : 'transparent',
           color: danger ? '#dc2626' : COLORS.textPrimary,
           fontSize: '14px',
-          transition: 'background-color 0.1s ease'
+          transition: 'background-color 0.1s ease',
+          opacity: disabled ? 0.5 : 1
         }}
       >
         {icon}
@@ -189,7 +308,7 @@ const KebabMenu: React.FC<{
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 999
+          zIndex: 99998
         }}
       />
       
@@ -204,27 +323,37 @@ const KebabMenu: React.FC<{
           border: `1px solid ${COLORS.borderDefault}`,
           borderRadius: '12px',
           boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-          zIndex: 1000,
+          zIndex: 99999,
           padding: '6px'
         }}
       >
         <MenuItem 
           icon={<Edit2 size={16} />} 
           label="Edit task" 
-          onClick={onEdit}
+          onClick={() => {
+            if (onEdit) onEdit();
+            onClose();
+          }}
         />
         <MenuItem 
           icon={<Copy size={16} />} 
           label="Duplicate" 
+          onClick={onDuplicate}
+          disabled={isLoading}
         />
         <MenuItem 
           icon={<Star size={16} />} 
           label="Add to favorites" 
+          onClick={() => {
+            // Favorites functionality can be added
+            onClose();
+          }}
         />
         <MenuItem 
           icon={<Archive size={16} />} 
           label="Archive" 
           onClick={onArchive}
+          disabled={isLoading}
         />
         <div style={{ 
           height: '1px', 
@@ -234,8 +363,9 @@ const KebabMenu: React.FC<{
         <MenuItem 
           icon={<Trash2 size={16} />} 
           label="Delete task" 
-          onClick={onDelete}
+          onClick={onDeleteClick}
           danger 
+          disabled={isLoading}
         />
       </div>
     </>

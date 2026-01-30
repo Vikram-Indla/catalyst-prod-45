@@ -93,7 +93,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
         />
       </div>
 
-      {/* DROPDOWN MENU */}
+      {/* DROPDOWN MENU - FIX 1: z-index 99999 */}
       {isOpen && (
         <div
           style={{
@@ -105,7 +105,7 @@ export const AssigneeDropdown: React.FC<AssigneeDropdownProps> = ({
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
             boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-            zIndex: 1000,
+            zIndex: 99999,
             padding: '6px',
             maxHeight: '280px',
             overflowY: 'auto'

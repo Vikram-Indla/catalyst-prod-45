@@ -1,11 +1,12 @@
 // ============================================================================
-// MOLECULE: CommentComposer — Composer for activity comments
+// MOLECULE: CommentComposer — Composer for activity comments (FIX 4)
 // ============================================================================
 
 import React, { useState } from 'react';
 import { Send } from 'lucide-react';
 import { COLORS } from '../colors';
 import { Avatar } from '../atoms';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 
 interface CommentComposerProps {
   onSubmit: (content: string) => void;
@@ -15,10 +16,15 @@ interface CommentComposerProps {
 
 export const CommentComposer: React.FC<CommentComposerProps> = ({
   onSubmit,
-  userInitials = 'U',
-  userColor = COLORS.accent
+  userInitials: propInitials,
+  userColor: propColor
 }) => {
   const [content, setContent] = useState('');
+  const currentUser = useCurrentUser();
+  
+  // FIX 4: Use current user's initials and color
+  const userInitials = currentUser?.initials || propInitials || 'U';
+  const userColor = currentUser?.color || propColor || COLORS.accent;
 
   const handleSubmit = () => {
     if (!content.trim()) return;
