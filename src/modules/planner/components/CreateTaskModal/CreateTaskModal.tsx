@@ -1,20 +1,31 @@
 /**
- * Create Task Modal - Catalyst Planner V9
- * Per V4 Spec: Minimal friction, keyboard-first, required linking
+ * Create Task Modal V10 - TaskBoardModal Aligned
+ * Matches TaskBoardModal styling, adds Start Date, removes Status
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Plus, Check, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
 import { TitleInput } from './fields/TitleInput';
 import { DescriptionToggle } from './fields/DescriptionToggle';
 import { WorkstreamSelect } from './fields/WorkstreamSelect';
 import { AssigneeSelect } from './fields/AssigneeSelect';
 import { PrioritySelect } from './fields/PrioritySelect';
 import { DueDatePicker } from './fields/DueDatePicker';
+import { StartDatePicker } from './fields/StartDatePicker';
 import { useCreateTaskMutation, type CreateTaskInput } from './hooks/useCreateTaskMutation';
 import type { TaskPriority } from '../../types';
+import { format } from 'date-fns';
+
+// Colors matching TaskBoardModal
+const COLORS = {
+  textPrimary: '#0f172a',
+  textMuted: '#64748b',
+  surfaceCard: '#ffffff',
+  surfacePage: '#f8fafc',
+  borderLight: '#e2e8f0',
+  accent: '#2563eb',
+};
 
 export interface CreateTaskModalProps {
   open: boolean;
@@ -35,6 +46,7 @@ export function CreateTaskModal({
   const [workstreamId, setWorkstreamId] = useState(defaultWorkstream || '');
   const [assigneeId, setAssigneeId] = useState('');
   const [priority, setPriority] = useState<TaskPriority>('medium');
+  const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd')); // Default to today
   const [dueDate, setDueDate] = useState('');
   
   // Validation state
@@ -53,6 +65,7 @@ export function CreateTaskModal({
       setWorkstreamId(defaultWorkstream || '');
       setAssigneeId('');
       setPriority('medium');
+      setStartDate(format(new Date(), 'yyyy-MM-dd')); // Default to today
       setDueDate('');
       setErrors({});
       setShowSuccess(false);
@@ -111,8 +124,8 @@ export function CreateTaskModal({
       workstream_id: workstreamId,
       assignee_id: assigneeId || undefined,
       priority,
+      start_date: startDate || format(new Date(), 'yyyy-MM-dd'),
       due_date: dueDate || undefined,
-      start_date: new Date().toISOString().split('T')[0],
     };
 
     createTask(input, {
@@ -127,7 +140,7 @@ export function CreateTaskModal({
         }, 1800);
       },
     });
-  }, [title, description, workstreamId, assigneeId, priority, dueDate, validate, createTask, onSuccess, onOpenChange]);
+  }, [title, description, workstreamId, assigneeId, priority, startDate, dueDate, validate, createTask, onSuccess, onOpenChange]);
 
   const handleClose = () => {
     if (!isPending) {
@@ -139,26 +152,51 @@ export function CreateTaskModal({
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - TaskBoardModal style */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.6)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 9999,
+            }}
             aria-hidden="true"
           />
 
-          {/* Modal */}
+          {/* Modal - TaskBoardModal aligned styling */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-0 z-[101] flex items-center justify-center p-4"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 10000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
           >
             <div 
-              className="w-full max-w-[520px] bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-visible"
+              style={{
+                width: '100%',
+                maxWidth: '560px',
+                backgroundColor: COLORS.surfaceCard,
+                borderRadius: '16px',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+                overflow: 'hidden',
+                position: 'relative',
+              }}
               role="dialog"
               aria-modal="true"
               aria-labelledby="create-task-title"
@@ -170,44 +208,114 @@ export function CreateTaskModal({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white dark:bg-slate-900 rounded-xl"
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      zIndex: 10,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: COLORS.surfaceCard,
+                      borderRadius: '16px',
+                    }}
                   >
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                      className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4"
+                      style={{
+                        width: '64px',
+                        height: '64px',
+                        borderRadius: '50%',
+                        backgroundColor: '#dcfce7',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '16px',
+                      }}
                     >
-                      <Check className="w-8 h-8 text-green-600" />
+                      <Check style={{ width: '32px', height: '32px', color: '#16a34a' }} />
                     </motion.div>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                    <h3 style={{
+                      fontSize: '18px',
+                      fontWeight: 600,
+                      color: COLORS.textPrimary,
+                      marginBottom: '8px',
+                    }}>
                       Task Created!
                     </h3>
-                    <div className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-md text-sm font-mono text-slate-700 dark:text-slate-300">
+                    <div style={{
+                      padding: '4px 12px',
+                      backgroundColor: COLORS.surfacePage,
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      fontFamily: 'monospace',
+                      color: COLORS.textMuted,
+                    }}>
                       {successTaskKey}
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
-                <h2 id="create-task-title" className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+              {/* Header - TaskBoardModal style */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '20px 24px',
+                borderBottom: `1px solid ${COLORS.borderLight}`,
+              }}>
+                <h2 
+                  id="create-task-title" 
+                  style={{
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    color: COLORS.textPrimary,
+                    margin: 0,
+                  }}
+                >
                   Add Task
                 </h2>
                 <button
                   type="button"
                   onClick={handleClose}
                   disabled={isPending}
-                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors disabled:opacity-50"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: 'transparent',
+                    cursor: isPending ? 'not-allowed' : 'pointer',
+                    opacity: isPending ? 0.5 : 1,
+                    transition: 'background-color 0.15s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isPending) e.currentTarget.style.backgroundColor = COLORS.surfacePage;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                   aria-label="Close"
                 >
-                  <X className="w-4 h-4" />
+                  <X style={{ width: '18px', height: '18px', color: COLORS.textMuted }} />
                 </button>
               </div>
 
               {/* Form Body */}
-              <div className="p-5 space-y-5 max-h-[70vh] overflow-visible">
+              <div style={{
+                padding: '24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+                maxHeight: '70vh',
+                overflowY: 'auto',
+              }}>
                 {/* Title - Hero Input */}
                 <TitleInput
                   ref={titleInputRef}
@@ -224,7 +332,7 @@ export function CreateTaskModal({
                 />
 
                 {/* Two-column row: Workstream + Priority */}
-                <div className="grid grid-cols-2 gap-4">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <WorkstreamSelect
                     value={workstreamId}
                     onChange={setWorkstreamId}
@@ -236,37 +344,83 @@ export function CreateTaskModal({
                   />
                 </div>
 
-                {/* Two-column row: Assignee + Due Date */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Two-column row: Assignee + Start Date */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <AssigneeSelect
                     value={assigneeId}
                     onChange={setAssigneeId}
                   />
-                  <DueDatePicker
-                    value={dueDate}
-                    onChange={setDueDate}
+                  <StartDatePicker
+                    value={startDate}
+                    onChange={setStartDate}
                   />
                 </div>
+
+                {/* Due Date - Full width */}
+                <DueDatePicker
+                  value={dueDate}
+                  onChange={setDueDate}
+                />
               </div>
 
-              {/* Footer */}
-              <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between rounded-b-xl">
-                <div className="text-xs text-slate-400">
-                  <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded text-[10px] font-medium">⌘</kbd>
-                  {' + '}
-                  <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded text-[10px] font-medium">Enter</kbd>
-                  {' to add'}
+              {/* Footer - TaskBoardModal style */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '16px 24px',
+                borderTop: `1px solid ${COLORS.borderLight}`,
+                backgroundColor: COLORS.surfacePage,
+              }}>
+                <div style={{
+                  fontSize: '12px',
+                  color: COLORS.textMuted,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}>
+                  <kbd style={{
+                    padding: '2px 6px',
+                    backgroundColor: COLORS.surfaceCard,
+                    border: `1px solid ${COLORS.borderLight}`,
+                    borderRadius: '4px',
+                    fontSize: '10px',
+                    fontWeight: 500,
+                  }}>⌘</kbd>
+                  <span>+</span>
+                  <kbd style={{
+                    padding: '2px 6px',
+                    backgroundColor: COLORS.surfaceCard,
+                    border: `1px solid ${COLORS.borderLight}`,
+                    borderRadius: '4px',
+                    fontSize: '10px',
+                    fontWeight: 500,
+                  }}>Enter</kbd>
+                  <span style={{ marginLeft: '4px' }}>to add</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <button
                     type="button"
                     onClick={handleClose}
                     disabled={isPending}
-                    className={cn(
-                      "px-4 py-2 text-sm font-medium rounded-lg transition-colors",
-                      "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700",
-                      "disabled:opacity-50 disabled:cursor-not-allowed"
-                    )}
+                    style={{
+                      padding: '10px 16px',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      color: COLORS.textMuted,
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: isPending ? 'not-allowed' : 'pointer',
+                      opacity: isPending ? 0.5 : 1,
+                      transition: 'background-color 0.15s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isPending) e.currentTarget.style.backgroundColor = COLORS.surfaceCard;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
                   >
                     Cancel
                   </button>
@@ -274,22 +428,41 @@ export function CreateTaskModal({
                     type="button"
                     onClick={handleSubmit}
                     disabled={isPending || !title.trim()}
-                    className={cn(
-                      "px-4 py-2 text-sm font-semibold rounded-lg transition-all",
-                      "bg-blue-600 text-white hover:bg-blue-700",
-                      "shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30",
-                      "flex items-center gap-2",
-                      "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
-                    )}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '10px 18px',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: '#ffffff',
+                      backgroundColor: COLORS.accent,
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: (isPending || !title.trim()) ? 'not-allowed' : 'pointer',
+                      opacity: (isPending || !title.trim()) ? 0.5 : 1,
+                      boxShadow: (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isPending && title.trim()) {
+                        e.currentTarget.style.backgroundColor = '#1d4ed8';
+                        e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 99, 235, 0.4)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = COLORS.accent;
+                      e.currentTarget.style.boxShadow = (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)';
+                    }}
                   >
                     {isPending ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 style={{ width: '16px', height: '16px', animation: 'spin 1s linear infinite' }} />
                         Adding...
                       </>
                     ) : (
                       <>
-                        <Plus className="w-4 h-4" />
+                        <Plus style={{ width: '16px', height: '16px' }} />
                         Add Task
                       </>
                     )}
@@ -298,8 +471,18 @@ export function CreateTaskModal({
               </div>
             </div>
           </motion.div>
+
+          {/* Keyframe for spinner */}
+          <style>{`
+            @keyframes spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
         </>
       )}
     </AnimatePresence>
   );
 }
+
+export default CreateTaskModal;

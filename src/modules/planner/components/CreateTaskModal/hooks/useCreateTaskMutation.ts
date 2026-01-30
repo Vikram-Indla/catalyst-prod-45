@@ -120,7 +120,7 @@ export function useCreateTaskMutation() {
       };
     },
     onSuccess: (result) => {
-      // Invalidate relevant queries
+      // Invalidate relevant queries for all views
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['planner-board-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['planner-dashboard'] });
@@ -128,6 +128,8 @@ export function useCreateTaskMutation() {
       queryClient.invalidateQueries({ queryKey: ['timeline-tasks-v2'] });
       queryClient.invalidateQueries({ queryKey: ['kanban-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['planner-task-list'] });
+      queryClient.invalidateQueries({ queryKey: ['planner-calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar-tasks'] });
       
       toast.success(`Task ${result.task_key} created successfully`);
     },
