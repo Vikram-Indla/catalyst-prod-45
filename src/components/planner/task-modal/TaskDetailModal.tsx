@@ -1,8 +1,8 @@
 // ============================================================================
-// TASK BOARD MODAL V10 — FINAL ASSEMBLY WITH AUTO-SAVE
+// TASK BOARD MODAL V10 — FINAL ASSEMBLY WITH AUTO-SAVE & REALTIME SYNC
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { COLORS } from './colors';
 import { 
   ModalHeader, 
@@ -16,7 +16,7 @@ import {
   FilesTab,
   ActivityTab
 } from './organisms';
-import { useAutoSave } from './hooks/useAutoSave';
+import { useAutoSave, useTaskRealtime } from './hooks';
 import { 
   Task, 
   TabId, 
@@ -67,6 +67,21 @@ export const TaskBoardModal: React.FC<TaskBoardModalProps> = ({
       setLastSaved(new Date());
     },
     onSaveError: () => setIsSaving(false)
+  });
+
+  // ==================== REALTIME SUBSCRIPTION ====================
+  // Subscribe to real-time updates for this task (syncs changes from other users/tabs)
+  useTaskRealtime({
+    taskId: isOpen ? task.id : null,
+    enabled: isOpen,
+    onUpdate: useCallback((payload: any) => {
+      // Only update if we're not currently saving (avoid conflicts)
+      if (!isSaving && payload.new) {
+        console.log('[TaskBoardModal] Received realtime update');
+        // Note: The query invalidation in useTaskRealtime will trigger
+        // parent components to refetch, which will update the task prop
+      }
+    }, [isSaving])
   });
 
   // ==================== EFFECTS ====================
