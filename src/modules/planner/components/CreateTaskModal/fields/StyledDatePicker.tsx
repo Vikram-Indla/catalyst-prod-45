@@ -1,11 +1,12 @@
 /**
  * Styled Date Picker - TaskBoardModal Style
- * Portal-based date picker with calendar and quick actions
+ * Uses Radix Popover with position="popper" for proper anchoring
  */
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import * as React from 'react';
+import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Colors from TaskBoardModal
 const COLORS = {
@@ -33,57 +34,13 @@ interface StyledDatePickerProps {
 }
 
 export function StyledDatePicker({ label, value, onChange, placeholder = 'Set date...' }: StyledDatePickerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [viewDate, setViewDate] = useState(() => {
+  const [open, setOpen] = React.useState(false);
+  const [viewDate, setViewDate] = React.useState(() => {
     if (value) return new Date(value);
     return new Date();
   });
   
-  const triggerRef = useRef<HTMLDivElement>(null);
   const selectedDate = value ? new Date(value) : null;
-  
-  // Get trigger position for portal
-  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
-
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + 4,
-        left: rect.left
-      });
-    }
-  }, [isOpen]);
-
-  // Close on outside click
-  useEffect(() => {
-    if (!isOpen) return;
-    
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (triggerRef.current && !triggerRef.current.contains(target)) {
-        const portalContent = document.querySelector('[data-styled-date-picker]');
-        if (portalContent && portalContent.contains(target)) return;
-        setIsOpen(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside, true);
-    return () => document.removeEventListener('mousedown', handleClickOutside, true);
-  }, [isOpen]);
-
-  // Close on escape
-  useEffect(() => {
-    if (!isOpen) return;
-    
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
-    };
-    
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
 
   const formatDisplayDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
@@ -101,32 +58,35 @@ export function StyledDatePicker({ label, value, onChange, placeholder = 'Set da
     return new Date(year, month, 1).getDay();
   };
 
-  const handlePrevMonth = useCallback((e: React.MouseEvent) => {
+  const handlePrevMonth = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
   }, [viewDate]);
 
-  const handleNextMonth = useCallback((e: React.MouseEvent) => {
+  const handleNextMonth = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
   }, [viewDate]);
 
-  const handleSelectDate = useCallback((day: number) => {
+  const handleSelectDate = React.useCallback((day: number) => {
     const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
     onChange(newDate.toISOString().split('T')[0]);
-    setIsOpen(false);
+    setOpen(false);
   }, [viewDate, onChange]);
 
-  const handleClear = useCallback((e: React.MouseEvent) => {
+  const handleClear = React.useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     onChange('');
   }, [onChange]);
 
-  const handleQuickDate = useCallback((daysToAdd: number) => {
+  const handleQuickDate = React.useCallback((daysToAdd: number) => {
     const date = new Date();
     date.setDate(date.getDate() + daysToAdd);
     onChange(date.toISOString().split('T')[0]);
-    setIsOpen(false);
+    setOpen(false);
   }, [onChange]);
 
   const renderCalendar = () => {
@@ -139,7 +99,7 @@ export function StyledDatePicker({ label, value, onChange, placeholder = 'Set da
     const days: React.ReactNode[] = [];
     
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} style={{ width: '36px', height: '36px' }} />);
+      days.push(<div key={`empty-${i}`} className="w-9 h-9" />);
     }
     
     for (let day = 1; day <= daysInMonth; day++) {
@@ -156,28 +116,15 @@ export function StyledDatePicker({ label, value, onChange, placeholder = 'Set da
           key={day}
           type="button"
           onClick={() => handleSelectDate(day)}
-          style={{
-            width: '36px',
-            height: '36px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: '8px',
-            border: isToday && !isSelected ? `1px solid ${COLORS.accent}` : 'none',
-            backgroundColor: isSelected ? COLORS.accent : 'transparent',
-            color: isSelected ? '#ffffff' : COLORS.textPrimary,
-            fontSize: '14px',
-            fontWeight: isSelected || isToday ? 600 : 400,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            transition: 'background-color 0.1s ease'
-          }}
-          onMouseEnter={(e) => {
-            if (!isSelected) e.currentTarget.style.backgroundColor = COLORS.surfaceHover;
-          }}
-          onMouseLeave={(e) => {
-            if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
-          }}
+          className={cn(
+            "w-9 h-9 flex items-center justify-center rounded-lg text-sm",
+            "transition-colors duration-100",
+            isSelected 
+              ? "bg-blue-600 text-white font-semibold" 
+              : isToday 
+                ? "border border-blue-600 font-semibold text-slate-900" 
+                : "text-slate-900 hover:bg-slate-100"
+          )}
         >
           {day}
         </button>
@@ -188,211 +135,137 @@ export function StyledDatePicker({ label, value, onChange, placeholder = 'Set da
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+    <div className="flex flex-col gap-1.5">
       {/* LABEL */}
-      <span style={{
-        fontSize: '11px',
-        fontWeight: 600,
-        color: COLORS.textLight,
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em'
-      }}>
+      <span 
+        className="text-[11px] font-semibold uppercase tracking-wider"
+        style={{ color: COLORS.textLight }}
+      >
         {label}
       </span>
 
-      {/* TRIGGER */}
-      <div
-        ref={triggerRef}
-        onClick={() => setIsOpen(!isOpen)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '10px 14px',
-          backgroundColor: COLORS.surfaceCard,
-          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
-          borderRadius: '10px',
-          cursor: 'pointer',
-          transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
-        }}
-      >
-        <Calendar size={18} style={{ color: COLORS.textLight, flexShrink: 0 }} />
-        <span 
-          style={{ 
-            flex: 1, 
-            fontSize: '14px', 
-            color: selectedDate ? COLORS.textPrimary : COLORS.textLight 
-          }}
-        >
-          {selectedDate ? formatDisplayDate(selectedDate) : placeholder}
-        </span>
-        {selectedDate && (
-          <X 
-            size={16} 
-            style={{ color: COLORS.textLight, cursor: 'pointer' }} 
-            onClick={handleClear}
-          />
-        )}
-        <ChevronDown 
-          size={16} 
-          style={{ 
-            color: COLORS.textLight,
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s ease'
-          }} 
-        />
-      </div>
-
-      {/* PORTAL CALENDAR */}
-      {isOpen && position && createPortal(
-        <div
-          data-styled-date-picker
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            position: 'fixed',
-            top: position.top,
-            left: position.left,
-            backgroundColor: COLORS.surfaceCard,
-            border: `1px solid ${COLORS.borderDefault}`,
-            borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.25)',
-            zIndex: 500,
-            padding: '16px',
-            width: '300px'
-          }}
-        >
-          {/* MONTH NAVIGATION */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <button
-              type="button"
-              onClick={handlePrevMonth}
-              style={{
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'transparent',
-                border: `1px solid ${COLORS.borderLight}`,
-                borderRadius: '8px',
-                cursor: 'pointer',
-                color: COLORS.textMuted
-              }}
+      {/* RADIX POPOVER */}
+      <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+        <PopoverPrimitive.Trigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-2.5 px-3.5 py-2.5 w-full",
+              "bg-white border rounded-[10px] cursor-pointer",
+              "transition-all duration-150 outline-none text-left",
+              "hover:border-slate-300",
+              "focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/15",
+              "data-[state=open]:border-blue-500 data-[state=open]:ring-[3px] data-[state=open]:ring-blue-500/15"
+            )}
+            style={{ borderColor: COLORS.borderLight }}
+          >
+            <Calendar size={18} className="text-slate-400 flex-shrink-0" />
+            <span 
+              className={cn(
+                "flex-1 text-sm",
+                selectedDate ? "text-slate-900" : "text-slate-400"
+              )}
             >
-              <ChevronLeft size={18} />
-            </button>
-            <span style={{ fontSize: '15px', fontWeight: 600, color: COLORS.textPrimary }}>
-              {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
+              {selectedDate ? formatDisplayDate(selectedDate) : placeholder}
             </span>
-            <button
-              type="button"
-              onClick={handleNextMonth}
-              style={{
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'transparent',
-                border: `1px solid ${COLORS.borderLight}`,
-                borderRadius: '8px',
-                cursor: 'pointer',
-                color: COLORS.textMuted
-              }}
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
+            {selectedDate && (
+              <X 
+                size={16} 
+                className="text-slate-400 hover:text-slate-600 cursor-pointer" 
+                onClick={handleClear}
+              />
+            )}
+            <ChevronDown 
+              size={16} 
+              className="text-slate-400 transition-transform duration-200 data-[state=open]:rotate-180" 
+            />
+          </button>
+        </PopoverPrimitive.Trigger>
 
-          {/* DAY HEADERS */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
-            {DAYS.map(day => (
-              <div
-                key={day}
-                style={{
-                  width: '36px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: COLORS.textMuted
-                }}
+        {/* PORTAL + CONTENT with position="popper" */}
+        <PopoverPrimitive.Portal>
+          <PopoverPrimitive.Content
+            side="bottom"
+            align="start"
+            sideOffset={4}
+            avoidCollisions={true}
+            collisionPadding={{ top: 8, right: 8, bottom: 68, left: 8 }}
+            className={cn(
+              "bg-white border rounded-xl shadow-xl p-4 w-[300px]",
+              "animate-in fade-in-0 zoom-in-95 slide-in-from-top-2",
+              "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+            )}
+            style={{ 
+              borderColor: COLORS.borderDefault,
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.25)',
+              zIndex: 'var(--z-modal-popover, 500)'
+            }}
+          >
+            {/* MONTH NAVIGATION */}
+            <div className="flex items-center justify-between mb-4">
+              <button
+                type="button"
+                onClick={handlePrevMonth}
+                className="w-8 h-8 flex items-center justify-center border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-500"
               >
-                {day}
-              </div>
-            ))}
-          </div>
+                <ChevronLeft size={18} />
+              </button>
+              <span className="text-[15px] font-semibold text-slate-900">
+                {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
+              </span>
+              <button
+                type="button"
+                onClick={handleNextMonth}
+                className="w-8 h-8 flex items-center justify-center border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-500"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
 
-          {/* CALENDAR GRID */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
-            {renderCalendar()}
-          </div>
+            {/* DAY HEADERS */}
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {DAYS.map(day => (
+                <div
+                  key={day}
+                  className="w-9 h-7 flex items-center justify-center text-xs font-semibold text-slate-500"
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
 
-          {/* QUICK ACTIONS */}
-          <div style={{ display: 'flex', gap: '8px', marginTop: '16px', paddingTop: '16px', borderTop: `1px solid ${COLORS.borderLight}` }}>
-            <button
-              type="button"
-              onClick={() => handleQuickDate(0)}
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                backgroundColor: COLORS.surfaceHover,
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: COLORS.textSecondary,
-                cursor: 'pointer',
-                fontFamily: 'inherit'
-              }}
-            >
-              Today
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDate(1)}
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                backgroundColor: COLORS.surfaceHover,
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: COLORS.textSecondary,
-                cursor: 'pointer',
-                fontFamily: 'inherit'
-              }}
-            >
-              Tomorrow
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDate(7)}
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                backgroundColor: COLORS.surfaceHover,
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: COLORS.textSecondary,
-                cursor: 'pointer',
-                fontFamily: 'inherit'
-              }}
-            >
-              Next Week
-            </button>
-          </div>
-        </div>,
-        document.body
-      )}
+            {/* CALENDAR GRID */}
+            <div className="grid grid-cols-7 gap-1">
+              {renderCalendar()}
+            </div>
+
+            {/* QUICK ACTIONS */}
+            <div className="flex gap-2 mt-4 pt-4 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => handleQuickDate(0)}
+                className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-[13px] font-medium text-slate-600 transition-colors"
+              >
+                Today
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickDate(1)}
+                className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-[13px] font-medium text-slate-600 transition-colors"
+              >
+                Tomorrow
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickDate(7)}
+                className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-[13px] font-medium text-slate-600 transition-colors"
+              >
+                Next Week
+              </button>
+            </div>
+          </PopoverPrimitive.Content>
+        </PopoverPrimitive.Portal>
+      </PopoverPrimitive.Root>
     </div>
   );
 }
