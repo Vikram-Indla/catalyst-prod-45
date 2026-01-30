@@ -241,7 +241,7 @@ export function WorkstreamsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-1" data-component="workstreams">
+    <div className="flex flex-col min-h-screen bg-surface-1" data-component="workstreams">
       <header className="bg-surface-0 border-b border-border-subtle">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3">
           <div>
@@ -307,7 +307,7 @@ export function WorkstreamsPage() {
         </div>
       </header>
 
-      <main className="px-4 sm:px-6 py-5 space-y-5 max-w-[1600px] mx-auto">
+      <main className="flex-1 flex flex-col px-4 sm:px-6 py-5 space-y-5 max-w-[1600px] mx-auto w-full">
         {/* KPI Bar */}
         <section className="bg-surface-0 border border-border-subtle rounded-xl p-4">
           <div className="flex flex-wrap gap-3">
@@ -532,7 +532,7 @@ export function WorkstreamsPage() {
 
         {/* List View */}
         {!isLoading && filteredWorkstreams.length > 0 && view === 'list' && (
-          <div className="bg-surface-0 border border-border-subtle rounded-xl overflow-hidden">
+          <div className="flex-1 bg-surface-0 border border-border-subtle rounded-xl overflow-hidden flex flex-col">
             <table className="w-full">
               <thead>
                 <tr className="h-12 bg-surface-2 border-b border-border-default">
