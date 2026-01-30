@@ -666,7 +666,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   width: '12px',
                   height: '12px',
                   borderRadius: '50%',
-                  backgroundColor: workstream.color || healthConfig.color,
+                   backgroundColor: healthConfig.color,
                   marginTop: '6px',
                   flexShrink: 0
                 }}
@@ -881,6 +881,34 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 {workstream.overdueCount || 0} overdue · {workstream.taskCount || 0} tasks
               </div>
             </div>
+
+            {/* Change Status Button (UI only) */}
+            <button
+              style={{
+                padding: '6px 12px',
+                backgroundColor: COLORS.surfaceCard,
+                border: `1px solid ${COLORS.borderLight}`,
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: COLORS.textMuted,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                fontFamily: 'inherit'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = COLORS.surfacePage;
+                e.currentTarget.style.borderColor = COLORS.borderDefault;
+                e.currentTarget.style.color = COLORS.textSecondary;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = COLORS.surfaceCard;
+                e.currentTarget.style.borderColor = COLORS.borderLight;
+                e.currentTarget.style.color = COLORS.textMuted;
+              }}
+            >
+              Change Status
+            </button>
           </div>
 
           {/* SAVE INDICATOR */}
