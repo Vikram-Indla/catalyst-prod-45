@@ -566,19 +566,79 @@ const styles = {
   noteBanner: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
-    padding: '14px 18px',
-    background: '#fffbeb',
+    gap: '12px',
+    padding: '14px 20px',
+    background: '#fef9e7',
     border: '1px solid #fde68a',
     borderRadius: '10px',
-    marginBottom: '24px'
+    marginBottom: '20px'
   },
   noteBannerIcon: {
-    color: '#d97706'
+    color: '#b45309',
+    flexShrink: 0
   },
   noteBannerText: {
+    fontSize: '14px',
+    color: '#b45309',
+    fontWeight: 500
+  },
+  noteInputCard: {
+    background: '#ffffff',
+    border: '1px solid #e2e8f0',
+    borderRadius: '12px',
+    marginBottom: '20px',
+    overflow: 'hidden'
+  },
+  noteInputTop: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '14px',
+    padding: '18px 20px',
+    minHeight: '100px'
+  },
+  noteAvatar: {
+    width: '36px',
+    height: '36px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     fontSize: '13px',
-    color: '#92400e'
+    fontWeight: 600,
+    color: 'white',
+    flexShrink: 0
+  },
+  noteTextarea: {
+    flex: 1,
+    border: 'none',
+    background: 'transparent',
+    fontSize: '15px',
+    color: '#334155',
+    outline: 'none',
+    resize: 'none' as const,
+    minHeight: '60px',
+    fontFamily: 'inherit',
+    lineHeight: 1.5
+  },
+  noteInputFooter: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '12px 20px',
+    borderTop: '1px solid #e2e8f0',
+    background: '#fafafa'
+  },
+  addNoteBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 20px',
+    background: '#2563eb',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: 500,
+    cursor: 'pointer'
   },
   activityFilters: {
     display: 'flex',
@@ -1110,12 +1170,37 @@ export function TaskDetailModalV4({ taskId, open, onOpenChange }: TaskDetailModa
               {/* NOTES TAB */}
               {activeTab === 'notes' && (
                 <div>
+                  {/* RBAC Banner */}
                   <div style={styles.noteBanner}>
                     <Lock size={20} style={styles.noteBannerIcon} />
                     <span style={styles.noteBannerText}>
                       Visible to all · Editable by leads and management
                     </span>
                   </div>
+
+                  {/* Add Note Input Card */}
+                  <div style={styles.noteInputCard}>
+                    <div style={styles.noteInputTop}>
+                      <div style={{ ...styles.noteAvatar, background: '#8b5cf6' }}>
+                        VI
+                      </div>
+                      <textarea
+                        style={styles.noteTextarea}
+                        placeholder="Add a note for the team..."
+                      />
+                    </div>
+                    <div style={styles.noteInputFooter}>
+                      <button style={styles.addNoteBtn}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="22" y1="2" x2="11" y2="13"></line>
+                          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        Add Note
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Empty State */}
                   <div style={styles.emptyState}>
                     <FileText size={52} style={styles.emptyIcon} />
                     <h3 style={styles.emptyTitle}>No notes yet</h3>
