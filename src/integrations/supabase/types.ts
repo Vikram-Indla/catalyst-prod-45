@@ -12568,6 +12568,36 @@ export type Database = {
         }
         Relationships: []
       }
+      planner_labels: {
+        Row: {
+          color: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       planner_saved_filters: {
         Row: {
           created_at: string | null
@@ -12799,6 +12829,73 @@ export type Database = {
           },
           {
             foreignKeyName: "planner_task_dependencies_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planner_task_labels: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          id: string
+          label_id: string | null
+          task_id: string | null
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          label_id?: string | null
+          task_id?: string | null
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          label_id?: string | null
+          task_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planner_task_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "planner_labels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_labels_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_board_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_labels_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_upcoming_deadlines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_labels_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_my_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_labels_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planner_task_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_labels_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "planner_tasks"
