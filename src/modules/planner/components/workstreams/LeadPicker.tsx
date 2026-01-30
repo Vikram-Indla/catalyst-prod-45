@@ -23,7 +23,7 @@ interface TeamMember {
 }
 
 interface LeadPickerProps {
-  value: string | null;  // Current lead ID (profile_id)
+  value: string | null;  // Current lead ID (resource_inventory.id)
   currentLeadInfo?: { id: string; name: string; initials: string } | null;
   onChange: (leadId: string | null, leadData?: TeamMember) => void;
   workstreamColor?: string;
@@ -117,10 +117,10 @@ export const LeadPicker: React.FC<LeadPickerProps> = ({
     email: r.email
   }));
 
-  // Find selected member
+  // Find selected member by resource_inventory.id (NOT profile_id)
   const selectedMember = currentLeadInfo 
     ? { ...currentLeadInfo, avatarColor: workstreamColor || getColorFromName(currentLeadInfo.name) }
-    : teamMembers.find(m => m.profileId === value);
+    : teamMembers.find(m => m.id === value);
 
   // Close on outside click
   useEffect(() => {
@@ -154,8 +154,8 @@ export const LeadPicker: React.FC<LeadPickerProps> = ({
   }, [isOpen]);
 
   const handleSelect = (member: TeamMember | null) => {
-    if (member && !member.profileId) return; // Can't select members without profile_id
-    onChange(member?.profileId || null, member || undefined);
+    // Use resource_inventory.id (NOT profile_id) - FK references resource_inventory
+    onChange(member?.id || null, member || undefined);
     setIsOpen(false);
     setSearchQuery('');
   };
@@ -394,7 +394,7 @@ export const LeadPicker: React.FC<LeadPickerProps> = ({
                 <MemberOption
                   key={member.id}
                   member={member}
-                  isSelected={value === member.profileId}
+                  isSelected={value === member.id}
                   showRole={showRole}
                   onClick={() => handleSelect(member)}
                 />
@@ -452,11 +452,11 @@ const MemberOption: React.FC<{
   onClick: () => void;
 }> = ({ member, isSelected, showRole, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const isDisabled = !member.profileId;
+  // All resources from inventory are selectable (no longer gated by profile_id)
 
   return (
     <div
-      onClick={() => !isDisabled && onClick()}
+      onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
@@ -465,11 +465,10 @@ const MemberOption: React.FC<{
         gap: '12px',
         padding: '10px 12px',
         borderRadius: '8px',
-        cursor: isDisabled ? 'not-allowed' : 'pointer',
-        opacity: isDisabled ? 0.5 : 1,
+        cursor: 'pointer',
         backgroundColor: isSelected 
           ? COLORS.surfaceSelected 
-          : (isHovered && !isDisabled ? COLORS.surfaceHover : 'transparent'),
+          : (isHovered ? COLORS.surfaceHover : 'transparent'),
         transition: 'background-color 0.1s ease',
         marginBottom: '2px'
       }}
