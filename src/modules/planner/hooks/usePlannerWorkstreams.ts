@@ -436,6 +436,8 @@ export function useAddWorkstreamMember() {
 // Assign/clear workstream lead while keeping workstream_members (profile_id) in sync.
 // - leadResourceId: resource_inventory.id (FK planner_workstreams.lead_id)
 // - workstream_members.user_id: profiles.id (resource_inventory.profile_id)
+// NOTE: Leads can be assigned even if they don't have a linked profile - the
+// profile linkage to workstream_members is optional (only done if profile exists)
 export function useSetWorkstreamLead() {
   const queryClient = useQueryClient();
 
@@ -464,37 +466,47 @@ export function useSetWorkstreamLead() {
         return;
       }
 
-      const { data: resource, error: resourceError } = await supabase
-        .from('resource_inventory')
-        .select('id, profile_id')
-        .eq('id', leadResourceId)
-        .single();
-      if (resourceError) throw new Error(resourceError.message);
-
-      const profileId = (resource as any)?.profile_id as string | null;
-      if (!isValidUUID(profileId)) {
-        throw new Error('Selected lead must have a linked profile.');
-      }
-
-      // Upsert lead membership (profile id)
-      const { error: upsertError } = await supabase
-        .from('workstream_members')
-        .upsert(
-          {
-            workstream_id: workstreamId,
-            user_id: profileId,
-            role: 'lead',
-          },
-          { onConflict: 'workstream_id,user_id' }
-        );
-      if (upsertError) throw new Error(upsertError.message);
-
-      // Update workstream lead_id (resource id)
+      // First, update the workstream lead_id (resource_inventory.id) 
+      // This is the primary assignment and always works
       const { error: leadError } = await supabase
         .from('planner_workstreams')
         .update({ lead_id: leadResourceId })
         .eq('id', workstreamId);
       if (leadError) throw new Error(leadError.message);
+
+      // Try to get the resource's profile_id for optional membership sync
+      const { data: resource, error: resourceError } = await supabase
+        .from('resource_inventory')
+        .select('id, profile_id')
+        .eq('id', leadResourceId)
+        .single();
+      
+      if (resourceError) {
+        // Resource lookup failed but lead_id is already set - log but don't fail
+        console.warn('Could not fetch resource for lead membership sync:', resourceError);
+        return;
+      }
+
+      const profileId = (resource as any)?.profile_id as string | null;
+      
+      // Only sync to workstream_members if the resource has a linked profile
+      // This is optional - the lead assignment via lead_id is the primary source of truth
+      if (isValidUUID(profileId)) {
+        const { error: upsertError } = await supabase
+          .from('workstream_members')
+          .upsert(
+            {
+              workstream_id: workstreamId,
+              user_id: profileId,
+              role: 'lead',
+            },
+            { onConflict: 'workstream_id,user_id' }
+          );
+        if (upsertError) {
+          // Log but don't fail - the primary lead assignment is already done
+          console.warn('Could not sync lead to workstream_members:', upsertError);
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
