@@ -507,18 +507,19 @@ const styles = {
   addItemInput: {
     display: 'flex',
     alignItems: 'center',
-    gap: '14px',
-    padding: '14px 16px',
+    gap: '16px',
+    padding: '16px 20px',
     background: '#ffffff',
     border: '2px solid #2563eb',
-    borderRadius: '10px',
+    borderRadius: '12px',
     marginTop: '12px'
   },
   addItemIcon: {
-    width: '26px',
-    height: '26px',
+    width: '32px',
+    height: '32px',
+    minWidth: '32px',
     background: '#2563eb',
-    borderRadius: '6px',
+    borderRadius: '8px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -529,10 +530,14 @@ const styles = {
   addItemInputField: {
     flex: 1,
     border: 'none',
-    background: 'transparent',
-    fontSize: '14px',
-    color: '#0f172a',
-    outline: 'none'
+    background: 'none',
+    fontSize: '15px',
+    color: '#334155',
+    outline: 'none',
+    padding: 0,
+    margin: 0,
+    boxShadow: 'none',
+    WebkitAppearance: 'none' as const
   },
   emptyState: {
     display: 'flex',
