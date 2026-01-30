@@ -9,7 +9,7 @@ import { Plus, Download, FileText } from 'lucide-react';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
 import type { KanbanTask } from './types/kanban';
 import { PlannerSidebar } from './components/PlannerSidebar';
-import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
+import { KanbanBoard } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
 import { PlannerTimeline } from './components/PlannerTimeline';
 import { PlannerCalendar } from './components/PlannerCalendar';
@@ -600,15 +600,7 @@ export function PlannerPage() {
           </main>
         </div>
 
-        {/* Task Detail Drawer (unified for all views) */}
-        <TaskDetailDrawer
-          task={selectedKanbanTask}
-          open={isKanbanDrawerOpen}
-          onOpenChange={(open) => {
-            setIsKanbanDrawerOpen(open);
-            if (!open) setSelectedKanbanTask(null);
-          }}
-        />
+        {/* Task Detail Drawer - DISABLED - awaiting new implementation */}
 
         {/* Create Modal */}
         <PlannerCreateModal

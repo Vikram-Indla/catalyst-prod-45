@@ -1,7 +1,6 @@
 // ============================================================
-// TASK DETAIL MODAL V2 - INDEX
-// Complete rebuild with all interactions wired to Supabase
+// TASK DETAIL DRAWER - INDEX
+// Backend hooks and tables retained - awaiting new modal implementation
 // ============================================================
 
-export { TaskDetailDrawer, TaskDetailModalV2 } from './TaskDetailModalV2';
 export { SavingIndicator, type SaveStatus } from './SavingIndicator';
