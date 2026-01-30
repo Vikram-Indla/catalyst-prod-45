@@ -50,12 +50,13 @@ import {
 // ============================================================================
 
 interface TeamMember {
-  id: string;
+  id: string | null; // profile_id (for member operations) - can be null
   name: string;
   initials: string;
   role: string;
   avatarColor: string;
   resourceId?: string; // resource_inventory.id for leads
+  hasProfile?: boolean; // whether the resource has a linked profile
 }
 
 interface WorkstreamDrawerProps {
@@ -174,12 +175,15 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
       if (error) throw error;
 
       setAllUsers((data || []).map((u: any) => ({
-        id: u.profile_id || u.id, // profile_id for member operations
-        resourceId: u.id, // resource_inventory.id for lead operations
+        // CRITICAL: For workstream_members, we MUST use profile_id (FK to profiles.id)
+        // If profile_id is null, we can still show the user but they can't be added as members
+        id: u.profile_id, // profile_id for member operations (can be null)
+        resourceId: u.id, // resource_inventory.id for lead operations (always valid)
         name: u.name || 'Unknown',
         initials: getInitials(u.name || 'U'),
         role: 'Team Member',
-        avatarColor: getAvatarColor(u.name || 'U')
+        avatarColor: getAvatarColor(u.name || 'U'),
+        hasProfile: !!u.profile_id, // track if they have a linked profile
       })));
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -277,13 +281,16 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   const canDelete = (workstream.taskCount || 0) === 0;
   const memberCount = members.length + (lead ? 1 : 0);
 
-  // Filtered users for pickers
+  // Filtered users for pickers - only show users with valid profile_id for member picker
   const availableUsersForMember = allUsers.filter(
-    u => !members.some(m => m.id === u.id) &&
+    u => u.hasProfile && // MUST have a linked profile to be added as member
+      u.id && // must have profile_id
+      !members.some(m => m.id === u.id) &&
       (!lead || lead.id !== u.resourceId) &&
       u.name.toLowerCase().includes(memberSearchQuery.toLowerCase())
   );
 
+  // Lead picker can show all users (leads don't require profile_id, they use resource_id)
   const filteredUsersForLead = allUsers.filter(
     u => u.name.toLowerCase().includes(leadSearchQuery.toLowerCase())
   );
@@ -307,6 +314,17 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   // ========================================
 
   const handleAddMember = async (user: TeamMember) => {
+    // CRITICAL: workstream_members.user_id requires a valid profile_id (FK to profiles.id)
+    // Resources without a linked profile cannot be added as members
+    if (!user.id || !user.hasProfile) {
+      toast({ 
+        title: 'Cannot add member', 
+        description: `${user.name} does not have a linked profile. Please create an account for this resource first.`,
+        variant: 'destructive'
+      });
+      return;
+    }
+
     if (members.some(m => m.id === user.id)) {
       toast({ title: 'Already a member', description: `${user.name} is already in this workstream` });
       return;
@@ -315,7 +333,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
     try {
       await addMember.mutateAsync({
         workstreamId: workstream.id,
-        userId: user.id, // profile_id
+        userId: user.id, // This is now guaranteed to be a valid profile_id
         role: 'member',
       });
 
@@ -809,7 +827,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
                         {availableUsersForMember.map(user => (
                           <button
-                            key={user.id}
+                            key={user.resourceId || user.id}
                             onClick={() => handleAddMember(user)}
                             style={dropdownItemStyle}
                           >
@@ -818,7 +836,9 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                           </button>
                         ))}
                         {availableUsersForMember.length === 0 && !isLoadingUsers && (
-                          <div style={{ padding: '16px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>No users available</div>
+                          <div style={{ padding: '16px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+                            No users with linked profiles available
+                          </div>
                         )}
                       </div>
                     </div>
