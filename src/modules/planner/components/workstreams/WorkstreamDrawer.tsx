@@ -1137,20 +1137,21 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   alignItems: 'center',
                   gap: '8px',
                   padding: '8px 12px',
-                  backgroundColor: COLORS.surfacePage,
-                  border: `1px solid ${COLORS.borderLight}`,
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  transition: 'all 0.15s ease'
+                  transition: 'all 0.15s ease',
+                  minWidth: '160px',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.surfaceHover;
-                  e.currentTarget.style.borderColor = COLORS.borderDefault;
+                  e.currentTarget.style.backgroundColor = '#f1f5f9';
+                  e.currentTarget.style.borderColor = '#cbd5e1';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.surfacePage;
-                  e.currentTarget.style.borderColor = COLORS.borderLight;
+                  e.currentTarget.style.backgroundColor = '#f8fafc';
+                  e.currentTarget.style.borderColor = '#e2e8f0';
                 }}
               >
                 {lead ? (
@@ -1158,17 +1159,17 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                     {/* Lead Avatar */}
                     <div
                       style={{
-                        width: '24px',
-                        height: '24px',
+                        width: '28px',
+                        height: '28px',
                         borderRadius: '50%',
-                        backgroundColor: lead.avatarColor,
+                        backgroundColor: lead.avatarColor || '#2563eb',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '10px',
+                        fontSize: '11px',
                         fontWeight: 600,
                         color: '#ffffff',
-                        flexShrink: 0
+                        flexShrink: 0,
                       }}
                     >
                       {lead.initials}
@@ -1178,31 +1179,41 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       style={{
                         fontSize: '14px',
                         fontWeight: 500,
-                        color: COLORS.textPrimary
+                        color: '#0f172a',
+                        flex: 1,
+                        textAlign: 'left',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       {lead.name}
                     </span>
                   </>
                 ) : (
-                  <>
-                    <User size={16} style={{ color: COLORS.textLight }} />
-                    <span
-                      style={{
-                        fontSize: '14px',
-                        color: COLORS.textLight
-                      }}
-                    >
-                      Assign lead...
-                    </span>
-                  </>
+                  /* Empty State - Shows "Unassigned" */
+                  <span
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '14px',
+                      color: '#94a3b8',
+                    }}
+                  >
+                    <User size={16} />
+                    Unassigned
+                  </span>
                 )}
+
+                {/* Chevron Arrow */}
                 <ChevronDown
                   size={14}
                   style={{
-                    color: COLORS.textLight,
+                    color: '#94a3b8',
+                    flexShrink: 0,
                     transform: showLeadPicker ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.2s ease'
+                    transition: 'transform 0.2s ease',
                   }}
                 />
               </button>
