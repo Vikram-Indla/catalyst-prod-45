@@ -1,6 +1,6 @@
 /**
- * Create Task Modal V10 - TaskBoardModal Aligned
- * Uses EXACT same molecules/atoms from TaskBoardModal for consistency
+ * Create Task Modal V10 - Enterprise Grade Implementation
+ * Aligned with TaskBoardModal styling, all dropdowns open UPWARD
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -25,6 +25,10 @@ import { ColorDot, Avatar, Label } from '@/components/planner/task-modal/atoms';
 // CreateTaskModal Component
 // ============================================================================
 
+// ============================================================================
+// CreateTaskModal Component
+// ============================================================================
+
 export interface CreateTaskModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -41,7 +45,6 @@ export function CreateTaskModal({
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [showDescription, setShowDescription] = useState(false);
   const [workstreamId, setWorkstreamId] = useState(defaultWorkstream || '');
   const [assigneeId, setAssigneeId] = useState('');
   const [priority, setPriority] = useState<TaskPriority>('medium');
@@ -65,7 +68,6 @@ export function CreateTaskModal({
     if (open) {
       setTitle('');
       setDescription('');
-      setShowDescription(false);
       setWorkstreamId(defaultWorkstream || '');
       setAssigneeId('');
       setPriority('medium');
@@ -121,6 +123,8 @@ export function CreateTaskModal({
       return;
     }
 
+    // Note: status is handled via status_id lookup - the mutation hook looks up
+    // the status_id from planner_statuses table based on slug (defaults to 'backlog')
     const input: CreateTaskInput = {
       title: title.trim(),
       description: description.trim() || undefined,
@@ -168,7 +172,7 @@ export function CreateTaskModal({
               bottom: 0,
               backgroundColor: 'rgba(15, 23, 42, 0.6)',
               backdropFilter: 'blur(4px)',
-              zIndex: 9999,
+              zIndex: 99998,
             }}
             aria-hidden="true"
           />
@@ -182,7 +186,7 @@ export function CreateTaskModal({
             style={{
               position: 'fixed',
               inset: 0,
-              zIndex: 10000,
+              zIndex: 99999,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -193,11 +197,14 @@ export function CreateTaskModal({
               style={{
                 width: '100%',
                 maxWidth: '560px',
+                maxHeight: '90vh',
                 backgroundColor: COLORS.surfaceCard,
                 borderRadius: '16px',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
                 overflow: 'hidden',
                 position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
               }}
               role="dialog"
               aria-modal="true"
@@ -272,7 +279,7 @@ export function CreateTaskModal({
                 <h2 
                   id="create-task-title" 
                   style={{
-                    fontSize: '16px',
+                    fontSize: '18px',
                     fontWeight: 600,
                     color: COLORS.textPrimary,
                     margin: 0,
@@ -315,18 +322,26 @@ export function CreateTaskModal({
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '20px',
-                maxHeight: '70vh',
+                flex: 1,
                 overflowY: 'auto',
               }}>
-                {/* Title Input */}
+                {/* Title Input (Required) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <Label size="sm">Title</Label>
+                  <label style={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: '#64748b',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.03em',
+                  }}>
+                    Title <span style={{ color: '#dc2626' }}>*</span>
+                  </label>
                   <input
                     ref={titleInputRef}
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Task title..."
+                    placeholder="Enter task title..."
                     style={{
                       width: '100%',
                       padding: '12px 14px',
@@ -354,64 +369,48 @@ export function CreateTaskModal({
                   )}
                 </div>
 
-                {/* Description Toggle */}
-                {!showDescription ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowDescription(true)}
+                {/* Description (Always Visible) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: '#64748b',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.03em',
+                  }}>
+                    Description
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Add details, context, or requirements..."
+                    rows={3}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '8px 12px',
-                      fontSize: '13px',
-                      fontWeight: 500,
-                      color: COLORS.accent,
-                      backgroundColor: COLORS.accentLight,
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      width: 'fit-content',
+                      width: '100%',
+                      padding: '12px 14px',
+                      fontSize: '14px',
+                      color: COLORS.textPrimary,
+                      backgroundColor: COLORS.surfaceCard,
+                      border: `1px solid ${COLORS.borderDefault}`,
+                      borderRadius: '10px',
+                      outline: 'none',
+                      resize: 'vertical',
+                      minHeight: '80px',
                       fontFamily: 'inherit',
+                      transition: 'all 0.15s ease',
                     }}
-                  >
-                    <Plus size={14} />
-                    Add Description
-                  </button>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <Label size="sm">Description</Label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Add a description..."
-                      rows={3}
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px',
-                        fontSize: '14px',
-                        color: COLORS.textPrimary,
-                        backgroundColor: COLORS.surfaceCard,
-                        border: `1px solid ${COLORS.borderDefault}`,
-                        borderRadius: '10px',
-                        outline: 'none',
-                        resize: 'none',
-                        fontFamily: 'inherit',
-                        transition: 'all 0.15s ease',
-                      }}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = COLORS.borderFocus;
-                        e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = COLORS.borderDefault;
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                    />
-                  </div>
-                )}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = COLORS.borderFocus;
+                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = COLORS.borderDefault;
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  />
+                </div>
 
-                {/* Two-column row: Workstream + Priority */}
+                {/* ROW 1: Workstream + Priority */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <WorkstreamDropdown
                     value={workstreamId}
@@ -425,7 +424,7 @@ export function CreateTaskModal({
                   />
                 </div>
 
-                {/* Two-column row: Assignee + Start Date */}
+                {/* ROW 2: Assignee + Start Date */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <AssigneeDropdown
                     value={assigneeId}
@@ -436,16 +435,16 @@ export function CreateTaskModal({
                     label="Start Date"
                     value={startDate}
                     onChange={setStartDate}
-                    placeholder="Set date..."
+                    placeholder="Select date..."
                   />
                 </div>
 
-                {/* Due Date - Full width */}
+                {/* ROW 3: Due Date (full width) */}
                 <DateDropdown
                   label="Due Date"
                   value={dueDate}
                   onChange={setDueDate}
-                  placeholder="Set date..."
+                  placeholder="Select date..."
                 />
               </div>
 
@@ -454,84 +453,81 @@ export function CreateTaskModal({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'flex-end',
+                gap: '12px',
                 padding: '16px 24px',
                 borderTop: `1px solid ${COLORS.borderLight}`,
                 backgroundColor: COLORS.surfacePage,
-                position: 'relative',
-                zIndex: 1,
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    disabled={isPending}
-                    style={{
-                      padding: '10px 16px',
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      color: COLORS.textMuted,
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: isPending ? 'not-allowed' : 'pointer',
-                      opacity: isPending ? 0.5 : 1,
-                      transition: 'background-color 0.15s',
-                      fontFamily: 'inherit',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isPending) e.currentTarget.style.backgroundColor = COLORS.surfaceCard;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isPending || !title.trim()}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '10px 18px',
-                      fontSize: '14px',
-                      fontWeight: 600,
-                      color: '#ffffff',
-                      backgroundColor: COLORS.accent,
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: (isPending || !title.trim()) ? 'not-allowed' : 'pointer',
-                      opacity: (isPending || !title.trim()) ? 0.5 : 1,
-                      boxShadow: (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)',
-                      transition: 'all 0.15s',
-                      fontFamily: 'inherit',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isPending && title.trim()) {
-                        e.currentTarget.style.backgroundColor = '#1d4ed8';
-                        e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 99, 235, 0.4)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = COLORS.accent;
-                      e.currentTarget.style.boxShadow = (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)';
-                    }}
-                  >
-                    {isPending ? (
-                      <>
-                        <Loader2 style={{ width: '16px', height: '16px', animation: 'spin 1s linear infinite' }} />
-                        Adding...
-                      </>
-                    ) : (
-                      <>
-                        <Plus style={{ width: '16px', height: '16px' }} />
-                        Add Task
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  disabled={isPending}
+                  style={{
+                    padding: '10px 20px',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    color: COLORS.textSecondary,
+                    backgroundColor: 'transparent',
+                    border: `1px solid ${COLORS.borderDefault}`,
+                    borderRadius: '10px',
+                    cursor: isPending ? 'not-allowed' : 'pointer',
+                    opacity: isPending ? 0.5 : 1,
+                    transition: 'background-color 0.15s',
+                    fontFamily: 'inherit',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isPending) e.currentTarget.style.backgroundColor = COLORS.surfaceCard;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isPending || !title.trim()}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 20px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: '#ffffff',
+                    backgroundColor: COLORS.accent,
+                    border: 'none',
+                    borderRadius: '10px',
+                    cursor: (isPending || !title.trim()) ? 'not-allowed' : 'pointer',
+                    opacity: (isPending || !title.trim()) ? 0.5 : 1,
+                    boxShadow: (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)',
+                    transition: 'all 0.15s',
+                    fontFamily: 'inherit',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isPending && title.trim()) {
+                      e.currentTarget.style.backgroundColor = '#1d4ed8';
+                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 99, 235, 0.4)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = COLORS.accent;
+                    e.currentTarget.style.boxShadow = (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)';
+                  }}
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 style={{ width: '16px', height: '16px', animation: 'spin 1s linear infinite' }} />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus style={{ width: '16px', height: '16px' }} />
+                      Add Task
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </motion.div>
@@ -549,7 +545,102 @@ export function CreateTaskModal({
 }
 
 // ============================================================================
-// WorkstreamDropdown - Matches TaskBoardModal MetaDropdown
+// PriorityDropdown - Opens UPWARD
+// ============================================================================
+
+interface PriorityDropdownProps {
+  value: TaskPriority;
+  onChange: (value: TaskPriority) => void;
+}
+
+function PriorityDropdown({ value, onChange }: PriorityDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const displayValue = value.charAt(0).toUpperCase() + value.slice(1);
+  const currentColor = PRIORITY_COLORS[displayValue] || '#94a3b8';
+
+  return (
+    <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
+      <label style={{
+        fontSize: '12px',
+        fontWeight: 600,
+        color: '#64748b',
+        textTransform: 'uppercase',
+        letterSpacing: '0.03em',
+      }}>
+        Priority
+      </label>
+      
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '10px 14px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+          borderRadius: '10px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+        }}
+      >
+        <ColorDot color={currentColor} size={10} />
+        <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: COLORS.textPrimary }}>
+          {displayValue}
+        </span>
+        <ChevronDown size={16} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+      </div>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '12px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            zIndex: 100001,
+            padding: '6px',
+            maxHeight: '280px',
+            overflowY: 'auto'
+          }}
+        >
+          {PRIORITIES.map((p) => (
+            <DropdownItem
+              key={p}
+              value={p}
+              color={PRIORITY_COLORS[p]}
+              isSelected={displayValue === p}
+              onClick={() => { onChange(p.toLowerCase() as TaskPriority); setIsOpen(false); }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// WorkstreamDropdown - Opens UPWARD
 // ============================================================================
 
 interface WorkstreamDropdownProps {
@@ -580,7 +671,15 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
 
   return (
     <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
-      <Label size="sm">Workstream</Label>
+      <label style={{
+        fontSize: '12px',
+        fontWeight: 600,
+        color: '#64748b',
+        textTransform: 'uppercase',
+        letterSpacing: '0.03em',
+      }}>
+        Workstream <span style={{ color: '#dc2626' }}>*</span>
+      </label>
       
       <div
         onClick={() => setIsOpen(!isOpen)}
@@ -612,14 +711,14 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
         <div
           style={{
             position: 'absolute',
-            top: 'calc(100% + 4px)',
+            bottom: 'calc(100% + 4px)',
             left: 0,
             right: 0,
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-            zIndex: 99999,
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            zIndex: 100001,
             padding: '6px',
             maxHeight: '280px',
             overflowY: 'auto'
@@ -644,94 +743,7 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
 }
 
 // ============================================================================
-// PriorityDropdown - Matches TaskBoardModal MetaDropdown
-// ============================================================================
-
-interface PriorityDropdownProps {
-  value: TaskPriority;
-  onChange: (value: TaskPriority) => void;
-}
-
-function PriorityDropdown({ value, onChange }: PriorityDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const displayValue = value.charAt(0).toUpperCase() + value.slice(1);
-  const currentColor = PRIORITY_COLORS[displayValue] || '#94a3b8';
-
-  return (
-    <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
-      <Label size="sm">Priority</Label>
-      
-      <div
-        onClick={() => setIsOpen(!isOpen)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '10px 14px',
-          backgroundColor: COLORS.surfaceCard,
-          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
-          borderRadius: '10px',
-          cursor: 'pointer',
-          transition: 'all 0.15s ease',
-          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
-        }}
-      >
-        <ColorDot color={currentColor} size={10} />
-        <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: COLORS.textPrimary }}>
-          {displayValue}
-        </span>
-        <ChevronDown size={16} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-      </div>
-
-      {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 4px)',
-            left: 0,
-            right: 0,
-            backgroundColor: COLORS.surfaceCard,
-            border: `1px solid ${COLORS.borderDefault}`,
-            borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-            zIndex: 99999,
-            padding: '6px',
-            maxHeight: '280px',
-            overflowY: 'auto'
-          }}
-        >
-          {PRIORITIES.map((p) => (
-            <DropdownItem
-              key={p}
-              value={p}
-              color={PRIORITY_COLORS[p]}
-              isSelected={displayValue === p}
-              onClick={() => { onChange(p.toLowerCase() as TaskPriority); setIsOpen(false); }}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ============================================================================
-// AssigneeDropdown - Matches TaskBoardModal AssigneeDropdown
+// AssigneeDropdown - Opens UPWARD
 // ============================================================================
 
 interface AssigneeDropdownProps {
@@ -761,7 +773,6 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
   const displayName = selectedUser?.name || 'Select assignee...';
   const displayInitials = selectedUser?.initials || (selectedUser ? selectedUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '?');
   
-  // Generate color from name
   const getColorFromName = (name: string): string => {
     const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b', '#6366f1'];
     let hash = 0;
@@ -780,7 +791,15 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
 
   return (
     <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
-      <Label size="sm">Assignee</Label>
+      <label style={{
+        fontSize: '12px',
+        fontWeight: 600,
+        color: '#64748b',
+        textTransform: 'uppercase',
+        letterSpacing: '0.03em',
+      }}>
+        Assignee
+      </label>
       
       <div
         onClick={() => setIsOpen(!isOpen)}
@@ -810,14 +829,14 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
         <div
           style={{
             position: 'absolute',
-            top: 'calc(100% + 4px)',
+            bottom: 'calc(100% + 4px)',
             left: 0,
             right: 0,
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-            zIndex: 99999,
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            zIndex: 100001,
             padding: '6px',
             maxHeight: '320px',
             overflowY: 'auto'
@@ -886,7 +905,7 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
 }
 
 // ============================================================================
-// DateDropdown - Matches TaskBoardModal DateDropdown
+// DateDropdown - Opens UPWARD above footer
 // ============================================================================
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -899,7 +918,7 @@ interface DateDropdownProps {
   onChange: (value: string) => void;
 }
 
-function DateDropdown({ label, value, placeholder = 'Set date...', onChange }: DateDropdownProps) {
+function DateDropdown({ label, value, placeholder = 'Select date...', onChange }: DateDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [viewDate, setViewDate] = useState(() => {
@@ -991,7 +1010,15 @@ function DateDropdown({ label, value, placeholder = 'Set date...', onChange }: D
 
   return (
     <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
-      <Label size="sm">{label}</Label>
+      <label style={{
+        fontSize: '12px',
+        fontWeight: 600,
+        color: '#64748b',
+        textTransform: 'uppercase',
+        letterSpacing: '0.03em',
+      }}>
+        {label}
+      </label>
 
       <div
         onClick={() => setIsOpen(!isOpen)}
@@ -1125,6 +1152,7 @@ function DropdownItem({ value, color, isSelected, onClick }: { value: string; co
     >
       <ColorDot color={color} size={10} />
       <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+      {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
     </div>
   );
 }
@@ -1179,6 +1207,7 @@ function AssigneeItem({ name, email, initials, color, isSelected, onClick }: {
         <div style={{ fontSize: '14px', color: COLORS.textPrimary, fontWeight: 500 }}>{name}</div>
         {email && <div style={{ fontSize: '12px', color: COLORS.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>}
       </div>
+      {isSelected && <Check size={16} style={{ color: COLORS.accent }} />}
     </div>
   );
 }
