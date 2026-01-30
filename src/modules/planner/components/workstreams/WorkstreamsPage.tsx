@@ -535,7 +535,7 @@ export function WorkstreamsPage() {
             <table className="w-full">
               <thead>
                 <tr className="h-12 bg-surface-2 border-b border-border-default">
-                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 260 }}>Name</th>
+                  <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 260 }}>Workstream name</th>
                   <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 220 }}>Lead</th>
                   <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 160 }}>Health</th>
                   <th className="px-6 text-left text-xs font-medium text-text-muted" style={{ width: 100 }}>Tasks</th>
