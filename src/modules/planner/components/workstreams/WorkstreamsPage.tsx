@@ -162,7 +162,7 @@ export function WorkstreamsPage() {
 
   // Drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [activeWorkstream, setActiveWorkstream] = useState<Workstream | null>(null);
+  const [activeWorkstreamId, setActiveWorkstreamId] = useState<string | null>(null);
 
   // Create modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -311,11 +311,17 @@ export function WorkstreamsPage() {
     };
   }, [workstreams]);
 
-  // Open drawer
+  // Open drawer - store ID, not the stale object
   const openDrawer = useCallback((ws: Workstream) => {
-    setActiveWorkstream(ws);
+    setActiveWorkstreamId(ws.id);
     setIsDrawerOpen(true);
   }, []);
+
+  // Get fresh workstream from query data (auto-updates when query invalidates)
+  const activeWorkstream = useMemo(() => {
+    if (!activeWorkstreamId) return null;
+    return workstreams.find(ws => ws.id === activeWorkstreamId) || null;
+  }, [activeWorkstreamId, workstreams]);
 
   // Quick actions
   const handleQuickArchive = useCallback(
