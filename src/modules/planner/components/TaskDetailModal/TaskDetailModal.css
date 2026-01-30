@@ -156,10 +156,10 @@
 
 /* METADATA BAR */
 .metadata-bar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  padding: 16px 24px;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 20px !important;
+  padding: 18px 28px !important;
   background: var(--task-surface-card);
   border-top: 1px solid var(--task-border-light);
   border-bottom: 1px solid var(--task-border-light);
