@@ -22,16 +22,15 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import {
   usePlannerWorkstreams,
   Workstream,
   useArchiveWorkstream,
   useDeleteWorkstream,
   useArchivedWorkstreamsCount,
-  useUpdateWorkstream,
-  useAddWorkstreamMember,
+  useSetWorkstreamLead,
 } from '../../hooks/usePlannerWorkstreams';
+import { useResourceInventory } from '../../hooks/useResourceInventory';
 import { WorkstreamDrawer } from './WorkstreamDrawer';
 import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
@@ -130,6 +129,7 @@ const formatDate = (dateString: string): string => {
 
 interface TeamMember {
   id: string;
+  profile_id: string | null;
   name: string;
   initials: string;
   role: string;
@@ -172,10 +172,10 @@ export function WorkstreamsPage() {
   const showArchived = searchParams.get('archived') === 'true';
   const { data: workstreams = [], isLoading } = usePlannerWorkstreams(showArchived);
   const { data: archivedCount = 0 } = useArchivedWorkstreamsCount();
+  const { data: resources = [] } = useResourceInventory();
   const archiveWorkstream = useArchiveWorkstream();
   const deleteWorkstream = useDeleteWorkstream();
-  const updateWorkstream = useUpdateWorkstream();
-  const addMember = useAddWorkstreamMember();
+  const setWorkstreamLead = useSetWorkstreamLead();
 
   // Toggle archive view
   const toggleArchiveView = () => {
@@ -187,29 +187,21 @@ export function WorkstreamsPage() {
     setSearchParams(searchParams);
   };
 
-  // Fetch all users for lead picker
-  const fetchAllUsers = useCallback(async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url')
-        .order('full_name');
-
-      if (error) throw error;
-
-      setAllUsers(
-        (data || []).map((u) => ({
-          id: u.id,
-          name: u.full_name || 'Unknown',
-          initials: getInitials(u.full_name || 'U'),
-          role: 'Team Member',
+  // Build lead options from resource inventory (lead_id FK requires resource_inventory.id)
+  useEffect(() => {
+    setAllUsers(
+      (resources || [])
+        .filter(r => !!r.profile_id)
+        .map((r) => ({
+          id: r.id,
+          profile_id: r.profile_id,
+          name: r.name || 'Unknown',
+          initials: r.initials || getInitials(r.name || 'U'),
+          role: r.role || 'Team Member',
           avatarColor: COLORS.accent,
         }))
-      );
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  }, []);
+    );
+  }, [resources]);
 
   // Build leads map from workstreams
   useEffect(() => {
@@ -218,6 +210,7 @@ export function WorkstreamsPage() {
       if (ws.lead?.id && ws.lead?.name) {
         leadsMap[ws.lead.id] = {
           id: ws.lead.id,
+          profile_id: null,
           name: ws.lead.name,
           initials: getInitials(ws.lead.name),
           role: 'Lead',
@@ -227,10 +220,6 @@ export function WorkstreamsPage() {
     });
     setLeads(leadsMap);
   }, [workstreams]);
-
-  useEffect(() => {
-    fetchAllUsers();
-  }, [fetchAllUsers]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -247,20 +236,12 @@ export function WorkstreamsPage() {
   // Assign lead
   const handleAssignLead = async (workstreamId: string, user: TeamMember | null) => {
     try {
-      if (user) {
-        await addMember.mutateAsync({
-          workstreamId,
-          userId: user.id,
-          role: 'lead',
-        });
-        setLeads((prev) => ({ ...prev, [user.id]: user }));
-      } else {
-        // Remove lead by updating directly
-        await updateWorkstream.mutateAsync({
-          id: workstreamId,
-          updates: { lead_id: null },
-        });
-      }
+      await setWorkstreamLead.mutateAsync({
+        workstreamId,
+        leadResourceId: user ? user.id : null,
+      });
+
+      if (user) setLeads((prev) => ({ ...prev, [user.id]: user }));
 
       setActiveDropdownId(null);
       setLeadSearchQuery('');
@@ -573,6 +554,7 @@ export function WorkstreamsPage() {
                 const lead = workstream.lead
                   ? {
                       id: workstream.lead.id,
+                      profile_id: null,
                       name: workstream.lead.name,
                       initials: getInitials(workstream.lead.name),
                       role: 'Lead',
@@ -619,15 +601,9 @@ export function WorkstreamsPage() {
               <WorkstreamCard
                 key={ws.id}
                 workstream={ws}
-                onLeadChange={(workstreamId, leadId) => {
-                  if (leadId) {
-                    addMember.mutate({
-                      workstreamId,
-                      userId: leadId,
-                      role: 'lead',
-                    });
+                  onLeadChange={(workstreamId, leadId) =>
+                    setWorkstreamLead.mutate({ workstreamId, leadResourceId: leadId })
                   }
-                }}
                 onEdit={(id) => {
                   const target = workstreams.find((w) => w.id === id);
                   if (target) {

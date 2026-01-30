@@ -6,6 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { isValidUUID } from '@/lib/utils/assertUuid';
 
 export interface WorkstreamMember {
   id: string;
@@ -102,20 +103,48 @@ export function usePlannerWorkstreams(includeArchived = false) {
       
       const doneStatusId = statuses?.[0]?.id;
 
-      // Fetch lead profiles from resource_inventory or profiles
-      const leadIds = workstreams.map(ws => ws.lead_id).filter(Boolean) as string[];
-      let leadProfilesMap = new Map<string, { name: string; initials: string }>();
-      
-      if (leadIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', leadIds);
-        
-        (profiles || []).forEach(p => {
-          leadProfilesMap.set(p.id, {
-            name: p.full_name || 'Unknown',
-            initials: getInitials(p.full_name || ''),
+      // Lead resolution
+      // - planner_workstreams.lead_id FK -> resource_inventory.id
+      // - workstream_members.user_id FK -> profiles.id (profile/auth id)
+      const leadResourceIds = workstreams.map(ws => ws.lead_id).filter((id): id is string => isValidUUID(id));
+      const leadProfileIdsFromMembers = (members || [])
+        .filter(m => m.role === 'lead')
+        .map(m => m.user_id)
+        .filter((id): id is string => isValidUUID(id));
+
+      const leadByResourceId = new Map<string, { name: string; initials: string; profile_id: string | null }>();
+      const leadByProfileId = new Map<string, { resource_id: string; name: string; initials: string }>();
+
+      if (leadResourceIds.length > 0) {
+        const { data: leadResources, error: leadError } = await supabase
+          .from('resource_inventory')
+          .select('id, profile_id, name')
+          .in('id', leadResourceIds);
+        if (leadError) throw new Error(leadError.message);
+        (leadResources || []).forEach(r => {
+          const name = (r as any).name || 'Unknown';
+          const initials = getInitials((r as any).name || '');
+          leadByResourceId.set((r as any).id, {
+            name,
+            initials,
+            profile_id: (r as any).profile_id ?? null,
+          });
+        });
+      }
+
+      if (leadProfileIdsFromMembers.length > 0) {
+        const { data: leadResourcesByProfile, error: leadProfileError } = await supabase
+          .from('resource_inventory')
+          .select('id, profile_id, name')
+          .in('profile_id', leadProfileIdsFromMembers);
+        if (leadProfileError) throw new Error(leadProfileError.message);
+        (leadResourcesByProfile || []).forEach(r => {
+          const profileId = (r as any).profile_id;
+          if (!isValidUUID(profileId)) return;
+          leadByProfileId.set(profileId, {
+            resource_id: (r as any).id,
+            name: (r as any).name || 'Unknown',
+            initials: getInitials((r as any).name || ''),
           });
         });
       }
@@ -150,13 +179,23 @@ export function usePlannerWorkstreams(includeArchived = false) {
         // Find lead from members or from lead_id
         const leadMember = wsMembers.find(m => m.role === 'lead');
         const leadProfile = leadMember?.profiles as any;
-        
-        // Use lead_id to fetch from profiles if no member has lead role
-        let leadInfo = leadProfile 
-          ? { id: leadProfile.id, name: leadProfile.full_name || 'Unknown', initials: getInitials(leadProfile.full_name || '') }
-          : ws.lead_id && leadProfilesMap.has(ws.lead_id)
-            ? { id: ws.lead_id, ...leadProfilesMap.get(ws.lead_id)! }
-            : undefined;
+
+        // Prefer explicit workstream.lead_id (resource id)
+        let leadInfo: Workstream['lead'] | undefined;
+
+        if (ws.lead_id && leadByResourceId.has(ws.lead_id)) {
+          leadInfo = { id: ws.lead_id, ...leadByResourceId.get(ws.lead_id)! };
+        } else if (leadProfile?.id && leadByProfileId.has(leadProfile.id)) {
+          const mapped = leadByProfileId.get(leadProfile.id)!;
+          leadInfo = { id: mapped.resource_id, name: mapped.name, initials: mapped.initials };
+        } else if (leadProfile) {
+          // Fallback display (no resource mapping found)
+          leadInfo = {
+            id: leadProfile.id,
+            name: leadProfile.full_name || 'Unknown',
+            initials: getInitials(leadProfile.full_name || ''),
+          };
+        }
         
         return {
           id: ws.id,
@@ -229,6 +268,7 @@ export function useCreateWorkstream() {
       name: string;
       description?: string;
       color: string;
+      // Must be resource_inventory.id (FK planner_workstreams.lead_id)
       leadId?: string | null;
       keyPrefix?: string; // 3-5 letter code for task keys
     }) => {
@@ -382,15 +422,6 @@ export function useAddWorkstreamMember() {
         );
 
       if (upsertError) throw new Error(upsertError.message);
-
-      // Keep planner_workstreams.lead_id in sync for filtering & list views
-      if (role === 'lead') {
-        const { error: leadIdError } = await supabase
-          .from('planner_workstreams')
-          .update({ lead_id: userId })
-          .eq('id', workstreamId);
-        if (leadIdError) throw new Error(leadIdError.message);
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
@@ -398,6 +429,78 @@ export function useAddWorkstreamMember() {
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to add member', error.message);
+    },
+  });
+}
+
+// Assign/clear workstream lead while keeping workstream_members (profile_id) in sync.
+// - leadResourceId: resource_inventory.id (FK planner_workstreams.lead_id)
+// - workstream_members.user_id: profiles.id (resource_inventory.profile_id)
+export function useSetWorkstreamLead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workstreamId,
+      leadResourceId,
+    }: {
+      workstreamId: string;
+      leadResourceId: string | null;
+    }) => {
+      // Demote existing lead members
+      const { error: demoteError } = await supabase
+        .from('workstream_members')
+        .update({ role: 'member' })
+        .eq('workstream_id', workstreamId)
+        .eq('role', 'lead');
+      if (demoteError) throw new Error(demoteError.message);
+
+      if (!leadResourceId) {
+        const { error: clearError } = await supabase
+          .from('planner_workstreams')
+          .update({ lead_id: null })
+          .eq('id', workstreamId);
+        if (clearError) throw new Error(clearError.message);
+        return;
+      }
+
+      const { data: resource, error: resourceError } = await supabase
+        .from('resource_inventory')
+        .select('id, profile_id')
+        .eq('id', leadResourceId)
+        .single();
+      if (resourceError) throw new Error(resourceError.message);
+
+      const profileId = (resource as any)?.profile_id as string | null;
+      if (!isValidUUID(profileId)) {
+        throw new Error('Selected lead must have a linked profile.');
+      }
+
+      // Upsert lead membership (profile id)
+      const { error: upsertError } = await supabase
+        .from('workstream_members')
+        .upsert(
+          {
+            workstream_id: workstreamId,
+            user_id: profileId,
+            role: 'lead',
+          },
+          { onConflict: 'workstream_id,user_id' }
+        );
+      if (upsertError) throw new Error(upsertError.message);
+
+      // Update workstream lead_id (resource id)
+      const { error: leadError } = await supabase
+        .from('planner_workstreams')
+        .update({ lead_id: leadResourceId })
+        .eq('id', workstreamId);
+      if (leadError) throw new Error(leadError.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+    },
+    onError: (error: Error) => {
+      catalystToast.error('Failed to update lead', error.message);
     },
   });
 }
@@ -415,13 +518,32 @@ export function useRemoveWorkstreamMember() {
 
       if (deleteError) throw new Error(deleteError.message);
 
-      // If the removed member was the current lead, clear the lead_id
-      const { error: clearLeadError } = await supabase
+      // If the removed member (profile id) is the current lead, clear planner_workstreams.lead_id (resource id)
+      const { data: ws, error: wsError } = await supabase
         .from('planner_workstreams')
-        .update({ lead_id: null })
+        .select('lead_id')
         .eq('id', workstreamId)
-        .eq('lead_id', userId);
-      if (clearLeadError) throw new Error(clearLeadError.message);
+        .single();
+      if (wsError) throw new Error(wsError.message);
+
+      const leadResourceId = (ws as any)?.lead_id as string | null;
+      if (!isValidUUID(leadResourceId)) return;
+
+      const { data: leadResource, error: leadResourceError } = await supabase
+        .from('resource_inventory')
+        .select('profile_id')
+        .eq('id', leadResourceId)
+        .maybeSingle();
+      if (leadResourceError) throw new Error(leadResourceError.message);
+
+      const leadProfileId = (leadResource as any)?.profile_id as string | null;
+      if (leadProfileId === userId) {
+        const { error: clearLeadError } = await supabase
+          .from('planner_workstreams')
+          .update({ lead_id: null })
+          .eq('id', workstreamId);
+        if (clearLeadError) throw new Error(clearLeadError.message);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
