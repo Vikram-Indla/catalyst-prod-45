@@ -1,5 +1,5 @@
 // ============================================================================
-// TASK DETAIL MODAL V10 — FINAL ASSEMBLY WITH AUTO-SAVE
+// TASK BOARD MODAL V10 — FINAL ASSEMBLY WITH AUTO-SAVE
 // ============================================================================
 
 import React, { useState, useEffect } from 'react';
@@ -35,7 +35,7 @@ import {
 // PROPS INTERFACE
 // ============================================================================
 
-interface TaskDetailModalProps {
+interface TaskBoardModalProps {
   task: Task;
   isOpen: boolean;
   onClose: () => void;
@@ -46,7 +46,7 @@ interface TaskDetailModalProps {
 // COMPONENT
 // ============================================================================
 
-export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
+export const TaskBoardModal: React.FC<TaskBoardModalProps> = ({
   task,
   isOpen,
   onClose,
@@ -379,4 +379,4 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   );
 };
 
-export default TaskDetailModal;
+export default TaskBoardModal;

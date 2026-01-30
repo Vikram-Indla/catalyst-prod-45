@@ -9,7 +9,7 @@ import { Kanban } from 'lucide-react';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
-import { TaskDetailModal, useTaskModal } from '@/components/planner/task-modal';
+import { TaskBoardModal, useTaskBoardModal } from '@/components/planner/task-modal';
 import type { Task } from '@/components/planner/task-modal/types';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
@@ -93,7 +93,7 @@ export function PlannerBoardsPage({
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   // V10 Task Detail Modal state
-  const { isOpen: isModalOpen, selectedTask, openModal, closeModal } = useTaskModal();
+  const { isOpen: isModalOpen, selectedTask, openModal, closeModal } = useTaskBoardModal();
   const [selectedBoardTask, setSelectedBoardTask] = useState<BoardTask | null>(null);
   // Data hooks
   const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
@@ -224,9 +224,9 @@ export function PlannerBoardsPage({
         defaultStatusId={createStatusId}
       />
 
-      {/* V10 Task Detail Modal */}
+      {/* V10 Task Board Modal */}
       {selectedTask && (
-        <TaskDetailModal
+        <TaskBoardModal
           task={selectedTask}
           isOpen={isModalOpen}
           onClose={handleCloseModal}

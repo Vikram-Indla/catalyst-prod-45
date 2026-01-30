@@ -1,13 +1,13 @@
 // ============================================================================
-// TASK DETAIL MODAL V10 — Main Export
+// TASK BOARD MODAL V10 — Main Export
 // ============================================================================
 
 // Main component
-export { TaskDetailModal } from './TaskDetailModal';
+export { TaskBoardModal } from './TaskDetailModal';
 export { default } from './TaskDetailModal';
 
 // Hook
-export { useTaskModal } from './hooks/useTaskModal';
+export { useTaskBoardModal } from './hooks/useTaskModal';
 
 // Types
 export * from './types';

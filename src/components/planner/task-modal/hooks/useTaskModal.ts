@@ -1,18 +1,18 @@
 // ============================================================================
-// HOOK: useTaskModal — Modal state management
+// HOOK: useTaskBoardModal — Modal state management
 // ============================================================================
 
 import { useState, useCallback } from 'react';
 import { Task } from '../types';
 
-interface UseTaskModalReturn {
+interface UseTaskBoardModalReturn {
   isOpen: boolean;
   selectedTask: Task | null;
   openModal: (task: Task) => void;
   closeModal: () => void;
 }
 
-export const useTaskModal = (): UseTaskModalReturn => {
+export const useTaskBoardModal = (): UseTaskBoardModalReturn => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
@@ -35,4 +35,4 @@ export const useTaskModal = (): UseTaskModalReturn => {
   };
 };
 
-export default useTaskModal;
+export default useTaskBoardModal;
