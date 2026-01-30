@@ -3,8 +3,8 @@
  * Matches QA spec: gray priority text, outline status badges, gray ID
  */
 
-import { useState, useRef, useEffect, useMemo } from 'react';
-import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2, Check, Plus } from 'lucide-react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2, Check, Plus, Tag, Search, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
@@ -26,10 +26,13 @@ import { PRIORITY_CONFIG } from '../../types';
 import type { TaskListTask } from '../../hooks/useTaskList';
 import type { TaskPriority } from '../../types';
 import type { Label } from '@/components/planner/task-modal/types/labels';
-import { LabelsCell } from '@/components/planner/shared/LabelsCell';
+import { LabelBadge } from '@/components/planner/task-modal/molecules/LabelBadge';
+import { useLabels } from '@/components/planner/task-modal/hooks/useLabels';
 import { format, differenceInDays } from 'date-fns';
 import { toast } from 'sonner';
 import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Enterprise Clean spec colors - inline styles to ensure specificity
 const STATUS_CONFIG: Record<string, { 
@@ -392,6 +395,171 @@ function WorkstreamDropdown({ task, workstreamColors, width, onUpdate }: Workstr
   );
 }
 
+// ============================================================
+// LABELS DROPDOWN - Inline editable labels with checkmarks
+// ============================================================
+interface LabelsDropdownProps {
+  task: TaskListTask;
+  taskLabels: Label[];
+  width: number | string;
+}
+
+function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [localLabels, setLocalLabels] = useState<Label[]>(taskLabels);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const queryClient = useQueryClient();
+  const { labels: allLabels, isLoading: labelsLoading } = useLabels();
+
+  // Sync with props
+  useEffect(() => {
+    setLocalLabels(taskLabels);
+  }, [taskLabels]);
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [open]);
+
+  const filteredLabels = useMemo(() => {
+    if (!search.trim()) return allLabels;
+    const lower = search.toLowerCase();
+    return allLabels.filter(l => l.name?.toLowerCase().includes(lower));
+  }, [allLabels, search]);
+
+  const isLabelAssigned = useCallback((labelId: string) => {
+    return localLabels.some(l => l.id === labelId);
+  }, [localLabels]);
+
+  const toggleLabel = async (label: Label) => {
+    setIsUpdating(true);
+    const isAssigned = isLabelAssigned(label.id);
+
+    try {
+      if (isAssigned) {
+        // Remove label
+        const { error } = await supabase
+          .from('planner_task_labels')
+          .delete()
+          .eq('task_id', task.id)
+          .eq('label_id', label.id);
+        
+        if (error) throw error;
+        setLocalLabels(prev => prev.filter(l => l.id !== label.id));
+      } else {
+        // Add label
+        const { data: { user } } = await supabase.auth.getUser();
+        const { error } = await supabase
+          .from('planner_task_labels')
+          .insert({
+            task_id: task.id,
+            label_id: label.id,
+            assigned_by: user?.id
+          });
+        
+        if (error && error.code !== '23505') throw error;
+        setLocalLabels(prev => [...prev, label]);
+      }
+      
+      // Invalidate cache so table updates
+      queryClient.invalidateQueries({ queryKey: ['task-labels-map'] });
+    } catch (error) {
+      console.error('Error toggling label:', error);
+      toast.error('Failed to update label');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return (
+    <td style={{ width }} onClick={(e) => e.stopPropagation()}>
+      <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(''); }}>
+        <PopoverTrigger asChild>
+          <button className="w-full flex items-center gap-1 min-h-[32px] px-1 py-1 rounded-md cursor-pointer bg-transparent border-0 hover:bg-muted/50 transition-colors text-left">
+            {localLabels.length > 0 ? (
+              <div className="flex flex-wrap gap-1 items-center">
+                {localLabels.slice(0, 2).map(label => (
+                  <LabelBadge key={label.id} label={label} size="sm" />
+                ))}
+                {localLabels.length > 2 && (
+                  <span
+                    className="text-[11px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
+                  >
+                    +{localLabels.length - 2}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span className="text-muted-foreground text-sm">—</span>
+            )}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent 
+          className="w-64 p-0 z-[500] bg-popover border border-border shadow-lg" 
+          align="start"
+        >
+          {/* Search input */}
+          <div className="p-2 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search labels..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-8 pr-2.5 py-1.5 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          </div>
+          
+          {/* Labels list */}
+          <div className="max-h-[280px] overflow-y-auto p-1.5">
+            {labelsLoading ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : filteredLabels.length === 0 ? (
+              <div className="text-center py-4 text-sm text-muted-foreground">
+                {search ? 'No labels found' : 'No labels available'}
+              </div>
+            ) : (
+              filteredLabels.map((label) => {
+                const isAssigned = isLabelAssigned(label.id);
+                return (
+                  <button
+                    key={label.id}
+                    onClick={() => toggleLabel(label)}
+                    disabled={isUpdating}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                      isAssigned ? "bg-muted font-medium" : "hover:bg-muted/50",
+                      isUpdating && "opacity-50 cursor-not-allowed"
+                    )}
+                  >
+                    {/* Color dot */}
+                    <span 
+                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: label.color }}
+                    />
+                    {/* Label name */}
+                    <span className="flex-1 text-left truncate">{label.name}</span>
+                    {/* Checkmark if assigned */}
+                    {isAssigned && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </td>
+  );
+}
+
 interface TaskListRowV3Props {
   task: TaskListTask;
   index: number;
@@ -618,11 +786,13 @@ export function TaskListRowV3({
         />
       )}
 
-      {/* Labels - Display assigned labels */}
+      {/* Labels - Inline editable dropdown */}
       {visibleColumns.has('labels') && (
-        <td style={{ width: getWidth('labels') }}>
-          <LabelsCell labels={labels} maxVisible={2} />
-        </td>
+        <LabelsDropdown
+          task={task}
+          taskLabels={labels}
+          width={getWidth('labels')}
+        />
       )}
 
       {/* Assignee - Avatar + name with searchable dropdown (K1-K5) */}
