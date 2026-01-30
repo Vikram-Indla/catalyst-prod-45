@@ -145,8 +145,6 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
           currentLeadInfo={workstream.lead}
           onChange={(leadId) => onLeadChange(workstream.id, leadId)}
           workstreamColor={workstream.color}
-          size="sm"
-          showRole={false}
           placeholder="Assign lead..."
         />
       </div>
