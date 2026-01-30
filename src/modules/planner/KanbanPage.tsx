@@ -75,11 +75,10 @@ export function KanbanPage() {
         onClose={handleDrawerClose}
       />
 
-      {/* Create Task Modal */}
+      {/* Create Task Modal - V10 */}
       <CreateTaskModal
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
-        defaultStatusId={createStatusId}
       />
     </div>
   );

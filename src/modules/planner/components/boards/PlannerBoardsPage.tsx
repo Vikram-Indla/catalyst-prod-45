@@ -217,11 +217,10 @@ export function PlannerBoardsPage({
         />
       </div>
 
-      {/* Create Task Modal */}
+      {/* Create Task Modal - V10 */}
       <CreateTaskModal
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
-        defaultStatusId={createStatusId}
       />
 
       {/* V10 Task Board Modal */}

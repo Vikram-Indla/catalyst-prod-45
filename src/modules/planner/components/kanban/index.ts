@@ -7,7 +7,8 @@ export { KanbanColumn } from './KanbanColumn';
 export { KanbanCard } from './KanbanCard';
 export { KanbanFilters } from './KanbanFilters';
 export { AddColumnButton } from './AddColumnButton';
-export { CreateTaskModal } from './CreateTaskModal';
+// V10 Create Task Modal - re-exported from CreateTaskModal folder (replaces legacy)
+export { CreateTaskModal } from '../CreateTaskModal';
 // Export the new detailed TaskDetailDrawer from TaskDetailDrawer folder
 export { TaskDetailDrawer } from '../TaskDetailDrawer';
 export { PriorityBadge } from './PriorityBadge';
