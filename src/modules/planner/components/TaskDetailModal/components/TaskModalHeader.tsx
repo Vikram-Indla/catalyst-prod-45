@@ -3,7 +3,7 @@
  * Task ID, workstream link, title, and action buttons
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { X, Link2, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -14,34 +14,13 @@ interface TaskModalHeaderProps {
     workstream?: { name: string; key_prefix?: string } | null;
   };
   onClose: () => void;
-  onTitleChange: (value: string) => void;
 }
 
-export function TaskModalHeader({ task, onClose, onTitleChange }: TaskModalHeaderProps) {
-  const [title, setTitle] = useState(task.title);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Sync with prop changes
-  useEffect(() => {
-    setTitle(task.title);
-  }, [task.title]);
-
+export function TaskModalHeader({ task, onClose }: TaskModalHeaderProps) {
   const handleCopyLink = () => {
     const url = `${window.location.origin}${window.location.pathname}?task=${task.task_key}`;
     navigator.clipboard.writeText(url);
     toast.success('Link copied to clipboard');
-  };
-
-  const handleTitleBlur = () => {
-    if (title.trim() !== task.title) {
-      onTitleChange(title.trim());
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      inputRef.current?.blur();
-    }
   };
 
   return (
@@ -64,16 +43,9 @@ export function TaskModalHeader({ task, onClose, onTitleChange }: TaskModalHeade
           </button>
         </div>
       </div>
-      <input
-        ref={inputRef}
-        type="text"
-        className="task-title-input"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        onBlur={handleTitleBlur}
-        onKeyDown={handleKeyDown}
-        placeholder="Task title..."
-      />
+      <h1 className="task-title" style={{ fontSize: '24px', fontWeight: 600, color: '#0f172a', margin: 0 }}>
+        {task.title}
+      </h1>
     </div>
   );
 }

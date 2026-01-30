@@ -165,7 +165,6 @@ export function TaskDetailModal({ taskId, open, onOpenChange }: TaskDetailModalP
             <TaskModalHeader 
               task={task} 
               onClose={handleClose}
-              onTitleChange={(value) => handleFieldChange('title', value, true)}
             />
             <TaskMetadataBar 
               task={task} 
