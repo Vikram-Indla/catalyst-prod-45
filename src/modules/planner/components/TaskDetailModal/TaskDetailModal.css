@@ -45,6 +45,7 @@
   flex-direction: column;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+  border-left: 4px solid var(--task-accent);
 }
 
 .task-modal-loading,
@@ -72,8 +73,7 @@
 
 /* HEADER */
 .task-modal-header {
-  padding: 24px 28px 20px;
-  border-bottom: 1px solid var(--task-border-light);
+  padding: 20px 24px 16px;
   background: var(--task-surface-card);
 }
 
@@ -81,7 +81,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .task-meta-info {
@@ -139,13 +139,13 @@
 
 .task-title-input {
   width: 100%;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
   color: var(--task-text-primary);
   line-height: 1.3;
   border: none;
   background: transparent;
-  padding: 0;
+  padding: 4px 0;
   outline: none;
   font-family: inherit;
 }
@@ -158,9 +158,10 @@
 .metadata-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  padding: 18px 28px;
-  background: var(--task-surface-page);
+  gap: 16px;
+  padding: 16px 24px;
+  background: var(--task-surface-card);
+  border-top: 1px solid var(--task-border-light);
   border-bottom: 1px solid var(--task-border-light);
 }
 
@@ -182,11 +183,11 @@
 .meta-dropdown {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 8px 12px;
   background: var(--task-surface-card);
   border: 1px solid var(--task-border-light);
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -305,14 +306,14 @@
 /* TABS */
 .tabs-container {
   display: flex;
-  padding: 0 28px;
+  padding: 0 24px;
   border-bottom: 1px solid var(--task-border-light);
   background: var(--task-surface-card);
   overflow-x: auto;
 }
 
 .tab-btn {
-  padding: 16px 18px;
+  padding: 14px 16px;
   font-size: 14px;
   font-weight: 500;
   color: var(--task-text-muted);
@@ -366,7 +367,7 @@
 .task-modal-content {
   flex: 1;
   overflow-y: auto;
-  padding: 28px;
+  padding: 24px;
 }
 
 /* DESCRIPTION TAB */
