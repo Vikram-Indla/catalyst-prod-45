@@ -235,10 +235,10 @@ export function TaskDetailModalV2({ taskId: propTaskId, task: propTask, open, on
 
   const tabs = [
     { id: 'description' as const, label: 'Description', count: null },
-    { id: 'notes' as const, label: 'Notes', count: leadNotesCount || null },
-    { id: 'checklist' as const, label: 'Checklist', count: checklistCount || null },
-    { id: 'links' as const, label: 'Links', count: linksCount || null },
-    { id: 'files' as const, label: 'Files', count: filesCount || null },
+    { id: 'notes' as const, label: 'Notes', count: null },
+    { id: 'checklist' as const, label: 'Checklist', count: null },
+    { id: 'links' as const, label: 'Links', count: null },
+    { id: 'files' as const, label: 'Files', count: null },
     { id: 'activity' as const, label: 'Activity', count: activityCount || null },
   ];
 
@@ -654,34 +654,37 @@ function DescriptionTab({ task, onFieldChange, onTextChange }: { task: any; onFi
   }, [task.description]);
 
   return (
-    <div className="space-y-6">
-      {/* Description Textarea */}
-      <textarea
-        className="description-textarea"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        onBlur={() => description !== task.description && onTextChange('description', description)}
-        placeholder="What is this task about? Add context, requirements, or notes..."
-      />
+    <div className="description-tab-content">
+      {/* Description Textarea - Blue bordered, no label above */}
+      <div className="description-wrapper">
+        <textarea
+          className="description-textarea"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          onBlur={() => description !== task.description && onTextChange('description', description)}
+          placeholder="Add a description..."
+          rows={6}
+        />
+      </div>
 
-      {/* Fields Row */}
+      {/* Fields Row - Matches reference: PRIORITY, DUE DATE, START DATE */}
       <div className="fields-row">
         <FieldGroup label="PRIORITY">
           <InlinePriorityDropdown value={task.priority || 'medium'} onChange={(p) => onFieldChange('priority', p)} />
         </FieldGroup>
         <FieldGroup label="DUE DATE">
-          <InlineDatePicker value={task.due_date} onChange={(d) => onFieldChange('due_date', d)} placeholder="Set due date" />
+          <InlineDatePicker value={task.due_date} onChange={(d) => onFieldChange('due_date', d)} placeholder="Set due date..." />
         </FieldGroup>
         <FieldGroup label="START DATE">
-          <InlineDatePicker value={task.start_date} onChange={(d) => onFieldChange('start_date', d)} placeholder="Set start date" />
+          <InlineDatePicker value={task.start_date} onChange={(d) => onFieldChange('start_date', d)} placeholder="Set start date..." />
         </FieldGroup>
       </div>
 
-      {/* Labels */}
+      {/* Add Labels Button - Dashed border style */}
       <div className="labels-section">
         <button className="add-labels-btn">
-          <Tag className="w-[18px] h-[18px]" />
-          Add labels
+          <Tag className="w-4 h-4" />
+          <span>Add labels</span>
         </button>
       </div>
     </div>
@@ -766,46 +769,43 @@ function NotesTab({ taskId, workstreamId }: { taskId: string; workstreamId: stri
   if (isLoading) return <Loader2 className="w-5 h-5 animate-spin mx-auto" />;
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="notes-header">
-        <span>🔒</span>
-        <span>Visible to all · Editable by leads and management</span>
-      </div>
-
-      {/* Add Note */}
-      {canManage && (
-        <div className="notes-composer">
-          <div className="avatar" style={{ background: '#8b5cf6' }}>{getInitials(user?.user_metadata?.full_name)}</div>
-          <div className="notes-input-wrapper">
-            <textarea
-              value={newNote}
-              onChange={(e) => setNewNote(e.target.value)}
-              placeholder="Add a note for the team..."
-              rows={3}
-            />
-            <div className="notes-actions">
-              <Button size="sm" onClick={handleAddNote} disabled={!newNote.trim() || addMutation.isPending}>
-                <Send className="w-3.5 h-3.5 mr-1" />
-                Add Note
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Notes List or Empty */}
+    <div className="notes-tab-content">
+      {/* Notes List */}
       {notes && notes.length > 0 ? (
-        <div className="space-y-3">
+        <div className="notes-list">
           {notes.map((note) => (
             <NoteItem key={note.id} note={note} canManage={canManage} taskId={taskId} />
           ))}
         </div>
       ) : (
-        <div className="empty-state">
-          <FileText className="w-10 h-10 mx-auto mb-3 text-[var(--task-text-muted)]" />
-          <h3>No notes yet</h3>
-          <p>Add the first note for your team</p>
+        <div className="notes-empty">
+          <FileText className="w-12 h-12 text-muted-foreground/50 mb-3" />
+          <p className="text-sm text-muted-foreground">No notes yet</p>
+        </div>
+      )}
+
+      {/* Add Note Composer */}
+      {canManage && (
+        <div className="notes-composer-simple">
+          <textarea
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                handleAddNote();
+              }
+            }}
+            placeholder="Add a note..."
+            rows={2}
+            className="notes-input"
+          />
+          <div className="notes-composer-footer">
+            <span className="notes-hint">Press ⌘+Enter to save</span>
+            <Button size="sm" onClick={handleAddNote} disabled={!newNote.trim() || addMutation.isPending}>
+              Add Note
+            </Button>
+          </div>
         </div>
       )}
     </div>
