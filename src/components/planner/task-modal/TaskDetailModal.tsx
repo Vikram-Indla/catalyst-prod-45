@@ -1,16 +1,5 @@
 // ============================================================================
-// TASK DETAIL MODAL V10 — FINAL ASSEMBLY
-// ============================================================================
-//
-// This is the complete, production-ready Task Detail Modal.
-// It assembles all atoms, molecules, and organisms into the final component.
-//
-// SPECIFICATIONS:
-// - Max Width: 820px
-// - Max Height: 92vh
-// - Border Radius: 16px
-// - All styles from previous prompts
-//
+// TASK DETAIL MODAL V10 — FINAL ASSEMBLY WITH AUTO-SAVE
 // ============================================================================
 
 import React, { useState, useEffect } from 'react';
@@ -27,6 +16,7 @@ import {
   FilesTab,
   ActivityTab
 } from './organisms';
+import { useAutoSave } from './hooks/useAutoSave';
 import { 
   Task, 
   TabId, 
@@ -65,6 +55,19 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   // ==================== STATE ====================
   const [activeTab, setActiveTab] = useState<TabId>('description');
   const [editedTask, setEditedTask] = useState<Task>(task);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  // ==================== AUTO-SAVE HOOK ====================
+  const { saveChanges, flush } = useAutoSave({
+    debounceMs: 800,
+    onSaveStart: () => setIsSaving(true),
+    onSaveComplete: () => {
+      setIsSaving(false);
+      setLastSaved(new Date());
+    },
+    onSaveError: () => setIsSaving(false)
+  });
 
   // ==================== EFFECTS ====================
   
@@ -72,16 +75,17 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   useEffect(() => {
     setEditedTask(task);
     setActiveTab('description');
+    setLastSaved(null);
   }, [task]);
 
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  }, []);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -93,12 +97,34 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     };
   }, [isOpen]);
 
+  // Flush pending saves on unmount
+  useEffect(() => {
+    return () => {
+      flush();
+    };
+  }, [flush]);
+
   // ==================== HANDLERS ====================
 
+  const handleClose = () => {
+    flush();
+    onClose();
+  };
+
   const handleFieldChange = <K extends keyof Task>(field: K, value: Task[K]) => {
-    const updated = { ...editedTask, [field]: value };
+    const updated = { ...editedTask, [field]: value, updatedAt: new Date().toISOString() };
     setEditedTask(updated);
+    
+    // Trigger auto-save
+    saveChanges(task.id, { [field]: value });
+    
+    // Also call parent onSave for optimistic updates
     if (onSave) onSave(updated);
+  };
+
+  // Title change handler
+  const handleTitleChange = (title: string) => {
+    handleFieldChange('title', title);
   };
 
   // Status/Priority/Workstream/Assignee
@@ -183,7 +209,6 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   // Notes
   const handleNoteAdd = (content: string) => {
     console.log('Add note:', content);
-    // Implement note storage
   };
 
   // Comments
@@ -204,14 +229,13 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
   const tabs: Tab[] = [
     { id: 'description', label: 'Description' },
-    { id: 'notes', label: 'Notes' },  // NOT "Lead Notes"
+    { id: 'notes', label: 'Notes' },
     { id: 'checklist', label: 'Checklist' },
     { id: 'links', label: 'Links' },
     { id: 'files', label: 'Files' },
     { id: 'activity', label: 'Activity', badge: (editedTask.comments?.length || 0) + (editedTask.history?.length || 1) }
   ];
 
-  // History (default if none provided)
   const history = editedTask.history || [
     { id: '1', action: 'Task created', author: 'System', timestamp: editedTask.createdAt || 'Unknown' }
   ];
@@ -278,7 +302,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     <>
       {/* OVERLAY */}
       <div
-        onClick={onClose}
+        onClick={handleClose}
         style={{
           position: 'fixed',
           top: 0,
@@ -312,7 +336,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           {/* HEADER */}
           <ModalHeader
             task={editedTask}
-            onClose={onClose}
+            onClose={handleClose}
+            onTitleChange={handleTitleChange}
           />
 
           {/* METADATA BAR */}
@@ -342,8 +367,12 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             {renderTabContent()}
           </div>
 
-          {/* FOOTER */}
-          <ModalFooter task={editedTask} />
+          {/* FOOTER WITH SAVE INDICATOR */}
+          <ModalFooter 
+            task={editedTask} 
+            isSaving={isSaving}
+            lastSaved={lastSaved}
+          />
         </div>
       </div>
     </>

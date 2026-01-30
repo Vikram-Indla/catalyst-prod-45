@@ -1,9 +1,9 @@
 // ============================================================================
-// ORGANISM: ModalHeader — Task modal header with actions (FIX 6: Kebab menu)
+// ORGANISM: ModalHeader — With editable title + pencil button
 // ============================================================================
 
-import React, { useState } from 'react';
-import { X, Link2, MoreHorizontal, Edit2, Trash2, Copy, Archive, Star } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { X, Link2, MoreHorizontal, Edit2, Trash2, Copy, Archive, Star, Check } from 'lucide-react';
 import { COLORS } from '../colors';
 import { IconButton } from '../atoms';
 import { Task } from '../types';
@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 interface ModalHeaderProps {
   task: Task;
   onClose: () => void;
+  onTitleChange?: (title: string) => void;
   onCopyLink?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -24,6 +25,7 @@ interface ModalHeaderProps {
 export const ModalHeader: React.FC<ModalHeaderProps> = ({
   task,
   onClose,
+  onTitleChange,
   onCopyLink,
   onEdit,
   onDelete,
@@ -33,14 +35,51 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
 }) => {
   const [showKebabMenu, setShowKebabMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleValue, setTitleValue] = useState(task.title);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  
   const { duplicateTask, archiveTask, deleteTask, isLoading } = useTaskActions();
   const { toast } = useToast();
 
+  // Update title value when task changes
+  useEffect(() => {
+    setTitleValue(task.title);
+  }, [task.title]);
+
+  // Focus input when entering edit mode
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditingTitle]);
+
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/task/${task.id}`;
+    const url = `${window.location.origin}/planner/task/${task.id}`;
     navigator.clipboard.writeText(url);
     toast({ title: 'Link copied', description: 'Task link copied to clipboard' });
     if (onCopyLink) onCopyLink();
+  };
+
+  const handleTitleSubmit = () => {
+    const trimmedTitle = titleValue.trim();
+    if (trimmedTitle && trimmedTitle !== task.title) {
+      if (onTitleChange) onTitleChange(trimmedTitle);
+    } else {
+      setTitleValue(task.title); // Reset if empty
+    }
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleTitleSubmit();
+    } else if (e.key === 'Escape') {
+      setTitleValue(task.title);
+      setIsEditingTitle(false);
+    }
   };
 
   const handleDuplicate = async () => {
@@ -90,7 +129,6 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
       >
         {/* TASK META INFO */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* TASK ID — Monospace */}
           <span
             style={{
               fontFamily: 'ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace',
@@ -101,11 +139,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
           >
             {task.taskId}
           </span>
-          
-          {/* SEPARATOR */}
           <span style={{ color: COLORS.textLight }}>·</span>
-          
-          {/* WORKSTREAM LINK */}
           <span
             style={{
               fontSize: '14px',
@@ -122,22 +156,17 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
 
         {/* ACTION BUTTONS */}
         <div style={{ display: 'flex', gap: '6px' }}>
-          {/* COPY LINK */}
           <IconButton
             icon={<Link2 size={18} />}
             onClick={handleCopyLink}
             title="Copy link"
           />
-
-          {/* KEBAB MENU */}
           <div style={{ position: 'relative' }}>
             <IconButton
               icon={<MoreHorizontal size={18} />}
               onClick={() => setShowKebabMenu(!showKebabMenu)}
               title="More options"
             />
-            
-            {/* KEBAB DROPDOWN - FIX 6: Wired to Supabase */}
             {showKebabMenu && (
               <KebabMenu
                 onEdit={onEdit}
@@ -149,8 +178,6 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               />
             )}
           </div>
-
-          {/* CLOSE */}
           <IconButton
             icon={<X size={18} />}
             onClick={onClose}
@@ -159,24 +186,108 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
         </div>
       </div>
 
-      {/* TASK TITLE — h1, NOT INPUT */}
-      <h1
-        style={{
-          fontSize: '24px',
-          fontWeight: 600,
-          color: COLORS.textPrimary,
-          lineHeight: 1.3,
-          margin: 0,
-          padding: 0
-        }}
-      >
-        {task.title}
-      </h1>
+      {/* TASK TITLE ROW - WITH PENCIL BUTTON */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {isEditingTitle ? (
+          /* EDIT MODE */
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+            <input
+              ref={titleInputRef}
+              type="text"
+              value={titleValue}
+              onChange={(e) => setTitleValue(e.target.value)}
+              onBlur={handleTitleSubmit}
+              onKeyDown={handleTitleKeyDown}
+              style={{
+                flex: 1,
+                fontSize: '24px',
+                fontWeight: 600,
+                color: COLORS.textPrimary,
+                lineHeight: 1.3,
+                padding: '4px 8px',
+                margin: '-4px -8px',
+                border: `2px solid ${COLORS.borderFocus}`,
+                borderRadius: '8px',
+                outline: 'none',
+                fontFamily: 'inherit',
+                backgroundColor: COLORS.surfaceCard,
+                boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)'
+              }}
+            />
+            <button
+              onClick={handleTitleSubmit}
+              style={{
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: COLORS.accent,
+                border: 'none',
+                borderRadius: '8px',
+                color: '#ffffff',
+                cursor: 'pointer'
+              }}
+              title="Save title"
+            >
+              <Check size={18} />
+            </button>
+          </div>
+        ) : (
+          /* VIEW MODE */
+          <>
+            <h1
+              style={{
+                flex: 1,
+                fontSize: '24px',
+                fontWeight: 600,
+                color: COLORS.textPrimary,
+                lineHeight: 1.3,
+                margin: 0,
+                padding: 0
+              }}
+            >
+              {task.title}
+            </h1>
+            
+            {/* PENCIL BUTTON */}
+            <button
+              onClick={() => setIsEditingTitle(true)}
+              title="Edit title"
+              style={{
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+                border: `1px solid ${COLORS.borderLight}`,
+                borderRadius: '8px',
+                color: COLORS.textMuted,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                flexShrink: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = COLORS.surfaceHover;
+                e.currentTarget.style.borderColor = COLORS.borderDefault;
+                e.currentTarget.style.color = COLORS.textSecondary;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = COLORS.borderLight;
+                e.currentTarget.style.color = COLORS.textMuted;
+              }}
+            >
+              <Edit2 size={16} />
+            </button>
+          </>
+        )}
+      </div>
 
-      {/* DELETE CONFIRMATION DIALOG - FIX 6 */}
+      {/* DELETE CONFIRMATION DIALOG */}
       {showDeleteConfirm && (
         <>
-          {/* Backdrop */}
           <div
             onClick={() => setShowDeleteConfirm(false)}
             style={{
@@ -189,7 +300,6 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               zIndex: 100000
             }}
           />
-          {/* Dialog */}
           <div
             style={{
               position: 'fixed',
@@ -299,7 +409,6 @@ const KebabMenu: React.FC<{
 
   return (
     <>
-      {/* BACKDROP */}
       <div
         onClick={onClose}
         style={{
@@ -311,8 +420,6 @@ const KebabMenu: React.FC<{
           zIndex: 99998
         }}
       />
-      
-      {/* MENU */}
       <div
         style={{
           position: 'absolute',
@@ -344,10 +451,7 @@ const KebabMenu: React.FC<{
         <MenuItem 
           icon={<Star size={16} />} 
           label="Add to favorites" 
-          onClick={() => {
-            // Favorites functionality can be added
-            onClose();
-          }}
+          onClick={() => onClose()}
         />
         <MenuItem 
           icon={<Archive size={16} />} 
@@ -355,11 +459,7 @@ const KebabMenu: React.FC<{
           onClick={onArchive}
           disabled={isLoading}
         />
-        <div style={{ 
-          height: '1px', 
-          backgroundColor: COLORS.borderLight, 
-          margin: '6px 0' 
-        }} />
+        <div style={{ height: '1px', backgroundColor: COLORS.borderLight, margin: '6px 0' }} />
         <MenuItem 
           icon={<Trash2 size={16} />} 
           label="Delete task" 
