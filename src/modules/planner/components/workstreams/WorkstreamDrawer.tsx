@@ -1,11 +1,12 @@
 // ============================================================================
-// WORKSTREAM DETAIL DRAWER — PIXEL-PERFECT IMPLEMENTATION
+// WORKSTREAM DETAIL DRAWER — PIXEL-PERFECT V2 IMPLEMENTATION
 // File: src/modules/planner/components/workstreams/WorkstreamDrawer.tsx
 // ============================================================================
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   X,
   Edit2,
@@ -20,7 +21,7 @@ import {
   Calendar,
   LayoutGrid,
   List,
-  User
+  Loader2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -31,6 +32,7 @@ import {
   useRemoveWorkstreamMember,
   useDeleteWorkstream,
   useArchiveWorkstream,
+  useSetWorkstreamLead,
 } from '../../hooks/usePlannerWorkstreams';
 import {
   AlertDialog,
@@ -53,15 +55,7 @@ interface TeamMember {
   initials: string;
   role: string;
   avatarColor: string;
-}
-
-interface WorkstreamActivity {
-  id: string;
-  action: string;
-  actor_name: string;
-  actor_initials: string;
-  actor_color: string;
-  created_at: string;
+  resourceId?: string; // resource_inventory.id for leads
 }
 
 interface WorkstreamDrawerProps {
@@ -69,76 +63,6 @@ interface WorkstreamDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-// ============================================================================
-// COLOR CONSTANTS — Catalyst V5 Design System
-// ============================================================================
-
-const COLORS = {
-  // Text Colors
-  textPrimary: '#0f172a',      // slate-900
-  textSecondary: '#334155',    // slate-700
-  textMuted: '#64748b',        // slate-500
-  textLight: '#94a3b8',        // slate-400
-  textPlaceholder: '#9ca3af',  // gray-400
-
-  // Surface Colors
-  surfaceCard: '#ffffff',
-  surfacePage: '#f8fafc',      // slate-50
-  surfaceHover: '#f1f5f9',     // slate-100
-  surfaceSelected: '#dbeafe',  // blue-100
-
-  // Border Colors
-  borderLight: '#e2e8f0',      // slate-200
-  borderDefault: '#cbd5e1',    // slate-300
-  borderFocus: '#3b82f6',      // blue-500
-
-  // Brand Colors
-  accent: '#2563eb',           // blue-600
-  accentHover: '#1d4ed8',      // blue-700
-  accentLight: '#dbeafe',      // blue-100
-
-  // Status Colors
-  danger: '#dc2626',           // red-600
-  dangerBg: '#fef2f2',         // red-50
-  dangerBorder: '#fecaca',     // red-200
-
-  warning: '#f59e0b',          // amber-500
-  warningBg: '#fffbeb',        // amber-50
-  warningBorder: '#fde68a',    // amber-200
-
-  success: '#16a34a',          // green-600
-  successBg: '#f0fdf4',        // green-50
-  successBorder: '#bbf7d0',    // green-200
-};
-
-// ============================================================================
-// HEALTH STATUS CONFIG
-// ============================================================================
-
-const HEALTH_CONFIG: Record<string, { color: string; bgColor: string; borderColor: string; icon: typeof Check; label: string }> = {
-  'healthy': {
-    color: COLORS.success,
-    bgColor: COLORS.successBg,
-    borderColor: COLORS.successBorder,
-    icon: Check,
-    label: 'On Track'
-  },
-  'at-risk': {
-    color: COLORS.warning,
-    bgColor: COLORS.warningBg,
-    borderColor: COLORS.warningBorder,
-    icon: AlertTriangle,
-    label: 'At Risk'
-  },
-  'critical': {
-    color: COLORS.danger,
-    bgColor: COLORS.dangerBg,
-    borderColor: COLORS.dangerBorder,
-    icon: AlertTriangle,
-    label: 'Critical'
-  }
-};
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -162,124 +86,39 @@ const formatDate = (dateString: string): string => {
   });
 };
 
-const formatTime = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+// Generate avatar color from name
+const getAvatarColor = (name: string): string => {
+  const colors = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#6366F1'];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
 };
 
 // ============================================================================
-// MEMBER ITEM SUB-COMPONENT
+// HEALTH STATUS CONFIG
 // ============================================================================
 
-const MemberItem: React.FC<{
-  member: TeamMember;
-  onRemove: () => void;
-}> = ({ member, onRemove }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        padding: '10px 12px',
-        backgroundColor: COLORS.surfacePage,
-        border: `1px solid ${COLORS.borderLight}`,
-        borderRadius: '10px',
-        transition: 'background-color 0.15s ease'
-      }}
-    >
-      {/* Avatar */}
-      <div
-        style={{
-          width: '36px',
-          height: '36px',
-          borderRadius: '50%',
-          backgroundColor: member.avatarColor,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '13px',
-          fontWeight: 600,
-          color: '#ffffff',
-          flexShrink: 0
-        }}
-      >
-        {member.initials}
-      </div>
-
-      {/* Info */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div
-          style={{
-            fontSize: '14px',
-            fontWeight: 500,
-            color: COLORS.textPrimary,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {member.name}
-        </div>
-        <div
-          style={{
-            fontSize: '12px',
-            color: COLORS.textMuted,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {member.role}
-        </div>
-      </div>
-
-      {/* Remove Button */}
-      <button
-        onClick={(e) => { e.stopPropagation(); onRemove(); }}
-        title="Remove member"
-        style={{
-          width: '28px',
-          height: '28px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'transparent',
-          border: 'none',
-          borderRadius: '6px',
-          cursor: 'pointer',
-          color: COLORS.textLight,
-          opacity: isHovered ? 1 : 0,
-          transition: 'all 0.15s ease'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = COLORS.dangerBg;
-          e.currentTarget.style.color = COLORS.danger;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'transparent';
-          e.currentTarget.style.color = COLORS.textLight;
-        }}
-      >
-        <X size={16} />
-      </button>
-    </div>
-  );
+const HEALTH_CONFIG: Record<string, { color: string; bgColor: string; borderColor: string; label: string }> = {
+  'healthy': {
+    color: '#16a34a',
+    bgColor: '#f0fdf4',
+    borderColor: '#bbf7d0',
+    label: 'On Track'
+  },
+  'at-risk': {
+    color: '#f59e0b',
+    bgColor: '#fffbeb',
+    borderColor: '#fde68a',
+    label: 'At Risk'
+  },
+  'critical': {
+    color: '#dc2626',
+    bgColor: '#fef2f2',
+    borderColor: '#fecaca',
+    label: 'Critical'
+  }
 };
 
 // ============================================================================
@@ -289,6 +128,7 @@ const MemberItem: React.FC<{
 export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDrawerProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Refs
   const leadPickerRef = useRef<HTMLDivElement>(null);
@@ -301,14 +141,13 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   const [showMemberPicker, setShowMemberPicker] = useState(false);
   const [memberSearchQuery, setMemberSearchQuery] = useState('');
   const [leadSearchQuery, setLeadSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'list' | 'board' | 'calendar'>('list');
   const [isSaving, setIsSaving] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  // Data State
+  // Data State - all available users for selection
   const [allUsers, setAllUsers] = useState<TeamMember[]>([]);
-  const [activities, setActivities] = useState<WorkstreamActivity[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
 
   // Mutations
   const updateWorkstream = useUpdateWorkstream();
@@ -316,56 +155,55 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   const removeMember = useRemoveWorkstreamMember();
   const deleteWorkstream = useDeleteWorkstream();
   const archiveWorkstream = useArchiveWorkstream();
+  const setWorkstreamLead = useSetWorkstreamLead();
 
   // ========================================
-  // DATA FETCHING
+  // DATA FETCHING - Using resource_inventory for lead picker
   // ========================================
 
   const fetchAllUsers = useCallback(async () => {
+    setIsLoadingUsers(true);
     try {
+      // Fetch from resource_inventory with profile link
       const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, avatar_url')
-        .order('full_name');
+        .from('resource_inventory')
+        .select('id, name, profile_id, is_active')
+        .eq('is_active', true)
+        .order('name');
 
       if (error) throw error;
 
-      setAllUsers((data || []).map(u => ({
-        id: u.id,
-        name: u.full_name || 'Unknown',
-        initials: getInitials(u.full_name || 'U'),
+      setAllUsers((data || []).map((u: any) => ({
+        id: u.profile_id || u.id, // profile_id for member operations
+        resourceId: u.id, // resource_inventory.id for lead operations
+        name: u.name || 'Unknown',
+        initials: getInitials(u.name || 'U'),
         role: 'Team Member',
-        avatarColor: COLORS.accent
+        avatarColor: getAvatarColor(u.name || 'U')
       })));
     } catch (error) {
       console.error('Error fetching users:', error);
+    } finally {
+      setIsLoadingUsers(false);
     }
   }, []);
-
-  const fetchActivities = useCallback(async () => {
-    if (!workstream?.id) return;
-    // Activities are currently not stored in a dedicated table
-    // Just show the creation activity
-    setActivities([]);
-  }, [workstream?.id]);
 
   // ========================================
   // EFFECTS
   // ========================================
 
-  // Initial load
+  // Initial load when drawer opens
   useEffect(() => {
     if (isOpen && workstream) {
       setDescriptionValue(workstream.description || '');
       fetchAllUsers();
-      fetchActivities();
       setIsEditingDescription(false);
       setShowLeadPicker(false);
       setShowMemberPicker(false);
       setMemberSearchQuery('');
       setLeadSearchQuery('');
     }
-  }, [isOpen, workstream?.id, fetchAllUsers, fetchActivities]);
+  }, [isOpen, workstream?.id, fetchAllUsers]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -415,6 +253,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   // COMPUTED DATA
   // ========================================
 
+  // Members from workstream prop (excludes lead)
   const members: TeamMember[] = (workstream.members || [])
     .filter(m => m.role !== 'lead')
     .map(m => ({
@@ -422,30 +261,46 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
       name: m.profile?.full_name || 'Unknown',
       initials: getInitials(m.profile?.full_name || 'U'),
       role: 'Team Member',
-      avatarColor: workstream.color || COLORS.accent
+      avatarColor: getAvatarColor(m.profile?.full_name || 'U')
     }));
 
+  // Lead from workstream prop
   const lead: TeamMember | null = workstream.lead ? {
     id: workstream.lead.id || '',
     name: workstream.lead.name || 'Unknown',
     initials: workstream.lead.initials || 'U',
     role: 'Lead',
-    avatarColor: workstream.color || COLORS.accent
+    avatarColor: getAvatarColor(workstream.lead.name || 'U')
   } : null;
 
   const healthConfig = HEALTH_CONFIG[workstream.health || 'healthy'] || HEALTH_CONFIG['healthy'];
-  const HealthIcon = healthConfig.icon;
   const canDelete = (workstream.taskCount || 0) === 0;
+  const memberCount = members.length + (lead ? 1 : 0);
 
-  // Filtered data
+  // Filtered users for pickers
   const availableUsersForMember = allUsers.filter(
     u => !members.some(m => m.id === u.id) &&
+      (!lead || lead.id !== u.resourceId) &&
       u.name.toLowerCase().includes(memberSearchQuery.toLowerCase())
   );
 
   const filteredUsersForLead = allUsers.filter(
     u => u.name.toLowerCase().includes(leadSearchQuery.toLowerCase())
   );
+
+  // Calculate progress
+  const taskCount = workstream.taskCount || 0;
+  const doneCount = workstream.doneCount || 0;
+  const progress = taskCount > 0 ? Math.round((doneCount / taskCount) * 100) : 0;
+
+  // ========================================
+  // SAVE INDICATOR HELPER
+  // ========================================
+
+  const showSaveSuccess = () => {
+    setShowSaved(true);
+    setTimeout(() => setShowSaved(false), 3000);
+  };
 
   // ========================================
   // ACTIONS
@@ -460,14 +315,16 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
     try {
       await addMember.mutateAsync({
         workstreamId: workstream.id,
-        userId: user.id,
+        userId: user.id, // profile_id
         role: 'member',
       });
 
+      // Immediately refetch to update UI
+      await queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      
       setShowMemberPicker(false);
       setMemberSearchQuery('');
-      setShowSaved(true);
-      setTimeout(() => setShowSaved(false), 2000);
+      showSaveSuccess();
 
       toast({
         title: 'Member added',
@@ -490,8 +347,10 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         userId: memberId,
       });
 
-      setShowSaved(true);
-      setTimeout(() => setShowSaved(false), 2000);
+      // Immediately refetch to update UI
+      await queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      
+      showSaveSuccess();
 
       toast({
         title: 'Member removed',
@@ -506,16 +365,18 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
   const handleChangeLead = async (user: TeamMember | null) => {
     try {
-      await addMember.mutateAsync({
+      // Use setWorkstreamLead mutation which properly handles resource_inventory.id
+      await setWorkstreamLead.mutateAsync({
         workstreamId: workstream.id,
-        userId: user?.id || '',
-        role: 'lead',
+        leadResourceId: user?.resourceId || null,
       });
 
+      // Immediately refetch to update UI
+      await queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      
       setShowLeadPicker(false);
       setLeadSearchQuery('');
-      setShowSaved(true);
-      setTimeout(() => setShowSaved(false), 2000);
+      showSaveSuccess();
 
       toast({
         title: user ? 'Lead updated' : 'Lead removed',
@@ -536,9 +397,10 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         updates: { description: descriptionValue || null },
       });
 
+      await queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      
       setIsEditingDescription(false);
-      setShowSaved(true);
-      setTimeout(() => setShowSaved(false), 2000);
+      showSaveSuccess();
 
       toast({ title: 'Description saved' });
 
@@ -598,9 +460,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
   return createPortal(
     <>
-      {/* ================================================================ */}
       {/* BACKDROP */}
-      {/* ================================================================ */}
       <div
         onClick={onClose}
         style={{
@@ -611,7 +471,6 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           bottom: 0,
           backgroundColor: 'rgba(15, 23, 42, 0.4)',
           backdropFilter: 'blur(2px)',
-          WebkitBackdropFilter: 'blur(2px)',
           zIndex: 998,
           opacity: isOpen ? 1 : 0,
           pointerEvents: isOpen ? 'auto' : 'none',
@@ -619,19 +478,17 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         }}
       />
 
-      {/* ================================================================ */}
       {/* DRAWER CONTAINER */}
-      {/* ================================================================ */}
       <div
         style={{
           position: 'fixed',
           top: 0,
           right: 0,
-          width: '480px',
+          width: '420px',
           maxWidth: '100vw',
           height: '100vh',
-          backgroundColor: COLORS.surfaceCard,
-          boxShadow: '-8px 0 30px rgba(0, 0, 0, 0.15)',
+          backgroundColor: '#ffffff',
+          boxShadow: '-8px 0 30px rgba(0, 0, 0, 0.12)',
           zIndex: 999,
           display: 'flex',
           flexDirection: 'column',
@@ -640,33 +497,20 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         }}
       >
         {/* ============================================================ */}
-        {/* HEADER */}
+        {/* HEADER SECTION */}
         {/* ============================================================ */}
-        <div
-          style={{
-            padding: '20px 24px',
-            borderBottom: `1px solid ${COLORS.borderLight}`,
-            backgroundColor: COLORS.surfaceCard
-          }}
-        >
-          {/* TOP ROW: Title + Actions */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'space-between',
-              marginBottom: '16px'
-            }}
-          >
+        <div style={{ padding: '20px 20px 16px 20px', borderBottom: '1px solid #e2e8f0' }}>
+          {/* TOP ROW: Health dot + Title + Actions */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
             {/* Left: Health dot + Title */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', flex: 1, minWidth: 0 }}>
               {/* Health Indicator Dot */}
               <div
                 style={{
                   width: '12px',
                   height: '12px',
                   borderRadius: '50%',
-                   backgroundColor: healthConfig.color,
+                  backgroundColor: healthConfig.color,
                   marginTop: '6px',
                   flexShrink: 0
                 }}
@@ -674,168 +518,36 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
               {/* Title & Meta */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <h1
-                  style={{
-                    fontSize: '20px',
-                    fontWeight: 600,
-                    color: COLORS.textPrimary,
-                    margin: 0,
-                    lineHeight: 1.3
-                  }}
-                >
+                <h1 style={{ fontSize: '20px', fontWeight: 600, color: '#0f172a', margin: 0, lineHeight: 1.3 }}>
                   {workstream.name}
                 </h1>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginTop: '4px',
-                    fontSize: '13px',
-                    color: COLORS.textMuted
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: 'ui-monospace, "SF Mono", Monaco, monospace',
-                      fontWeight: 500,
-                      color: COLORS.textSecondary
-                    }}
-                  >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: '13px', color: '#64748b' }}>
+                  <span style={{ fontWeight: 500, color: '#475569' }}>
                     {workstream.key_prefix || workstream.code}
                   </span>
-                  <span style={{ color: COLORS.textLight }}>·</span>
+                  <span>·</span>
                   <span>Created {formatDate(workstream.created_at)}</span>
                 </div>
               </div>
             </div>
 
             {/* Right: Action Buttons */}
-            <div style={{ display: 'flex', gap: '4px' }}>
-              {/* Edit Button */}
-              <button
-                title="Edit workstream"
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'transparent',
-                  border: '1px solid transparent',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  color: COLORS.textMuted,
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.surfaceHover;
-                  e.currentTarget.style.borderColor = COLORS.borderLight;
-                  e.currentTarget.style.color = COLORS.textSecondary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = 'transparent';
-                  e.currentTarget.style.color = COLORS.textMuted;
-                }}
-              >
+            <div style={{ display: 'flex', gap: '2px', marginLeft: '12px' }}>
+              <button title="Edit workstream" style={iconButtonStyle}>
                 <Edit2 size={18} />
               </button>
-
-              {/* Archive Button */}
-              <button
-                title={workstream.is_archived ? 'Unarchive' : 'Archive'}
-                onClick={handleArchive}
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'transparent',
-                  border: '1px solid transparent',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  color: COLORS.textMuted,
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.surfaceHover;
-                  e.currentTarget.style.borderColor = COLORS.borderLight;
-                  e.currentTarget.style.color = COLORS.textSecondary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = 'transparent';
-                  e.currentTarget.style.color = COLORS.textMuted;
-                }}
-              >
+              <button title={workstream.is_archived ? 'Unarchive' : 'Archive'} onClick={handleArchive} style={iconButtonStyle}>
                 {workstream.is_archived ? <ArchiveRestore size={18} /> : <Archive size={18} />}
               </button>
-
-              {/* Delete Button */}
               <button
                 title={canDelete ? 'Delete' : `Cannot delete: ${workstream.taskCount} task(s) linked`}
                 onClick={() => canDelete && setIsDeleteOpen(true)}
                 disabled={!canDelete}
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'transparent',
-                  border: '1px solid transparent',
-                  borderRadius: '8px',
-                  cursor: canDelete ? 'pointer' : 'not-allowed',
-                  color: canDelete ? COLORS.textMuted : COLORS.borderDefault,
-                  transition: 'all 0.15s ease',
-                  opacity: canDelete ? 1 : 0.5
-                }}
-                onMouseEnter={(e) => {
-                  if (canDelete) {
-                    e.currentTarget.style.backgroundColor = COLORS.dangerBg;
-                    e.currentTarget.style.borderColor = COLORS.dangerBorder;
-                    e.currentTarget.style.color = COLORS.danger;
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = 'transparent';
-                  e.currentTarget.style.color = canDelete ? COLORS.textMuted : COLORS.borderDefault;
-                }}
+                style={{ ...iconButtonStyle, opacity: canDelete ? 1 : 0.4, cursor: canDelete ? 'pointer' : 'not-allowed' }}
               >
                 <Trash2 size={18} />
               </button>
-
-              {/* Close Button */}
-              <button
-                onClick={onClose}
-                title="Close"
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'transparent',
-                  border: '1px solid transparent',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  color: COLORS.textMuted,
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.surfaceHover;
-                  e.currentTarget.style.borderColor = COLORS.borderLight;
-                  e.currentTarget.style.color = COLORS.textSecondary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = 'transparent';
-                  e.currentTarget.style.color = COLORS.textMuted;
-                }}
-              >
+              <button onClick={onClose} title="Close" style={iconButtonStyle}>
                 <X size={20} />
               </button>
             </div>
@@ -846,65 +558,31 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
-              padding: '12px 16px',
+              padding: '12px 14px',
               backgroundColor: healthConfig.bgColor,
               border: `1px solid ${healthConfig.borderColor}`,
               borderRadius: '10px',
               marginBottom: '12px'
             }}
           >
-            {/* Status Icon */}
-            <HealthIcon
-              size={20}
-              style={{ color: healthConfig.color, flexShrink: 0 }}
-            />
-
-            {/* Status Info */}
+            <AlertTriangle size={20} style={{ color: healthConfig.color, marginRight: '10px', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div
-                style={{
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  color: healthConfig.color
-                }}
-              >
-                {healthConfig.label}
-              </div>
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: COLORS.textMuted,
-                  marginTop: '2px'
-                }}
-              >
+              <div style={{ fontSize: '14px', fontWeight: 600, color: healthConfig.color }}>{healthConfig.label}</div>
+              <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
                 {workstream.overdueCount || 0} overdue · {workstream.taskCount || 0} tasks
               </div>
             </div>
-
-            {/* Change Status Button (UI only) */}
             <button
               style={{
-                padding: '6px 12px',
-                backgroundColor: COLORS.surfaceCard,
-                border: `1px solid ${COLORS.borderLight}`,
+                padding: '6px 14px',
+                backgroundColor: '#ffffff',
+                border: '1px solid #e2e8f0',
                 borderRadius: '6px',
-                fontSize: '12px',
+                fontSize: '13px',
                 fontWeight: 500,
-                color: COLORS.textMuted,
+                color: '#475569',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                fontFamily: 'inherit'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = COLORS.surfacePage;
-                e.currentTarget.style.borderColor = COLORS.borderDefault;
-                e.currentTarget.style.color = COLORS.textSecondary;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = COLORS.surfaceCard;
-                e.currentTarget.style.borderColor = COLORS.borderLight;
-                e.currentTarget.style.color = COLORS.textMuted;
+                transition: 'all 0.15s ease'
               }}
             >
               Change Status
@@ -912,1170 +590,332 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           </div>
 
           {/* SAVE INDICATOR */}
-          {showSaved && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                fontSize: '12px',
-                color: COLORS.success
-              }}
-            >
-              <Check size={14} />
-              <span>All changes saved</span>
-            </div>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#16a34a', minHeight: '20px' }}>
+            {showSaved && (
+              <>
+                <Check size={14} />
+                <span>All changes saved</span>
+              </>
+            )}
+          </div>
         </div>
 
         {/* ============================================================ */}
-        {/* BODY (Scrollable) */}
+        {/* SCROLLABLE BODY */}
         {/* ============================================================ */}
-        <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '24px'
-          }}
-        >
-          {/* ======================================== */}
-          {/* DESCRIPTION SECTION */}
-          {/* ======================================== */}
-          <div style={{ marginBottom: '28px' }}>
-            {/* Section Header */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '12px'
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: COLORS.textMuted,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}
-              >
-                Description
-              </span>
+        <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '80px' }}>
+          <div style={{ padding: '20px' }}>
+            {/* DESCRIPTION SECTION */}
+            <div style={{ marginBottom: '28px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span style={sectionLabelStyle}>Description</span>
+                {!isEditingDescription && (
+                  <button onClick={() => setIsEditingDescription(true)} style={editLinkStyle}>Edit</button>
+                )}
+              </div>
 
-              {!isEditingDescription ? (
-                <button
-                  onClick={() => setIsEditingDescription(true)}
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    color: COLORS.accent,
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontFamily: 'inherit',
-                    transition: 'background-color 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.accentLight}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                >
-                  Edit
-                </button>
-              ) : (
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    onClick={() => {
-                      setIsEditingDescription(false);
-                      setDescriptionValue(workstream.description || '');
-                    }}
+              {isEditingDescription ? (
+                <div>
+                  <textarea
+                    value={descriptionValue}
+                    onChange={(e) => setDescriptionValue(e.target.value)}
+                    placeholder="Add a description..."
                     style={{
-                      fontSize: '12px',
-                      fontWeight: 500,
-                      color: COLORS.textMuted,
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      fontFamily: 'inherit'
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSaveDescription}
-                    disabled={isSaving}
-                    style={{
-                      fontSize: '12px',
-                      fontWeight: 500,
-                      color: COLORS.accent,
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      cursor: isSaving ? 'not-allowed' : 'pointer',
-                      padding: '4px 8px',
-                      borderRadius: '4px',
+                      width: '100%',
+                      minHeight: '100px',
+                      padding: '12px',
+                      fontSize: '14px',
+                      lineHeight: 1.6,
+                      color: '#334155',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '8px',
+                      resize: 'vertical',
                       fontFamily: 'inherit',
-                      opacity: isSaving ? 0.6 : 1
+                      outline: 'none'
                     }}
-                  >
-                    {isSaving ? 'Saving...' : 'Save'}
-                  </button>
+                    autoFocus
+                  />
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                    <button onClick={handleSaveDescription} disabled={isSaving} style={primaryButtonStyle}>
+                      {isSaving ? <Loader2 size={14} className="animate-spin" /> : 'Save'}
+                    </button>
+                    <button onClick={() => { setIsEditingDescription(false); setDescriptionValue(workstream.description || ''); }} style={secondaryButtonStyle}>
+                      Cancel
+                    </button>
+                  </div>
                 </div>
+              ) : (
+                <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#334155', margin: 0 }}>
+                  {workstream.description || <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>No description added.</span>}
+                </p>
               )}
             </div>
 
-            {/* Description Content */}
-            {isEditingDescription ? (
-              <textarea
-                value={descriptionValue}
-                onChange={(e) => setDescriptionValue(e.target.value)}
-                placeholder="Add a description for this workstream..."
-                autoFocus
-                style={{
-                  width: '100%',
-                  minHeight: '80px',
-                  padding: '12px 14px',
-                  border: `1px solid ${COLORS.borderDefault}`,
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  lineHeight: 1.6,
-                  color: COLORS.textPrimary,
-                  backgroundColor: COLORS.surfaceCard,
-                  resize: 'vertical',
-                  outline: 'none',
-                  fontFamily: 'inherit',
-                  transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = COLORS.borderFocus;
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = COLORS.borderDefault;
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              />
-            ) : (
-              <p
-                style={{
-                  fontSize: '14px',
-                  color: workstream.description ? COLORS.textSecondary : COLORS.textLight,
-                  lineHeight: 1.6,
-                  margin: 0,
-                  fontStyle: workstream.description ? 'normal' : 'italic'
-                }}
-              >
-                {workstream.description || 'No description provided'}
-              </p>
-            )}
-          </div>
+            {/* TEAM SECTION */}
+            <div style={{ marginBottom: '28px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <span style={sectionLabelStyle}>Team</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', letterSpacing: '0.03em' }}>
+                  {memberCount} {memberCount === 1 ? 'MEMBER' : 'MEMBERS'}
+                </span>
+              </div>
 
-          {/* ======================================== */}
-          {/* TEAM SECTION */}
-          {/* ======================================== */}
-          <div style={{ marginBottom: '28px' }}>
-            {/* Section Header */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '12px'
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: COLORS.textMuted,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}
-              >
-                Team
-              </span>
-              <span
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: COLORS.textPrimary
-                }}
-              >
-                {members.length} member{members.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-
-            {/* LEAD ROW */}
-            <div
-              ref={leadPickerRef}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px 0',
-                borderBottom: `1px solid ${COLORS.surfaceHover}`,
-                position: 'relative'
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  color: COLORS.textMuted
-                }}
-              >
-                Lead
-              </span>
-
-              {/* Lead Picker Trigger */}
-              <button
-                onClick={() => setShowLeadPicker(!showLeadPicker)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px 12px',
-                  backgroundColor: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  transition: 'all 0.15s ease',
-                  minWidth: '160px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f1f5f9';
-                  e.currentTarget.style.borderColor = '#cbd5e1';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f8fafc';
-                  e.currentTarget.style.borderColor = '#e2e8f0';
-                }}
-              >
-                {lead ? (
-                  <>
-                    {/* Lead Avatar */}
-                    <div
-                      style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '50%',
-                        backgroundColor: lead.avatarColor || '#2563eb',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        color: '#ffffff',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {lead.initials}
-                    </div>
-                    {/* Lead Name */}
-                    <span
-                      style={{
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: '#0f172a',
-                        flex: 1,
-                        textAlign: 'left',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {lead.name}
-                    </span>
-                  </>
-                ) : (
-                  /* Empty State - Shows "Unassigned" */
-                  <span
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      fontSize: '14px',
-                      color: '#94a3b8',
-                    }}
-                  >
-                    <User size={16} />
-                    Unassigned
-                  </span>
-                )}
-
-                {/* Chevron Arrow */}
-                <ChevronDown
-                  size={14}
-                  style={{
-                    color: '#94a3b8',
-                    flexShrink: 0,
-                    transform: showLeadPicker ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.2s ease',
-                  }}
-                />
-              </button>
-
-              {/* Lead Picker Dropdown */}
-              {showLeadPicker && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 4px)',
-                    right: 0,
-                    width: '320px',
-                    backgroundColor: COLORS.surfaceCard,
-                    border: `1px solid ${COLORS.borderDefault}`,
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-                    zIndex: 100,
-                    overflow: 'hidden'
-                  }}
-                >
-                  {/* Search */}
-                  <div
-                    style={{
-                      padding: '12px',
-                      borderBottom: `1px solid ${COLORS.borderLight}`
-                    }}
-                  >
-                    <div
+              {/* Lead Picker */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '13px', color: '#64748b' }}>Lead</span>
+                  <div ref={leadPickerRef} style={{ position: 'relative' }}>
+                    <button
+                      onClick={() => setShowLeadPicker(!showLeadPicker)}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        padding: '10px 12px',
-                        backgroundColor: COLORS.surfacePage,
+                        padding: '8px 12px',
+                        backgroundColor: '#f8fafc',
+                        border: '1px solid #e2e8f0',
                         borderRadius: '8px',
-                        border: `1px solid ${COLORS.borderLight}`
+                        cursor: 'pointer',
+                        minWidth: '200px',
+                        justifyContent: 'space-between'
                       }}
                     >
-                      <Search size={16} style={{ color: COLORS.textLight, flexShrink: 0 }} />
-                      <input
-                        type="text"
-                        value={leadSearchQuery}
-                        onChange={(e) => setLeadSearchQuery(e.target.value)}
-                        placeholder="Search team members..."
-                        autoFocus
-                        style={{
-                          flex: 1,
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          fontSize: '14px',
-                          color: COLORS.textPrimary,
-                          outline: 'none',
-                          fontFamily: 'inherit'
-                        }}
-                      />
-                      {leadSearchQuery && (
-                        <button
-                          onClick={() => setLeadSearchQuery('')}
-                          style={{
-                            width: '20px',
-                            height: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: COLORS.surfaceHover,
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            color: COLORS.textMuted
-                          }}
-                        >
-                          <X size={12} />
-                        </button>
+                      {lead ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={avatarStyle(lead.avatarColor)}>{lead.initials}</div>
+                          <span style={{ fontSize: '14px', color: '#0f172a', fontWeight: 500 }}>{lead.name}</span>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: '14px', color: '#94a3b8' }}>Select lead...</span>
                       )}
-                    </div>
-                  </div>
+                      <ChevronDown size={16} style={{ color: '#64748b' }} />
+                    </button>
 
-                  {/* User List */}
-                  <div
-                    style={{
-                      maxHeight: '280px',
-                      overflowY: 'auto',
-                      padding: '8px'
-                    }}
-                  >
-                    {filteredUsersForLead.length === 0 ? (
-                      <div
-                        style={{
-                          padding: '16px',
-                          textAlign: 'center',
-                          color: COLORS.textMuted,
-                          fontSize: '14px'
-                        }}
-                      >
-                        No members found
-                      </div>
-                    ) : (
-                      filteredUsersForLead.map(user => (
-                        <div
-                          key={user.id}
-                          onClick={() => handleChangeLead(user)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            padding: '10px 12px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            backgroundColor: lead?.id === user.id ? COLORS.surfaceSelected : 'transparent',
-                            transition: 'background-color 0.1s ease',
-                            marginBottom: '2px'
-                          }}
-                          onMouseEnter={(e) => {
-                            if (lead?.id !== user.id) {
-                              e.currentTarget.style.backgroundColor = COLORS.surfaceHover;
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = lead?.id === user.id ? COLORS.surfaceSelected : 'transparent';
-                          }}
-                        >
-                          {/* Avatar */}
-                          <div
-                            style={{
-                              width: '36px',
-                              height: '36px',
-                              borderRadius: '50%',
-                              backgroundColor: user.avatarColor,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '13px',
-                              fontWeight: 600,
-                              color: '#ffffff',
-                              flexShrink: 0
-                            }}
-                          >
-                            {user.initials}
+                    {/* Lead Dropdown */}
+                    {showLeadPicker && (
+                      <div style={dropdownStyle}>
+                        <div style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>
+                          <div style={{ position: 'relative' }}>
+                            <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                            <input
+                              type="text"
+                              value={leadSearchQuery}
+                              onChange={(e) => setLeadSearchQuery(e.target.value)}
+                              placeholder="Search..."
+                              style={searchInputStyle}
+                              autoFocus
+                            />
                           </div>
-
-                          {/* Info */}
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div
-                              style={{
-                                fontSize: '14px',
-                                fontWeight: 500,
-                                color: COLORS.textPrimary,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
-                              }}
+                        </div>
+                        <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
+                          {lead && (
+                            <button onClick={() => handleChangeLead(null)} style={dropdownItemStyle}>
+                              <span style={{ color: '#dc2626', fontSize: '13px' }}>Remove lead</span>
+                            </button>
+                          )}
+                          {filteredUsersForLead.map(user => (
+                            <button
+                              key={user.id}
+                              onClick={() => handleChangeLead(user)}
+                              style={dropdownItemStyle}
                             >
-                              {user.name}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: '12px',
-                                color: COLORS.textMuted,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              {user.role}
-                            </div>
-                          </div>
-
-                          {/* Check */}
-                          {lead?.id === user.id && (
-                            <Check size={18} style={{ color: COLORS.accent, flexShrink: 0 }} />
+                              <div style={avatarStyle(user.avatarColor, 28)}>{user.initials}</div>
+                              <span style={{ fontSize: '14px', color: '#0f172a' }}>{user.name}</span>
+                              {lead?.id === user.resourceId && <Check size={16} style={{ marginLeft: 'auto', color: '#2563eb' }} />}
+                            </button>
+                          ))}
+                          {filteredUsersForLead.length === 0 && !isLoadingUsers && (
+                            <div style={{ padding: '16px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>No users found</div>
                           )}
                         </div>
-                      ))
-                    )}
-                  </div>
-
-                  {/* Remove Assignment */}
-                  {lead && (
-                    <div
-                      style={{
-                        padding: '8px 12px',
-                        borderTop: `1px solid ${COLORS.borderLight}`
-                      }}
-                    >
-                      <button
-                        onClick={() => handleChangeLead(null)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          width: '100%',
-                          padding: '10px 12px',
-                          backgroundColor: 'transparent',
-                          border: 'none',
-                          borderRadius: '8px',
-                          fontSize: '14px',
-                          color: COLORS.danger,
-                          cursor: 'pointer',
-                          fontFamily: 'inherit',
-                          transition: 'background-color 0.1s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.dangerBg}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                      >
-                        <X size={16} />
-                        Remove assignment
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* MEMBERS LIST */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                marginTop: '12px'
-              }}
-            >
-              {members.map(member => (
-                <MemberItem
-                  key={member.id}
-                  member={member}
-                  onRemove={() => handleRemoveMember(member.id)}
-                />
-              ))}
-            </div>
-
-            {/* ADD MEMBER BUTTON */}
-            <div ref={memberPickerRef} style={{ position: 'relative', marginTop: '12px' }}>
-              <button
-                onClick={() => setShowMemberPicker(!showMemberPicker)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  width: '100%',
-                  padding: '12px 16px',
-                  backgroundColor: COLORS.surfaceCard,
-                  border: `1.5px dashed ${COLORS.borderDefault}`,
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  color: COLORS.textMuted,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.accentLight;
-                  e.currentTarget.style.borderColor = COLORS.accent;
-                  e.currentTarget.style.borderStyle = 'solid';
-                  e.currentTarget.style.color = COLORS.accent;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.surfaceCard;
-                  e.currentTarget.style.borderColor = COLORS.borderDefault;
-                  e.currentTarget.style.borderStyle = 'dashed';
-                  e.currentTarget.style.color = COLORS.textMuted;
-                }}
-              >
-                <UserPlus size={18} />
-                Add Member
-              </button>
-
-              {/* Member Picker Dropdown */}
-              {showMemberPicker && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 8px)',
-                    left: 0,
-                    right: 0,
-                    backgroundColor: COLORS.surfaceCard,
-                    border: `1px solid ${COLORS.borderDefault}`,
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-                    zIndex: 100,
-                    overflow: 'hidden'
-                  }}
-                >
-                  {/* Search */}
-                  <div
-                    style={{
-                      padding: '12px',
-                      borderBottom: `1px solid ${COLORS.borderLight}`
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '10px 12px',
-                        backgroundColor: COLORS.surfacePage,
-                        borderRadius: '8px',
-                        border: `1px solid ${COLORS.borderLight}`
-                      }}
-                    >
-                      <Search size={16} style={{ color: COLORS.textLight, flexShrink: 0 }} />
-                      <input
-                        type="text"
-                        value={memberSearchQuery}
-                        onChange={(e) => setMemberSearchQuery(e.target.value)}
-                        placeholder="Search team members..."
-                        autoFocus
-                        style={{
-                          flex: 1,
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          fontSize: '14px',
-                          color: COLORS.textPrimary,
-                          outline: 'none',
-                          fontFamily: 'inherit'
-                        }}
-                      />
-                      {memberSearchQuery && (
-                        <button
-                          onClick={() => setMemberSearchQuery('')}
-                          style={{
-                            width: '20px',
-                            height: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: COLORS.surfaceHover,
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            color: COLORS.textMuted
-                          }}
-                        >
-                          <X size={12} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Available Users List */}
-                  <div
-                    style={{
-                      maxHeight: '280px',
-                      overflowY: 'auto',
-                      padding: '8px'
-                    }}
-                  >
-                    {availableUsersForMember.length === 0 ? (
-                      <div
-                        style={{
-                          padding: '16px',
-                          textAlign: 'center',
-                          color: COLORS.textMuted,
-                          fontSize: '14px'
-                        }}
-                      >
-                        {memberSearchQuery ? 'No members found' : 'All team members are already added'}
                       </div>
-                    ) : (
-                      availableUsersForMember.map(user => (
-                        <div
-                          key={user.id}
-                          onClick={() => handleAddMember(user)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            padding: '10px 12px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            backgroundColor: 'transparent',
-                            transition: 'background-color 0.1s ease',
-                            marginBottom: '2px'
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.surfaceHover}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          {/* Avatar */}
-                          <div
-                            style={{
-                              width: '36px',
-                              height: '36px',
-                              borderRadius: '50%',
-                              backgroundColor: user.avatarColor,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '13px',
-                              fontWeight: 600,
-                              color: '#ffffff',
-                              flexShrink: 0
-                            }}
-                          >
-                            {user.initials}
-                          </div>
-
-                          {/* Info */}
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div
-                              style={{
-                                fontSize: '14px',
-                                fontWeight: 500,
-                                color: COLORS.textPrimary,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              {user.name}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: '12px',
-                                color: COLORS.textMuted,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              {user.role}
-                            </div>
-                          </div>
-                        </div>
-                      ))
                     )}
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* ======================================== */}
-          {/* WORK SUMMARY SECTION */}
-          {/* ======================================== */}
-          <div style={{ marginBottom: '28px' }}>
-            {/* Section Header */}
-            <span
-              style={{
-                display: 'block',
-                fontSize: '11px',
-                fontWeight: 600,
-                color: COLORS.textMuted,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '12px'
-              }}
-            >
-              Work Summary
-            </span>
-
-            {/* Summary Cards */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '12px'
-              }}
-            >
-              {/* Total Tasks */}
-              <div
-                style={{
-                  padding: '16px',
-                  backgroundColor: COLORS.surfacePage,
-                  border: `1px solid ${COLORS.borderLight}`,
-                  borderRadius: '10px',
-                  textAlign: 'center'
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 700,
-                    color: COLORS.textPrimary,
-                    lineHeight: 1
-                  }}
-                >
-                  {workstream.taskCount || 0}
-                </div>
-                <div
-                  style={{
-                    fontSize: '12px',
-                    color: COLORS.textMuted,
-                    marginTop: '4px'
-                  }}
-                >
-                  Total Tasks
-                </div>
               </div>
 
-              {/* Overdue */}
-              <div
-                style={{
-                  padding: '16px',
-                  backgroundColor: COLORS.surfacePage,
-                  border: `1px solid ${COLORS.borderLight}`,
-                  borderRadius: '10px',
-                  textAlign: 'center'
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 700,
-                    color: (workstream.overdueCount || 0) > 0 ? COLORS.danger : COLORS.textPrimary,
-                    lineHeight: 1
-                  }}
-                >
-                  {workstream.overdueCount || 0}
-                </div>
-                <div
-                  style={{
-                    fontSize: '12px',
-                    color: COLORS.textMuted,
-                    marginTop: '4px'
-                  }}
-                >
-                  Overdue
-                </div>
-              </div>
+              {/* Member Cards */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {/* Show lead as first member card if exists */}
+                {lead && (
+                  <div style={memberCardStyle}>
+                    <div style={avatarStyle(lead.avatarColor, 40)}>{lead.initials}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>{lead.name}</div>
+                      <div style={{ fontSize: '12px', color: '#64748b' }}>Product Manager</div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Regular members */}
+                {members.map(member => (
+                  <div key={member.id} style={memberCardStyle} className="group">
+                    <div style={avatarStyle(member.avatarColor, 40)}>{member.initials}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>{member.name}</div>
+                      <div style={{ fontSize: '12px', color: '#64748b' }}>Senior Engineer</div>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveMember(member.id)}
+                      style={{ opacity: 0, transition: 'opacity 0.15s', padding: '4px', borderRadius: '4px', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: '#94a3b8' }}
+                      className="group-hover:opacity-100"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
 
-              {/* Members */}
-              <div
-                style={{
-                  padding: '16px',
-                  backgroundColor: COLORS.surfacePage,
-                  border: `1px solid ${COLORS.borderLight}`,
-                  borderRadius: '10px',
-                  textAlign: 'center'
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 700,
-                    color: COLORS.textPrimary,
-                    lineHeight: 1
-                  }}
-                >
-                  {workstream.memberCount || members.length}
-                </div>
-                <div
-                  style={{
-                    fontSize: '12px',
-                    color: COLORS.textMuted,
-                    marginTop: '4px'
-                  }}
-                >
-                  Members
-                </div>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div style={{ marginTop: '16px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: '8px'
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '12px',
-                    color: COLORS.textMuted
-                  }}
-                >
-                  Task Completion
-                </span>
-                <span
-                  style={{
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    color: COLORS.textPrimary
-                  }}
-                >
-                  {workstream.progress || 0}% complete
-                </span>
-              </div>
-              <div
-                style={{
-                  height: '8px',
-                  backgroundColor: COLORS.borderLight,
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}
-              >
-                <div
-                  style={{
-                    height: '100%',
-                    width: `${workstream.progress || 0}%`,
-                    backgroundColor: COLORS.accent,
-                    borderRadius: '4px',
-                    transition: 'width 0.3s ease'
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* ======================================== */}
-          {/* ACTIVITY SECTION */}
-          {/* ======================================== */}
-          <div>
-            {/* Section Header */}
-            <span
-              style={{
-                display: 'block',
-                fontSize: '11px',
-                fontWeight: 600,
-                color: COLORS.textMuted,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '12px'
-              }}
-            >
-              Activity
-            </span>
-
-            {/* Activity List */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px'
-              }}
-            >
-              {activities.length === 0 ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '12px'
-                  }}
-                >
-                  {/* Avatar */}
-                  <div
+                {/* Add Member Button */}
+                <div ref={memberPickerRef} style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setShowMemberPicker(!showMemberPicker)}
                     style={{
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '50%',
-                      backgroundColor: workstream.color || COLORS.accent,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: '#ffffff',
-                      flexShrink: 0
+                      gap: '8px',
+                      width: '100%',
+                      padding: '14px',
+                      backgroundColor: 'transparent',
+                      border: '2px dashed #e2e8f0',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      color: '#64748b',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      transition: 'all 0.15s ease'
                     }}
                   >
-                    {workstream.lead?.initials || 'SY'}
-                  </div>
+                    <UserPlus size={18} />
+                    Add Member
+                  </button>
 
-                  {/* Content */}
-                  <div style={{ flex: 1, paddingTop: '2px' }}>
-                    <div
-                      style={{
-                        fontSize: '14px',
-                        color: COLORS.textSecondary,
-                        lineHeight: 1.4
-                      }}
-                    >
-                      <strong
-                        style={{
-                          fontWeight: 600,
-                          color: COLORS.textPrimary
-                        }}
-                      >
-                        {workstream.lead?.name || 'System'}
-                      </strong>
-                      {' '}
-                      created this workstream
+                  {/* Member Dropdown */}
+                  {showMemberPicker && (
+                    <div style={{ ...dropdownStyle, bottom: '100%', top: 'auto', marginBottom: '4px' }}>
+                      <div style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>
+                        <div style={{ position: 'relative' }}>
+                          <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                          <input
+                            type="text"
+                            value={memberSearchQuery}
+                            onChange={(e) => setMemberSearchQuery(e.target.value)}
+                            placeholder="Search..."
+                            style={searchInputStyle}
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+                      <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
+                        {availableUsersForMember.map(user => (
+                          <button
+                            key={user.id}
+                            onClick={() => handleAddMember(user)}
+                            style={dropdownItemStyle}
+                          >
+                            <div style={avatarStyle(user.avatarColor, 28)}>{user.initials}</div>
+                            <span style={{ fontSize: '14px', color: '#0f172a' }}>{user.name}</span>
+                          </button>
+                        ))}
+                        {availableUsersForMember.length === 0 && !isLoadingUsers && (
+                          <div style={{ padding: '16px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>No users available</div>
+                        )}
+                      </div>
                     </div>
-                    <div
-                      style={{
-                        fontSize: '12px',
-                        color: COLORS.textLight,
-                        marginTop: '4px'
-                      }}
-                    >
-                      {formatTime(workstream.created_at)}
-                    </div>
-                  </div>
+                  )}
                 </div>
-              ) : (
-                activities.map(activity => (
-                  <div
-                    key={activity.id}
-                    style={{
-                      display: 'flex',
-                      gap: '12px'
-                    }}
-                  >
-                    {/* Avatar */}
-                    <div
-                      style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        backgroundColor: activity.actor_color || COLORS.textMuted,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: '#ffffff',
-                        flexShrink: 0
-                      }}
-                    >
-                      {activity.actor_initials}
-                    </div>
+              </div>
+            </div>
 
-                    {/* Content */}
-                    <div style={{ flex: 1, paddingTop: '2px' }}>
-                      <div
-                        style={{
-                          fontSize: '14px',
-                          color: COLORS.textSecondary,
-                          lineHeight: 1.4
-                        }}
-                      >
-                        <strong
-                          style={{
-                            fontWeight: 600,
-                            color: COLORS.textPrimary
-                          }}
-                        >
-                          {activity.actor_name}
-                        </strong>
-                        {' '}
-                        {activity.action}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '12px',
-                          color: COLORS.textLight,
-                          marginTop: '4px'
-                        }}
-                      >
-                        {formatTime(activity.created_at)}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
+            {/* WORK SUMMARY SECTION */}
+            <div style={{ marginBottom: '28px' }}>
+              <div style={{ marginBottom: '14px' }}>
+                <span style={sectionLabelStyle}>Work Summary</span>
+              </div>
+
+              {/* Stats Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                <div style={statCardStyle}>
+                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{taskCount}</div>
+                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Total Tasks</div>
+                </div>
+                <div style={statCardStyle}>
+                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#dc2626', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
+                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Overdue</div>
+                </div>
+                <div style={statCardStyle}>
+                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{memberCount}</div>
+                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Members</div>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '13px', color: '#64748b' }}>Task Completion</span>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{progress}% complete</span>
+                </div>
+                <div style={{ height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${progress}%`, backgroundColor: '#2563eb', borderRadius: '4px', transition: 'width 0.3s ease' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* ACTIVITY SECTION */}
+            <div>
+              <div style={{ marginBottom: '14px' }}>
+                <span style={sectionLabelStyle}>Activity</span>
+              </div>
+              <div style={{ fontSize: '13px', color: '#94a3b8', fontStyle: 'italic' }}>
+                No recent activity
+              </div>
             </div>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* FOOTER TABS */}
+        {/* FOOTER NAVIGATION TABS */}
         {/* ============================================================ */}
         <div
           style={{
-            padding: '16px 24px',
-            borderTop: `1px solid ${COLORS.borderLight}`,
-            backgroundColor: COLORS.surfaceCard
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            display: 'flex',
+            gap: '8px',
+            padding: '12px 20px',
+            backgroundColor: '#ffffff',
+            borderTop: '1px solid #e2e8f0'
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              gap: '8px'
-            }}
-          >
-            {/* Task List Tab */}
-            <button
-              onClick={() => { setActiveTab('list'); navigateToTasks(); }}
-              style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '12px 16px',
-                backgroundColor: activeTab === 'list' ? COLORS.accent : COLORS.surfacePage,
-                border: `1px solid ${activeTab === 'list' ? COLORS.accent : COLORS.borderLight}`,
-                borderRadius: '10px',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: activeTab === 'list' ? '#ffffff' : COLORS.textMuted,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <List size={16} />
-              Task List
-            </button>
-
-            {/* Board Tab */}
-            <button
-              onClick={() => { setActiveTab('board'); navigateToBoard(); }}
-              style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '12px 16px',
-                backgroundColor: activeTab === 'board' ? COLORS.accent : COLORS.surfacePage,
-                border: `1px solid ${activeTab === 'board' ? COLORS.accent : COLORS.borderLight}`,
-                borderRadius: '10px',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: activeTab === 'board' ? '#ffffff' : COLORS.textMuted,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <LayoutGrid size={16} />
-              Board
-            </button>
-
-            {/* Calendar Tab */}
-            <button
-              onClick={() => { setActiveTab('calendar'); navigateToCalendar(); }}
-              style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '12px 16px',
-                backgroundColor: activeTab === 'calendar' ? COLORS.accent : COLORS.surfacePage,
-                border: `1px solid ${activeTab === 'calendar' ? COLORS.accent : COLORS.borderLight}`,
-                borderRadius: '10px',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: activeTab === 'calendar' ? '#ffffff' : COLORS.textMuted,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Calendar size={16} />
-              Calendar
-            </button>
-          </div>
+          <button onClick={navigateToTasks} style={navTabStyle(true)}>
+            <LayoutGrid size={16} />
+            Task List
+          </button>
+          <button onClick={navigateToBoard} style={navTabStyle(false)}>
+            <List size={16} />
+            Board
+          </button>
+          <button onClick={navigateToCalendar} style={navTabStyle(false)}>
+            <Calendar size={16} />
+            Calendar
+          </button>
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
+      {/* DELETE CONFIRMATION DIALOG */}
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Workstream</AlertDialogTitle>
+            <AlertDialogTitle>Delete workstream?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to permanently delete "{workstream.name}"? This action cannot be undone.
+              This action cannot be undone. This will permanently delete "{workstream.name}" and remove all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              style={{ backgroundColor: COLORS.danger }}
-            >
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -2085,5 +925,153 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
     document.body
   );
 }
+
+// ============================================================================
+// STYLE HELPERS
+// ============================================================================
+
+const iconButtonStyle: React.CSSProperties = {
+  width: '36px',
+  height: '36px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: 'transparent',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  color: '#64748b',
+  transition: 'all 0.15s ease'
+};
+
+const sectionLabelStyle: React.CSSProperties = {
+  fontSize: '11px',
+  fontWeight: 600,
+  color: '#64748b',
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em'
+};
+
+const editLinkStyle: React.CSSProperties = {
+  fontSize: '13px',
+  fontWeight: 500,
+  color: '#2563eb',
+  backgroundColor: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  padding: '4px 8px',
+  borderRadius: '4px'
+};
+
+const primaryButtonStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '6px',
+  padding: '8px 16px',
+  backgroundColor: '#2563eb',
+  color: '#ffffff',
+  border: 'none',
+  borderRadius: '6px',
+  fontSize: '13px',
+  fontWeight: 500,
+  cursor: 'pointer'
+};
+
+const secondaryButtonStyle: React.CSSProperties = {
+  padding: '8px 16px',
+  backgroundColor: '#f1f5f9',
+  color: '#475569',
+  border: '1px solid #e2e8f0',
+  borderRadius: '6px',
+  fontSize: '13px',
+  fontWeight: 500,
+  cursor: 'pointer'
+};
+
+const avatarStyle = (color: string, size = 32): React.CSSProperties => ({
+  width: `${size}px`,
+  height: `${size}px`,
+  borderRadius: '50%',
+  backgroundColor: color,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: size > 32 ? '14px' : '12px',
+  fontWeight: 600,
+  color: '#ffffff',
+  flexShrink: 0
+});
+
+const memberCardStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '12px 14px',
+  backgroundColor: '#f8fafc',
+  border: '1px solid #e2e8f0',
+  borderRadius: '10px'
+};
+
+const statCardStyle: React.CSSProperties = {
+  padding: '16px',
+  backgroundColor: '#f8fafc',
+  border: '1px solid #e2e8f0',
+  borderRadius: '10px',
+  textAlign: 'center'
+};
+
+const dropdownStyle: React.CSSProperties = {
+  position: 'absolute',
+  top: '100%',
+  left: 0,
+  right: 0,
+  marginTop: '4px',
+  backgroundColor: '#ffffff',
+  border: '1px solid #e2e8f0',
+  borderRadius: '10px',
+  boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
+  zIndex: 9999,
+  overflow: 'hidden'
+};
+
+const searchInputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '8px 8px 8px 36px',
+  fontSize: '14px',
+  border: '1px solid #e2e8f0',
+  borderRadius: '6px',
+  outline: 'none'
+};
+
+const dropdownItemStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+  width: '100%',
+  padding: '10px 12px',
+  backgroundColor: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  textAlign: 'left',
+  transition: 'background-color 0.1s ease'
+};
+
+const navTabStyle = (isActive: boolean): React.CSSProperties => ({
+  flex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '6px',
+  padding: '10px 16px',
+  backgroundColor: isActive ? '#2563eb' : '#ffffff',
+  color: isActive ? '#ffffff' : '#475569',
+  border: isActive ? 'none' : '1px solid #e2e8f0',
+  borderRadius: '8px',
+  fontSize: '13px',
+  fontWeight: 500,
+  cursor: 'pointer',
+  transition: 'all 0.15s ease'
+});
 
 export default WorkstreamDrawer;
