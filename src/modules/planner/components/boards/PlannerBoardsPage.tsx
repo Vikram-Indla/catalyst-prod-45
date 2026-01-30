@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';
-import { TaskDetailModal } from '../TaskDetailModal';
+import { TaskDetailModalV4 } from '../TaskDetailModal';
 import { PlannerViewHeader } from '../shared/PlannerViewHeader';
 import { PlannerSearchBar } from '../PlannerSearchBar';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
@@ -147,7 +147,7 @@ export function PlannerBoardsPage({
         defaultStatusId={createStatusId}
       />
 
-      <TaskDetailModal
+      <TaskDetailModalV4
         taskId={selectedTaskId}
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
