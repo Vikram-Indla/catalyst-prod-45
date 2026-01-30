@@ -396,7 +396,7 @@ function WorkstreamDropdown({ task, workstreamColors, width, onUpdate }: Workstr
 }
 
 // ============================================================
-// LABELS DROPDOWN - Inline editable labels with checkmarks
+// LABELS DROPDOWN - Inline editable labels with multi-select
 // ============================================================
 interface LabelsDropdownProps {
   task: TaskListTask;
@@ -407,13 +407,13 @@ interface LabelsDropdownProps {
 function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [updatingLabels, setUpdatingLabels] = useState<Set<string>>(new Set());
   const [localLabels, setLocalLabels] = useState<Label[]>(taskLabels);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const queryClient = useQueryClient();
   const { labels: allLabels, isLoading: labelsLoading } = useLabels();
 
-  // Sync with props
+  // Sync with props when external data changes (realtime updates)
   useEffect(() => {
     setLocalLabels(taskLabels);
   }, [taskLabels]);
@@ -435,8 +435,12 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
   }, [localLabels]);
 
   const toggleLabel = async (label: Label) => {
-    setIsUpdating(true);
-    const isAssigned = isLabelAssigned(label.id);
+    const labelId = label.id;
+    
+    // Mark this label as updating
+    setUpdatingLabels(prev => new Set(prev).add(labelId));
+    
+    const isAssigned = isLabelAssigned(labelId);
 
     try {
       if (isAssigned) {
@@ -445,10 +449,10 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
           .from('planner_task_labels')
           .delete()
           .eq('task_id', task.id)
-          .eq('label_id', label.id);
+          .eq('label_id', labelId);
         
         if (error) throw error;
-        setLocalLabels(prev => prev.filter(l => l.id !== label.id));
+        setLocalLabels(prev => prev.filter(l => l.id !== labelId));
       } else {
         // Add label
         const { data: { user } } = await supabase.auth.getUser();
@@ -456,7 +460,7 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
           .from('planner_task_labels')
           .insert({
             task_id: task.id,
-            label_id: label.id,
+            label_id: labelId,
             assigned_by: user?.id
           });
         
@@ -470,9 +474,40 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
       console.error('Error toggling label:', error);
       toast.error('Failed to update label');
     } finally {
-      setIsUpdating(false);
+      setUpdatingLabels(prev => {
+        const next = new Set(prev);
+        next.delete(labelId);
+        return next;
+      });
     }
   };
+
+  const removeAllLabels = async () => {
+    if (localLabels.length === 0) return;
+    
+    // Mark all as updating
+    const allIds = new Set(localLabels.map(l => l.id));
+    setUpdatingLabels(allIds);
+    
+    try {
+      const { error } = await supabase
+        .from('planner_task_labels')
+        .delete()
+        .eq('task_id', task.id);
+      
+      if (error) throw error;
+      setLocalLabels([]);
+      queryClient.invalidateQueries({ queryKey: ['task-labels-map'] });
+      toast.success('All labels removed');
+    } catch (error) {
+      console.error('Error removing all labels:', error);
+      toast.error('Failed to remove labels');
+    } finally {
+      setUpdatingLabels(new Set());
+    }
+  };
+
+  const hasAssignedLabels = localLabels.length > 0;
 
   return (
     <td style={{ width }} onClick={(e) => e.stopPropagation()}>
@@ -493,7 +528,10 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
                 )}
               </div>
             ) : (
-              <span className="text-muted-foreground text-sm">—</span>
+              <span className="text-muted-foreground text-sm flex items-center gap-1">
+                <Plus className="w-3 h-3" />
+                Add label
+              </span>
             )}
           </button>
         </PopoverTrigger>
@@ -501,7 +539,7 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
           className="w-64 p-0 z-[500] bg-popover border border-border shadow-lg" 
           align="start"
         >
-          {/* Search input */}
+          {/* Header with search and clear all */}
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -514,6 +552,15 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
                 className="w-full pl-8 pr-2.5 py-1.5 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
+            {hasAssignedLabels && (
+              <button
+                onClick={removeAllLabels}
+                disabled={updatingLabels.size > 0}
+                className="w-full mt-2 text-xs text-destructive hover:text-destructive/80 font-medium text-left px-1 disabled:opacity-50"
+              >
+                Remove all labels ({localLabels.length})
+              </button>
+            )}
           </div>
           
           {/* Labels list */}
@@ -529,6 +576,7 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
             ) : (
               filteredLabels.map((label) => {
                 const isAssigned = isLabelAssigned(label.id);
+                const isUpdating = updatingLabels.has(label.id);
                 return (
                   <button
                     key={label.id}
@@ -537,7 +585,7 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
                     className={cn(
                       "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
                       isAssigned ? "bg-muted font-medium" : "hover:bg-muted/50",
-                      isUpdating && "opacity-50 cursor-not-allowed"
+                      isUpdating && "opacity-50 cursor-wait"
                     )}
                   >
                     {/* Color dot */}
@@ -547,8 +595,12 @@ function LabelsDropdown({ task, taskLabels, width }: LabelsDropdownProps) {
                     />
                     {/* Label name */}
                     <span className="flex-1 text-left truncate">{label.name}</span>
-                    {/* Checkmark if assigned */}
-                    {isAssigned && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
+                    {/* Loading or checkmark */}
+                    {isUpdating ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-muted-foreground flex-shrink-0" />
+                    ) : isAssigned ? (
+                      <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                    ) : null}
                   </button>
                 );
               })

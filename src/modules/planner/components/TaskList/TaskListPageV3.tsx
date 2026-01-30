@@ -39,6 +39,7 @@ import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { usePlannerRealtime } from '../../hooks/usePlannerRealtime';
 import { useUpdatePlannerTask } from '../../hooks/usePlannerTasks';
 import { useTaskLabelsMap } from '../../hooks/useTaskLabelsMap';
+import { useTaskLabelsRealtime } from '../../hooks/useTaskLabelsRealtime';
 import { TaskListRowV3 } from './TaskListRowV3';
 import { BulkActionBar } from '../task-list/BulkActionBar';
 import { LabelsFilter } from '@/components/planner/shared/LabelsFilter';
@@ -143,8 +144,9 @@ export function TaskListPageV3({ onTaskClick, onCreateTask }: TaskListPageV3Prop
     });
   }, [tasks, labelsMap, selectedLabelFilters]);
 
-  // Real-time subscription
+  // Real-time subscriptions
   usePlannerRealtime(null);
+  useTaskLabelsRealtime();
 
   // Sync URL params to filter state
   useEffect(() => {
