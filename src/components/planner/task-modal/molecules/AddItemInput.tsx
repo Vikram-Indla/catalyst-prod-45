@@ -1,5 +1,5 @@
 // ============================================================================
-// MOLECULE: AddItemInput — Input for adding checklist items
+// MOLECULE: AddItemInput — Input for adding checklist items (FIX 5)
 // ============================================================================
 
 import React, { useState } from 'react';
@@ -33,9 +33,12 @@ export const AddItemInput: React.FC<AddItemInputProps> = ({
         gap: '14px',
         padding: '14px 16px',
         backgroundColor: isFocused ? COLORS.surfaceCard : COLORS.surfacePage,
-        border: `2px ${isFocused ? 'solid' : 'dashed'} ${isFocused ? COLORS.accent : COLORS.borderDefault}`,
+        // FIX 5: Subtle dashed border that becomes solid blue on focus
+        border: `1.5px ${isFocused ? 'solid' : 'dashed'} ${isFocused ? '#3b82f6' : '#cbd5e1'}`,
         borderRadius: '10px',
-        transition: 'all 0.2s ease'
+        transition: 'all 0.2s ease',
+        // FIX 5: Subtle shadow, not heavy
+        boxShadow: isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none'
       }}
     >
       {/* PLUS ICON — 22px blue box */}
