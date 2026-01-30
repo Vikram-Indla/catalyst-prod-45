@@ -16,6 +16,7 @@ import {
   ModalContent,
 } from '@/components/overlays/AtlassianModal';
 import '@/styles/task-detail-modal-enterprise.css';
+import '@/styles/task-detail-modal-invasive.css';
 
 import { DrawerHeader } from './DrawerHeader';
 import { TaskDescription } from './TaskDescription';

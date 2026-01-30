@@ -1,13 +1,14 @@
 // ============================================================
-// ACTIVITY SECTION - POLISHED
+// ACTIVITY SECTION - ENTERPRISE CLEAN V2
 // Tabs for All/Comments/History with styled feed
+// Matches reference screenshots with proper formatting
 // ============================================================
 
 import { useState, useEffect } from 'react';
-import { MessageSquare, Send, History, ListFilter } from 'lucide-react';
+import { MessageSquare, Send, History, ListFilter, Clock, UserPlus, Edit3, Paperclip, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { TaskComment, TaskActivity } from '../../hooks/useTaskDetails';
@@ -23,12 +24,16 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
   const [activeTab, setActiveTab] = useState<'all' | 'comments' | 'history'>('all');
   const [newComment, setNewComment] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
+  const [userInitials, setUserInitials] = useState('U');
   const addComment = useAddComment();
 
-  // Get current user ID
+  // Get current user ID and name
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUserId(data.user?.id || null);
+      const name = data.user?.user_metadata?.full_name || data.user?.email || '';
+      const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
+      setUserInitials(initials);
     });
   }, []);
 
@@ -63,14 +68,8 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
 
   return (
     <div className="space-y-4">
-      {/* Header - Sentence case */}
-      <div className="flex items-center gap-2">
-        <MessageSquare className="w-4 h-4 text-muted-foreground" />
-        <span className="text-xs font-medium text-muted-foreground">Activity</span>
-      </div>
-
-      {/* Styled Tabs - Theme-aware */}
-      <div className="flex gap-1 p-1 bg-muted rounded-lg">
+      {/* Styled Tabs - Segmented control style matching reference */}
+      <div className="flex bg-muted/50 rounded-lg p-1">
         {([
           { key: 'all', label: 'All', icon: ListFilter },
           { key: 'comments', label: 'Comments', icon: MessageSquare },
@@ -80,20 +79,20 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+              "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-md transition-all",
               activeTab === tab.key 
-                ? "bg-background text-foreground shadow-sm" 
+                ? "bg-background text-foreground shadow-sm border border-border/50" 
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <tab.icon className="w-3.5 h-3.5" />
+            <tab.icon className="w-4 h-4" />
             {tab.label}
           </button>
         ))}
       </div>
 
       {/* Activity Feed */}
-      <div className="space-y-4 max-h-64 overflow-y-auto">
+      <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
         {activeTab === 'all' && (
           allItems.length === 0 ? (
             <EmptyState message="No activity yet" />
@@ -101,7 +100,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
             allItems.map(item => (
               item.type === 'comment' 
                 ? <CommentItem key={`c-${item.id}`} comment={item as TaskComment} />
-                : <ActivityItem key={`a-${item.id}`} activity={item as TaskActivity} />
+                : <HistoryItem key={`a-${item.id}`} activity={item as TaskActivity} />
             ))
           )
         )}
@@ -121,18 +120,20 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
             <EmptyState message="No activity recorded yet." />
           ) : (
             activity.map(item => (
-              <ActivityItem key={item.id} activity={item} />
+              <HistoryItem key={item.id} activity={item} />
             ))
           )
         )}
       </div>
 
-      {/* Comment Input - Theme-aware */}
-      <div className="flex gap-3">
-        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground flex-shrink-0">
-          U
+      {/* Comment Composer - Styled like reference */}
+      <div className="flex gap-3 pt-2">
+        <div 
+          className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground flex-shrink-0"
+        >
+          {userInitials}
         </div>
-        <div className="flex-1 relative">
+        <div className="flex-1 relative border border-border rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all">
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
@@ -143,23 +144,18 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
               }
             }}
             placeholder="Write a comment... Type @ to mention"
-            rows={2}
-            className="w-full px-3 py-2 pr-12 border border-border rounded-lg text-sm resize-none bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+            rows={3}
+            className="w-full px-4 py-3 pr-14 text-sm resize-none bg-background text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
           <Button
             size="icon"
             onClick={handleSubmitComment}
-            disabled={!newComment.trim()}
-            className="absolute bottom-2 right-2 h-7 w-7"
+            disabled={!newComment.trim() || addComment.isPending}
+            className="absolute bottom-2.5 right-2.5 h-9 w-9 rounded-full"
           >
-            <Send className="w-3.5 h-3.5" />
+            <Send className="w-4 h-4" />
           </Button>
         </div>
-      </div>
-      
-      {/* Keyboard hint */}
-      <div className="text-[10px] text-muted-foreground/60 text-center">
-        Press <kbd className="px-1 py-0.5 rounded bg-muted text-muted-foreground font-mono text-[9px]">⌘</kbd> + <kbd className="px-1 py-0.5 rounded bg-muted text-muted-foreground font-mono text-[9px]">Enter</kbd> to send
       </div>
     </div>
   );
@@ -168,9 +164,9 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
 // Empty state component for consistent styling
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="text-center py-8">
-      <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
-        <MessageSquare className="w-5 h-5 text-muted-foreground" />
+    <div className="text-center py-10">
+      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
+        <MessageSquare className="w-6 h-6 text-muted-foreground/50" />
       </div>
       <p className="text-sm text-muted-foreground">{message}</p>
     </div>
@@ -179,21 +175,21 @@ function EmptyState({ message }: { message: string }) {
 
 function CommentItem({ comment }: { comment: TaskComment }) {
   const authorName = comment.author?.full_name || 'Unknown';
-  const initials = authorName.split(' ').map(n => n[0]).join('').slice(0, 2);
+  const initials = authorName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   
   return (
     <div className="flex gap-3">
-      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground flex-shrink-0">
+      <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground flex-shrink-0">
         {initials}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-foreground">{authorName}</span>
-          <span className="text-[11px] text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
           </span>
         </div>
-        <div className="mt-1.5 p-3 bg-muted/50 rounded-lg text-sm text-foreground/80 leading-relaxed">
+        <div className="mt-2 p-3 bg-muted/50 rounded-lg text-sm text-foreground/90 leading-relaxed">
           {comment.content}
         </div>
       </div>
@@ -201,71 +197,118 @@ function CommentItem({ comment }: { comment: TaskComment }) {
   );
 }
 
-function ActivityItem({ activity }: { activity: TaskActivity }) {
+// History item styled to match the reference screenshots
+function HistoryItem({ activity }: { activity: TaskActivity }) {
   const actorName = activity.actor?.full_name || 'System';
-  const initials = actorName.split(' ').map(n => n[0]).join('').slice(0, 2);
   
+  const getActionIcon = () => {
+    const action = activity.action_type;
+    switch (action) {
+      case 'created':
+        return <Clock className="w-4 h-4" />;
+      case 'assignment':
+      case 'assignee_changed':
+        return <UserPlus className="w-4 h-4" />;
+      case 'status_changed':
+      case 'status_change':
+        return <Edit3 className="w-4 h-4" />;
+      case 'attachment':
+        return <Paperclip className="w-4 h-4" />;
+      case 'checklist':
+      case 'checklist_item_completed':
+        return <CheckSquare className="w-4 h-4" />;
+      default:
+        return <Edit3 className="w-4 h-4" />;
+    }
+  };
+
   const getActionText = () => {
-    // Handle planner_activity_log action types
     const action = activity.action_type;
     const newVal = activity.new_value;
+    const oldVal = activity.old_value;
     
     // Try to parse JSON if it's a stringified object
     let parsedNewVal: any = newVal;
+    let parsedOldVal: any = oldVal;
     try {
       if (newVal && newVal.startsWith('{')) {
         parsedNewVal = JSON.parse(newVal);
+      }
+      if (oldVal && oldVal.startsWith('{')) {
+        parsedOldVal = JSON.parse(oldVal);
       }
     } catch { /* ignore */ }
     
     switch (action) {
       case 'created':
-        return `created this task`;
-      case 'completed':
-        return `marked as completed`;
+        return (
+          <>
+            <strong>Task</strong> created by <strong>{actorName}</strong>
+          </>
+        );
       case 'status_changed':
-        if (typeof parsedNewVal === 'object' && parsedNewVal.from && parsedNewVal.to) {
-          return `changed status from "${parsedNewVal.from}" to "${parsedNewVal.to}"`;
-        }
-        return 'changed status';
-      case 'priority_changed':
-        if (typeof parsedNewVal === 'object' && parsedNewVal.from && parsedNewVal.to) {
-          return `changed priority from "${parsedNewVal.from}" to "${parsedNewVal.to}"`;
-        }
-        return 'changed priority';
-      case 'assignee_changed':
-        return `changed assignee`;
-      case 'updated':
-        return `updated this task`;
       case 'status_change':
-        return `changed status from "${activity.old_value}" to "${newVal}"`;
+        if (typeof parsedNewVal === 'object' && parsedNewVal.from && parsedNewVal.to) {
+          return (
+            <>
+              <strong>{actorName}</strong> changed status from <strong>{parsedNewVal.from}</strong> to <strong>{parsedNewVal.to}</strong>
+            </>
+          );
+        }
+        if (oldVal && newVal) {
+          return (
+            <>
+              <strong>{actorName}</strong> changed status from <strong>{oldVal}</strong> to <strong>{newVal}</strong>
+            </>
+          );
+        }
+        return <><strong>{actorName}</strong> changed status</>;
       case 'assignment':
-        return newVal ? `assigned to ${newVal}` : 'removed assignment';
-      case 'edit':
-        return `updated ${activity.old_value}`;
-      case 'comment':
-        return 'added a comment';
+      case 'assignee_changed':
+        return (
+          <>
+            <strong>{actorName}</strong> assigned <strong>{newVal || 'someone'}</strong> to this task
+          </>
+        );
       case 'attachment':
-        return 'added an attachment';
+        return (
+          <>
+            <strong>{actorName}</strong> attached <strong>{newVal || 'a file'}</strong>
+          </>
+        );
+      case 'checklist':
+      case 'checklist_item_completed':
+        return (
+          <>
+            <strong>{actorName}</strong> completed checklist item <strong>"{newVal}"</strong>
+          </>
+        );
+      case 'priority_changed':
+        return (
+          <>
+            <strong>{actorName}</strong> changed priority
+          </>
+        );
+      case 'updated':
+      case 'edit':
+        return <><strong>{actorName}</strong> updated this task</>;
       default:
-        return action || 'made a change';
+        return <><strong>{actorName}</strong> made a change</>;
     }
   };
   
   return (
-    <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground flex-shrink-0">
-        {initials}
+    <div className="flex items-start gap-3 py-3 border-b border-border/50 last:border-0">
+      <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground flex-shrink-0">
+        {getActionIcon()}
       </div>
-      <div className="flex-1 min-w-0 py-1">
-        <span className="text-sm">
-          <span className="font-semibold text-foreground">{actorName}</span>
-          {' '}
-          <span className="text-muted-foreground">{getActionText()}</span>
-        </span>
-        <span className="text-[11px] text-muted-foreground ml-2">
-          {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
-        </span>
+      <div className="flex-1 min-w-0 pt-1">
+        <p className="text-sm text-foreground/90 leading-relaxed">
+          {getActionText()}
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          {format(new Date(activity.created_at), 'MMM d, yyyy')} at {format(new Date(activity.created_at), 'h:mm a')}
+        </p>
       </div>
     </div>
   );
