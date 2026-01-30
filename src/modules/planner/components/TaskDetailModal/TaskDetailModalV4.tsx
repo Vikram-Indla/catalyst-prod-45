@@ -501,7 +501,7 @@ const styles = {
     color: '#0f172a'
   },
   itemLabelCompleted: {
-    color: '#64748b',
+    color: '#94a3b8',
     textDecoration: 'line-through'
   },
   addItemInput: {
@@ -509,13 +509,14 @@ const styles = {
     alignItems: 'center',
     gap: '14px',
     padding: '14px 16px',
-    background: '#f8fafc',
-    border: '2px dashed #cbd5e1',
-    borderRadius: '10px'
+    background: '#ffffff',
+    border: '2px solid #2563eb',
+    borderRadius: '10px',
+    marginTop: '12px'
   },
   addItemIcon: {
-    width: '22px',
-    height: '22px',
+    width: '26px',
+    height: '26px',
     background: '#2563eb',
     borderRadius: '6px',
     display: 'flex',
@@ -802,8 +803,8 @@ export function TaskDetailModalV4({ taskId, open, onOpenChange }: TaskDetailModa
     { id: 'activity', label: 'Activity', badge: activities.length || undefined }
   ];
 
-  // Checklist calculations
-  const completedCount = checklistItems.filter((item: any) => item.completed).length;
+  // Checklist calculations - use is_completed field
+  const completedCount = checklistItems.filter((item: any) => item.is_completed).length;
   const progressPercent = checklistItems.length > 0 ? Math.round((completedCount / checklistItems.length) * 100) : 0;
 
   const getStatusColor = (slug: string) => STATUS_COLORS[slug] || '#94a3b8';
@@ -1170,7 +1171,7 @@ export function TaskDetailModalV4({ taskId, open, onOpenChange }: TaskDetailModa
                     </div>
                     <input
                       style={styles.addItemInputField}
-                      placeholder="Add new item..."
+                      placeholder="Add checklist item..."
                       value={newChecklistItem}
                       onChange={(e) => setNewChecklistItem(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAddChecklistItem()}
