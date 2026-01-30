@@ -23,6 +23,25 @@
   --app-safe-top: env(safe-area-inset-top, 0px);
   --app-header-h: 56px;
   --app-top-offset: calc(var(--app-safe-top) + var(--app-header-h));
+  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     GLOBAL Z-INDEX LAYER TOKENS — Canonical overlay architecture
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --z-base: 1;
+  --z-dropdown: 50;
+  --z-footer: 60;
+  --z-sticky: 100;
+  --z-popover: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-modal-popover: 500;  /* Overlays inside modals (dropdowns, calendars) */
+  --z-toast: 600;
+  --z-max: 9999;
+  
+  /* Footer collision avoidance for overlays */
+  --app-footer-h: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --overlay-collision-bottom: calc(var(--app-footer-h) + var(--safe-bottom) + 8px);
 }
 
 /* ════════════════════════════════════════════════════════════════════════════

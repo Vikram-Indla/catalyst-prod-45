@@ -3,3 +3,4 @@
 // ============================================================================
 
 export { formatDate, formatDateShort } from './formatDate';
+export { useOverlayPosition } from './useOverlayPosition';
