@@ -10,12 +10,6 @@ export { DateDropdown } from './DateDropdown';
 export { TabButton } from './TabButton';
 export { AddLabelsButton } from './AddLabelsButton';
 
-// Portal-based overlays (collision-aware)
-export { PortalDropdown } from './PortalDropdown';
-export { PortalDatePicker } from './PortalDatePicker';
-export { PortalMetaDropdown } from './PortalMetaDropdown';
-export { PortalAssigneeDropdown } from './PortalAssigneeDropdown';
-
 // Items
 export { ChecklistItem } from './ChecklistItem';
 export { LinkItem } from './LinkItem';

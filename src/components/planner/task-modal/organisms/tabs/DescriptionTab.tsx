@@ -1,12 +1,11 @@
 // ============================================================================
 // ORGANISM: DescriptionTab — Description tab content
 // NO "Description" header — starts directly with textarea
-// Uses Portal-based dropdowns for footer collision avoidance
 // ============================================================================
 
 import React, { useState } from 'react';
 import { COLORS, PRIORITY_COLORS, PRIORITIES } from '../../colors';
-import { PortalDropdown, PortalDatePicker, AddLabelsButton } from '../../molecules';
+import { FieldDropdown, DateDropdown, AddLabelsButton } from '../../molecules';
 import { Task, TaskPriority } from '../../types';
 
 interface DescriptionTabProps {
@@ -73,8 +72,8 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
           marginTop: '28px'
         }}
       >
-        {/* PRIORITY — Portal-based for collision avoidance */}
-        <PortalDropdown
+        {/* PRIORITY */}
+        <FieldDropdown
           label="Priority"
           value={task.priority}
           options={priorityOptions}
@@ -82,16 +81,16 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
           colorMap={PRIORITY_COLORS}
         />
 
-        {/* DUE DATE — Portal-based for collision avoidance */}
-        <PortalDatePicker
+        {/* DUE DATE */}
+        <DateDropdown
           label="Due Date"
           value={task.dueDate}
           placeholder="Set due date..."
           onChange={onDueDateChange}
         />
 
-        {/* START DATE — Portal-based for collision avoidance */}
-        <PortalDatePicker
+        {/* START DATE */}
+        <DateDropdown
           label="Start Date"
           value={task.startDate}
           placeholder="Set start date..."

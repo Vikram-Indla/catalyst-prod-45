@@ -1,11 +1,10 @@
 // ============================================================================
-// ORGANISM: MetadataBar — 4-column metadata dropdowns (Portal-based)
-// Uses portal overlays to avoid footer collision in modal contexts
+// ORGANISM: MetadataBar — 4-column metadata dropdowns
 // ============================================================================
 
 import React from 'react';
 import { COLORS, STATUS_COLORS, PRIORITY_COLORS, WORKSTREAM_COLORS, STATUSES, PRIORITIES, WORKSTREAMS, DEFAULT_ASSIGNEES } from '../colors';
-import { PortalMetaDropdown, PortalAssigneeDropdown } from '../molecules';
+import { MetaDropdown, AssigneeDropdown } from '../molecules';
 import { Task, TaskStatus, TaskPriority, TaskWorkstream, Assignee } from '../types';
 
 interface MetadataBarProps {
@@ -39,8 +38,8 @@ export const MetadataBar: React.FC<MetadataBarProps> = ({
         borderBottom: `1px solid ${COLORS.borderLight}`
       }}
     >
-      {/* STATUS DROPDOWN — Portal-based */}
-      <PortalMetaDropdown
+      {/* STATUS DROPDOWN */}
+      <MetaDropdown
         label="Status"
         value={task.status}
         options={statusOptions}
@@ -48,8 +47,8 @@ export const MetadataBar: React.FC<MetadataBarProps> = ({
         colorMap={STATUS_COLORS}
       />
 
-      {/* PRIORITY DROPDOWN — Portal-based */}
-      <PortalMetaDropdown
+      {/* PRIORITY DROPDOWN */}
+      <MetaDropdown
         label="Priority"
         value={task.priority}
         options={priorityOptions}
@@ -57,8 +56,8 @@ export const MetadataBar: React.FC<MetadataBarProps> = ({
         colorMap={PRIORITY_COLORS}
       />
 
-      {/* WORKSTREAM DROPDOWN — Portal-based */}
-      <PortalMetaDropdown
+      {/* WORKSTREAM DROPDOWN */}
+      <MetaDropdown
         label="Workstream"
         value={task.workstream}
         options={workstreamOptions}
@@ -66,8 +65,8 @@ export const MetadataBar: React.FC<MetadataBarProps> = ({
         colorMap={WORKSTREAM_COLORS}
       />
 
-      {/* ASSIGNEE DROPDOWN — Portal-based */}
-      <PortalAssigneeDropdown
+      {/* ASSIGNEE DROPDOWN */}
+      <AssigneeDropdown
         value={task.assignee}
         onChange={onAssigneeChange}
         assignees={DEFAULT_ASSIGNEES}
