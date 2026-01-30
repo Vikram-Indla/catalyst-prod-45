@@ -1,31 +1,29 @@
 /**
  * Create Task Modal V10 - TaskBoardModal Aligned
- * Matches TaskBoardModal styling, adds Start Date, removes Status
+ * Uses EXACT same molecules/atoms from TaskBoardModal for consistency
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Plus, Check, Loader2 } from 'lucide-react';
+import { X, Plus, Check, Loader2, ChevronDown, Calendar, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TitleInput } from './fields/TitleInput';
-import { DescriptionToggle } from './fields/DescriptionToggle';
-import { WorkstreamSelect } from './fields/WorkstreamSelect';
-import { AssigneeSelect } from './fields/AssigneeSelect';
-import { PrioritySelect } from './fields/PrioritySelect';
-import { DueDatePicker } from './fields/DueDatePicker';
-import { StartDatePicker } from './fields/StartDatePicker';
 import { useCreateTaskMutation, type CreateTaskInput } from './hooks/useCreateTaskMutation';
 import type { TaskPriority } from '../../types';
 import { format } from 'date-fns';
+import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
+import { usePlannerUsers } from '../../hooks/usePlannerUsers';
 
-// Colors matching TaskBoardModal
-const COLORS = {
-  textPrimary: '#0f172a',
-  textMuted: '#64748b',
-  surfaceCard: '#ffffff',
-  surfacePage: '#f8fafc',
-  borderLight: '#e2e8f0',
-  accent: '#2563eb',
-};
+// Import shared colors & atoms from TaskBoardModal
+import { 
+  COLORS, 
+  PRIORITY_COLORS, 
+  PRIORITIES,
+  WORKSTREAM_COLORS 
+} from '@/components/planner/task-modal/colors';
+import { ColorDot, Avatar, Label } from '@/components/planner/task-modal/atoms';
+
+// ============================================================================
+// CreateTaskModal Component
+// ============================================================================
 
 export interface CreateTaskModalProps {
   open: boolean;
@@ -43,10 +41,11 @@ export function CreateTaskModal({
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [showDescription, setShowDescription] = useState(false);
   const [workstreamId, setWorkstreamId] = useState(defaultWorkstream || '');
   const [assigneeId, setAssigneeId] = useState('');
   const [priority, setPriority] = useState<TaskPriority>('medium');
-  const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd')); // Default to today
+  const [startDate, setStartDate] = useState(new Date().toISOString());
   const [dueDate, setDueDate] = useState('');
   
   // Validation state
@@ -56,26 +55,30 @@ export function CreateTaskModal({
   
   const titleInputRef = useRef<HTMLInputElement>(null);
   const { mutate: createTask, isPending } = useCreateTaskMutation();
+  
+  // Fetch workstreams & users from database
+  const { data: workstreams = [] } = usePlannerWorkstreams();
+  const { data: users = [] } = usePlannerUsers();
 
   // Reset form when modal opens
   useEffect(() => {
     if (open) {
       setTitle('');
       setDescription('');
+      setShowDescription(false);
       setWorkstreamId(defaultWorkstream || '');
       setAssigneeId('');
       setPriority('medium');
-      setStartDate(format(new Date(), 'yyyy-MM-dd')); // Default to today
+      setStartDate(new Date().toISOString());
       setDueDate('');
       setErrors({});
       setShowSuccess(false);
       setSuccessTaskKey('');
-      // Focus title after animation
       setTimeout(() => titleInputRef.current?.focus(), 100);
     }
   }, [open, defaultWorkstream]);
 
-  // Keyboard shortcuts (⌘+Enter to submit, Escape to close)
+  // Keyboard shortcuts
   useEffect(() => {
     if (!open) return;
     
@@ -124,8 +127,8 @@ export function CreateTaskModal({
       workstream_id: workstreamId,
       assignee_id: assigneeId || undefined,
       priority,
-      start_date: startDate || format(new Date(), 'yyyy-MM-dd'),
-      due_date: dueDate || undefined,
+      start_date: startDate ? format(new Date(startDate), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+      due_date: dueDate ? format(new Date(dueDate), 'yyyy-MM-dd') : undefined,
     };
 
     createTask(input, {
@@ -133,7 +136,6 @@ export function CreateTaskModal({
         setSuccessTaskKey(result.task_key);
         setShowSuccess(true);
         
-        // Close after success animation
         setTimeout(() => {
           onSuccess?.(result.task_key);
           onOpenChange(false);
@@ -152,7 +154,7 @@ export function CreateTaskModal({
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop - TaskBoardModal style */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -171,7 +173,7 @@ export function CreateTaskModal({
             aria-hidden="true"
           />
 
-          {/* Modal - TaskBoardModal aligned styling */}
+          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -259,7 +261,7 @@ export function CreateTaskModal({
                 )}
               </AnimatePresence>
 
-              {/* Header - TaskBoardModal style */}
+              {/* Header */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -316,29 +318,108 @@ export function CreateTaskModal({
                 maxHeight: '70vh',
                 overflowY: 'auto',
               }}>
-                {/* Title - Hero Input */}
-                <TitleInput
-                  ref={titleInputRef}
-                  value={title}
-                  onChange={setTitle}
-                  error={errors.title}
-                  label="Title"
-                />
+                {/* Title Input */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <Label size="sm">Title</Label>
+                  <input
+                    ref={titleInputRef}
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Task title..."
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      fontSize: '15px',
+                      fontWeight: 500,
+                      color: COLORS.textPrimary,
+                      backgroundColor: COLORS.surfaceCard,
+                      border: `1px solid ${errors.title ? '#ef4444' : COLORS.borderDefault}`,
+                      borderRadius: '10px',
+                      outline: 'none',
+                      transition: 'all 0.15s ease',
+                      fontFamily: 'inherit',
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = COLORS.borderFocus;
+                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = errors.title ? '#ef4444' : COLORS.borderDefault;
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  />
+                  {errors.title && (
+                    <span style={{ fontSize: '12px', color: '#ef4444' }}>{errors.title}</span>
+                  )}
+                </div>
 
-                {/* Description - Collapsible */}
-                <DescriptionToggle
-                  value={description}
-                  onChange={setDescription}
-                />
+                {/* Description Toggle */}
+                {!showDescription ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowDescription(true)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 12px',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      color: COLORS.accent,
+                      backgroundColor: COLORS.accentLight,
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      width: 'fit-content',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    <Plus size={14} />
+                    Add Description
+                  </button>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <Label size="sm">Description</Label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Add a description..."
+                      rows={3}
+                      style={{
+                        width: '100%',
+                        padding: '12px 14px',
+                        fontSize: '14px',
+                        color: COLORS.textPrimary,
+                        backgroundColor: COLORS.surfaceCard,
+                        border: `1px solid ${COLORS.borderDefault}`,
+                        borderRadius: '10px',
+                        outline: 'none',
+                        resize: 'none',
+                        fontFamily: 'inherit',
+                        transition: 'all 0.15s ease',
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = COLORS.borderFocus;
+                        e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = COLORS.borderDefault;
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    />
+                  </div>
+                )}
 
                 {/* Two-column row: Workstream + Priority */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <WorkstreamSelect
+                  <WorkstreamDropdown
                     value={workstreamId}
                     onChange={setWorkstreamId}
+                    workstreams={workstreams}
                     error={errors.workstream}
                   />
-                  <PrioritySelect
+                  <PriorityDropdown
                     value={priority}
                     onChange={setPriority}
                   />
@@ -346,24 +427,29 @@ export function CreateTaskModal({
 
                 {/* Two-column row: Assignee + Start Date */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <AssigneeSelect
+                  <AssigneeDropdown
                     value={assigneeId}
                     onChange={setAssigneeId}
+                    users={users}
                   />
-                  <StartDatePicker
+                  <DateDropdown
+                    label="Start Date"
                     value={startDate}
                     onChange={setStartDate}
+                    placeholder="Set date..."
                   />
                 </div>
 
                 {/* Due Date - Full width */}
-                <DueDatePicker
+                <DateDropdown
+                  label="Due Date"
                   value={dueDate}
                   onChange={setDueDate}
+                  placeholder="Set date..."
                 />
               </div>
 
-              {/* Footer - TaskBoardModal style */}
+              {/* Footer */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -414,6 +500,7 @@ export function CreateTaskModal({
                       cursor: isPending ? 'not-allowed' : 'pointer',
                       opacity: isPending ? 0.5 : 1,
                       transition: 'background-color 0.15s',
+                      fontFamily: 'inherit',
                     }}
                     onMouseEnter={(e) => {
                       if (!isPending) e.currentTarget.style.backgroundColor = COLORS.surfaceCard;
@@ -443,6 +530,7 @@ export function CreateTaskModal({
                       opacity: (isPending || !title.trim()) ? 0.5 : 1,
                       boxShadow: (isPending || !title.trim()) ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)',
                       transition: 'all 0.15s',
+                      fontFamily: 'inherit',
                     }}
                     onMouseEnter={(e) => {
                       if (!isPending && title.trim()) {
@@ -472,7 +560,6 @@ export function CreateTaskModal({
             </div>
           </motion.div>
 
-          {/* Keyframe for spinner */}
           <style>{`
             @keyframes spin {
               from { transform: rotate(0deg); }
@@ -482,6 +569,641 @@ export function CreateTaskModal({
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+// ============================================================================
+// WorkstreamDropdown - Matches TaskBoardModal MetaDropdown
+// ============================================================================
+
+interface WorkstreamDropdownProps {
+  value: string;
+  onChange: (value: string) => void;
+  workstreams: { id: string; name: string; color?: string }[];
+  error?: string;
+}
+
+function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedWorkstream = workstreams.find(w => w.id === value);
+  const displayName = selectedWorkstream?.name || 'Select workstream...';
+  const displayColor = selectedWorkstream?.color || WORKSTREAM_COLORS[displayName] || '#94a3b8';
+
+  return (
+    <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
+      <Label size="sm">Workstream</Label>
+      
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '10px 14px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${error ? '#ef4444' : isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+          borderRadius: '10px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+        }}
+      >
+        {selectedWorkstream && <ColorDot color={displayColor} size={10} />}
+        <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: selectedWorkstream ? COLORS.textPrimary : COLORS.textLight }}>
+          {displayName}
+        </span>
+        <ChevronDown size={16} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+      </div>
+
+      {error && <span style={{ fontSize: '12px', color: '#ef4444' }}>{error}</span>}
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '12px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+            zIndex: 99999,
+            padding: '6px',
+            maxHeight: '280px',
+            overflowY: 'auto'
+          }}
+        >
+          {workstreams.map((ws) => {
+            const color = ws.color || WORKSTREAM_COLORS[ws.name] || '#94a3b8';
+            return (
+              <DropdownItem
+                key={ws.id}
+                value={ws.name}
+                color={color}
+                isSelected={value === ws.id}
+                onClick={() => { onChange(ws.id); setIsOpen(false); }}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// PriorityDropdown - Matches TaskBoardModal MetaDropdown
+// ============================================================================
+
+interface PriorityDropdownProps {
+  value: TaskPriority;
+  onChange: (value: TaskPriority) => void;
+}
+
+function PriorityDropdown({ value, onChange }: PriorityDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const displayValue = value.charAt(0).toUpperCase() + value.slice(1);
+  const currentColor = PRIORITY_COLORS[displayValue] || '#94a3b8';
+
+  return (
+    <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
+      <Label size="sm">Priority</Label>
+      
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '10px 14px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+          borderRadius: '10px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+        }}
+      >
+        <ColorDot color={currentColor} size={10} />
+        <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: COLORS.textPrimary }}>
+          {displayValue}
+        </span>
+        <ChevronDown size={16} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+      </div>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '12px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+            zIndex: 99999,
+            padding: '6px',
+            maxHeight: '280px',
+            overflowY: 'auto'
+          }}
+        >
+          {PRIORITIES.map((p) => (
+            <DropdownItem
+              key={p}
+              value={p}
+              color={PRIORITY_COLORS[p]}
+              isSelected={displayValue === p}
+              onClick={() => { onChange(p.toLowerCase() as TaskPriority); setIsOpen(false); }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// AssigneeDropdown - Matches TaskBoardModal AssigneeDropdown
+// ============================================================================
+
+interface AssigneeDropdownProps {
+  value: string;
+  onChange: (value: string) => void;
+  users: { id: string; name: string; initials?: string; avatarUrl?: string; email?: string }[];
+}
+
+function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [search, setSearch] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+        setSearch('');
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedUser = users.find(u => u.id === value);
+  const displayName = selectedUser?.name || 'Select assignee...';
+  const displayInitials = selectedUser?.initials || (selectedUser ? selectedUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '?');
+  
+  // Generate color from name
+  const getColorFromName = (name: string): string => {
+    const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b', '#6366f1'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+  
+  const displayColor = selectedUser ? getColorFromName(selectedUser.name) : '#94a3b8';
+
+  const filteredUsers = users.filter(u => 
+    u.name.toLowerCase().includes(search.toLowerCase()) ||
+    (u.email && u.email.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  return (
+    <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
+      <Label size="sm">Assignee</Label>
+      
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '10px 14px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+          borderRadius: '10px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+        }}
+      >
+        {selectedUser && <Avatar initials={displayInitials} color={displayColor} size="sm" />}
+        <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: selectedUser ? COLORS.textPrimary : COLORS.textLight }}>
+          {displayName}
+        </span>
+        <ChevronDown size={16} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+      </div>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '12px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+            zIndex: 99999,
+            padding: '6px',
+            maxHeight: '320px',
+            overflowY: 'auto'
+          }}
+        >
+          {/* Search Input */}
+          <div style={{ padding: '6px', borderBottom: `1px solid ${COLORS.borderLight}`, marginBottom: '6px' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 10px',
+              backgroundColor: COLORS.surfacePage,
+              borderRadius: '8px',
+              border: `1px solid ${COLORS.borderLight}`,
+            }}>
+              <Search size={16} style={{ color: COLORS.textLight }} />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search people..."
+                autoFocus
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  outline: 'none',
+                  backgroundColor: 'transparent',
+                  fontSize: '14px',
+                  color: COLORS.textPrimary,
+                  fontFamily: 'inherit',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Unassigned Option */}
+          <AssigneeItem
+            name="Unassigned"
+            initials="?"
+            color="#94a3b8"
+            isSelected={!value}
+            onClick={() => { onChange(''); setIsOpen(false); setSearch(''); }}
+          />
+
+          {/* User List */}
+          {filteredUsers.map((user) => {
+            const initials = user.initials || user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+            const color = getColorFromName(user.name);
+            return (
+              <AssigneeItem
+                key={user.id}
+                name={user.name}
+                email={user.email}
+                initials={initials}
+                color={color}
+                isSelected={value === user.id}
+                onClick={() => { onChange(user.id); setIsOpen(false); setSearch(''); }}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// DateDropdown - Matches TaskBoardModal DateDropdown
+// ============================================================================
+
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+interface DateDropdownProps {
+  label: string;
+  value?: string;
+  placeholder?: string;
+  onChange: (value: string) => void;
+}
+
+function DateDropdown({ label, value, placeholder = 'Set date...', onChange }: DateDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [viewDate, setViewDate] = useState(() => {
+    if (value) return new Date(value);
+    return new Date();
+  });
+  
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const selectedDate = value ? new Date(value) : null;
+  
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const formatDisplayDate = (date: Date): string => {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const getDaysInMonth = (year: number, month: number): number => new Date(year, month + 1, 0).getDate();
+  const getFirstDayOfMonth = (year: number, month: number): number => new Date(year, month, 1).getDay();
+
+  const handlePrevMonth = () => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
+  const handleNextMonth = () => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
+
+  const handleSelectDate = (day: number) => {
+    const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+    onChange(newDate.toISOString());
+    setIsOpen(false);
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange('');
+  };
+
+  const renderCalendar = () => {
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const daysInMonth = getDaysInMonth(year, month);
+    const firstDay = getFirstDayOfMonth(year, month);
+    const today = new Date();
+    
+    const days: React.ReactNode[] = [];
+    
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} style={{ width: '36px', height: '36px' }} />);
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const isSelected = selectedDate && selectedDate.getDate() === day && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
+      const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+      
+      days.push(
+        <button
+          key={day}
+          onClick={() => handleSelectDate(day)}
+          style={{
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '8px',
+            border: isToday && !isSelected ? `1px solid ${COLORS.accent}` : 'none',
+            backgroundColor: isSelected ? COLORS.accent : 'transparent',
+            color: isSelected ? '#ffffff' : COLORS.textPrimary,
+            fontSize: '14px',
+            fontWeight: isSelected || isToday ? 600 : 400,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            transition: 'background-color 0.1s ease',
+          }}
+          onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = COLORS.surfaceHover; }}
+          onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+        >
+          {day}
+        </button>
+      );
+    }
+    
+    return days;
+  };
+
+  return (
+    <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
+      <Label size="sm">{label}</Label>
+
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '10px 14px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderFocus : COLORS.borderDefault)}`,
+          borderRadius: '10px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none'
+        }}
+      >
+        <Calendar size={18} style={{ color: COLORS.textLight, flexShrink: 0 }} />
+        <span style={{ flex: 1, fontSize: '14px', color: selectedDate ? COLORS.textPrimary : COLORS.textLight }}>
+          {selectedDate ? formatDisplayDate(selectedDate) : placeholder}
+        </span>
+        {selectedDate && (
+          <X size={16} style={{ color: COLORS.textLight, cursor: 'pointer' }} onClick={handleClear} />
+        )}
+        <ChevronDown size={16} style={{ color: COLORS.textLight, transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }} />
+      </div>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '12px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+            zIndex: 99999,
+            padding: '16px',
+            width: '300px'
+          }}
+        >
+          {/* Month Navigation */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <button onClick={handlePrevMonth} style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', border: `1px solid ${COLORS.borderLight}`, borderRadius: '8px', cursor: 'pointer', color: COLORS.textMuted }}>
+              <ChevronLeft size={18} />
+            </button>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: COLORS.textPrimary }}>
+              {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
+            </span>
+            <button onClick={handleNextMonth} style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', border: `1px solid ${COLORS.borderLight}`, borderRadius: '8px', cursor: 'pointer', color: COLORS.textMuted }}>
+              <ChevronRight size={18} />
+            </button>
+          </div>
+
+          {/* Day Headers */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
+            {DAYS.map(day => (
+              <div key={day} style={{ width: '36px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: COLORS.textMuted }}>
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+            {renderCalendar()}
+          </div>
+
+          {/* Quick Actions */}
+          <div style={{ display: 'flex', gap: '8px', marginTop: '16px', paddingTop: '16px', borderTop: `1px solid ${COLORS.borderLight}` }}>
+            {[
+              { label: 'Today', getDays: 0 },
+              { label: 'Tomorrow', getDays: 1 },
+              { label: 'Next Week', getDays: 7 },
+            ].map(({ label: btnLabel, getDays }) => (
+              <button
+                key={btnLabel}
+                onClick={() => {
+                  const date = new Date();
+                  date.setDate(date.getDate() + getDays);
+                  onChange(date.toISOString());
+                  setIsOpen(false);
+                }}
+                style={{
+                  flex: 1,
+                  padding: '8px 12px',
+                  backgroundColor: COLORS.surfaceHover,
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: COLORS.textSecondary,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                {btnLabel}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// Shared DropdownItem Component
+// ============================================================================
+
+function DropdownItem({ value, color, isSelected, onClick }: { value: string; color: string; isSelected: boolean; onClick: () => void }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 12px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        backgroundColor: isSelected ? COLORS.accentLight : (isHovered ? COLORS.surfaceHover : 'transparent'),
+        transition: 'background-color 0.1s ease'
+      }}
+    >
+      <ColorDot color={color} size={10} />
+      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+    </div>
+  );
+}
+
+// ============================================================================
+// AssigneeItem Component
+// ============================================================================
+
+function AssigneeItem({ name, email, initials, color, isSelected, onClick }: { 
+  name: string; 
+  email?: string;
+  initials: string; 
+  color: string; 
+  isSelected: boolean; 
+  onClick: () => void; 
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 12px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        backgroundColor: isSelected ? COLORS.accentLight : (isHovered ? COLORS.surfaceHover : 'transparent'),
+        transition: 'background-color 0.1s ease'
+      }}
+    >
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '28px',
+          height: '28px',
+          borderRadius: '50%',
+          backgroundColor: color,
+          color: '#ffffff',
+          fontSize: '11px',
+          fontWeight: 600
+        }}
+      >
+        {initials}
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: '14px', color: COLORS.textPrimary, fontWeight: 500 }}>{name}</div>
+        {email && <div style={{ fontSize: '12px', color: COLORS.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>}
+      </div>
+    </div>
   );
 }
 
