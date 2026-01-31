@@ -34,7 +34,6 @@ import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/C
 import { BulkEditModal } from '@/components/capacity/BulkEditModal';
 import { DraggableCardsView } from '@/components/capacity/DraggableCardsView';
 import { Logo } from '@/components/brand/Logo';
-import { CatyWidget } from '@/components/caty-ai';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type ProjectPeriodType = 'weekly' | 'monthly';
@@ -1606,21 +1605,20 @@ export default function CapacityPlannerPage() {
           );
         })()}
 
-        {/* Caty AI Widget */}
         <div className="fixed bottom-6 right-6 z-50">
-          <CatyWidget
-            onAction={(action) => {
-              console.log('Caty action:', action);
-              // Handle actions: 'extend-all', 'review', 'assign', 'compare', 'live-chat', 'schedule'
-              if (action === 'review') setResource360Id(filteredResources[0]?.id || null);
-              if (action === 'live-chat') setAiDrawerOpen(true);
-            }}
-            initialContext={{
-              department: departmentFilter === 'all' ? 'All Departments' : departmentFilter,
-              period: 'Q1 2026',
-              view: `${primaryView} - ${resourceView}`
-            }}
-          />
+          <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
+          <button
+            onClick={() => setAiDrawerOpen(true)}
+            className="relative w-[52px] h-[52px] rounded-full bg-[#0d9488] flex items-center justify-center shadow-lg hover:scale-105 transition-transform cursor-pointer border-0"
+            style={{ boxShadow: '0 4px 16px rgba(13, 148, 136, 0.35)' }}
+          >
+            <Bot className="h-6 w-6 text-white" />
+            {highPriorityCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#dc2626] text-white text-[11px] font-bold flex items-center justify-center border-2 border-white">
+                {highPriorityCount}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Presentation Mode Fullscreen Overlay */}

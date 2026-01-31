@@ -266,7 +266,6 @@ import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import SkillsInventory from "./pages/SkillsInventory";
 import StarredPage from "./pages/StarredPage";
-import CatyTestPage from "./pages/CatyTestPage";
 
 
 import BusinessRequests from "./pages/enterprise/BusinessRequests";
@@ -415,10 +414,8 @@ const App = () => (
               {/* Starred items page */}
               <Route path="/starred" element={<StarredPage />} />
               
-              {/* Caty AI Test Page */}
-              <Route path="/caty-test" element={<CatyTestPage />} />
               
-
+              
               <Route path="/search" element={<SearchPage />} />
               <Route path="/portfolio/:portfolioId/room" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
