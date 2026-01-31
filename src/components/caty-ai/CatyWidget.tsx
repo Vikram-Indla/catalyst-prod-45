@@ -338,6 +338,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
         className="caty-minimized-btn"
         onClick={() => setIsMinimized(false)}
         title="Open CATY AI"
+        aria-label="Open CATY AI"
       >
         <div className="caty-minimized-icon">
           {/* Catalyst Convergence Hub Logo - Reversed (White) */}
@@ -357,7 +358,6 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
             <circle cx="50" cy="50" r="9" fill="#2563eb"/>
           </svg>
         </div>
-        <span>CATY AI</span>
       </button>
     );
   }
