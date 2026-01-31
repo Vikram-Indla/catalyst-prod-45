@@ -73,10 +73,10 @@ header button.caty-header-btn {
   height: 36px !important;
   min-width: 36px !important;
   border-radius: 8px !important;
-  border: 1px solid #e2e8f0 !important;
-  background: #f1f5f9 !important;
-  background-color: #f1f5f9 !important;
-  color: #475569 !important;
+  border: 1px solid hsl(214 32% 91%) !important; /* ~slate-200 */
+  background: hsl(210 40% 96%) !important; /* ~slate-100 */
+  background-color: hsl(210 40% 96%) !important;
+  color: hsl(215 25% 27%) !important; /* ~slate-700 */
   cursor: pointer !important;
   display: flex !important;
   align-items: center !important;
@@ -90,24 +90,39 @@ header button.caty-header-btn {
 .caty-header-btn svg,
 .caty-header-actions button svg,
 .caty-header-actions svg {
-  color: #475569 !important;
-  stroke: #475569 !important;
+  display: block !important;
+  color: hsl(215 25% 27%) !important; /* ~slate-700 */
+  stroke: hsl(215 25% 27%) !important;
   width: 18px !important;
   height: 18px !important;
+  opacity: 1 !important;
+}
+
+/* Lucide uses SVG presentation attrs; force all primitives to inherit our stroke */
+.caty-header-actions button svg path,
+.caty-header-actions button svg line,
+.caty-header-actions button svg polyline,
+.caty-header-actions button svg polygon,
+.caty-header-actions button svg circle,
+.caty-header-actions button svg rect {
+  stroke: currentColor !important;
+  fill: none !important;
+  opacity: 1 !important;
+  vector-effect: non-scaling-stroke !important;
 }
 
 .caty-header-btn:hover,
 .caty-header-actions button:hover {
-  background: #e2e8f0 !important;
-  background-color: #e2e8f0 !important;
-  color: #2563eb !important;
-  border-color: #2563eb !important;
+  background: hsl(214 32% 91%) !important; /* ~slate-200 */
+  background-color: hsl(214 32% 91%) !important;
+  color: hsl(217 91% 60%) !important; /* ~blue-600 */
+  border-color: hsl(217 91% 60%) !important;
 }
 
 .caty-header-btn:hover svg,
 .caty-header-actions button:hover svg {
-  color: #2563eb !important;
-  stroke: #2563eb !important;
+  color: hsl(217 91% 60%) !important;
+  stroke: hsl(217 91% 60%) !important;
 }
 
 /* HEADER ICON */
