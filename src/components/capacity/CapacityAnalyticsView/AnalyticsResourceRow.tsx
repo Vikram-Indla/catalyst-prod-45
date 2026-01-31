@@ -60,8 +60,8 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
             <TooltipTrigger asChild>
               <div className="relative flex-shrink-0">
                 <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ring-2 ra-avatar-neutral"
-                  data-ra-avatar="neutral"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ring-2 ring-white/20"
+                  style={{ backgroundColor: '#64748b' }}
                 >
                   {initials}
                 </div>
@@ -106,8 +106,12 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
       {/* Location Badge Cell - Enterprise Clean: Neutralized */}
       <td className="py-3 px-3 min-w-[100px] border-r border-border">
         <span 
-          className="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wide border ra-badge-neutral"
-          data-ra-badge="neutral"
+          className="inline-block px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide"
+          style={{ 
+            backgroundColor: 'transparent', 
+            color: '#64748b',
+            border: 'none'
+          }}
         >
           {badge.label}
         </span>
