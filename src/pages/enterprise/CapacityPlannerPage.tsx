@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import '@/styles/resource-allocation-enterprise.css';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -848,7 +849,7 @@ export default function CapacityPlannerPage() {
         />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-surface-2 dark:bg-surface-1">
+        <div className="ra-enterprise-clean flex-1 flex flex-col min-h-0 px-6 py-6 bg-surface-2 dark:bg-surface-1">
 
           {/* Resources Primary View */}
           {primaryView === 'resources' && (
