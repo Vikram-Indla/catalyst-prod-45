@@ -456,6 +456,214 @@ button.caty-department-pill,
   margin-top: 4px !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   VIEWPORT (Empty State Upgrade) — CatyViewport.tsx (NUCLEAR)
+   Fixes “plain text / stacked” regression when viewport CSS is missing.
+   ═══════════════════════════════════════════════════════════════ */
+
+.caty-viewport {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.caty-viewport__stats {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 10px !important;
+}
+
+@media (max-width: 480px) {
+  .caty-viewport__stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+.caty-viewport__stat {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 14px 12px !important;
+  text-align: center !important;
+}
+
+.caty-viewport__stat-value {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #2563eb !important;
+  line-height: 1.2 !important;
+}
+
+.caty-viewport__stat-value--danger { color: #dc2626 !important; }
+.caty-viewport__stat-value--warning { color: #b45309 !important; }
+.caty-viewport__stat-value--muted { color: #94a3b8 !important; }
+
+.caty-viewport__stat-label {
+  font-size: 0.625rem !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  margin-top: 4px !important;
+}
+
+.caty-viewport__section {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.caty-viewport__section-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 14px 16px !important;
+  background: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.caty-viewport__section-indicator {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 999px !important;
+  flex-shrink: 0 !important;
+}
+
+.caty-viewport__section-indicator--critical { background: #dc2626 !important; }
+.caty-viewport__section-indicator--warning { background: #b45309 !important; }
+.caty-viewport__section-indicator--info { background: #2563eb !important; }
+.caty-viewport__section-indicator--success { background: #059669 !important; }
+
+.caty-viewport__section-title {
+  flex: 1 !important;
+  min-width: 0 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+}
+
+.caty-viewport__section-count {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.8125rem !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+}
+
+.caty-viewport__probe-list {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.caty-viewport__probe-item {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 14px 16px !important;
+  background: #ffffff !important;
+  border: none !important;
+  border-top: 1px solid #e2e8f0 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+.caty-viewport__probe-item:hover {
+  background: #f8fafc !important;
+}
+
+.caty-viewport__probe-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.caty-viewport__probe-text {
+  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+  line-height: 1.35 !important;
+}
+
+.caty-viewport__probe-text strong { font-weight: 700 !important; }
+
+.caty-viewport__probe-meta {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin-top: 8px !important;
+}
+
+.caty-viewport__tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #64748b !important;
+  white-space: nowrap !important;
+}
+
+.caty-viewport__tag--danger {
+  background: #fef2f2 !important;
+  border-color: rgba(220, 38, 38, 0.3) !important;
+  color: #dc2626 !important;
+}
+
+.caty-viewport__tag--warning {
+  background: #fffbeb !important;
+  border-color: rgba(180, 83, 9, 0.3) !important;
+  color: #b45309 !important;
+}
+
+.caty-viewport__tag--info {
+  background: #dbeafe !important;
+  border-color: #dbeafe !important;
+  color: #2563eb !important;
+}
+
+.caty-viewport__probe-chevron {
+  width: 18px !important;
+  height: 18px !important;
+  color: #94a3b8 !important;
+  flex-shrink: 0 !important;
+}
+
+.caty-viewport__empty {
+  padding: 16px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  color: #475569 !important;
+  font-size: 0.875rem !important;
+}
+
+.caty-viewport__skeleton {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.caty-viewport__skeleton-stats,
+.caty-viewport__skeleton-header,
+.caty-viewport__skeleton-card {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+}
+
+.caty-viewport__skeleton-stats { height: 88px !important; }
+.caty-viewport__skeleton-section { display: flex !important; flex-direction: column !important; gap: 10px !important; }
+.caty-viewport__skeleton-header { height: 44px !important; }
+.caty-viewport__skeleton-card { height: 76px !important; }
+
 /* DATA CARD */
 .caty-data-card {
   background: #ffffff !important;
