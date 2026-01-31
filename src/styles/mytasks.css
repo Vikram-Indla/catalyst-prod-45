@@ -718,11 +718,12 @@
 
 /* ============================================================================
    COMPLETION ANIMATION STATES
+   Per spec: NO mint green (#d1fae5). Use subtle teal (#f0fdfa) instead.
    ============================================================================ */
 
-/* Completing state - green background flash */
+/* Completing state - subtle teal flash (NOT mint green) */
 .mytasks-row--completing {
-  background-color: #d1fae5 !important;
+  background-color: #f0fdfa !important;
   transition: background-color 150ms ease;
 }
 
@@ -782,6 +783,7 @@
 
 /* ============================================================================
    COMPLETED TODAY SECTION
+   Per spec: MUTED (gray) styling, NOT celebratory green
    ============================================================================ */
 
 .mytasks-completed-section {
@@ -789,33 +791,40 @@
   margin-top: 8px;
 }
 
+/* MUTED gray header — NOT green per spec */
 .mytasks-section-header--completed {
-  background-color: #f0fdf4;
-  border-bottom: 1px solid #bbf7d0;
+  background-color: #f1f5f9;  /* slate-100, NOT green */
+  border-bottom: 1px solid #e2e8f0;  /* slate-200 */
   cursor: pointer;
   width: 100%;
   text-align: left;
 }
 
+/* Gray icon — NOT green per spec */
 .mytasks-section-header__icon--completed {
-  color: #16a34a;
+  color: #94a3b8;  /* slate-400, NOT green */
 }
 
+/* Gray title — NOT green per spec */
 .mytasks-section-header__title--completed {
-  color: #16a34a;
+  color: #94a3b8;  /* slate-400, NOT green */
+  text-transform: none;  /* Sentence case per spec */
+  letter-spacing: normal;
 }
 
 .mytasks-completed-list {
-  background-color: #fafdf9;
+  background-color: #ffffff;  /* White, NOT green tint */
 }
 
+/* 60% opacity per spec */
 .mytasks-row--completed-item {
   background-color: transparent;
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
 .mytasks-row--completed-item:hover {
-  background-color: #f0fdf4;
+  background-color: #f8fafc;  /* Subtle slate hover, NOT green */
+  opacity: 0.8;
 }
 
 .mytasks-row__id--completed {
@@ -871,21 +880,23 @@
 
 /* ============================================================================
    DARK MODE OVERRIDES
+   Per spec: Muted styling in dark mode too (NOT green)
    ============================================================================ */
 
 .dark .mytasks-row--completing {
-  background-color: rgba(34, 197, 94, 0.2) !important;
+  background-color: rgba(45, 212, 191, 0.15) !important;  /* Subtle teal */
 }
 
+/* Muted dark mode completed section — NOT green */
 .dark .mytasks-section-header--completed {
-  background-color: rgba(34, 197, 94, 0.1);
-  border-bottom-color: rgba(34, 197, 94, 0.3);
+  background-color: rgba(100, 116, 139, 0.15);  /* slate muted */
+  border-bottom-color: rgba(100, 116, 139, 0.25);
 }
 
 .dark .mytasks-completed-list {
-  background-color: rgba(34, 197, 94, 0.05);
+  background-color: rgba(100, 116, 139, 0.05);  /* slate muted */
 }
 
 .dark .mytasks-row--completed-item:hover {
-  background-color: rgba(34, 197, 94, 0.1);
+  background-color: rgba(100, 116, 139, 0.1);  /* slate muted */
 }

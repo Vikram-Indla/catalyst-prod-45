@@ -31,7 +31,8 @@ function formatCompletedTime(dateString: string | null): string {
 }
 
 export function CompletedTodaySection({ tasks, onOpenDetail }: CompletedTodaySectionProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  // Collapsed by default per spec
+  const [isExpanded, setIsExpanded] = useState(false);
   const uncompleteTask = useUncompleteMyTask();
 
   // Don't render if no completed tasks
@@ -44,7 +45,7 @@ export function CompletedTodaySection({ tasks, onOpenDetail }: CompletedTodaySec
 
   return (
     <div className="mytasks-completed-section">
-      {/* Section Header */}
+      {/* Section Header — MUTED (not green) per spec */}
       <button 
         className="mytasks-section-header mytasks-section-header--completed"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -57,7 +58,7 @@ export function CompletedTodaySection({ tasks, onOpenDetail }: CompletedTodaySec
         />
         <CheckCircle2 className="mytasks-section-header__icon mytasks-section-header__icon--completed" />
         <h3 className="mytasks-section-header__title mytasks-section-header__title--completed">
-          COMPLETED TODAY
+          Completed today
         </h3>
         <span className="mytasks-section-header__count">
           {tasks.length}
