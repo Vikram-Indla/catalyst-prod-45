@@ -379,12 +379,13 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
               </div>
             </ScrollArea>
             
-            {/* Footer - No "?" button */}
+            {/* Footer - With save indicator */}
             <div className="task-modal__footer">
               <DrawerFooter
                 task={task}
                 onDelete={handleClose}
                 onDuplicate={() => {}}
+                saveStatus={saveStatus}
               />
             </div>
           </>
