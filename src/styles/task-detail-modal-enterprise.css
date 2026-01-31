@@ -81,6 +81,8 @@
 .task-modal {
   width: 100%;
   max-width: 800px;
+  min-height: 600px;
+  height: 600px;
   background: var(--tm-surface-card);
   border-radius: var(--tm-radius-xl);
   box-shadow: var(--tm-shadow-modal);
@@ -89,6 +91,8 @@
   font-size: 14px;
   line-height: 1.5;
   color: var(--tm-text-primary);
+  display: flex;
+  flex-direction: column;
 }
 
 

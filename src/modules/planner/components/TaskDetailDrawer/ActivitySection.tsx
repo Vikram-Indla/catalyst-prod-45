@@ -63,13 +63,7 @@ export function ActivitySection({ taskId, comments, activity }: ActivitySectionP
 
   return (
     <div className="space-y-4">
-      {/* Header - Sentence case */}
-      <div className="flex items-center gap-2">
-        <MessageSquare className="w-4 h-4 text-muted-foreground" />
-        <span className="text-xs font-medium text-muted-foreground">Activity</span>
-      </div>
-
-      {/* Styled Tabs - Theme-aware */}
+      {/* Styled Tabs - Theme-aware (no duplicate header) */}
       <div className="flex gap-1 p-1 bg-muted rounded-lg">
         {([
           { key: 'all', label: 'All', icon: ListFilter },

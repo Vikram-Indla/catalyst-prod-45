@@ -102,22 +102,6 @@ export function LeadNotesTab({ taskId, workstreamId }: LeadNotesTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header with access indicator */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/20">
-          <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-        </div>
-        <div>
-          <h3 className="text-sm font-semibold text-text-primary">Lead Notes</h3>
-          <p className="text-xs text-text-secondary">
-            {canManage 
-              ? 'Visible to all · Editable by leads and management'
-              : 'Visible to all · Read-only for your role'
-            }
-          </p>
-        </div>
-      </div>
-
       {/* Add new note - only if can manage */}
       {canManage && (
         <div className="rounded-xl border border-border-default bg-surface-1/50 p-4">
