@@ -87,7 +87,7 @@ const sanitizeResponse = (response: string): string => {
 
 export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProps) {
   const defaultContext: CatyContext = {
-    department: 'Delivery Department',
+    department: 'All Departments',
     period: 'Q1 2026',
     location: 'All Locations',
   };
