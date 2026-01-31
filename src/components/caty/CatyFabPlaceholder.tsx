@@ -40,7 +40,7 @@ export function CatyFabPlaceholder() {
     <>
       {/* FAB Button */}
       <button
-        className={cn("caty-fab", isOpen && "hidden")}
+        className={cn("caty-fab", isOpen && "caty-fab-hidden")}
         aria-label="Open Caty AI Assistant"
         onClick={() => setIsOpen(true)}
       >
