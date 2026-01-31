@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { CatyWidget } from '@/components/caty-ai';
 import { HubIcon } from '@/components/caty-ai/constants';
-import '@/styles/caty.css';
+import '@/styles/caty-fab.css';
 
 export function CatyFabPlaceholder() {
   const [isOpen, setIsOpen] = useState(false);
