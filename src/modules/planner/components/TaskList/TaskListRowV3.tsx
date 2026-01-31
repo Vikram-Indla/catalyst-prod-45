@@ -1,10 +1,11 @@
 /**
  * Task List Row V3 - Enterprise Clean Implementation
  * Matches QA spec: gray priority text, outline status badges, gray ID
+ * Dropdowns match CreateTaskModal V10 styling
  */
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2, Check, Plus, Tag, Search, Loader2 } from 'lucide-react';
+import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2, Check, Plus, Tag, Search, Loader2, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
@@ -33,6 +34,7 @@ import { toast } from 'sonner';
 import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { COLORS, STATUS_COLORS, WORKSTREAM_COLORS } from '@/components/planner/task-modal/colors';
 
 // Enterprise Clean spec colors - inline styles to ensure specificity
 const STATUS_CONFIG: Record<string, { 
@@ -237,47 +239,128 @@ interface StatusDropdownProps {
 }
 
 function StatusDropdown({ task, statuses, statusConfig, width, onUpdate }: StatusDropdownProps) {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const currentStatus = statuses.find(s => s.id === task.status_id);
+  const displayName = currentStatus?.name || task.status_name || 'Select status...';
+  const displayColor = currentStatus?.color || statusConfig.dotColor || '#94a3b8';
 
   return (
     <td style={{ width }} onClick={(e) => e.stopPropagation()}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <button
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-medium cursor-pointer border-0"
+      <div ref={dropdownRef} style={{ position: 'relative' }}>
+        <div
+          onClick={() => setIsOpen(!isOpen)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+            boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+            minWidth: '120px',
+          }}
+        >
+          <span
             style={{
-              backgroundColor: statusConfig.bgColor,
-              border: `1px solid ${statusConfig.borderColor}`,
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: displayColor,
+              flexShrink: 0,
+            }}
+          />
+          <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>
+            {displayName}
+          </span>
+          <ChevronDown size={14} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+        </div>
+
+        {isOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 4px)',
+              left: 0,
+              right: 0,
+              backgroundColor: COLORS.surfaceCard,
+              border: `1px solid ${COLORS.borderDefault}`,
+              borderRadius: '10px',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+              zIndex: 100001,
+              padding: '6px',
+              minWidth: '160px',
             }}
           >
-            <span
-              className="w-2 h-2 rounded-full flex-shrink-0"
-              style={{ backgroundColor: statusConfig.dotColor }}
-            />
-            <span style={{ color: '#475569' }}>{task.status_name || 'Unknown'}</span>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-48 p-1.5 z-[500] bg-popover border border-border shadow-lg" align="start">
-          {statuses.map((status) => {
-            const isSelected = status.id === task.status_id;
-            return (
-              <button
-                key={status.id}
-                onClick={() => { onUpdate(task.id, 'status_id', status.id); setOpen(false); }}
-                className={cn(
-                  "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
-                  isSelected ? "bg-muted font-semibold" : "hover:bg-muted/50"
-                )}
-              >
-                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: status.color || '#94a3b8' }} />
-                <span>{status.name}</span>
-                {isSelected && <Check className="w-4 h-4 ml-auto text-primary" />}
-              </button>
-            );
-          })}
-        </PopoverContent>
-      </Popover>
+            {statuses.map((status) => {
+              const isSelected = status.id === task.status_id;
+              const color = status.color || STATUS_COLORS[status.name] || '#94a3b8';
+              return (
+                <StatusDropdownItem
+                  key={status.id}
+                  value={status.name}
+                  color={color}
+                  isSelected={isSelected}
+                  onClick={() => { onUpdate(task.id, 'status_id', status.id); setIsOpen(false); }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
     </td>
+  );
+}
+
+// Shared DropdownItem for Status
+function StatusDropdownItem({ value, color, isSelected, onClick }: { value: string; color: string; isSelected: boolean; onClick: () => void }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 12px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        backgroundColor: isSelected ? COLORS.accentLight : (isHovered ? COLORS.surfaceHover : 'transparent'),
+        transition: 'background-color 0.1s ease'
+      }}
+    >
+      <span
+        style={{
+          width: '10px',
+          height: '10px',
+          borderRadius: '50%',
+          backgroundColor: color,
+          flexShrink: 0,
+        }}
+      />
+      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+      {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
+    </div>
   );
 }
 
@@ -342,56 +425,138 @@ interface WorkstreamDropdownProps {
 }
 
 function WorkstreamDropdown({ task, workstreamColors, width, onUpdate }: WorkstreamDropdownProps) {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const { data: workstreams = [] } = usePlannerWorkstreams();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedWorkstream = workstreams.find(w => w.id === task.workstream_id);
+  const displayName = selectedWorkstream?.name || task.workstream_name || 'None';
+  const displayColor = selectedWorkstream?.color || WORKSTREAM_COLORS[displayName] || workstreamColors.hex || '#94a3b8';
 
   return (
     <td style={{ width }} onClick={(e) => e.stopPropagation()}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <button className="inline-flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer bg-transparent border-0 hover:bg-muted/50 transition-colors">
-            <span
-              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-              style={{ backgroundColor: task.workstream_name ? workstreamColors.hex : '#9ca3af' }}
-            />
-            <span className="text-sm font-medium" style={{ color: '#334155' }}>
-              {task.workstream_name || 'None'}
-            </span>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-56 p-1.5 z-[500] bg-popover border border-border shadow-lg max-h-[280px] overflow-y-auto" align="start">
-          <button
-            onClick={() => { onUpdate(task.id, 'workstream_id', null); setOpen(false); }}
-            className={cn(
-              "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
-              !task.workstream_id ? "bg-muted font-semibold" : "hover:bg-muted/50"
-            )}
+      <div ref={dropdownRef} style={{ position: 'relative' }}>
+        <div
+          onClick={() => setIsOpen(!isOpen)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+            boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+            minWidth: '140px',
+          }}
+        >
+          <span
+            style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: displayColor,
+              flexShrink: 0,
+            }}
+          />
+          <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>
+            {displayName}
+          </span>
+          <ChevronDown size={14} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+        </div>
+
+        {isOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 4px)',
+              left: 0,
+              right: 0,
+              backgroundColor: COLORS.surfaceCard,
+              border: `1px solid ${COLORS.borderDefault}`,
+              borderRadius: '10px',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+              zIndex: 100001,
+              padding: '6px',
+              maxHeight: '280px',
+              overflowY: 'auto',
+              minWidth: '180px',
+            }}
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-gray-400 flex-shrink-0" />
-            <span className="text-muted-foreground">None</span>
-            {!task.workstream_id && <Check className="w-4 h-4 ml-auto text-primary" />}
-          </button>
-          {workstreams.map((ws) => {
-            const colors = getWorkstreamColor(ws.name);
-            const isSelected = ws.id === task.workstream_id;
-            return (
-              <button
-                key={ws.id}
-                onClick={() => { onUpdate(task.id, 'workstream_id', ws.id); setOpen(false); }}
-                className={cn(
-                  "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
-                  isSelected ? "bg-muted font-semibold" : "hover:bg-muted/50"
-                )}
-              >
-                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: colors.hex }} />
-                <span>{ws.name}</span>
-                {isSelected && <Check className="w-4 h-4 ml-auto text-primary" />}
-              </button>
-            );
-          })}
-        </PopoverContent>
-      </Popover>
+            {/* None option */}
+            <WorkstreamDropdownItem
+              value="None"
+              color="#94a3b8"
+              isSelected={!task.workstream_id}
+              onClick={() => { onUpdate(task.id, 'workstream_id', null); setIsOpen(false); }}
+            />
+            {workstreams.map((ws) => {
+              const color = ws.color || WORKSTREAM_COLORS[ws.name] || getWorkstreamColor(ws.name).hex;
+              const isSelected = ws.id === task.workstream_id;
+              return (
+                <WorkstreamDropdownItem
+                  key={ws.id}
+                  value={ws.name}
+                  color={color}
+                  isSelected={isSelected}
+                  onClick={() => { onUpdate(task.id, 'workstream_id', ws.id); setIsOpen(false); }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
     </td>
+  );
+}
+
+// Shared DropdownItem for Workstream
+function WorkstreamDropdownItem({ value, color, isSelected, onClick }: { value: string; color: string; isSelected: boolean; onClick: () => void }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 12px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        backgroundColor: isSelected ? COLORS.accentLight : (isHovered ? COLORS.surfaceHover : 'transparent'),
+        transition: 'background-color 0.1s ease'
+      }}
+    >
+      <span
+        style={{
+          width: '10px',
+          height: '10px',
+          borderRadius: '50%',
+          backgroundColor: color,
+          flexShrink: 0,
+        }}
+      />
+      <span style={{ fontSize: '14px', color: value === 'None' ? COLORS.textMuted : COLORS.textPrimary }}>{value}</span>
+      {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
+    </div>
   );
 }
 

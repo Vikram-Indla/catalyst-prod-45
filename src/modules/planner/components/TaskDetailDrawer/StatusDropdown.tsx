@@ -1,20 +1,13 @@
 // ============================================================
-// STATUS DROPDOWN COMPONENT
-// Colored status badge with dropdown selector
+// STATUS DROPDOWN COMPONENT V10 — Enterprise Clean
+// Matches CreateTaskModal dropdown styling
 // ============================================================
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
-import { CATALYST_COLORS } from '../../types/kanban';
+import { COLORS, STATUS_COLORS } from '@/components/planner/task-modal/colors';
 
 interface StatusDropdownProps {
   currentStatusId: string;
@@ -38,60 +31,136 @@ function useStatuses() {
 
 export function StatusDropdown({ currentStatusId, currentStatus, onChange }: StatusDropdownProps) {
   const { data: statuses = [] } = useStatuses();
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const getStatusColor = (slug: string) => {
-    const colors: Record<string, string> = {
-      backlog: CATALYST_COLORS.gray400,
-      planned: CATALYST_COLORS.gray500,
-      'in-progress': CATALYST_COLORS.gray600,
-      review: CATALYST_COLORS.gray700,
-      done: CATALYST_COLORS.gray700,
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
     };
-    return colors[slug] || CATALYST_COLORS.gray500;
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const getStatusColor = (slug: string, name?: string) => {
+    const slugColors: Record<string, string> = {
+      backlog: '#94a3b8',
+      planned: '#3b82f6',
+      'in-progress': '#f59e0b',
+      'in progress': '#f59e0b',
+      review: '#8b5cf6',
+      done: '#16a34a',
+    };
+    return slugColors[slug] || STATUS_COLORS[name || ''] || '#94a3b8';
   };
 
+  const displayName = currentStatus?.name || 'Select status';
+  const displayColor = getStatusColor(currentStatus?.slug, currentStatus?.name);
+
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <button
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wide transition-colors hover:opacity-80"
+    <div ref={dropdownRef} style={{ position: 'relative' }}>
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 12px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+          borderRadius: '8px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+          minWidth: '120px',
+        }}
+      >
+        <span
           style={{
-            backgroundColor: `${getStatusColor(currentStatus?.slug)}15`,
-            color: getStatusColor(currentStatus?.slug),
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            backgroundColor: displayColor,
+            flexShrink: 0,
+          }}
+        />
+        <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: COLORS.textPrimary }}>
+          {displayName}
+        </span>
+        <ChevronDown size={14} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+      </div>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '10px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            zIndex: 100001,
+            padding: '6px',
+            minWidth: '160px',
           }}
         >
-          <span
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ backgroundColor: getStatusColor(currentStatus?.slug) }}
-          />
-          {currentStatus?.name || 'Select status'}
-          <ChevronDown className="w-3 h-3 ml-0.5" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-48">
-        {statuses.map((status) => (
-          <DropdownMenuItem
-            key={status.id}
-            onClick={() => {
-              onChange(status.id);
-              setOpen(false);
-            }}
-            className="flex items-center justify-between"
-          >
-            <span className="flex items-center gap-2">
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: getStatusColor(status.slug) }}
+          {statuses.map((status: any) => {
+            const isSelected = status.id === currentStatusId;
+            const color = getStatusColor(status.slug, status.name);
+            return (
+              <DropdownItem
+                key={status.id}
+                value={status.name}
+                color={color}
+                isSelected={isSelected}
+                onClick={() => { onChange(status.id); setIsOpen(false); }}
               />
-              {status.name}
-            </span>
-            {status.id === currentStatusId && (
-              <Check className="w-4 h-4 text-primary" />
-            )}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Shared DropdownItem Component
+function DropdownItem({ value, color, isSelected, onClick }: { value: string; color: string; isSelected: boolean; onClick: () => void }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 12px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        backgroundColor: isSelected ? COLORS.accentLight : (isHovered ? COLORS.surfaceHover : 'transparent'),
+        transition: 'background-color 0.1s ease'
+      }}
+    >
+      <span
+        style={{
+          width: '10px',
+          height: '10px',
+          borderRadius: '50%',
+          backgroundColor: color,
+          flexShrink: 0,
+        }}
+      />
+      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+      {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
+    </div>
   );
 }
