@@ -7,8 +7,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ResourceWithUtilization } from '../types/database';
 
-const ONSITE_COUNTRY_CODES = ['SA', 'KSA'];
-
 export function useResourceUtilization(departmentId?: string | null) {
   return useQuery({
     queryKey: ['caty-resources', departmentId],
@@ -33,13 +31,21 @@ export function useResourceUtilization(departmentId?: string | null) {
       if (error) throw error;
       if (!resources || resources.length === 0) return [];
       
-      // Fetch countries for location mapping
+      // Fetch countries for country name
       const { data: countries } = await supabase
         .from('resource_countries')
         .select('id, code, name')
         .eq('is_active', true);
       
       const countryMap = new Map(countries?.map(c => [c.id, { code: c.code || '', name: c.name }]) || []);
+      
+      // Fetch locations for On-Site/Off-Shore determination
+      const { data: locations } = await supabase
+        .from('resource_locations')
+        .select('id, name')
+        .eq('is_active', true);
+      
+      const locationMap = new Map(locations?.map(l => [l.id, l.name]) || []);
       
       // Fetch allocations for the current period
       const resourceIds = resources.map(r => r.id);
@@ -57,7 +63,12 @@ export function useResourceUtilization(departmentId?: string | null) {
         
         const country = countryMap.get(resource.country_id || '');
         const countryCode = country?.code || '';
-        const isOnSite = ONSITE_COUNTRY_CODES.includes(countryCode.toUpperCase());
+        
+        // FIXED: Use location_id to determine On-Site vs Off-Shore
+        const locationName = locationMap.get(resource.location_id || '') || '';
+        const isOnSite = locationName.toLowerCase().includes('onsite') || 
+                         locationName.toLowerCase().includes('on-site') ||
+                         locationName.toLowerCase() === 'on site';
         
         let status: 'critical' | 'warning' | 'normal' | 'available';
         if (utilization > 100) status = 'critical';
