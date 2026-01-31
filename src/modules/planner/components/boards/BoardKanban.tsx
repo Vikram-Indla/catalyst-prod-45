@@ -227,7 +227,6 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
                   tasks={getColumnTasks(column.slug)}
                   onTaskClick={onTaskClick}
                   onAddTask={onAddTask}
-                  isDraggingColumn={!!activeColumn}
                 />
               ))}
 

@@ -694,19 +694,22 @@
    COLUMN DRAG & DROP
    ============================================================================ */
 
-/* Drag handle visibility */
+/* Drag handle - always visible, interactive */
 .boards-column__drag-handle {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  opacity: 0.4;
   cursor: grab;
   color: #94a3b8;
-  transition: opacity var(--boards-transition-fast), color var(--boards-transition-fast);
+  transition: opacity var(--boards-transition-fast), color var(--boards-transition-fast), background-color var(--boards-transition-fast);
   border-radius: 4px;
   margin-left: -4px;
+  touch-action: none; /* Critical for DnD */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .boards-column__header:hover .boards-column__drag-handle {
@@ -714,23 +717,63 @@
 }
 
 .boards-column__drag-handle:hover {
-  color: #64748b;
-  background-color: #f1f5f9;
+  color: #3b82f6;
+  background-color: #eff6ff;
+  opacity: 1;
 }
 
 .boards-column__drag-handle:active {
   cursor: grabbing;
+  color: #1d4ed8;
+  background-color: #dbeafe;
+}
+
+.dark .boards-column__drag-handle {
+  color: #64748b;
 }
 
 .dark .boards-column__drag-handle:hover {
+  color: #60a5fa;
+  background-color: #1e3a5f;
+}
+
+/* Delete button for custom columns */
+.boards-column__delete-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
   color: #94a3b8;
-  background-color: #334155;
+  opacity: 0;
+  transition: all var(--boards-transition-fast);
+}
+
+.boards-column__header:hover .boards-column__delete-btn {
+  opacity: 1;
+}
+
+.boards-column__delete-btn:hover {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
+.dark .boards-column__delete-btn:hover {
+  background-color: #450a0a;
+  color: #f87171;
 }
 
 /* Column being dragged */
 .boards-column--dragging {
-  opacity: 0.5;
+  opacity: 0.6;
   transform: scale(1.02);
+  box-shadow: var(--boards-shadow-card-dragging);
+  border-radius: 8px;
+  background-color: var(--boards-bg-card);
 }
 
 /* Column overlay when dragging */
