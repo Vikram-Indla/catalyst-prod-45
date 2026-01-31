@@ -38,7 +38,7 @@ export const CatyHeader: React.FC<CatyHeaderProps> = ({
         <span className="caty-header-title">CATY AI™</span>
         <span className="caty-header-subtitle">
           <span className={`caty-status-dot ${!isOnline ? 'offline' : ''}`}></span>
-          Capacity Assistant
+          Resource Capacity Assistant
         </span>
       </div>
     </div>
