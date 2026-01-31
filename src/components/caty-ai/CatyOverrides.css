@@ -531,7 +531,8 @@ button.caty-department-pill,
   flex-shrink: 0 !important;
 }
 
-.caty-viewport__section-indicator--critical { background: #dc2626 !important; }
+.caty-viewport__section-indicator--critical,
+.caty-viewport__section-indicator--danger { background: #dc2626 !important; }
 .caty-viewport__section-indicator--warning { background: #b45309 !important; }
 .caty-viewport__section-indicator--info { background: #2563eb !important; }
 .caty-viewport__section-indicator--success { background: #059669 !important; }
@@ -565,14 +566,36 @@ button.caty-department-pill,
   padding: 14px 16px !important;
   background: #ffffff !important;
   border: none !important;
+  border-left: 4px solid transparent !important;
   border-top: 1px solid #e2e8f0 !important;
   text-align: left !important;
   cursor: pointer !important;
   transition: background 0.15s ease !important;
 }
 
+.caty-viewport__probe-item:first-child {
+  border-top: none !important;
+}
+
 .caty-viewport__probe-item:hover {
   background: #f8fafc !important;
+}
+
+/* Severity-based left border colors */
+.caty-viewport__probe-item--danger,
+.caty-viewport__probe-item--critical {
+  background: #fef2f2 !important;
+  border-left-color: #dc2626 !important;
+}
+
+.caty-viewport__probe-item--warning {
+  background: #fffbeb !important;
+  border-left-color: #b45309 !important;
+}
+
+.caty-viewport__probe-item--info {
+  background: #eff6ff !important;
+  border-left-color: #2563eb !important;
 }
 
 .caty-viewport__probe-content {
@@ -611,7 +634,9 @@ button.caty-department-pill,
   white-space: nowrap !important;
 }
 
-.caty-viewport__tag--danger {
+.caty-viewport__tag--danger,
+.caty-viewport__tag--critical,
+.caty-viewport__tag--date {
   background: #fef2f2 !important;
   border-color: rgba(220, 38, 38, 0.3) !important;
   color: #dc2626 !important;
@@ -623,10 +648,17 @@ button.caty-department-pill,
   color: #b45309 !important;
 }
 
-.caty-viewport__tag--info {
+.caty-viewport__tag--info,
+.caty-viewport__tag--count {
   background: #dbeafe !important;
   border-color: #dbeafe !important;
   color: #2563eb !important;
+}
+
+.caty-viewport__tag--vendor {
+  background: #ecfdf5 !important;
+  border-color: rgba(5, 150, 105, 0.3) !important;
+  color: #059669 !important;
 }
 
 .caty-viewport__probe-chevron {
