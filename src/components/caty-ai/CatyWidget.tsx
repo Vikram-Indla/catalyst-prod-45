@@ -412,6 +412,20 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
                     const message = question.text.replace(/<\/?strong>/g, '');
                     handleSend(message);
                   }}
+                  onTileClick={(tileType) => {
+                    // Trigger AI query based on clicked tile
+                    switch (tileType) {
+                      case 'expiring':
+                        handleSend('Show resources with contracts expiring soon');
+                        break;
+                      case 'overallocated':
+                        handleSend('Show over-allocated resources');
+                        break;
+                      case 'unallocated':
+                        handleSend('Show unallocated resources with 0% utilization');
+                        break;
+                    }
+                  }}
                 />
               ) : (
                 <>
