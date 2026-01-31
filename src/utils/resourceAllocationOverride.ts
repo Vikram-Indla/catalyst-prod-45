@@ -179,74 +179,49 @@ function styleEndCell(cell: HTMLElement): void {
 }
 
 /**
- * Neutralize avatar colors
+ * Neutralize avatar colors - ONLY in resource info column
+ * IMPORTANT: Do NOT touch utilization bars or other colored elements
  */
 function neutralizeAvatars(container: Element): void {
-  // Multiple selector strategies
-  const selectors = [
-    '[class*="avatar"]',
-    '[class*="Avatar"]',
-    '[class*="profile-pic"]',
-    '[class*="user-icon"]',
-    '[class*="initials"]',
-    '.MuiAvatar-root',
-    '[data-testid*="avatar"]',
-  ];
+  // ONLY target avatars in the sticky resource info column (first TD)
+  // This prevents interference with utilization bar colors
+  const resourceCells = container.querySelectorAll('td:first-child, td.sticky');
   
-  selectors.forEach(selector => {
-    try {
-      container.querySelectorAll(selector).forEach((avatar) => {
-        const el = avatar as HTMLElement;
-        
-        // Skip if already processed
-        if (el.hasAttribute('data-ra-avatar-processed')) return;
-        
-        // Override background
-        el.style.setProperty('background', CONFIG.neutralAvatar, 'important');
-        el.style.setProperty('background-color', CONFIG.neutralAvatar, 'important');
-        el.style.setProperty('color', '#ffffff', 'important');
-        
-        el.setAttribute('data-ra-avatar-processed', 'true');
-      });
-    } catch (e) {
-      // Selector might not be valid in all browsers
-    }
-  });
-  
-  // Also find by circular shape and background color
-  container.querySelectorAll('*').forEach((el) => {
-    const computed = getComputedStyle(el);
-    const bgColor = computed.backgroundColor;
-    const borderRadius = computed.borderRadius;
-    const width = parseInt(computed.width);
-    const height = parseInt(computed.height);
+  resourceCells.forEach(cell => {
+    // Find avatar-like elements ONLY within the resource info cell
+    const avatarSelectors = [
+      '[class*="avatar"]',
+      '[class*="Avatar"]',
+      '.rounded-full',
+    ];
     
-    // Check if it's a circular element (likely avatar)
-    const isCircular = (
-      borderRadius === '50%' || 
-      borderRadius === '9999px' ||
-      (width > 20 && width < 50 && width === height && parseFloat(borderRadius) > width / 3)
-    );
-    
-    // Check if it has a non-gray/white background
-    const hasColoredBg = (
-      bgColor && 
-      bgColor !== 'transparent' && 
-      bgColor !== 'rgba(0, 0, 0, 0)' &&
-      !bgColor.includes('255, 255, 255') &&
-      !bgColor.includes('248, 250, 252') &&
-      !bgColor.includes('241, 245, 249') &&
-      !bgColor.includes('100, 116, 139') // already neutral
-    );
-    
-    if (isCircular && hasColoredBg && width > 24 && width < 48) {
-      const htmlEl = el as HTMLElement;
-      if (!htmlEl.hasAttribute('data-ra-avatar-processed')) {
-        htmlEl.style.setProperty('background', CONFIG.neutralAvatar, 'important');
-        htmlEl.style.setProperty('background-color', CONFIG.neutralAvatar, 'important');
-        htmlEl.setAttribute('data-ra-avatar-processed', 'true');
+    avatarSelectors.forEach(selector => {
+      try {
+        cell.querySelectorAll(selector).forEach((avatar) => {
+          const el = avatar as HTMLElement;
+          
+          // Skip if already processed
+          if (el.hasAttribute('data-ra-avatar-processed')) return;
+          
+          // Skip small elements (likely icons, not avatars)
+          const width = el.offsetWidth;
+          if (width < 24 || width > 60) return;
+          
+          // Check if it has text content (initials)
+          const hasInitials = el.textContent?.trim().length === 2;
+          
+          if (hasInitials) {
+            // Override background to neutral gray
+            el.style.setProperty('background', CONFIG.neutralAvatar, 'important');
+            el.style.setProperty('background-color', CONFIG.neutralAvatar, 'important');
+            el.style.setProperty('color', '#ffffff', 'important');
+            el.setAttribute('data-ra-avatar-processed', 'true');
+          }
+        });
+      } catch (e) {
+        // Selector might not be valid
       }
-    }
+    });
   });
 }
 
