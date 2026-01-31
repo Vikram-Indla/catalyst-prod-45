@@ -7,11 +7,13 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { GripVertical, Plus } from 'lucide-react';
+import { GripVertical, Plus, Trash2 } from 'lucide-react';
 import { BoardTaskCard } from './BoardTaskCard';
 import type { BoardColumn, BoardTask } from '../../types/planner-boards';
 import { cn } from '@/lib/utils';
 import { ColumnActions } from './ColumnActions';
+import { useDeleteColumn } from '../../hooks/useColumnManagement';
+import { supabase } from '@/integrations/supabase/client';
 
 import '@/styles/boards.css';
 
@@ -20,7 +22,6 @@ interface SortableColumnProps {
   tasks: BoardTask[];
   onTaskClick?: (task: BoardTask) => void;
   onAddTask?: (statusId: string) => void;
-  isDraggingColumn?: boolean;
 }
 
 // Map status slug to CSS class
@@ -40,9 +41,10 @@ export function SortableColumn({
   column, 
   tasks, 
   onTaskClick, 
-  onAddTask,
-  isDraggingColumn 
+  onAddTask 
 }: SortableColumnProps) {
+  const deleteColumn = useDeleteColumn();
+  
   // Column sortable (for horizontal reordering)
   const {
     attributes,
@@ -64,6 +66,33 @@ export function SortableColumn({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  // Check if this is a system column that cannot be deleted
+  const isSystemColumn = column.is_system ?? 
+    ['backlog', 'planned', 'progress', 'review', 'done'].includes(column.slug);
+
+  const handleDeleteColumn = async () => {
+    // Check for tasks in this column
+    const { count } = await supabase
+      .from('planner_tasks')
+      .select('*', { count: 'exact', head: true })
+      .eq('status_id', column.id)
+      .is('deleted_at', null);
+
+    if (count && count > 0) {
+      const confirmed = window.confirm(
+        `This column has ${count} task(s). Move them to Backlog and delete the column?`
+      );
+      if (!confirmed) return;
+      
+      deleteColumn.mutate({ id: column.id, moveTasksToBacklog: true });
+    } else {
+      const confirmed = window.confirm(`Delete the "${column.name}" column?`);
+      if (!confirmed) return;
+      deleteColumn.mutate({ id: column.id });
+    }
   };
 
   return (
@@ -72,22 +101,22 @@ export function SortableColumn({
       style={style}
       className={cn(
         'boards-column',
-        isDragging && 'boards-column--dragging',
-        isDraggingColumn && 'pointer-events-none'
+        isDragging && 'boards-column--dragging'
       )}
     >
       {/* Column Header */}
       <div className="boards-column__header group">
         <div className="boards-column__header-left">
-          {/* Drag Handle */}
-          <button
+          {/* Drag Handle - Always visible with proper touch handling */}
+          <div
             className="boards-column__drag-handle"
             {...attributes}
             {...listeners}
+            style={{ touchAction: 'none' }}
             aria-label="Drag to reorder column"
           >
             <GripVertical className="w-4 h-4" />
-          </button>
+          </div>
           
           {/* Status Dot */}
           <span 
@@ -112,7 +141,19 @@ export function SortableColumn({
             <Plus className="w-4 h-4" />
           </button>
 
-          {/* Column Actions Menu */}
+          {/* Delete Button - Only for custom columns */}
+          {!isSystemColumn && (
+            <button 
+              className="boards-column__delete-btn"
+              onClick={handleDeleteColumn}
+              aria-label={`Delete ${column.name} column`}
+              title="Delete column"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Column Actions Menu (color picker, etc.) */}
           <ColumnActions column={column} />
         </div>
       </div>
