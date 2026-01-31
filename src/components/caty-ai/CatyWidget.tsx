@@ -17,9 +17,7 @@ import { CatyEmpty } from './CatyEmpty';
 import { CatyHistoryPanel } from './CatyHistoryPanel';
 import { RESPONSES } from './responses';
 import { NextAction } from './schema';
-import './caty-ai-v7.css';
-import './caty-ai-v7-overrides.css';
-import './CatyOverrides.css';
+import './CatyWidget.css';
 import './CatyAnswerCard.css';
 
 interface CatyWidgetProps {
