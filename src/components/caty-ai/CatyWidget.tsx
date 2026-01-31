@@ -242,7 +242,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           </div>
         )}
 
-        <CatyHeader isOnline={isOnline} />
+        <CatyHeader isOnline={isOnline} onClose={onClose} />
 
         <CatyContextBar context={context} />
 
