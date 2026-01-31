@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
-import { Search, FileText, Zap, Star, BookOpen, AlertTriangle, CheckSquare, Bug } from "lucide-react";
+import { Search, FileText, Zap, Star, BookOpen, AlertTriangle, CheckSquare, Bug, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { getValidatedWorkItemRoute } from "@/lib/workItemRoutes";
@@ -28,9 +28,6 @@ interface SearchResult {
   scopeName: string;
   updatedAt: string;
 }
-
-// Unified focus ring class
-const focusRingClass = "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--surface-1)]";
 
 // Type icons and colors
 const TYPE_CONFIG: Record<GlobalSearchWorkItemType, { icon: React.ElementType; color: string; label: string }> = {
@@ -220,7 +217,7 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
 
   return (
     <div
-      className="fixed inset-0 z-[200] bg-[var(--bg-overlay,rgba(0,0,0,0.5))] backdrop-blur-sm animate-in fade-in duration-150"
+      className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm animate-in fade-in duration-150"
       onClick={() => onOpenChange(false)}
     >
       <div
@@ -228,15 +225,12 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
         onClick={(e) => e.stopPropagation()}
       >
         <Command
-          className={cn(
-            "rounded-xl border shadow-2xl overflow-hidden",
-            "bg-[var(--surface-1)] border-[var(--border-color)]"
-          )}
+          className="rounded-xl border shadow-2xl overflow-hidden bg-popover border-border"
           shouldFilter={false}
         >
           {/* Search Input */}
-          <div className="flex items-center gap-4 px-5 py-3.5 border-b border-[var(--divider)]">
-            <Search className="h-4 w-4 text-[var(--icon-muted)] shrink-0" />
+          <div className="flex items-center gap-4 px-5 py-3.5 border-b border-border">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
             <Command.Input
               ref={inputRef}
               value={search}
@@ -244,42 +238,49 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
               placeholder="Search work items…"
               style={{ outline: 'none', boxShadow: 'none' }}
               className={cn(
-                "flex-1 h-7 bg-transparent text-sm text-[var(--text-1)] pl-1",
-                "placeholder:text-[var(--text-3)]",
+                "flex-1 h-7 bg-transparent text-sm text-foreground pl-1",
+                "placeholder:text-muted-foreground",
                 "!outline-none !border-none !ring-0 !shadow-none"
               )}
             />
-            <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-[var(--border-color)] bg-[var(--surface-2)] px-1.5 text-[10px] font-medium text-[var(--text-3)]">
+            <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">
               ESC
             </kbd>
+            <button
+              onClick={() => onOpenChange(false)}
+              className="p-1 rounded hover:bg-muted transition-colors"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
           </div>
 
           {/* Results List */}
           <Command.List className="max-h-[420px] overflow-y-auto">
             {isLoading && (
-              <div className="px-4 py-8 text-center text-sm text-[var(--text-3)]">
+              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent mx-auto mb-2" />
                 Searching...
               </div>
             )}
 
             {!isLoading && search.trim() && results.length === 0 && (
               <Command.Empty className="py-12 text-center">
-                <Search className="h-8 w-8 mx-auto mb-3 text-[var(--icon-muted)] opacity-50" />
-                <p className="text-sm text-[var(--text-3)]">No results found for "{search}"</p>
-                <p className="text-xs text-[var(--text-3)] mt-1 opacity-70">Try searching by key or title</p>
+                <Search className="h-8 w-8 mx-auto mb-3 text-muted-foreground/50" />
+                <p className="text-sm text-muted-foreground">No results found for "{search}"</p>
+                <p className="text-xs text-muted-foreground mt-1 opacity-70">Try searching by key or title</p>
               </Command.Empty>
             )}
 
             {!isLoading && !search.trim() && (
               <div className="py-12 text-center">
-                <Search className="h-8 w-8 mx-auto mb-3 text-[var(--icon-muted)] opacity-50" />
-                <p className="text-sm text-[var(--text-3)]">Start typing to search</p>
+                <Search className="h-8 w-8 mx-auto mb-3 text-muted-foreground/50" />
+                <p className="text-sm text-muted-foreground">Start typing to search</p>
               </div>
             )}
 
             {results.length > 0 && (
               <>
-                <div className="px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-3)]">
+                <div className="px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   Results
                 </div>
                 <div className="px-2 pb-2">
@@ -293,11 +294,11 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
                         onSelect={() => handleSelect(item)}
                         className={cn(
                           "flex items-start gap-3 px-3 py-2.5 rounded-md cursor-pointer",
-                          "text-[var(--text-1)]",
-                          "aria-selected:bg-[var(--nav-hover-bg)]",
-                          "hover:bg-[var(--surface-2)]",
+                          "text-foreground",
+                          "aria-selected:bg-accent",
+                          "hover:bg-muted",
                           "transition-colors",
-                          focusRingClass
+                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         )}
                       >
                         <div 
@@ -308,18 +309,18 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-baseline gap-2">
-                            <span className="text-xs font-semibold text-[var(--text-2)] shrink-0">
+                            <span className="text-xs font-semibold text-muted-foreground shrink-0">
                               {item.key}:
                             </span>
-                            <span className="text-sm truncate text-[var(--text-1)]">
+                            <span className="text-sm truncate text-foreground">
                               {item.summary}
                             </span>
                           </div>
-                          <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-[var(--text-3)]">
+                          <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-muted-foreground">
                             <span>{config.label}</span>
                           </div>
                         </div>
-                        <div className="shrink-0 text-[11px] text-[var(--text-3)] whitespace-nowrap">
+                        <div className="shrink-0 text-[11px] text-muted-foreground whitespace-nowrap">
                           {formatRelativeTime(item.updatedAt)}
                         </div>
                       </Command.Item>
@@ -331,22 +332,22 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
           </Command.List>
 
           {/* Footer */}
-          <div className="flex items-center justify-between px-4 py-2 border-t border-[var(--divider)] bg-[var(--surface-2)]">
-            <div className="flex items-center gap-4 text-[11px] text-[var(--text-3)]">
+          <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-muted">
+            <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 rounded bg-[var(--surface-3)] text-[10px]">↵</kbd>
+                <kbd className="px-1 py-0.5 rounded bg-background text-[10px]">↵</kbd>
                 Open
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 rounded bg-[var(--surface-3)] text-[10px]">↑↓</kbd>
+                <kbd className="px-1 py-0.5 rounded bg-background text-[10px]">↑↓</kbd>
                 Navigate
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 rounded bg-[var(--surface-3)] text-[10px]">Esc</kbd>
+                <kbd className="px-1 py-0.5 rounded bg-background text-[10px]">Esc</kbd>
                 Close
               </span>
             </div>
-            <div className="text-[11px] text-[var(--text-3)]">
+            <div className="text-[11px] text-muted-foreground">
               {results.length} {results.length === 1 ? 'item' : 'items'}
             </div>
           </div>
