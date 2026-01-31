@@ -93,58 +93,87 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   HEADER
+   HEADER (WHITE BACKGROUND - CATY AI V10)
    ───────────────────────────────────────────────────────────────────────────── */
-.caty-header {
-  display: flex;
-  align-items: center;
-  gap: var(--caty-space-lg);
-  padding: 20px 24px;
-  background: var(--caty-bg-panel);
-  border-bottom: 1px solid var(--caty-border-light);
+.caty-header,
+.caty-header-fixed {
+  display: flex !important;
+  align-items: center !important;
+  padding: 20px 24px !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
   flex-shrink: 0;
 }
 
+.caty-header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
 .caty-header-icon {
-  width: 52px;
-  height: 52px;
-  background: var(--caty-primary);
-  border-radius: var(--caty-radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  background: #2563eb !important;
+  border-radius: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   flex-shrink: 0;
 }
 
 .caty-header-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.caty-header-text {
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .caty-header-title {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--caty-text-primary);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.2 !important;
 }
 
 .caty-header-subtitle {
-  display: flex;
-  align-items: center;
-  gap: var(--caty-space-sm);
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: var(--caty-text-muted);
-  margin-top: 2px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.8125rem !important;
+  font-weight: 400 !important;
+  color: #64748b !important;
+  margin-top: 2px !important;
 }
 
 .caty-status-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--caty-success);
-  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  background: #059669 !important;
+  border-radius: 50% !important;
   flex-shrink: 0;
+}
+
+.caty-status-dot.offline {
+  background: #dc2626 !important;
+}
+
+/* NUCLEAR OVERRIDE - Remove any blue gradient from header */
+[class*="caty-header"],
+[class*="caty"] header,
+.caty-widget header {
+  background: #ffffff !important;
+  background-image: none !important;
+  background-color: #ffffff !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
