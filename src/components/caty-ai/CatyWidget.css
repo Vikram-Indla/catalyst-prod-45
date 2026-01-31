@@ -1418,3 +1418,36 @@ body.caty-backdrop-open {
   overflow: hidden !important;
   padding-right: 0 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NUCLEAR FIX: HIDE ALL ACTION BUTTONS & SUGGESTIONS
+   User wants straight answers only - no CTAs, no suggestions
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Hide data card footers with action buttons */
+.caty-data-card-footer {
+  display: none !important;
+}
+
+/* Hide all action buttons */
+.caty-action-btn,
+button.caty-action-btn,
+.caty-btn.secondary,
+.caty-btn.primary {
+  display: none !important;
+}
+
+/* Hide "View All", "Check Attendance" and similar buttons */
+button[class*="action"],
+.caty-response-html button,
+.caty-bubble button,
+.caty-data-card button {
+  display: none !important;
+}
+
+/* Hide any next action sections */
+[class*="next-action"],
+[class*="suggestion"],
+.caty-suggestions-row {
+  display: none !important;
+}
