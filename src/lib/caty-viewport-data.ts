@@ -1,6 +1,7 @@
 /**
  * CATY Viewport Data Fetching — Enterprise Probing Questions
- * Calculates stats and builds intelligent question sections
+ * Generates generic aggregate questions about utilization & contracts
+ * WITHOUT exposing individual resource names
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +10,8 @@ import type { ViewportData, ViewportStats, ViewportSection, ProbingQuestion } fr
 export async function fetchViewportData(departmentId: string | null): Promise<ViewportData> {
   const today = new Date();
   const ninetyDaysFromNow = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000);
+  const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const sixtyDaysFromNow = new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000);
 
   // Fetch resources from resource_inventory view
   let resourceQuery = supabase
@@ -48,7 +51,7 @@ export async function fetchViewportData(departmentId: string | null): Promise<Vi
     utilizationMap.set(alloc.resource_id, current + (alloc.allocation_percent || 0));
   });
 
-  // Calculate stats
+  // Calculate stats and categorize resources
   const stats: ViewportStats = {
     totalResources: resources?.length || 0,
     expiringContracts: 0,
@@ -56,165 +59,217 @@ export async function fetchViewportData(departmentId: string | null): Promise<Vi
     zeroUtilization: 0,
   };
 
-  const expiringResources: any[] = [];
-  const overAllocatedResources: any[] = [];
-  const zeroUtilResources: any[] = [];
+  // Aggregation buckets
+  const expiringData = {
+    within30Days: [] as any[],
+    within60Days: [] as any[],
+    within90Days: [] as any[],
+    byVendor: new Map<string, any[]>(),
+    byDepartment: new Map<string, any[]>(),
+  };
+
+  const overAllocatedData = {
+    above150: [] as any[],
+    above120: [] as any[],
+    above100: [] as any[],
+    byDepartment: new Map<string, any[]>(),
+  };
+
+  const lowUtilData = {
+    zeroUtil: [] as any[],
+    below25: [] as any[],
+    below50: [] as any[],
+    byDepartment: new Map<string, any[]>(),
+  };
 
   (resources || []).forEach(resource => {
     const contractEnd = resource.contract_end_date ? new Date(resource.contract_end_date) : null;
-    // Get actual utilization from allocation data
     const utilization = utilizationMap.get(resource.id) || 0;
+    const deptName = resource.department_name || 'Unknown';
+    const vendorName = resource.vendor_name || 'Unknown';
 
-    // Expiring within 90 days
+    // Expiring contracts categorization
     if (contractEnd && contractEnd >= today && contractEnd <= ninetyDaysFromNow) {
       stats.expiringContracts++;
       const daysLeft = Math.ceil((contractEnd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      expiringResources.push({ 
-        id: resource.id,
-        name: resource.name,
-        department_name: resource.department_name,
-        vendor_name: resource.vendor_name,
-        contractEnd, 
-        daysLeft 
-      });
+      const entry = { id: resource.id, daysLeft, deptName, vendorName };
+
+      if (contractEnd <= thirtyDaysFromNow) {
+        expiringData.within30Days.push(entry);
+      } else if (contractEnd <= sixtyDaysFromNow) {
+        expiringData.within60Days.push(entry);
+      } else {
+        expiringData.within90Days.push(entry);
+      }
+
+      // Group by vendor
+      if (!expiringData.byVendor.has(vendorName)) expiringData.byVendor.set(vendorName, []);
+      expiringData.byVendor.get(vendorName)!.push(entry);
+
+      // Group by department
+      if (!expiringData.byDepartment.has(deptName)) expiringData.byDepartment.set(deptName, []);
+      expiringData.byDepartment.get(deptName)!.push(entry);
     }
 
-    // Over-allocated (>100%)
+    // Over-allocated categorization
     if (utilization > 100) {
       stats.overAllocated++;
-      overAllocatedResources.push({ 
-        id: resource.id,
-        name: resource.name,
-        department_name: resource.department_name,
-        vendor_name: resource.vendor_name,
-        utilization 
-      });
+      const entry = { id: resource.id, utilization, deptName };
+
+      if (utilization >= 150) {
+        overAllocatedData.above150.push(entry);
+      } else if (utilization >= 120) {
+        overAllocatedData.above120.push(entry);
+      } else {
+        overAllocatedData.above100.push(entry);
+      }
+
+      if (!overAllocatedData.byDepartment.has(deptName)) overAllocatedData.byDepartment.set(deptName, []);
+      overAllocatedData.byDepartment.get(deptName)!.push(entry);
     }
 
-    // Zero utilization - only count resources with NO allocations
+    // Low utilization categorization
     if (utilization === 0) {
       stats.zeroUtilization++;
-      zeroUtilResources.push({ 
-        id: resource.id,
-        name: resource.name,
-        department_name: resource.department_name,
-        vendor_name: resource.vendor_name,
-        utilization 
-      });
+      const entry = { id: resource.id, utilization, deptName };
+      lowUtilData.zeroUtil.push(entry);
+
+      if (!lowUtilData.byDepartment.has(deptName)) lowUtilData.byDepartment.set(deptName, []);
+      lowUtilData.byDepartment.get(deptName)!.push(entry);
+    } else if (utilization < 25) {
+      const entry = { id: resource.id, utilization, deptName };
+      lowUtilData.below25.push(entry);
+    } else if (utilization < 50) {
+      const entry = { id: resource.id, utilization, deptName };
+      lowUtilData.below50.push(entry);
     }
   });
 
-  // Build sections
+  // Build sections with generic questions
   const sections: ViewportSection[] = [];
 
-  // Section 1: Contracts Expiring
-  if (expiringResources.length > 0) {
-    sections.push(buildExpiringSection(expiringResources, departmentId));
+  if (stats.expiringContracts > 0) {
+    sections.push(buildExpiringSection(expiringData, departmentId));
   }
 
-  // Section 2: Over-Allocated
-  if (overAllocatedResources.length > 0) {
-    sections.push(buildOverAllocatedSection(overAllocatedResources, departmentId));
+  if (stats.overAllocated > 0) {
+    sections.push(buildOverAllocatedSection(overAllocatedData, departmentId));
   }
 
-  // Section 3: Zero Utilization
-  if (zeroUtilResources.length > 0) {
-    sections.push(buildZeroUtilSection(zeroUtilResources, departmentId));
+  if (stats.zeroUtilization > 0 || lowUtilData.below25.length > 0) {
+    sections.push(buildLowUtilSection(lowUtilData, departmentId));
   }
 
   return { stats, sections };
 }
 
-function buildExpiringSection(resources: any[], departmentId: string | null): ViewportSection {
+function buildExpiringSection(data: any, departmentId: string | null): ViewportSection {
   const questions: ProbingQuestion[] = [];
+  const totalCount = data.within30Days.length + data.within60Days.length + data.within90Days.length;
 
-  // Sort by days left (most urgent first)
-  resources.sort((a, b) => a.daysLeft - b.daysLeft);
+  // Question 1: Urgent contracts (within 30 days)
+  if (data.within30Days.length > 0) {
+    questions.push({
+      id: 'expiring-30-days',
+      severity: 'danger',
+      text: `<strong>${data.within30Days.length} contract${data.within30Days.length > 1 ? 's' : ''}</strong> expiring within 30 days — review renewal pipeline`,
+      highlightedText: `${data.within30Days.length} contract${data.within30Days.length > 1 ? 's' : ''}`,
+      tags: [
+        { type: 'date', label: '< 30 days' },
+        { type: 'count', label: `${data.within30Days.length} urgent` },
+      ],
+      resourceIds: data.within30Days.map((r: any) => r.id),
+    });
+  }
 
-  // Group by vendor
-  const byVendor = groupBy(resources, r => r.vendor_name || 'Unassigned');
+  // Question 2: Vendor concentration risk
+  const topVendor = [...data.byVendor.entries()].sort((a, b) => b[1].length - a[1].length)[0];
+  if (topVendor && topVendor[1].length >= 2) {
+    questions.push({
+      id: 'expiring-vendor-concentration',
+      severity: 'warning',
+      text: `<strong>${topVendor[1].length} contracts</strong> from single vendor expiring — assess vendor dependency risk`,
+      highlightedText: `${topVendor[1].length} contracts`,
+      tags: [
+        { type: 'vendor', label: topVendor[0] },
+        { type: 'count', label: 'concentration risk' },
+      ],
+      resourceIds: topVendor[1].map((r: any) => r.id),
+    });
+  }
 
-  Object.entries(byVendor).forEach(([vendorName, vendorResources]) => {
-    const vendorDisplay = vendorName === 'Unassigned' ? 'resources with no vendor' : `vendor ${vendorName}`;
-    if (vendorResources.length >= 2) {
-      // Group question
-      const earliestDate = Math.min(...vendorResources.map(r => r.daysLeft));
-      questions.push({
-        id: `expiring-${vendorName.replace(/\s+/g, '-')}`,
-        severity: 'danger',
-        text: `Show <strong>${vendorResources.length} expiring contracts</strong> for ${vendorDisplay}`,
-        highlightedText: `${vendorResources.length} expiring contracts`,
-        tags: [
-          { type: 'vendor', label: vendorName },
-          { type: 'date', label: `${earliestDate} days` },
-        ],
-        resourceIds: vendorResources.map(r => r.id),
-      });
-    } else {
-      // Individual question
-      const r = vendorResources[0];
-      questions.push({
-        id: `expiring-${r.id}`,
-        severity: 'danger',
-        text: `Show contract expiring for <strong>${r.name}</strong>`,
-        highlightedText: r.name,
-        tags: [
-          { type: 'vendor', label: vendorName },
-          { type: 'date', label: `${r.daysLeft} days` },
-        ],
-        resourceIds: [r.id],
-      });
-    }
-  });
+  // Question 3: Department planning
+  if (data.within60Days.length > 0 || data.within90Days.length > 0) {
+    const count = data.within60Days.length + data.within90Days.length;
+    questions.push({
+      id: 'expiring-planning-horizon',
+      severity: 'info',
+      text: `<strong>${count} contract${count > 1 ? 's' : ''}</strong> expiring in 30-90 days — plan capacity transition`,
+      highlightedText: `${count} contract${count > 1 ? 's' : ''}`,
+      tags: [
+        { type: 'date', label: '30-90 days' },
+        { type: 'count', label: 'planning window' },
+      ],
+      resourceIds: [...data.within60Days, ...data.within90Days].map((r: any) => r.id),
+    });
+  }
 
   return {
     id: 'expiring',
     title: 'Contracts Expiring',
     severity: 'danger',
-    totalCount: resources.length,
-    questions: questions.slice(0, 3), // Max 3 questions per section
+    totalCount,
+    questions: questions.slice(0, 3),
   };
 }
 
-function buildOverAllocatedSection(resources: any[], departmentId: string | null): ViewportSection {
+function buildOverAllocatedSection(data: any, departmentId: string | null): ViewportSection {
   const questions: ProbingQuestion[] = [];
+  const totalCount = data.above150.length + data.above120.length + data.above100.length;
 
-  // Always show 2-3 individual questions for better visibility
-  const showIndividualFirst = resources.length <= 4 || departmentId;
-  
-  if (showIndividualFirst) {
-    // Individual questions (max 3)
-    resources.slice(0, 3).forEach(r => {
-      questions.push({
-        id: `over-allocated-${r.id}`,
-        severity: 'warning',
-        text: `Is <strong>${r.name}</strong> correctly at ${r.utilization}% allocation?`,
-        highlightedText: r.name,
-        tags: [
-          { type: 'vendor', label: r.vendor_name || 'Unknown' },
-          { type: 'count', label: `${r.utilization}%` },
-        ],
-        resourceIds: [r.id],
-      });
+  // Question 1: Critical overload (150%+)
+  if (data.above150.length > 0) {
+    const maxUtil = Math.max(...data.above150.map((r: any) => r.utilization));
+    questions.push({
+      id: 'over-allocated-critical',
+      severity: 'danger',
+      text: `<strong>${data.above150.length} assignment${data.above150.length > 1 ? 's' : ''}</strong> at 150%+ utilization — immediate rebalancing required`,
+      highlightedText: `${data.above150.length} assignment${data.above150.length > 1 ? 's' : ''}`,
+      tags: [
+        { type: 'count', label: `up to ${maxUtil}%` },
+        { type: 'project', label: 'critical' },
+      ],
+      resourceIds: data.above150.map((r: any) => r.id),
     });
-  } else {
-    // Grouped by department when viewing all with many resources
-    const byDept = groupBy(resources, r => r.department_name || 'Unknown');
-    
-    // Show top 3 department groups
-    Object.entries(byDept).slice(0, 3).forEach(([deptName, deptResources]) => {
-      const maxUtil = Math.max(...deptResources.map(r => r.utilization));
-      questions.push({
-        id: `over-allocated-${deptName.replace(/\s+/g, '-')}`,
-        severity: 'warning',
-        text: `Resolve <strong>${deptResources.length} resources</strong> in ${deptName} above 100%`,
-        highlightedText: `${deptResources.length} resources`,
-        tags: [
-          { type: 'project', label: deptName },
-          { type: 'count', label: `up to ${maxUtil}%` },
-        ],
-        resourceIds: deptResources.map(r => r.id),
-      });
+  }
+
+  // Question 2: High overload (120-149%)
+  if (data.above120.length > 0) {
+    questions.push({
+      id: 'over-allocated-high',
+      severity: 'warning',
+      text: `<strong>${data.above120.length} assignment${data.above120.length > 1 ? 's' : ''}</strong> at 120-149% — review allocation conflicts`,
+      highlightedText: `${data.above120.length} assignment${data.above120.length > 1 ? 's' : ''}`,
+      tags: [
+        { type: 'count', label: '120-149%' },
+        { type: 'project', label: 'high load' },
+      ],
+      resourceIds: data.above120.map((r: any) => r.id),
+    });
+  }
+
+  // Question 3: Moderate overload (100-119%)
+  if (data.above100.length > 0) {
+    questions.push({
+      id: 'over-allocated-moderate',
+      severity: 'info',
+      text: `<strong>${data.above100.length} assignment${data.above100.length > 1 ? 's' : ''}</strong> slightly over capacity (100-119%) — validate assignment overlap`,
+      highlightedText: `${data.above100.length} assignment${data.above100.length > 1 ? 's' : ''}`,
+      tags: [
+        { type: 'count', label: '100-119%' },
+        { type: 'project', label: 'overlap' },
+      ],
+      resourceIds: data.above100.map((r: any) => r.id),
     });
   }
 
@@ -222,70 +277,66 @@ function buildOverAllocatedSection(resources: any[], departmentId: string | null
     id: 'over-allocated',
     title: 'Over-Allocated (>100%)',
     severity: 'warning',
-    totalCount: resources.length,
-    questions: questions.slice(0, 3), // Ensure max 3 questions
+    totalCount,
+    questions: questions.slice(0, 3),
   };
 }
 
-function buildZeroUtilSection(resources: any[], departmentId: string | null): ViewportSection {
+function buildLowUtilSection(data: any, departmentId: string | null): ViewportSection {
   const questions: ProbingQuestion[] = [];
+  const totalCount = data.zeroUtil.length;
 
-  // Always show 2-3 individual questions first for better visibility
-  const showIndividualFirst = resources.length <= 5 || departmentId;
-  
-  if (showIndividualFirst) {
-    // Individual questions (max 3)
-    resources.slice(0, 3).forEach(r => {
-      questions.push({
-        id: `zero-util-${r.id}`,
-        severity: 'info',
-        text: `Should <strong>${r.name}</strong> be assigned to active projects?`,
-        highlightedText: r.name,
-        tags: [
-          { type: 'vendor', label: r.vendor_name || 'Unknown' },
-          { type: 'count', label: `0% since ${getCurrentMonth()}` },
-        ],
-        resourceIds: [r.id],
-      });
+  // Question 1: Unassigned capacity
+  if (data.zeroUtil.length > 0) {
+    questions.push({
+      id: 'low-util-unassigned',
+      severity: 'warning',
+      text: `<strong>${data.zeroUtil.length} assignment${data.zeroUtil.length > 1 ? 's' : ''}</strong> with 0% utilization — review bench capacity`,
+      highlightedText: `${data.zeroUtil.length} assignment${data.zeroUtil.length > 1 ? 's' : ''}`,
+      tags: [
+        { type: 'count', label: '0% utilized' },
+        { type: 'project', label: 'bench' },
+      ],
+      resourceIds: data.zeroUtil.map((r: any) => r.id),
     });
-  } else {
-    // Grouped by department when viewing all with many resources
-    const byDept = groupBy(resources, r => r.department_name || 'Unknown');
-    
-    // Show top 3 department groups
-    Object.entries(byDept).slice(0, 3).forEach(([deptName, deptResources]) => {
-      questions.push({
-        id: `zero-util-${deptName.replace(/\s+/g, '-')}`,
-        severity: 'info',
-        text: `Assign <strong>${deptResources.length} resources</strong> in ${deptName} with 0% utilization`,
-        highlightedText: `${deptResources.length} resources`,
-        tags: [
-          { type: 'project', label: deptName },
-          { type: 'count', label: `${deptResources.length} idle` },
-        ],
-        resourceIds: deptResources.map(r => r.id),
-      });
+  }
+
+  // Question 2: Department bench concentration
+  const topDept = [...data.byDepartment.entries()].sort((a, b) => b[1].length - a[1].length)[0];
+  if (topDept && topDept[1].length >= 2) {
+    questions.push({
+      id: 'low-util-dept-concentration',
+      severity: 'info',
+      text: `<strong>${topDept[1].length} unassigned</strong> in ${topDept[0]} — optimize team allocation`,
+      highlightedText: `${topDept[1].length} unassigned`,
+      tags: [
+        { type: 'project', label: topDept[0] },
+        { type: 'count', label: 'idle capacity' },
+      ],
+      resourceIds: topDept[1].map((r: any) => r.id),
+    });
+  }
+
+  // Question 3: Low utilization (below 25%)
+  if (data.below25.length > 0) {
+    questions.push({
+      id: 'low-util-underutilized',
+      severity: 'info',
+      text: `<strong>${data.below25.length} assignment${data.below25.length > 1 ? 's' : ''}</strong> below 25% utilization — opportunity for additional workload`,
+      highlightedText: `${data.below25.length} assignment${data.below25.length > 1 ? 's' : ''}`,
+      tags: [
+        { type: 'count', label: '< 25%' },
+        { type: 'project', label: 'capacity available' },
+      ],
+      resourceIds: data.below25.map((r: any) => r.id),
     });
   }
 
   return {
-    id: 'zero-util',
-    title: 'Zero Utilization',
+    id: 'low-util',
+    title: 'Low Utilization',
     severity: 'info',
-    totalCount: resources.length,
-    questions: questions.slice(0, 3), // Ensure max 3 questions
+    totalCount,
+    questions: questions.slice(0, 3),
   };
-}
-
-function groupBy<T>(arr: T[], fn: (item: T) => string): Record<string, T[]> {
-  return arr.reduce((acc, item) => {
-    const key = fn(item);
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(item);
-    return acc;
-  }, {} as Record<string, T[]>);
-}
-
-function getCurrentMonth(): string {
-  return new Date().toLocaleDateString('en-US', { month: 'short' });
 }
