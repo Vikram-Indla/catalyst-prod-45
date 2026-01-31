@@ -6,6 +6,7 @@
 
 import React, { useMemo, useState } from 'react';
 import '@/styles/ra-enterprise-clean.css';
+import '@/styles/ra-enterprise-polish.css';
 import '@/styles/resource-allocation-enterprise.css';
 import '@/styles/resource-allocation-override.css';
 import { useResourceAllocationOverride } from '@/hooks/useResourceAllocationOverride';
@@ -275,7 +276,7 @@ export function CapacityAnalyticsView({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full ra-polish">
       {/* TOP ROW: Category Widgets (Insourced, Cosourced, Outsourced, Licenses) - Hidden in Utilization view */}
       {!hideWidgets && (
       <section className="ct-category-section mb-4">

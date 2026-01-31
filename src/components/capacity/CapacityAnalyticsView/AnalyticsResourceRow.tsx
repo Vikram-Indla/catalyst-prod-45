@@ -60,7 +60,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
             <TooltipTrigger asChild>
               <div className="relative flex-shrink-0">
                 <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ring-2 ring-white/20"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ring-2 ring-white/30 shadow-md transition-transform duration-150 hover:scale-105"
                   style={{ backgroundColor: '#64748b' }}
                 >
                   {initials}
@@ -87,7 +87,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
           
           {/* Name, Role, Department - match original structure */}
           <div className="flex flex-col min-w-0">
-            <div className="font-semibold text-sm text-foreground truncate">
+            <div className="font-bold text-sm text-slate-800 truncate resource-name">
               {resource.name}
             </div>
             <div className="text-xs text-muted-foreground">
