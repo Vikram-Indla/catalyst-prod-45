@@ -409,6 +409,12 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
                       key={msg.id} 
                       message={msg} 
                       onAction={handleActionClick}
+                      onDrillDown={(type, params) => {
+                        // Handle drill-down by sending a new query
+                        if (type === 'country' && params.country_name) {
+                          handleSend(`Show resources in ${params.country_name}`);
+                        }
+                      }}
                     />
                   ))}
                   {isTyping && <CatyThinking />}
