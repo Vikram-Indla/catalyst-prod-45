@@ -201,82 +201,67 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CONTEXT BAR
+   CONTEXT BAR — Department Pills Only
    ───────────────────────────────────────────────────────────────────────────── */
 .caty-context-bar {
   display: flex;
   align-items: center;
-  gap: var(--caty-space-md);
-  padding: 14px 24px;
-  background: var(--caty-primary-subtle);
+  padding: 12px 20px;
+  background: var(--caty-bg-subtle);
   border-bottom: 1px solid var(--caty-border-light);
   flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
-.caty-context-label {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--caty-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
+.caty-context-bar::-webkit-scrollbar {
+  display: none;
 }
 
-.caty-context-tags {
+/* Department Pills Container */
+.caty-department-pills {
   display: flex;
-  gap: var(--caty-space-sm);
-  flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
+  flex-wrap: nowrap;
 }
 
-.caty-context-tag {
-  padding: 6px 14px;
+/* Individual Department Pill */
+.caty-department-pill {
+  padding: 8px 16px;
   background: var(--caty-bg-panel);
-  border: 1px solid var(--caty-border-light);
-  border-radius: var(--caty-radius-sm);
-  font-size: 0.75rem;
+  border: 2px solid var(--caty-border-light);
+  border-radius: 20px;
+  font-family: var(--caty-font-sans);
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--caty-text-secondary);
   white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
-.caty-context-tag.active {
+.caty-department-pill:hover {
+  border-color: var(--caty-primary);
+  color: var(--caty-primary);
+  background: var(--caty-primary-subtle);
+}
+
+.caty-department-pill.active {
   background: var(--caty-primary);
   border-color: var(--caty-primary);
   color: white;
+  font-weight: 600;
 }
 
-/* Department Select Dropdown */
+/* Hide old context elements */
+.caty-context-label,
+.caty-context-tags,
+.caty-context-tag,
 .caty-context-select {
-  appearance: none;
-  background: var(--caty-primary);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  border: none;
-  color: white;
-  padding: 6px 28px 6px 14px;
-  border-radius: var(--caty-radius-sm);
-  font-family: var(--caty-font-sans);
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.caty-context-select:hover {
-  background-color: var(--caty-primary-hover);
-}
-
-.caty-context-select:focus {
-  outline: 2px solid var(--caty-primary-muted);
-  outline-offset: 2px;
-}
-
-.caty-context-select option {
-  background: var(--caty-bg-panel);
-  color: var(--caty-text-primary);
-  padding: 8px;
+  display: none !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

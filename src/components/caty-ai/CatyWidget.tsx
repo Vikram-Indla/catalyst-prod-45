@@ -101,6 +101,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
     getSessions,
     clearHistory,
     context,
+    setContext,
   } = useCatySession(initialContext || defaultContext);
 
   const { showToast } = useCatyToast();
@@ -351,7 +352,10 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
 
             <CatyHeader isOnline={isOnline} onClose={handleClose} />
 
-            <CatyContextBar context={context} />
+            <CatyContextBar 
+              context={context} 
+              onDepartmentChange={(dept) => setContext(prev => ({ ...prev, department: dept }))}
+            />
 
             <div className="caty-messages">
               {messages.length === 0 ? (
