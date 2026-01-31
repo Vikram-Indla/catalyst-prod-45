@@ -133,7 +133,7 @@ export function SidebarBase({
             background: 'transparent',
           }}
         >
-        <div className="flex items-center gap-2.5 overflow-hidden">
+        <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
             {/* Module Badge — 32×32 (smaller than header logo for visual hierarchy) */}
             <div 
               className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
@@ -160,7 +160,7 @@ export function SidebarBase({
           {/* Collapse button — dark mode compatible */}
           <button
             onClick={onToggle}
-            className="w-7 h-7 flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-white/5 dark:hover:bg-white/10"
+            className="w-7 h-7 flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-white/5 dark:hover:bg-white/10 ml-3"
             style={{
               borderColor: 'var(--divider)',
               color: 'var(--text-3)',
