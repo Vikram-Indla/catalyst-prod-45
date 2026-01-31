@@ -100,9 +100,12 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
     loadSession,
     getSessions,
     clearHistory,
+    newSession,
     context,
     setContext,
   } = useCatySession(initialContext || defaultContext);
+
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const { showToast } = useCatyToast();
   const [isTyping, setIsTyping] = useState(false);
@@ -328,6 +331,25 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
 
   if (!isPanelOpen) return null;
 
+  // Minimized state - show only a small button to restore
+  if (isMinimized) {
+    return (
+      <button 
+        className="caty-minimized-btn"
+        onClick={() => setIsMinimized(false)}
+        title="Open CATY AI"
+      >
+        <div className="caty-minimized-icon">
+          <svg viewBox="0 0 100 100" fill="none" width="24" height="24">
+            <circle cx="50" cy="50" r="16" fill="white"/>
+            <circle cx="50" cy="50" r="8" fill="#2563eb"/>
+          </svg>
+        </div>
+        <span>CATY AI</span>
+      </button>
+    );
+  }
+
   return (
     <>
       {/* Backdrop overlay */}
@@ -350,7 +372,15 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
               </div>
             )}
 
-            <CatyHeader isOnline={isOnline} onClose={handleClose} />
+            <CatyHeader 
+              isOnline={isOnline} 
+              onClose={handleClose} 
+              onClearChat={() => {
+                newSession();
+                showToast('Chat cleared');
+              }}
+              onMinimize={() => setIsMinimized(true)}
+            />
 
             <CatyContextBar 
               context={context} 
