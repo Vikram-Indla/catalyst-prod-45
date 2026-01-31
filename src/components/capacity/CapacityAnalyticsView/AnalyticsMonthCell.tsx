@@ -64,10 +64,10 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: '8px',
-            backgroundImage: 'repeating-linear-gradient(-45deg, #f1f5f9, #f1f5f9 4px, #e2e8f0 4px, #e2e8f0 8px)',
+            backgroundImage: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #f1f5f9 4px, #f1f5f9 8px)',
           }}
         >
-          <span style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', background: 'rgba(255,255,255,0.8)', padding: '2px 8px', borderRadius: '4px' }}>END</span>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: '#94a3b8', background: 'rgba(255,255,255,0.9)', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
         </div>
       </td>
     );
@@ -85,10 +85,10 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             justifyContent: 'center',
             borderRadius: '8px',
             border: '1px dashed #cbd5e1',
-            backgroundImage: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)',
+            backgroundImage: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #f1f5f9 4px, #f1f5f9 8px)',
           }}
         >
-          <span style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', background: 'rgba(255,255,255,0.8)', padding: '2px 8px', borderRadius: '4px' }}>END</span>
+          <span style={{ fontSize: '10px', fontWeight: 600, color: '#94a3b8', background: 'rgba(255,255,255,0.9)', padding: '4px 12px', borderRadius: '4px', letterSpacing: '0.5px' }}>END</span>
         </div>
       </td>
     );
@@ -145,9 +145,10 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
       <Tooltip>
         <TooltipTrigger asChild>
           <div 
+            className="allocation-cell"
             style={{
               position: 'relative',
-              height: '48px',
+              height: '56px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -155,21 +156,24 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
               borderRadius: '8px',
               background: '#ffffff',
               border: isOverAllocated ? '1px solid #fca5a5' : '1px solid #e2e8f0',
-              boxShadow: isOverAllocated ? '0 0 0 1px #fca5a5' : 'none',
+              boxShadow: isOverAllocated ? '0 0 0 1px #fca5a5' : '0 1px 3px rgba(0,0,0,0.04)',
               cursor: 'default',
+              transition: 'all 150ms ease, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
-            {/* Text content - dark on white */}
-            <span style={{
-              fontSize: '12px',
-              fontWeight: 600,
-              color: isOverAllocated ? '#dc2626' : '#334155',
+            {/* Text content - dark on white - POLISH: Larger percent text */}
+            <span className="alloc-percent" style={{
+              fontSize: '14px',
+              fontWeight: 700,
+              color: isOverAllocated ? '#dc2626' : '#1e293b',
+              letterSpacing: '-0.01em',
               zIndex: 10,
             }}>
               {totalPercent}%
             </span>
-            <span style={{
-              fontSize: '9px',
+            {/* POLISH: Larger project text (11px) */}
+            <span className="alloc-project" style={{
+              fontSize: '11px',
               fontWeight: 500,
               color: '#64748b',
               maxWidth: '100px',
@@ -177,36 +181,38 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
               padding: '0 4px',
+              marginTop: '3px',
               zIndex: 10,
             }}>
               {primarySegment.assignment.name}
             </span>
             
-            {/* Horizontal progress bar at bottom (Strategy D)
-                Using a SPAN element to avoid CSS div overrides */}
+            {/* Horizontal progress bar at bottom (Strategy D) - POLISH: 5px height */}
             <span
+              className="allocation-bar"
               aria-hidden="true"
               style={{
                 position: 'absolute',
                 bottom: '4px',
                 left: '6px',
                 right: '6px',
-                height: '4px',
-                borderRadius: '2px',
+                height: '5px',
+                borderRadius: '2.5px',
                 background: '#e2e8f0',
                 display: 'block',
                 overflow: 'hidden',
               }}
             >
-              {/* Fill bar - inline color */}
+              {/* Fill bar - POLISH: Gradient colors */}
               <span
+                className={`alloc-bar-fill ${projectSlug}`}
                 style={{
                   display: 'block',
                   height: '100%',
                   width: `${barWidth}%`,
-                  borderRadius: '2px',
-                  background: barColor,
-                  transition: 'width 0.3s ease',
+                  borderRadius: '2.5px',
+                  background: `linear-gradient(90deg, ${barColor} 0%, ${barColor}dd 100%)`,
+                  transition: 'width 250ms cubic-bezier(0.4, 0, 0.2, 1)',
                 }}
               />
             </span>
