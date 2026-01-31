@@ -569,7 +569,34 @@ export function useRemoveWorkstreamMember() {
         if (clearLeadError) throw new Error(clearLeadError.message);
       }
     },
-    onSuccess: () => {
+    onMutate: async ({ workstreamId, userId }) => {
+      await queryClient.cancelQueries({ queryKey: ['planner-workstreams'] });
+
+      const previous = queryClient.getQueriesData<Workstream[]>({ queryKey: ['planner-workstreams'] });
+
+      // Optimistically remove the member from all cached workstreams queries
+      previous.forEach(([key, data]) => {
+        if (!data) return;
+        queryClient.setQueryData<Workstream[]>(key, (old) => {
+          if (!old) return old;
+          return old.map((ws) => {
+            if (ws.id !== workstreamId) return ws;
+            return {
+              ...ws,
+              members: (ws.members || []).filter((m) => m.user_id !== userId),
+            };
+          });
+        });
+      });
+
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      ctx?.previous?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
     },
   });

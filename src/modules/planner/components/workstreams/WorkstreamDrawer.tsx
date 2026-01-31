@@ -622,6 +622,49 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         {/* SCROLLABLE BODY */}
         {/* ============================================================ */}
         <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '80px' }}>
+          {/* WORK SUMMARY (sticky) */}
+          <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 20,
+              padding: '20px',
+              backgroundColor: '#ffffff',
+              borderBottom: '1px solid #e2e8f0',
+            }}
+          >
+            <div style={{ marginBottom: '14px' }}>
+              <span style={sectionLabelStyle}>Work Summary</span>
+            </div>
+
+            {/* Stats Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+              <div style={statCardStyle}>
+                <div style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{taskCount}</div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Total Tasks</div>
+              </div>
+              <div style={statCardStyle}>
+                <div style={{ fontSize: '28px', fontWeight: 700, color: '#dc2626', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Overdue</div>
+              </div>
+              <div style={statCardStyle}>
+                <div style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{memberCount}</div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Members</div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '13px', color: '#64748b' }}>Task Completion</span>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{progress}% complete</span>
+              </div>
+              <div style={{ height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${progress}%`, backgroundColor: '#2563eb', borderRadius: '4px', transition: 'width 0.3s ease' }} />
+              </div>
+            </div>
+          </div>
+
           <div style={{ padding: '20px' }}>
             {/* DESCRIPTION SECTION */}
             <div style={{ marginBottom: '28px' }}>
@@ -766,22 +809,26 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 )}
                 
                 {/* Regular members */}
-                {members.map(member => (
-                  <div key={member.id} style={memberCardStyle} className="group">
-                    <div style={avatarStyle(member.avatarColor, 40)}>{member.initials}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>{member.name}</div>
-                      <div style={{ fontSize: '12px', color: '#64748b' }}>Senior Engineer</div>
+                <div style={{ maxHeight: '260px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {members.map(member => (
+                    <div key={member.id} style={memberCardStyle} className="group">
+                      <div style={avatarStyle(member.avatarColor, 40)}>{member.initials}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>{member.name}</div>
+                        <div style={{ fontSize: '12px', color: '#64748b' }}>Senior Engineer</div>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveMember(member.id)}
+                        title="Remove"
+                        aria-label={`Remove ${member.name}`}
+                        style={{ transition: 'opacity 0.15s', padding: '4px', borderRadius: '4px', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: '#94a3b8' }}
+                        className="opacity-0 group-hover:opacity-100"
+                      >
+                        <X size={16} />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleRemoveMember(member.id)}
-                      style={{ opacity: 0, transition: 'opacity 0.15s', padding: '4px', borderRadius: '4px', border: 'none', backgroundColor: 'transparent', cursor: 'pointer', color: '#94a3b8' }}
-                      className="group-hover:opacity-100"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
 
                 {/* Add Member Button */}
                 <div ref={memberPickerRef} style={{ position: 'relative' }}>
@@ -847,49 +894,6 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               </div>
             </div>
 
-            {/* WORK SUMMARY SECTION */}
-            <div style={{ marginBottom: '28px' }}>
-              <div style={{ marginBottom: '14px' }}>
-                <span style={sectionLabelStyle}>Work Summary</span>
-              </div>
-
-              {/* Stats Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                <div style={statCardStyle}>
-                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{taskCount}</div>
-                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Total Tasks</div>
-                </div>
-                <div style={statCardStyle}>
-                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#dc2626', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
-                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Overdue</div>
-                </div>
-                <div style={statCardStyle}>
-                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{memberCount}</div>
-                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Members</div>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '13px', color: '#64748b' }}>Task Completion</span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{progress}% complete</span>
-                </div>
-                <div style={{ height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${progress}%`, backgroundColor: '#2563eb', borderRadius: '4px', transition: 'width 0.3s ease' }} />
-                </div>
-              </div>
-            </div>
-
-            {/* ACTIVITY SECTION */}
-            <div>
-              <div style={{ marginBottom: '14px' }}>
-                <span style={sectionLabelStyle}>Activity</span>
-              </div>
-              <div style={{ fontSize: '13px', color: '#94a3b8', fontStyle: 'italic' }}>
-                No recent activity
-              </div>
-            </div>
           </div>
         </div>
 
