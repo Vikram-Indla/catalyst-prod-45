@@ -32,11 +32,14 @@ export async function fetchViewportData(departmentId: string | null): Promise<Vi
   const { data: resources, error: resourceError } = await resourceQuery;
   if (resourceError) throw resourceError;
 
-  // Fetch allocation data to calculate utilization
+  // Fetch allocation data to calculate utilization - MUST filter for CURRENT allocations only
+  const todayStr = today.toISOString().split('T')[0];
   const { data: allocations } = await supabase
     .from('resource_allocations')
     .select('resource_id, allocation_percent')
-    .gte('end_date', today.toISOString().split('T')[0]);
+    .lte('start_date', todayStr)  // Started on or before today
+    .gte('end_date', todayStr)    // Ends on or after today
+    .in('status', ['active', 'committed', 'forecast']); // Include all valid statuses
 
   // Build utilization map: resource_id -> total allocation %
   const utilizationMap = new Map<string, number>();
