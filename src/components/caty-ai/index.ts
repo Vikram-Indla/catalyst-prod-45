@@ -3,4 +3,5 @@
  */
 
 export { CatyWidget } from './CatyWidget';
+export { CatyThinking } from './CatyThinking';
 export type { CatyMessage, CatySession, CatyContext } from './types';
