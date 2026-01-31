@@ -705,7 +705,7 @@ export function CapacityAnalyticsView({
       )}
 
       {/* Analytics Table - Strategy D wrapper */}
-      <div className="ra-enterprise-clean flex flex-col flex-1 bg-card rounded-lg border border-border overflow-hidden">
+      <div className="ra-enterprise-clean ra-polish flex flex-col flex-1 bg-card rounded-lg border border-border overflow-hidden">
         {/* Header: Department Tabs + View Scope Toggle */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           {/* Department Tabs */}
