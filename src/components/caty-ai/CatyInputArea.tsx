@@ -14,7 +14,7 @@ interface CatyInputAreaProps {
 export const CatyInputArea: React.FC<CatyInputAreaProps> = ({
   onSend,
   disabled,
-  placeholder = 'Ask about capacity, contracts, or resource allocation...',
+  placeholder = 'Ask about resources, utilization, or contracts...',
 }) => {
   const [value, setValue] = useState('');
 

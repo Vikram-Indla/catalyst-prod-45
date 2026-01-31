@@ -32,7 +32,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
   const defaultContext: CatyContext = {
     department: 'Delivery Department',
     period: 'Q1 2026',
-    view: 'Utilization View',
+    location: 'All Locations',
   };
 
   const {
@@ -103,7 +103,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           context: {
             department: context.department,
             period: context.period,
-            view: context.view
+            location: context.location
           }
         }),
       });
@@ -210,13 +210,13 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
     const l = text.toLowerCase();
     let responded = false;
 
-    if (l.includes('forecast') || l.includes('q2')) {
+    if (l.includes('forecast') || l.includes('q2') || l.includes('utilization')) {
       addMessage('assistant', RESPONSES.forecast(context.department, 'Q2 2026'), true);
       responded = true;
-    } else if (l.includes('expiring') || l.includes('contract')) {
+    } else if (l.includes('expiring') || l.includes('contract') || l.includes('ending')) {
       addMessage('assistant', RESPONSES.contracts(), true);
       responded = true;
-    } else if (l.includes('.net') || l.includes('available') || l.includes('replacement')) {
+    } else if (l.includes('.net') || l.includes('available') || l.includes('replacement') || l.includes('resource')) {
       addMessage('assistant', RESPONSES.resources(), true);
       responded = true;
     }
@@ -224,19 +224,9 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
     if (!responded) {
       addMessage('assistant', RESPONSES.fallback(text));
       setFailedQueries(prev => prev + 1);
-      if (failedQueries >= 2) {
-        setTimeout(() => {
-          addMessage('assistant', RESPONSES.escalation(), true);
-        }, 800);
-        setFailedQueries(0);
-      }
     } else {
       setFailedQueries(0);
     }
-  };
-
-  const handleEscalate = () => {
-    addMessage('assistant', RESPONSES.escalation(), true);
   };
 
   return (
@@ -252,12 +242,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           </div>
         )}
 
-        <CatyHeader
-          onHistoryClick={() => setIsHistoryOpen(true)}
-          onEscalateClick={handleEscalate}
-          onMinimizeClick={() => onClose?.()}
-          isOnline={isOnline}
-        />
+        <CatyHeader isOnline={isOnline} />
 
         <CatyContextBar context={context} />
 
@@ -275,14 +260,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           )}
         </div>
 
-        <CatySuggestionsBar
-          suggestions={[
-            { text: 'View Expiring Contracts', variant: 'alert', onClick: () => handleSend('Show expiring contracts') },
-            { text: 'Find .NET Resources', onClick: () => handleSend('Find available .NET developers') },
-            { text: 'Q2 Forecast', onClick: () => handleSend('Show Q2 capacity forecast') },
-            { text: 'Connect to Specialist', variant: 'escalate', onClick: handleEscalate },
-          ]}
-        />
+        <CatySuggestionsBar onSend={handleSend} />
 
         <CatyInputArea onSend={handleSend} disabled={!isOnline || isTyping} />
 

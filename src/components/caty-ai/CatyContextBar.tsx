@@ -1,5 +1,5 @@
 /**
- * Caty AI V7 — Context Bar Component
+ * Caty AI V7 — Context Bar Component (Better labels)
  */
 
 import React from 'react';
@@ -11,11 +11,11 @@ interface CatyContextBarProps {
 
 export const CatyContextBar: React.FC<CatyContextBarProps> = ({ context }) => (
   <div className="caty-context-bar">
-    <span className="caty-context-label">Context:</span>
+    <span className="caty-context-label">Viewing:</span>
     <div className="caty-context-tags">
       <span className="caty-context-tag active">{context.department}</span>
       <span className="caty-context-tag">{context.period}</span>
-      <span className="caty-context-tag">{context.view}</span>
+      <span className="caty-context-tag">{context.location || 'All Locations'}</span>
     </div>
   </div>
 );
