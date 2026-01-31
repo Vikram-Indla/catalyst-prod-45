@@ -26,6 +26,7 @@
 }
 
 /* HEADER - FORCE WHITE */
+.caty-header-fixed,
 .caty-header,
 [class*="caty-header"],
 .caty-widget header,
@@ -37,7 +38,20 @@ header[class*="caty"] {
   padding: 20px 24px !important;
   display: flex !important;
   align-items: center !important;
+  justify-content: space-between !important;
   gap: 16px !important;
+}
+
+.caty-header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.caty-header-text {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
 }
 
 /* HEADER ACTIONS - Show the action buttons */
@@ -45,24 +59,27 @@ header[class*="caty"] {
   display: flex !important;
   gap: 8px !important;
   align-items: center !important;
+  margin-left: auto !important;
 }
 
 .caty-header-btn {
   width: 36px !important;
   height: 36px !important;
   border-radius: 8px !important;
-  border: none !important;
-  background: rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #f8fafc !important;
+  color: #64748b !important;
   cursor: pointer !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: background 0.2s !important;
+  transition: all 0.2s !important;
 }
 
 .caty-header-btn:hover {
-  background: rgba(255, 255, 255, 0.3) !important;
+  background: #f1f5f9 !important;
+  color: #2563eb !important;
+  border-color: #2563eb !important;
 }
 
 /* HEADER ICON */
