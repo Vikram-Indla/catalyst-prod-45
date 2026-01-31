@@ -1340,21 +1340,18 @@
    CATY AI — BLUR HEAVY BACKDROP OVERLAY
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Backdrop overlay - covers entire screen */
+/* Backdrop overlay - covers entire screen BEHIND the panel */
 .caty-backdrop-overlay {
   position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
+  inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  background: rgba(15, 23, 42, 0.5) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  z-index: 9998 !important;
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  z-index: 10000 !important;
   cursor: pointer !important;
-  animation: caty-backdrop-fadein 0.25s ease-out forwards !important;
+  animation: caty-backdrop-fadein 0.2s ease-out forwards !important;
 }
 
 /* Backdrop fade-in animation */
@@ -1366,74 +1363,58 @@
   }
   100% {
     opacity: 1;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
 }
 
-/* Panel container - positioned above backdrop, full screen overlay for positioning */
+/* Panel container - positioned ABOVE backdrop */
 .caty-widget-container {
   position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
+  inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 9999 !important;
+  z-index: 10001 !important;
   display: flex !important;
   justify-content: flex-end !important;
-  align-items: flex-start !important;
-  padding: 20px !important;
+  align-items: flex-end !important;
+  padding: 24px !important;
   pointer-events: none !important;
 }
 
 /* Panel wrapper - receives pointer events */
-.caty-widget-container > .caty-widget,
-.caty-widget-container > div {
+.caty-widget-container > .caty-widget {
   pointer-events: auto !important;
-  animation: caty-panel-slidein 0.3s ease-out forwards !important;
+  animation: caty-panel-slidein 0.25s ease-out forwards !important;
 }
 
-/* Override the fixed positioning from caty-panel when inside container */
+/* Ensure the panel itself is visible and positioned correctly */
 .caty-widget-container .caty-panel {
   position: relative !important;
   bottom: auto !important;
   right: auto !important;
-  max-height: calc(100vh - 40px) !important;
+  max-height: calc(100vh - 48px) !important;
+  box-shadow: 
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* Panel slide-in animation */
 @keyframes caty-panel-slidein {
   0% {
     opacity: 0;
-    transform: translateX(20px) scale(0.98);
+    transform: translateY(20px) scale(0.98);
   }
   100% {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Enhanced panel shadow when backdrop is active */
-.caty-backdrop-open .caty-panel,
-.caty-widget-container .caty-panel {
-  box-shadow: 
-    0 0 0 1px rgba(0, 0, 0, 0.05),
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-}
-
-/* Body scroll lock */
+/* Body scroll lock when backdrop is active */
 body.caty-backdrop-open {
   overflow: hidden !important;
   padding-right: 0 !important;
-}
-
-/* Ensure panel is above everything */
-.caty-widget-container .caty-widget,
-.caty-widget-container [class*="caty-widget"] {
-  z-index: 9999 !important;
 }
