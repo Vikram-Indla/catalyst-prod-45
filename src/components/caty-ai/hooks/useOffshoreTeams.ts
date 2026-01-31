@@ -1,13 +1,11 @@
 /**
  * CATY AI V7 — Offshore Teams Hook
- * Uses actual Catalyst database schema
+ * Uses location_id to determine Off-Shore (NOT country codes)
  */
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { OffshoreTeam } from '../types/database';
-
-const ONSITE_COUNTRY_CODES = ['SA', 'KSA'];
 
 const FLAGS: Record<string, string> = {
   'EG': '🇪🇬', 'IN': '🇮🇳', 'JO': '🇯🇴', 'PK': '🇵🇰', 'PH': '🇵🇭',
@@ -19,7 +17,7 @@ const FLAGS: Record<string, string> = {
   'ZA': '🇿🇦', 'NG': '🇳🇬', 'KE': '🇰🇪', 'RU': '🇷🇺', 'UA': '🇺🇦',
   'PL': '🇵🇱', 'RO': '🇷🇴', 'TR': '🇹🇷', 'IL': '🇮🇱', 'QA': '🇶🇦',
   'KW': '🇰🇼', 'BH': '🇧🇭', 'OM': '🇴🇲', 'LB': '🇱🇧', 'SY': '🇸🇾',
-  'KSA': '🇸🇦', 'LK': '🇱🇰', 'NP': '🇳🇵',
+  'KSA': '🇸🇦', 'LK': '🇱🇰', 'NP': '🇳🇵', 'SD': '🇸🇩', 'XK': '🇽🇰',
 };
 
 export function useOffshoreTeams(departmentId?: string | null) {
@@ -28,29 +26,39 @@ export function useOffshoreTeams(departmentId?: string | null) {
     queryFn: async (): Promise<OffshoreTeam[]> => {
       const today = new Date().toISOString().split('T')[0];
       
-      // Fetch all countries first
+      // Fetch locations to determine Off-Shore location IDs
+      const { data: locations } = await supabase
+        .from('resource_locations')
+        .select('id, name')
+        .eq('is_active', true);
+      
+      // Build set of Off-Shore location IDs (NOT onsite)
+      const offShoreLocationIds = new Set<string>();
+      (locations || []).forEach(loc => {
+        const locName = (loc.name || '').toLowerCase().trim();
+        // If location name does NOT contain "onsite", it's Off-Shore
+        const isOnSite = locName.includes('onsite') || locName.includes('on-site') || locName.includes('on site');
+        if (!isOnSite) {
+          offShoreLocationIds.add(loc.id);
+        }
+      });
+      
+      if (offShoreLocationIds.size === 0) return [];
+      
+      // Fetch all countries for mapping
       const { data: countries } = await supabase
         .from('resource_countries')
         .select('id, code, name')
         .eq('is_active', true);
       
-      if (!countries) return [];
+      const countryMap = new Map(countries?.map(c => [c.id, { code: c.code || '', name: c.name }]) || []);
       
-      // Create map of offshore countries (exclude on-site)
-      const offshoreCountries = countries.filter(c => 
-        !ONSITE_COUNTRY_CODES.includes((c.code || '').toUpperCase())
-      );
-      const offshoreCountryIds = offshoreCountries.map(c => c.id);
-      const countryMap = new Map(countries.map(c => [c.id, { code: c.code || '', name: c.name }]));
-      
-      if (offshoreCountryIds.length === 0) return [];
-      
-      // Fetch resources in offshore countries
+      // Fetch resources that are Off-Shore (based on location_id)
       let query = supabase
         .from('resource_inventory')
-        .select('id, country_id')
+        .select('id, country_id, location_id')
         .eq('is_active', true)
-        .in('country_id', offshoreCountryIds);
+        .in('location_id', Array.from(offShoreLocationIds));
       
       if (departmentId) {
         query = query.eq('department_id', departmentId);
@@ -68,7 +76,7 @@ export function useOffshoreTeams(departmentId?: string | null) {
         .in('resource_id', resourceIds)
         .lte('start_date', today)
         .gte('end_date', today)
-        .eq('status', 'active');
+        .in('status', ['active', 'committed', 'forecast']);
       
       // Group by country
       const countryStats = new Map<string, { count: number; totalUtil: number }>();
