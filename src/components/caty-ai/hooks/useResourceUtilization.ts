@@ -47,7 +47,7 @@ export function useResourceUtilization(departmentId?: string | null) {
       
       const locationMap = new Map(locations?.map(l => [l.id, l.name]) || []);
       
-      // Fetch allocations for the current period
+      // Fetch allocations for the current period - include all valid statuses
       const resourceIds = resources.map(r => r.id);
       const { data: allocations } = await supabase
         .from('resource_allocations')
@@ -55,7 +55,7 @@ export function useResourceUtilization(departmentId?: string | null) {
         .in('resource_id', resourceIds)
         .lte('start_date', today)
         .gte('end_date', today)
-        .eq('status', 'active');
+        .in('status', ['active', 'committed', 'forecast']);
       
       return resources.map(resource => {
         const resourceAllocs = allocations?.filter(a => a.resource_id === resource.id) || [];
