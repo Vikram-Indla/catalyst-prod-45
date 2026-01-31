@@ -15,6 +15,7 @@ import { CatyInputArea } from './CatyInputArea';
 import { CatySuggestionsBar } from './CatySuggestionsBar';
 import { CatyEmpty } from './CatyEmpty';
 import { CatyHistoryPanel } from './CatyHistoryPanel';
+import { CatyBackdrop } from './CatyBackdrop';
 import { RESPONSES } from './responses';
 import { NextAction } from './schema';
 import './CatyWidget.css';
@@ -317,60 +318,80 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
     }
   };
 
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
+
+  const handleClose = useCallback(() => {
+    setIsPanelOpen(false);
+    onClose?.();
+  }, [onClose]);
+
+  if (!isPanelOpen) return null;
+
   return (
-    <div className="caty-widget">
-      <div className="caty-panel">
-        {!isOnline && (
-          <div className="caty-offline">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="1" y1="1" x2="23" y2="23" />
-              <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
-            </svg>
-            <span>Connection lost. Attempting to reconnect...</span>
+    <>
+      {/* Backdrop overlay */}
+      <CatyBackdrop 
+        isOpen={isPanelOpen} 
+        onClose={handleClose} 
+      />
+      
+      {/* Panel container */}
+      <div className="caty-widget-container">
+        <div className="caty-widget">
+          <div className="caty-panel">
+            {!isOnline && (
+              <div className="caty-offline">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                  <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+                </svg>
+                <span>Connection lost. Attempting to reconnect...</span>
+              </div>
+            )}
+
+            <CatyHeader isOnline={isOnline} onClose={handleClose} />
+
+            <CatyContextBar context={context} />
+
+            <div className="caty-messages">
+              {messages.length === 0 ? (
+                <CatyEmpty onSuggestionClick={handleSend} />
+              ) : (
+                <>
+                  {messages.map(msg => (
+                    <CatyMessageComponent 
+                      key={msg.id} 
+                      message={msg} 
+                      onAction={handleActionClick}
+                    />
+                  ))}
+                  {isTyping && <CatyThinking />}
+                  <div ref={messagesEndRef} />
+                </>
+              )}
+            </div>
+
+            <CatySuggestionsBar onSend={handleSend} />
+
+            <CatyInputArea onSend={handleSend} disabled={!isOnline || isTyping} />
+
+            <CatyHistoryPanel
+              isOpen={isHistoryOpen}
+              sessions={getSessions()}
+              onClose={() => setIsHistoryOpen(false)}
+              onLoad={id => {
+                loadSession(id);
+                setIsHistoryOpen(false);
+                showToast('Conversation loaded');
+              }}
+              onClear={() => {
+                clearHistory();
+                showToast('History cleared');
+              }}
+            />
           </div>
-        )}
-
-        <CatyHeader isOnline={isOnline} onClose={onClose} />
-
-        <CatyContextBar context={context} />
-
-        <div className="caty-messages">
-          {messages.length === 0 ? (
-            <CatyEmpty onSuggestionClick={handleSend} />
-          ) : (
-            <>
-              {messages.map(msg => (
-                <CatyMessageComponent 
-                  key={msg.id} 
-                  message={msg} 
-                  onAction={handleActionClick}
-                />
-              ))}
-              {isTyping && <CatyThinking />}
-              <div ref={messagesEndRef} />
-            </>
-          )}
         </div>
-
-        <CatySuggestionsBar onSend={handleSend} />
-
-        <CatyInputArea onSend={handleSend} disabled={!isOnline || isTyping} />
-
-        <CatyHistoryPanel
-          isOpen={isHistoryOpen}
-          sessions={getSessions()}
-          onClose={() => setIsHistoryOpen(false)}
-          onLoad={id => {
-            loadSession(id);
-            setIsHistoryOpen(false);
-            showToast('Conversation loaded');
-          }}
-          onClear={() => {
-            clearHistory();
-            showToast('History cleared');
-          }}
-        />
       </div>
-    </div>
+    </>
   );
 }
