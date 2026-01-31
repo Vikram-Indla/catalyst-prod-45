@@ -21,7 +21,7 @@ const HubIcon = () => (
   </svg>
 );
 
-const CatyHeader = ({ onHistory, onEscalate, isOnline }: { onHistory: () => void; onEscalate: () => void; isOnline: boolean }) => (
+const CatyHeader = ({ onHistory, onEscalate, isOnline, onMinimize }: { onHistory: () => void; onEscalate: () => void; isOnline: boolean; onMinimize: () => void }) => (
   <header className="caty-header">
     <div className="caty-header-left">
       <div className="caty-header-icon"><HubIcon /></div>
@@ -36,7 +36,7 @@ const CatyHeader = ({ onHistory, onEscalate, isOnline }: { onHistory: () => void
     <div className="caty-header-actions">
       <button className="caty-header-btn" onClick={onHistory} aria-label="History"><Clock size={22} /></button>
       <button className="caty-header-btn escalate" onClick={onEscalate} aria-label="Escalate"><Users size={22} /></button>
-      <button className="caty-header-btn" aria-label="Minimize"><Minus size={22} /></button>
+      <button className="caty-header-btn" onClick={onMinimize} aria-label="Minimize"><Minus size={22} /></button>
     </div>
   </header>
 );
@@ -187,6 +187,7 @@ export function CatyWidget({ initialContext, onAction }: CatyWidgetProps) {
   const { messages, context, addMessage, saveSession, loadSession, getSessions, clearHistory } = useCatySession(initialContext || defaultCtx);
   const { showToast } = useCatyToast();
   
+  const [isOpen, setIsOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -232,30 +233,48 @@ export function CatyWidget({ initialContext, onAction }: CatyWidgetProps) {
 
   const handleEscalate = () => addMessage('assistant', CATY_RESPONSES.escalation(), true);
 
+  const handleMinimize = () => setIsOpen(false);
+
   return (
     <div className="caty-widget">
-      <div className="caty-panel">
-        {!isOnline && (
-          <div className="caty-offline">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/></svg>
-            <span>Connection lost. Attempting to reconnect...</span>
-          </div>
-        )}
-        <CatyHeader onHistory={() => setHistoryOpen(true)} onEscalate={handleEscalate} isOnline={isOnline} />
-        <CatyContextBar context={context} />
-        <div className="caty-messages">
-          {messages.length === 0 ? <CatyEmpty onSend={handleSend} /> : (
-            <>
-              {messages.map(m => <CatyMessageItem key={m.id} msg={m} />)}
-              {isTyping && <CatyTyping />}
-              <div ref={endRef} />
-            </>
-          )}
+      {/* FAB Button */}
+      <button
+        className="caty-fab"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Open Caty AI Assistant"
+        style={{ display: isOpen ? 'none' : 'flex' }}
+      >
+        <div className="caty-fab-glow" />
+        <div className="caty-fab-icon">
+          <HubIcon />
         </div>
-        <CatySuggestions onSend={handleSend} onEscalate={handleEscalate} />
-        <CatyInput onSend={handleSend} disabled={!isOnline} />
-        <CatyHistory isOpen={historyOpen} sessions={getSessions()} onClose={() => setHistoryOpen(false)} onLoad={id => { loadSession(id); setHistoryOpen(false); showToast('Conversation loaded'); }} onClear={() => { clearHistory(); showToast('History cleared'); }} />
-      </div>
+      </button>
+
+      {/* Chat Panel */}
+      {isOpen && (
+        <div className="caty-panel">
+          {!isOnline && (
+            <div className="caty-offline">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/></svg>
+              <span>Connection lost. Attempting to reconnect...</span>
+            </div>
+          )}
+          <CatyHeader onHistory={() => setHistoryOpen(true)} onEscalate={handleEscalate} isOnline={isOnline} onMinimize={handleMinimize} />
+          <CatyContextBar context={context} />
+          <div className="caty-messages">
+            {messages.length === 0 ? <CatyEmpty onSend={handleSend} /> : (
+              <>
+                {messages.map(m => <CatyMessageItem key={m.id} msg={m} />)}
+                {isTyping && <CatyTyping />}
+                <div ref={endRef} />
+              </>
+            )}
+          </div>
+          <CatySuggestions onSend={handleSend} onEscalate={handleEscalate} />
+          <CatyInput onSend={handleSend} disabled={!isOnline} />
+          <CatyHistory isOpen={historyOpen} sessions={getSessions()} onClose={() => setHistoryOpen(false)} onLoad={id => { loadSession(id); setHistoryOpen(false); showToast('Conversation loaded'); }} onClear={() => { clearHistory(); showToast('History cleared'); }} />
+        </div>
+      )}
     </div>
   );
 }
