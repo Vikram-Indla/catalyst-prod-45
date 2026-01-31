@@ -219,7 +219,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   const tabs = [
     { id: 'description' as const, label: 'Description', badge: null },
-    { id: 'lead-notes' as const, label: 'Lead Notes', badge: leadNotesCount || null },
+    { id: 'lead-notes' as const, label: 'Notes', badge: leadNotesCount || null },
     { id: 'checklist' as const, label: 'Checklist', badge: checklistCount || null },
     { id: 'links' as const, label: 'Links', badge: linksCount || null },
     { id: 'files' as const, label: 'Files', badge: filesCount || null },

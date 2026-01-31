@@ -38,13 +38,12 @@ export function ChecklistSection({ taskId, items }: ChecklistSectionProps) {
 
   return (
     <div>
-      {/* V2 Checklist Header with Progress */}
-      <div className="task-modal__checklist-header">
-        <span className="task-modal__checklist-title">Checklist</span>
-        <span className="task-modal__checklist-progress">
+      {/* Progress indicator only (no duplicate header) */}
+      <div className="task-modal__checklist-header mb-3">
+        <span className="task-modal__checklist-progress text-xs text-muted-foreground">
           {completed} of {total} complete ({progress}%)
-          <span className="task-modal__checklist-bar">
-            <span className="task-modal__checklist-fill" style={{ width: `${progress}%` }} />
+          <span className="task-modal__checklist-bar ml-2 inline-block w-24 h-1.5 bg-muted rounded-full overflow-hidden align-middle">
+            <span className="task-modal__checklist-fill block h-full bg-primary rounded-full transition-all" style={{ width: `${progress}%` }} />
           </span>
         </span>
       </div>

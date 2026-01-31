@@ -13,19 +13,13 @@ interface TaskDescriptionProps {
 export function TaskDescription({ value, onChange }: TaskDescriptionProps) {
   return (
     <div className="space-y-3">
-      {/* Section header with icon */}
-      <div className="flex items-center gap-2">
-        <FileText className="w-4 h-4 text-muted-foreground" />
-        <span className="text-sm font-medium text-foreground">Description</span>
-      </div>
-      
-      {/* Description content - editable */}
+      {/* Description content - editable (no duplicate header) */}
       <div
         contentEditable
         suppressContentEditableWarning
         onBlur={(e) => onChange(e.currentTarget.textContent || '')}
         data-placeholder="Add a description..."
-        className="min-h-[60px] text-sm text-foreground leading-relaxed outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground cursor-text pl-6"
+        className="min-h-[60px] text-sm text-foreground leading-relaxed outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground cursor-text"
       >
         {value}
       </div>
