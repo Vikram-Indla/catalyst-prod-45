@@ -72,53 +72,56 @@ export function MyTasksContent({
   }, [tasksBySection]);
 
   return (
-    <div className="mytasks-page">
-      {/* Header with KPIs and Toolbar */}
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
+      {/* Header with KPIs and Toolbar - Edge-to-edge like Dashboard */}
       <MyTasksHeader
         filters={filters}
         onFilterChange={onFilterChange}
         onOpenCreateModal={onOpenCreateModal}
       />
 
-      {/* Task Container */}
-      <div className="mytasks-container">
-        {isLoading ? (
-          <div className="mytasks-loading">
-            <div className="mytasks-loading__spinner" />
-            Loading tasks...
-          </div>
-        ) : visibleSections.length === 0 ? (
-          <div className="mytasks-empty">
-            <Layers className="mytasks-empty__icon" />
-            <h3 className="mytasks-empty__title">No tasks found</h3>
-            <p className="mytasks-empty__description">
-              {filters.searchQuery
-                ? `No tasks match "${filters.searchQuery}"`
-                : 'You have no tasks yet. Create your first task to get started.'}
-            </p>
-            {!filters.searchQuery && (
-              <button 
-                onClick={onOpenCreateModal} 
-                className="mytasks-add-btn mt-4"
-              >
-                <Plus className="w-4 h-4" />
-                Add Task
-              </button>
-            )}
-          </div>
-        ) : (
-          <>
-            {visibleSections.map((section) => (
-              <TaskSection
-                key={section}
-                title={SECTION_CONFIG[section].label}
-                color={SECTION_CONFIG[section].color}
-                tasks={tasksBySection[section]}
-                onOpenDetail={onOpenTaskDetail}
-              />
-            ))}
-          </>
-        )}
+      {/* Content Area - Scrollable with padding */}
+      <div className="flex-1 overflow-auto p-6 lg:px-8">
+        {/* Task Container */}
+        <div className="mytasks-container">
+          {isLoading ? (
+            <div className="mytasks-loading">
+              <div className="mytasks-loading__spinner" />
+              Loading tasks...
+            </div>
+          ) : visibleSections.length === 0 ? (
+            <div className="mytasks-empty">
+              <Layers className="mytasks-empty__icon" />
+              <h3 className="mytasks-empty__title">No tasks found</h3>
+              <p className="mytasks-empty__description">
+                {filters.searchQuery
+                  ? `No tasks match "${filters.searchQuery}"`
+                  : 'You have no tasks yet. Create your first task to get started.'}
+              </p>
+              {!filters.searchQuery && (
+                <button 
+                  onClick={onOpenCreateModal} 
+                  className="mytasks-add-btn mt-4"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Task
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              {visibleSections.map((section) => (
+                <TaskSection
+                  key={section}
+                  title={SECTION_CONFIG[section].label}
+                  color={SECTION_CONFIG[section].color}
+                  tasks={tasksBySection[section]}
+                  onOpenDetail={onOpenTaskDetail}
+                />
+              ))}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
