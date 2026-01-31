@@ -14,7 +14,8 @@ import {
   Map,
   Wand2,
   Bell,
-  Wallet
+  Wallet,
+  Calendar
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -118,6 +119,18 @@ const adminPockets = [
     children: [
       { label: 'Routes & Components', path: '/admin/routes-registry' },
       { label: 'Mock Data Generator', path: '/admin/mock-data' },
+    ],
+  },
+  {
+    id: 'planhub',
+    label: 'PlanHub™',
+    icon: Calendar,
+    path: '/admin/planhub',
+    children: [
+      { label: 'General Settings', path: '/admin/planhub/general' },
+      { label: 'Plan Templates', path: '/admin/planhub/templates' },
+      { label: 'AI Configuration', path: '/admin/planhub/ai' },
+      { label: 'Activity Log', path: '/admin/planhub/audit' },
     ],
   },
   {

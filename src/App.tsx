@@ -198,6 +198,7 @@ const TaskListPage = lazy(() => import("./modules/planner/pages/TaskListPage"));
 import CreateMenuConfig from "./pages/admin/CreateMenuConfig";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
+import { PlanHubGeneralSettings, PlanHubTemplates, PlanHubAIConfig, PlanHubActivityLog } from "./pages/admin/planhub";
 
 const SoftwareLicensesPage = lazy(() => import("./modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
@@ -936,6 +937,15 @@ const App = () => (
                 <Route path="incidents/owning-teams" element={<IncidentOwningTeams />} />
                 <Route path="mock-data" element={<MockDataGenerator />} />
                 <Route path="ai-integration" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AiIntegrationPage /></Suspense>} />
+                {/* PlanHub Admin Routes */}
+                <Route path="planhub" element={<Navigate to="/admin/planhub/general" replace />} />
+                <Route path="planhub/general" element={<PlanHubGeneralSettings />} />
+                <Route path="planhub/templates" element={<PlanHubTemplates />} />
+                <Route path="planhub/ai" element={<PlanHubAIConfig />} />
+                <Route path="planhub/audit" element={<PlanHubActivityLog />} />
+                {/* Catch-all for unknown planhub admin sub-routes */}
+                <Route path="planhub/*" element={<Navigate to="/admin/planhub/general" replace />} />
+                {/* Requirement Assist Admin Routes */}
                 <Route path="requirement-assist" element={<Navigate to="/admin/requirement-assist/ai-configuration" replace />} />
                 <Route path="requirement-assist/ai-configuration" element={<RAAdminAIConfiguration />} />
                 <Route path="requirement-assist/templates" element={<RAAdminTemplates />} />
