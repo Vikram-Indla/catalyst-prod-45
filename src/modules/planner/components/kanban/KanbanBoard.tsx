@@ -1,7 +1,7 @@
 // ============================================================
 // KANBAN BOARD COMPONENT
 // Main board with drag-and-drop and swimlane view modes
-// Filters provided by parent PlannerSearchBar (no duplicate filters)
+// Supports both TASK and COLUMN drag-and-drop
 // ============================================================
 
 import { useState, useCallback, useMemo } from 'react';
@@ -17,20 +17,27 @@ import {
   DragEndEvent,
   DragOverEvent,
 } from '@dnd-kit/core';
-import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import type { KanbanTask, KanbanTaskFilters } from '../../types/kanban';
-import { useKanbanStatuses, useKanbanStatusesRealtime } from '../../hooks/useKanbanStatuses';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import type { KanbanTask, KanbanTaskFilters, PlannerStatus } from '../../types/kanban';
+import { useKanbanStatuses, useKanbanStatusesRealtime, useReorderKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { useKanbanTasks, useKanbanTasksRealtime, useMoveKanbanTask } from '../../hooks/useKanbanTasks';
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
 import { SwimlaneRow } from './SwimlaneRow';
 import { AddColumnButton } from './AddColumnButton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Loader2, LayoutGrid, Rows3, User, Flag, Layers } from 'lucide-react';
+import { Loader2, User, Flag, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type SwimlaneGrouping = 'none' | 'assignee' | 'priority' | 'workstream';
 export type KanbanViewMode = 'board' | 'swimlane';
+
+// Drag item types for differentiating tasks vs columns
+type DragItemType = 'task' | 'column';
 
 interface KanbanBoardProps {
   onTaskClick?: (task: any) => void;
@@ -94,13 +101,16 @@ export function KanbanBoard({
   const { data: statuses = [], isLoading: statusesLoading } = useKanbanStatuses();
   const { data: tasks = [], isLoading: tasksLoading } = useKanbanTasks(filters);
   const moveTask = useMoveKanbanTask();
+  const reorderStatuses = useReorderKanbanStatuses();
 
   // Realtime subscriptions
   useKanbanStatusesRealtime();
   useKanbanTasksRealtime();
 
-  // Drag state
+  // Drag state - track both tasks and columns
   const [activeTask, setActiveTask] = useState<KanbanTask | null>(null);
+  const [activeColumn, setActiveColumn] = useState<PlannerStatus | null>(null);
+  const [dragItemType, setDragItemType] = useState<DragItemType | null>(null);
 
   // Sensors for drag and drop
   const sensors = useSensors(
@@ -113,6 +123,9 @@ export function KanbanBoard({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  // Column IDs for sortable context
+  const columnIds = useMemo(() => statuses.map(s => `column-${s.id}`), [statuses]);
 
   // Group tasks by swimlane - respect user's explicit choice
   const effectiveSwimlane = swimlane;
@@ -179,11 +192,26 @@ export function KanbanBoard({
 
   // Drag handlers
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    const task = tasks.find((t) => t.id === event.active.id);
+    const activeId = event.active.id as string;
+    
+    // Check if dragging a column (prefixed with "column-")
+    if (activeId.startsWith('column-')) {
+      const columnId = activeId.replace('column-', '');
+      const column = statuses.find((s) => s.id === columnId);
+      if (column) {
+        setActiveColumn(column);
+        setDragItemType('column');
+        return;
+      }
+    }
+    
+    // Otherwise it's a task
+    const task = tasks.find((t) => t.id === activeId);
     if (task) {
       setActiveTask(task);
+      setDragItemType('task');
     }
-  }, [tasks]);
+  }, [tasks, statuses]);
 
   const handleDragOver = useCallback((event: DragOverEvent) => {
     // Handle drag over for visual feedback
@@ -191,14 +219,46 @@ export function KanbanBoard({
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
+    
+    // Reset all drag states
     setActiveTask(null);
+    setActiveColumn(null);
+    setDragItemType(null);
 
     if (!over) return;
 
-    const taskId = active.id as string;
+    const activeId = active.id as string;
     const overId = over.id as string;
 
-    // Find the task being dragged
+    // Handle COLUMN drag-drop
+    if (activeId.startsWith('column-') && overId.startsWith('column-')) {
+      const draggedColumnId = activeId.replace('column-', '');
+      const overColumnId = overId.replace('column-', '');
+      
+      if (draggedColumnId === overColumnId) return;
+      
+      const oldIndex = statuses.findIndex(s => s.id === draggedColumnId);
+      const newIndex = statuses.findIndex(s => s.id === overColumnId);
+      
+      if (oldIndex === -1 || newIndex === -1) return;
+      
+      // Create new order array
+      const newStatuses = [...statuses];
+      const [moved] = newStatuses.splice(oldIndex, 1);
+      newStatuses.splice(newIndex, 0, moved);
+      
+      // Update positions
+      const updates = newStatuses.map((s, idx) => ({
+        id: s.id,
+        position: idx,
+      }));
+      
+      reorderStatuses.mutate(updates);
+      return;
+    }
+
+    // Handle TASK drag-drop
+    const taskId = activeId;
     const draggedTask = tasks.find((t) => t.id === taskId);
     if (!draggedTask) return;
 
@@ -245,7 +305,7 @@ export function KanbanBoard({
       newStatusId: targetStatusId,
       newPosition: targetPosition,
     });
-  }, [tasks, statuses, moveTask]);
+  }, [tasks, statuses, moveTask, reorderStatuses]);
 
   const handleFilterChange = useCallback((newFilters: Partial<KanbanTaskFilters>) => {
     setInternalFilters((prev) => ({ ...prev, ...newFilters }));
@@ -282,22 +342,25 @@ export function KanbanBoard({
           onDragEnd={handleDragEnd}
         >
           {viewMode === 'board' ? (
-            // Standard Board View - always flat, no swimlane grouping in board mode
-            <div className="flex gap-4 p-4 min-h-full">
-              {statuses.map((status) => (
-                <KanbanColumn
-                  key={status.id}
-                  status={status}
-                  tasks={getTasksByStatus(tasks)[status.id] || []}
-                  onTaskClick={onTaskClick}
-                  onTaskEdit={onTaskEdit}
-                  onTaskDelete={onTaskDelete}
-                  onAddTask={onAddTask}
-                />
-              ))}
-              {/* Add Column Button */}
-              <AddColumnButton />
-            </div>
+            // Standard Board View with horizontal column drag-drop
+            <SortableContext items={columnIds} strategy={horizontalListSortingStrategy}>
+              <div className="flex gap-4 p-4 min-h-full">
+                {statuses.map((status) => (
+                  <KanbanColumn
+                    key={status.id}
+                    status={status}
+                    tasks={getTasksByStatus(tasks)[status.id] || []}
+                    onTaskClick={onTaskClick}
+                    onTaskEdit={onTaskEdit}
+                    onTaskDelete={onTaskDelete}
+                    onAddTask={onAddTask}
+                    isDraggingColumn={activeColumn?.id === status.id}
+                  />
+                ))}
+                {/* Add Column Button */}
+                <AddColumnButton />
+              </div>
+            </SortableContext>
           ) : (
             // Swimlane View Mode - horizontal rows grouped by workstream/assignee
             <div className="p-4 space-y-4">
@@ -323,9 +386,20 @@ export function KanbanBoard({
             </div>
           )}
 
-          <DragOverlay>
-            {activeTask && (
+          <DragOverlay dropAnimation={null}>
+            {dragItemType === 'task' && activeTask && (
               <KanbanCard task={activeTask} isDragging />
+            )}
+            {dragItemType === 'column' && activeColumn && (
+              <div className="w-[300px] opacity-90 bg-card border border-primary rounded-xl p-4 shadow-2xl">
+                <div className="flex items-center gap-2">
+                  <span 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: activeColumn.color || '#2563eb' }}
+                  />
+                  <span className="font-semibold text-sm">{activeColumn.name}</span>
+                </div>
+              </div>
             )}
           </DragOverlay>
         </DndContext>
