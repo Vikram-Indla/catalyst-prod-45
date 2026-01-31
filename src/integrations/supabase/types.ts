@@ -13481,10 +13481,12 @@ export type Database = {
         Row: {
           color: string
           created_at: string | null
+          created_by: string | null
           id: string
           is_completed_status: boolean | null
           is_default: boolean | null
           is_done: boolean | null
+          is_system: boolean | null
           name: string
           position: number | null
           slug: string
@@ -13494,10 +13496,12 @@ export type Database = {
         Insert: {
           color?: string
           created_at?: string | null
+          created_by?: string | null
           id?: string
           is_completed_status?: boolean | null
           is_default?: boolean | null
           is_done?: boolean | null
+          is_system?: boolean | null
           name: string
           position?: number | null
           slug: string
@@ -13507,10 +13511,12 @@ export type Database = {
         Update: {
           color?: string
           created_at?: string | null
+          created_by?: string | null
           id?: string
           is_completed_status?: boolean | null
           is_default?: boolean | null
           is_done?: boolean | null
+          is_system?: boolean | null
           name?: string
           position?: number | null
           slug?: string
@@ -30285,6 +30291,7 @@ export type Database = {
           is_completed_status: boolean | null
           is_default: boolean | null
           is_done: boolean | null
+          is_system: boolean | null
           name: string | null
           position: number | null
           slug: string | null
@@ -30299,6 +30306,7 @@ export type Database = {
           is_completed_status?: boolean | null
           is_default?: boolean | null
           is_done?: boolean | null
+          is_system?: boolean | null
           name?: string | null
           position?: number | null
           slug?: string | null
@@ -30313,6 +30321,7 @@ export type Database = {
           is_completed_status?: boolean | null
           is_default?: boolean | null
           is_done?: boolean | null
+          is_system?: boolean | null
           name?: string | null
           position?: number | null
           slug?: string | null

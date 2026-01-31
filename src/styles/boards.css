@@ -691,6 +691,107 @@
 
 
 /* ============================================================================
+   COLUMN DRAG & DROP
+   ============================================================================ */
+
+/* Drag handle visibility */
+.boards-column__drag-handle {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  cursor: grab;
+  color: #94a3b8;
+  transition: opacity var(--boards-transition-fast), color var(--boards-transition-fast);
+  border-radius: 4px;
+  margin-left: -4px;
+}
+
+.boards-column__header:hover .boards-column__drag-handle {
+  opacity: 1;
+}
+
+.boards-column__drag-handle:hover {
+  color: #64748b;
+  background-color: #f1f5f9;
+}
+
+.boards-column__drag-handle:active {
+  cursor: grabbing;
+}
+
+.dark .boards-column__drag-handle:hover {
+  color: #94a3b8;
+  background-color: #334155;
+}
+
+/* Column being dragged */
+.boards-column--dragging {
+  opacity: 0.5;
+  transform: scale(1.02);
+}
+
+/* Column overlay when dragging */
+.boards-column--overlay {
+  background-color: var(--boards-bg-card);
+  border-radius: 8px;
+  box-shadow: var(--boards-shadow-card-dragging);
+  opacity: 0.95;
+  width: var(--boards-column-width);
+}
+
+/* ============================================================================
+   ADD COLUMN BUTTON
+   ============================================================================ */
+
+.boards-add-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 200px;
+  height: 120px;
+  background-color: transparent;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--boards-transition-normal);
+  flex-shrink: 0;
+  margin-top: 44px; /* Align with column body */
+}
+
+.boards-add-column:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #334155;
+  transform: scale(1.02);
+}
+
+.dark .boards-add-column {
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+.dark .boards-add-column:hover {
+  background-color: #1e293b;
+  border-color: #64748b;
+  color: #e2e8f0;
+}
+
+.boards-add-column svg {
+  width: 24px;
+  height: 24px;
+  opacity: 0.7;
+}
+
+
+/* ============================================================================
    RESPONSIVE ADJUSTMENTS
    ============================================================================ */
 
@@ -701,5 +802,10 @@
   
   .boards-column {
     width: 260px;
+  }
+  
+  .boards-add-column {
+    min-width: 160px;
+    height: 100px;
   }
 }
