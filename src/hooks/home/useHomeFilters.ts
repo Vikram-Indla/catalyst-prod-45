@@ -48,7 +48,7 @@ export const DOMAIN_OPTIONS: { value: HomeDomain; label: string }[] = [
   { value: 'all', label: 'All domains' },
   { value: 'operations', label: 'Operations' },
   { value: 'delivery', label: 'Delivery' },
-  { value: 'planner', label: 'Planner' },
+  { value: 'planner', label: 'Taskhub' },
 ];
 
 // ============================================
@@ -130,7 +130,7 @@ export const LEVEL_OPTIONS = [
   { value: 'Program', label: 'Program' },
   { value: 'Project', label: 'Project' },
   { value: 'Release', label: 'Release' },
-  { value: 'Planner', label: 'Planner' },
+  { value: 'Planner', label: 'Taskhub' },
 ];
 
 // ============================================

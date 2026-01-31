@@ -462,11 +462,14 @@ const App = () => (
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
               
-              {/* Planner Module */}
-              <Route path="/planner" element={<Navigate to="/planner/boards" replace />} />
-              <Route path="/planner/:view" element={<PlannerPage />} />
-              <Route path="/planner-kanban" element={<KanbanPage />} />
-              <Route path="/planner/my-tasks" element={<MyTasksPage />} />
+              {/* Taskhub Module */}
+              <Route path="/taskhub" element={<Navigate to="/taskhub/boards" replace />} />
+              <Route path="/taskhub/:view" element={<PlannerPage />} />
+              <Route path="/taskhub-kanban" element={<KanbanPage />} />
+              <Route path="/taskhub/my-tasks" element={<MyTasksPage />} />
+              {/* Legacy planner routes - redirect to taskhub */}
+              <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
+              <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
               
               
               {/* Mining */}

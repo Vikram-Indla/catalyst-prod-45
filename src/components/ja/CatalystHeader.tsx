@@ -149,7 +149,7 @@ export function CatalystHeader() {
     { label: "Project", isLabel: true, moduleKey: "project", visibleToProductOwner: true },
     { label: "Releases", path: "/releases/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "Operations", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
-    { label: "Taskboard", path: "/planner/boards", moduleKey: "planner", visibleToProductOwner: true },
+    { label: "Taskhub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
   ];
 
   // Get all nav items with their enabled status based on role-based module access
@@ -494,21 +494,21 @@ export function CatalystHeader() {
                         )}
                       </Popover>
                     )
-                  ) : item.label === "Taskboard" ? (
-                    // Taskboard: Direct navigation to planner boards
+                  ) : item.label === "Taskhub" ? (
+                    // Taskhub: Direct navigation to taskhub boards
                     <button
                       style={{
                         ...navButtonStyle,
-                        color: location.pathname.startsWith('/planner') ? 'hsl(var(--primary))' : navButtonStyle.color,
-                        fontWeight: location.pathname.startsWith('/planner') ? 600 : navButtonStyle.fontWeight,
-                        background: location.pathname.startsWith('/planner') ? 'hsl(var(--primary) / 0.08)' : 'transparent',
+                        color: location.pathname.startsWith('/taskhub') ? 'hsl(var(--primary))' : navButtonStyle.color,
+                        fontWeight: location.pathname.startsWith('/taskhub') ? 600 : navButtonStyle.fontWeight,
+                        background: location.pathname.startsWith('/taskhub') ? 'hsl(var(--primary) / 0.08)' : 'transparent',
                       }}
-                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/planner')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/planner') ? 'hsl(var(--primary) / 0.08)' : 'transparent'; }}
-                      onClick={() => navigate('/planner/boards')}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/taskhub') ? 'hsl(var(--primary) / 0.08)' : 'transparent'; }}
+                      onClick={() => navigate('/taskhub/boards')}
                     >
                       {item.label}
-                      {location.pathname.startsWith('/planner') && (
+                      {location.pathname.startsWith('/taskhub') && (
                         <span 
                           style={{
                             position: 'absolute',

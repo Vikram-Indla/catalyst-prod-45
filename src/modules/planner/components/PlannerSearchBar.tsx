@@ -191,7 +191,7 @@ export function PlannerSearchBar({
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem 
-            onClick={() => navigate('/planner/teams')}
+            onClick={() => navigate('/taskhub/teams')}
             className="text-muted-foreground hover:text-foreground"
           >
             <span className="flex items-center gap-1 text-sm">

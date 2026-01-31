@@ -450,7 +450,7 @@ export function DrawerHeader({
   const taskKey = task.task_key || task.key || '';
 
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/planner/task-list?task=${task.id}`;
+    const url = `${window.location.origin}/taskhub/task-list?task=${task.id}`;
     navigator.clipboard.writeText(url);
     toast.success('Link copied to clipboard');
   };

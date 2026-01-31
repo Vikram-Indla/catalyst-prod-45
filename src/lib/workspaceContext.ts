@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'planner';
+export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -21,9 +21,9 @@ export interface WorkspaceContext {
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
   
-  // Planner module - separate from Home (includes /planner/* and /planner/my-tasks)
-  if (pathname.startsWith('/planner')) {
-    return 'planner';
+  // Taskhub module - separate from Home (includes /taskhub/* and /taskhub/my-tasks)
+  if (pathname.startsWith('/taskhub')) {
+    return 'taskhub';
   }
   
   // Home - includes /for-you which is the main home route
@@ -108,8 +108,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'Releases';
     case 'operations':
       return 'Operations';
-    case 'planner':
-      return 'Planner';
+    case 'taskhub':
+      return 'Taskhub';
     default:
       return '';
   }

@@ -96,7 +96,7 @@ export function QuickActions({
   }, [isStarred]);
 
   const copyLink = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/planner/task/${taskKey}`);
+    navigator.clipboard.writeText(`${window.location.origin}/taskhub/task/${taskKey}`);
     // No toast - silent operation
   };
 

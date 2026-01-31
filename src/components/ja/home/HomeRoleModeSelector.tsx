@@ -12,7 +12,7 @@ const modes: { value: HomeRoleMode; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'operations', label: 'Operations' },
   { value: 'delivery', label: 'Delivery' },
-  { value: 'planner', label: 'Planner' },
+  { value: 'planner', label: 'Taskhub' },
 ];
 
 export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorProps) {

@@ -22,26 +22,26 @@ interface PlannerSidebarProps {
 
 export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebarProps) {
   const plannerSidebarConfig: SidebarConfig = {
-    badge: 'TB',
-    label: 'Taskboard',
+    badge: 'TH',
+    label: 'Taskhub',
     sections: [
       {
         title: '',
         items: [
-          { id: 'dashboard', title: 'Dashboard', path: '/planner/dashboard', icon: LayoutDashboard, exact: true },
-          { id: 'workstreams', title: 'Workstreams', path: '/planner/workstreams', icon: Layers, exact: true },
-          { id: 'my-tasks', title: 'My Tasks', path: '/planner/my-tasks', icon: CheckSquare, exact: true },
-          { id: 'boards', title: 'Boards', path: '/planner/boards', icon: LayoutGrid, exact: true },
-          { id: 'task-list', title: 'Task List', path: '/planner/task-list', icon: List, exact: true },
-          { id: 'timeline', title: 'Timeline', path: '/planner/timeline', icon: GanttChartSquare, exact: true },
-          { id: 'calendar', title: 'Calendar', path: '/planner/calendar', icon: Calendar, exact: true },
+          { id: 'dashboard', title: 'Dashboard', path: '/taskhub/dashboard', icon: LayoutDashboard, exact: true },
+          { id: 'workstreams', title: 'Workstreams', path: '/taskhub/workstreams', icon: Layers, exact: true },
+          { id: 'my-tasks', title: 'My Tasks', path: '/taskhub/my-tasks', icon: CheckSquare, exact: true },
+          { id: 'boards', title: 'Boards', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
+          { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
+          { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
+          { id: 'calendar', title: 'Calendar', path: '/taskhub/calendar', icon: Calendar, exact: true },
         ],
       },
     ],
     footerItem: { 
       id: 'settings', 
       title: 'Settings', 
-      path: '/planner/settings', 
+      path: '/taskhub/settings', 
       icon: Settings, 
       exact: true 
     },

@@ -62,7 +62,7 @@ export function DashboardTeamWorkload({ data, unassignedCount }: DashboardTeamWo
         </div>
         {unassignedCount > 0 && (
           <button
-            onClick={() => navigate('/planner/boards?assignee=unassigned')}
+            onClick={() => navigate('/taskhub/boards?assignee=unassigned')}
             className={cn(
               'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium',
               'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
@@ -89,7 +89,7 @@ export function DashboardTeamWorkload({ data, unassignedCount }: DashboardTeamWo
             return (
               <button
                 key={member.profile_id}
-                onClick={() => navigate(`/planner/boards?assignee=${member.profile_id}`)}
+                onClick={() => navigate(`/taskhub/boards?assignee=${member.profile_id}`)}
                 className={cn(
                   'w-full p-3 rounded-lg border text-left',
                   'border-slate-200 dark:border-slate-700',

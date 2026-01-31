@@ -80,7 +80,7 @@ export function DashboardKPIStrip({
       <div className="flex items-center divide-x divide-slate-200 dark:divide-slate-700">
         {/* Total Tasks */}
         <button
-          onClick={() => navigate('/planner/task-list')}
+          onClick={() => navigate('/taskhub/task-list')}
           className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           <span className="text-xl font-bold text-slate-900 dark:text-slate-100 tabular-nums leading-none">
@@ -93,7 +93,7 @@ export function DashboardKPIStrip({
 
         {/* Overdue - with warning icon */}
         <button
-          onClick={() => navigate('/planner/task-list?filter=overdue')}
+          onClick={() => navigate('/taskhub/task-list?filter=overdue')}
           className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           {metrics.overdue_count > 0 && (
@@ -112,7 +112,7 @@ export function DashboardKPIStrip({
 
         {/* Blocked */}
         <button
-          onClick={() => navigate('/planner/task-list?filter=blocked')}
+          onClick={() => navigate('/taskhub/task-list?filter=blocked')}
           className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           <span className={cn(
@@ -128,7 +128,7 @@ export function DashboardKPIStrip({
 
         {/* Done (7d) */}
         <button
-          onClick={() => navigate('/planner/task-list?status=done')}
+          onClick={() => navigate('/taskhub/task-list?status=done')}
           className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           <span className="text-xl font-bold text-slate-900 dark:text-slate-100 tabular-nums leading-none">
@@ -141,7 +141,7 @@ export function DashboardKPIStrip({
 
         {/* Unassigned - with users icon */}
         <button
-          onClick={() => navigate('/planner/task-list?assignee=unassigned')}
+          onClick={() => navigate('/taskhub/task-list?assignee=unassigned')}
           className="flex items-center gap-2 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           <Users className={cn(
