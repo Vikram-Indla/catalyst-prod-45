@@ -61,7 +61,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   // Contract ended (past end date) - show diagonal striped END cell
   if (isEnded) {
     return (
-      <td className="allocation-cell end p-1 min-w-[120px]" data-status="end">
+      <td className="allocation-cell end p-1 min-w-[120px] max-w-[120px] w-[120px]" data-status="end">
         <div 
           className="h-12 flex items-center justify-center rounded-lg"
           style={{
@@ -77,7 +77,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   // Contract ends this month - show dotted fill with END label
   if (contractEndsThisMonth && (segments.length === 0 || totalPercent === 0)) {
     return (
-      <td className="allocation-cell end p-1 min-w-[120px]" data-status="end">
+      <td className="allocation-cell end p-1 min-w-[120px] max-w-[120px] w-[120px]" data-status="end">
         <div 
           className="h-12 flex items-center justify-center rounded-lg border border-dashed border-slate-300"
           style={{
@@ -93,7 +93,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   // Empty/no allocation - show as Available (white cell, no bar)
   if (segments.length === 0 || totalPercent === 0) {
     return (
-      <td className="allocation-cell p-1 min-w-[120px]">
+      <td className="allocation-cell p-1 min-w-[120px] max-w-[120px] w-[120px]">
         <div className="h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200">
           <span className="text-xs font-medium text-slate-400">Available</span>
         </div>
@@ -130,7 +130,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
 
   return (
     <td 
-      className="allocation-cell p-1 min-w-[120px]" 
+      className="allocation-cell p-1 min-w-[120px] max-w-[120px] w-[120px]" 
       data-project={projectSlug}
     >
       <Tooltip>

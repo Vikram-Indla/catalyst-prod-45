@@ -744,23 +744,23 @@ export function CapacityAnalyticsView({
             ))}
           </div>
         ) : (
-          <table className="w-full border-collapse">
+          <table className="w-full table-fixed border-collapse">
             <thead className="sticky top-0 z-20 bg-card">
               {/* Column Headers */}
               <tr className="border-b border-border">
-                <th className="sticky left-0 z-30 bg-card text-left py-3 px-4 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[180px]">
+                <th className="sticky left-0 z-30 bg-card text-left py-3 px-4 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[280px] max-w-[280px] w-[280px]">
                   Resource
                 </th>
-                <th className="text-left py-3 px-3 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[100px]">
+                <th className="text-center py-3 px-3 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[100px] max-w-[100px] w-[100px]">
                   Location
                 </th>
-                <th className="text-center py-3 px-3 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[80px]">
+                <th className="text-center py-3 px-3 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[100px] max-w-[100px] w-[100px]">
                   Utilization
                 </th>
                 {months.map((m) => (
                   <th 
                     key={`${m.year}-${m.month}`}
-                    className="text-center py-3 px-2 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[120px]"
+                    className="text-center py-3 px-2 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[120px] max-w-[120px] w-[120px]"
                   >
                     {MONTH_LABELS[m.month - 1]}
                   </th>

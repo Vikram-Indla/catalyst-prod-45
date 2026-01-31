@@ -50,7 +50,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   return (
     <tr className="border-b border-border/30 hover:bg-muted/20 transition-colors">
       {/* Resource Info Cell with Avatar */}
-      <td className="sticky left-0 z-10 bg-card py-3 px-4 min-w-[280px] border-r border-border">
+      <td className="sticky left-0 z-10 bg-card py-3 px-4 min-w-[280px] max-w-[280px] w-[280px] border-r border-border">
         <div 
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => onResourceClick?.(resource.id)}
@@ -104,7 +104,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
       </td>
 
       {/* Location Badge Cell - Enterprise Clean: Neutralized */}
-      <td className="py-3 px-3 min-w-[100px] border-r border-border">
+      <td className="py-3 px-3 min-w-[100px] max-w-[100px] w-[100px] border-r border-border text-center">
         <span 
           className="inline-block px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide"
           style={{ 
@@ -118,7 +118,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
       </td>
 
       {/* Utilization Cell */}
-      <td className="py-3 px-3 min-w-[80px] border-r border-border text-center">
+      <td className="py-3 px-3 min-w-[100px] max-w-[100px] w-[100px] border-r border-border text-center">
         <span className={cn(
           'inline-block px-2 py-1 text-xs font-bold rounded border',
           getUtilizationColor(committedPercent)
