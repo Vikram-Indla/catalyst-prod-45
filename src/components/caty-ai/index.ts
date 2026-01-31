@@ -1,9 +1,11 @@
 /**
- * Caty AI V7 — Barrel Export
+ * CATY AI V7 — Barrel Export
  */
 
 export { CatyWidget } from './CatyWidget';
 export { CatyThinking } from './CatyThinking';
 export { CatyAnswerCard } from './CatyAnswerCard';
+export * from './hooks';
+export * from './types/database';
 export type { CatyMessage, CatySession, CatyContext } from './types';
 export type { CatyStructuredResponse, ResourceAnswerResponse, GeneralAnswerResponse, NextAction } from './schema';
