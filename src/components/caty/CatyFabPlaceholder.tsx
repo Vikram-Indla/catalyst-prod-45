@@ -1,27 +1,81 @@
 /**
- * Caty FAB Placeholder - Icon only, functionality unhooked
- * Ready for new AI implementation
+ * Caty FAB — Opens Caty AI V7 Widget
  */
 
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import catalystLogoWhite from '@/assets/catalyst-ai-logo-white.svg';
+import { CatyWidget } from '@/components/caty-ai';
+import { HubIcon } from '@/components/caty-ai/constants';
 import '@/styles/caty.css';
 
 export function CatyFabPlaceholder() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleAction = (action: string) => {
+    console.log('Caty action:', action);
+    // Handle capacity planning actions here
+    switch (action) {
+      case 'extend-all':
+        console.log('Extending all contracts...');
+        break;
+      case 'review':
+        console.log('Opening individual review...');
+        break;
+      case 'assign':
+        console.log('Assigning to project...');
+        break;
+      case 'compare':
+        console.log('Comparing skills...');
+        break;
+      case 'live-chat':
+        console.log('Starting live chat...');
+        break;
+      case 'schedule':
+        console.log('Opening scheduler...');
+        break;
+    }
+  };
+
   return (
-    <button
-      className={cn("caty-fab")}
-      aria-label="Caty AI Assistant (Coming Soon)"
-      onClick={() => {
-        // Functionality unhooked - ready for replacement
-      }}
-    >
-      <img 
-        src={catalystLogoWhite} 
-        alt="Catalyst AI" 
-        className="w-10 h-10"
-        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
-      />
-    </button>
+    <>
+      {/* FAB Button */}
+      <button
+        className={cn("caty-fab", isOpen && "hidden")}
+        aria-label="Open Caty AI Assistant"
+        onClick={() => setIsOpen(true)}
+      >
+        <div className="w-10 h-10">
+          <HubIcon />
+        </div>
+      </button>
+
+      {/* Widget Panel */}
+      {isOpen && (
+        <div 
+          className="fixed bottom-6 right-6 z-[1000]"
+          style={{ 
+            animation: 'fadeInUp 0.25s ease-out'
+          }}
+        >
+          <CatyWidget 
+            onAction={handleAction}
+            onClose={() => setIsOpen(false)}
+          />
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </>
   );
 }
