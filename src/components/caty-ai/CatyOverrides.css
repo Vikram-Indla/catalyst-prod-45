@@ -1,0 +1,228 @@
+/* ═══════════════════════════════════════════════════════════════
+   CATY AI V7 — FORCE OVERRIDES
+   Import AFTER CatyWidget.css to fix any broken styles
+   ═══════════════════════════════════════════════════════════════ */
+
+/* RESET BOX SIZING */
+.caty-widget *,
+.caty-widget *::before,
+.caty-widget *::after {
+  box-sizing: border-box !important;
+}
+
+/* PANEL */
+.caty-panel {
+  background: #ffffff !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+/* HEADER = WHITE */
+.caty-header {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.caty-header-title {
+  color: #0f172a !important;
+}
+
+.caty-header-subtitle {
+  color: #64748b !important;
+}
+
+.caty-header-btn {
+  color: #64748b !important;
+  background: transparent !important;
+}
+
+.caty-header-btn.escalate {
+  color: #2563eb !important;
+}
+
+/* CONTEXT BAR = LIGHT BLUE */
+.caty-context-bar {
+  background: #eff6ff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* FORCE HORIZONTAL LAYOUTS */
+.caty-context-tags,
+.caty-suggestions,
+.caty-card-actions,
+.caty-resource-row {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+}
+
+/* CONTEXT TAGS */
+.caty-context-tags {
+  overflow-x: auto !important;
+}
+
+.caty-context-tag {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* SUGGESTIONS */
+.caty-suggestions {
+  overflow-x: auto !important;
+  background: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+.caty-suggestion {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  min-height: 44px !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 12px 18px !important;
+  cursor: pointer !important;
+}
+
+.caty-suggestion.alert {
+  color: #dc2626 !important;
+  border-color: rgba(220, 38, 38, 0.3) !important;
+}
+
+.caty-suggestion.escalate {
+  color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+/* EMPTY STATE BUTTONS */
+.caty-empty-suggestions button {
+  width: 100% !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 14px 18px !important;
+  text-align: left !important;
+  cursor: pointer !important;
+}
+
+.caty-empty-suggestions button:hover {
+  background: #dbeafe !important;
+  border-color: #2563eb !important;
+  color: #2563eb !important;
+}
+
+/* INPUT */
+.caty-input-wrapper {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+}
+
+.caty-input-wrapper:focus-within {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px #dbeafe !important;
+}
+
+.caty-input-field textarea {
+  background: transparent !important;
+  border: none !important;
+}
+
+.caty-send-btn {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+}
+
+.caty-send-btn:disabled {
+  background: #e2e8f0 !important;
+  color: #94a3b8 !important;
+}
+
+/* CARD */
+.caty-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+}
+
+.caty-card-header {
+  background: #f8fafc !important;
+  border-left: 4px solid #dc2626 !important;
+}
+
+.caty-card-header.success {
+  border-left-color: #059669 !important;
+}
+
+.caty-card-header.warning {
+  border-left-color: #b45309 !important;
+}
+
+.caty-card-header.info {
+  border-left-color: #2563eb !important;
+}
+
+/* RESOURCE ROW */
+.caty-resource-row {
+  align-items: center !important;
+  background: #f1f5f9 !important;
+  border-radius: 10px !important;
+}
+
+.caty-resource-initials {
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  flex-shrink: 0 !important;
+  background: #64748b !important;
+  border-radius: 10px !important;
+}
+
+.caty-resource-value {
+  color: #dc2626 !important;
+  flex-shrink: 0 !important;
+}
+
+.caty-resource-value.success {
+  color: #059669 !important;
+}
+
+/* BUTTONS */
+.caty-btn {
+  border-radius: 10px !important;
+  min-height: 48px !important;
+}
+
+.caty-btn.primary {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.caty-btn.secondary {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* MESSAGES */
+.caty-messages {
+  background: #ffffff !important;
+}
+
+.caty-bubble {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.caty-bubble strong {
+  color: inherit !important;
+  font-weight: 600 !important;
+}
+
+.caty-message.user .caty-bubble {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
