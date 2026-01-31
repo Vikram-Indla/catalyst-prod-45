@@ -32,6 +32,19 @@ export async function fetchViewportData(departmentId: string | null): Promise<Vi
   const { data: resources, error: resourceError } = await resourceQuery;
   if (resourceError) throw resourceError;
 
+  // Fetch allocation data to calculate utilization
+  const { data: allocations } = await supabase
+    .from('resource_allocations')
+    .select('resource_id, allocation_percent')
+    .gte('end_date', today.toISOString().split('T')[0]);
+
+  // Build utilization map: resource_id -> total allocation %
+  const utilizationMap = new Map<string, number>();
+  (allocations || []).forEach((alloc: { resource_id: string; allocation_percent: number | null }) => {
+    const current = utilizationMap.get(alloc.resource_id) || 0;
+    utilizationMap.set(alloc.resource_id, current + (alloc.allocation_percent || 0));
+  });
+
   // Calculate stats
   const stats: ViewportStats = {
     totalResources: resources?.length || 0,
@@ -46,8 +59,8 @@ export async function fetchViewportData(departmentId: string | null): Promise<Vi
 
   (resources || []).forEach(resource => {
     const contractEnd = resource.contract_end_date ? new Date(resource.contract_end_date) : null;
-    // Note: current_utilization not available in view, default to 0 for now
-    const utilization = 0;
+    // Get actual utilization from allocation data
+    const utilization = utilizationMap.get(resource.id) || 0;
 
     // Expiring within 90 days
     if (contractEnd && contractEnd >= today && contractEnd <= ninetyDaysFromNow) {
@@ -63,7 +76,7 @@ export async function fetchViewportData(departmentId: string | null): Promise<Vi
       });
     }
 
-    // Over-allocated (will need allocation data joined in future)
+    // Over-allocated (>100%)
     if (utilization > 100) {
       stats.overAllocated++;
       overAllocatedResources.push({ 
@@ -75,7 +88,7 @@ export async function fetchViewportData(departmentId: string | null): Promise<Vi
       });
     }
 
-    // Zero utilization
+    // Zero utilization - only count resources with NO allocations
     if (utilization === 0) {
       stats.zeroUtilization++;
       zeroUtilResources.push({ 
@@ -163,24 +176,12 @@ function buildExpiringSection(resources: any[], departmentId: string | null): Vi
 function buildOverAllocatedSection(resources: any[], departmentId: string | null): ViewportSection {
   const questions: ProbingQuestion[] = [];
 
-  if (resources.length >= 2 && !departmentId) {
-    // Grouped by department when viewing all
-    const byDept = groupBy(resources, r => r.department_name || 'Unknown');
-    const deptSummary = Object.entries(byDept)
-      .map(([dept, rs]) => `${dept} (${rs.length})`)
-      .join(', ');
-
-    questions.push({
-      id: 'over-allocated-all',
-      severity: 'warning',
-      text: `Resolve <strong>${resources.length} resources</strong> allocated above 100%`,
-      highlightedText: `${resources.length} resources`,
-      tags: [{ type: 'count', label: deptSummary }],
-      resourceIds: resources.map(r => r.id),
-    });
-  } else {
-    // Individual questions
-    resources.slice(0, 2).forEach(r => {
+  // Always show 2-3 individual questions for better visibility
+  const showIndividualFirst = resources.length <= 4 || departmentId;
+  
+  if (showIndividualFirst) {
+    // Individual questions (max 3)
+    resources.slice(0, 3).forEach(r => {
       questions.push({
         id: `over-allocated-${r.id}`,
         severity: 'warning',
@@ -193,6 +194,25 @@ function buildOverAllocatedSection(resources: any[], departmentId: string | null
         resourceIds: [r.id],
       });
     });
+  } else {
+    // Grouped by department when viewing all with many resources
+    const byDept = groupBy(resources, r => r.department_name || 'Unknown');
+    
+    // Show top 3 department groups
+    Object.entries(byDept).slice(0, 3).forEach(([deptName, deptResources]) => {
+      const maxUtil = Math.max(...deptResources.map(r => r.utilization));
+      questions.push({
+        id: `over-allocated-${deptName.replace(/\s+/g, '-')}`,
+        severity: 'warning',
+        text: `Resolve <strong>${deptResources.length} resources</strong> in ${deptName} above 100%`,
+        highlightedText: `${deptResources.length} resources`,
+        tags: [
+          { type: 'project', label: deptName },
+          { type: 'count', label: `up to ${maxUtil}%` },
+        ],
+        resourceIds: deptResources.map(r => r.id),
+      });
+    });
   }
 
   return {
@@ -200,31 +220,19 @@ function buildOverAllocatedSection(resources: any[], departmentId: string | null
     title: 'Over-Allocated (>100%)',
     severity: 'warning',
     totalCount: resources.length,
-    questions,
+    questions: questions.slice(0, 3), // Ensure max 3 questions
   };
 }
 
 function buildZeroUtilSection(resources: any[], departmentId: string | null): ViewportSection {
   const questions: ProbingQuestion[] = [];
 
-  if (resources.length >= 3 && !departmentId) {
-    // Grouped by department when viewing all
-    const byDept = groupBy(resources, r => r.department_name || 'Unknown');
-    const deptSummary = Object.entries(byDept)
-      .map(([dept, rs]) => `${dept} (${rs.length})`)
-      .join(', ');
-
-    questions.push({
-      id: 'zero-util-all',
-      severity: 'info',
-      text: `Assign <strong>${resources.length} resources</strong> with 0% utilization`,
-      highlightedText: `${resources.length} resources`,
-      tags: [{ type: 'count', label: deptSummary }],
-      resourceIds: resources.map(r => r.id),
-    });
-  } else {
-    // Individual questions
-    resources.slice(0, 2).forEach(r => {
+  // Always show 2-3 individual questions first for better visibility
+  const showIndividualFirst = resources.length <= 5 || departmentId;
+  
+  if (showIndividualFirst) {
+    // Individual questions (max 3)
+    resources.slice(0, 3).forEach(r => {
       questions.push({
         id: `zero-util-${r.id}`,
         severity: 'info',
@@ -237,6 +245,24 @@ function buildZeroUtilSection(resources: any[], departmentId: string | null): Vi
         resourceIds: [r.id],
       });
     });
+  } else {
+    // Grouped by department when viewing all with many resources
+    const byDept = groupBy(resources, r => r.department_name || 'Unknown');
+    
+    // Show top 3 department groups
+    Object.entries(byDept).slice(0, 3).forEach(([deptName, deptResources]) => {
+      questions.push({
+        id: `zero-util-${deptName.replace(/\s+/g, '-')}`,
+        severity: 'info',
+        text: `Assign <strong>${deptResources.length} resources</strong> in ${deptName} with 0% utilization`,
+        highlightedText: `${deptResources.length} resources`,
+        tags: [
+          { type: 'project', label: deptName },
+          { type: 'count', label: `${deptResources.length} idle` },
+        ],
+        resourceIds: deptResources.map(r => r.id),
+      });
+    });
   }
 
   return {
@@ -244,7 +270,7 @@ function buildZeroUtilSection(resources: any[], departmentId: string | null): Vi
     title: 'Zero Utilization',
     severity: 'info',
     totalCount: resources.length,
-    questions,
+    questions: questions.slice(0, 3), // Ensure max 3 questions
   };
 }
 
