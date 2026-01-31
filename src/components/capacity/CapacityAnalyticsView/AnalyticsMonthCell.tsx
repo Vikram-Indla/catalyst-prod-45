@@ -2,11 +2,13 @@
  * Analytics Month Cell - Strategy D: Horizontal Bar
  * White cells with thin colored progress bar at bottom
  * Microsoft Project style - clean enterprise look
+ * 
+ * REBUILT: Uses fully inline styles to bypass any CSS overrides
  */
 
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { MonthCell, MonthSegment } from './types';
+import type { MonthCell } from './types';
 
 interface AnalyticsMonthCellProps {
   cell: MonthCell;
@@ -14,24 +16,16 @@ interface AnalyticsMonthCellProps {
 }
 
 // Project color mapping for horizontal bars
-const PROJECT_COLORS: Record<string, string> = {
-  'sectorial': '#3b82f6',           // BLUE
-  'sectorial services': '#3b82f6',
-  'dataplatform': '#10b981',        // GREEN  
-  'data platform': '#10b981',
-  'senaei': '#f59e0b',              // AMBER
-  'senaei 3.0': '#f59e0b',
-  'tahommena': '#ec4899',           // PINK
-  'tahommena 2.0': '#ec4899',
-  'inspection': '#8b5cf6',          // PURPLE
-  'inspection project': '#8b5cf6',
-  'irplatform': '#06b6d4',          // CYAN
-  'ir platform': '#06b6d4',
-  'ir-platform': '#06b6d4',
-  'ir platform - phase 1': '#06b6d4',
+const PROJECT_BAR_COLORS: Record<string, string> = {
+  sectorial: '#3b82f6',      // BLUE
+  dataplatform: '#10b981',   // GREEN  
+  senaei: '#f59e0b',         // AMBER
+  tahommena: '#ec4899',      // PINK
+  inspection: '#8b5cf6',     // PURPLE
+  irplatform: '#06b6d4',     // CYAN
 };
 
-function getProjectSlug(name: string): string {
+function getProjectSlug(name: string): keyof typeof PROJECT_BAR_COLORS {
   const lowerName = name.toLowerCase().trim();
   if (lowerName.includes('sectorial')) return 'sectorial';
   if (lowerName.includes('data platform') || lowerName.includes('dataplatform')) return 'dataplatform';
@@ -40,21 +34,6 @@ function getProjectSlug(name: string): string {
   if (lowerName.includes('inspection')) return 'inspection';
   if (lowerName.includes('ir platform') || lowerName.includes('irplatform') || lowerName.includes('ir-platform')) return 'irplatform';
   return 'sectorial'; // default
-}
-
-function getProjectColor(name: string): string {
-  if (!name) return '#3b82f6';
-  const lowerName = name.toLowerCase().trim();
-  
-  // Direct match - order matters (more specific first)
-  if (lowerName.includes('sectorial')) return '#3b82f6';      // BLUE
-  if (lowerName.includes('data platform') || lowerName.includes('dataplatform')) return '#10b981';  // GREEN
-  if (lowerName.includes('senaei')) return '#f59e0b';         // AMBER
-  if (lowerName.includes('tahommena')) return '#ec4899';      // PINK
-  if (lowerName.includes('inspection')) return '#8b5cf6';     // PURPLE
-  if (lowerName.includes('ir platform') || lowerName.includes('irplatform') || lowerName.includes('ir-platform')) return '#06b6d4';    // CYAN
-  
-  return '#3b82f6'; // default blue
 }
 
 export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCellProps) {
@@ -66,17 +45,29 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   const contractDate = contractEndDate ? new Date(contractEndDate) : null;
   const contractEndsThisMonth = contractDate && contractDate >= monthStart && contractDate <= monthEnd;
 
+  // Shared cell styles
+  const cellStyle: React.CSSProperties = {
+    padding: '4px',
+    minWidth: '120px',
+    maxWidth: '120px',
+    width: '120px',
+  };
+
   // Contract ended (past end date) - show diagonal striped END cell
   if (isEnded) {
     return (
-      <td className="allocation-cell end p-1 min-w-[120px] max-w-[120px] w-[120px]" data-status="end">
+      <td style={cellStyle} data-status="end">
         <div 
-          className="h-12 flex items-center justify-center rounded-lg"
           style={{
+            height: '48px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '8px',
             backgroundImage: 'repeating-linear-gradient(-45deg, #f1f5f9, #f1f5f9 4px, #e2e8f0 4px, #e2e8f0 8px)',
           }}
         >
-          <span className="text-xs font-medium text-slate-400 bg-white/80 px-2 py-0.5 rounded">END</span>
+          <span style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', background: 'rgba(255,255,255,0.8)', padding: '2px 8px', borderRadius: '4px' }}>END</span>
         </div>
       </td>
     );
@@ -85,14 +76,19 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   // Contract ends this month - show dotted fill with END label
   if (contractEndsThisMonth && (segments.length === 0 || totalPercent === 0)) {
     return (
-      <td className="allocation-cell end p-1 min-w-[120px] max-w-[120px] w-[120px]" data-status="end">
+      <td style={cellStyle} data-status="end">
         <div 
-          className="h-12 flex items-center justify-center rounded-lg border border-dashed border-slate-300"
           style={{
+            height: '48px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '8px',
+            border: '1px dashed #cbd5e1',
             backgroundImage: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)',
           }}
         >
-          <span className="text-xs font-medium text-slate-400 bg-white/80 px-2 py-0.5 rounded">END</span>
+          <span style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', background: 'rgba(255,255,255,0.8)', padding: '2px 8px', borderRadius: '4px' }}>END</span>
         </div>
       </td>
     );
@@ -101,9 +97,17 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   // Empty/no allocation - show as Available (white cell, no bar)
   if (segments.length === 0 || totalPercent === 0) {
     return (
-      <td className="allocation-cell p-1 min-w-[120px] max-w-[120px] w-[120px]">
-        <div className="h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200">
-          <span className="text-xs font-medium text-slate-400">Available</span>
+      <td style={cellStyle}>
+        <div style={{
+          height: '48px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '8px',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+        }}>
+          <span style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8' }}>Available</span>
         </div>
       </td>
     );
@@ -112,7 +116,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   // Get primary segment (first one) for color and project name
   const primarySegment = segments[0];
   const projectSlug = getProjectSlug(primarySegment.assignment.name);
-  const barColor = getProjectColor(primarySegment.assignment.name);
+  const barColor = PROJECT_BAR_COLORS[projectSlug] || '#3b82f6';
   const isOverAllocated = totalPercent > 100;
 
   // Calculate bar width as percentage (capped at 100% for display)
@@ -137,54 +141,75 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   );
 
   return (
-    <td 
-      className="allocation-cell p-1 min-w-[120px] max-w-[120px] w-[120px]" 
-      data-project={projectSlug}
-    >
+    <td style={cellStyle} data-project={projectSlug}>
       <Tooltip>
         <TooltipTrigger asChild>
           <div 
-            className={cn(
-              'relative h-12 flex flex-col items-center justify-center rounded-lg bg-white border cursor-default',
-              isOverAllocated 
-                ? 'border-rose-300 ring-1 ring-rose-300' 
-                : 'border-slate-200'
-            )}
+            style={{
+              position: 'relative',
+              height: '48px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '8px',
+              background: '#ffffff',
+              border: isOverAllocated ? '1px solid #fca5a5' : '1px solid #e2e8f0',
+              boxShadow: isOverAllocated ? '0 0 0 1px #fca5a5' : 'none',
+              cursor: 'default',
+            }}
           >
             {/* Text content - dark on white */}
-            <span className={cn(
-              'text-xs font-semibold z-10',
-              isOverAllocated ? 'text-rose-600' : 'text-slate-700'
-            )}>
+            <span style={{
+              fontSize: '12px',
+              fontWeight: 600,
+              color: isOverAllocated ? '#dc2626' : '#334155',
+              zIndex: 10,
+            }}>
               {totalPercent}%
             </span>
-            <span className="text-[9px] font-medium text-slate-500 truncate max-w-[100px] px-1 z-10">
+            <span style={{
+              fontSize: '9px',
+              fontWeight: 500,
+              color: '#64748b',
+              maxWidth: '100px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              padding: '0 4px',
+              zIndex: 10,
+            }}>
               {primarySegment.assignment.name}
             </span>
             
             {/* Horizontal progress bar at bottom (Strategy D)
-                Use SVG so “nuclear” CSS background overrides can’t wipe out the fill color. */}
-            <svg
-              className="allocation-bar absolute bottom-1 left-1.5 right-1.5 h-1.5"
-              viewBox="0 0 100 4"
-              preserveAspectRatio="none"
+                Using a SPAN element to avoid CSS div overrides */}
+            <span
               aria-hidden="true"
-              style={{ pointerEvents: 'none' }}
+              style={{
+                position: 'absolute',
+                bottom: '4px',
+                left: '6px',
+                right: '6px',
+                height: '4px',
+                borderRadius: '2px',
+                background: '#e2e8f0',
+                display: 'block',
+                overflow: 'hidden',
+              }}
             >
-              {/* Track */}
-              <rect x="0" y="0" width="100" height="4" rx="2" ry="2" fill="#e2e8f0" />
-              {/* Fill */}
-              <rect
-                x="0"
-                y="0"
-                width={barWidth}
-                height="4"
-                rx="2"
-                ry="2"
-                fill={barColor}
-                data-project={projectSlug}
+              {/* Fill bar - inline color */}
+              <span
+                style={{
+                  display: 'block',
+                  height: '100%',
+                  width: `${barWidth}%`,
+                  borderRadius: '2px',
+                  background: barColor,
+                  transition: 'width 0.3s ease',
+                }}
               />
-            </svg>
+            </span>
           </div>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-xs">
