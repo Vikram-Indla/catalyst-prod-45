@@ -44,15 +44,19 @@ export function MyTasksHeader({
 
   return (
     <div className="flex-shrink-0">
-      {/* Header with Summary Cards */}
-      <div className="mytasks-header">
+      {/* Header - Dashboard style */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div>
-          <h1 className="mytasks-header-title">My Tasks</h1>
-          <p className="mytasks-header-subtitle">{subtitleText}</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+            My Tasks
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {subtitleText}
+          </p>
         </div>
 
-        {/* Summary Cards - Linear style */}
-        <div className="mytasks-summary-cards">
+        {/* Summary Cards - Inline with header */}
+        <div className="flex items-center gap-3">
           <div className="mytasks-summary-card mytasks-summary-card--overdue">
             <div className="mytasks-summary-card__value">
               {isLoading ? '—' : summary?.overdue_count || 0}
