@@ -40,9 +40,9 @@
   /* CELL CONFIGURATION */
   --ra-cell-bg: var(--ra-white);
   --ra-cell-border: var(--ra-slate-200);
-  --ra-cell-radius: 4px;
-  --ra-cell-padding: 8px;
-  --ra-cell-min-height: 56px;
+  --ra-cell-radius: 8px;
+  --ra-cell-padding: 4px;
+  --ra-cell-min-height: 48px;
   
   /* HORIZONTAL BAR CONFIGURATION */
   --ra-bar-height: 4px;
@@ -55,7 +55,7 @@
   --ra-text-percent-size: 12px;
   --ra-text-percent-weight: 600;
   --ra-text-project: var(--ra-slate-500);
-  --ra-text-project-size: 10px;
+  --ra-text-project-size: 9px;
   
   /* AVATAR (Neutralized) */
   --ra-avatar-bg: var(--ra-slate-400);
@@ -79,44 +79,58 @@
    ───────────────────────────────────────────────────────────── */
 .ra-enterprise-clean .allocation-grid,
 .ra-enterprise-clean [class*="allocation-grid"],
-.ra-enterprise-clean [class*="resource-grid"] {
-  background: var(--ra-slate-100) !important;
+.ra-enterprise-clean [class*="resource-grid"],
+.ra-enterprise-clean table {
+  background: var(--ra-slate-50) !important;
   border-collapse: separate !important;
-  border-spacing: 1px !important;
+  border-spacing: 4px !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
    ALLOCATION CELL — BASE (Strategy D: Horizontal Bar)
+   NUCLEAR OVERRIDE - target ALL possible cell classes
    ───────────────────────────────────────────────────────────── */
 .ra-enterprise-clean .allocation-cell,
 .ra-enterprise-clean [class*="allocation-cell"],
-.ra-enterprise-clean [class*="resource-cell"],
-.ra-enterprise-clean td[class*="allocation"] {
-  /* OVERRIDE: Remove solid blue fills */
+.ra-enterprise-clean td.allocation-cell,
+.ra-enterprise-clean td[class*="allocation"],
+.ra-enterprise-clean td.p-1 > div:not([class*="allocation-cell"]),
+.ra-enterprise-clean td > div.h-12 {
+  /* OVERRIDE: White background - NOT blue */
   background: var(--ra-cell-bg) !important;
+  background-color: var(--ra-cell-bg) !important;
   
   /* Layout */
-  padding: var(--ra-cell-padding) !important;
   min-height: var(--ra-cell-min-height) !important;
-  
-  /* Structure for bar positioning */
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  align-items: center !important;
-  position: relative !important;
   
   /* Border */
   border: 1px solid var(--ra-cell-border) !important;
   border-radius: var(--ra-cell-radius) !important;
 }
 
+/* Force white on any cell container divs */
+.ra-enterprise-clean td > div.rounded-lg,
+.ra-enterprise-clean td > div.flex,
+.ra-enterprise-clean td > div.h-12,
+.ra-enterprise-clean td > div {
+  background: var(--ra-white) !important;
+  background-color: var(--ra-white) !important;
+}
+
+/* NUCLEAR: Override inline style backgrounds on cells */
+.ra-enterprise-clean td div[style*="background"] {
+  background-color: var(--ra-white) !important;
+}
+
 /* ─────────────────────────────────────────────────────────────
-   ALLOCATION CELL — TEXT CONTENT
+   ALLOCATION CELL — TEXT CONTENT (Dark on White)
    ───────────────────────────────────────────────────────────── */
 .ra-enterprise-clean .allocation-cell .cell-percent,
 .ra-enterprise-clean .allocation-cell [class*="percent"],
-.ra-enterprise-clean .allocation-cell [class*="utilization"] {
+.ra-enterprise-clean .allocation-cell [class*="utilization"],
+.ra-enterprise-clean td span.text-xs.font-semibold,
+.ra-enterprise-clean td span.text-xs.font-bold,
+.ra-enterprise-clean td div span.text-white {
   /* OVERRIDE: Dark text instead of white-on-blue */
   color: var(--ra-text-percent) !important;
   font-size: var(--ra-text-percent-size) !important;
@@ -126,10 +140,12 @@
 
 .ra-enterprise-clean .allocation-cell .cell-project,
 .ra-enterprise-clean .allocation-cell [class*="project-name"],
-.ra-enterprise-clean .allocation-cell [class*="assignment"] {
+.ra-enterprise-clean .allocation-cell [class*="assignment"],
+.ra-enterprise-clean td span.text-\\[9px\\],
+.ra-enterprise-clean td span.text-white\\/90 {
   color: var(--ra-text-project) !important;
   font-size: var(--ra-text-project-size) !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   margin-top: 2px !important;
 }
 
@@ -380,4 +396,51 @@
 /* Assignment color indicator */
 .ra-enterprise-clean [role="rowheader"] .w-1.rounded-full {
   /* Keep assignment color for project differentiation */
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NUCLEAR OVERRIDES - Strategy D Enforcement
+   Force ALL colored backgrounds to white, keep only horizontal bar
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Override ANY blue background on cells */
+.ra-enterprise-clean td div[style*="#3b82f6"],
+.ra-enterprise-clean td div[style*="rgb(59, 130, 246)"],
+.ra-enterprise-clean td div[style*="BRAND_COLOR"],
+.ra-enterprise-clean td div.bg-blue-500,
+.ra-enterprise-clean td div.bg-blue-600,
+.ra-enterprise-clean td div.bg-primary {
+  background: var(--ra-white) !important;
+  background-color: var(--ra-white) !important;
+}
+
+/* Force segment divs to be transparent (only the bar should have color) */
+.ra-enterprise-clean td div.h-full.flex.flex-col {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* But keep the allocation-bar colored */
+.ra-enterprise-clean .allocation-bar > div,
+.ra-enterprise-clean div.h-1,
+.ra-enterprise-clean div.h-1\\.5 {
+  /* Keep these colored - they are the progress bars */
+}
+
+/* Force white text to become dark */
+.ra-enterprise-clean td .text-white,
+.ra-enterprise-clean td .text-white\\/90 {
+  color: var(--ra-text-percent) !important;
+}
+
+/* END cell styling */
+.ra-enterprise-clean td.allocation-cell.end div,
+.ra-enterprise-clean td[data-status="end"] div {
+  background: transparent !important;
+}
+
+/* Ensure the main cell container is white */
+.ra-enterprise-clean td.p-1.min-w-\\[120px\\] > div {
+  background: var(--ra-white) !important;
+  border: 1px solid var(--ra-cell-border) !important;
 }
