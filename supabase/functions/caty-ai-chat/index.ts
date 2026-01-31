@@ -858,8 +858,8 @@ PROFILE CARD (Use for INDIVIDUAL resource lookup - NO intro text before this!):
   <div class="caty-profile-header">
     <div class="caty-profile-avatar">[INITIALS]</div>
     <div class="caty-profile-identity">
-      <div class="caty-profile-name">[FULL NAME FROM DATABASE]</div>
-      <div class="caty-profile-role">[ROLE] • [DEPARTMENT]</div>
+      <div class="caty-profile-name">[FULL NAME FROM DATABASE - resource.display_name]</div>
+      <div class="caty-profile-role">[resource.role FROM DATABASE e.g. "Technical PO"] • [resource.department.name]</div>
     </div>
   </div>
   <div class="caty-profile-details">

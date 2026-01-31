@@ -559,7 +559,7 @@ button.caty-department-pill,
   width: 48px !important;
   height: 48px !important;
   min-width: 48px !important;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  background: #64748b !important;
   border-radius: 12px !important;
   display: flex !important;
   align-items: center !important;
@@ -669,7 +669,7 @@ button.caty-department-pill,
   width: 64px !important;
   height: 64px !important;
   min-width: 64px !important;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  background: #64748b !important;
   border-radius: 16px !important;
   display: flex !important;
   align-items: center !important;
