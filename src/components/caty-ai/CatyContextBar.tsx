@@ -22,21 +22,24 @@ export const CatyContextBar: React.FC<CatyContextBarProps> = ({
   context,
   onDepartmentChange 
 }) => {
-  // Fetch departments from database
+  // Fetch departments from resource_inventory table (users module)
   const { data: departments = [] } = useQuery({
-    queryKey: ['caty-departments'],
+    queryKey: ['caty-user-departments'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('departments')
-        .select('id, name')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
+        .from('resource_inventory')
+        .select('department_name')
+        .not('department_name', 'is', null)
+        .order('department_name');
       
       if (error) {
         console.error('[CATY] Failed to fetch departments:', error);
         return [];
       }
-      return data as Department[];
+      
+      // Get unique department names
+      const uniqueDepts = [...new Set(data.map(d => d.department_name))].filter(Boolean);
+      return uniqueDepts.map((name, idx) => ({ id: `dept-${idx}`, name: name as string }));
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
