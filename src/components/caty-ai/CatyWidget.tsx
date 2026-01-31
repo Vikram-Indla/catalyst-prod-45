@@ -19,6 +19,7 @@ import { RESPONSES } from './responses';
 import { NextAction } from './schema';
 import './CatyWidget.css';
 import './CatyAnswerCard.css';
+import './CatyOverrides.css';
 
 interface CatyWidgetProps {
   initialContext?: CatyContext;
