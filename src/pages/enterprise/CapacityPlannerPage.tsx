@@ -1606,21 +1606,7 @@ export default function CapacityPlannerPage() {
           );
         })()}
 
-        <div className="fixed bottom-6 right-6 z-50">
-          <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
-          <button
-            onClick={() => setAiDrawerOpen(true)}
-            className="relative w-[52px] h-[52px] rounded-full bg-[#0d9488] flex items-center justify-center shadow-lg hover:scale-105 transition-transform cursor-pointer border-0"
-            style={{ boxShadow: '0 4px 16px rgba(13, 148, 136, 0.35)' }}
-          >
-            <Bot className="h-6 w-6 text-white" />
-            {highPriorityCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#dc2626] text-white text-[11px] font-bold flex items-center justify-center border-2 border-white">
-                {highPriorityCount}
-              </span>
-            )}
-          </button>
-        </div>
+        {/* FAB removed - using CatyFabPlaceholder from App.tsx for unified CATY AI experience */}
 
         {/* Presentation Mode Fullscreen Overlay */}
         {presentationMode && (
