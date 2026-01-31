@@ -15,7 +15,7 @@ interface Department {
 
 interface CatyContextBarProps {
   context: CatyContext;
-  onDepartmentChange: (department: string) => void;
+  onDepartmentChange: (department: string, departmentId: string | null) => void;
 }
 
 export const CatyContextBar: React.FC<CatyContextBarProps> = ({ 
@@ -24,11 +24,11 @@ export const CatyContextBar: React.FC<CatyContextBarProps> = ({
 }) => {
   // Fetch departments from resource_inventory table (users module)
   const { data: departments = [] } = useQuery({
-    queryKey: ['caty-user-departments'],
+    queryKey: ['caty-user-departments-with-ids'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select('department_name')
+        .select('department_id, department_name')
         .not('department_name', 'is', null)
         .order('department_name');
       
@@ -37,9 +37,16 @@ export const CatyContextBar: React.FC<CatyContextBarProps> = ({
         return [];
       }
       
-      // Get unique department names
-      const uniqueDepts = [...new Set(data.map(d => d.department_name))].filter(Boolean);
-      return uniqueDepts.map((name, idx) => ({ id: `dept-${idx}`, name: name as string }));
+      // Get unique department entries
+      const seen = new Set<string>();
+      const uniqueDepts: { id: string; name: string }[] = [];
+      data.forEach(d => {
+        if (d.department_name && !seen.has(d.department_name)) {
+          seen.add(d.department_name);
+          uniqueDepts.push({ id: d.department_id, name: d.department_name });
+        }
+      });
+      return uniqueDepts;
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
@@ -64,7 +71,7 @@ export const CatyContextBar: React.FC<CatyContextBarProps> = ({
           <button
             key={dept.id}
             className={`caty-department-pill ${isSelected(dept.name) ? 'active' : ''}`}
-            onClick={() => onDepartmentChange(dept.name)}
+            onClick={() => onDepartmentChange(dept.name, dept.id === 'all' ? null : dept.id)}
           >
             {dept.name}
           </button>
