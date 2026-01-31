@@ -9,7 +9,6 @@ import '@/styles/ra-enterprise-clean.css';
 import '@/styles/ra-enterprise-polish.css';
 import '@/styles/resource-allocation-enterprise.css';
 import '@/styles/resource-allocation-override.css';
-import { useResourceAllocationOverride } from '@/hooks/useResourceAllocationOverride';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Users, AlertTriangle, ChevronDown, ChevronUp, X } from 'lucide-react';
@@ -50,13 +49,6 @@ export function CapacityAnalyticsView({
     departmentFilter,
     viewScope,
     year,
-  });
-
-  // Strategy D: JavaScript injection for horizontal bars (after data loads)
-  useResourceAllocationOverride({
-    containerSelector: '.ra-enterprise-clean',
-    enabled: !isLoading,
-    dependencies: [departmentFilter, viewScope, rows],
   });
 
   // Fetch run rate data for department widgets
@@ -276,7 +268,7 @@ export function CapacityAnalyticsView({
   }
 
   return (
-    <div className="flex flex-col h-full ra-polish">
+    <div className="flex flex-col h-full ra-enterprise-clean ra-polish">
       {/* TOP ROW: Category Widgets (Insourced, Cosourced, Outsourced, Licenses) - Hidden in Utilization view */}
       {!hideWidgets && (
       <section className="ct-category-section mb-4">
