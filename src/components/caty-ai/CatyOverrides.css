@@ -586,6 +586,13 @@ button.caty-department-pill,
   margin-top: 2px !important;
 }
 
+.caty-data-assignments {
+  font-size: 0.6875rem !important;
+  color: #3b82f6 !important;
+  margin-top: 2px !important;
+  font-weight: 500 !important;
+}
+
 .caty-data-tags {
   display: flex !important;
   flex-direction: column !important;
