@@ -137,26 +137,30 @@ export const generateOffshoreResponse = (teams: OffshoreTeam[], dept: string) =>
   }
   
   const total = teams.reduce((s, t) => s + t.resource_count, 0);
+  const uniqueCountries = teams.length;
   
   return `<div class="caty-bubble"><p>Off-shore teams${dept !== 'All Departments' ? ' for ' + dept : ''}:</p></div>
 <div class="caty-data-card">
   <div class="caty-data-card-header info">
-    <span class="caty-data-card-title">Off-Shore Teams</span>
-    <span class="caty-data-card-badge">${total} resources</span>
+    <span class="caty-data-card-title">Off-shore Locations</span>
+    <span class="caty-data-card-badge">${uniqueCountries} Countries</span>
   </div>
   <div class="caty-data-card-body">
     ${teams.map(t => `
-      <div class="caty-team-row">
+      <div class="caty-team-row caty-clickable" data-drilldown="country" data-country="${t.country_code}" data-country-name="${t.country_name}" role="button" tabindex="0">
         <div class="caty-team-flag">${t.flag}</div>
         <div class="caty-team-info">
           <div class="caty-team-name">${t.country_name}</div>
         </div>
         <div class="caty-team-stats">
           <span class="caty-team-count">${t.resource_count}</span>
-          <span class="caty-team-util">${t.avg_utilization}% avg</span>
+          <span class="caty-team-label">Resources</span>
         </div>
       </div>
     `).join('')}
+  </div>
+  <div class="caty-data-card-footer">
+    <span class="caty-footer-total">${total} total off-shore resources</span>
   </div>
 </div>`;
 };

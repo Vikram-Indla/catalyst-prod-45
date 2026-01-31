@@ -3,7 +3,7 @@
  * Enhanced with structured response rendering and markdown support
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { CatyMessage } from './types';
 import { HubIcon } from './constants';
@@ -14,6 +14,7 @@ interface CatyMessageProps {
   message: CatyMessage;
   userInitials?: string;
   onAction?: (action: NextAction) => void;
+  onDrillDown?: (type: string, params: Record<string, string>) => void;
 }
 
 const formatTime = (timestamp: string) => {
@@ -24,8 +25,40 @@ const formatTime = (timestamp: string) => {
 export const CatyMessageComponent: React.FC<CatyMessageProps> = ({ 
   message, 
   userInitials = 'VK',
-  onAction 
+  onAction,
+  onDrillDown
 }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Handle drill-down clicks on clickable elements
+  const handleDrillDownClick = useCallback((event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    const clickable = target.closest('[data-drilldown]') as HTMLElement;
+    
+    if (clickable && onDrillDown) {
+      const drilldownType = clickable.getAttribute('data-drilldown') || '';
+      const params: Record<string, string> = {};
+      
+      // Collect all data-* attributes
+      Array.from(clickable.attributes).forEach(attr => {
+        if (attr.name.startsWith('data-') && attr.name !== 'data-drilldown') {
+          const key = attr.name.replace('data-', '').replace(/-/g, '_');
+          params[key] = attr.value;
+        }
+      });
+      
+      onDrillDown(drilldownType, params);
+    }
+  }, [onDrillDown]);
+
+  // Attach click handlers to clickable elements
+  useEffect(() => {
+    const container = contentRef.current;
+    if (!container || !onDrillDown) return;
+
+    container.addEventListener('click', handleDrillDownClick);
+    return () => container.removeEventListener('click', handleDrillDownClick);
+  }, [handleDrillDownClick, onDrillDown]);
   // Detect if this is a streaming/incomplete JSON response
   const streamingState = useMemo(() => {
     if (message.type !== 'assistant' || message.isHtml) {
@@ -325,7 +358,7 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
       <div className={`caty-avatar ${message.type}`}>
         {message.type === 'assistant' ? <HubIcon /> : userInitials}
       </div>
-      <div className="caty-msg-body">
+      <div className="caty-msg-body" ref={contentRef}>
         {renderContent()}
         <span className="caty-msg-time">{formatTime(message.timestamp)}</span>
       </div>
