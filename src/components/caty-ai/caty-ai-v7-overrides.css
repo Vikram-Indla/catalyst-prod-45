@@ -5,6 +5,15 @@
 
 .caty-widget button,.caty-widget .caty-btn,.caty-widget .caty-header-btn,.caty-widget .caty-suggestion,.caty-widget .caty-send-btn,.caty-widget .caty-input-btn{all:unset!important;box-sizing:border-box!important;font-family:var(--caty-font-sans)!important;cursor:pointer!important}
 
+/* SUGGESTIONS BAR - FORCE HORIZONTAL PILLS */
+.caty-widget .caty-suggestions{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:10px!important;padding:16px 24px!important;background:#ffffff!important;border-top:1px solid #e2e8f0!important;overflow-x:auto!important;scrollbar-width:none!important;-ms-overflow-style:none!important}
+.caty-widget .caty-suggestions::-webkit-scrollbar{display:none!important}
+.caty-widget .caty-suggestion{display:flex!important;align-items:center!important;padding:12px 18px!important;background:#f1f5f9!important;border:1px solid #e2e8f0!important;border-radius:10px!important;font-size:0.8125rem!important;font-weight:500!important;color:#475569!important;white-space:nowrap!important;flex-shrink:0!important;min-height:44px!important;cursor:pointer!important}
+.caty-widget .caty-suggestion:hover{background:#dbeafe!important;border-color:#2563eb!important;color:#2563eb!important}
+.caty-widget .caty-suggestion.alert{border-color:rgba(220,38,38,0.3)!important;color:#dc2626!important}
+.caty-widget .caty-suggestion.alert:hover{background:#fef2f2!important}
+.caty-widget .caty-suggestion.escalate{border-color:#2563eb!important;color:#2563eb!important}
+
 .caty-widget .caty-btn{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;padding:14px 20px!important;border-radius:10px!important;font-size:.875rem!important;font-weight:600!important;transition:all .15s ease!important;min-height:48px!important}
 .caty-widget .caty-btn.primary{background:var(--caty-primary)!important;color:var(--caty-text-inverse)!important}
 .caty-widget .caty-btn.primary:hover{background:var(--caty-primary-hover)!important}
