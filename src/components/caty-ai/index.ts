@@ -3,7 +3,7 @@
 // Enterprise-grade chatbot for Capacity Planner
 // ============================================================================
 
-export * from './types';
-export * from './constants';
+export { CatyWidget, default } from './CatyWidget';
+export type { CatyMessage, CatySession, CatyContext } from './types';
 export * from './responses';
 export * from './hooks';
