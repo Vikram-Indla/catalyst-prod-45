@@ -633,11 +633,10 @@ DATA CARD:
   <div class="caty-data-card-body">
     <!-- Resource rows here -->
   </div>
-  <div class="caty-data-card-footer">
-    <button class="caty-action-btn primary">Rebalance</button>
-    <button class="caty-action-btn secondary">Export</button>
-  </div>
 </div>
+
+IMPORTANT: Do NOT include any footer buttons, action buttons, "View All", "Check Attendance", or suggestion CTAs.
+Only output the data cards and metrics. No follow-up actions.
 
 RESOURCE ROW (use for EVERY resource):
 <div class="caty-data-row">

@@ -378,20 +378,7 @@ const ResourceAnswerCard: React.FC<{
         </div>
       )}
 
-      {/* Next Actions */}
-      {next_best_actions.length > 0 && (
-        <div style={{ marginBottom: '16px' }}>
-          <SectionHeader 
-            title="Next Actions" 
-            icon={<span style={{ fontSize: '16px' }}>🚀</span>} 
-          />
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {next_best_actions.map((action, idx) => (
-              <ActionButton key={idx} action={action} onAction={onAction} />
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Next Actions - REMOVED: User wants straight answers only, no suggestions */}
 
       {/* Data Quality Footer */}
       {data_quality && (
@@ -442,16 +429,7 @@ const GeneralAnswerCard: React.FC<{
         <ReactMarkdown>{response.content_markdown}</ReactMarkdown>
       </div>
 
-      {/* Next Actions */}
-      {response.next_best_actions.length > 0 && (
-        <div style={{ marginTop: '16px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {response.next_best_actions.map((action, idx) => (
-              <ActionButton key={idx} action={action} onAction={onAction} />
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Next Actions - REMOVED: User wants straight answers only, no suggestions */}
 
       {/* Data Quality Footer */}
       {response.data_quality && (
