@@ -231,30 +231,9 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   TABLE STRUCTURE
+   TABLE STRUCTURE - Preserved, minimal overrides only
    ───────────────────────────────────────────────────────────── */
-.ra-enterprise-clean table {
-  border-collapse: collapse;
-}
-
-.ra-enterprise-clean th {
-  background: var(--ra-slate-50) !important;
-  color: var(--ra-slate-600) !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-}
-
-.ra-enterprise-clean td {
-  background: var(--ra-white) !important;
-  border-color: var(--ra-slate-200) !important;
-}
-
-/* First column (resource info) keeps card background */
-.ra-enterprise-clean td:first-child {
-  background: hsl(var(--card)) !important;
-}
+/* NOTE: Layout rules removed to preserve native table structure */
 
 /* ─────────────────────────────────────────────────────────────
    UTILIZATION BADGE — NEUTRALIZED
