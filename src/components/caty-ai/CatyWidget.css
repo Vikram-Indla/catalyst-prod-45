@@ -846,6 +846,16 @@
   text-overflow: ellipsis;
 }
 
+.caty-data-assignments {
+  font-size: 0.6875rem;
+  color: var(--caty-primary);
+  margin-top: 2px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Tags Container */
 .caty-data-tags {
   display: flex;

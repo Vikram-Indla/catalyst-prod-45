@@ -495,7 +495,7 @@ async function buildAggregateContext(
   // Step 1: Fetch all active resources
   let resourceQuery = supabase
     .from('resource_inventory')
-    .select('id, name, department_id, department_name, vendor_id, vendor_name, country_id, contract_end_date, role_name')
+    .select('id, name, department_id, department_name, vendor_id, vendor_name, country_id, location_id, contract_end_date, role_name')
     .eq('is_active', true);
   
   // Filter by department if specified and not "All"
@@ -558,15 +558,61 @@ async function buildAggregateContext(
     countryMap = new Map((countries || []).map((c: any) => [c.id, { code: c.code || '', name: c.name }]));
   }
   
-  // Step 3: Fetch allocations for all resources
+  // Step 2b: Fetch locations for site status (source of truth)
+  const locationIds = [...new Set(resources.map((r: any) => r.location_id).filter(Boolean))];
+  let locationMap = new Map<string, string>();
+  let onSiteLocationIds = new Set<string>();
+  
+  if (locationIds.length > 0) {
+    const { data: locations } = await supabase
+      .from('resource_locations')
+      .select('id, name')
+      .in('id', locationIds);
+    
+    (locations || []).forEach((loc: any) => {
+      locationMap.set(loc.id, loc.name);
+      const locName = (loc.name || '').toLowerCase().trim();
+      if (locName.includes('onsite') || locName.includes('on-site') || locName.includes('on site')) {
+        onSiteLocationIds.add(loc.id);
+      }
+    });
+  }
+
+  // Step 3: Fetch allocations for all resources (include all valid statuses)
   const resourceIds = resources.map((r: any) => r.id);
   const { data: allocations } = await supabase
     .from('resource_allocations')
-    .select('resource_id, allocation_percent')
+    .select('resource_id, allocation_percent, assignment_id')
     .in('resource_id', resourceIds)
     .lte('start_date', dateEnd)
     .gte('end_date', dateStart)
-    .eq('status', 'active');
+    .in('status', ['active', 'committed', 'forecast']);
+  
+  // Step 3b: Fetch assignment names for allocations
+  const assignmentIds = [...new Set((allocations || []).map((a: any) => a.assignment_id).filter(Boolean))];
+  let assignmentMap = new Map<string, string>();
+  
+  if (assignmentIds.length > 0) {
+    const { data: assignments } = await supabase
+      .from('resource_assignments')
+      .select('id, name')
+      .in('id', assignmentIds);
+    
+    assignmentMap = new Map((assignments || []).map((a: any) => [a.id, a.name]));
+  }
+  
+  // Build resource -> assignment names map
+  const resourceAssignmentsMap = new Map<string, string[]>();
+  (allocations || []).forEach((a: any) => {
+    if (a.assignment_id && assignmentMap.has(a.assignment_id)) {
+      const existing = resourceAssignmentsMap.get(a.resource_id) || [];
+      const assignmentName = assignmentMap.get(a.assignment_id)!;
+      if (!existing.includes(assignmentName)) {
+        existing.push(assignmentName);
+        resourceAssignmentsMap.set(a.resource_id, existing);
+      }
+    }
+  });
   
   // Build utilization map
   const utilMap = new Map<string, number>();
@@ -604,13 +650,16 @@ async function buildAggregateContext(
     const util = utilMap.get(r.id) || 0;
     totalUtil += util;
     
+    // Attach assignments to resource
+    r.assignments = resourceAssignmentsMap.get(r.id) || [];
+    
     if (util > 100) overUtilized++;
     else if (util >= 80 && util <= 90) onTarget++;
     else underUtilized++;
     
-    // Site status
-    const country = countryMap.get(r.country_id);
-    const isOnSite = country?.code?.toUpperCase() === 'SA' || country?.code?.toUpperCase() === 'KSA';
+    // Site status - use location_id (source of truth), NOT country
+    const isOnSite = r.location_id && onSiteLocationIds.has(r.location_id);
+    r.location_type = isOnSite ? 'Onsite' : 'Offshore';
     if (isOnSite) onSiteCount++;
     else offShoreCount++;
     
@@ -737,9 +786,10 @@ const SYSTEM_PROMPT = `You are CATY AI, a Capacity Planning Assistant for Cataly
 1. NEVER output markdown (**, ##, ###, *, -)
 2. NEVER output plain text without HTML wrapper
 3. ALWAYS wrap responses in the HTML components below
-4. NEVER show "Data: unknown" or "Confidence: low"
-5. ALWAYS include Department, Location, Utilization for resources
-6. Do NOT include any footer buttons, action buttons, "View All", "Check Attendance", or suggestion CTAs
+4. NEVER show "Data: unknown" or "Confidence: low" or "Unknown" for any field
+5. ALWAYS include Name, Role, Department, Vendor, Assignment(s), Location, Utilization for every resource
+6. If a resource has assignments in the DATABASE CONTEXT, show them (e.g., "Senaei 3.0, Project X")
+7. Do NOT include any footer buttons, action buttons, "View All", "Check Attendance", or suggestion CTAs
 
 ##############################################
 # HTML COMPONENTS (Use these exactly)
@@ -791,7 +841,8 @@ RESOURCE ROW (ONLY for resources in DATABASE CONTEXT):
   <div class="caty-data-avatar">[INITIALS FROM DATABASE NAME]</div>
   <div class="caty-data-info">
     <div class="caty-data-name">[NAME FROM DATABASE]</div>
-    <div class="caty-data-meta">[ROLE] • [DEPARTMENT] • [VENDOR] FROM DATABASE</div>
+    <div class="caty-data-meta">[ROLE] • [DEPARTMENT] • [VENDOR]</div>
+    <div class="caty-data-assignments">[ASSIGNMENT NAME(S) FROM DATABASE - e.g., "Senaei 3.0"]</div>
   </div>
   <div class="caty-data-tags">
     <span class="caty-tag location [onsite|offshore]">[LOCATION FROM DATABASE]</span>
