@@ -119,14 +119,15 @@ function buildExpiringSection(resources: any[], departmentId: string | null): Vi
   const byVendor = groupBy(resources, r => r.vendor_name || 'Unassigned');
 
   Object.entries(byVendor).forEach(([vendorName, vendorResources]) => {
+    const vendorDisplay = vendorName === 'Unassigned' ? 'resources with no vendor' : `vendor ${vendorName}`;
     if (vendorResources.length >= 2) {
       // Group question
       const earliestDate = Math.min(...vendorResources.map(r => r.daysLeft));
       questions.push({
         id: `expiring-${vendorName.replace(/\s+/g, '-')}`,
         severity: 'danger',
-        text: `Review <strong>${vendorResources.length} contracts</strong> expiring for ${vendorName}`,
-        highlightedText: `${vendorResources.length} contracts`,
+        text: `Show <strong>${vendorResources.length} expiring contracts</strong> for ${vendorDisplay}`,
+        highlightedText: `${vendorResources.length} expiring contracts`,
         tags: [
           { type: 'vendor', label: vendorName },
           { type: 'date', label: `${earliestDate} days` },
@@ -139,7 +140,7 @@ function buildExpiringSection(resources: any[], departmentId: string | null): Vi
       questions.push({
         id: `expiring-${r.id}`,
         severity: 'danger',
-        text: `Renew <strong>${r.name}</strong> before contract ends?`,
+        text: `Show contract expiring for <strong>${r.name}</strong>`,
         highlightedText: r.name,
         tags: [
           { type: 'vendor', label: vendorName },
