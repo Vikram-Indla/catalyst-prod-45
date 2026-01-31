@@ -1,0 +1,705 @@
+/* ============================================================================
+   KANBAN BOARDS MODULE — RING-FENCED DESIGN SYSTEM
+   
+   File: src/styles/boards.css
+   Namespace: --boards-* (prevents conflicts with Catalyst V5 / Planner / MyTasks)
+   Benchmark: Linear, Trello
+   Score Target: 8.5/10
+   
+   CRITICAL: Import this file in your Boards component
+   import '@/styles/boards.css';
+   ============================================================================ */
+
+:root {
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
+  
+  /* Card Title — PRIMARY (hero of the card) */
+  --boards-card-title-size: 14px;
+  --boards-card-title-weight: 500;  /* NOT 400 — medium weight per Linear */
+  --boards-card-title-color: #1e293b;
+  --boards-card-title-color-done: #64748b;
+  
+  /* Task ID — SECONDARY (visible but subtle) */
+  --boards-card-id-size: 11px;
+  --boards-card-id-weight: 400;
+  --boards-card-id-font: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  --boards-card-id-color: #64748b;  /* NOT #c4c9d4 — that's invisible */
+  
+  /* Date — METADATA */
+  --boards-date-size: 12px;
+  --boards-date-weight: 400;
+  --boards-date-color-overdue: #dc2626;
+  --boards-date-color-today: #4f46e5;  /* Indigo — NOT green */
+  --boards-date-color-upcoming: #64748b;
+  
+  /* Column Header */
+  --boards-column-title-size: 14px;
+  --boards-column-title-weight: 600;
+  --boards-column-title-color: #1e293b;
+  --boards-column-count-size: 12px;
+  --boards-column-count-color: #64748b;
+  
+  /* ========================================
+     COLORS — SURFACES
+     ======================================== */
+  
+  --boards-bg-page: #f8fafc;
+  --boards-bg-column: transparent;
+  --boards-bg-card: #ffffff;
+  --boards-bg-card-hover: #ffffff;
+  --boards-bg-empty: #f8fafc;
+  
+  /* ========================================
+     COLORS — BORDERS
+     ======================================== */
+  
+  --boards-border-card: #e2e8f0;
+  --boards-border-card-hover: #cbd5e1;
+  --boards-border-empty: #e2e8f0;
+  
+  /* Priority Left Borders */
+  --boards-priority-critical: #dc2626;
+  --boards-priority-high: #ef4444;
+  --boards-priority-medium: #f59e0b;
+  --boards-priority-low: #22c55e;
+  --boards-priority-none: transparent;
+  
+  /* ========================================
+     COLORS — STATUS DOTS
+     ======================================== */
+  
+  --boards-status-backlog: #94a3b8;
+  --boards-status-planned: #3b82f6;
+  --boards-status-in-progress: #f59e0b;
+  --boards-status-progress: #f59e0b;
+  --boards-status-review: #8b5cf6;
+  --boards-status-done: #22c55e;
+  
+  /* ========================================
+     COLORS — AVATARS
+     ======================================== */
+  
+  --boards-avatar-blue: #3b82f6;
+  --boards-avatar-teal: #14b8a6;
+  --boards-avatar-purple: #8b5cf6;
+  --boards-avatar-orange: #f97316;
+  --boards-avatar-pink: #ec4899;
+  --boards-avatar-green: #22c55e;
+  --boards-avatar-slate: #64748b;
+  
+  /* ========================================
+     SHADOWS — CRITICAL FOR DRAGGABILITY
+     ======================================== */
+  
+  --boards-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --boards-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --boards-shadow-card-dragging: 0 8px 24px rgba(0, 0, 0, 0.12);
+  
+  /* ========================================
+     SPACING
+     ======================================== */
+  
+  --boards-page-padding: 20px;
+  --boards-column-gap: 16px;
+  --boards-column-width: 280px;
+  --boards-card-gap: 8px;
+  --boards-card-padding: 12px;
+  --boards-card-radius: 8px;
+  
+  /* ========================================
+     SIZING
+     ======================================== */
+  
+  --boards-avatar-size: 24px;
+  --boards-status-dot-size: 8px;
+  --boards-priority-border-width: 3px;
+  
+  /* ========================================
+     TRANSITIONS
+     ======================================== */
+  
+  --boards-transition-fast: 0.1s ease;
+  --boards-transition-normal: 0.15s ease;
+  --boards-transition-lift: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode overrides */
+.dark {
+  --boards-card-title-color: #e2e8f0;
+  --boards-card-title-color-done: #94a3b8;
+  --boards-card-id-color: #94a3b8;
+  --boards-column-title-color: #e2e8f0;
+  
+  --boards-bg-page: #0f172a;
+  --boards-bg-card: #1e293b;
+  --boards-bg-card-hover: #1e293b;
+  --boards-bg-empty: #1e293b;
+  
+  --boards-border-card: #334155;
+  --boards-border-card-hover: #475569;
+  --boards-border-empty: #334155;
+}
+
+
+/* ============================================================================
+   BOARD CONTAINER
+   ============================================================================ */
+
+.boards-container {
+  display: flex;
+  gap: var(--boards-column-gap);
+  padding: var(--boards-page-padding);
+  overflow-x: auto;
+  min-height: calc(100vh - 200px);
+  align-items: flex-start;
+}
+
+
+/* ============================================================================
+   COLUMN
+   ============================================================================ */
+
+.boards-column {
+  width: var(--boards-column-width);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Column Header */
+.boards-column__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 8px;
+  margin-bottom: 12px;
+}
+
+.boards-column__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.boards-column__dot {
+  width: var(--boards-status-dot-size);
+  height: var(--boards-status-dot-size);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.boards-column__dot--backlog { background-color: var(--boards-status-backlog); }
+.boards-column__dot--planned { background-color: var(--boards-status-planned); }
+.boards-column__dot--in-progress { background-color: var(--boards-status-in-progress); }
+.boards-column__dot--progress { background-color: var(--boards-status-progress); }
+.boards-column__dot--review { background-color: var(--boards-status-review); }
+.boards-column__dot--done { background-color: var(--boards-status-done); }
+
+.boards-column__title {
+  font-size: var(--boards-column-title-size);
+  font-weight: var(--boards-column-title-weight);
+  color: var(--boards-column-title-color);
+  margin: 0;
+}
+
+.boards-column__count {
+  font-size: var(--boards-column-count-size);
+  font-weight: 500;
+  color: var(--boards-column-count-color);
+  background-color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.dark .boards-column__count {
+  background-color: #334155;
+}
+
+.boards-column__add-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all var(--boards-transition-fast);
+}
+
+.boards-column__add-btn:hover {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.dark .boards-column__add-btn:hover {
+  background-color: #334155;
+  color: #94a3b8;
+}
+
+.boards-column__add-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Column Body */
+.boards-column__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--boards-card-gap);
+  min-height: 100px;
+  flex: 1;
+}
+
+/* Empty State */
+.boards-column__empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  background-color: var(--boards-bg-empty);
+  border: 1px dashed var(--boards-border-empty);
+  border-radius: var(--boards-card-radius);
+}
+
+/* Add Task Row (at bottom of column) */
+.boards-add-task {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  background-color: transparent;
+  border: 1px dashed #d1d5db;
+  border-radius: var(--boards-card-radius);
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--boards-transition-normal);
+  margin-top: 4px;
+}
+
+.boards-add-task:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #334155;
+}
+
+.dark .boards-add-task {
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+.dark .boards-add-task:hover {
+  background-color: #1e293b;
+  border-color: #64748b;
+  color: #e2e8f0;
+}
+
+.boards-add-task svg {
+  width: 14px;
+  height: 14px;
+}
+
+
+/* ============================================================================
+   CARD — THE CORE COMPONENT
+   
+   Visual Hierarchy:
+   ┌─────────────────────────────────────────┐
+   │ PLN-51-4                                │  ← ID (monospace, #64748b)
+   │                                         │
+   │ Model reg                               │  ← Title (weight 500, #1e293b)
+   │                                         │
+   │ 📅 Overdue                       [VI]   │  ← Date + Avatar
+   └─────────────────────────────────────────┘
+     │
+     └─ 3px left border = Priority
+   ============================================================================ */
+
+.boards-card {
+  background-color: var(--boards-bg-card);
+  border: 1px solid var(--boards-border-card);
+  border-radius: var(--boards-card-radius);
+  padding: var(--boards-card-padding);
+  cursor: grab;
+  transition: all var(--boards-transition-lift);
+  box-shadow: var(--boards-shadow-card);  /* ✅ Cards have shadow */
+  position: relative;
+}
+
+.boards-card:hover {
+  border-color: var(--boards-border-card-hover);
+  box-shadow: var(--boards-shadow-card-hover);  /* ✅ Lift on hover */
+  transform: translateY(-1px);
+}
+
+.boards-card:active {
+  cursor: grabbing;
+  box-shadow: var(--boards-shadow-card-dragging);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   PRIORITY — Left border (NOT floating icon)
+   ======================================== */
+
+.boards-card--priority-critical {
+  border-left: var(--boards-priority-border-width) solid var(--boards-priority-critical);
+}
+
+.boards-card--priority-high {
+  border-left: var(--boards-priority-border-width) solid var(--boards-priority-high);
+}
+
+.boards-card--priority-medium {
+  border-left: var(--boards-priority-border-width) solid var(--boards-priority-medium);
+}
+
+.boards-card--priority-low {
+  border-left: var(--boards-priority-border-width) solid var(--boards-priority-low);
+}
+
+/* ========================================
+   DONE STATE — Muted appearance
+   ======================================== */
+
+.boards-card--done {
+  opacity: 0.7;
+}
+
+.boards-card--done .boards-card__title {
+  text-decoration: line-through;
+  color: var(--boards-card-title-color-done);
+}
+
+/* ========================================
+   BLOCKED STATE
+   ======================================== */
+
+.boards-card--blocked {
+  border-left: var(--boards-priority-border-width) solid var(--boards-priority-critical);
+}
+
+.boards-card--blocked::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(239, 68, 68, 0.03);
+  border-radius: var(--boards-card-radius);
+  pointer-events: none;
+}
+
+
+/* ============================================================================
+   CARD HEADER
+   ============================================================================ */
+
+.boards-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+/* Task ID — Monospace, NO badge background (Linear style) */
+.boards-card__id {
+  font-family: var(--boards-card-id-font);
+  font-size: var(--boards-card-id-size);
+  font-weight: var(--boards-card-id-weight);
+  color: var(--boards-card-id-color);  /* #64748b — visible, NOT #c4c9d4 */
+  /* NO background, NO padding — Linear doesn't use badges */
+}
+
+
+/* ============================================================================
+   CARD TITLE — THE HERO
+   
+   CRITICAL: Title is weight 500, NOT 400. It's the darkest element.
+   ============================================================================ */
+
+.boards-card__title {
+  font-size: var(--boards-card-title-size);
+  font-weight: var(--boards-card-title-weight);  /* 500 — medium, NOT 400 */
+  color: var(--boards-card-title-color);  /* #1e293b — dark */
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  /* Truncate long titles */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+/* ============================================================================
+   BLOCKED INDICATOR (inline)
+   ============================================================================ */
+
+.boards-card__blocked {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.boards-card__blocked svg {
+  width: 12px;
+  height: 12px;
+}
+
+
+/* ============================================================================
+   CARD FOOTER
+   ============================================================================ */
+
+.boards-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;  /* Maintain consistent height even when empty */
+}
+
+
+/* ============================================================================
+   DATE — Consistent color rules
+   
+   CRITICAL: If no date, show NOTHING. Don't show "No due date".
+   ============================================================================ */
+
+.boards-card__date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--boards-date-size);
+  font-weight: var(--boards-date-weight);
+}
+
+.boards-card__date svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+/* Date States */
+.boards-card__date--overdue {
+  color: var(--boards-date-color-overdue);
+  font-weight: 500;
+}
+
+.boards-card__date--today {
+  color: var(--boards-date-color-today);  /* Indigo #4f46e5 — NOT green */
+  font-weight: 500;
+}
+
+.boards-card__date--upcoming {
+  color: var(--boards-date-color-upcoming);
+}
+
+/* 
+   NO .boards-card__date--none class exists
+   If there's no date, simply don't render the element
+*/
+
+
+/* ============================================================================
+   AVATAR — Replaces text assignee names
+   
+   CRITICAL: Use avatars (24px circles), NOT text names.
+   Faces are scannable. Text requires reading.
+   ============================================================================ */
+
+.boards-card__avatar {
+  width: var(--boards-avatar-size);
+  height: var(--boards-avatar-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+/* Avatar Color Variants */
+.boards-card__avatar--blue { background-color: var(--boards-avatar-blue); }
+.boards-card__avatar--teal { background-color: var(--boards-avatar-teal); }
+.boards-card__avatar--purple { background-color: var(--boards-avatar-purple); }
+.boards-card__avatar--orange { background-color: var(--boards-avatar-orange); }
+.boards-card__avatar--pink { background-color: var(--boards-avatar-pink); }
+.boards-card__avatar--green { background-color: var(--boards-avatar-green); }
+.boards-card__avatar--slate { background-color: var(--boards-avatar-slate); }
+
+/* Empty avatar placeholder (when no assignee) */
+.boards-card__avatar--empty {
+  background-color: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  color: #94a3b8;
+}
+
+.dark .boards-card__avatar--empty {
+  background-color: #334155;
+  border-color: #475569;
+  color: #64748b;
+}
+
+
+/* ============================================================================
+   MULTIPLE AVATARS (Avatar Stack)
+   ============================================================================ */
+
+.boards-card__avatars {
+  display: flex;
+  align-items: center;
+}
+
+.boards-card__avatars .boards-card__avatar {
+  margin-left: -6px;
+  border: 2px solid var(--boards-bg-card);
+}
+
+.boards-card__avatars .boards-card__avatar:first-child {
+  margin-left: 0;
+}
+
+.boards-card__avatar-overflow {
+  width: var(--boards-avatar-size);
+  height: var(--boards-avatar-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: #64748b;
+  background-color: #f1f5f9;
+  margin-left: -6px;
+  border: 2px solid var(--boards-bg-card);
+}
+
+.dark .boards-card__avatar-overflow {
+  background-color: #334155;
+  color: #94a3b8;
+}
+
+
+/* ============================================================================
+   CARD LABELS/TAGS (Optional)
+   ============================================================================ */
+
+.boards-card__labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.boards-card__label {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.boards-card__label--blue {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.boards-card__label--green {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.boards-card__label--yellow {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.boards-card__label--red {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.boards-card__label--purple {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+
+/* ============================================================================
+   DRAGGING STATE (when using dnd-kit or react-beautiful-dnd)
+   ============================================================================ */
+
+.boards-card--dragging {
+  box-shadow: var(--boards-shadow-card-dragging);
+  transform: rotate(2deg);
+  opacity: 0.9;
+}
+
+/* Drop placeholder */
+.boards-card--placeholder {
+  background-color: #f1f5f9;
+  border: 2px dashed #cbd5e1;
+  box-shadow: none;
+}
+
+.dark .boards-card--placeholder {
+  background-color: #1e293b;
+  border-color: #475569;
+}
+
+
+/* ============================================================================
+   LOADING STATE
+   ============================================================================ */
+
+.boards-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.boards-loading__spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: boards-spin 0.8s linear infinite;
+  margin-right: 12px;
+}
+
+@keyframes boards-spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .boards-container {
+    padding: 12px;
+  }
+  
+  .boards-column {
+    width: 260px;
+  }
+}

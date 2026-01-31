@@ -1,6 +1,6 @@
 // ============================================================
-// BOARD COLUMN - V9
-// Droppable column with task count and add button
+// BOARD COLUMN — LINEAR-INSPIRED DESIGN
+// Droppable column with status dot, count badge, and add button
 // ============================================================
 
 import { useDroppable } from '@dnd-kit/core';
@@ -9,7 +9,9 @@ import { Plus } from 'lucide-react';
 import { BoardTaskCard } from './BoardTaskCard';
 import type { BoardColumn as BoardColumnType, BoardTask } from '../../types/planner-boards';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+
+// Import ring-fenced CSS
+import '@/styles/boards.css';
 
 interface BoardColumnProps {
   column: BoardColumnType;
@@ -23,43 +25,46 @@ export function BoardColumn({ column, tasks, onTaskClick, onAddTask }: BoardColu
     id: column.id,
   });
 
+  // Map status slug to CSS class
+  const getStatusClass = (slug: string): string => {
+    const statusMap: Record<string, string> = {
+      'backlog': 'backlog',
+      'planned': 'planned',
+      'progress': 'progress',
+      'in-progress': 'in-progress',
+      'review': 'review',
+      'done': 'done',
+    };
+    return statusMap[slug] || 'backlog';
+  };
+
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col w-72 min-w-72 h-full rounded-xl',
-        'bg-slate-100 dark:bg-slate-800/50',
-        'border border-slate-200 dark:border-slate-700',
-        isOver && 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900'
+        'boards-column',
+        isOver && 'ring-2 ring-blue-500 ring-offset-2 rounded-lg'
       )}
     >
       {/* Column Header */}
-      <div className="flex items-center justify-between px-3 py-2.5 border-b border-slate-200 dark:border-slate-700">
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-2.5 h-2.5 rounded-full"
-            style={{ backgroundColor: column.color }}
-          />
-          <span className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-            {column.name}
-          </span>
-          <span className="px-1.5 py-0.5 text-xs font-mono font-medium rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-            {column.task_count}
-          </span>
+      <div className="boards-column__header">
+        <div className="boards-column__header-left">
+          <span className={cn('boards-column__dot', `boards-column__dot--${getStatusClass(column.slug)}`)} />
+          <h3 className="boards-column__title">{column.name}</h3>
+          <span className="boards-column__count">{column.task_count}</span>
         </div>
         
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-6 h-6"
+        <button 
+          className="boards-column__add-btn"
           onClick={() => onAddTask?.(column.id)}
+          aria-label={`Add task to ${column.name}`}
         >
-          <Plus className="w-4 h-4" />
-        </Button>
+          <Plus />
+        </button>
       </div>
 
-      {/* Tasks Container */}
-      <div className="flex-1 overflow-auto p-2 space-y-2">
+      {/* Column Body */}
+      <div className="boards-column__body">
         <SortableContext
           items={tasks.map((t) => t.id)}
           strategy={verticalListSortingStrategy}
@@ -74,26 +79,17 @@ export function BoardColumn({ column, tasks, onTaskClick, onAddTask }: BoardColu
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="flex items-center justify-center py-8 text-sm text-slate-400">
+          <div className="boards-column__empty">
             No tasks
           </div>
         )}
-      </div>
 
-      {/* Add Task Footer */}
-      <button
-        onClick={() => onAddTask?.(column.id)}
-        className={cn(
-          'flex items-center gap-2 px-3 py-2 text-sm',
-          'text-slate-500 dark:text-slate-400',
-          'hover:text-slate-700 dark:hover:text-slate-200',
-          'hover:bg-slate-200/50 dark:hover:bg-slate-700/50',
-          'transition-colors rounded-b-xl'
-        )}
-      >
-        <Plus className="w-4 h-4" />
-        Add Task
-      </button>
+        {/* Add Task Button at bottom */}
+        <button className="boards-add-task" onClick={() => onAddTask?.(column.id)}>
+          <Plus />
+          Add Task
+        </button>
+      </div>
     </div>
   );
 }

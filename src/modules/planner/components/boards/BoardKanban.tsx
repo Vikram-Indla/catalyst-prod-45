@@ -23,8 +23,8 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Loader2 } from 'lucide-react';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 
-// Import V10 Enterprise Clean styles
-import '@/styles/planner-enterprise-clean.css';
+// Import Linear-inspired ring-fenced design system
+import '@/styles/boards.css';
 
 interface BoardKanbanProps {
   filters?: BoardFilters;
@@ -119,14 +119,14 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
   }
 
   return (
-    <ScrollArea className="h-full planner-enterprise-clean">
+    <ScrollArea className="h-full">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 p-4 min-h-full">
+        <div className="boards-container">
           {columns.map((column) => (
             <BoardColumn
               key={column.id}
