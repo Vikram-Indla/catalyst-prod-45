@@ -835,3 +835,64 @@ button.caty-department-pill,
   align-items: center !important;
   justify-content: center !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   FAB BUTTON — PROTECT HUB ICON (NUCLEAR)
+   ═══════════════════════════════════════════════════════════════ */
+.caty-fab,
+button.caty-fab {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  width: 60px !important;
+  height: 60px !important;
+  min-width: 60px !important;
+  min-height: 60px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* FAB icon container */
+.caty-fab > div,
+.caty-fab > .w-10 {
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* FAB SVG (Hub Icon) — preserve all strokes and fills */
+.caty-fab svg,
+.caty-fab > div svg {
+  width: 40px !important;
+  height: 40px !important;
+  display: block !important;
+}
+
+/* Preserve the connecting lines (white semi-transparent) */
+.caty-fab svg line {
+  stroke: rgba(255, 255, 255, 0.4) !important;
+  stroke-width: 4 !important;
+  stroke-linecap: round !important;
+  fill: none !important;
+}
+
+/* Preserve the outer circles (white) */
+.caty-fab svg circle {
+  fill: white !important;
+  stroke: none !important;
+}
+
+/* Preserve the center blue dot */
+.caty-fab svg circle:last-child {
+  fill: #2563eb !important;
+}
