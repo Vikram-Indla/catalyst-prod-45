@@ -109,35 +109,68 @@
 
 /* ─────────────────────────────────────────────────────────────
    HORIZONTAL BAR — FILL (Project Color)
+   NOTE: Using span selector as component uses <span> elements
    ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-bar > span,
 .ra-enterprise-clean .allocation-bar > div {
   height: 100% !important;
   border-radius: var(--ra-bar-radius) !important;
   transition: width 0.3s ease !important;
 }
 
-/* Project-specific bar colors via data attribute */
-.ra-enterprise-clean .allocation-bar > div[data-project="sectorial"] {
+/* Project-specific bar colors via class on fill element */
+.ra-enterprise-clean .alloc-bar-fill.sectorial {
+  background: linear-gradient(90deg, var(--ra-project-sectorial) 0%, var(--ra-project-sectorial) 100%) !important;
+}
+
+.ra-enterprise-clean .alloc-bar-fill.dataplatform {
+  background: linear-gradient(90deg, var(--ra-project-dataplatform) 0%, var(--ra-project-dataplatform) 100%) !important;
+}
+
+.ra-enterprise-clean .alloc-bar-fill.senaei {
+  background: linear-gradient(90deg, var(--ra-project-senaei) 0%, var(--ra-project-senaei) 100%) !important;
+}
+
+.ra-enterprise-clean .alloc-bar-fill.tahommena {
+  background: linear-gradient(90deg, var(--ra-project-tahommena) 0%, var(--ra-project-tahommena) 100%) !important;
+}
+
+.ra-enterprise-clean .alloc-bar-fill.inspection {
+  background: linear-gradient(90deg, var(--ra-project-inspection) 0%, var(--ra-project-inspection) 100%) !important;
+}
+
+.ra-enterprise-clean .alloc-bar-fill.irplatform {
+  background: linear-gradient(90deg, var(--ra-project-irplatform) 0%, var(--ra-project-irplatform) 100%) !important;
+}
+
+/* Fallback: data-attribute selectors for div elements (legacy support) */
+.ra-enterprise-clean .allocation-bar > div[data-project="sectorial"],
+.ra-enterprise-clean .allocation-bar > span[data-project="sectorial"] {
   background: var(--ra-project-sectorial) !important;
 }
 
-.ra-enterprise-clean .allocation-bar > div[data-project="dataplatform"] {
+.ra-enterprise-clean .allocation-bar > div[data-project="dataplatform"],
+.ra-enterprise-clean .allocation-bar > span[data-project="dataplatform"] {
   background: var(--ra-project-dataplatform) !important;
 }
 
-.ra-enterprise-clean .allocation-bar > div[data-project="senaei"] {
+.ra-enterprise-clean .allocation-bar > div[data-project="senaei"],
+.ra-enterprise-clean .allocation-bar > span[data-project="senaei"] {
   background: var(--ra-project-senaei) !important;
 }
 
-.ra-enterprise-clean .allocation-bar > div[data-project="tahommena"] {
+.ra-enterprise-clean .allocation-bar > div[data-project="tahommena"],
+.ra-enterprise-clean .allocation-bar > span[data-project="tahommena"] {
   background: var(--ra-project-tahommena) !important;
 }
 
-.ra-enterprise-clean .allocation-bar > div[data-project="inspection"] {
+.ra-enterprise-clean .allocation-bar > div[data-project="inspection"],
+.ra-enterprise-clean .allocation-bar > span[data-project="inspection"] {
   background: var(--ra-project-inspection) !important;
 }
 
-.ra-enterprise-clean .allocation-bar > div[data-project="irplatform"] {
+.ra-enterprise-clean .allocation-bar > div[data-project="irplatform"],
+.ra-enterprise-clean .allocation-bar > span[data-project="irplatform"] {
   background: var(--ra-project-irplatform) !important;
 }
 
