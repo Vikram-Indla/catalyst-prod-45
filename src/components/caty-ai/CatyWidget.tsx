@@ -18,6 +18,7 @@ import { CatyHistoryPanel } from './CatyHistoryPanel';
 import { RESPONSES } from './responses';
 import './caty-ai-v7.css';
 import './caty-ai-v7-overrides.css';
+import './CatyOverrides.css';
 
 interface CatyWidgetProps {
   initialContext?: CatyContext;
