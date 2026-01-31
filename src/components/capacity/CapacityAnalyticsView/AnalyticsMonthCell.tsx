@@ -15,17 +15,19 @@ interface AnalyticsMonthCellProps {
   contractEndDate?: string | null;
 }
 
-// Project color mapping for horizontal bars
-const PROJECT_BAR_COLORS: Record<string, string> = {
-  sectorial: '#3b82f6',      // BLUE
-  dataplatform: '#10b981',   // GREEN  
-  senaei: '#f59e0b',         // AMBER
-  tahommena: '#ec4899',      // PINK
-  inspection: '#8b5cf6',     // PURPLE
-  irplatform: '#06b6d4',     // CYAN
+type ProjectSlug = 'sectorial' | 'dataplatform' | 'senaei' | 'tahommena' | 'inspection' | 'irplatform';
+
+// Ring-fenced project color variables (actual colors live in ra-enterprise-clean.css)
+const PROJECT_BAR_VAR: Record<ProjectSlug, string> = {
+  sectorial: 'var(--ra-project-sectorial)',
+  dataplatform: 'var(--ra-project-dataplatform)',
+  senaei: 'var(--ra-project-senaei)',
+  tahommena: 'var(--ra-project-tahommena)',
+  inspection: 'var(--ra-project-inspection)',
+  irplatform: 'var(--ra-project-irplatform)',
 };
 
-function getProjectSlug(name: string): keyof typeof PROJECT_BAR_COLORS {
+function getProjectSlug(name: string): ProjectSlug {
   const lowerName = name.toLowerCase().trim();
   if (lowerName.includes('sectorial')) return 'sectorial';
   if (lowerName.includes('data platform') || lowerName.includes('dataplatform')) return 'dataplatform';
@@ -116,7 +118,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
   // Get primary segment (first one) for color and project name
   const primarySegment = segments[0];
   const projectSlug = getProjectSlug(primarySegment.assignment.name);
-  const barColor = PROJECT_BAR_COLORS[projectSlug] || '#3b82f6';
+  const barColor = PROJECT_BAR_VAR[projectSlug] || 'var(--ra-project-default)';
   const isOverAllocated = totalPercent > 100;
 
   // Calculate bar width as percentage (capped at 100% for display)
@@ -198,9 +200,11 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
                 right: '6px',
                 height: '5px',
                 borderRadius: '2.5px',
-                background: '#e2e8f0',
+                // Track color is ring-fenced by CSS; keep a safe fallback.
+                background: 'var(--ra-bar-track, #e2e8f0)',
                 display: 'block',
                 overflow: 'hidden',
+                zIndex: 2,
               }}
             >
               {/* Fill bar - POLISH: Gradient colors */}
@@ -211,8 +215,10 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
                   height: '100%',
                   width: `${barWidth}%`,
                   borderRadius: '2.5px',
-                  background: `linear-gradient(90deg, ${barColor} 0%, ${barColor}dd 100%)`,
+                  // Use ring-fenced CSS variables. ra-enterprise-polish.css upgrades this to gradients.
+                  background: barColor,
                   transition: 'width 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  zIndex: 3,
                 }}
               />
             </span>
