@@ -80,10 +80,10 @@
   border: 0;
 }
 
-/* PANEL - 2x width (1000px) */
+/* PANEL - 4x width (2000px) */
 .caty-panel {
   width: 100%;
-  max-width: 1000px;
+  max-width: 2000px;
   height: 860px;
   max-height: 94vh;
   background: var(--caty-bg-panel);
@@ -257,7 +257,8 @@
 .caty-message {
   display: flex;
   gap: 16px;
-  max-width: 95%;
+  max-width: 100%;
+  width: 100%;
   animation: caty-msg-in 0.25s ease-out;
 }
 
