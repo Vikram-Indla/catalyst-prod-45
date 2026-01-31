@@ -1,6 +1,6 @@
 // ============================================================
-// BOARD KANBAN - V10 Enterprise Clean
-// DnD-enabled Kanban board with V10 enterprise design
+// BOARD KANBAN - V11 with Column Drag-Drop Reordering
+// DnD-enabled Kanban board with column reordering and custom columns
 // ============================================================
 
 import { useState, useCallback, useMemo } from 'react';
@@ -15,13 +15,20 @@ import {
   DragStartEvent,
   DragEndEvent,
 } from '@dnd-kit/core';
-import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
 import { useBoardData, useMoveBoardTask } from '../../hooks/usePlannerBoards';
-import { BoardColumn } from './BoardColumn';
+import { useReorderColumns } from '../../hooks/useColumnManagement';
+import { SortableColumn } from './SortableColumn';
 import { BoardTaskCard } from './BoardTaskCard';
+import { AddColumnModal } from './AddColumnModal';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Loader2 } from 'lucide-react';
-import type { BoardFilters, BoardTask } from '../../types/planner-boards';
+import { Loader2, Plus } from 'lucide-react';
+import type { BoardFilters, BoardTask, BoardColumn } from '../../types/planner-boards';
 
 // Import Linear-inspired ring-fenced design system
 import '@/styles/boards.css';
@@ -33,12 +40,19 @@ interface BoardKanbanProps {
 }
 
 export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProps) {
-  const { columns, tasks, tasksByStatus, isLoading, isError } = useBoardData(filters);
+  const { columns, tasks, tasksByStatus, isLoading, isError, refetch } = useBoardData(filters);
   const moveTask = useMoveBoardTask();
+  const reorderColumns = useReorderColumns();
   
   const [activeTask, setActiveTask] = useState<BoardTask | null>(null);
+  const [activeColumn, setActiveColumn] = useState<BoardColumn | null>(null);
+  const [localColumns, setLocalColumns] = useState<BoardColumn[] | null>(null);
+  const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
 
-  // DnD sensors
+  // Use local columns during drag, otherwise use fetched columns
+  const displayColumns = localColumns ?? columns;
+
+  // DnD sensors with slight delay to differentiate click from drag
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
@@ -55,21 +69,79 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
 
   // Drag handlers
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    const task = tasks.find((t) => t.id === event.active.id);
-    if (task) setActiveTask(task);
-  }, [tasks]);
+    const { active } = event;
+    const activeId = String(active.id);
+
+    // Check if dragging a column
+    if (activeId.startsWith('column-')) {
+      const columnId = activeId.replace('column-', '');
+      const column = columns.find((c) => c.id === columnId);
+      if (column) {
+        setActiveColumn(column);
+        setLocalColumns(columns);
+      }
+    } else {
+      // Dragging a task
+      const task = tasks.find((t) => t.id === activeId);
+      if (task) setActiveTask(task);
+    }
+  }, [columns, tasks]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
+    
     setActiveTask(null);
+    setActiveColumn(null);
 
-    if (!over) return;
+    if (!over) {
+      setLocalColumns(null);
+      return;
+    }
 
-    const taskId = active.id as string;
-    const overId = over.id as string;
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    // Handle column reordering
+    if (activeId.startsWith('column-') && overId.startsWith('column-')) {
+      const activeColumnId = activeId.replace('column-', '');
+      const overColumnId = overId.replace('column-', '');
+
+      if (activeColumnId !== overColumnId && localColumns) {
+        const oldIndex = localColumns.findIndex((c) => c.id === activeColumnId);
+        const newIndex = localColumns.findIndex((c) => c.id === overColumnId);
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          const newColumns = arrayMove(localColumns, oldIndex, newIndex);
+          setLocalColumns(newColumns);
+
+          // Persist new order
+          const updates = newColumns.map((col, idx) => ({
+            id: col.id,
+            position: idx,
+          }));
+
+          reorderColumns.mutate({ columns: updates }, {
+            onSuccess: () => {
+              setLocalColumns(null);
+              refetch();
+            },
+            onError: () => {
+              setLocalColumns(null);
+            }
+          });
+        }
+      }
+      return;
+    }
+
+    // Handle task movement
+    const taskId = activeId;
     const draggedTask = tasks.find((t) => t.id === taskId);
     
-    if (!draggedTask) return;
+    if (!draggedTask) {
+      setLocalColumns(null);
+      return;
+    }
 
     // Determine target
     let targetStatusId: string;
@@ -84,7 +156,10 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
     } else {
       // Dropping on another task
       const overTask = tasks.find((t) => t.id === overId);
-      if (!overTask) return;
+      if (!overTask) {
+        setLocalColumns(null);
+        return;
+      }
       
       targetStatusId = overTask.status_id;
       targetPosition = overTask.position;
@@ -92,6 +167,7 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
 
     // Only move if something changed
     if (draggedTask.status_id === targetStatusId && draggedTask.position === targetPosition) {
+      setLocalColumns(null);
       return;
     }
 
@@ -100,7 +176,21 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
       target_status_id: targetStatusId,
       target_position: targetPosition,
     });
-  }, [tasks, columns, moveTask]);
+
+    setLocalColumns(null);
+  }, [tasks, columns, localColumns, moveTask, reorderColumns, refetch]);
+
+  const handleDragCancel = useCallback(() => {
+    setActiveTask(null);
+    setActiveColumn(null);
+    setLocalColumns(null);
+  }, []);
+
+  // Column IDs for sortable context
+  const columnIds = useMemo(() => 
+    displayColumns.map((c) => `column-${c.id}`), 
+    [displayColumns]
+  );
 
   if (isLoading) {
     return (
@@ -119,32 +209,67 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
   }
 
   return (
-    <ScrollArea className="h-full">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="boards-container">
-          {columns.map((column) => (
-            <BoardColumn
-              key={column.id}
-              column={column}
-              tasks={getColumnTasks(column.slug)}
-              onTaskClick={onTaskClick}
-              onAddTask={onAddTask}
-            />
-          ))}
-        </div>
+    <>
+      <ScrollArea className="h-full">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
+          <SortableContext items={columnIds} strategy={horizontalListSortingStrategy}>
+            <div className="boards-container">
+              {displayColumns.map((column) => (
+                <SortableColumn
+                  key={column.id}
+                  column={column}
+                  tasks={getColumnTasks(column.slug)}
+                  onTaskClick={onTaskClick}
+                  onAddTask={onAddTask}
+                  isDraggingColumn={!!activeColumn}
+                />
+              ))}
 
-        <DragOverlay>
-          {activeTask && (
-            <BoardTaskCard task={activeTask} isDragging />
-          )}
-        </DragOverlay>
-      </DndContext>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+              {/* Add Column Button */}
+              <button
+                className="boards-add-column"
+                onClick={() => setIsAddColumnOpen(true)}
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add Column</span>
+              </button>
+            </div>
+          </SortableContext>
+
+          <DragOverlay>
+            {activeTask && (
+              <BoardTaskCard task={activeTask} isDragging />
+            )}
+            {activeColumn && (
+              <div className="boards-column boards-column--overlay">
+                <div className="boards-column__header">
+                  <div className="boards-column__header-left">
+                    <span 
+                      className="boards-column__dot"
+                      style={{ backgroundColor: activeColumn.color }}
+                    />
+                    <h3 className="boards-column__title">{activeColumn.name}</h3>
+                    <span className="boards-column__count">{activeColumn.task_count}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DragOverlay>
+        </DndContext>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+
+      {/* Add Column Modal */}
+      <AddColumnModal 
+        open={isAddColumnOpen} 
+        onOpenChange={setIsAddColumnOpen} 
+      />
+    </>
   );
 }

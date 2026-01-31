@@ -5,10 +5,12 @@
 export interface BoardColumn {
   id: string;
   name: string;
-  slug: 'backlog' | 'planned' | 'progress' | 'review' | 'done';
+  slug: string; // Now supports custom slugs
   color: string;
   position: number;
   is_completed_status: boolean;
+  is_system?: boolean;
+  is_done?: boolean;
   task_count: number;
 }
 
