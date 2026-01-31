@@ -52,6 +52,17 @@ function detectQueryType(message: string): QueryType {
     }
   }
   
+  // FALLBACK: Short single/double word input (3+ chars) without aggregate keywords = individual lookup
+  const trimmed = message.trim();
+  const words = trimmed.split(/\s+/);
+  if (words.length <= 2 && trimmed.length >= 3) {
+    const aggregateWords = ['summary', 'total', 'count', 'average', 'avg', 'show all', 'list all', 'all resources', 'how many', 'department', 'vendor', 'offshore', 'onsite', 'expiring', 'utilization'];
+    const isAggregate = aggregateWords.some(kw => lower.includes(kw));
+    if (!isAggregate) {
+      return 'individual_resource';
+    }
+  }
+  
   // Check for aggregate keywords (only if no individual name was detected)
   if (AGGREGATE_KEYWORDS.some(kw => lower.includes(kw))) {
     return 'aggregate';
@@ -93,6 +104,19 @@ function extractResourceIdentifier(message: string): string | null {
       if (!excludeWords.includes(potentialName)) {
         return match[1]; // Return with original casing
       }
+    }
+  }
+  
+  // FALLBACK: If user types just a short word (3+ chars) with no aggregate keywords, treat as name lookup
+  const trimmed = message.trim();
+  const words = trimmed.split(/\s+/);
+  if (words.length <= 2 && trimmed.length >= 3) {
+    const lower = trimmed.toLowerCase();
+    const aggregateWords = ['summary', 'total', 'count', 'average', 'avg', 'show all', 'list all', 'all resources', 'how many', 'department', 'vendor', 'offshore', 'onsite', 'expiring', 'utilization'];
+    const isAggregate = aggregateWords.some(kw => lower.includes(kw));
+    if (!isAggregate) {
+      // Return the trimmed input as-is (could be first name like "nada" or "vikram")
+      return trimmed;
     }
   }
   
