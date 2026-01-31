@@ -603,13 +603,15 @@ async function buildAggregateContext(
   }
 
   // Step 3: Fetch allocations for all resources (include all valid statuses)
+  // CRITICAL FIX: For utilization metrics, ALWAYS use TODAY's date to avoid summing multiple monthly fragments
+  // The quarter range is ONLY for expiring contracts analysis
   const resourceIds = resources.map((r: any) => r.id);
   const { data: allocations } = await supabase
     .from('resource_allocations')
     .select('resource_id, allocation_percent, assignment_id')
     .in('resource_id', resourceIds)
-    .lte('start_date', dateEnd)
-    .gte('end_date', dateStart)
+    .lte('start_date', today)
+    .gte('end_date', today)
     .in('status', ['active', 'committed', 'forecast']);
   
   // Step 3b: Fetch assignment names for allocations
