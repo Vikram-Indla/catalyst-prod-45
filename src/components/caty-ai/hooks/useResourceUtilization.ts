@@ -64,11 +64,14 @@ export function useResourceUtilization(departmentId?: string | null) {
         const country = countryMap.get(resource.country_id || '');
         const countryCode = country?.code || '';
         
-        // FIXED: Use location_id to determine On-Site vs Off-Shore
+        // Determine On-Site vs Off-Shore from location name
         const locationName = locationMap.get(resource.location_id || '') || '';
-        const isOnSite = locationName.toLowerCase().includes('onsite') || 
-                         locationName.toLowerCase().includes('on-site') ||
-                         locationName.toLowerCase() === 'on site';
+        const locationLower = locationName.toLowerCase().trim();
+        // Check if location contains "onsite" or similar patterns (NOT "off")
+        const isOnSite = (locationLower.includes('onsite') || 
+                         locationLower.includes('on-site') ||
+                         locationLower.includes('on site')) &&
+                         !locationLower.includes('off');
         
         let status: 'critical' | 'warning' | 'normal' | 'available';
         if (utilization > 100) status = 'critical';
