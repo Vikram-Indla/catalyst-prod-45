@@ -331,7 +331,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
 
   if (!isPanelOpen) return null;
 
-  // Minimized state - show only a small button to restore
+  // Minimized state - show Catalyst Hub convergence icon
   if (isMinimized) {
     return (
       <button 
@@ -340,9 +340,20 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
         title="Open CATY AI"
       >
         <div className="caty-minimized-icon">
-          <svg viewBox="0 0 100 100" fill="none" width="24" height="24">
-            <circle cx="50" cy="50" r="16" fill="white"/>
-            <circle cx="50" cy="50" r="8" fill="#2563eb"/>
+          {/* Catalyst Hub Convergence Icon - 4 white circles with blue center */}
+          <svg viewBox="0 0 100 100" fill="none" width="32" height="32">
+            {/* Connecting lines */}
+            <line x1="50" y1="50" x2="20" y2="25" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="80" y2="25" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="20" y2="75" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="80" y2="75" stroke="rgba(255,255,255,0.5)" strokeWidth="3" strokeLinecap="round"/>
+            {/* Outer circles */}
+            <circle cx="20" cy="25" r="10" fill="white"/>
+            <circle cx="80" cy="25" r="10" fill="white"/>
+            <circle cx="20" cy="75" r="10" fill="white"/>
+            <circle cx="80" cy="75" r="10" fill="white"/>
+            {/* Center blue dot */}
+            <circle cx="50" cy="50" r="10" fill="#2563eb"/>
           </svg>
         </div>
         <span>CATY AI</span>
