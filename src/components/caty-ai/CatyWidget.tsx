@@ -177,4 +177,87 @@ const CatyHistory = ({ isOpen, sessions, onClose, onLoad, onClear }: { isOpen: b
   );
 };
 
-// Part 3: Main CatyWidget component will be added below
+interface CatyWidgetProps {
+  initialContext?: CatyContext;
+  onAction?: (action: string) => void;
+}
+
+export function CatyWidget({ initialContext, onAction }: CatyWidgetProps) {
+  const defaultCtx: CatyContext = { department: 'Delivery Department', period: 'Q1 2026', view: 'Utilization View' };
+  const { messages, context, addMessage, saveSession, loadSession, getSessions, clearHistory } = useCatySession(initialContext || defaultCtx);
+  const { showToast } = useCatyToast();
+  
+  const [isTyping, setIsTyping] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [failedQueries, setFailedQueries] = useState(0);
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const on = () => { setIsOnline(true); showToast('Connection restored'); };
+    const off = () => setIsOnline(false);
+    window.addEventListener('online', on);
+    window.addEventListener('offline', off);
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
+  }, [showToast]);
+
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+
+  useEffect(() => { if (messages.length > 0) saveSession(); }, [messages, saveSession]);
+
+  useEffect(() => {
+    (window as any).catyAction = (action: string) => { onAction?.(action); showToast('Action initiated'); };
+    return () => { delete (window as any).catyAction; };
+  }, [onAction, showToast]);
+
+  const handleSend = (text: string) => {
+    addMessage('user', text);
+    setIsTyping(true);
+    setTimeout(() => { setIsTyping(false); processQuery(text); }, 1200);
+  };
+
+  const processQuery = (text: string) => {
+    const l = text.toLowerCase();
+    let ok = false;
+    if (l.includes('forecast') || l.includes('q2')) { addMessage('assistant', CATY_RESPONSES.forecast(context.department, 'Q2 2026'), true); ok = true; }
+    else if (l.includes('expiring') || l.includes('contract')) { addMessage('assistant', CATY_RESPONSES.contracts(), true); ok = true; }
+    else if (l.includes('.net') || l.includes('available') || l.includes('replacement')) { addMessage('assistant', CATY_RESPONSES.resources(), true); ok = true; }
+    
+    if (!ok) {
+      addMessage('assistant', CATY_RESPONSES.fallback(text));
+      setFailedQueries(p => p + 1);
+      if (failedQueries >= 2) { setTimeout(() => addMessage('assistant', CATY_RESPONSES.escalation(), true), 800); setFailedQueries(0); }
+    } else { setFailedQueries(0); }
+  };
+
+  const handleEscalate = () => addMessage('assistant', CATY_RESPONSES.escalation(), true);
+
+  return (
+    <div className="caty-widget">
+      <div className="caty-panel">
+        {!isOnline && (
+          <div className="caty-offline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/></svg>
+            <span>Connection lost. Attempting to reconnect...</span>
+          </div>
+        )}
+        <CatyHeader onHistory={() => setHistoryOpen(true)} onEscalate={handleEscalate} isOnline={isOnline} />
+        <CatyContextBar context={context} />
+        <div className="caty-messages">
+          {messages.length === 0 ? <CatyEmpty onSend={handleSend} /> : (
+            <>
+              {messages.map(m => <CatyMessageItem key={m.id} msg={m} />)}
+              {isTyping && <CatyTyping />}
+              <div ref={endRef} />
+            </>
+          )}
+        </div>
+        <CatySuggestions onSend={handleSend} onEscalate={handleEscalate} />
+        <CatyInput onSend={handleSend} disabled={!isOnline} />
+        <CatyHistory isOpen={historyOpen} sessions={getSessions()} onClose={() => setHistoryOpen(false)} onLoad={id => { loadSession(id); setHistoryOpen(false); showToast('Conversation loaded'); }} onClear={() => { clearHistory(); showToast('History cleared'); }} />
+      </div>
+    </div>
+  );
+}
+
+export default CatyWidget;
