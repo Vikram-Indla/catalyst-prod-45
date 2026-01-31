@@ -25,10 +25,10 @@
   box-shadow: 0 16px 48px rgba(0,0,0,0.12) !important;
 }
 
-/* HEADER - FORCE WHITE */
+/* HEADER - FORCE WHITE with proper layout */
 .caty-header-fixed,
 .caty-header,
-[class*="caty-header"],
+[class*="caty-header"]:not(.caty-header-actions):not(.caty-header-btn):not(.caty-header-left):not(.caty-header-text):not(.caty-header-icon):not(.caty-header-title):not(.caty-header-subtitle),
 .caty-widget header,
 header[class*="caty"] {
   background: #ffffff !important;
@@ -40,12 +40,14 @@ header[class*="caty"] {
   align-items: center !important;
   justify-content: space-between !important;
   gap: 16px !important;
+  flex-shrink: 0 !important;
 }
 
 .caty-header-left {
   display: flex !important;
   align-items: center !important;
   gap: 16px !important;
+  flex: 1 !important;
 }
 
 .caty-header-text {
@@ -54,26 +56,40 @@ header[class*="caty"] {
   gap: 2px !important;
 }
 
-/* HEADER ACTIONS - Show the action buttons */
+/* HEADER ACTIONS - MUST be visible */
 .caty-header-actions {
   display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
   gap: 8px !important;
   align-items: center !important;
-  margin-left: auto !important;
+  flex-shrink: 0 !important;
 }
 
+/* Header buttons - Minimize and Clear Chat */
 .caty-header-btn {
   width: 36px !important;
   height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
   border-radius: 8px !important;
   border: 1px solid #e2e8f0 !important;
   background: #f8fafc !important;
   color: #64748b !important;
   cursor: pointer !important;
   display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
   align-items: center !important;
   justify-content: center !important;
   transition: all 0.2s !important;
+  flex-shrink: 0 !important;
+}
+
+.caty-header-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke-width: 2 !important;
 }
 
 .caty-header-btn:hover {
