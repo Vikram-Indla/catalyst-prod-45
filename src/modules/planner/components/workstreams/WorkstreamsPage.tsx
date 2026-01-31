@@ -364,26 +364,27 @@ export function WorkstreamsPage() {
   return (
     <div
       style={{
-        padding: '32px 40px',
         backgroundColor: COLORS.surfacePage,
         minHeight: '100vh',
       }}
     >
-      {/* PAGE HEADER */}
+      {/* PAGE HEADER - Dashboard Style */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: '24px',
+          padding: '16px 24px',
+          backgroundColor: COLORS.surfaceWhite,
+          borderBottom: `1px solid ${COLORS.borderLight}`,
         }}
       >
         <div>
           <h1
             style={{
-              fontSize: '24px',
+              fontSize: '20px',
               fontWeight: 700,
-              color: COLORS.textPrimary,
+              color: '#0f172a',
               margin: 0,
             }}
           >
@@ -392,8 +393,8 @@ export function WorkstreamsPage() {
           <p
             style={{
               fontSize: '14px',
-              color: COLORS.textMuted,
-              marginTop: '4px',
+              color: '#64748b',
+              marginTop: '2px',
               margin: 0,
             }}
           >
@@ -401,17 +402,17 @@ export function WorkstreamsPage() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <button
             onClick={toggleArchiveView}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              padding: '10px 16px',
+              padding: '8px 14px',
               backgroundColor: COLORS.surfaceWhite,
               border: `1px solid ${COLORS.borderLight}`,
-              borderRadius: '10px',
+              borderRadius: '8px',
               fontSize: '14px',
               fontWeight: 500,
               color: COLORS.textSecondary,
@@ -421,6 +422,25 @@ export function WorkstreamsPage() {
           >
             <Archive size={16} />
             Archived
+            {archivedCount > 0 && (
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: '20px',
+                  height: '20px',
+                  padding: '0 6px',
+                  backgroundColor: '#f1f5f9',
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#64748b',
+                }}
+              >
+                {archivedCount}
+              </span>
+            )}
           </button>
 
           <button
@@ -429,15 +449,16 @@ export function WorkstreamsPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              padding: '10px 16px',
+              padding: '8px 14px',
               backgroundColor: COLORS.accent,
               border: 'none',
-              borderRadius: '10px',
+              borderRadius: '8px',
               fontSize: '14px',
               fontWeight: 500,
               color: '#ffffff',
               cursor: 'pointer',
               fontFamily: 'inherit',
+              boxShadow: '0 1px 3px rgba(37, 99, 235, 0.2)',
             }}
           >
             <Plus size={16} />
@@ -445,6 +466,9 @@ export function WorkstreamsPage() {
           </button>
         </div>
       </div>
+      
+      {/* Content Container */}
+      <div style={{ padding: '24px' }}>
 
       {/* SUMMARY CARDS */}
       <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
@@ -888,6 +912,7 @@ export function WorkstreamsPage() {
 
       {/* Create Modal */}
       <CreateWorkstreamModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+      </div>
     </div>
   );
 }

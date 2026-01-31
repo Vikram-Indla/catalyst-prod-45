@@ -203,6 +203,29 @@ export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
             Overdue
           </div>
         </div>
+
+        {/* MEMBERS */}
+        <div>
+          <div
+            style={{
+              fontSize: '20px',
+              fontWeight: 600,
+              color: COLORS.textPrimary,
+              lineHeight: 1
+            }}
+          >
+            {workstream.members?.length || 0}
+          </div>
+          <div
+            style={{
+              fontSize: '12px',
+              color: COLORS.textMuted,
+              marginTop: '4px'
+            }}
+          >
+            Members
+          </div>
+        </div>
       </div>
 
       {/* HOVER ACTIONS */}
