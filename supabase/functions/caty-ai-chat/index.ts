@@ -903,19 +903,22 @@ DATA CARD (for lists/aggregate views):
   </div>
 </div>
 
-RESOURCE ROW (ONLY for resources in DATABASE CONTEXT):
+RESOURCE ROW (MANDATORY for multi-resource lists - 2+ people):
 <div class="caty-data-row">
-  <div class="caty-data-avatar">[INITIALS FROM DATABASE NAME]</div>
+  <div class="caty-data-avatar-box">[INITIALS FROM DATABASE NAME - 2 letters uppercase]</div>
   <div class="caty-data-info">
     <div class="caty-data-name">[NAME FROM DATABASE]</div>
     <div class="caty-data-meta">[role_name FROM DATABASE e.g. "Technical PO"] • [DEPARTMENT] • [VENDOR]</div>
-    <div class="caty-data-assignments">[contract_end_date FROM DATABASE e.g. "2025-06-30"]</div>
+    <div class="caty-data-assignments">[contract_end_date FROM DATABASE] ([assignment names])</div>
   </div>
   <div class="caty-data-tags">
     <span class="caty-tag location [onsite|offshore]">[LOCATION FROM DATABASE]</span>
     <span class="caty-tag util [danger|warning|success]">[UTIL% FROM DATABASE]</span>
   </div>
 </div>
+
+CRITICAL: When showing 2+ resources, use RESOURCE ROW format above with caty-data-avatar-box class.
+When showing 1 resource (individual lookup), use PROFILE CARD format with caty-profile-avatar class.
 
 COUNTRY ROW (for off-shore breakdown):
 <div class="caty-team-row">
