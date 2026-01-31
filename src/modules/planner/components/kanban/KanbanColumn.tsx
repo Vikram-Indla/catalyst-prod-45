@@ -1,11 +1,14 @@
 // ============================================================
 // KANBAN COLUMN COMPONENT
-// Droppable column containing task cards - Catalyst V5 styling
+// Droppable + Sortable column containing task cards - Catalyst V5 styling
+// Supports column drag-and-drop reordering
 // ============================================================
 
 import { useDroppable } from '@dnd-kit/core';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Plus, Inbox } from 'lucide-react';
+import { Plus, Inbox, GripVertical } from 'lucide-react';
 import type { PlannerStatus, KanbanTask } from '../../types/kanban';
 import { KanbanCard } from './KanbanCard';
 import { cn } from '@/lib/utils';
@@ -28,6 +31,7 @@ interface KanbanColumnProps {
   onTaskEdit?: (task: any) => void;
   onTaskDelete?: (taskId: string) => void;
   onAddTask?: (statusId?: string) => void;
+  isDraggingColumn?: boolean;
 }
 
 export function KanbanColumn({
@@ -37,10 +41,29 @@ export function KanbanColumn({
   onTaskEdit,
   onTaskDelete,
   onAddTask,
+  isDraggingColumn = false,
 }: KanbanColumnProps) {
-  const { setNodeRef, isOver } = useDroppable({
+  // Droppable for task drops
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
     id: status.id,
   });
+
+  // Sortable for column reordering - use prefixed ID to distinguish from tasks
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setSortableRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: `column-${status.id}`,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const taskIds = tasks.map((t) => t.id);
   
@@ -49,14 +72,26 @@ export function KanbanColumn({
 
   return (
     <div
+      ref={setSortableRef}
+      style={style}
       className={cn(
         'flex flex-col w-[300px] min-w-[300px] rounded-xl overflow-hidden',
-        isOver && 'ring-2 ring-primary/50'
+        isOver && 'ring-2 ring-primary/50',
+        isDragging && 'opacity-50 scale-[1.02]',
+        isDraggingColumn && 'ring-2 ring-primary'
       )}
+      {...attributes}
     >
-      {/* Column Header - White background */}
-      <div className="flex items-center justify-between px-4 py-3 bg-card border border-border rounded-t-xl">
+      {/* Column Header - White background with drag handle */}
+      <div className="flex items-center justify-between px-4 py-3 bg-card border border-border rounded-t-xl group">
         <div className="flex items-center gap-2.5">
+          {/* Drag Handle */}
+          <button
+            className="opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing transition-opacity p-0.5 -ml-1 text-muted-foreground hover:text-foreground"
+            {...listeners}
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
           <span
             className="w-3 h-3 rounded-full shrink-0"
             style={{ backgroundColor: statusColor }}
@@ -86,7 +121,7 @@ export function KanbanColumn({
       >
         <ScrollArea className="h-[calc(100vh-280px)]">
           <div
-            ref={setNodeRef}
+            ref={setDroppableRef}
             className="flex flex-col gap-2 min-h-[120px]"
           >
             <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
