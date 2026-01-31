@@ -1241,6 +1241,95 @@
   .caty-thinking-spinner { animation: none; }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   DATA PROVENANCE (V10 - Required for every response)
+   ═══════════════════════════════════════════════════════════════ */
+
+.caty-provenance {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.6875rem;
+  color: #64748b;
+}
+
+.caty-prov-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.caty-prov-row:last-child {
+  margin-bottom: 0;
+}
+
+.caty-prov-row span:first-child {
+  font-weight: 600;
+  color: #475569;
+  min-width: 70px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIMILAR NAMES / FALLBACK SUGGESTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.caty-similar-header {
+  padding: 12px 16px;
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+.caty-similar-header strong {
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIAGNOSTICS DISPLAY
+   ═══════════════════════════════════════════════════════════════ */
+
+.caty-diagnostics {
+  padding: 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #dc2626;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.caty-diagnostics-title {
+  font-weight: 600;
+  color: #991b1b;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+
+.caty-diagnostics ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.caty-diagnostics li {
+  font-size: 0.8125rem;
+  color: #7f1d1d;
+  margin-bottom: 4px;
+  padding-left: 12px;
+  position: relative;
+}
+
+.caty-diagnostics li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #dc2626;
+}
+
 .caty-widget :focus-visible { outline: 2px solid var(--caty-primary); outline-offset: 2px; }
 
 /* RESPONSIVE */
