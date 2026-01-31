@@ -392,10 +392,12 @@ async function buildResourceContext(
 
 async function buildAggregateContext(
   supabase: any,
-  context: { department?: string; period?: string; location?: string }
+  context: { department?: string; period?: string; location?: string },
+  userQuery: string = ''
 ): Promise<any> {
   const timeRange = parseTimeRange(context.period || '');
   const today = new Date().toISOString().split('T')[0];
+  const queryLower = userQuery.toLowerCase();
   
   // Build date range for allocations
   let dateStart = today;
@@ -404,6 +406,16 @@ async function buildAggregateContext(
     dateStart = timeRange.start;
     dateEnd = timeRange.end;
   }
+  
+  // Detect if asking about "no vendor" - note: all resources have vendor_id in this system
+  const askingNoVendor = queryLower.includes('no vendor') || queryLower.includes('without vendor');
+  
+  // Detect if asking about expiring contracts
+  const askingExpiring = queryLower.includes('expir') || queryLower.includes('contract') || queryLower.includes('ending');
+  
+  // Extract numeric limit from query (e.g., "show 5", "top 10")
+  const limitMatch = queryLower.match(/(?:show|top|first|list)\s*(\d+)/);
+  const queryLimit = limitMatch ? parseInt(limitMatch[1]) : 10;
   
   // Step 1: Fetch all active resources
   let resourceQuery = supabase
@@ -414,7 +426,6 @@ async function buildAggregateContext(
   // Filter by department if specified and not "All"
   const deptName = context.department || 'All Departments';
   if (deptName && !deptName.toLowerCase().includes('all')) {
-    // Try to find department by name
     const { data: depts } = await supabase
       .from('departments')
       .select('id, name')
@@ -438,6 +449,26 @@ async function buildAggregateContext(
       time_range: timeRange
     };
   }
+  
+  // Step 1b: Fetch vendor names from resource_vendors table
+  const vendorIds = [...new Set(resources.map((r: any) => r.vendor_id).filter(Boolean))];
+  let vendorMap = new Map<string, string>();
+  
+  if (vendorIds.length > 0) {
+    const { data: vendors } = await supabase
+      .from('resource_vendors')
+      .select('id, name')
+      .in('id', vendorIds);
+    
+    vendorMap = new Map((vendors || []).map((v: any) => [v.id, v.name]));
+  }
+  
+  // Enrich resources with vendor names
+  resources.forEach((r: any) => {
+    if (r.vendor_id && !r.vendor_name) {
+      r.vendor_name = vendorMap.get(r.vendor_id) || null;
+    }
+  });
   
   // Step 2: Fetch countries for site status
   const countryIds = [...new Set(resources.map((r: any) => r.country_id).filter(Boolean))];
@@ -479,10 +510,20 @@ async function buildAggregateContext(
   // Track by department
   const deptStats = new Map<string, { count: number; totalUtil: number; over: number }>();
   
-  // Track expiring contracts (within 30 days)
+  // Track expiring contracts - use QUARTER range if specified, otherwise 90 days forward
   const expiringResources: any[] = [];
-  const thirtyDaysFromNow = new Date();
-  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+  
+  // For expiring, use the quarter range OR 90 days from today
+  let expiryStart = today;
+  let expiryEnd: string;
+  if (timeRange.start && timeRange.end) {
+    expiryStart = timeRange.start;
+    expiryEnd = timeRange.end;
+  } else {
+    const ninetyDaysFromNow = new Date();
+    ninetyDaysFromNow.setDate(ninetyDaysFromNow.getDate() + 90);
+    expiryEnd = ninetyDaysFromNow.toISOString().split('T')[0];
+  }
   
   resources.forEach((r: any) => {
     const util = utilMap.get(r.id) || 0;
@@ -508,14 +549,18 @@ async function buildAggregateContext(
     deptStat.totalUtil += util;
     if (util > 100) deptStat.over++;
     
-    // Expiring contracts
+    // Expiring contracts - use quarter/period range
     if (r.contract_end_date) {
       const endDate = new Date(r.contract_end_date);
-      if (endDate >= new Date() && endDate <= thirtyDaysFromNow) {
+      const endDateStr = r.contract_end_date.split('T')[0];
+      
+      // Check if contract end date falls within the range
+      if (endDateStr >= expiryStart && endDateStr <= expiryEnd) {
         const daysUntil = Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
         expiringResources.push({
           name: r.name,
           department: r.department_name,
+          vendor_name: r.vendor_name || 'No Vendor Assigned',
           contract_end_date: r.contract_end_date,
           days_until_expiry: daysUntil,
           utilization: util,
@@ -559,8 +604,14 @@ async function buildAggregateContext(
     }))
     .sort((a, b) => b.resource_count - a.resource_count);
   
-  // Sort expiring by days_until_expiry
+  // Sort expiring by days_until_expiry (soonest first)
   expiringResources.sort((a, b) => a.days_until_expiry - b.days_until_expiry);
+  
+  // Filter for "no vendor" if requested - but note in this system all have vendors
+  let filteredExpiring = expiringResources;
+  if (askingNoVendor) {
+    filteredExpiring = expiringResources.filter(r => !r.vendor_name || r.vendor_name === 'No Vendor Assigned');
+  }
   
   return {
     summary: {
@@ -571,15 +622,19 @@ async function buildAggregateContext(
       on_target_count: onTarget,
       on_site_count: onSiteCount,
       off_shore_count: offShoreCount,
-      expiring_contracts_count: expiringResources.length
+      expiring_contracts_count: expiringResources.length,
+      no_vendor_note: askingNoVendor ? 'All resources in this system have vendors assigned.' : undefined
     },
     department_breakdown: departmentBreakdown.slice(0, 10),
     offshore_breakdown: offshoreBreakdown.slice(0, 8),
-    expiring_contracts: expiringResources.slice(0, 10),
+    expiring_contracts: filteredExpiring.slice(0, queryLimit),
+    all_expiring_contracts: askingExpiring ? expiringResources.slice(0, queryLimit) : undefined,
     time_range: timeRange,
+    expiry_date_range: { start: expiryStart, end: expiryEnd },
     filter_applied: {
       department: deptName,
-      location: context.location || 'All Locations'
+      location: context.location || 'All Locations',
+      no_vendor_filter: askingNoVendor
     }
   };
 }
@@ -761,12 +816,13 @@ serve(async (req) => {
       }
     } else if (queryType === 'aggregate') {
       // Aggregate data (department-level, team-level, etc.)
-      const aggregateData = await buildAggregateContext(supabase, context || {});
+      const aggregateData = await buildAggregateContext(supabase, context || {}, userQuery);
       resourceContext = JSON.stringify(aggregateData, null, 2);
       console.log('[CATY] Aggregate context built:', {
         total_resources: aggregateData.summary?.total_resources,
         departments: aggregateData.department_breakdown?.length,
-        expiring: aggregateData.expiring_contracts?.length
+        expiring: aggregateData.expiring_contracts?.length,
+        expiry_range: aggregateData.expiry_date_range
       });
     }
 
