@@ -86,10 +86,30 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
     return parsed;
   }, [message.content, message.type, message.isHtml, streamingState.isStreaming]);
 
+  // INVASIVE FIX: Detect if content contains caty HTML classes
+  const containsCatyHtml = useMemo(() => {
+    if (message.type !== 'assistant') return false;
+    const content = message.content;
+    // Check for any caty- class patterns or HTML tags with caty classes
+    return content.includes('class="caty-') || 
+           content.includes("class='caty-") ||
+           content.includes('caty-bubble') ||
+           content.includes('caty-metrics-row') ||
+           content.includes('caty-data-card') ||
+           content.includes('caty-data-row') ||
+           content.includes('caty-metric-card');
+  }, [message.content, message.type]);
+
   const renderContent = () => {
-    // HTML content (legacy fallback responses)
-    if (message.isHtml) {
-      return <div dangerouslySetInnerHTML={{ __html: message.content }} />;
+    // INVASIVE FIX: Force HTML rendering if content contains caty classes
+    // This catches cases where isHtml flag wasn't properly set
+    if (message.isHtml || containsCatyHtml) {
+      return (
+        <div 
+          className="caty-response-html"
+          dangerouslySetInnerHTML={{ __html: message.content }} 
+        />
+      );
     }
 
     // Show processing state while JSON is streaming (incomplete)
@@ -111,10 +131,10 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
           }} />
           <div>
             <div style={{ fontWeight: 500, color: 'var(--caty-text-primary)', marginBottom: '4px' }}>
-              Processing response...
+              Querying capacity data...
             </div>
             <div style={{ fontSize: '12px', color: 'var(--caty-text-secondary)' }}>
-              Analyzing capacity data
+              Analyzing resources across departments
             </div>
           </div>
         </div>
@@ -130,6 +150,7 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
         />
       );
     }
+    
     // Check if content looks like JSON but failed to parse - try one more time
     const msgContent = message.content.trim();
     if (message.type === 'assistant' && msgContent.startsWith('{') && msgContent.endsWith('}')) {
@@ -146,7 +167,8 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
           );
         }
       } catch (e) {
-        console.log('[CatyMessage] Direct JSON parse also failed:', e);
+        // Don't show raw JSON - wrap in error card
+        console.log('[CatyMessage] Direct JSON parse failed, showing fallback');
       }
     }
 
