@@ -14,8 +14,8 @@ export const CatyEmpty: React.FC<CatyEmptyProps> = ({ onSuggestionClick }) => (
     <div className="caty-empty-icon">
       <HubIcon />
     </div>
-    <h3>Caty</h3>
-    <p>Capacity Assistant</p>
+    <h3>CATY AI<sup className="caty-trademark">™</sup></h3>
+    <p>Capacity Intelligence Assistant</p>
     
     {/* Data Summary */}
     <div className="caty-data-summary">

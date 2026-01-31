@@ -80,10 +80,10 @@
   border: 0;
 }
 
-/* PANEL */
+/* PANEL - 2x width (1000px) */
 .caty-panel {
   width: 100%;
-  max-width: 500px;
+  max-width: 1000px;
   height: 860px;
   max-height: 94vh;
   background: var(--caty-bg-panel);
@@ -94,6 +94,15 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
+}
+
+/* TRADEMARK SYMBOL */
+.caty-trademark {
+  font-size: 0.5em;
+  vertical-align: super;
+  margin-left: 2px;
+  font-weight: 500;
+  color: var(--caty-text-muted);
 }
 
 /* HEADER - WHITE BACKGROUND */

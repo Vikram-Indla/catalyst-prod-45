@@ -16,7 +16,7 @@ export const CatyHeader: React.FC<CatyHeaderProps> = ({ isOnline }) => (
         <HubIcon />
       </div>
       <div>
-        <div className="caty-header-title">Caty</div>
+        <div className="caty-header-title">CATY AI<sup className="caty-trademark">™</sup></div>
         <div className="caty-header-subtitle">
           <span className={`caty-status-dot ${!isOnline ? 'offline' : ''}`} />
           Capacity Assistant
