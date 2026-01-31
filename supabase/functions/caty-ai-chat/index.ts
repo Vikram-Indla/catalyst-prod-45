@@ -261,9 +261,22 @@ async function buildResourceContext(
       .eq('id', resourceData.location_id)
       .single();
 
-    if (loc?.name) {
+   if (loc?.name) {
       // determineSiteStatus reads `resource.location`/`location_type`
       resourceData.location = loc.name;
+    }
+  }
+
+  // Step 1c: Resolve vendor name from vendor_id (vendor_name in resource_inventory is often null)
+  if (resourceData.vendor_id && !resourceData.vendor_name) {
+    const { data: vendor } = await supabase
+      .from('resource_vendors')
+      .select('id, name')
+      .eq('id', resourceData.vendor_id)
+      .single();
+
+    if (vendor?.name) {
+      resourceData.vendor_name = vendor.name;
     }
   }
   
@@ -304,6 +317,7 @@ async function buildResourceContext(
   }
   
   // Step 4: Get allocations
+  // FIXED: Include all valid statuses (active, committed, forecast) - not just 'active'
   let allocQuery = supabase
     .from('resource_allocations')
     .select(`
@@ -315,7 +329,7 @@ async function buildResourceContext(
       assignment_id
     `)
     .eq('resource_id', resourceData.id)
-    .eq('status', 'active');
+    .in('status', ['active', 'committed', 'forecast']);
   
   if (timeRange.start && timeRange.end) {
     allocQuery = allocQuery
