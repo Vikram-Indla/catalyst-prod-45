@@ -13,7 +13,7 @@ import { CatyMessageComponent } from './CatyMessage';
 import { CatyThinking } from './CatyThinking';
 import { CatyInputArea } from './CatyInputArea';
 import { CatySuggestionsBar } from './CatySuggestionsBar';
-import { CatyEmpty } from './CatyEmpty';
+import { CatyViewport } from './CatyViewport';
 import { CatyHistoryPanel } from './CatyHistoryPanel';
 import { CatyBackdrop } from './CatyBackdrop';
 import { RESPONSES } from './responses';
@@ -106,6 +106,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
   } = useCatySession(initialContext || defaultContext);
 
   const [isMinimized, setIsMinimized] = useState(false);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
 
   const { showToast } = useCatyToast();
   const [isTyping, setIsTyping] = useState(false);
@@ -396,12 +397,22 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
 
             <CatyContextBar 
               context={context} 
-              onDepartmentChange={(dept) => setContext(prev => ({ ...prev, department: dept }))}
+              onDepartmentChange={(dept, deptId) => {
+                setContext(prev => ({ ...prev, department: dept }));
+                setSelectedDepartmentId(deptId);
+              }}
             />
 
             <div className="caty-messages">
               {messages.length === 0 ? (
-                <CatyEmpty onSuggestionClick={handleSend} />
+                <CatyViewport 
+                  selectedDepartmentId={selectedDepartmentId}
+                  onQuestionClick={(question) => {
+                    // Convert probing question to chat message (strip HTML tags)
+                    const message = question.text.replace(/<\/?strong>/g, '');
+                    handleSend(message);
+                  }}
+                />
               ) : (
                 <>
                   {messages.map(msg => (
