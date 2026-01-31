@@ -148,6 +148,8 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           const jsonStr = line.slice(6).trim();
           if (jsonStr === '[DONE]') {
             streamDone = true;
+            // Final update - mark as HTML since edge function returns HTML
+            updateLastAssistantMessage(assistantContent, true);
             break;
           }
 
@@ -173,16 +175,25 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           if (raw.startsWith(':') || raw.trim() === '') continue;
           if (!raw.startsWith('data: ')) continue;
           const jsonStr = raw.slice(6).trim();
-          if (jsonStr === '[DONE]') continue;
+          if (jsonStr === '[DONE]') {
+            // Final update - mark as HTML
+            updateLastAssistantMessage(assistantContent, true);
+            continue;
+          }
           try {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               assistantContent += content;
-              updateLastAssistantMessage(assistantContent);
+              updateLastAssistantMessage(assistantContent, true);
             }
           } catch { /* ignore */ }
         }
+      }
+
+      // Ensure final message is marked as HTML
+      if (assistantContent) {
+        updateLastAssistantMessage(assistantContent, true);
       }
 
       return true;
