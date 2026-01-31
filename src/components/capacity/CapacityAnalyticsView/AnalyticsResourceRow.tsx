@@ -55,26 +55,35 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => onResourceClick?.(resource.id)}
         >
-          {/* Avatar with flag overlay */}
+          {/* Avatar with flag overlay - V10 Style: Rounded square with blue border */}
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="relative flex-shrink-0">
+                {/* Rounded square avatar with blue border */}
                 <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ring-2 ring-white/30 shadow-md transition-transform duration-150 hover:scale-105"
-                  style={{ backgroundColor: '#64748b' }}
+                  className="w-11 h-11 rounded-xl flex items-center justify-center text-[15px] font-bold transition-transform duration-150 hover:scale-105"
+                  style={{ 
+                    backgroundColor: '#eff6ff',
+                    color: '#3b82f6',
+                    border: '2px solid #93c5fd',
+                    boxShadow: '0 1px 3px rgba(59, 130, 246, 0.1)'
+                  }}
                 >
                   {initials}
                 </div>
-                {/* Flag overlay */}
+                {/* Flag overlay - positioned at bottom-right */}
                 {flagUrl && (
                   <span 
-                    className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
-                    style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
+                    className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center overflow-hidden"
+                    style={{ 
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                      border: '1.5px solid white'
+                    }}
                   >
                     <img 
                       src={flagUrl} 
                       alt={countryName || ''} 
-                      className="w-3.5 h-3.5 object-cover rounded-sm"
+                      className="w-full h-full object-cover"
                     />
                   </span>
                 )}
