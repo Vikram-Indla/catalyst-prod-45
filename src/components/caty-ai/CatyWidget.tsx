@@ -3,7 +3,7 @@
  * Powered by Lovable AI Gateway (Gemini 3 Flash)
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CatyContext } from './types';
 import { useCatySession } from './useCatySession';
 import { useCatyToast } from './useCatyToast';
@@ -16,9 +16,11 @@ import { CatySuggestionsBar } from './CatySuggestionsBar';
 import { CatyEmpty } from './CatyEmpty';
 import { CatyHistoryPanel } from './CatyHistoryPanel';
 import { RESPONSES } from './responses';
+import { NextAction } from './schema';
 import './caty-ai-v7.css';
 import './caty-ai-v7-overrides.css';
 import './CatyOverrides.css';
+import './CatyAnswerCard.css';
 
 interface CatyWidgetProps {
   initialContext?: CatyContext;
@@ -206,6 +208,24 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
     setIsTyping(false);
   };
 
+  // Handle action button clicks from structured responses
+  const handleActionClick = useCallback((action: NextAction) => {
+    const actionPrompts: Record<string, string> = {
+      'utilization_breakdown': 'Show me the detailed utilization breakdown',
+      'show_allocations': 'Show all current allocations',
+      'show_assignments': 'Show all assignments for this resource',
+      'show_expiring_contracts': 'Show contracts expiring soon',
+      'show_similar_resources': 'Find similar available resources',
+      'generate_report': 'Generate a capacity report',
+      'extend_contract': 'Help me extend this contract',
+      'assign_resource': 'Help me assign this resource',
+    };
+    
+    const prompt = actionPrompts[action.action_key] || action.label;
+    handleSend(prompt);
+    showToast(`Action: ${action.label}`);
+  }, [showToast]);
+
   const processQueryFallback = (text: string) => {
     const l = text.toLowerCase();
     let responded = false;
@@ -252,7 +272,11 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           ) : (
             <>
               {messages.map(msg => (
-                <CatyMessageComponent key={msg.id} message={msg} />
+                <CatyMessageComponent 
+                  key={msg.id} 
+                  message={msg} 
+                  onAction={handleActionClick}
+                />
               ))}
               {isTyping && <CatyThinking />}
               <div ref={messagesEndRef} />
