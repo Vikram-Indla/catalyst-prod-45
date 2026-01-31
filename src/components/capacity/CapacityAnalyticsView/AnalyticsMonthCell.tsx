@@ -164,7 +164,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             
             {/* Horizontal progress bar at bottom (Strategy D) */}
             <div 
-              className="absolute bottom-1 left-1.5 right-1.5 h-1 rounded-full"
+              className="allocation-bar absolute bottom-1 left-1.5 right-1.5 h-1.5 rounded-full"
               style={{ backgroundColor: '#e2e8f0' }}
             >
               <div 
@@ -174,6 +174,7 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
                   backgroundColor: barColor,
                   transition: 'width 0.3s ease'
                 }}
+                data-project={projectSlug}
               />
             </div>
           </div>
