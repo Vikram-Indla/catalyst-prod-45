@@ -114,15 +114,6 @@ export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
           />
         </div>
 
-        {/* Due Date */}
-        <div className="task-modal__inline-field">
-          <span className="task-modal__inline-label">Due Date</span>
-          <DueDatePicker
-            value={task.due_date}
-            onChange={(date) => onFieldChange('due_date', date)}
-          />
-        </div>
-
         {/* Start Date */}
         <div className="task-modal__inline-field">
           <span className="task-modal__inline-label">Start Date</span>
@@ -130,6 +121,15 @@ export function TaskFieldsGrid({ task, onFieldChange }: TaskFieldsGridProps) {
             value={task.start_date}
             onChange={(date) => onFieldChange('start_date', date)}
             placeholder="Set start date..."
+          />
+        </div>
+
+        {/* Due Date */}
+        <div className="task-modal__inline-field">
+          <span className="task-modal__inline-label">Due Date</span>
+          <DueDatePicker
+            value={task.due_date}
+            onChange={(date) => onFieldChange('due_date', date)}
           />
         </div>
       </div>
