@@ -709,12 +709,14 @@ async function buildAggregateContext(
         const daysUntil = Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
         expiringResources.push({
           name: r.name,
+          role_name: r.role_name || 'Unspecified Role',
           department: r.department_name,
-          vendor_name: r.vendor_name || 'No Vendor Assigned',
-          contract_end_date: r.contract_end_date,
+          vendor_name: r.vendor_name || 'No Vendor',
+          contract_end_date: endDateStr,
           days_until_expiry: daysUntil,
           utilization: util,
-          site_status: isOnSite ? 'on_site' : 'off_shore'
+          site_status: r.location_type || (r.location_id && onSiteLocationIds.has(r.location_id) ? 'Onsite' : 'Offshore'),
+          assignments: r.assignments || []
         });
       }
     }
@@ -904,8 +906,8 @@ RESOURCE ROW (ONLY for resources in DATABASE CONTEXT):
   <div class="caty-data-avatar">[INITIALS FROM DATABASE NAME]</div>
   <div class="caty-data-info">
     <div class="caty-data-name">[NAME FROM DATABASE]</div>
-    <div class="caty-data-meta">[ROLE] • [DEPARTMENT] • [VENDOR]</div>
-    <div class="caty-data-assignments">[ASSIGNMENT NAME(S) FROM DATABASE - e.g., "Senaei 3.0"]</div>
+    <div class="caty-data-meta">[role_name FROM DATABASE e.g. "Technical PO"] • [DEPARTMENT] • [VENDOR]</div>
+    <div class="caty-data-assignments">[contract_end_date FROM DATABASE e.g. "2025-06-30"]</div>
   </div>
   <div class="caty-data-tags">
     <span class="caty-tag location [onsite|offshore]">[LOCATION FROM DATABASE]</span>
