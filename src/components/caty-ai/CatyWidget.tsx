@@ -10,7 +10,7 @@ import { useCatyToast } from './useCatyToast';
 import { CatyHeader } from './CatyHeader';
 import { CatyContextBar } from './CatyContextBar';
 import { CatyMessageComponent } from './CatyMessage';
-import { CatyTypingIndicator } from './CatyTypingIndicator';
+import { CatyThinking } from './CatyThinking';
 import { CatyInputArea } from './CatyInputArea';
 import { CatySuggestionsBar } from './CatySuggestionsBar';
 import { CatyEmpty } from './CatyEmpty';
@@ -269,7 +269,7 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
               {messages.map(msg => (
                 <CatyMessageComponent key={msg.id} message={msg} />
               ))}
-              {isTyping && <CatyTypingIndicator />}
+              {isTyping && <CatyThinking />}
               <div ref={messagesEndRef} />
             </>
           )}
