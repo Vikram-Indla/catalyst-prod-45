@@ -732,7 +732,7 @@ button.caty-department-pill,
   color: #dc2626 !important;
 }
 
-/* INPUT */
+/* INPUT — SINGLE CLEAN BOX (no inner border) */
 .caty-input-area {
   padding: 18px 24px 22px !important;
   background: #ffffff !important;
@@ -742,16 +742,41 @@ button.caty-department-pill,
 .caty-input-wrapper {
   display: flex !important;
   align-items: center !important;
-  gap: 12px !important;
-  background: #f1f5f9 !important;
-  border: 1px solid #e2e8f0 !important;
+  gap: 8px !important;
+  background: #f8fafc !important;
+  border: 1.5px solid #cbd5e1 !important;
   border-radius: 14px !important;
-  padding: 10px 14px !important;
+  padding: 8px 12px !important;
 }
 
 .caty-input-wrapper:focus-within {
   border-color: #2563eb !important;
   box-shadow: 0 0 0 3px #dbeafe !important;
+}
+
+/* TEXTAREA — Remove inner border, make transparent */
+.caty-widget .caty-input-field,
+.caty-widget .caty-input-field textarea,
+.caty-input-field,
+.caty-input-field textarea {
+  flex: 1 !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  max-height: 140px !important;
+  resize: none !important;
+  border: none !important;
+  background: transparent !important;
+  font-size: 0.9375rem !important;
+  color: #0f172a !important;
+  outline: none !important;
+  padding: 8px 4px !important;
+  line-height: 1.5 !important;
+  box-shadow: none !important;
+}
+
+.caty-widget .caty-input-field textarea::placeholder,
+.caty-input-field textarea::placeholder {
+  color: #94a3b8 !important;
 }
 
 .caty-send-btn {
