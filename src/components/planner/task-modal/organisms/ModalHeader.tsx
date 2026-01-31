@@ -56,7 +56,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
   }, [isEditingTitle]);
 
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/planner/task/${task.id}`;
+    const url = `${window.location.origin}/taskhub/task/${task.id}`;
     navigator.clipboard.writeText(url);
     toast({ title: 'Link copied', description: 'Task link copied to clipboard' });
     if (onCopyLink) onCopyLink();

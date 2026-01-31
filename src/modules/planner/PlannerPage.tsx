@@ -200,7 +200,7 @@ export function PlannerPage() {
   // Handlers
   const handleViewChange = useCallback((view: PlannerView) => {
     setActiveView(view);
-    navigate(`/planner/${view}`);
+    navigate(`/taskhub/${view}`);
   }, [navigate]);
 
   // Convert PlannerTask to KanbanTask for unified drawer

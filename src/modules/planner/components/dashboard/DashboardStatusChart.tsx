@@ -85,7 +85,7 @@ export function DashboardStatusChart({ data }: DashboardStatusChartProps) {
                     key={`cell-${index}`} 
                     fill={entry.color}
                     className="cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => navigate(`/planner/boards?status=${entry.slug}`)}
+                    onClick={() => navigate(`/taskhub/boards?status=${entry.slug}`)}
                   />
                 ))}
               </Pie>
@@ -124,7 +124,7 @@ export function DashboardStatusChart({ data }: DashboardStatusChartProps) {
           {chartData.map((status) => (
             <button
               key={status.slug}
-              onClick={() => navigate(`/planner/boards?status=${status.slug}`)}
+              onClick={() => navigate(`/taskhub/boards?status=${status.slug}`)}
               className={cn(
                 'flex items-center justify-between w-full px-3 py-2 rounded-lg',
                 'hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors',

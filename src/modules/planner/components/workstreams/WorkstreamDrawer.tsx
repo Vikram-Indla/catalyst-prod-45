@@ -458,17 +458,17 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
 
   // Navigation handlers
   const navigateToTasks = () => {
-    navigate(`/planner/task-list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
+    navigate(`/taskhub/task-list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
     onClose();
   };
 
   const navigateToBoard = () => {
-    navigate(`/planner/boards?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
+    navigate(`/taskhub/boards?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
     onClose();
   };
 
   const navigateToCalendar = () => {
-    navigate(`/planner/calendar?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
+    navigate(`/taskhub/calendar?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
     onClose();
   };
 

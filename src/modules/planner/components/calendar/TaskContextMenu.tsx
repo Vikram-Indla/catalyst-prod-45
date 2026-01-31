@@ -89,7 +89,7 @@ export function TaskContextMenu({
   }, [onClose]);
 
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/planner/task/${task.id}`;
+    const url = `${window.location.origin}/taskhub/task/${task.id}`;
     navigator.clipboard.writeText(url);
     onAction('copy-link');
     onClose();

@@ -103,7 +103,7 @@ export function DashboardUpcomingDeadlines({ data }: DashboardUpcomingDeadlinesP
           return (
             <button
               key={task.id}
-              onClick={() => navigate(`/planner/boards?task=${task.id}`)}
+              onClick={() => navigate(`/taskhub/boards?task=${task.id}`)}
               className={cn(
                 'w-full p-3 rounded-lg border text-left',
                 'border-slate-200 dark:border-slate-700',

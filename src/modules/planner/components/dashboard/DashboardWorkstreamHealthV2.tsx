@@ -85,7 +85,7 @@ export function DashboardWorkstreamHealthV2({ data }: DashboardWorkstreamHealthV
           return (
             <button
               key={ws.workstream_id}
-              onClick={() => navigate(`/planner/task-list?workstream=${ws.workstream_id}`)}
+              onClick={() => navigate(`/taskhub/task-list?workstream=${ws.workstream_id}`)}
               className={cn(
                 'w-full text-left p-4 rounded-lg border border-slate-100 dark:border-slate-700',
                 'hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-sm',

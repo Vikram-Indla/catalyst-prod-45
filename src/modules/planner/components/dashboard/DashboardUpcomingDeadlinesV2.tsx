@@ -103,7 +103,7 @@ export function DashboardUpcomingDeadlinesV2({ data, className, onTaskClick }: D
           return (
             <button
               key={task.id}
-              onClick={() => onTaskClick ? onTaskClick(task.id) : navigate(`/planner/task-list?taskId=${task.id}`)}
+              onClick={() => onTaskClick ? onTaskClick(task.id) : navigate(`/taskhub/task-list?taskId=${task.id}`)}
               className={cn(
                 'w-full flex items-center gap-4 py-4 px-2 text-left',
                 'hover:bg-slate-50 dark:hover:bg-slate-700/50',

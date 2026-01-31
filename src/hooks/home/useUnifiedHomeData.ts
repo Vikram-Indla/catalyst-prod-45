@@ -121,11 +121,11 @@ function generateNavigation(
     };
   }
 
-  // Planner (Tasks)
+  // Taskhub (Tasks) - domain is 'planner' for internal filtering
   if (domain === 'planner' || type === 'task') {
     return {
-      path: `/planner/tasks?taskId=${id}`,
-      fallbackPath: '/planner/tasks',
+      path: `/taskhub/tasks?taskId=${id}`,
+      fallbackPath: '/taskhub/tasks',
       openBehavior: 'push',
     };
   }

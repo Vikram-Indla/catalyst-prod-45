@@ -72,13 +72,13 @@ export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdo
   );
 
   const handleSelectTeam = useCallback((teamId: string) => {
-    // Navigate to planner with team pre-selected
-    navigate(`/planner/boards?team=${teamId}`);
+    // Navigate to taskhub with team pre-selected
+    navigate(`/taskhub/boards?team=${teamId}`);
     onClose();
   }, [navigate, onClose]);
 
   const handleSelectAllTeams = useCallback(() => {
-    navigate('/planner/boards');
+    navigate('/taskhub/boards');
     onClose();
   }, [navigate, onClose]);
 

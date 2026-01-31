@@ -66,7 +66,7 @@ export function DashboardWorkstreamHealth({ data }: DashboardWorkstreamHealthPro
           return (
             <button
               key={ws.workstream_id}
-              onClick={() => navigate(`/planner/boards?workstream=${ws.workstream_slug}`)}
+              onClick={() => navigate(`/taskhub/boards?workstream=${ws.workstream_slug}`)}
               className={cn(
                 'w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700',
                 'hover:border-slate-300 dark:hover:border-slate-600',

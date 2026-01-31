@@ -58,7 +58,7 @@ export function DashboardTeamWorkloadV2({ data, unassignedCount }: DashboardTeam
         {/* Unassigned Tasks Row - special styling with dashed border */}
         {unassignedCount > 0 && (
           <button
-            onClick={() => navigate('/planner/task-list?assignee=unassigned')}
+            onClick={() => navigate('/taskhub/task-list?assignee=unassigned')}
             className={cn(
               'w-full flex items-center gap-3 p-3 rounded-lg',
               'border-2 border-dashed border-amber-300 dark:border-amber-700',
@@ -99,7 +99,7 @@ export function DashboardTeamWorkloadV2({ data, unassignedCount }: DashboardTeam
           membersWithTasks.map((member) => (
             <button
               key={member.profile_id}
-              onClick={() => navigate(`/planner/task-list?assignee=${member.profile_id}`)}
+              onClick={() => navigate(`/taskhub/task-list?assignee=${member.profile_id}`)}
               className={cn(
                 'w-full flex items-center gap-3 p-3 rounded-lg',
                 'bg-slate-50/50 dark:bg-slate-800/50',
