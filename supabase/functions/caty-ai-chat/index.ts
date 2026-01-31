@@ -27,8 +27,29 @@ function detectQueryType(message: string): QueryType {
   
   // IMPORTANT: Check for specific resource identifier (name pattern) FIRST
   // This takes priority so queries like "Show contract for John Smith" find the individual
+  
+  // Check for two capitalized words (e.g., "John Smith")
   if (/\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/.test(message)) {
     return 'individual_resource';
+  }
+  
+  // CRITICAL: Also check for lowercase single-word names that appear after key phrases
+  // E.g., "when is nada contract expiring" should detect "nada" as individual
+  const individualPatterns = [
+    /(?:who is|show|find|about|when is|what is|where is|check|look up|lookup)\s+(\w{3,})/i,
+    /(\w{3,})(?:'s|\s+contract|\s+allocation|\s+availability|\s+utilization)/i,
+  ];
+  
+  for (const pattern of individualPatterns) {
+    const match = message.match(pattern);
+    if (match && match[1]) {
+      const potentialName = match[1].toLowerCase();
+      // Exclude common non-name words
+      const excludeWords = ['the', 'all', 'my', 'our', 'any', 'some', 'this', 'that', 'each', 'every', 'department', 'team', 'offshore', 'onsite'];
+      if (!excludeWords.includes(potentialName)) {
+        return 'individual_resource';
+      }
+    }
   }
   
   // Check for aggregate keywords (only if no individual name was detected)
@@ -56,6 +77,24 @@ function extractResourceIdentifier(message: string): string | null {
   // Try to extract name (two capitalized words)
   const nameMatch = message.match(/\b([A-Z][a-z]+)\s+([A-Z][a-z]+)\b/);
   if (nameMatch) return `${nameMatch[1]} ${nameMatch[2]}`;
+  
+  // CRITICAL: Extract single-word names after key phrases (case-insensitive)
+  const singleNamePatterns = [
+    /(?:who is|show|find|about|when is|what is|where is|check|look up|lookup)\s+(\w{3,})/i,
+    /(\w{3,})(?:'s|\s+contract|\s+allocation|\s+availability|\s+utilization)/i,
+  ];
+  
+  for (const pattern of singleNamePatterns) {
+    const match = message.match(pattern);
+    if (match && match[1]) {
+      const potentialName = match[1].toLowerCase();
+      // Exclude common non-name words
+      const excludeWords = ['the', 'all', 'my', 'our', 'any', 'some', 'this', 'that', 'each', 'every', 'department', 'team', 'offshore', 'onsite'];
+      if (!excludeWords.includes(potentialName)) {
+        return match[1]; // Return with original casing
+      }
+    }
+  }
   
   return null;
 }
