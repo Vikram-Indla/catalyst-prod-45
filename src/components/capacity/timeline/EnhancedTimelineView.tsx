@@ -20,6 +20,7 @@ import { DraggableAllocationBar } from './DraggableAllocationBar';
 import { useRealtimeAllocations } from '@/hooks/useRealtimeAllocations';
 import { SyncStatusProvider } from '@/contexts/SyncStatusContext';
 import { SyncStatusIndicator } from '@/components/ui/SyncStatusIndicator';
+import { CapacityAvatar } from '@/components/capacity/CapacityAvatar';
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -73,30 +74,15 @@ interface AvatarProps {
   flagSvg?: string | null;
 }
 
-function ResourceAvatar({ initials, contractEndDate, flagSvg }: AvatarProps) {
-  const contractInfo = getContractStatus(contractEndDate);
-  
-  const ringClass = cn(styles.avatarRing, {
-    [styles.ringTeal]: contractInfo.status === 'healthy',
-    [styles.ringWarning]: contractInfo.status === 'warning',
-    [styles.ringDanger]: contractInfo.status === 'critical',
-    [styles.ringGray]: contractInfo.status === 'permanent' || contractInfo.status === 'expired',
-  });
-
+function ResourceAvatarWrapper({ initials, contractEndDate, flagSvg }: AvatarProps) {
+  // V10 Unified Style - Use CapacityAvatar component
   return (
-    <div className={styles.avatarWrapper}>
-      <div className={cn(styles.avatar, styles.avatarPrimary)}>
-        {initials}
-      </div>
-      <div className={ringClass} />
-      {flagSvg && (
-        <img 
-          src={flagSvg} 
-          alt="" 
-          className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm z-10"
-        />
-      )}
-    </div>
+    <CapacityAvatar
+      initials={initials}
+      flagUrl={flagSvg}
+      size="md"
+      showTooltip={false}
+    />
   );
 }
 
@@ -473,7 +459,7 @@ export function EnhancedTimelineView({
                     >
                       {/* Resource Column */}
                       <div className={styles.resourceColumn}>
-                        <ResourceAvatar
+                        <ResourceAvatarWrapper
                           initials={getInitials(resource.name)}
                           contractEndDate={resource.contractEndDate}
                           flagSvg={resource.country_flag_svg}
@@ -595,7 +581,7 @@ export function EnhancedTimelineView({
               >
                 {/* Resource Column */}
                 <div className={styles.resourceColumn}>
-                  <ResourceAvatar
+                  <ResourceAvatarWrapper
                     initials={getInitials(resource.name)}
                     contractEndDate={resource.contractEndDate}
                   />

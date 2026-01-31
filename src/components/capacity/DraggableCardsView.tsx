@@ -1,7 +1,7 @@
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Users, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Avatar360 } from '@/components/capacity/Avatar360';
+import { CapacityAvatar } from '@/components/capacity/CapacityAvatar';
 import type { ResourceMetric, CapacityProject } from '@/modules/capacity-planner';
 
 // Department colors - Catalyst V5 compliant
@@ -161,23 +161,14 @@ function DraggableResourceCard({
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
 
-        {/* Avatar with 360° hover animation + country flag */}
-        <div className="relative">
-          <Avatar360 
-            initials={initials}
-            onClick={on360Click}
-            bgColor={deptColor.bg}
-            textColor={deptColor.text}
-            size="md"
-          />
-          {countryFlagSvg && (
-            <img 
-              src={countryFlagSvg} 
-              alt="" 
-              className="absolute -bottom-0.5 -right-0.5 h-3.5 w-5 object-cover rounded-sm border border-background shadow-sm"
-            />
-          )}
-        </div>
+        {/* Avatar - V10 Unified Style */}
+        <CapacityAvatar
+          initials={initials}
+          flagUrl={countryFlagSvg}
+          size="md"
+          onClick={(e) => { e?.stopPropagation(); on360Click(); }}
+          showTooltip={false}
+        />
 
         {/* Info */}
         <div className="flex-1 min-w-0">

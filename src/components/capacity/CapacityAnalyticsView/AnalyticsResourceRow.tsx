@@ -1,10 +1,10 @@
 /**
- * Analytics Resource Row - V8 Design with Avatar matching Resources tab
+ * Analytics Resource Row - V10 Design with Unified CapacityAvatar
  */
 
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { AnalyticsMonthCell } from './AnalyticsMonthCell';
+import { CapacityAvatar } from '@/components/capacity/CapacityAvatar';
 import type { CapacityRow } from './types';
 
 interface AnalyticsResourceRowProps {
@@ -55,44 +55,13 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => onResourceClick?.(resource.id)}
         >
-          {/* Avatar with flag overlay - V10 Style: Rounded square with blue border */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="relative flex-shrink-0">
-                {/* Rounded square avatar with blue border */}
-                <div 
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-[15px] font-bold transition-transform duration-150 hover:scale-105"
-                  style={{ 
-                    backgroundColor: '#eff6ff',
-                    color: '#3b82f6',
-                    border: '2px solid #93c5fd',
-                    boxShadow: '0 1px 3px rgba(59, 130, 246, 0.1)'
-                  }}
-                >
-                  {initials}
-                </div>
-                {/* Flag overlay - positioned at bottom-right */}
-                {flagUrl && (
-                  <span 
-                    className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center overflow-hidden"
-                    style={{ 
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                      border: '1.5px solid white'
-                    }}
-                  >
-                    <img 
-                      src={flagUrl} 
-                      alt={countryName || ''} 
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                )}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="bg-slate-900 text-white text-xs font-medium px-2.5 py-1.5">
-              {countryName || 'Unknown Country'}
-            </TooltipContent>
-          </Tooltip>
+          {/* Avatar with flag overlay - V10 Style: Unified CapacityAvatar */}
+          <CapacityAvatar
+            initials={initials}
+            flagUrl={flagUrl}
+            countryName={countryName}
+            size="md"
+          />
           
           {/* Name, Role, Department - match original structure */}
           <div className="flex flex-col min-w-0">
