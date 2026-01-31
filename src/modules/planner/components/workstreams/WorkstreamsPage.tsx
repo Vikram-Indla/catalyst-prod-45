@@ -1171,10 +1171,6 @@ const WorkstreamRow: React.FC<{
                     fontSize: '14px',
                     fontWeight: 500,
                     color: COLORS.textPrimary,
-                    maxWidth: '120px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
                   }}
                 >
                   {lead.name}

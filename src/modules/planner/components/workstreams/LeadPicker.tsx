@@ -117,7 +117,7 @@ export function LeadPicker({
               >
                 {displayLead.initials || getInitials(displayLead.name)}
               </div>
-              <span className="text-foreground truncate max-w-[140px]">{displayLead.name}</span>
+              <span className="text-foreground">{displayLead.name}</span>
             </>
           ) : (
             <>
