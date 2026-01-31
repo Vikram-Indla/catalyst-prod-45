@@ -1,69 +1,186 @@
 /**
  * Caty AI V7 — Response Templates (Fallback)
+ * Uses proper HTML structure with styled data cards
  */
 
 export const RESPONSES = {
+  // CONTRACTS RESPONSE - Structured with data cards
+  contracts: () => `
+<div class="caty-bubble">
+  <p>I have analyzed the contract data for the Delivery Department. There are currently <strong>7 contractor agreements</strong> scheduled to expire this month.</p>
+</div>
+
+<div class="caty-card">
+  <div class="caty-card-header">
+    <span class="caty-card-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </span>
+    <span class="caty-card-title">Expiring Contracts — October 2026</span>
+  </div>
+  <div class="caty-card-body">
+    <div class="caty-card-section">
+      <div class="caty-section-label">Project Management</div>
+      <div class="caty-resource-row">
+        <div class="caty-resource-initials">SJ</div>
+        <div class="caty-resource-details">
+          <div class="caty-resource-name">Sarah Jenkins</div>
+          <div class="caty-resource-meta">Senior Project Manager</div>
+        </div>
+        <div class="caty-resource-date">Oct 15</div>
+        <div class="caty-resource-status pending">Pending Review</div>
+      </div>
+      <div class="caty-resource-row">
+        <div class="caty-resource-initials">MC</div>
+        <div class="caty-resource-details">
+          <div class="caty-resource-name">Michael Chen</div>
+          <div class="caty-resource-meta">Agile Coach</div>
+        </div>
+        <div class="caty-resource-date">Oct 28</div>
+        <div class="caty-resource-status success">Renewal Recommended</div>
+      </div>
+    </div>
+    
+    <div class="caty-card-section">
+      <div class="caty-section-label">Software Engineering</div>
+      <div class="caty-resource-row">
+        <div class="caty-resource-initials">DK</div>
+        <div class="caty-resource-details">
+          <div class="caty-resource-name">David Kim</div>
+          <div class="caty-resource-meta">Senior .NET Developer</div>
+        </div>
+        <div class="caty-resource-date">Oct 10</div>
+        <div class="caty-resource-status critical">Critical</div>
+      </div>
+      <div class="caty-resource-row">
+        <div class="caty-resource-initials">AP</div>
+        <div class="caty-resource-details">
+          <div class="caty-resource-name">Anna Petrova</div>
+          <div class="caty-resource-meta">Full Stack Developer</div>
+        </div>
+        <div class="caty-resource-date">Oct 22</div>
+        <div class="caty-resource-status pending">Under Review</div>
+      </div>
+    </div>
+    
+    <div class="caty-card-actions">
+      <button class="caty-btn primary" onclick="window.catyAction('extend-all')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="17 1 21 5 17 9"/>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+        </svg>
+        Extend All Contracts
+      </button>
+      <button class="caty-btn secondary" onclick="window.catyAction('review')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Review Individually
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="caty-bubble">
+  <p><strong>Recommendation:</strong> David Kim's contract requires immediate attention as his assigned project has critical deliverables in Q4.</p>
+  <p>Would you like me to prepare extension requests for any of these contracts?</p>
+</div>
+`,
+
+  // FORECAST RESPONSE
   forecast: (dept: string, period: string) => `
 <div class="caty-bubble">
   <p>The following is the <strong>${period} capacity forecast</strong> for the ${dept}:</p>
-  <ul>
-    <li><strong>April 2026:</strong> 97% projected utilization with 3 anticipated resource gaps due to contract expirations.</li>
-    <li><strong>May 2026:</strong> 94% projected utilization. Reduced availability expected during the Ramadan period.</li>
-    <li><strong>June 2026:</strong> 98% projected utilization following the completion of the planned summer hiring cycle.</li>
-  </ul>
-  <p><strong>Key Risk:</strong> 5 contracts are scheduled to expire in April. Extension decisions are required by March 15 to maintain project continuity.</p>
-  <p>Would you like me to prepare a detailed risk mitigation report?</p>
-</div>`,
-
-  contracts: () => `
-<div class="caty-bubble">
-  <p>I have identified <strong>3 contracts</strong> scheduled to expire within the next 7 days:</p>
 </div>
+
+<div class="caty-metrics-grid">
+  <div class="caty-metric">
+    <div class="caty-metric-value">97%</div>
+    <div class="caty-metric-label">April Utilization</div>
+  </div>
+  <div class="caty-metric">
+    <div class="caty-metric-value">94%</div>
+    <div class="caty-metric-label">May Utilization</div>
+  </div>
+  <div class="caty-metric">
+    <div class="caty-metric-value">98%</div>
+    <div class="caty-metric-label">June Utilization</div>
+  </div>
+  <div class="caty-metric warning">
+    <div class="caty-metric-value">3</div>
+    <div class="caty-metric-label">Resource Gaps</div>
+  </div>
+</div>
+
 <div class="caty-card">
-  <div class="caty-card-header">
-    <span class="caty-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
-    <span class="caty-card-title">Expiring Contracts — 7 Day Window</span>
+  <div class="caty-card-header warning">
+    <span class="caty-card-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </span>
+    <span class="caty-card-title">Key Risk Factors</span>
   </div>
   <div class="caty-card-body">
-    <div class="caty-resource-row">
-      <div class="caty-resource-initials">AY</div>
-      <div class="caty-resource-details">
-        <div class="caty-resource-name">Ahmed Yousry</div>
-        <div class="caty-resource-meta">.NET Developer • Tahommena 2.0</div>
+    <div class="caty-risk-item">
+      <div class="caty-risk-icon critical">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>
       </div>
-      <div class="caty-resource-value">3 days</div>
+      <div class="caty-risk-text">
+        <strong>5 contracts expiring in April</strong>
+        <span>Extension decisions required by March 15</span>
+      </div>
     </div>
-    <div class="caty-resource-row">
-      <div class="caty-resource-initials">SK</div>
-      <div class="caty-resource-details">
-        <div class="caty-resource-name">Sara Khaled</div>
-        <div class="caty-resource-meta">QA Engineer • Senaei 3.0</div>
+    <div class="caty-risk-item">
+      <div class="caty-risk-icon warning">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>
       </div>
-      <div class="caty-resource-value">5 days</div>
+      <div class="caty-risk-text">
+        <strong>Ramadan period in May</strong>
+        <span>Reduced availability expected</span>
+      </div>
     </div>
-    <div class="caty-resource-row">
-      <div class="caty-resource-initials">RH</div>
-      <div class="caty-resource-details">
-        <div class="caty-resource-name">Rami Hassan</div>
-        <div class="caty-resource-meta">DevOps Engineer • Data Platform</div>
+    <div class="caty-risk-item">
+      <div class="caty-risk-icon info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>
       </div>
-      <div class="caty-resource-value">7 days</div>
+      <div class="caty-risk-text">
+        <strong>Summer hiring cycle</strong>
+        <span>3 new resources onboarding in June</span>
+      </div>
     </div>
     <div class="caty-card-actions">
-      <button class="caty-btn primary" onclick="window.catyAction('extend-all')">Extend All Contracts</button>
-      <button class="caty-btn secondary" onclick="window.catyAction('review')">Review Individually</button>
+      <button class="caty-btn primary" onclick="window.catyAction('risk-report')">Generate Risk Report</button>
+      <button class="caty-btn secondary" onclick="window.catyAction('mitigation')">View Mitigation Plan</button>
     </div>
   </div>
-</div>`,
+</div>
 
+<div class="caty-bubble">
+  <p>Would you like me to prepare a detailed risk mitigation report?</p>
+</div>
+`,
+
+  // RESOURCES RESPONSE  
   resources: () => `
 <div class="caty-bubble">
-  <p>I have identified <strong>2 available .NET developers</strong> who meet the required qualifications:</p>
+  <p>I have identified <strong>2 available .NET developers</strong> who meet the required qualifications for immediate assignment:</p>
 </div>
+
 <div class="caty-card">
   <div class="caty-card-header success">
-    <span class="caty-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span>
-    <span class="caty-card-title">Available Resources</span>
+    <span class="caty-card-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </span>
+    <span class="caty-card-title">Available .NET Developers</span>
   </div>
   <div class="caty-card-body">
     <div class="caty-resource-row">
@@ -72,7 +189,10 @@ export const RESPONSES = {
         <div class="caty-resource-name">Mohamed Khalil</div>
         <div class="caty-resource-meta">Senior .NET Developer • ELM • Egypt</div>
       </div>
-      <div class="caty-resource-value success">75%</div>
+      <div class="caty-resource-availability">
+        <div class="caty-availability-bar" style="--percent: 75%"></div>
+        <span>75% Available</span>
+      </div>
     </div>
     <div class="caty-resource-row">
       <div class="caty-resource-initials">FA</div>
@@ -80,49 +200,113 @@ export const RESPONSES = {
         <div class="caty-resource-name">Fatima Al-Rashid</div>
         <div class="caty-resource-meta">.NET Developer • Elm Co. • Saudi Arabia</div>
       </div>
-      <div class="caty-resource-value success">60%</div>
+      <div class="caty-resource-availability">
+        <div class="caty-availability-bar" style="--percent: 60%"></div>
+        <span>60% Available</span>
+      </div>
     </div>
     <div class="caty-card-actions">
-      <button class="caty-btn primary" onclick="window.catyAction('assign')">Assign to Project</button>
-      <button class="caty-btn secondary" onclick="window.catyAction('compare')">Compare Skills</button>
+      <button class="caty-btn primary" onclick="window.catyAction('assign')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <line x1="20" y1="8" x2="20" y2="14"/>
+          <line x1="23" y1="11" x2="17" y2="11"/>
+        </svg>
+        Assign to Project
+      </button>
+      <button class="caty-btn secondary" onclick="window.catyAction('compare')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Compare Skills
+      </button>
     </div>
   </div>
 </div>
+
 <div class="caty-bubble">
   <p>Both resources have confirmed availability and possess the required technical certifications. Would you like me to initiate an allocation request?</p>
-</div>`,
+</div>
+`,
 
+  // ESCALATION RESPONSE
   escalation: () => `
 <div class="caty-bubble">
-  <p>I understand you would like to speak with a Capacity Planning Specialist.</p>
-  <p><strong>Available Options:</strong></p>
-  <ul>
-    <li><strong>Live Chat:</strong> A specialist is available now. Estimated wait time: 2 minutes.</li>
-    <li><strong>Schedule Call:</strong> Book a 30-minute consultation at your convenience.</li>
-    <li><strong>Email Support:</strong> capacity-support@moim.gov.sa</li>
-  </ul>
+  <p>I understand you would like to speak with a <strong>Capacity Planning Specialist</strong>.</p>
 </div>
+
 <div class="caty-card">
   <div class="caty-card-header success">
-    <span class="caty-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+    <span class="caty-card-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+    </span>
     <span class="caty-card-title">Specialist Available Now</span>
   </div>
   <div class="caty-card-body">
-    <div class="caty-resource-row">
+    <div class="caty-specialist-row">
       <div class="caty-resource-initials">AS</div>
       <div class="caty-resource-details">
         <div class="caty-resource-name">Ahmad Al-Saud</div>
         <div class="caty-resource-meta">Senior Capacity Planning Analyst • MoIM</div>
       </div>
-      <div class="caty-resource-value success">Online</div>
+      <div class="caty-online-status">
+        <span class="caty-online-dot"></span>
+        Online
+      </div>
+    </div>
+    <div class="caty-wait-time">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      Estimated wait: 2 minutes
     </div>
     <div class="caty-card-actions">
-      <button class="caty-btn primary" onclick="window.catyAction('live-chat')">Start Live Chat</button>
-      <button class="caty-btn secondary" onclick="window.catyAction('schedule')">Schedule Call</button>
+      <button class="caty-btn primary" onclick="window.catyAction('live-chat')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Start Live Chat
+      </button>
+      <button class="caty-btn secondary" onclick="window.catyAction('schedule')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Schedule Call
+      </button>
     </div>
   </div>
-</div>`,
+</div>
 
-  fallback: (query: string) =>
-    `I understand you are inquiring about "${query}". I am able to assist with capacity planning, contract management, resource allocation, and utilization analysis. Please specify what information you require, and I will provide a detailed response.`,
+<div class="caty-email-link">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+    <polyline points="22,6 12,13 2,6"/>
+  </svg>
+  <span>capacity-support@moim.gov.sa</span>
+</div>
+`,
+
+  // FALLBACK
+  fallback: (query: string) => `
+<div class="caty-bubble">
+  <p>I understand you are inquiring about "<strong>${query}</strong>".</p>
+  <p>I am able to assist with:</p>
+  <ul class="caty-capability-list">
+    <li><strong>Capacity planning and forecasting</strong></li>
+    <li><strong>Contract management and renewals</strong></li>
+    <li><strong>Resource allocation and availability</strong></li>
+    <li><strong>Utilization analysis and reporting</strong></li>
+  </ul>
+  <p>Please provide more details about your specific requirement, and I will provide a comprehensive response.</p>
+</div>
+`
 };

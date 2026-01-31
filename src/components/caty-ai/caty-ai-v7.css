@@ -446,6 +446,229 @@
 
 .caty-resource-value.success { color: var(--caty-success); }
 
+/* RESOURCE STATUS & DATE */
+.caty-resource-date {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--caty-text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.caty-resource-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.caty-resource-status.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.caty-resource-status.success {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.caty-resource-status.critical {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* CARD SECTIONS */
+.caty-card-section {
+  margin-bottom: 16px;
+}
+
+.caty-card-section:last-of-type {
+  margin-bottom: 18px;
+}
+
+.caty-section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--caty-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+/* AVAILABILITY BAR */
+.caty-resource-availability {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.caty-availability-bar {
+  width: 60px;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.caty-availability-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: var(--percent, 0%);
+  background: #059669;
+  border-radius: 3px;
+}
+
+.caty-resource-availability span {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #059669;
+  white-space: nowrap;
+}
+
+/* RISK ITEMS */
+.caty-risk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--caty-border-light);
+}
+
+.caty-risk-item:last-of-type {
+  border-bottom: none;
+  margin-bottom: 14px;
+}
+
+.caty-risk-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.caty-risk-icon.critical { color: #dc2626; }
+.caty-risk-icon.warning { color: #b45309; }
+.caty-risk-icon.info { color: #2563eb; }
+
+.caty-risk-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.caty-risk-text strong {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--caty-text-primary);
+}
+
+.caty-risk-text span {
+  font-size: 0.8125rem;
+  color: var(--caty-text-muted);
+}
+
+/* SPECIALIST ROW */
+.caty-specialist-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--caty-bg-muted);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.caty-online-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.caty-online-dot {
+  width: 8px;
+  height: 8px;
+  background: #059669;
+  border-radius: 50%;
+  animation: caty-pulse 2s ease-in-out infinite;
+}
+
+@keyframes caty-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.caty-wait-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--caty-text-muted);
+  margin-bottom: 16px;
+  padding-left: 4px;
+}
+
+.caty-wait-time svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* EMAIL LINK */
+.caty-email-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--caty-bg-muted);
+  border-radius: 10px;
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: var(--caty-primary);
+}
+
+.caty-email-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* CAPABILITY LIST */
+.caty-capability-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.caty-capability-list li {
+  padding: 8px 0;
+  padding-left: 24px;
+  position: relative;
+  color: var(--caty-text-secondary);
+}
+
+.caty-capability-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #059669;
+  font-weight: 600;
+}
+
+.caty-capability-list li strong {
+  color: var(--caty-text-primary);
+}
+
 /* ACTIONS */
 .caty-card-actions { display: flex; gap: 12px; }
 
@@ -478,7 +701,14 @@
 .caty-btn.secondary:hover { background: var(--caty-bg-subtle); color: var(--caty-text-primary); }
 .caty-btn svg { width: 18px; height: 18px; }
 
-/* METRICS */
+/* METRICS GRID */
+.caty-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 12px 0;
+}
+
 .caty-metrics {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -491,6 +721,14 @@
   border-radius: 10px;
   padding: 16px 18px;
   text-align: center;
+}
+
+.caty-metric.warning {
+  background: #fef3c7;
+}
+
+.caty-metric.warning .caty-metric-value {
+  color: #b45309;
 }
 
 .caty-metric-value {
