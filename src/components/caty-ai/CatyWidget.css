@@ -94,3 +94,117 @@
 .caty-typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .caty-typing-dot:nth-child(3) { animation-delay: 0.4s; }
 @keyframes caty-typing { 0%, 60%, 100% { opacity: 0.4; transform: scale(1); } 30% { opacity: 1; transform: scale(1.1); } }
+
+.caty-card { background: var(--caty-bg-panel); border: 1px solid var(--caty-border-light); border-radius: 12px; overflow: hidden; margin-top: 10px; }
+
+.caty-card-header { display: flex; align-items: center; gap: 12px; padding: 16px 18px; background: var(--caty-bg-subtle); border-bottom: 1px solid var(--caty-border-light); border-left: 4px solid var(--caty-danger); }
+
+.caty-card-header.warning { border-left-color: var(--caty-warning); }
+
+.caty-card-header.success { border-left-color: var(--caty-success); }
+
+.caty-card-header.info { border-left-color: var(--caty-primary); }
+
+.caty-card-icon { flex-shrink: 0; color: var(--caty-danger); }
+
+.caty-card-header.warning .caty-card-icon { color: var(--caty-warning); }
+
+.caty-card-header.success .caty-card-icon { color: var(--caty-success); }
+
+.caty-card-header.info .caty-card-icon { color: var(--caty-primary); }
+
+.caty-card-icon svg { width: 20px; height: 20px; }
+
+.caty-card-title { font-size: 0.875rem; font-weight: 600; color: var(--caty-text-primary); }
+
+.caty-card-body { padding: 18px; }
+
+.caty-resource-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--caty-bg-muted); border-radius: 10px; margin-bottom: 12px; }
+
+.caty-resource-row:last-of-type { margin-bottom: 18px; }
+
+.caty-resource-initials { width: 44px; height: 44px; background: var(--caty-text-muted); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--caty-text-inverse); font-size: 0.875rem; font-weight: 600; flex-shrink: 0; }
+
+.caty-resource-details { flex: 1; min-width: 0; }
+
+.caty-resource-name { font-size: 0.9375rem; font-weight: 600; color: var(--caty-text-primary); margin-bottom: 2px; }
+
+.caty-resource-meta { font-size: 0.8125rem; color: var(--caty-text-muted); }
+
+.caty-resource-value { font-family: var(--caty-font-mono); font-size: 0.875rem; font-weight: 600; color: var(--caty-danger); white-space: nowrap; }
+
+.caty-resource-value.success { color: var(--caty-success); }
+
+.caty-card-actions { display: flex; gap: 12px; }
+
+.caty-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 20px; border-radius: 10px; font-size: 0.875rem; font-weight: 600; transition: all 0.15s ease; min-height: 48px; }
+
+.caty-btn:active { transform: scale(0.98); }
+
+.caty-btn:focus-visible { outline: 2px solid var(--caty-primary); outline-offset: 2px; }
+
+.caty-btn.primary { background: var(--caty-primary); color: var(--caty-text-inverse); }
+
+.caty-btn.primary:hover { background: var(--caty-primary-hover); }
+
+.caty-btn.secondary { background: var(--caty-bg-muted); color: var(--caty-text-secondary); border: 1px solid var(--caty-border-light); }
+
+.caty-btn.secondary:hover { background: var(--caty-bg-subtle); color: var(--caty-text-primary); }
+
+.caty-btn svg { width: 18px; height: 18px; }
+
+.caty-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
+
+.caty-metric { background: var(--caty-bg-muted); border-radius: 10px; padding: 16px 18px; text-align: center; }
+
+.caty-metric-value { font-family: var(--caty-font-mono); font-size: 1.625rem; font-weight: 700; color: var(--caty-primary); margin-bottom: 4px; }
+
+.caty-metric-label { font-size: 0.6875rem; font-weight: 600; color: var(--caty-text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+
+.caty-suggestions { display: flex; gap: 10px; padding: 16px 24px; background: var(--caty-bg-panel); border-top: 1px solid var(--caty-border-light); overflow-x: auto; scrollbar-width: none; }
+
+.caty-suggestions::-webkit-scrollbar { display: none; }
+
+.caty-suggestion { padding: 12px 18px; background: var(--caty-bg-muted); border: 1px solid var(--caty-border-light); border-radius: 10px; font-size: 0.8125rem; font-weight: 500; color: var(--caty-text-secondary); white-space: nowrap; transition: all 0.15s ease; min-height: 44px; }
+
+.caty-suggestion:hover { background: var(--caty-primary-muted); border-color: var(--caty-primary); color: var(--caty-primary); }
+
+.caty-suggestion:focus-visible { outline: 2px solid var(--caty-primary); outline-offset: 2px; }
+
+.caty-suggestion.alert { border-color: rgba(220,38,38,0.3); color: var(--caty-danger); }
+
+.caty-suggestion.alert:hover { background: var(--caty-danger-bg); }
+
+.caty-suggestion.escalate { border-color: var(--caty-primary); color: var(--caty-primary); }
+
+.caty-input-area { padding: 18px 24px 22px; background: var(--caty-bg-panel); border-top: 1px solid var(--caty-border-light); }
+
+.caty-input-wrapper { display: flex; align-items: flex-end; gap: 12px; background: var(--caty-bg-muted); border: 1px solid var(--caty-border-light); border-radius: 14px; padding: 10px 14px; transition: all 0.15s ease; }
+
+.caty-input-wrapper:focus-within { border-color: var(--caty-primary); box-shadow: var(--caty-shadow-focus); }
+
+.caty-input-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--caty-text-muted); border-radius: 10px; transition: all 0.15s ease; }
+
+.caty-input-btn:hover { background: rgba(0,0,0,0.04); color: var(--caty-text-secondary); }
+
+.caty-input-btn:focus-visible { outline: 2px solid var(--caty-primary); outline-offset: 2px; }
+
+.caty-input-btn svg { width: 22px; height: 22px; }
+
+.caty-input-field { flex: 1; }
+
+.caty-input-field textarea { width: 100%; min-height: 44px; max-height: 140px; resize: none; border: none; background: none; font-family: var(--caty-font-sans); font-size: 0.9375rem; color: var(--caty-text-primary); outline: none; padding: 12px 0; line-height: 1.5; }
+
+.caty-input-field textarea::placeholder { color: var(--caty-text-light); }
+
+.caty-send-btn { width: 48px; height: 48px; background: var(--caty-primary); color: var(--caty-text-inverse); border-radius: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
+
+.caty-send-btn:hover { background: var(--caty-primary-hover); }
+
+.caty-send-btn:active { transform: scale(0.95); }
+
+.caty-send-btn:focus-visible { outline: 2px solid var(--caty-primary); outline-offset: 2px; }
+
+.caty-send-btn:disabled { background: var(--caty-border-light); color: var(--caty-text-light); cursor: not-allowed; transform: none; }
+
+.caty-send-btn svg { width: 22px; height: 22px; }
