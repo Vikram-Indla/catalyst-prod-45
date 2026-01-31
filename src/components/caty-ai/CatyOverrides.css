@@ -344,6 +344,11 @@ button.caty-department-pill,
 .caty-messages {
   padding: 24px !important;
   background: #ffffff !important;
+  /* Fix: allow inner scrolling inside a flex column panel (otherwise content can be clipped with no scroll) */
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 /* BUBBLE */
