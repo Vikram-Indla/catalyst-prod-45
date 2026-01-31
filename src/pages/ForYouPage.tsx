@@ -7,7 +7,7 @@ import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
-import { ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable, ForYouTableSkeleton, ForYouPagination, TaskhubStrip } from '@/components/for-you';
+import { ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable, ForYouTableSkeleton, ForYouPagination } from '@/components/for-you';
 import { BulkActionsBar } from '@/components/business-requests/table-view/BulkActionsBar';
 import { CatalystAIPanel } from '@/components/catalyst-ai';
 import { toast } from 'sonner';
@@ -116,9 +116,7 @@ export default function ForYouPage() {
         navigate(`/program/epics?selected=${key}`);
         break;
       case 'task':
-      case 'planner_task':
-        // Navigate to Taskhub with task modal open
-        navigate(`/taskhub/my-tasks?taskId=${key}`);
+        navigate(`/project/tasks?selected=${key}`);
         break;
       case 'business-request':
         navigate(`/product/business-requests?selected=${key}`);
@@ -193,9 +191,6 @@ export default function ForYouPage() {
           activeMode={activeMode} 
           onModeChange={setActiveMode} 
         />
-
-        {/* Taskhub Strip - My Tasks KPIs */}
-        <TaskhubStrip />
 
         {/* Work Section */}
         <section className="bg-surface-0">
