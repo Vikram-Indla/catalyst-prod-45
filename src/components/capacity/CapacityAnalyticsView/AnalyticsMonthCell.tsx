@@ -15,19 +15,20 @@ interface AnalyticsMonthCellProps {
 
 // Project color mapping for horizontal bars
 const PROJECT_COLORS: Record<string, string> = {
-  'sectorial': '#3b82f6',
+  'sectorial': '#3b82f6',           // BLUE
   'sectorial services': '#3b82f6',
-  'dataplatform': '#10b981',
+  'dataplatform': '#10b981',        // GREEN  
   'data platform': '#10b981',
-  'senaei': '#f59e0b',
+  'senaei': '#f59e0b',              // AMBER
   'senaei 3.0': '#f59e0b',
-  'tahommena': '#ec4899',
+  'tahommena': '#ec4899',           // PINK
   'tahommena 2.0': '#ec4899',
-  'inspection': '#8b5cf6',
+  'inspection': '#8b5cf6',          // PURPLE
   'inspection project': '#8b5cf6',
-  'irplatform': '#06b6d4',
+  'irplatform': '#06b6d4',          // CYAN
   'ir platform': '#06b6d4',
   'ir-platform': '#06b6d4',
+  'ir platform - phase 1': '#06b6d4',
 };
 
 function getProjectSlug(name: string): string {
@@ -42,10 +43,17 @@ function getProjectSlug(name: string): string {
 }
 
 function getProjectColor(name: string): string {
+  if (!name) return '#3b82f6';
   const lowerName = name.toLowerCase().trim();
-  for (const [key, color] of Object.entries(PROJECT_COLORS)) {
-    if (lowerName.includes(key)) return color;
-  }
+  
+  // Direct match - order matters (more specific first)
+  if (lowerName.includes('sectorial')) return '#3b82f6';      // BLUE
+  if (lowerName.includes('data platform') || lowerName.includes('dataplatform')) return '#10b981';  // GREEN
+  if (lowerName.includes('senaei')) return '#f59e0b';         // AMBER
+  if (lowerName.includes('tahommena')) return '#ec4899';      // PINK
+  if (lowerName.includes('inspection')) return '#8b5cf6';     // PURPLE
+  if (lowerName.includes('ir platform') || lowerName.includes('irplatform') || lowerName.includes('ir-platform')) return '#06b6d4';    // CYAN
+  
   return '#3b82f6'; // default blue
 }
 
@@ -156,16 +164,16 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
             
             {/* Horizontal progress bar at bottom (Strategy D) */}
             <div 
-              className="allocation-bar absolute bottom-1 left-1.5 right-1.5 h-1 rounded-full bg-slate-200"
+              className="absolute bottom-1 left-1.5 right-1.5 h-1 rounded-full"
+              style={{ backgroundColor: '#e2e8f0' }}
             >
               <div 
-                className="h-full rounded-full transition-all duration-300"
+                className="h-full rounded-full"
                 style={{ 
                   width: `${barWidth}%`,
                   backgroundColor: barColor,
+                  transition: 'width 0.3s ease'
                 }}
-                data-project={projectSlug}
-                data-percent={totalPercent}
               />
             </div>
           </div>
