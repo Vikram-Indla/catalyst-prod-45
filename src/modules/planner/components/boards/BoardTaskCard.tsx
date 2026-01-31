@@ -1,15 +1,24 @@
 // ============================================================
-// BOARD TASK CARD - V10 Enterprise Clean
-// Sortable task card with V10 enterprise design tokens
-// Shape-based priority, muted colors, border-only workstream
+// BOARD TASK CARD — LINEAR-INSPIRED ENTERPRISE DESIGN
+// 
+// KEY DESIGN DECISIONS (Linear Philosophy):
+// - Task ID: Monospace #64748b (visible, not washed out)
+// - Title: Weight 500 (hero of the card)
+// - No Date: Show NOTHING (not "No due date")
+// - Assignee: Avatar circle (not text name)
+// - Priority: Left border (not floating icon)
+// - Cards: Shadow + hover lift (draggable affordance)
 // ============================================================
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { AlertTriangle, Calendar, User } from 'lucide-react';
+import { AlertTriangle, Calendar } from 'lucide-react';
 import type { BoardTask } from '../../types/planner-boards';
 import { cn } from '@/lib/utils';
 import { format, parseISO, isToday, isTomorrow, isPast } from 'date-fns';
+
+// Import ring-fenced CSS
+import '@/styles/boards.css';
 
 interface BoardTaskCardProps {
   task: BoardTask;
@@ -17,12 +26,52 @@ interface BoardTaskCardProps {
   isDragging?: boolean;
 }
 
-// V10: Shape-based priority indicators (all gray, shape differentiates)
-const PRIORITY_SHAPES: Record<string, string> = {
-  critical: '◆', // Diamond - maximum urgency
-  high: '▲',     // Triangle - warning
-  medium: '●',   // Filled circle - moderate
-  low: '○',      // Empty circle - minimal
+// Avatar color assignment (consistent per user)
+const AVATAR_COLORS = ['blue', 'teal', 'purple', 'orange', 'pink', 'green', 'slate'] as const;
+
+const getAvatarColor = (userId: string): typeof AVATAR_COLORS[number] => {
+  const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+};
+
+const getInitials = (name: string): string => {
+  return name
+    .split(' ')
+    .map(word => word[0])
+    .filter(Boolean)
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+// Date status for color coding
+const getDateStatus = (date: string): 'overdue' | 'today' | 'upcoming' => {
+  const parsedDate = parseISO(date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const dueDate = new Date(parsedDate);
+  dueDate.setHours(0, 0, 0, 0);
+  
+  if (dueDate < today) return 'overdue';
+  if (dueDate.getTime() === today.getTime()) return 'today';
+  return 'upcoming';
+};
+
+// Format date for display
+const formatDueDate = (date: string): string => {
+  const parsedDate = parseISO(date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const dueDate = new Date(parsedDate);
+  dueDate.setHours(0, 0, 0, 0);
+  
+  if (isPast(dueDate) && !isToday(parsedDate)) return 'Overdue';
+  if (isToday(parsedDate)) return 'Today';
+  if (isTomorrow(parsedDate)) return 'Tomorrow';
+  
+  return format(parsedDate, 'MMM d');
 };
 
 export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps) {
@@ -40,33 +89,8 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
     transition,
   };
 
-  const getDueDateDisplay = () => {
-    if (!task.due_date) return null;
-    
-    const date = parseISO(task.due_date);
-    
-    if (task.is_completed_status) {
-      return { label: format(date, 'MMM d'), className: 'task-due' };
-    }
-    
-    if (isPast(date) && !isToday(date)) {
-      return { label: 'Overdue', className: 'task-due overdue' };
-    }
-    if (isToday(date)) {
-      return { label: 'Today', className: 'task-due today' };
-    }
-    if (isTomorrow(date)) {
-      return { label: 'Tomorrow', className: 'task-due' };
-    }
-    
-    return { label: format(date, 'MMM d'), className: 'task-due' };
-  };
-
-  const dueDisplay = getDueDateDisplay();
-  const priorityShape = PRIORITY_SHAPES[task.priority] || PRIORITY_SHAPES.medium;
-  
-  // Get workstream slug for data attribute
-  const workstreamSlug = task.workstream_slug?.toLowerCase() || '';
+  const isCompleted = task.is_completed_status;
+  const activeDragging = isDragging || isSortableDragging;
 
   return (
     <div
@@ -75,82 +99,84 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
       {...attributes}
       {...listeners}
       onClick={onClick}
-      data-workstream={workstreamSlug}
       className={cn(
-        'board-task-card group relative bg-white dark:bg-slate-800 rounded-lg p-3 cursor-pointer',
-        'border border-slate-200 dark:border-slate-700',
-        'hover:shadow-sm transition-all duration-150',
-        (isDragging || isSortableDragging) && 'opacity-50 shadow-xl rotate-2 scale-105',
-        task.blocked && 'blocked'
+        'boards-card',
+        // Priority left border (NOT floating icon)
+        task.priority === 'critical' && 'boards-card--priority-critical',
+        task.priority === 'high' && 'boards-card--priority-high',
+        task.priority === 'medium' && 'boards-card--priority-medium',
+        task.priority === 'low' && 'boards-card--priority-low',
+        // Done state (opacity + strikethrough)
+        isCompleted && 'boards-card--done',
+        // Blocked state
+        task.blocked && 'boards-card--blocked',
+        // Dragging state
+        activeDragging && 'boards-card--dragging'
       )}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onClick?.();
+        }
+      }}
     >
-      {/* Top row: Key + Priority Shape */}
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <span className="task-key text-[11px] font-mono font-medium text-slate-500 dark:text-slate-400">
-          {task.key}
-        </span>
-        <span 
-          className="priority-shape text-[10px] text-slate-500 dark:text-slate-400"
-          title={task.priority}
-        >
-          {priorityShape}
-        </span>
+      {/* ========================================
+          CARD HEADER — Task ID only
+          NO mysterious blue dot
+          ======================================== */}
+      <div className="boards-card__header">
+        <span className="boards-card__id">{task.key}</span>
+        {/* NO blue dot — it was unclear what it meant */}
       </div>
 
-      {/* Title */}
-      <h4 className={cn(
-        'task-title text-[13px] font-medium text-slate-900 dark:text-slate-100 line-clamp-2 mb-2',
-        task.is_completed_status && 'completed line-through text-slate-400'
-      )}>
-        {task.title}
-      </h4>
+      {/* ========================================
+          CARD TITLE — The Hero
+          Weight 500, darkest element
+          ======================================== */}
+      <h4 className="boards-card__title">{task.title}</h4>
 
       {/* Blocked indicator */}
       {task.blocked && (
-        <div className="blocked-indicator flex items-center gap-1.5 mb-2 text-red-600 dark:text-red-400 text-[11px]">
-          <AlertTriangle className="w-3 h-3" />
-          <span className="font-medium">Blocked</span>
+        <div className="boards-card__blocked">
+          <AlertTriangle />
+          <span>Blocked</span>
         </div>
       )}
 
-      {/* Progress bar (V10: muted colors) */}
-      {task.progress > 0 && (
-        <div className="mb-2">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] text-slate-400">Progress</span>
-            <span className="text-[10px] font-mono font-medium text-slate-500 dark:text-slate-400">
-              {task.progress}%
-            </span>
-          </div>
-          <div className="progress-bar-bg h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-            <div 
-              className={cn(
-                'progress-bar-fill h-full rounded-full transition-all',
-                task.progress >= 100 ? 'complete bg-emerald-500' : 'bg-slate-400'
-              )}
-              style={{ width: `${task.progress}%` }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Bottom row: Due date + Assignee (V10: text-only, no pills) */}
-      <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
-        {dueDisplay ? (
-          <div className={cn('flex items-center gap-1 text-[11px]', dueDisplay.className)}>
-            <Calendar className="w-3 h-3" />
-            {dueDisplay.label}
-          </div>
+      {/* ========================================
+          CARD FOOTER — Date + Avatar
+          ======================================== */}
+      <div className="boards-card__footer">
+        {/* Date — ONLY show if date exists
+            If no date, render nothing (not "No due date") */}
+        {task.due_date ? (
+          <span 
+            className={cn(
+              'boards-card__date',
+              `boards-card__date--${isCompleted ? 'upcoming' : getDateStatus(task.due_date)}`
+            )}
+          >
+            <Calendar />
+            {formatDueDate(task.due_date)}
+          </span>
         ) : (
-          <span className="text-[10px] text-slate-400">No due date</span>
+          // Empty span to maintain flex layout
+          <span />
         )}
 
-        {task.assignee_name && (
-          <div className="task-assignee flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 truncate max-w-24">
-            <User className="w-3 h-3 flex-shrink-0" />
-            <span className="truncate">{task.assignee_name}</span>
+        {/* Avatar — Circle with initials (NOT text name) */}
+        {task.assignee_id && task.assignee_name ? (
+          <div 
+            className={cn(
+              'boards-card__avatar',
+              `boards-card__avatar--${getAvatarColor(task.assignee_id)}`
+            )}
+            title={task.assignee_name}
+          >
+            {getInitials(task.assignee_name)}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
