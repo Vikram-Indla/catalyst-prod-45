@@ -1121,11 +1121,16 @@ button.caty-fab {
   background: #f8fafc !important;
   border: 1px solid #e2e8f0 !important;
   border-left: 4px solid #94a3b8 !important;
-  border-radius: 10px !important;
+  /* CRITICAL: Sharp left edge, rounded right */
+  border-top-left-radius: 2px !important;
+  border-bottom-left-radius: 2px !important;
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
   width: 100% !important;
   text-align: left !important;
+  min-height: 56px !important;
 }
 
 .caty-viewport__probe-item:hover {
