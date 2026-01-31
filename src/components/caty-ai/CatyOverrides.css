@@ -40,12 +40,29 @@ header[class*="caty"] {
   gap: 16px !important;
 }
 
-/* REMOVE MINIMIZE BUTTON */
-[class*="minimize"],
-[class*="close"],
-.caty-header button,
+/* HEADER ACTIONS - Show the action buttons */
 .caty-header-actions {
-  display: none !important;
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.caty-header-btn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background 0.2s !important;
+}
+
+.caty-header-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* HEADER ICON */
@@ -580,4 +597,39 @@ header[class*="caty"] {
 .caty-debug,
 .caty-meta-info {
   display: none !important;
+}
+
+/* MINIMIZED BUTTON */
+.caty-minimized-btn {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px 20px !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  border: none !important;
+  border-radius: 50px !important;
+  color: white !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+.caty-minimized-btn:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 6px 25px rgba(37, 99, 235, 0.5) !important;
+}
+
+.caty-minimized-icon {
+  width: 28px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }

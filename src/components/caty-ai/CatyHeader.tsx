@@ -3,13 +3,21 @@
  */
 
 import React from 'react';
+import { Minus, Trash2 } from 'lucide-react';
 
 interface CatyHeaderProps {
   isOnline?: boolean;
   onClose?: () => void;
+  onClearChat?: () => void;
+  onMinimize?: () => void;
 }
 
-export const CatyHeader: React.FC<CatyHeaderProps> = ({ isOnline = true }) => (
+export const CatyHeader: React.FC<CatyHeaderProps> = ({ 
+  isOnline = true, 
+  onClose,
+  onClearChat,
+  onMinimize 
+}) => (
   <header className="caty-header-fixed">
     <div className="caty-header-left">
       <div className="caty-header-icon">
@@ -33,6 +41,26 @@ export const CatyHeader: React.FC<CatyHeaderProps> = ({ isOnline = true }) => (
           Capacity Assistant
         </span>
       </div>
+    </div>
+    <div className="caty-header-actions">
+      {onClearChat && (
+        <button 
+          className="caty-header-btn" 
+          onClick={onClearChat}
+          title="Clear chat"
+        >
+          <Trash2 size={18} />
+        </button>
+      )}
+      {onMinimize && (
+        <button 
+          className="caty-header-btn" 
+          onClick={onMinimize}
+          title="Minimize"
+        >
+          <Minus size={18} />
+        </button>
+      )}
     </div>
   </header>
 );
