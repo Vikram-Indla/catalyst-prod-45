@@ -61,10 +61,6 @@ export function ForYouToolbar({
           )}
         >
           <Zap className="w-5 h-5 text-white" />
-          {/* Pulse indicator */}
-          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-surface-0">
-            <span className="absolute inset-[-2px] bg-green-500 rounded-full animate-ping opacity-50" />
-          </span>
         </button>
       </div>
     </div>
