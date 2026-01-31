@@ -251,15 +251,37 @@ async function buildResourceContext(
     missingFields.push('resource');
     return { found: false, missing_fields: missingFields };
   }
+
+  // Step 1b: Resolve location name from location_id (source of truth)
+  // This prevents misclassification when country != site (e.g., offshore nationality but onsite location)
+  if (resourceData.location_id) {
+    const { data: loc } = await supabase
+      .from('resource_locations')
+      .select('id, name')
+      .eq('id', resourceData.location_id)
+      .single();
+
+    if (loc?.name) {
+      // determineSiteStatus reads `resource.location`/`location_type`
+      resourceData.location = loc.name;
+    }
+  }
   
   // Step 2: Get department
   if (resourceData.department_id) {
+    // NOTE: resource_inventory.department_id maps to capacity_departments (not departments)
     const { data: dept } = await supabase
-      .from('departments')
-      .select('id, name, department_code')
+      .from('capacity_departments')
+      .select('id, name, department_id')
       .eq('id', resourceData.department_id)
       .single();
-    departmentData = dept;
+
+    if (dept?.name) {
+      departmentData = { id: dept.id, name: dept.name };
+    } else if (resourceData.department_name) {
+      // Fallback when FK lookup fails / schema cache mismatch
+      departmentData = { id: null, name: resourceData.department_name };
+    }
   } else if (resourceData.department_name) {
     departmentData = { id: null, name: resourceData.department_name };
   }
@@ -466,7 +488,7 @@ async function buildAggregateContext(
   const deptName = context.department || 'All Departments';
   if (deptName && !deptName.toLowerCase().includes('all')) {
     const { data: depts } = await supabase
-      .from('departments')
+      .from('capacity_departments')
       .select('id, name')
       .ilike('name', `%${deptName.replace('Department', '').trim()}%`)
       .limit(1);
