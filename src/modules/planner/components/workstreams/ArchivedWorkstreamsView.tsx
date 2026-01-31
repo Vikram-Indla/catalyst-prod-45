@@ -1,10 +1,10 @@
 // ============================================================
-// ARCHIVED WORKSTREAMS VIEW — Enterprise Clean
+// ARCHIVED WORKSTREAMS VIEW — Dashboard Header Style
 // Full page view for managing archived workstreams
 // ============================================================
 
 import { useState } from 'react';
-import { ArrowLeft, ArchiveRestore, Trash2, Check, Search } from 'lucide-react';
+import { ArrowLeft, ArchiveRestore, Trash2, Check, Search, Archive } from 'lucide-react';
 import { Workstream, useArchiveWorkstream, useDeleteWorkstream } from '../../hooks/usePlannerWorkstreams';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -91,48 +91,74 @@ export function ArchivedWorkstreamsView({
   };
 
   return (
-    <div className="min-h-screen workstreams-enterprise-clean">
-      {/* Header - Cream background as per screenshot */}
-      <header className="bg-amber-50/80 dark:bg-amber-900/10 border-b border-amber-200/50 dark:border-amber-800/30">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Back + Title */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={onBack}
-                className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                title="Back to workstreams"
-              >
-                <ArrowLeft className="w-5 h-5" strokeWidth={1.5} />
-              </button>
-              <div>
-                <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-                  Archived Workstreams
-                </h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {filteredWorkstreams.length} archived workstream{filteredWorkstreams.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
-
-            {/* Bulk Actions */}
-            {selectedIds.size > 0 && (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-slate-500 dark:text-slate-400">
-                  {selectedIds.size} selected
-                </span>
-                <button
-                  onClick={handleBulkRestore}
-                  disabled={archiveWorkstream.isPending}
-                  className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors disabled:opacity-50"
-                >
-                  <ArchiveRestore className="w-4 h-4" strokeWidth={1.5} />
-                  Restore Selected
-                </button>
-              </div>
-            )}
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      {/* Header - Dashboard Style */}
+      <header 
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 24px',
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #e2e8f0',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button
+            onClick={onBack}
+            style={{
+              padding: '8px',
+              color: '#64748b',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            title="Back to workstreams"
+          >
+            <ArrowLeft size={20} strokeWidth={1.5} />
+          </button>
+          <div>
+            <h1 style={{
+              fontSize: '20px',
+              fontWeight: 700,
+              color: '#0f172a',
+              margin: 0,
+            }}>
+              Archived Workstreams
+            </h1>
+            <p style={{
+              fontSize: '14px',
+              color: '#64748b',
+              marginTop: '2px',
+              margin: 0,
+            }}>
+              {filteredWorkstreams.length} archived workstream{filteredWorkstreams.length !== 1 ? 's' : ''}
+            </p>
           </div>
         </div>
+
+        {/* Bulk Actions */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              {selectedIds.size} selected
+            </span>
+            <button
+              onClick={handleBulkRestore}
+              disabled={archiveWorkstream.isPending}
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors disabled:opacity-50"
+            >
+              <ArchiveRestore className="w-4 h-4" strokeWidth={1.5} />
+              Restore Selected
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Content */}
@@ -166,11 +192,7 @@ export function ArchivedWorkstreamsView({
         {!isLoading && filteredWorkstreams.length === 0 && (
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
             <div className="w-12 h-12 mx-auto mb-4 bg-slate-100 dark:bg-slate-700 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="5" rx="1" />
-                <path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9" />
-                <path d="M10 13h4" />
-              </svg>
+              <Archive className="w-6 h-6 text-slate-400" />
             </div>
             <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">
               No archived workstreams
@@ -193,16 +215,16 @@ export function ArchivedWorkstreamsView({
                       onCheckedChange={toggleSelectAll}
                     />
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <th className="py-3 px-4 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                     Name
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <th className="py-3 px-4 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                     Health
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <th className="py-3 px-4 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                     Tasks
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <th className="py-3 px-4 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                     Archived
                   </th>
                   <th className="py-3 px-4 text-right text-xs font-medium text-slate-500 dark:text-slate-400">
