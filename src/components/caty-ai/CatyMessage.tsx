@@ -26,6 +26,28 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
   userInitials = 'VK',
   onAction 
 }) => {
+  // Detect if this is a streaming/incomplete JSON response
+  const streamingState = useMemo(() => {
+    if (message.type !== 'assistant' || message.isHtml) {
+      return { isStreaming: false, isJsonResponse: false };
+    }
+    
+    const content = message.content.trim();
+    
+    // Check if it looks like it's starting to be JSON
+    const startsWithJson = content.startsWith('{') || content.startsWith('```json');
+    
+    // Check if brackets are balanced (complete JSON)
+    const openBraces = (content.match(/{/g) || []).length;
+    const closeBraces = (content.match(/}/g) || []).length;
+    const isComplete = openBraces > 0 && openBraces === closeBraces;
+    
+    return {
+      isStreaming: startsWithJson && !isComplete,
+      isJsonResponse: startsWithJson
+    };
+  }, [message.content, message.type, message.isHtml]);
+
   // Try to parse structured response for assistant messages
   const structuredResponse = useMemo(() => {
     if (message.type !== 'assistant' || message.isHtml) {
@@ -36,6 +58,11 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
     
     // Skip empty or very short content
     if (!content || content.length < 20) {
+      return null;
+    }
+    
+    // Don't try to parse if we're still streaming JSON
+    if (streamingState.isStreaming) {
       return null;
     }
     
@@ -57,12 +84,41 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
     }
     
     return parsed;
-  }, [message.content, message.type, message.isHtml]);
+  }, [message.content, message.type, message.isHtml, streamingState.isStreaming]);
 
   const renderContent = () => {
     // HTML content (legacy fallback responses)
     if (message.isHtml) {
       return <div dangerouslySetInnerHTML={{ __html: message.content }} />;
+    }
+
+    // Show processing state while JSON is streaming (incomplete)
+    if (streamingState.isStreaming && streamingState.isJsonResponse) {
+      return (
+        <div className="caty-bubble" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '12px',
+          padding: '16px 20px'
+        }}>
+          <div className="caty-processing-spinner" style={{
+            width: '18px',
+            height: '18px',
+            border: '2px solid var(--caty-border-subtle)',
+            borderTopColor: 'var(--caty-accent)',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }} />
+          <div>
+            <div style={{ fontWeight: 500, color: 'var(--caty-text-primary)', marginBottom: '4px' }}>
+              Processing response...
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--caty-text-secondary)' }}>
+              Analyzing capacity data
+            </div>
+          </div>
+        </div>
+      );
     }
 
     // Structured JSON response - render as card
@@ -74,13 +130,12 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
         />
       );
     }
-
     // Check if content looks like JSON but failed to parse - try one more time
-    const content = message.content.trim();
-    if (message.type === 'assistant' && content.startsWith('{') && content.endsWith('}')) {
+    const msgContent = message.content.trim();
+    if (message.type === 'assistant' && msgContent.startsWith('{') && msgContent.endsWith('}')) {
       // Last-ditch attempt to parse and render
       try {
-        const directParsed = JSON.parse(content);
+        const directParsed = JSON.parse(msgContent);
         if (directParsed.response_type === 'general_answer' || directParsed.response_type === 'resource_answer') {
           console.log('[CatyMessage] Direct parse succeeded where structured parse failed');
           return (
