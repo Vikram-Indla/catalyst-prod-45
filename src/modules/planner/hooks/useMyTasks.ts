@@ -428,3 +428,23 @@ export function useReorderMyTask() {
     },
   });
 }
+
+/**
+ * Fetch workstreams for filter dropdown
+ */
+export function useMyWorkstreams() {
+  return useQuery({
+    queryKey: ['planner', 'workstreams', 'filter'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('planner_workstreams')
+        .select('id, name, color')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
+      return (data || []) as { id: string; name: string; color?: string }[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}

@@ -2,18 +2,13 @@
 // MY TASKS HEADER - Enterprise Linear-Aligned V2
 // Ring-fenced CSS: mytasks-header, mytasks-summary-card, etc.
 // With KPI pulse animation on completion
+// Dropdown styling matches TaskDetailDrawer/StatusDropdown
 // ============================================================
 
-import { useRef, useEffect } from 'react';
-import { Plus, Search, X, ChevronDown, Layers } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import { useMyTasksSummary } from '../../hooks/useMyTasks';
+import { useRef, useEffect, useState } from 'react';
+import { Plus, Search, X, ChevronDown, Layers, Check } from 'lucide-react';
+import { useMyTasksSummary, useMyWorkstreams } from '../../hooks/useMyTasks';
+import { COLORS } from '@/components/planner/task-modal/colors';
 import type { FilterConfig } from '../../types/my-tasks';
 
 interface MyTasksHeaderProps {
@@ -23,6 +18,14 @@ interface MyTasksHeaderProps {
   completedTodayCount?: number;
 }
 
+const STATUS_OPTIONS = [
+  { value: 'backlog', label: 'Backlog', color: '#94a3b8' },
+  { value: 'planned', label: 'Planned', color: '#3b82f6' },
+  { value: 'progress', label: 'In Progress', color: '#f59e0b' },
+  { value: 'review', label: 'Review', color: '#8b5cf6' },
+  { value: 'done', label: 'Done', color: '#16a34a' },
+];
+
 export function MyTasksHeader({
   filters,
   onFilterChange,
@@ -30,7 +33,7 @@ export function MyTasksHeader({
   completedTodayCount = 0,
 }: MyTasksHeaderProps) {
   const { data: summary, isLoading } = useMyTasksSummary();
-  const workstreams: { id: string; name: string; color?: string }[] = [];
+  const { data: workstreams = [] } = useMyWorkstreams();
   
   // Ref for pulse animation
   const doneCountRef = useRef<HTMLDivElement>(null);
@@ -116,64 +119,18 @@ export function MyTasksHeader({
             <span className="mytasks-search__shortcut">⌘K</span>
           </div>
 
-          {/* Workstream Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="mytasks-filter-btn">
-                <Layers className="mytasks-filter-btn__icon" />
-                {filters.workstreams?.[0] 
-                  ? workstreams.find(w => w.id === filters.workstreams?.[0])?.name || 'Workstream'
-                  : 'Workstream'
-                }
-                <ChevronDown className="w-3 h-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              <DropdownMenuItem onClick={() => onFilterChange({ workstreams: undefined })}>
-                All Workstreams
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {workstreams.map((ws) => (
-                <DropdownMenuItem 
-                  key={ws.id} 
-                  onClick={() => onFilterChange({ workstreams: [ws.id] })}
-                >
-                  {ws.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Workstream Filter - Enterprise Dropdown Style */}
+          <WorkstreamDropdown
+            workstreams={workstreams}
+            selectedId={filters.workstreams?.[0]}
+            onSelect={(id) => onFilterChange({ workstreams: id ? [id] : undefined })}
+          />
 
-          {/* Status Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="mytasks-filter-btn">
-                {filters.statuses?.[0] || 'Status'}
-                <ChevronDown className="w-3 h-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-40">
-              <DropdownMenuItem onClick={() => onFilterChange({ statuses: undefined })}>
-                All Statuses
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['backlog'] })}>
-                Backlog
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['planned'] })}>
-                Planned
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['progress'] })}>
-                In Progress
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['review'] })}>
-                Review
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onFilterChange({ statuses: ['done'] })}>
-                Done
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Status Filter - Enterprise Dropdown Style */}
+          <StatusDropdown
+            selectedStatus={filters.statuses?.[0]}
+            onSelect={(status) => onFilterChange({ statuses: status ? [status] : undefined })}
+          />
 
           {/* Clear Filters */}
           {activeFilterCount > 0 && (
@@ -200,6 +157,277 @@ export function MyTasksHeader({
           Add Task
         </button>
       </div>
+    </div>
+  );
+}
+
+// ============================================================
+// WORKSTREAM DROPDOWN - Enterprise Clean (matches StatusDropdown)
+// ============================================================
+function WorkstreamDropdown({ 
+  workstreams, 
+  selectedId, 
+  onSelect 
+}: { 
+  workstreams: { id: string; name: string; color?: string }[];
+  selectedId?: string;
+  onSelect: (id: string | null) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedWorkstream = workstreams.find(w => w.id === selectedId);
+  const displayName = selectedWorkstream?.name || 'Workstream';
+  const displayColor = selectedWorkstream?.color || '#64748b';
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative' }}>
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 12px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+          borderRadius: '8px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+          minWidth: '140px',
+        }}
+      >
+        <Layers size={14} style={{ color: selectedId ? displayColor : '#64748b' }} />
+        <span style={{ 
+          flex: 1, 
+          fontSize: '13px', 
+          fontWeight: 500, 
+          color: selectedId ? COLORS.textPrimary : '#64748b',
+        }}>
+          {displayName}
+        </span>
+        <ChevronDown 
+          size={14} 
+          style={{ 
+            color: COLORS.textLight, 
+            transition: 'transform 0.2s ease', 
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' 
+          }} 
+        />
+      </div>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '10px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            zIndex: 100001,
+            padding: '6px',
+            minWidth: '180px',
+          }}
+        >
+          {/* All Workstreams option */}
+          <DropdownItem
+            value="All Workstreams"
+            color="#64748b"
+            isSelected={!selectedId}
+            onClick={() => { onSelect(null); setIsOpen(false); }}
+          />
+          
+          {workstreams.map((ws) => (
+            <DropdownItem
+              key={ws.id}
+              value={ws.name}
+              color={ws.color || '#3b82f6'}
+              isSelected={ws.id === selectedId}
+              onClick={() => { onSelect(ws.id); setIsOpen(false); }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// STATUS DROPDOWN - Enterprise Clean (matches TaskDetailDrawer)
+// ============================================================
+function StatusDropdown({ 
+  selectedStatus, 
+  onSelect 
+}: { 
+  selectedStatus?: string;
+  onSelect: (status: string | null) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selected = STATUS_OPTIONS.find(s => s.value === selectedStatus);
+  const displayName = selected?.label || 'Status';
+  const displayColor = selected?.color || '#64748b';
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative' }}>
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 12px',
+          backgroundColor: COLORS.surfaceCard,
+          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+          borderRadius: '8px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          boxShadow: isOpen ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
+          minWidth: '120px',
+        }}
+      >
+        {selectedStatus && (
+          <span
+            style={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '50%',
+              backgroundColor: displayColor,
+              flexShrink: 0,
+            }}
+          />
+        )}
+        <span style={{ 
+          flex: 1, 
+          fontSize: '13px', 
+          fontWeight: 500, 
+          color: selectedStatus ? COLORS.textPrimary : '#64748b',
+        }}>
+          {displayName}
+        </span>
+        <ChevronDown 
+          size={14} 
+          style={{ 
+            color: COLORS.textLight, 
+            transition: 'transform 0.2s ease', 
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' 
+          }} 
+        />
+      </div>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            backgroundColor: COLORS.surfaceCard,
+            border: `1px solid ${COLORS.borderDefault}`,
+            borderRadius: '10px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            zIndex: 100001,
+            padding: '6px',
+            minWidth: '160px',
+          }}
+        >
+          {/* All Statuses option */}
+          <DropdownItem
+            value="All Statuses"
+            color="#64748b"
+            isSelected={!selectedStatus}
+            onClick={() => { onSelect(null); setIsOpen(false); }}
+          />
+          
+          {STATUS_OPTIONS.map((status) => (
+            <DropdownItem
+              key={status.value}
+              value={status.label}
+              color={status.color}
+              isSelected={status.value === selectedStatus}
+              onClick={() => { onSelect(status.value); setIsOpen(false); }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// SHARED DROPDOWN ITEM - Enterprise Clean styling
+// ============================================================
+function DropdownItem({ 
+  value, 
+  color, 
+  isSelected, 
+  onClick 
+}: { 
+  value: string; 
+  color: string; 
+  isSelected: boolean; 
+  onClick: () => void;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 12px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        backgroundColor: isSelected ? COLORS.accentLight : (isHovered ? COLORS.surfaceHover : 'transparent'),
+        transition: 'background-color 0.1s ease'
+      }}
+    >
+      <span
+        style={{
+          width: '10px',
+          height: '10px',
+          borderRadius: '50%',
+          backgroundColor: color,
+          flexShrink: 0,
+        }}
+      />
+      <span style={{ fontSize: '14px', color: COLORS.textPrimary }}>{value}</span>
+      {isSelected && <Check size={16} style={{ color: COLORS.accent, marginLeft: 'auto' }} />}
     </div>
   );
 }
