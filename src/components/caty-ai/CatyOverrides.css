@@ -26,20 +26,34 @@
 }
 
 .caty-header-title {
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
   color: #0f172a !important;
+  letter-spacing: -0.02em !important;
 }
 
 .caty-header-subtitle {
+  font-size: 0.8125rem !important;
   color: #64748b !important;
 }
 
-.caty-header-btn {
-  color: #64748b !important;
-  background: transparent !important;
+.caty-header-icon {
+  width: 56px !important;
+  height: 56px !important;
+  background: #2563eb !important;
+  border-radius: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-.caty-header-btn.escalate {
-  color: #2563eb !important;
+.caty-header-icon svg {
+  color: white !important;
+}
+
+/* HIDE HEADER ACTIONS */
+.caty-header-actions {
+  display: none !important;
 }
 
 /* CONTEXT BAR = LIGHT BLUE */
@@ -571,4 +585,73 @@
 
 .caty-capability-list li strong {
   color: #0f172a !important;
+}
+
+/* DATA SUMMARY (Empty State) */
+.caty-data-summary {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 24px !important;
+  margin: 24px 0 32px !important;
+  padding: 20px !important;
+  background: #f8fafc !important;
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.caty-data-stat {
+  text-align: center !important;
+}
+
+.caty-data-value {
+  display: block !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #2563eb !important;
+}
+
+.caty-data-label {
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* THINKING STATE */
+.caty-thinking {
+  background: #f1f5f9 !important;
+  border-radius: 14px !important;
+  border-bottom-left-radius: 4px !important;
+  padding: 18px 22px !important;
+}
+
+.caty-thinking-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-weight: 500 !important;
+  color: #475569 !important;
+}
+
+.caty-thinking-spinner {
+  color: #2563eb !important;
+  animation: caty-spin 1s linear infinite !important;
+}
+
+@keyframes caty-spin {
+  to { transform: rotate(360deg); }
+}
+
+.caty-thinking-stats {
+  margin-top: 8px !important;
+  font-size: 0.8125rem !important;
+  color: #64748b !important;
+}
+
+/* MSG BODY */
+.caty-msg-body {
+  flex: 1 !important;
+  min-width: 0 !important;
 }

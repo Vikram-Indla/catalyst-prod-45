@@ -21,5 +21,5 @@ export interface CatySession {
 export interface CatyContext {
   department: string;
   period: string;
-  view: string;
+  location?: string; // "On-Site" | "Off-Shore" | "All"
 }
