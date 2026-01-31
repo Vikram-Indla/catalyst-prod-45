@@ -1,14 +1,17 @@
 // ============================================================
 // MY TASKS CONTENT - Enterprise Linear-Aligned V2
 // Ring-fenced CSS: mytasks-page, mytasks-container, etc.
-// Sections: Overdue → Today → This Week → Later
+// Sections: Overdue → Today → This Week → Later → Completed Today
 // ============================================================
 
-import { useMemo } from 'react';
-import { Search, Plus, Layers } from 'lucide-react';
+import { useMemo, useEffect } from 'react';
+import { Plus, Layers } from 'lucide-react';
 import { useMyTasks } from '../../hooks/useMyTasks';
+import { useMyTasksUndo } from '../../hooks/useMyTasksUndo';
+import { useUncompleteMyTask } from '../../hooks/useUncompleteMyTask';
 import { MyTasksHeader } from './MyTasksHeader';
 import { TaskSection } from './TaskSection';
+import { CompletedTodaySection } from './CompletedTodaySection';
 import type { FilterConfig, TimeSection, MyTask } from '../../types/my-tasks';
 // Import ring-fenced CSS
 import '@/styles/mytasks.css';
@@ -32,6 +35,14 @@ const SECTION_CONFIG: Record<TimeSection, { label: string; color: string }> = {
   completed: { label: 'Completed', color: '#10b981' },
 };
 
+// Check if task was completed today
+function isCompletedToday(completedAt: string | null): boolean {
+  if (!completedAt) return false;
+  const completed = new Date(completedAt);
+  const today = new Date();
+  return completed.toDateString() === today.toDateString();
+}
+
 export function MyTasksContent({
   filters,
   onFilterChange,
@@ -39,19 +50,58 @@ export function MyTasksContent({
   onOpenTaskDetail,
 }: MyTasksContentProps) {
   const { data: tasks = [], isLoading } = useMyTasks(filters);
+  const { popUndo, clearExpired } = useMyTasksUndo();
+  const uncompleteTask = useUncompleteMyTask();
 
-  // Group tasks by time section
+  // Keyboard shortcut: Cmd+Z for undo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault();
+        const action = popUndo();
+        if (action && action.type === 'complete') {
+          uncompleteTask.mutate({
+            taskId: action.taskId,
+            originalSection: action.originalSection,
+          });
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [popUndo, uncompleteTask]);
+
+  // Clear expired undo actions periodically
+  useEffect(() => {
+    const interval = setInterval(clearExpired, 10000);
+    return () => clearInterval(interval);
+  }, [clearExpired]);
+
+  // Group tasks by time section including completed today
   const tasksBySection = useMemo(() => {
-    const grouped: Record<TimeSection, MyTask[]> = {
+    const grouped: Record<TimeSection | 'completedToday', MyTask[]> = {
       overdue: [],
       today: [],
       this_week: [],
       upcoming: [],
       someday: [],
       completed: [],
+      completedToday: [],
     };
 
     tasks.forEach((task) => {
+      // Check if it's a task completed today
+      if (task.status_is_done && isCompletedToday(task.completed_at)) {
+        grouped.completedToday.push(task);
+        return;
+      }
+
+      // Skip other completed tasks (not today)
+      if (task.status_is_done) {
+        return;
+      }
+
       const section = task.time_section as TimeSection;
       // Merge someday into upcoming (Later)
       if (section === 'someday') {
@@ -78,6 +128,7 @@ export function MyTasksContent({
         filters={filters}
         onFilterChange={onFilterChange}
         onOpenCreateModal={onOpenCreateModal}
+        completedTodayCount={tasksBySection.completedToday.length}
       />
 
       {/* Content Area - Scrollable with padding */}
@@ -89,7 +140,7 @@ export function MyTasksContent({
               <div className="mytasks-loading__spinner" />
               Loading tasks...
             </div>
-          ) : visibleSections.length === 0 ? (
+          ) : visibleSections.length === 0 && tasksBySection.completedToday.length === 0 ? (
             <div className="mytasks-empty">
               <Layers className="mytasks-empty__icon" />
               <h3 className="mytasks-empty__title">No tasks found</h3>
@@ -110,6 +161,7 @@ export function MyTasksContent({
             </div>
           ) : (
             <>
+              {/* Active task sections */}
               {visibleSections.map((section) => (
                 <TaskSection
                   key={section}
@@ -119,6 +171,12 @@ export function MyTasksContent({
                   onOpenDetail={onOpenTaskDetail}
                 />
               ))}
+
+              {/* Completed Today Section */}
+              <CompletedTodaySection
+                tasks={tasksBySection.completedToday}
+                onOpenDetail={onOpenTaskDetail}
+              />
             </>
           )}
         </div>

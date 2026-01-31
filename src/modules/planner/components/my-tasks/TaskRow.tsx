@@ -1,13 +1,14 @@
 // ============================================================
-// TASK ROW - Enterprise Linear-Aligned V2
+// TASK ROW - Enterprise Linear-Aligned V2 with Completion Animation
 // Ring-fenced CSS: mytasks-row, mytasks-checkbox, etc.
 // Visual Hierarchy: Checkbox → ID (mono) → Title (500) → Workstream (dot+text) → Date → Actions
 // ============================================================
 
-import { Check, Calendar, Clock, Edit2, Trash2, MoreHorizontal } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Check, Calendar, Clock, Edit2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useCompleteMyTask } from '../../hooks/useMyTasks';
-import type { MyTask } from '../../types/my-tasks';
+import { useCompleteMyTaskWithUndo } from '../../hooks/useCompleteMyTaskWithUndo';
+import type { MyTask, TimeSection } from '../../types/my-tasks';
 import { format, isToday, isTomorrow, isThisWeek, isBefore, startOfDay } from 'date-fns';
 
 interface TaskRowProps {
@@ -25,7 +26,6 @@ function normalizeWorkstreamName(name: string | null): string | null {
 // Derive workstream dot color from workstream color or name
 function getWorkstreamDotClass(color?: string | null, name?: string | null): string {
   if (color) {
-    // Map common colors to dot classes
     if (color.includes('3b82f6') || color.includes('blue')) return 'mytasks-row__workstream-dot--blue';
     if (color.includes('14b8a6') || color.includes('teal')) return 'mytasks-row__workstream-dot--teal';
     if (color.includes('8b5cf6') || color.includes('purple')) return 'mytasks-row__workstream-dot--purple';
@@ -33,22 +33,54 @@ function getWorkstreamDotClass(color?: string | null, name?: string | null): str
     if (color.includes('ec4899') || color.includes('pink')) return 'mytasks-row__workstream-dot--pink';
     if (color.includes('22c55e') || color.includes('green')) return 'mytasks-row__workstream-dot--green';
   }
-  // Default to slate
   return 'mytasks-row__workstream-dot--slate';
 }
 
-export function TaskRow({ task, onOpenDetail, isOverdueSection }: TaskRowProps) {
-  const completeTask = useCompleteMyTask();
+// Helper for animation timing
+function wait(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-  const handleComplete = (e: React.MouseEvent) => {
+export function TaskRow({ task, onOpenDetail, isOverdueSection }: TaskRowProps) {
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(task.status_is_done);
+  const rowRef = useRef<HTMLDivElement>(null);
+  
+  const completeTask = useCompleteMyTaskWithUndo();
+
+  const handleComplete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!task.status_is_done) {
-      completeTask.mutate(task.id);
+    
+    if (!isCompleted && !isCompleting) {
+      // COMPLETING TASK - with animation sequence
+      setIsCompleting(true);
+      
+      // Step 1: Show completing state (green flash)
+      await wait(150);
+      
+      // Step 2: Show completed state (strikethrough)
+      setIsCompleted(true);
+      await wait(250);
+      
+      // Step 3: Fade out
+      rowRef.current?.classList.add('mytasks-row--fade-out');
+      await wait(400);
+      
+      // Step 4: Actually complete in database
+      completeTask.mutate({
+        taskId: task.id,
+        taskTitle: task.title,
+        originalSection: task.time_section as TimeSection,
+      });
+      
+      setIsCompleting(false);
     }
   };
 
   const handleRowClick = () => {
-    onOpenDetail(task.id);
+    if (!isCompleting) {
+      onOpenDetail(task.id);
+    }
   };
 
   // Format due date with color state
@@ -89,29 +121,38 @@ export function TaskRow({ task, onOpenDetail, isOverdueSection }: TaskRowProps) 
 
   return (
     <div
+      ref={rowRef}
       className={cn(
         'mytasks-row',
         isOverdue && 'mytasks-row--overdue',
-        task.status_is_done && 'opacity-50'
+        isCompleting && 'mytasks-row--completing',
+        isCompleted && 'mytasks-row--completed'
       )}
       onClick={handleRowClick}
+      data-task-id={task.id}
     >
       {/* Checkbox - 16px, Linear style */}
       <button
         onClick={handleComplete}
+        disabled={isCompleting}
         className={cn(
           'mytasks-checkbox',
-          task.status_is_done && 'mytasks-checkbox--checked'
+          isCompleted && 'mytasks-checkbox--checked'
         )}
       >
-        {task.status_is_done && <Check className="w-2.5 h-2.5" />}
+        {isCompleted && <Check className="w-2.5 h-2.5" />}
       </button>
 
       {/* Task ID - Monospace, NO badge */}
       <span className="mytasks-row__id">{task.task_key}</span>
 
       {/* Task Title - Weight 500, primary */}
-      <span className="mytasks-row__title">{task.title}</span>
+      <span className={cn(
+        'mytasks-row__title',
+        isCompleted && 'mytasks-row__title--completed'
+      )}>
+        {task.title}
+      </span>
 
       {/* Workstream - 8px dot + grey text */}
       {workstreamName && (

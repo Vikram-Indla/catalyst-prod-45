@@ -8,3 +8,4 @@ export * from './MyTasksContent';
 export * from './MyTasksHeader';
 export * from './TaskSection';
 export * from './TaskRow';
+export * from './CompletedTodaySection';

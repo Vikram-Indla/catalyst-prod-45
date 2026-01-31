@@ -1,8 +1,10 @@
 // ============================================================
 // MY TASKS HEADER - Enterprise Linear-Aligned V2
 // Ring-fenced CSS: mytasks-header, mytasks-summary-card, etc.
+// With KPI pulse animation on completion
 // ============================================================
 
+import { useRef, useEffect } from 'react';
 import { Plus, Search, X, ChevronDown, Layers } from 'lucide-react';
 import {
   DropdownMenu,
@@ -18,15 +20,32 @@ interface MyTasksHeaderProps {
   filters: FilterConfig;
   onFilterChange: (filters: Partial<FilterConfig>) => void;
   onOpenCreateModal: () => void;
+  completedTodayCount?: number;
 }
 
 export function MyTasksHeader({
   filters,
   onFilterChange,
   onOpenCreateModal,
+  completedTodayCount = 0,
 }: MyTasksHeaderProps) {
   const { data: summary, isLoading } = useMyTasksSummary();
   const workstreams: { id: string; name: string; color?: string }[] = [];
+  
+  // Ref for pulse animation
+  const doneCountRef = useRef<HTMLDivElement>(null);
+  const prevCompletedRef = useRef(completedTodayCount);
+
+  // Pulse animation when completed count increases
+  useEffect(() => {
+    if (completedTodayCount > prevCompletedRef.current) {
+      doneCountRef.current?.classList.add('mytasks-kpi-pulse');
+      setTimeout(() => {
+        doneCountRef.current?.classList.remove('mytasks-kpi-pulse');
+      }, 300);
+    }
+    prevCompletedRef.current = completedTodayCount;
+  }, [completedTodayCount]);
 
   // Active filter count
   const activeFilterCount = [
@@ -69,9 +88,12 @@ export function MyTasksHeader({
             </div>
             <div className="mytasks-summary-card__label">Today</div>
           </div>
-          <div className="mytasks-summary-card mytasks-summary-card--done">
+          <div 
+            ref={doneCountRef}
+            className="mytasks-summary-card mytasks-summary-card--done"
+          >
             <div className="mytasks-summary-card__value">
-              {isLoading ? '—' : summary?.completed_today || 0}
+              {isLoading ? '—' : completedTodayCount}
             </div>
             <div className="mytasks-summary-card__label">Done</div>
           </div>
