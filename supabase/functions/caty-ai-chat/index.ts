@@ -20,8 +20,9 @@ function isFinancialQuery(query: string): boolean {
   return BANNED_FINANCIAL_TERMS.some(term => lower.includes(term));
 }
 
+// Must match the required exact rejection message
 const FINANCIAL_REJECTION_MESSAGE = `<div class="caty-bubble">
-  <p>This question is outside the Capacity Planning domain. Financial or payment-related information is intentionally not supported.</p>
+  <p>This question is outside the Capacity Planning domain. Financial information is intentionally not supported.</p>
 </div>`;
 
 // ============ QUERY INTENT DETECTION ============
@@ -76,12 +77,18 @@ interface QueryResult {
 
 function detectQueryIntent(message: string): QueryIntent {
   const lower = message.toLowerCase();
-  
-  // Check for specific patterns
+
+  // Contract/expiry intent should win over generic "show X" patterns
+  if (lower.includes('expir') || lower.includes('expiration') || lower.includes('contract') || lower.includes('ending')) {
+    return 'contract_window';
+  }
+
+  // Generic list queries should NOT be treated as a person/resource lookup
+  if (/(?:show|find)\s+(?:all\s+)?resources\b/i.test(lower)) return 'mixed';
+
+  // Check for specific patterns that imply a specific person/resource lookup
   if (/\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/.test(message)) return 'resource_lookup';
-  if (/(?:who is|show|find|about|when is|look up|lookup)\s+\w+/i.test(lower)) return 'resource_lookup';
-  
-  if (lower.includes('expir') || lower.includes('contract') || lower.includes('ending')) return 'contract_window';
+  if (/(?:who is|about|when is|look up|lookup)\s+\w+/i.test(lower)) return 'resource_lookup';
   if (lower.includes('vendor')) return 'vendor_filter';
   if (lower.includes('department') || lower.includes('dept')) return 'department_filter';
   if (lower.includes('role') || lower.includes('developer') || lower.includes('engineer') || lower.includes('pm')) return 'role_filter';
@@ -107,7 +114,16 @@ function extractResourceName(message: string): string | null {
     const match = message.match(pattern);
     if (match?.[1]) {
       const name = match[1].toLowerCase();
-      const exclude = ['the', 'all', 'my', 'our', 'any', 'some', 'this', 'that', 'department', 'team', 'offshore', 'onsite'];
+      // Avoid treating generic nouns as resource names (critical to prevent false "no results")
+      const exclude = [
+        // stopwords
+        'with', 'for', 'from', 'into', 'over', 'under', 'within', 'between',
+        'the', 'all', 'my', 'our', 'any', 'some', 'this', 'that',
+        'department', 'dept', 'team', 'vendor', 'role',
+        'resource', 'resources',
+        'contract', 'contracts', 'expiring', 'expiry', 'expiration', 'upcoming',
+        'offshore', 'onsite',
+      ];
       if (!exclude.includes(name)) return match[1];
     }
   }
@@ -115,7 +131,13 @@ function extractResourceName(message: string): string | null {
   // Short input fallback
   const words = message.trim().split(/\s+/);
   if (words.length <= 2 && message.trim().length >= 3) {
-    const aggregateWords = ['summary', 'total', 'count', 'average', 'department', 'vendor', 'offshore', 'onsite', 'expiring', 'utilization'];
+    const aggregateWords = [
+      'summary', 'total', 'count', 'average',
+      'department', 'vendor', 'offshore', 'onsite',
+      'expiring', 'expiry', 'expiration', 'contract',
+      'utilization', 'allocation', 'capacity',
+      'resource', 'resources',
+    ];
     if (!aggregateWords.some(kw => message.toLowerCase().includes(kw))) {
       return message.trim();
     }
@@ -183,11 +205,14 @@ function parseTimeWindow(query: string): { type: 'none' | 'relative' | 'range'; 
 
 function buildQueryPlan(message: string, context: any): QueryPlan {
   const intent = detectQueryIntent(message);
-  const resourceName = extractResourceName(message);
+  // Only treat input as a resource lookup when intent is resource_lookup.
+  // This prevents list/contract queries like "Show resources with contracts expiring soon"
+  // from being mis-parsed as a name lookup (e.g., "with").
+  const resourceName = intent === 'resource_lookup' ? extractResourceName(message) : null;
   const timeWindow = parseTimeWindow(message);
   
   return {
-    intent: resourceName ? 'resource_lookup' : intent,
+    intent,
     entities: {
       resource_name: resourceName || undefined,
       department_name: context?.department && !context.department.toLowerCase().includes('all') ? context.department : undefined,
