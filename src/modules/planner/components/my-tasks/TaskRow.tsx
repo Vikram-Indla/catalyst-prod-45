@@ -1,9 +1,10 @@
 // ============================================================
-// TASK ROW - Enterprise Clean V1
-// Elevated cards, rounded square checkboxes, muted IDs
+// TASK ROW - Enterprise Linear-Aligned V2
+// Ring-fenced CSS: mytasks-row, mytasks-checkbox, etc.
+// Visual Hierarchy: Checkbox → ID (mono) → Title (500) → Workstream (dot+text) → Date → Actions
 // ============================================================
 
-import { Check, Calendar, Clock } from 'lucide-react';
+import { Check, Calendar, Clock, Edit2, Trash2, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCompleteMyTask } from '../../hooks/useMyTasks';
 import type { MyTask } from '../../types/my-tasks';
@@ -21,6 +22,21 @@ function normalizeWorkstreamName(name: string | null): string | null {
   return name;
 }
 
+// Derive workstream dot color from workstream color or name
+function getWorkstreamDotClass(color?: string | null, name?: string | null): string {
+  if (color) {
+    // Map common colors to dot classes
+    if (color.includes('3b82f6') || color.includes('blue')) return 'mytasks-row__workstream-dot--blue';
+    if (color.includes('14b8a6') || color.includes('teal')) return 'mytasks-row__workstream-dot--teal';
+    if (color.includes('8b5cf6') || color.includes('purple')) return 'mytasks-row__workstream-dot--purple';
+    if (color.includes('f97316') || color.includes('orange')) return 'mytasks-row__workstream-dot--orange';
+    if (color.includes('ec4899') || color.includes('pink')) return 'mytasks-row__workstream-dot--pink';
+    if (color.includes('22c55e') || color.includes('green')) return 'mytasks-row__workstream-dot--green';
+  }
+  // Default to slate
+  return 'mytasks-row__workstream-dot--slate';
+}
+
 export function TaskRow({ task, onOpenDetail, isOverdueSection }: TaskRowProps) {
   const completeTask = useCompleteMyTask();
 
@@ -35,25 +51,25 @@ export function TaskRow({ task, onOpenDetail, isOverdueSection }: TaskRowProps) 
     onOpenDetail(task.id);
   };
 
-  // Format due date
-  const formatDueDate = () => {
+  // Format due date with color state
+  const formatDueDate = (): { text: string; state: 'overdue' | 'today' | 'upcoming' } | null => {
     if (!task.due_date) return null;
     const date = new Date(task.due_date);
     const today = startOfDay(new Date());
 
     if (isBefore(date, today)) {
-      return { text: format(date, 'MMM d'), isOverdue: true };
+      return { text: format(date, 'MMM d'), state: 'overdue' };
     }
     if (isToday(date)) {
-      return { text: 'Today', isOverdue: false };
+      return { text: 'Today', state: 'today' };
     }
     if (isTomorrow(date)) {
-      return { text: 'Tomorrow', isOverdue: false };
+      return { text: 'Tomorrow', state: 'upcoming' };
     }
     if (isThisWeek(date, { weekStartsOn: 0 })) {
-      return { text: format(date, 'EEE'), isOverdue: false };
+      return { text: format(date, 'EEE'), state: 'upcoming' };
     }
-    return { text: format(date, 'MMM d'), isOverdue: false };
+    return { text: format(date, 'MMM d'), state: 'upcoming' };
   };
 
   const dueDate = formatDueDate();
@@ -69,57 +85,83 @@ export function TaskRow({ task, onOpenDetail, isOverdueSection }: TaskRowProps) 
   };
 
   const timeEstimate = formatTime(task.time_estimate_minutes);
+  const isOverdue = isOverdueSection || dueDate?.state === 'overdue';
 
   return (
     <div
       className={cn(
-        'mt-task-card group',
-        isOverdueSection && 'task-overdue',
+        'mytasks-row',
+        isOverdue && 'mytasks-row--overdue',
         task.status_is_done && 'opacity-50'
       )}
       onClick={handleRowClick}
     >
-      {/* Checkbox - Rounded Square */}
+      {/* Checkbox - 16px, Linear style */}
       <button
         onClick={handleComplete}
-        className={cn('mt-checkbox', task.status_is_done && 'checked')}
+        className={cn(
+          'mytasks-checkbox',
+          task.status_is_done && 'mytasks-checkbox--checked'
+        )}
       >
-        {task.status_is_done && <Check className="w-3 h-3" />}
+        {task.status_is_done && <Check className="w-2.5 h-2.5" />}
       </button>
 
-      {/* Task ID - Muted Gray */}
-      <span className="mt-task-id">{task.task_key}</span>
+      {/* Task ID - Monospace, NO badge */}
+      <span className="mytasks-row__id">{task.task_key}</span>
 
-      {/* Title */}
-      <span className={cn('mt-task-title', task.status_is_done && 'completed')}>
-        {task.title}
-      </span>
+      {/* Task Title - Weight 500, primary */}
+      <span className="mytasks-row__title">{task.title}</span>
 
-      {/* Meta: Workstream, Due Date, Time */}
-      <div className="mt-task-meta">
-        {/* Workstream - Text only, no dot */}
-        {workstreamName && (
-          <span className="mt-workstream-name">
-            <span className="mt-workstream-dot" /> {/* Hidden via CSS */}
-            {workstreamName}
-          </span>
-        )}
+      {/* Workstream - 8px dot + grey text */}
+      {workstreamName && (
+        <span className="mytasks-row__workstream">
+          <span 
+            className={cn(
+              'mytasks-row__workstream-dot',
+              getWorkstreamDotClass(task.workstream_color, workstreamName)
+            )}
+            style={task.workstream_color ? { backgroundColor: task.workstream_color } : undefined}
+          />
+          {workstreamName}
+        </span>
+      )}
 
-        {/* Due Date */}
+      {/* Date + Duration meta group */}
+      <div className="mytasks-row__meta">
+        {/* Due Date - Color coded */}
         {dueDate && (
-          <span className={cn('flex items-center gap-1', dueDate.isOverdue && 'mt-date-overdue')}>
-            <Calendar className="w-3.5 h-3.5" />
+          <span className={cn(
+            'mytasks-row__date',
+            dueDate.state === 'overdue' && 'mytasks-row__date--overdue',
+            dueDate.state === 'today' && 'mytasks-row__date--today',
+            dueDate.state === 'upcoming' && 'mytasks-row__date--upcoming'
+          )}>
+            <Calendar className="mytasks-row__date-icon" />
             {dueDate.text}
           </span>
         )}
 
-        {/* Time Estimate */}
+        {/* Duration - Subtle */}
         {timeEstimate && (
-          <span className="mt-time-estimate">
-            <Clock className="w-3 h-3" />
-            {timeEstimate}
-          </span>
+          <>
+            {dueDate && <span className="mytasks-row__meta-separator">·</span>}
+            <span className="mytasks-row__duration">
+              <Clock className="mytasks-row__duration-icon" />
+              {timeEstimate}
+            </span>
+          </>
         )}
+      </div>
+
+      {/* Row Actions - Appear on hover */}
+      <div className="mytasks-row__actions">
+        <button className="mytasks-action-btn" onClick={(e) => { e.stopPropagation(); onOpenDetail(task.id); }}>
+          <Edit2 />
+        </button>
+        <button className="mytasks-action-btn mytasks-action-btn--danger" onClick={(e) => { e.stopPropagation(); }}>
+          <Trash2 />
+        </button>
       </div>
     </div>
   );

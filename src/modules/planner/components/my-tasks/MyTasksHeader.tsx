@@ -1,6 +1,6 @@
 // ============================================================
-// MY TASKS HEADER - Enterprise Clean V1
-// Invasive override with elevated KPI cards and sentence case
+// MY TASKS HEADER - Enterprise Linear-Aligned V2
+// Ring-fenced CSS: mytasks-header, mytasks-summary-card, etc.
 // ============================================================
 
 import { Plus, Search, X, ChevronDown, Layers } from 'lucide-react';
@@ -44,59 +44,57 @@ export function MyTasksHeader({
 
   return (
     <div className="flex-shrink-0">
-      {/* ROW 1: Header with KPI Cards */}
-      <div className="mt-header flex items-center justify-between">
+      {/* Header with Summary Cards */}
+      <div className="mytasks-header">
         <div>
-          <h1>My Tasks</h1>
-          <p className="mt-subtitle">{subtitleText}</p>
+          <h1 className="mytasks-header-title">My Tasks</h1>
+          <p className="mytasks-header-subtitle">{subtitleText}</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* KPI Cards - Enterprise Clean Style */}
-          <div className="mt-kpi-card kpi-overdue">
-            <span className="mt-kpi-value">{isLoading ? '—' : summary?.overdue_count || 0}</span>
-            <span className="mt-kpi-label">Overdue</span>
+        {/* Summary Cards - Linear style */}
+        <div className="mytasks-summary-cards">
+          <div className="mytasks-summary-card mytasks-summary-card--overdue">
+            <div className="mytasks-summary-card__value">
+              {isLoading ? '—' : summary?.overdue_count || 0}
+            </div>
+            <div className="mytasks-summary-card__label">Overdue</div>
           </div>
-          <div className="mt-kpi-card kpi-today">
-            <span className="mt-kpi-value">{isLoading ? '—' : summary?.today_count || 0}</span>
-            <span className="mt-kpi-label">Today</span>
+          <div className="mytasks-summary-card mytasks-summary-card--today">
+            <div className="mytasks-summary-card__value">
+              {isLoading ? '—' : summary?.today_count || 0}
+            </div>
+            <div className="mytasks-summary-card__label">Today</div>
           </div>
-          <div className="mt-kpi-card kpi-done">
-            <span className="mt-kpi-value">{isLoading ? '—' : summary?.completed_today || 0}</span>
-            <span className="mt-kpi-label">Done</span>
+          <div className="mytasks-summary-card mytasks-summary-card--done">
+            <div className="mytasks-summary-card__value">
+              {isLoading ? '—' : summary?.completed_today || 0}
+            </div>
+            <div className="mytasks-summary-card__label">Done</div>
           </div>
         </div>
       </div>
 
-      {/* ROW 2: Toolbar */}
-      <div className="mt-toolbar">
-        <div className="flex items-center gap-2 flex-1">
+      {/* Toolbar */}
+      <div className="mytasks-toolbar">
+        <div className="mytasks-toolbar__left">
           {/* Search */}
-          <div className="mt-search">
-            <Search className="w-4 h-4 mt-search-icon" />
+          <div className="mytasks-search">
+            <Search className="mytasks-search__icon" />
             <input
               type="text"
-              placeholder="Search tasks... ⌘K"
+              placeholder="Search tasks..."
               value={filters.searchQuery || ''}
               onChange={(e) => onFilterChange({ searchQuery: e.target.value || undefined })}
-              className="mt-search-input"
+              className="mytasks-search__input"
             />
-            {filters.searchQuery && (
-              <button
-                onClick={() => onFilterChange({ searchQuery: undefined })}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-                style={{ color: 'var(--mt-text-muted)' }}
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+            <span className="mytasks-search__shortcut">⌘K</span>
           </div>
 
           {/* Workstream Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="mt-filter-btn">
-                <Layers className="w-4 h-4" />
+              <button className="mytasks-filter-btn">
+                <Layers className="mytasks-filter-btn__icon" />
                 {filters.workstreams?.[0] 
                   ? workstreams.find(w => w.id === filters.workstreams?.[0])?.name || 'Workstream'
                   : 'Workstream'
@@ -123,7 +121,7 @@ export function MyTasksHeader({
           {/* Status Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="mt-filter-btn">
+              <button className="mytasks-filter-btn">
                 {filters.statuses?.[0] || 'Status'}
                 <ChevronDown className="w-3 h-3" />
               </button>
@@ -159,7 +157,7 @@ export function MyTasksHeader({
                 workstreams: undefined,
                 searchQuery: undefined,
               })} 
-              className="mt-filter-btn"
+              className="mytasks-filter-btn"
             >
               <X className="w-4 h-4" />
               Clear ({activeFilterCount})
@@ -169,7 +167,7 @@ export function MyTasksHeader({
 
         {/* Add Task Button */}
         <button 
-          className="mt-btn-primary"
+          className="mytasks-add-btn"
           onClick={onOpenCreateModal}
         >
           <Plus className="w-4 h-4" />

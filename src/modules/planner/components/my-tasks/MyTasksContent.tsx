@@ -1,17 +1,17 @@
 // ============================================================
-// MY TASKS CONTENT - Enterprise Clean V1
+// MY TASKS CONTENT - Enterprise Linear-Aligned V2
+// Ring-fenced CSS: mytasks-page, mytasks-container, etc.
 // Sections: Overdue → Today → This Week → Later
-// Uses mytasks-enterprise-clean CSS override
 // ============================================================
 
 import { useMemo } from 'react';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Layers } from 'lucide-react';
 import { useMyTasks } from '../../hooks/useMyTasks';
 import { MyTasksHeader } from './MyTasksHeader';
 import { TaskSection } from './TaskSection';
 import type { FilterConfig, TimeSection, MyTask } from '../../types/my-tasks';
-// Import Enterprise Clean override styles
-import '@/styles/mytasks-enterprise-clean.css';
+// Import ring-fenced CSS
+import '@/styles/mytasks.css';
 
 interface MyTasksContentProps {
   filters: FilterConfig;
@@ -20,7 +20,7 @@ interface MyTasksContentProps {
   onOpenTaskDetail: (taskId: string) => void;
 }
 
-// Per justification: Overdue → Today → This Week → Later
+// Per spec: Overdue → Today → This Week → Later
 const SECTION_ORDER: TimeSection[] = ['overdue', 'today', 'this_week', 'upcoming'];
 
 const SECTION_CONFIG: Record<TimeSection, { label: string; color: string }> = {
@@ -72,27 +72,26 @@ export function MyTasksContent({
   }, [tasksBySection]);
 
   return (
-    <div className="mytasks-enterprise-clean flex flex-col h-full" data-component="mytasks">
-      {/* Header with KPIs and Filters */}
+    <div className="mytasks-page">
+      {/* Header with KPIs and Toolbar */}
       <MyTasksHeader
         filters={filters}
         onFilterChange={onFilterChange}
         onOpenCreateModal={onOpenCreateModal}
       />
 
-      {/* Task Sections - Enterprise Clean cards */}
-      <div className="mt-content">
+      {/* Task Container */}
+      <div className="mytasks-container">
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <div className="mytasks-loading">
+            <div className="mytasks-loading__spinner" />
+            Loading tasks...
           </div>
         ) : visibleSections.length === 0 ? (
-          <div className="mt-empty-state">
-            <div className="mt-empty-icon">
-              <Search className="w-7 h-7" />
-            </div>
-            <h3 className="mt-empty-title">No tasks found</h3>
-            <p className="mt-empty-text">
+          <div className="mytasks-empty">
+            <Layers className="mytasks-empty__icon" />
+            <h3 className="mytasks-empty__title">No tasks found</h3>
+            <p className="mytasks-empty__description">
               {filters.searchQuery
                 ? `No tasks match "${filters.searchQuery}"`
                 : 'You have no tasks yet. Create your first task to get started.'}
@@ -100,7 +99,7 @@ export function MyTasksContent({
             {!filters.searchQuery && (
               <button 
                 onClick={onOpenCreateModal} 
-                className="mt-btn-primary mt-4"
+                className="mytasks-add-btn mt-4"
               >
                 <Plus className="w-4 h-4" />
                 Add Task
@@ -108,7 +107,7 @@ export function MyTasksContent({
             )}
           </div>
         ) : (
-          <div>
+          <>
             {visibleSections.map((section) => (
               <TaskSection
                 key={section}
@@ -118,7 +117,7 @@ export function MyTasksContent({
                 onOpenDetail={onOpenTaskDetail}
               />
             ))}
-          </div>
+          </>
         )}
       </div>
     </div>
