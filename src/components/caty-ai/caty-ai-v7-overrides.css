@@ -71,7 +71,19 @@
 .caty-widget .caty-context-tag.active{background:#2563eb!important;border-color:#2563eb!important;color:#ffffff!important}
 
 .caty-widget .caty-messages{padding:24px!important;margin:0!important;gap:24px!important}
-.caty-widget .caty-input-area{padding:18px 24px 22px!important;margin:0!important}
+
+/* INPUT AREA - FORCE STYLED */
+.caty-widget .caty-input-area{padding:18px 24px 22px!important;margin:0!important;background:#ffffff!important;border-top:1px solid #e2e8f0!important}
+.caty-widget .caty-input-wrapper{display:flex!important;align-items:flex-end!important;gap:12px!important;background:#f1f5f9!important;border:1px solid #e2e8f0!important;border-radius:14px!important;padding:10px 14px!important}
+.caty-widget .caty-input-wrapper:focus-within{border-color:#2563eb!important;box-shadow:0 0 0 3px #dbeafe!important}
+.caty-widget .caty-input-btn{width:44px!important;height:44px!important;display:flex!important;align-items:center!important;justify-content:center!important;color:#64748b!important;background:transparent!important;border:none!important;border-radius:10px!important}
+.caty-widget .caty-input-btn:hover{background:rgba(0,0,0,0.04)!important;color:#475569!important}
+.caty-widget .caty-input-field{flex:1!important}
+.caty-widget .caty-input-field textarea{width:100%!important;min-height:44px!important;max-height:140px!important;resize:none!important;border:none!important;background:transparent!important;font-size:0.9375rem!important;color:#0f172a!important;outline:none!important;padding:12px 0!important;line-height:1.5!important}
+.caty-widget .caty-input-field textarea::placeholder{color:#94a3b8!important}
+.caty-widget .caty-send-btn{width:48px!important;height:48px!important;background:#2563eb!important;color:#ffffff!important;border:none!important;border-radius:12px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+.caty-widget .caty-send-btn:hover{background:#1d4ed8!important}
+.caty-widget .caty-send-btn:disabled{background:#e2e8f0!important;color:#94a3b8!important;cursor:not-allowed!important}
 
 .caty-widget{position:relative!important;z-index:1000!important}
 .caty-widget .caty-history{z-index:1100!important}
