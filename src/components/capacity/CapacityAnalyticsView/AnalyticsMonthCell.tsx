@@ -162,21 +162,29 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
               {primarySegment.assignment.name}
             </span>
             
-            {/* Horizontal progress bar at bottom (Strategy D) */}
-            <div 
-              className="allocation-bar absolute bottom-1 left-1.5 right-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: '#e2e8f0' }}
+            {/* Horizontal progress bar at bottom (Strategy D)
+                Use SVG so “nuclear” CSS background overrides can’t wipe out the fill color. */}
+            <svg
+              className="allocation-bar absolute bottom-1 left-1.5 right-1.5 h-1.5"
+              viewBox="0 0 100 4"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              style={{ pointerEvents: 'none' }}
             >
-              <div 
-                className="h-full rounded-full"
-                style={{ 
-                  width: `${barWidth}%`,
-                  backgroundColor: barColor,
-                  transition: 'width 0.3s ease'
-                }}
+              {/* Track */}
+              <rect x="0" y="0" width="100" height="4" rx="2" ry="2" fill="#e2e8f0" />
+              {/* Fill */}
+              <rect
+                x="0"
+                y="0"
+                width={barWidth}
+                height="4"
+                rx="2"
+                ry="2"
+                fill={barColor}
                 data-project={projectSlug}
               />
-            </div>
+            </svg>
           </div>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-xs">
