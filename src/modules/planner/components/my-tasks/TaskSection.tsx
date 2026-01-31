@@ -1,8 +1,9 @@
 // ============================================================
-// TASK SECTION - Enterprise Clean V1
-// Sentence case headers, hidden dots, card-based tasks
+// TASK SECTION - Enterprise Linear-Aligned V2
+// Ring-fenced CSS: mytasks-section-header, uppercase labels
 // ============================================================
 
+import { AlertCircle, Clock, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TaskRow } from './TaskRow';
 import type { MyTask } from '../../types/my-tasks';
@@ -23,19 +24,36 @@ export function TaskSection({
   if (tasks.length === 0) return null;
 
   const isOverdue = title.toLowerCase() === 'overdue';
+  const isToday = title.toLowerCase() === 'today';
+  const isUpcoming = title.toLowerCase() === 'this week' || title.toLowerCase() === 'later';
+
+  // Get section icon
+  const SectionIcon = isOverdue ? AlertCircle : isToday ? Clock : Calendar;
+  const iconClass = isOverdue 
+    ? 'mytasks-section-header__icon--overdue' 
+    : isToday 
+      ? 'mytasks-section-header__icon--today' 
+      : 'mytasks-section-header__icon--upcoming';
+
+  const titleClass = isOverdue 
+    ? 'mytasks-section-header__title--overdue' 
+    : isToday 
+      ? 'mytasks-section-header__title--today' 
+      : 'mytasks-section-header__title--upcoming';
 
   return (
-    <div className="mb-6">
-      {/* Section Header - Enterprise Clean: Sentence case, no dots */}
-      <div className={cn('mt-section-header', isOverdue && 'section-overdue')}>
-        {/* Hidden dot for backward compat */}
-        <span className="mt-section-dot" style={{ backgroundColor: color }} />
-        <h3 className="mt-section-title">{title}</h3>
-        <span className="mt-section-count">{tasks.length}</span>
+    <div className="mb-2">
+      {/* Section Header - Linear style */}
+      <div className="mytasks-section-header">
+        <SectionIcon className={cn('mytasks-section-header__icon', iconClass)} />
+        <h3 className={cn('mytasks-section-header__title', titleClass)}>
+          {title.toUpperCase()}
+        </h3>
+        <span className="mytasks-section-header__count">{tasks.length}</span>
       </div>
 
-      {/* Task Cards - Enterprise Clean style */}
-      <div className="space-y-0">
+      {/* Task Rows */}
+      <div>
         {tasks.map((task) => (
           <TaskRow
             key={task.id}

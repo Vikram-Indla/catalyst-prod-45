@@ -1,0 +1,716 @@
+/* ============================================================================
+   MY TASKS MODULE — RING-FENCED DESIGN TOKENS
+   
+   File: src/styles/mytasks.css
+   Namespace: --mytasks-* (prevents conflicts with Catalyst V5 / Planner)
+   Benchmark: Linear, Asana
+   Score Target: 9.1/10
+   
+   CRITICAL: Import this file in your MyTasks component
+   import '@/styles/mytasks.css';
+   ============================================================================ */
+
+:root {
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
+  
+  /* Task Title — PRIMARY (confident, not loud) */
+  --mytasks-title-font-size: 14px;
+  --mytasks-title-font-weight: 500;  /* NOT 600 — medium weight per Linear */
+  --mytasks-title-color: #1e293b;    /* slate-800 */
+  --mytasks-title-color-overdue: #991b1b;  /* red-800 */
+  
+  /* Task ID — SECONDARY (visible but subtle) */
+  --mytasks-id-font-size: 12px;
+  --mytasks-id-font-weight: 400;
+  --mytasks-id-font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  --mytasks-id-color: #64748b;       /* slate-500 — visible, not dead */
+  --mytasks-id-color-overdue: #b91c1c;  /* red-700 */
+  
+  /* Workstream — TERTIARY (present but quiet) */
+  --mytasks-workstream-font-size: 12px;
+  --mytasks-workstream-font-weight: 400;
+  --mytasks-workstream-color: #64748b;  /* slate-500 */
+  
+  /* Date — METADATA */
+  --mytasks-date-font-size: 13px;
+  --mytasks-date-font-weight: 400;
+  --mytasks-date-color-overdue: #dc2626;   /* red-600 */
+  --mytasks-date-color-today: #4f46e5;     /* indigo-600 — NOT red */
+  --mytasks-date-color-upcoming: #64748b;  /* slate-500 */
+  
+  /* Duration — SUBTLE METADATA */
+  --mytasks-duration-font-size: 12px;
+  --mytasks-duration-font-weight: 400;
+  --mytasks-duration-color: #94a3b8;  /* slate-400 */
+  
+  /* Section Headers */
+  --mytasks-section-font-size: 12px;
+  --mytasks-section-font-weight: 600;
+  --mytasks-section-letter-spacing: 0.04em;
+  --mytasks-section-color-overdue: #dc2626;
+  --mytasks-section-color-today: #1e293b;
+  --mytasks-section-color-upcoming: #64748b;
+  
+  /* ========================================
+     COLORS — SURFACES
+     ======================================== */
+  
+  --mytasks-bg-page: #f8fafc;
+  --mytasks-bg-card: #ffffff;
+  --mytasks-bg-row: #ffffff;
+  --mytasks-bg-row-hover: #f9fafb;       /* Very subtle — Linear style */
+  --mytasks-bg-row-overdue: #fffbfb;     /* Barely tinted pink */
+  --mytasks-bg-row-overdue-hover: #fef2f2;
+  --mytasks-bg-section-header: #f8fafc;
+  --mytasks-bg-toolbar: #f8fafc;
+  
+  /* ========================================
+     COLORS — BORDERS
+     ======================================== */
+  
+  --mytasks-border-light: #f1f5f9;
+  --mytasks-border-default: #e2e8f0;
+  --mytasks-border-row: #f1f5f9;
+  --mytasks-border-overdue: #ef4444;     /* 3px left accent */
+  --mytasks-border-today: #6366f1;       /* Optional: indigo accent */
+  
+  /* ========================================
+     COLORS — WORKSTREAM DOTS (8px circles)
+     ======================================== */
+  
+  --mytasks-dot-blue: #3b82f6;
+  --mytasks-dot-teal: #14b8a6;
+  --mytasks-dot-purple: #8b5cf6;
+  --mytasks-dot-orange: #f97316;
+  --mytasks-dot-pink: #ec4899;
+  --mytasks-dot-green: #22c55e;
+  --mytasks-dot-slate: #64748b;
+  
+  /* ========================================
+     COLORS — INTERACTIVE
+     ======================================== */
+  
+  --mytasks-checkbox-border: #d1d5db;
+  --mytasks-checkbox-border-hover: #6366f1;
+  --mytasks-checkbox-bg-hover: #eef2ff;
+  --mytasks-checkbox-border-overdue: #fca5a5;
+  --mytasks-checkbox-border-overdue-hover: #ef4444;
+  
+  --mytasks-action-color: #9ca3af;
+  --mytasks-action-color-hover: #4b5563;
+  --mytasks-action-bg-hover: #f3f4f6;
+  
+  /* ========================================
+     SPACING
+     ======================================== */
+  
+  --mytasks-page-padding: 32px 40px;
+  --mytasks-card-padding: 0;
+  --mytasks-card-radius: 12px;
+  --mytasks-row-padding: 12px 20px;
+  --mytasks-row-gap: 12px;
+  --mytasks-section-header-padding: 14px 20px;
+  --mytasks-toolbar-padding: 16px 20px;
+  
+  /* ========================================
+     SIZING
+     ======================================== */
+  
+  --mytasks-checkbox-size: 16px;        /* Linear uses 16px, not 20px */
+  --mytasks-checkbox-radius: 4px;
+  --mytasks-checkbox-border-width: 1.5px;
+  
+  --mytasks-dot-size: 8px;              /* Workstream indicator */
+  
+  --mytasks-action-btn-size: 28px;
+  --mytasks-action-icon-size: 14px;
+  
+  /* ========================================
+     TRANSITIONS
+     ======================================== */
+  
+  --mytasks-transition-fast: 0.1s ease;
+  --mytasks-transition-normal: 0.15s ease;
+}
+
+
+/* ============================================================================
+   PAGE CONTAINER
+   ============================================================================ */
+
+.mytasks-page {
+  padding: var(--mytasks-page-padding);
+  background-color: var(--mytasks-bg-page);
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+
+/* ============================================================================
+   PAGE HEADER
+   ============================================================================ */
+
+.mytasks-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.mytasks-header-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.mytasks-header-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Summary Cards */
+.mytasks-summary-cards {
+  display: flex;
+  gap: 12px;
+}
+
+.mytasks-summary-card {
+  padding: 12px 20px;
+  border-radius: 10px;
+  text-align: center;
+  min-width: 80px;
+}
+
+.mytasks-summary-card--overdue {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.mytasks-summary-card--today {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.mytasks-summary-card--done {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.mytasks-summary-card__value {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.mytasks-summary-card--overdue .mytasks-summary-card__value { color: #dc2626; }
+.mytasks-summary-card--today .mytasks-summary-card__value { color: #2563eb; }
+.mytasks-summary-card--done .mytasks-summary-card__value { color: #16a34a; }
+
+.mytasks-summary-card__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+
+/* ============================================================================
+   TOOLBAR
+   ============================================================================ */
+
+.mytasks-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--mytasks-toolbar-padding);
+  background-color: var(--mytasks-bg-toolbar);
+  border-bottom: 1px solid var(--mytasks-border-default);
+}
+
+.mytasks-toolbar__left {
+  display: flex;
+  gap: 12px;
+}
+
+.mytasks-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  border: 1px solid var(--mytasks-border-default);
+  border-radius: 10px;
+  width: 260px;
+}
+
+.mytasks-search__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  font-family: inherit;
+}
+
+.mytasks-search__input::placeholder {
+  color: #94a3b8;
+}
+
+.mytasks-search__icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.mytasks-search__shortcut {
+  padding: 3px 6px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.mytasks-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  border: 1px solid var(--mytasks-border-default);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--mytasks-transition-fast);
+}
+
+.mytasks-filter-btn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.mytasks-filter-btn__icon {
+  color: #64748b;
+}
+
+.mytasks-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color var(--mytasks-transition-fast);
+}
+
+.mytasks-add-btn:hover {
+  background-color: #1d4ed8;
+}
+
+
+/* ============================================================================
+   TASK LIST CONTAINER
+   ============================================================================ */
+
+.mytasks-container {
+  background-color: var(--mytasks-bg-card);
+  border: 1px solid var(--mytasks-border-default);
+  border-radius: var(--mytasks-card-radius);
+  overflow: hidden;
+}
+
+
+/* ============================================================================
+   SECTION HEADER
+   ============================================================================ */
+
+.mytasks-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--mytasks-section-header-padding);
+  background-color: var(--mytasks-bg-section-header);
+  border-bottom: 1px solid var(--mytasks-border-default);
+}
+
+.mytasks-section-header__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.mytasks-section-header__icon--overdue { color: #dc2626; }
+.mytasks-section-header__icon--today { color: #64748b; }
+.mytasks-section-header__icon--upcoming { color: #94a3b8; }
+
+.mytasks-section-header__title {
+  font-size: var(--mytasks-section-font-size);
+  font-weight: var(--mytasks-section-font-weight);
+  text-transform: uppercase;
+  letter-spacing: var(--mytasks-section-letter-spacing);
+  margin: 0;
+}
+
+.mytasks-section-header__title--overdue { color: var(--mytasks-section-color-overdue); }
+.mytasks-section-header__title--today { color: var(--mytasks-section-color-today); }
+.mytasks-section-header__title--upcoming { color: var(--mytasks-section-color-upcoming); }
+
+.mytasks-section-header__count {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+  background-color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+
+/* ============================================================================
+   TASK ROW — THE CORE COMPONENT
+   
+   Visual Hierarchy:
+   ┌─────────────────────────────────────────────────────────────────────────┐
+   │ ☐  PLN-51-4   API Documentation Update    ● Catalyst    Jan 30 · 3h  ⋮ │
+   │ │      │              │                       │            │         │ │
+   │ │      │              │                       │            │         └─ Actions (hover)
+   │ │      │              │                       │            └─ Date + Duration
+   │ │      │              │                       └─ Workstream (dot + text)
+   │ │      │              └─ Task Title (weight 500, PRIMARY)
+   │ │      └─ Task ID (monospace, subtle)
+   │ └─ Checkbox (16px)
+   └─────────────────────────────────────────────────────────────────────────┘
+   ============================================================================ */
+
+.mytasks-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mytasks-row-gap);
+  padding: var(--mytasks-row-padding);
+  background-color: var(--mytasks-bg-row);
+  border-bottom: 1px solid var(--mytasks-border-row);
+  cursor: pointer;
+  transition: background-color var(--mytasks-transition-fast);
+}
+
+.mytasks-row:last-child {
+  border-bottom: none;
+}
+
+.mytasks-row:hover {
+  background-color: var(--mytasks-bg-row-hover);
+}
+
+.mytasks-row:hover .mytasks-row__actions {
+  opacity: 1;
+}
+
+/* Overdue State */
+.mytasks-row--overdue {
+  border-left: 3px solid var(--mytasks-border-overdue);
+  background-color: var(--mytasks-bg-row-overdue);
+}
+
+.mytasks-row--overdue:hover {
+  background-color: var(--mytasks-bg-row-overdue-hover);
+}
+
+
+/* ============================================================================
+   CHECKBOX — 16px, 1.5px border (Linear style)
+   ============================================================================ */
+
+.mytasks-checkbox {
+  width: var(--mytasks-checkbox-size);
+  height: var(--mytasks-checkbox-size);
+  border: var(--mytasks-checkbox-border-width) solid var(--mytasks-checkbox-border);
+  border-radius: var(--mytasks-checkbox-radius);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all var(--mytasks-transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+}
+
+.mytasks-checkbox:hover {
+  border-color: var(--mytasks-checkbox-border-hover);
+  background-color: var(--mytasks-checkbox-bg-hover);
+}
+
+.mytasks-row--overdue .mytasks-checkbox {
+  border-color: var(--mytasks-checkbox-border-overdue);
+}
+
+.mytasks-row--overdue .mytasks-checkbox:hover {
+  border-color: var(--mytasks-checkbox-border-overdue-hover);
+  background-color: #fef2f2;
+}
+
+.mytasks-checkbox--checked {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.mytasks-checkbox--checked svg {
+  color: #ffffff;
+  width: 10px;
+  height: 10px;
+}
+
+
+/* ============================================================================
+   TASK ID — Monospace, NO badge (Linear style)
+   
+   CRITICAL: Do NOT add background or padding. Linear doesn't use badges.
+   ============================================================================ */
+
+.mytasks-row__id {
+  font-family: var(--mytasks-id-font-family);
+  font-size: var(--mytasks-id-font-size);
+  font-weight: var(--mytasks-id-font-weight);
+  color: var(--mytasks-id-color);
+  min-width: 70px;
+  flex-shrink: 0;
+  /* NO background, NO padding — this is intentional */
+}
+
+.mytasks-row--overdue .mytasks-row__id {
+  color: var(--mytasks-id-color-overdue);
+}
+
+
+/* ============================================================================
+   TASK TITLE — Weight 500, NOT 600 (Linear style)
+   
+   CRITICAL: Do NOT change to font-weight: 600. That's too loud.
+   The title should be confident but not screaming.
+   ============================================================================ */
+
+.mytasks-row__title {
+  flex: 1;
+  font-size: var(--mytasks-title-font-size);
+  font-weight: var(--mytasks-title-font-weight);  /* 500 — medium, NOT bold */
+  color: var(--mytasks-title-color);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mytasks-row--overdue .mytasks-row__title {
+  color: var(--mytasks-title-color-overdue);
+}
+
+
+/* ============================================================================
+   WORKSTREAM — 8px Dot + subtle text, NO badge (Asana style)
+   
+   CRITICAL: Do NOT add background color to this. The dot provides
+   the visual anchor without creating badge noise at scale.
+   ============================================================================ */
+
+.mytasks-row__workstream {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--mytasks-workstream-font-size);
+  font-weight: var(--mytasks-workstream-font-weight);
+  color: var(--mytasks-workstream-color);
+  flex-shrink: 0;
+  /* NO background, NO padding — this is intentional */
+}
+
+.mytasks-row__workstream-dot {
+  width: var(--mytasks-dot-size);
+  height: var(--mytasks-dot-size);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Workstream dot color variants */
+.mytasks-row__workstream-dot--blue { background-color: var(--mytasks-dot-blue); }
+.mytasks-row__workstream-dot--teal { background-color: var(--mytasks-dot-teal); }
+.mytasks-row__workstream-dot--purple { background-color: var(--mytasks-dot-purple); }
+.mytasks-row__workstream-dot--orange { background-color: var(--mytasks-dot-orange); }
+.mytasks-row__workstream-dot--pink { background-color: var(--mytasks-dot-pink); }
+.mytasks-row__workstream-dot--green { background-color: var(--mytasks-dot-green); }
+.mytasks-row__workstream-dot--slate { background-color: var(--mytasks-dot-slate); }
+
+
+/* ============================================================================
+   DATE — Consistent color rules
+   
+   CRITICAL COLOR RULES:
+   - Overdue: #dc2626 (red)
+   - Today: #4f46e5 (indigo) — NOT red!
+   - Upcoming: #64748b (grey)
+   ============================================================================ */
+
+.mytasks-row__date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--mytasks-date-font-size);
+  font-weight: var(--mytasks-date-font-weight);
+  flex-shrink: 0;
+}
+
+.mytasks-row__date--overdue { color: var(--mytasks-date-color-overdue); }
+.mytasks-row__date--today { color: var(--mytasks-date-color-today); }
+.mytasks-row__date--upcoming { color: var(--mytasks-date-color-upcoming); }
+
+.mytasks-row__date-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+
+/* ============================================================================
+   DURATION — Subtle, optional, grouped with date
+   
+   CRITICAL: Do NOT add badge styling. Keep this subtle.
+   ============================================================================ */
+
+.mytasks-row__duration {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--mytasks-duration-font-size);
+  font-weight: var(--mytasks-duration-font-weight);
+  color: var(--mytasks-duration-color);
+  flex-shrink: 0;
+  /* NO background — keep it subtle */
+}
+
+.mytasks-row__duration-icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* Optional: Date + Duration grouped */
+.mytasks-row__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mytasks-row__meta-separator {
+  color: #d1d5db;
+  font-size: 10px;
+}
+
+
+/* ============================================================================
+   ROW ACTIONS — Appear on hover (Linear style)
+   ============================================================================ */
+
+.mytasks-row__actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--mytasks-transition-normal);
+  margin-left: 8px;
+}
+
+.mytasks-action-btn {
+  width: var(--mytasks-action-btn-size);
+  height: var(--mytasks-action-btn-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--mytasks-action-color);
+  transition: all var(--mytasks-transition-fast);
+}
+
+.mytasks-action-btn:hover {
+  background-color: var(--mytasks-action-bg-hover);
+  color: var(--mytasks-action-color-hover);
+}
+
+.mytasks-action-btn--danger:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.mytasks-action-btn svg {
+  width: var(--mytasks-action-icon-size);
+  height: var(--mytasks-action-icon-size);
+}
+
+
+/* ============================================================================
+   EMPTY STATE
+   ============================================================================ */
+
+.mytasks-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.mytasks-empty__icon {
+  width: 48px;
+  height: 48px;
+  color: #d1d5db;
+  margin-bottom: 16px;
+}
+
+.mytasks-empty__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.mytasks-empty__description {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+
+/* ============================================================================
+   LOADING STATE
+   ============================================================================ */
+
+.mytasks-loading {
+  padding: 60px 20px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.mytasks-loading__spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: mytasks-spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes mytasks-spin {
+  to { transform: rotate(360deg); }
+}
