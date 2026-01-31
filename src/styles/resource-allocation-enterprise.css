@@ -76,15 +76,9 @@
 
 /* ─────────────────────────────────────────────────────────────
    GRID CONTAINER
+   NOTE: Removed grid/table layout overrides to preserve existing structure
    ───────────────────────────────────────────────────────────── */
-.ra-enterprise-clean .allocation-grid,
-.ra-enterprise-clean [class*="allocation-grid"],
-.ra-enterprise-clean [class*="resource-grid"],
-.ra-enterprise-clean table {
-  background: var(--ra-slate-50) !important;
-  border-collapse: separate !important;
-  border-spacing: 4px !important;
-}
+/* Layout rules removed - preserve native table structure */
 
 /* ─────────────────────────────────────────────────────────────
    ALLOCATION CELL — BASE (Strategy D: Horizontal Bar)
