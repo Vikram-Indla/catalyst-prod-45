@@ -589,8 +589,56 @@ export default function CapacityPlannerPage() {
   };
   
   // Handler to open allocation booking modal
+  // Supports both profile_id (from cards/table) and resource_inventory.id (from heatmap)
   const handleOpenAllocationModal = useCallback((resourceId: string) => {
-    const resource = metrics.resources.find(r => r.id === resourceId);
+    // First try direct match by id (profile_id)
+    let resource = metrics.resources.find(r => r.id === resourceId);
+    
+    // If not found, try matching by resourceInventoryId (from heatmap view)
+    if (!resource) {
+      resource = metrics.resources.find(r => (r as any).resourceInventoryId === resourceId);
+    }
+    
+    // If still not found, try to fetch from resource_inventory directly
+    if (!resource) {
+      // Build a minimal resource from the ID for the modal
+      // The modal will fetch full details using the resource_inventory.id
+      supabase
+        .from('resource_inventory')
+        .select('id, name, role_name, department_id, vendor_name, contract_start_date, contract_end_date, country_id, location_id')
+        .eq('id', resourceId)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            const minimalResource = {
+              id: resourceId,
+              name: data.name || 'Unknown',
+              role: data.role_name || 'Resource',
+              department: undefined,
+              department_id: data.department_id,
+              vendor_name: data.vendor_name,
+              contract_start_date: data.contract_start_date,
+              contract_end_date: data.contract_end_date,
+              allocation: 0,
+              assignments: [],
+              country: undefined,
+              location: undefined,
+              avatar_url: undefined,
+              resourceInventoryId: resourceId,
+              status: 'active',
+              email: '',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            } as unknown as ResourceMetric;
+            setAllocationModalResource(minimalResource);
+            setAllocationModalOpen(true);
+          } else {
+            toast.error('Resource not found');
+          }
+        });
+      return;
+    }
+    
     if (resource) {
       setAllocationModalResource(resource);
       setAllocationModalOpen(true);
