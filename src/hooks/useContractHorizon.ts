@@ -88,9 +88,34 @@ export function useContractHorizon() {
     return map;
   }, [vendors]);
 
+  // Fetch locations to determine On-Site vs Off-Shore
+  const { data: locationData = [] } = useQuery({
+    queryKey: ['resource-locations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_locations')
+        .select('id, name')
+        .eq('is_active', true);
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Build set of On-Site location IDs
+  const onSiteLocationIds = useMemo(() => {
+    const ids = new Set<string>();
+    locationData.forEach(loc => {
+      const locName = (loc.name || '').toLowerCase().trim();
+      if (locName.includes('onsite') || locName.includes('on-site') || locName.includes('on site')) {
+        ids.add(loc.id);
+      }
+    });
+    return ids;
+  }, [locationData]);
+
   // Fetch ALL resources from resource_inventory (no filters - parity with Utilization/Gantt views)
   const { data: rawResources = [], isLoading } = useQuery({
-    queryKey: ['contract-horizon-resources', departmentMap, vendorMap],
+    queryKey: ['contract-horizon-resources', departmentMap, vendorMap, onSiteLocationIds],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_inventory')
@@ -107,26 +132,27 @@ export function useContractHorizon() {
           country_id,
           location_id
         `);
-      // Removed filters: .not('contract_end_date', 'is', null) and .gte('contract_end_date', ...)
-      // This ensures parity with Utilization and Gantt views (74 resources)
 
       if (error) throw error;
 
-      // Map to contract resources (no role filtering - include all resources)
-      return (data || []).map((r: any) => ({
+      // Map to contract resources - use location_id to determine On-Site vs Off-Shore
+      return (data || []).map((r: any) => {
+        const isOnSite = r.location_id && onSiteLocationIds.has(r.location_id);
+        return {
           id: r.id,
           name: r.name || 'Unknown',
           role: r.role_name || 'Team Member',
           department: departmentMap[r.department_id] || 'Unassigned',
           vendor: r.vendor_id ? vendorMap[r.vendor_id] || r.vendor_name || 'Unknown' : r.vendor_name || 'Unknown',
           country: 'Saudi Arabia',
-          location: r.location_id ? 'Off-shore' : 'On-site',
+          location: isOnSite ? 'On-Site' : 'Off-Shore',
           contractStart: r.contract_start_date || '2026-01-01',
           contractEnd: r.contract_end_date,
           profileId: r.profile_id
-        })) as ContractResource[];
+        };
+      }) as ContractResource[];
     },
-    enabled: departments.length > 0 && vendors.length > 0
+    enabled: departments.length > 0 && vendors.length > 0 && locationData.length > 0
   });
 
   // Process resources with computed status

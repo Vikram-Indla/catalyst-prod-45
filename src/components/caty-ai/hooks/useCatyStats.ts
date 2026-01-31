@@ -1,6 +1,6 @@
 /**
  * CATY AI V7 — Stats Hook
- * Uses actual Catalyst database schema
+ * Uses location_id to determine On-Site vs Off-Shore (NOT country codes)
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -16,8 +16,6 @@ export interface CatyStats {
   offShore: number;
 }
 
-const ONSITE_COUNTRY_CODES = ['SA', 'KSA'];
-
 export function useCatyStats(departmentId?: string | null) {
   return useQuery({
     queryKey: ['caty-stats', departmentId],
@@ -28,10 +26,25 @@ export function useCatyStats(departmentId?: string | null) {
       const todayStr = today.toISOString().split('T')[0];
       const futureStr = futureDate.toISOString().split('T')[0];
       
+      // Fetch locations to determine On-Site vs Off-Shore
+      const { data: locations } = await supabase
+        .from('resource_locations')
+        .select('id, name')
+        .eq('is_active', true);
+      
+      // Build set of On-Site location IDs based on location NAME
+      const onSiteLocationIds = new Set<string>();
+      (locations || []).forEach(loc => {
+        const locName = (loc.name || '').toLowerCase().trim();
+        if (locName.includes('onsite') || locName.includes('on-site') || locName.includes('on site')) {
+          onSiteLocationIds.add(loc.id);
+        }
+      });
+      
       // Fetch resources
       let resourceQuery = supabase
         .from('resource_inventory')
-        .select('id, country_id, contract_end_date')
+        .select('id, location_id, contract_end_date')
         .eq('is_active', true);
       
       if (departmentId) {
@@ -52,16 +65,6 @@ export function useCatyStats(departmentId?: string | null) {
         };
       }
       
-      // Fetch countries to determine on-site vs off-shore
-      const { data: countries } = await supabase
-        .from('resource_countries')
-        .select('id, code')
-        .eq('is_active', true);
-      
-      const onSiteCountryIds = countries
-        ?.filter(c => ONSITE_COUNTRY_CODES.includes((c.code || '').toUpperCase()))
-        .map(c => c.id) || [];
-      
       // Fetch allocations
       const resourceIds = resources.map(r => r.id);
       const { data: allocations } = await supabase
@@ -70,7 +73,7 @@ export function useCatyStats(departmentId?: string | null) {
         .in('resource_id', resourceIds)
         .lte('start_date', todayStr)
         .gte('end_date', todayStr)
-        .eq('status', 'active');
+        .in('status', ['active', 'committed', 'forecast']);
       
       // Calculate utilization per resource
       const utilMap = new Map<string, number>();
@@ -90,8 +93,8 @@ export function useCatyStats(departmentId?: string | null) {
         if (u > 100) overUtilized++;
         if (u < 30) available++;
         
-        // Check if on-site
-        if (r.country_id && onSiteCountryIds.includes(r.country_id)) {
+        // Check if On-Site using location_id (NOT country)
+        if (r.location_id && onSiteLocationIds.has(r.location_id)) {
           onSite++;
         }
         
