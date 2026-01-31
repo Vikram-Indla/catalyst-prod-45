@@ -6,7 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// ============ RESOURCE DETECTION ============
+// ============ QUERY TYPE DETECTION ============
+
+type QueryType = 'individual_resource' | 'aggregate' | 'general';
 
 const RESOURCE_KEYWORDS = [
   'who', 'resource', 'contractor', 'engineer', 'developer', 'pm', 'project manager',
@@ -14,10 +16,31 @@ const RESOURCE_KEYWORDS = [
   'person', 'team member', 'employee', 'staff', 'consultant'
 ];
 
-function isResourceInvolvedQuery(message: string): boolean {
+const AGGREGATE_KEYWORDS = [
+  'by department', 'department', 'all resources', 'team', 'everyone', 'summary',
+  'overview', 'breakdown', 'distribution', 'across', 'total', 'offshore', 'off-shore',
+  'onsite', 'on-site', 'expiring', 'contracts', 'how many', 'count'
+];
+
+function detectQueryType(message: string): QueryType {
   const lower = message.toLowerCase();
-  return RESOURCE_KEYWORDS.some(kw => lower.includes(kw)) ||
-    /\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/.test(message); // Name pattern
+  
+  // Check for aggregate keywords first
+  if (AGGREGATE_KEYWORDS.some(kw => lower.includes(kw))) {
+    return 'aggregate';
+  }
+  
+  // Check for specific resource identifier (name pattern)
+  if (/\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/.test(message)) {
+    return 'individual_resource';
+  }
+  
+  // Check for resource keywords
+  if (RESOURCE_KEYWORDS.some(kw => lower.includes(kw))) {
+    return 'aggregate';
+  }
+  
+  return 'general';
 }
 
 function extractResourceIdentifier(message: string): string | null {
@@ -364,6 +387,202 @@ async function buildResourceContext(
   };
 }
 
+// ============ AGGREGATE CONTEXT BUILDER ============
+
+async function buildAggregateContext(
+  supabase: any,
+  context: { department?: string; period?: string; location?: string }
+): Promise<any> {
+  const timeRange = parseTimeRange(context.period || '');
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Build date range for allocations
+  let dateStart = today;
+  let dateEnd = today;
+  if (timeRange.start && timeRange.end) {
+    dateStart = timeRange.start;
+    dateEnd = timeRange.end;
+  }
+  
+  // Step 1: Fetch all active resources
+  let resourceQuery = supabase
+    .from('resource_inventory')
+    .select('id, name, department_id, department_name, vendor_id, vendor_name, country_id, contract_end_date, role_name')
+    .eq('is_active', true);
+  
+  // Filter by department if specified and not "All"
+  const deptName = context.department || 'All Departments';
+  if (deptName && !deptName.toLowerCase().includes('all')) {
+    // Try to find department by name
+    const { data: depts } = await supabase
+      .from('departments')
+      .select('id, name')
+      .ilike('name', `%${deptName.replace('Department', '').trim()}%`)
+      .limit(1);
+    
+    if (depts && depts.length > 0) {
+      resourceQuery = resourceQuery.eq('department_id', depts[0].id);
+    }
+  }
+  
+  const { data: resources, error: resourceError } = await resourceQuery;
+  
+  if (resourceError || !resources || resources.length === 0) {
+    console.log('[CATY] No resources found for aggregate query', resourceError);
+    return {
+      summary: {
+        total_resources: 0,
+        message: 'No resources found matching the criteria'
+      },
+      time_range: timeRange
+    };
+  }
+  
+  // Step 2: Fetch countries for site status
+  const countryIds = [...new Set(resources.map((r: any) => r.country_id).filter(Boolean))];
+  let countryMap = new Map<string, { code: string; name: string }>();
+  
+  if (countryIds.length > 0) {
+    const { data: countries } = await supabase
+      .from('resource_countries')
+      .select('id, code, name')
+      .in('id', countryIds);
+    
+    countryMap = new Map((countries || []).map((c: any) => [c.id, { code: c.code || '', name: c.name }]));
+  }
+  
+  // Step 3: Fetch allocations for all resources
+  const resourceIds = resources.map((r: any) => r.id);
+  const { data: allocations } = await supabase
+    .from('resource_allocations')
+    .select('resource_id, allocation_percent')
+    .in('resource_id', resourceIds)
+    .lte('start_date', dateEnd)
+    .gte('end_date', dateStart)
+    .eq('status', 'active');
+  
+  // Build utilization map
+  const utilMap = new Map<string, number>();
+  (allocations || []).forEach((a: any) => {
+    utilMap.set(a.resource_id, (utilMap.get(a.resource_id) || 0) + (a.allocation_percent || 0));
+  });
+  
+  // Step 4: Calculate stats
+  let totalUtil = 0;
+  let overUtilized = 0;
+  let underUtilized = 0;
+  let onTarget = 0;
+  let onSiteCount = 0;
+  let offShoreCount = 0;
+  
+  // Track by department
+  const deptStats = new Map<string, { count: number; totalUtil: number; over: number }>();
+  
+  // Track expiring contracts (within 30 days)
+  const expiringResources: any[] = [];
+  const thirtyDaysFromNow = new Date();
+  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+  
+  resources.forEach((r: any) => {
+    const util = utilMap.get(r.id) || 0;
+    totalUtil += util;
+    
+    if (util > 100) overUtilized++;
+    else if (util >= 80 && util <= 90) onTarget++;
+    else underUtilized++;
+    
+    // Site status
+    const country = countryMap.get(r.country_id);
+    const isOnSite = country?.code?.toUpperCase() === 'SA' || country?.code?.toUpperCase() === 'KSA';
+    if (isOnSite) onSiteCount++;
+    else offShoreCount++;
+    
+    // Department stats
+    const deptKey = r.department_name || 'Unknown';
+    if (!deptStats.has(deptKey)) {
+      deptStats.set(deptKey, { count: 0, totalUtil: 0, over: 0 });
+    }
+    const deptStat = deptStats.get(deptKey)!;
+    deptStat.count++;
+    deptStat.totalUtil += util;
+    if (util > 100) deptStat.over++;
+    
+    // Expiring contracts
+    if (r.contract_end_date) {
+      const endDate = new Date(r.contract_end_date);
+      if (endDate >= new Date() && endDate <= thirtyDaysFromNow) {
+        const daysUntil = Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        expiringResources.push({
+          name: r.name,
+          department: r.department_name,
+          contract_end_date: r.contract_end_date,
+          days_until_expiry: daysUntil,
+          utilization: util,
+          site_status: isOnSite ? 'on_site' : 'off_shore'
+        });
+      }
+    }
+  });
+  
+  // Build department breakdown
+  const departmentBreakdown = Array.from(deptStats.entries())
+    .map(([name, stats]) => ({
+      department_name: name,
+      resource_count: stats.count,
+      avg_utilization: Math.round(stats.totalUtil / stats.count),
+      over_utilized_count: stats.over
+    }))
+    .sort((a, b) => b.resource_count - a.resource_count);
+  
+  // Build off-shore breakdown by country
+  const offshoreByCountry = new Map<string, { name: string; count: number; totalUtil: number }>();
+  resources.forEach((r: any) => {
+    const country = countryMap.get(r.country_id);
+    if (!country || country.code?.toUpperCase() === 'SA' || country.code?.toUpperCase() === 'KSA') return;
+    
+    const key = country.code || 'Unknown';
+    if (!offshoreByCountry.has(key)) {
+      offshoreByCountry.set(key, { name: country.name, count: 0, totalUtil: 0 });
+    }
+    const stat = offshoreByCountry.get(key)!;
+    stat.count++;
+    stat.totalUtil += utilMap.get(r.id) || 0;
+  });
+  
+  const offshoreBreakdown = Array.from(offshoreByCountry.entries())
+    .map(([code, stats]) => ({
+      country_code: code,
+      country_name: stats.name,
+      resource_count: stats.count,
+      avg_utilization: Math.round(stats.totalUtil / stats.count)
+    }))
+    .sort((a, b) => b.resource_count - a.resource_count);
+  
+  // Sort expiring by days_until_expiry
+  expiringResources.sort((a, b) => a.days_until_expiry - b.days_until_expiry);
+  
+  return {
+    summary: {
+      total_resources: resources.length,
+      avg_utilization: Math.round(totalUtil / resources.length),
+      over_utilized_count: overUtilized,
+      under_utilized_count: underUtilized,
+      on_target_count: onTarget,
+      on_site_count: onSiteCount,
+      off_shore_count: offShoreCount,
+      expiring_contracts_count: expiringResources.length
+    },
+    department_breakdown: departmentBreakdown.slice(0, 10),
+    offshore_breakdown: offshoreBreakdown.slice(0, 8),
+    expiring_contracts: expiringResources.slice(0, 10),
+    time_range: timeRange,
+    filter_applied: {
+      department: deptName,
+      location: context.location || 'All Locations'
+    }
+  };
+}
+
 // ============ SYSTEM PROMPT ============
 
 const SYSTEM_PROMPT = `YOU ARE CATY AI™ (Capacity Assistant) INSIDE CATALYST.
@@ -498,14 +717,17 @@ serve(async (req) => {
     const lastUserMessage = messages.filter((m: any) => m.role === 'user').pop();
     const userQuery = lastUserMessage?.content || '';
 
-    // Detect if this is a resource-involved query
-    const isResourceQuery = isResourceInvolvedQuery(userQuery);
-    const resourceIdentifier = isResourceQuery ? extractResourceIdentifier(userQuery) : null;
+    // Detect query type
+    const queryType = detectQueryType(userQuery);
+    const resourceIdentifier = queryType === 'individual_resource' ? extractResourceIdentifier(userQuery) : null;
 
-    // Build context if resource-involved
-    let resourceContext = 'No specific resource context available.';
+    console.log('[CATY] Query type:', queryType, 'Identifier:', resourceIdentifier);
+
+    // Build context based on query type
+    let resourceContext = 'No specific context available.';
     
-    if (isResourceQuery) {
+    if (queryType === 'individual_resource' && resourceIdentifier) {
+      // Individual resource lookup
       const contextData = await buildResourceContext(supabase, resourceIdentifier, context || {});
       
       if (contextData.found) {
@@ -520,6 +742,15 @@ serve(async (req) => {
           contextData.missing_fields.join(', ');
         console.log('[CATY] Resource not found:', resourceIdentifier);
       }
+    } else if (queryType === 'aggregate') {
+      // Aggregate data (department-level, team-level, etc.)
+      const aggregateData = await buildAggregateContext(supabase, context || {});
+      resourceContext = JSON.stringify(aggregateData, null, 2);
+      console.log('[CATY] Aggregate context built:', {
+        total_resources: aggregateData.summary?.total_resources,
+        departments: aggregateData.department_breakdown?.length,
+        expiring: aggregateData.expiring_contracts?.length
+      });
     }
 
     // Build system prompt with context
@@ -529,7 +760,7 @@ serve(async (req) => {
       .replace('{location}', context?.location || 'All Locations')
       .replace('{resource_context}', resourceContext);
 
-    console.log('[CATY] Query type:', isResourceQuery ? 'resource' : 'general');
+    
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
