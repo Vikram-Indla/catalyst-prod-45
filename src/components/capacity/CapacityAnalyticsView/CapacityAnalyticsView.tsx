@@ -1,9 +1,11 @@
 /**
  * Capacity Analytics View V7
  * Monthly grid with department tabs, location column, grouped sections
+ * STRATEGY D: Horizontal Bar styling enforced via ra-enterprise-clean wrapper
  */
 
 import React, { useMemo, useState } from 'react';
+import '@/styles/resource-allocation-enterprise.css';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Users, AlertTriangle, ChevronDown, ChevronUp, X } from 'lucide-react';
@@ -691,8 +693,8 @@ export function CapacityAnalyticsView({
         </section>
       )}
 
-      {/* Analytics Table */}
-      <div className="flex flex-col flex-1 bg-card rounded-lg border border-border overflow-hidden">
+      {/* Analytics Table - Strategy D wrapper */}
+      <div className="ra-enterprise-clean flex flex-col flex-1 bg-card rounded-lg border border-border overflow-hidden">
         {/* Header: Department Tabs + View Scope Toggle */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           {/* Department Tabs */}
