@@ -1,6 +1,7 @@
 /**
  * CATY AI V7 — Expiring Contracts Hook
  * Uses actual Catalyst database schema
+ * Default: 90 days to match stats tile calculation
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +10,7 @@ import { ContractExpiring, ResourceWithUtilization } from '../types/database';
 
 const ONSITE_COUNTRY_CODES = ['SA', 'KSA'];
 
-export function useExpiringContracts(departmentId?: string | null, days = 30) {
+export function useExpiringContracts(departmentId?: string | null, days = 90) {
   return useQuery({
     queryKey: ['caty-contracts', departmentId, days],
     queryFn: async (): Promise<ContractExpiring[]> => {
