@@ -5,6 +5,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import '@/styles/ra-enterprise-clean.css';
 import '@/styles/resource-allocation-enterprise.css';
 import '@/styles/resource-allocation-override.css';
 import { useResourceAllocationOverride } from '@/hooks/useResourceAllocationOverride';

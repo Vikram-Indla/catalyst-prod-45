@@ -21,19 +21,19 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
   const isOffshore = locationName.includes('offshore');
   const isHybrid = locationName.includes('hybrid');
   
+  // Enterprise Clean: All badges neutralized to gray
   const getLocationBadge = () => {
-    if (isOnsite) return { label: 'ONSITE', bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' };
-    if (isOffshore) return { label: 'OFFSHORE', bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' };
-    if (isHybrid) return { label: 'HYBRID', bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-200' };
-    return { label: locationName.toUpperCase() || '-', bg: 'bg-muted', text: 'text-muted-foreground', border: 'border-border' };
+    if (isOnsite) return { label: 'ONSITE' };
+    if (isOffshore) return { label: 'OFFSHORE' };
+    if (isHybrid) return { label: 'HYBRID' };
+    return { label: locationName.toUpperCase() || '-' };
   };
   
   const badge = getLocationBadge();
   const deptName = resource.department?.name || 'BMC';
 
-  // Avatar styling (match Resources tab)
+  // Avatar styling - Enterprise Clean: Neutralized to gray
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-  const avatarBgClass = 'bg-emerald-500';
   
   // Country flag - use flag_svg from database (same as admin/users)
   const countryName = resource.country?.name;
@@ -60,10 +60,8 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
             <TooltipTrigger asChild>
               <div className="relative flex-shrink-0">
                 <div 
-                  className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ring-2 ring-emerald-400",
-                    avatarBgClass
-                  )}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ring-2 ra-avatar-neutral"
+                  data-ra-avatar="neutral"
                 >
                   {initials}
                 </div>
@@ -105,12 +103,12 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
         </div>
       </td>
 
-      {/* Location Badge Cell */}
+      {/* Location Badge Cell - Enterprise Clean: Neutralized */}
       <td className="py-3 px-3 min-w-[100px] border-r border-border">
-        <span className={cn(
-          'inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wide border',
-          badge.bg, badge.text, badge.border
-        )}>
+        <span 
+          className="inline-block px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wide border ra-badge-neutral"
+          data-ra-badge="neutral"
+        >
           {badge.label}
         </span>
       </td>

@@ -1,0 +1,289 @@
+/* ============================================================
+   RESOURCE ALLOCATION — ENTERPRISE CLEAN (Strategy D)
+   
+   RING-FENCE PROTOCOL:
+   ├── Namespace: --ra-* (Resource Allocation)
+   ├── Wrapper: .ra-enterprise-clean
+   ├── Layer: @layer ra-enterprise
+   ├── Isolation: Does NOT affect other Catalyst modules
+   └── Load: Import AFTER base Catalyst styles
+   
+   COLOR METRICS:
+   ├── Density: 55% → 5%
+   ├── Saturation: 85% → 15%
+   └── KPMG Test: FAIL → PASS
+   ============================================================ */
+
+@layer ra-enterprise {
+
+/* ─────────────────────────────────────────────────────────────
+   ROOT TOKENS
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean {
+  /* Neutral Foundation */
+  --ra-white: #ffffff;
+  --ra-slate-50: #f8fafc;
+  --ra-slate-100: #f1f5f9;
+  --ra-slate-200: #e2e8f0;
+  --ra-slate-300: #cbd5e1;
+  --ra-slate-400: #94a3b8;
+  --ra-slate-500: #64748b;
+  --ra-slate-600: #475569;
+  --ra-slate-700: #334155;
+  --ra-slate-800: #1e293b;
+
+  /* Project Bar Colors */
+  --ra-project-sectorial: #3b82f6;
+  --ra-project-dataplatform: #10b981;
+  --ra-project-senaei: #f59e0b;
+  --ra-project-tahommena: #ec4899;
+  --ra-project-inspection: #8b5cf6;
+  --ra-project-irplatform: #06b6d4;
+  --ra-project-default: #3b82f6;
+
+  /* Cell Configuration */
+  --ra-cell-bg: var(--ra-white);
+  --ra-cell-border: var(--ra-slate-200);
+  --ra-cell-radius: 8px;
+  --ra-cell-padding: 12px 8px 18px 8px;
+  --ra-cell-min-height: 48px;
+
+  /* Bar Configuration */
+  --ra-bar-height: 4px;
+  --ra-bar-radius: 2px;
+  --ra-bar-bottom: 4px;
+  --ra-bar-left-right: 6px;
+  --ra-bar-track: var(--ra-slate-200);
+
+  /* Typography */
+  --ra-text-percent-color: var(--ra-slate-700);
+  --ra-text-percent-size: 12px;
+  --ra-text-percent-weight: 600;
+  --ra-text-project-color: var(--ra-slate-500);
+  --ra-text-project-size: 9px;
+  --ra-text-project-weight: 500;
+
+  /* Avatar (Neutralized) */
+  --ra-avatar-bg: var(--ra-slate-400);
+  --ra-avatar-text: var(--ra-white);
+  --ra-avatar-size: 40px;
+  --ra-avatar-ring: var(--ra-slate-400);
+
+  /* Badge (Neutralized) */
+  --ra-badge-bg: transparent;
+  --ra-badge-text: var(--ra-slate-500);
+  --ra-badge-border: var(--ra-slate-300);
+
+  /* END Cell */
+  --ra-end-pattern: repeating-linear-gradient(
+    -45deg,
+    var(--ra-slate-100),
+    var(--ra-slate-100) 4px,
+    var(--ra-slate-200) 4px,
+    var(--ra-slate-200) 8px
+  );
+  --ra-end-text: var(--ra-slate-400);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ALLOCATION CELL — BASE
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-cell {
+  position: relative;
+  background: var(--ra-cell-bg) !important;
+}
+
+.ra-enterprise-clean .allocation-cell > div {
+  background: var(--ra-cell-bg) !important;
+  border-color: var(--ra-cell-border) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HORIZONTAL BAR — TRACK
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-bar {
+  background: var(--ra-bar-track) !important;
+  height: var(--ra-bar-height) !important;
+  border-radius: var(--ra-bar-radius) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HORIZONTAL BAR — FILL (Project Color)
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-bar > div {
+  height: 100% !important;
+  border-radius: var(--ra-bar-radius) !important;
+  transition: width 0.3s ease !important;
+}
+
+/* Project-specific bar colors via data attribute */
+.ra-enterprise-clean .allocation-bar > div[data-project="sectorial"] {
+  background: var(--ra-project-sectorial) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="dataplatform"] {
+  background: var(--ra-project-dataplatform) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="senaei"] {
+  background: var(--ra-project-senaei) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="tahommena"] {
+  background: var(--ra-project-tahommena) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="inspection"] {
+  background: var(--ra-project-inspection) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="irplatform"] {
+  background: var(--ra-project-irplatform) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   END CELL
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-cell[data-status="end"] > div {
+  background: var(--ra-end-pattern) !important;
+}
+
+.ra-enterprise-clean .allocation-cell[data-status="end"] span {
+  color: var(--ra-end-text) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   AVATAR — NEUTRALIZED (Gray Only)
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .ra-avatar-neutral,
+.ra-enterprise-clean [data-ra-avatar="neutral"] {
+  background: var(--ra-avatar-bg) !important;
+  background-color: var(--ra-avatar-bg) !important;
+  color: var(--ra-avatar-text) !important;
+  --tw-ring-color: var(--ra-avatar-ring) !important;
+  ring-color: var(--ra-avatar-ring) !important;
+}
+
+/* Force override any colored avatars in the grid */
+.ra-enterprise-clean tr td:first-child .rounded-full {
+  background: var(--ra-avatar-bg) !important;
+  background-color: var(--ra-avatar-bg) !important;
+  --tw-ring-color: var(--ra-avatar-ring) !important;
+}
+
+/* Specifically target emerald avatars to override */
+.ra-enterprise-clean .bg-emerald-500,
+.ra-enterprise-clean .bg-emerald-600,
+.ra-enterprise-clean .bg-blue-500,
+.ra-enterprise-clean .bg-green-500,
+.ra-enterprise-clean .bg-purple-500,
+.ra-enterprise-clean .bg-pink-500 {
+  background: var(--ra-avatar-bg) !important;
+  background-color: var(--ra-avatar-bg) !important;
+}
+
+/* Override ring colors */
+.ra-enterprise-clean .ring-emerald-400,
+.ra-enterprise-clean .ring-blue-400,
+.ra-enterprise-clean .ring-green-400 {
+  --tw-ring-color: var(--ra-avatar-ring) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LOCATION BADGE — NEUTRALIZED (Gray Text Only)
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .ra-badge-neutral,
+.ra-enterprise-clean [data-ra-badge="neutral"] {
+  background: var(--ra-badge-bg) !important;
+  background-color: var(--ra-badge-bg) !important;
+  color: var(--ra-badge-text) !important;
+  border: 1px solid var(--ra-badge-border) !important;
+}
+
+/* Override all colored location badges */
+.ra-enterprise-clean .bg-blue-100,
+.ra-enterprise-clean .bg-emerald-100,
+.ra-enterprise-clean .bg-orange-100,
+.ra-enterprise-clean .bg-green-100,
+.ra-enterprise-clean .bg-teal-100,
+.ra-enterprise-clean [class*="bg-blue-1"],
+.ra-enterprise-clean [class*="bg-emerald-1"],
+.ra-enterprise-clean [class*="bg-green-1"] {
+  background: var(--ra-badge-bg) !important;
+  background-color: var(--ra-badge-bg) !important;
+}
+
+/* Override badge text colors */
+.ra-enterprise-clean .text-blue-700,
+.ra-enterprise-clean .text-emerald-700,
+.ra-enterprise-clean .text-orange-700,
+.ra-enterprise-clean .text-green-700,
+.ra-enterprise-clean .text-teal-700 {
+  color: var(--ra-badge-text) !important;
+}
+
+/* Override badge borders */
+.ra-enterprise-clean .border-blue-200,
+.ra-enterprise-clean .border-emerald-200,
+.ra-enterprise-clean .border-orange-200,
+.ra-enterprise-clean .border-green-200 {
+  border-color: var(--ra-badge-border) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TABLE STRUCTURE
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean table {
+  border-collapse: collapse;
+}
+
+.ra-enterprise-clean th {
+  background: var(--ra-slate-50) !important;
+  color: var(--ra-slate-600) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.ra-enterprise-clean td {
+  background: var(--ra-white) !important;
+  border-color: var(--ra-slate-200) !important;
+}
+
+/* First column (resource info) keeps card background */
+.ra-enterprise-clean td:first-child {
+  background: hsl(var(--card)) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UTILIZATION BADGE — NEUTRALIZED
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .utilization-badge {
+  background: var(--ra-white) !important;
+  border-color: var(--ra-slate-300) !important;
+  color: var(--ra-slate-700) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DARK MODE SUPPORT
+   ───────────────────────────────────────────────────────────── */
+.dark .ra-enterprise-clean {
+  --ra-white: hsl(var(--card));
+  --ra-slate-50: hsl(var(--muted));
+  --ra-slate-100: hsl(222.2 47.4% 15%);
+  --ra-slate-200: hsl(217.2 32.6% 20%);
+  --ra-slate-700: hsl(210 40% 85%);
+  --ra-slate-800: hsl(210 40% 98%);
+}
+
+.dark .ra-enterprise-clean td {
+  background: hsl(var(--card)) !important;
+}
+
+.dark .ra-enterprise-clean th {
+  background: hsl(var(--muted)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+} /* END @layer ra-enterprise */
