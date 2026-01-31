@@ -8,3 +8,4 @@ export { ForYouToolbar } from './ForYouToolbar';
 export { ForYouTable } from './ForYouTable';
 export { ForYouTableSkeleton } from './ForYouTableSkeleton';
 export { ForYouPagination } from './ForYouPagination';
+export { TaskhubStrip } from './TaskhubStrip';
