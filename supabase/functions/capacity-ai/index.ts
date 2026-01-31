@@ -1,9 +1,14 @@
+// ============================================================
+// CAPACITY AI EDGE FUNCTION — Lovable AI (Gemini) Integration
+// Streaming AI assistant for capacity planning using google/gemini-3-flash-preview
+// ============================================================
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
@@ -13,10 +18,10 @@ serve(async (req) => {
 
   try {
     const { messages } = await req.json();
-    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
-    if (!ANTHROPIC_API_KEY) {
-      throw new Error("ANTHROPIC_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     // Initialize Supabase client to fetch real capacity data
@@ -176,39 +181,23 @@ serve(async (req) => {
       return daysUntilExpiry > 0 && daysUntilExpiry <= 90;
     }).length;
 
-    // Create STRICT system prompt with STRUCTURED JSON RESPONSE format
+    // Create system prompt for capacity AI
     const systemPrompt = `You are CATI (Capacity AI), an enterprise assistant for the Catalyst capacity planning and user management system.
 
 ## CRITICAL RULES - YOU MUST FOLLOW:
 1. **ONLY use data provided below** - Never mention external sources
-2. **NEVER hallucinate** - If data is missing, indicate status as "warning" or "error"
+2. **NEVER hallucinate** - If data is missing, say so clearly
 3. **NEVER suggest checking with HR, managers, or external systems**
 4. **Be precise** - Use exact names, dates, and percentages from the data
 5. **Stay in scope** - Answer about capacity, resources, allocations, AND user management in Catalyst
+6. **Format responses with Markdown** - Use **bold** for emphasis, bullet points for lists
 
-## RESPONSE FORMAT - YOU MUST RESPOND WITH THIS EXACT JSON STRUCTURE:
-{
-  "directAnswer": {
-    "value": "<THE MAIN ANSWER - one sentence or single value>",
-    "status": "<success|warning|error>"
-  },
-  "context": [
-    {"label": "<Label>", "value": "<Value>"},
-    {"label": "<Label>", "value": "<Value>"}
-  ],
-  "systemNote": "<Only include if data is missing or needs attention>",
-  "actions": [
-    {"label": "Open Users", "type": "primary", "action": "open-user"},
-    {"label": "Fix Data", "type": "secondary", "action": "fix-data"}
-  ]
-}
-
-## RESPONSE RULES:
-- directAnswer.value: ONE direct answer. A date, a number, a name, or one short sentence. NO PARAGRAPHS.
-- directAnswer.status: "success" = data found, "warning" = partial/needs attention, "error" = not found
-- context: Maximum 6 label→value pairs for supporting details
-- systemNote: ONLY if data is missing or incomplete
-- actions: Include "Open Users" for user queries, "Fix Data" for data quality issues
+## RESPONSE STYLE:
+- Be concise and direct
+- Lead with the most important information
+- Use bullet points for multiple items
+- Include specific numbers and percentages
+- End with a brief suggestion if relevant
 
 ## Current Date: ${new Date().toISOString().split('T')[0]}
 
@@ -226,11 +215,13 @@ serve(async (req) => {
 - Users with No Roles Assigned: ${usersWithNoRoles}
 - Users with Contracts Expiring in 90 Days: ${usersWithExpiringContracts}
 
-### All Users with Roles & Details (from Admin Users):
-${JSON.stringify(userDetails, null, 2)}
+### All Users with Roles & Details:
+${JSON.stringify(userDetails.slice(0, 50), null, 2)}
+${userDetails.length > 50 ? `\n... and ${userDetails.length - 50} more users` : ''}
 
-### All Resources with Complete Details (from Capacity Planner):
-${JSON.stringify(resourceDetails, null, 2)}
+### All Resources with Complete Details:
+${JSON.stringify(resourceDetails.slice(0, 50), null, 2)}
+${resourceDetails.length > 50 ? `\n... and ${resourceDetails.length - 50} more resources` : ''}
 
 ### Active Projects/Assignments:
 ${JSON.stringify(projectDetails, null, 2)}
@@ -240,35 +231,42 @@ ${JSON.stringify(projectDetails, null, 2)}
 ### Vendors: ${JSON.stringify(vendors.map((v: any) => ({ name: v.name })))}
 ### Departments: ${JSON.stringify(departments.map((d: any) => ({ name: d.name })))}
 
-RESPOND ONLY WITH THE JSON OBJECT. NO MARKDOWN FORMATTING. NO EXPLANATIONS.`;
+Remember: Be helpful, precise, and use the data above to answer questions about capacity planning, resources, and user management.`;
 
-    // Call Claude API using Anthropic directly
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    // Call Lovable AI Gateway (Gemini)
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1024,
-        system: systemPrompt,
-        messages: messages.map((m: any) => ({
-          role: m.role === "assistant" ? "assistant" : "user",
-          content: m.content,
-        })),
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages.map((m: any) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        ],
         stream: true,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Anthropic API error:", response.status, errorText);
+      console.error("Lovable AI Gateway error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
           status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds to continue." }), {
+          status: 402,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -279,7 +277,7 @@ RESPOND ONLY WITH THE JSON OBJECT. NO MARKDOWN FORMATTING. NO EXPLANATIONS.`;
       });
     }
 
-    // Return streaming response
+    // Return streaming response directly
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });

@@ -1,6 +1,7 @@
 /**
- * Caty V4 — Main Panel Component (GOD-TIER 9.8)
+ * Caty V4 — Main Panel Component (Lovable AI Powered)
  * Enterprise-grade AI Assistant for capacity management
+ * Uses Gemini 3 Flash via Lovable AI Gateway with streaming
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -20,7 +21,8 @@ import { CatyInput } from './CatyInput';
 import { CatySkeletonCard, CatyErrorState } from './CatyStates';
 import { useCapacityData } from './useCapacityData';
 import { useCatyKeyboard } from './useCatyKeyboard';
-import { formatTimeAgo, formatContractDate, type ChatMessage } from './types';
+import { useCatyAI, type Message } from './useCatyAI';
+import { formatTimeAgo, type ChatMessage } from './types';
 
 // Import ring-fenced styles
 import '@/styles/caty.css';
@@ -31,7 +33,6 @@ export function CatyPanelV4() {
   const [isMinimized, setIsMinimized] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
   
   // Refs
@@ -44,6 +45,9 @@ export function CatyPanelV4() {
   
   // Capacity data hook
   const { stats, isLoading, isError, refetch } = useCapacityData();
+  
+  // AI streaming hook
+  const { isStreaming, streamResponse, abortStream } = useCatyAI();
   
   // Keyboard shortcuts
   useCatyKeyboard({ 
@@ -107,7 +111,7 @@ export function CatyPanelV4() {
   // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+  }, [messages, isStreaming]);
 
   // Toggle department expansion
   const toggleDeptExpand = (deptId: string) => {
@@ -122,146 +126,103 @@ export function CatyPanelV4() {
     });
   };
 
-  // Generate AI response
-  const generateResponse = useCallback(async (query: string): Promise<string> => {
-    const lowerQuery = query.toLowerCase();
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const thirtyDays = new Date(todayStart);
-    thirtyDays.setDate(thirtyDays.getDate() + 30);
-    thirtyDays.setHours(23, 59, 59, 999);
-    const ninetyDays = new Date(todayStart);
-    ninetyDays.setDate(ninetyDays.getDate() + 90);
-    ninetyDays.setHours(23, 59, 59, 999);
+  // Convert chat messages to AI format
+  const getAIMessages = useCallback((): Message[] => {
+    return messages.map(m => ({
+      role: m.type === 'user' ? 'user' : 'assistant',
+      content: m.content,
+    }));
+  }, [messages]);
 
-    // Critical resources query
-    if (lowerQuery.includes('critical')) {
-      const { data: criticalResources } = await supabase
-        .from('resource_inventory')
-        .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
-        .lte('contract_end_date', thirtyDays.toISOString())
-        .gte('contract_end_date', todayStart.toISOString())
-        .not('contract_end_date', 'is', null)
-        .order('contract_end_date', { ascending: true })
-        .limit(10);
-
-      if (criticalResources && criticalResources.length > 0) {
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', criticalResources.filter(r => r.profile_id).map(r => r.profile_id));
-        
-        const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
-        
-        return `**${criticalResources.length} Critical Resources (ending within 30 days):**\n\n${criticalResources.map(r => {
-          const name = (r.profile_id && profileMap.get(r.profile_id)) || r.name || r.role_name || 'Resource';
-          return `• **${name}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`;
-        }).join('\n')}`;
-      }
-      return '**No critical resources found** (contracts ending within 30 days)';
-    }
-
-    // Total/breakdown query
-    if (lowerQuery.includes('total') || lowerQuery.includes('breakdown') || lowerQuery.includes('department')) {
-      return `**Total Resources: ${stats.total}**\n\n**By Department:**\n${stats.departments.map(d => 
-        `• **${d.name}**: ${d.count} resources (${d.critical} critical, ${d.warning} warning)`
-      ).join('\n')}`;
-    }
-
-    // Renewals query
-    if (lowerQuery.includes('renewal') || lowerQuery.includes('contract')) {
-      const { data: renewals } = await supabase
-        .from('resource_inventory')
-        .select('id, profile_id, name, contract_end_date, vendor_name')
-        .lte('contract_end_date', ninetyDays.toISOString())
-        .gte('contract_end_date', todayStart.toISOString())
-        .order('contract_end_date', { ascending: true })
-        .limit(10);
-
-      if (renewals && renewals.length > 0) {
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', renewals.filter(r => r.profile_id).map(r => r.profile_id));
-        
-        const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
-
-        return `**Priority Contract Renewals (next 90 days):**\n\n${renewals.map(r => {
-          const name = (r.profile_id && profileMap.get(r.profile_id)) || r.name || 'Resource';
-          return `• **${name}** (${r.vendor_name || 'N/A'}) — ends ${formatContractDate(r.contract_end_date)}`;
-        }).join('\n')}`;
-      }
-      return '**No urgent renewals needed**';
-    }
-
-    // Warning query
-    if (lowerQuery.includes('warning')) {
-      const warningDepts = stats.departments.filter(d => d.warning > 0 || d.critical > 0);
-      if (warningDepts.length > 0) {
-        return `**Departments with Warnings:**\n\n${warningDepts.map(d => 
-          `• **${d.name}**: ${d.critical} critical, ${d.warning} warning (${d.utilization}% utilization)`
-        ).join('\n')}`;
-      }
-      return '**All departments are looking healthy!** No warnings to report.';
-    }
-
-    // Department specific query
-    for (const dept of stats.departments) {
-      if (lowerQuery.includes(dept.name.toLowerCase())) {
-        return `**${dept.name} Department (${dept.count} resources):**\n\n• **Utilization:** ${dept.utilization}%\n• **Critical:** ${dept.critical}\n• **Warning:** ${dept.warning}\n\nClick on the department card above to see the resource list.`;
-      }
-    }
-
-    return `I can help you with capacity insights. Try asking about:\n• Critical resources\n• Contract renewals\n• Department breakdown\n• A specific department`;
-  }, [stats]);
-
-  // Handle message submit
+  // Handle message submit with streaming
   const handleSubmit = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isStreaming) return;
 
+    const userQuery = inputValue.trim();
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'user',
-      content: inputValue,
+      content: userQuery,
       timestamp: new Date()
     };
+    
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
-    setIsTyping(true);
 
-    try {
-      // Simulate typing delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
-      
-      const response = await generateResponse(inputValue);
-      
-      const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content: response,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Caty error:', error);
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsTyping(false);
-    }
+    // Create assistant message placeholder for streaming
+    const assistantMessageId = (Date.now() + 1).toString();
+    let assistantContent = '';
+
+    // Add empty assistant message that will be updated
+    setMessages(prev => [...prev, {
+      id: assistantMessageId,
+      type: 'assistant',
+      content: '',
+      timestamp: new Date()
+    }]);
+
+    // Build messages array for AI
+    const aiMessages: Message[] = [
+      ...getAIMessages(),
+      { role: 'user', content: userQuery }
+    ];
+
+    // Stream response
+    await streamResponse(
+      aiMessages,
+      // onDelta - update the last message with new tokens
+      (deltaText: string) => {
+        assistantContent += deltaText;
+        setMessages(prev => {
+          const updated = [...prev];
+          const lastIdx = updated.length - 1;
+          if (lastIdx >= 0 && updated[lastIdx].id === assistantMessageId) {
+            updated[lastIdx] = {
+              ...updated[lastIdx],
+              content: assistantContent,
+            };
+          }
+          return updated;
+        });
+      },
+      // onDone
+      () => {
+        // Final update with complete content
+        setMessages(prev => {
+          const updated = [...prev];
+          const lastIdx = updated.length - 1;
+          if (lastIdx >= 0 && updated[lastIdx].id === assistantMessageId) {
+            updated[lastIdx] = {
+              ...updated[lastIdx],
+              content: assistantContent || 'I apologize, but I could not generate a response. Please try again.',
+            };
+          }
+          return updated;
+        });
+      },
+      // onError
+      (error: string) => {
+        setMessages(prev => {
+          const updated = [...prev];
+          const lastIdx = updated.length - 1;
+          if (lastIdx >= 0 && updated[lastIdx].id === assistantMessageId) {
+            updated[lastIdx] = {
+              ...updated[lastIdx],
+              content: `Sorry, I encountered an error: ${error}. Please try again.`,
+            };
+          }
+          return updated;
+        });
+      }
+    );
   };
 
   // Handle KPI click
   const handleKpiClick = (type: 'critical' | 'warning' | 'total') => {
     const queries = {
-      critical: 'Show critical resources',
-      warning: 'Show warning resources',
-      total: 'Show all resources breakdown'
+      critical: 'Show critical resources ending within 30 days',
+      warning: 'Show warning resources ending within 90 days',
+      total: 'Show me a breakdown of all resources by department'
     };
     setInputValue(queries[type]);
     setTimeout(() => handleSubmit(), 100);
@@ -282,6 +243,7 @@ export function CatyPanelV4() {
 
   // Handle refresh
   const handleRefresh = () => {
+    abortStream();
     setMessages([]);
     refetch();
   };
@@ -379,11 +341,14 @@ export function CatyPanelV4() {
                     userInitials={getUserInitials()}
                     onCopy={handleCopy}
                     onFeedback={handleFeedback}
+                    isStreaming={isStreaming && message.type === 'assistant' && message === messages[messages.length - 1]}
                   />
                 ))}
 
-                {/* Typing Indicator */}
-                {isTyping && <CatyTypingIndicator />}
+                {/* Typing Indicator - only show when starting stream with empty content */}
+                {isStreaming && messages.length > 0 && messages[messages.length - 1].content === '' && (
+                  <CatyTypingIndicator />
+                )}
 
                 <div ref={messagesEndRef} />
               </div>
@@ -395,6 +360,7 @@ export function CatyPanelV4() {
                   setInputValue(text);
                   inputRef.current?.focus();
                 }}
+                disabled={isStreaming}
               />
 
               {/* Input */}
@@ -403,14 +369,15 @@ export function CatyPanelV4() {
                 value={inputValue}
                 onChange={setInputValue}
                 onSend={handleSubmit}
-                disabled={isTyping}
+                disabled={isStreaming}
+                placeholder={isStreaming ? "Generating response..." : "Ask about capacity..."}
               />
             </>
           )}
 
           {/* Live region for screen readers */}
           <div aria-live="polite" aria-atomic="true" className="sr-only">
-            {isTyping && 'Caty is typing a response'}
+            {isStreaming && 'Caty is generating a response'}
           </div>
         </div>
       )}
