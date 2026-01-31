@@ -12391,6 +12391,826 @@ export type Database = {
           },
         ]
       }
+      planhub_activity_log: {
+        Row: {
+          action: Database["public"]["Enums"]["planhub_audit_action"]
+          created_at: string
+          details: Json | null
+          id: string
+          plan_id: string | null
+          user_id: string
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["planhub_audit_action"]
+          created_at?: string
+          details?: Json | null
+          id?: string
+          plan_id?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["planhub_audit_action"]
+          created_at?: string
+          details?: Json | null
+          id?: string
+          plan_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_activity_log_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "planhub_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_ai_config: {
+        Row: {
+          api_key_encrypted: string | null
+          features_enabled: Json
+          id: string
+          max_tokens: number
+          model: string
+          temperature: number
+          updated_at: string
+          updated_by: string
+        }
+        Insert: {
+          api_key_encrypted?: string | null
+          features_enabled?: Json
+          id?: string
+          max_tokens?: number
+          model?: string
+          temperature?: number
+          updated_at?: string
+          updated_by: string
+        }
+        Update: {
+          api_key_encrypted?: string | null
+          features_enabled?: Json
+          id?: string
+          max_tokens?: number
+          model?: string
+          temperature?: number
+          updated_at?: string
+          updated_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_comments: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          plan_id: string
+          task_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          plan_id: string
+          task_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          plan_id?: string
+          task_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "planhub_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "planhub_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_permissions: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      planhub_plans: {
+        Row: {
+          budget: number | null
+          code: string | null
+          confidence: number | null
+          created_at: string
+          created_by: string
+          description: string | null
+          duration_days: number | null
+          end_date: string | null
+          health: Database["public"]["Enums"]["planhub_plan_health"]
+          id: string
+          lead_id: string | null
+          name: string
+          sentiment: Database["public"]["Enums"]["planhub_sentiment"]
+          start_date: string | null
+          status: Database["public"]["Enums"]["planhub_plan_status"]
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          code?: string | null
+          confidence?: number | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          duration_days?: number | null
+          end_date?: string | null
+          health?: Database["public"]["Enums"]["planhub_plan_health"]
+          id?: string
+          lead_id?: string | null
+          name: string
+          sentiment?: Database["public"]["Enums"]["planhub_sentiment"]
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["planhub_plan_status"]
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          code?: string | null
+          confidence?: number | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          duration_days?: number | null
+          end_date?: string | null
+          health?: Database["public"]["Enums"]["planhub_plan_health"]
+          id?: string
+          lead_id?: string | null
+          name?: string
+          sentiment?: Database["public"]["Enums"]["planhub_sentiment"]
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["planhub_plan_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_resources: {
+        Row: {
+          assignment: string | null
+          created_at: string
+          end_date: string | null
+          id: string
+          is_skeleton: boolean
+          name: string
+          notes: string | null
+          plan_id: string
+          profile_id: string | null
+          role: string
+          skills: string[] | null
+          start_date: string | null
+          updated_at: string
+          utilization: number
+          vendor: string | null
+        }
+        Insert: {
+          assignment?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_skeleton?: boolean
+          name: string
+          notes?: string | null
+          plan_id: string
+          profile_id?: string | null
+          role: string
+          skills?: string[] | null
+          start_date?: string | null
+          updated_at?: string
+          utilization?: number
+          vendor?: string | null
+        }
+        Update: {
+          assignment?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_skeleton?: boolean
+          name?: string
+          notes?: string | null
+          plan_id?: string
+          profile_id?: string | null
+          role?: string
+          skills?: string[] | null
+          start_date?: string | null
+          updated_at?: string
+          utilization?: number
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_resources_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "planhub_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_role_permissions: {
+        Row: {
+          created_at: string
+          id: string
+          permission_id: string
+          role: Database["public"]["Enums"]["planhub_role"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permission_id: string
+          role: Database["public"]["Enums"]["planhub_role"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permission_id?: string
+          role?: Database["public"]["Enums"]["planhub_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "planhub_permissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          updated_by: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          updated_by: string
+          value: Json
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          updated_by?: string
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_tasks: {
+        Row: {
+          assignee_id: string | null
+          created_at: string
+          days: number | null
+          end_date: string | null
+          id: string
+          is_expanded: boolean
+          is_flagged: boolean
+          name: string
+          parent_id: string | null
+          plan_id: string
+          position: number
+          progress: number
+          start_date: string | null
+          type: Database["public"]["Enums"]["planhub_task_type"]
+          updated_at: string
+          wbs: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string
+          days?: number | null
+          end_date?: string | null
+          id?: string
+          is_expanded?: boolean
+          is_flagged?: boolean
+          name: string
+          parent_id?: string | null
+          plan_id: string
+          position?: number
+          progress?: number
+          start_date?: string | null
+          type?: Database["public"]["Enums"]["planhub_task_type"]
+          updated_at?: string
+          wbs: string
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string
+          days?: number | null
+          end_date?: string | null
+          id?: string
+          is_expanded?: boolean
+          is_flagged?: boolean
+          name?: string
+          parent_id?: string | null
+          plan_id?: string
+          position?: number
+          progress?: number
+          start_date?: string | null
+          type?: Database["public"]["Enums"]["planhub_task_type"]
+          updated_at?: string
+          wbs?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "planhub_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "planhub_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_templates: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string
+          description: string | null
+          duration_days: number
+          id: string
+          is_system: boolean
+          name: string
+          phases: Json
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_system?: boolean
+          name: string
+          phases?: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_system?: boolean
+          name?: string
+          phases?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_user_roles: {
+        Row: {
+          created_at: string
+          granted_by: string
+          id: string
+          role: Database["public"]["Enums"]["planhub_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted_by: string
+          id?: string
+          role?: Database["public"]["Enums"]["planhub_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          granted_by?: string
+          id?: string
+          role?: Database["public"]["Enums"]["planhub_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planhub_versions: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_baseline: boolean
+          notes: string | null
+          plan_id: string
+          snapshot: Json
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_baseline?: boolean
+          notes?: string | null
+          plan_id: string
+          snapshot: Json
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_baseline?: boolean
+          notes?: string | null
+          plan_id?: string
+          snapshot?: Json
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "planhub_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       planner_activity_log: {
         Row: {
           action: string
@@ -31518,6 +32338,30 @@ export type Database = {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
       }
+      planhub_create_version: {
+        Args: {
+          plan_uuid: string
+          set_baseline?: boolean
+          version_notes?: string
+          version_tag: string
+        }
+        Returns: string
+      }
+      planhub_get_admin_stats: { Args: never; Returns: Json }
+      planhub_get_plan_full: { Args: { plan_uuid: string }; Returns: Json }
+      planhub_get_user_role: {
+        Args: { user_uuid: string }
+        Returns: Database["public"]["Enums"]["planhub_role"]
+      }
+      planhub_is_admin: { Args: never; Returns: boolean }
+      planhub_reorder_tasks: {
+        Args: { task_positions: Json }
+        Returns: boolean
+      }
+      planhub_restore_version: {
+        Args: { version_uuid: string }
+        Returns: boolean
+      }
       planner_task_list_stats: {
         Args: { p_assignee_id?: string; p_workstream_id?: string }
         Returns: {
@@ -32672,6 +33516,19 @@ export type Database = {
         | "configure"
       permission_scope: "global" | "portfolio" | "program" | "team"
       pi_state: "planned" | "active" | "closed"
+      planhub_audit_action:
+        | "create"
+        | "update"
+        | "delete"
+        | "access"
+        | "export"
+        | "share"
+        | "restore"
+      planhub_plan_health: "ontrack" | "atrisk" | "critical"
+      planhub_plan_status: "draft" | "active" | "review" | "archived"
+      planhub_role: "admin" | "manager" | "editor" | "viewer"
+      planhub_sentiment: "conservative" | "moderate" | "aggressive"
+      planhub_task_type: "phase" | "task" | "milestone"
       portfolio_status: "active" | "archived"
       priority_level: "P1" | "P2" | "P3" | "P4"
       program_status: "active" | "archived"
@@ -33304,6 +34161,20 @@ export const Constants = {
       ],
       permission_scope: ["global", "portfolio", "program", "team"],
       pi_state: ["planned", "active", "closed"],
+      planhub_audit_action: [
+        "create",
+        "update",
+        "delete",
+        "access",
+        "export",
+        "share",
+        "restore",
+      ],
+      planhub_plan_health: ["ontrack", "atrisk", "critical"],
+      planhub_plan_status: ["draft", "active", "review", "archived"],
+      planhub_role: ["admin", "manager", "editor", "viewer"],
+      planhub_sentiment: ["conservative", "moderate", "aggressive"],
+      planhub_task_type: ["phase", "task", "milestone"],
       portfolio_status: ["active", "archived"],
       priority_level: ["P1", "P2", "P3", "P4"],
       program_status: ["active", "archived"],
