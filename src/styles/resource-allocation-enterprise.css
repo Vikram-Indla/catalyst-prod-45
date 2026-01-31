@@ -111,8 +111,9 @@
   background-color: var(--ra-white) !important;
 }
 
-/* NUCLEAR: Override inline style backgrounds on cells */
-.ra-enterprise-clean td div[style*="background"] {
+/* NUCLEAR: Override inline style backgrounds on *cell containers* only.
+   IMPORTANT: Do NOT target nested divs (e.g., allocation bars), otherwise bars become invisible. */
+.ra-enterprise-clean td > div[style*="background"] {
   background-color: var(--ra-white) !important;
 }
 
