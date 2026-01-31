@@ -1,0 +1,113 @@
+/* 
+ * Resource Allocation Grid — Strategy D Override
+ * Companion CSS for JavaScript injection
+ * Handles edge cases and ensures clean appearance
+ */
+
+/* ============================================================
+   INJECTED ELEMENTS
+   ============================================================ */
+
+/* Ensure injected bars are visible */
+.ra-injected-bar,
+.ra-injected-track {
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+/* ============================================================
+   CELL STYLING
+   ============================================================ */
+
+/* Cell text styling */
+td[data-ra-processed] {
+  text-align: center !important;
+  vertical-align: middle !important;
+  font-size: 12px !important;
+  color: #334155 !important;
+  background: #ffffff !important;
+  overflow: visible !important;
+}
+
+/* END cell styling */
+td[data-ra-processed="end"] {
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+}
+
+/* ============================================================
+   AVATAR NEUTRALIZATION
+   ============================================================ */
+
+/* Processed avatar styling */
+[data-ra-avatar-processed="true"] {
+  background: #64748b !important;
+  background-color: #64748b !important;
+}
+
+/* Ring neutralization */
+[data-ra-avatar-processed="true"] {
+  --tw-ring-color: #94a3b8 !important;
+  ring-color: #94a3b8 !important;
+}
+
+/* ============================================================
+   BADGE NEUTRALIZATION
+   ============================================================ */
+
+/* Force all location badges to neutral gray */
+.ra-enterprise-clean span[class*="bg-blue"],
+.ra-enterprise-clean span[class*="bg-emerald"],
+.ra-enterprise-clean span[class*="bg-orange"],
+.ra-enterprise-clean span[class*="bg-green"],
+.ra-enterprise-clean span[class*="bg-teal"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #64748b !important;
+  border: none !important;
+}
+
+/* ============================================================
+   TRANSITIONS
+   ============================================================ */
+
+/* Transition for smooth updates */
+td {
+  transition: padding-bottom 0.2s ease;
+}
+
+/* Bar animation */
+.ra-injected-bar {
+  transition: width 0.3s ease, background-color 0.2s ease;
+}
+
+/* ============================================================
+   CONTAINER WRAPPER
+   ============================================================ */
+
+/* Ensure container allows overflow for bars */
+.ra-enterprise-clean table,
+.ra-enterprise-clean tbody,
+.ra-enterprise-clean tr {
+  overflow: visible !important;
+}
+
+/* White cell backgrounds by default */
+.ra-enterprise-clean td {
+  background-color: #ffffff !important;
+}
+
+/* Dark mode support */
+.dark .ra-enterprise-clean td {
+  background-color: hsl(var(--card)) !important;
+}
+
+.dark td[data-ra-processed] {
+  color: #e2e8f0 !important;
+  background: hsl(var(--card)) !important;
+}
+
+.dark td[data-ra-processed="end"] {
+  color: #64748b !important;
+}

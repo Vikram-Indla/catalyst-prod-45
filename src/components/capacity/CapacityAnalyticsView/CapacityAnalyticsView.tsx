@@ -6,6 +6,8 @@
 
 import React, { useMemo, useState } from 'react';
 import '@/styles/resource-allocation-enterprise.css';
+import '@/styles/resource-allocation-override.css';
+import { useResourceAllocationOverride } from '@/hooks/useResourceAllocationOverride';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Users, AlertTriangle, ChevronDown, ChevronUp, X } from 'lucide-react';
@@ -46,6 +48,13 @@ export function CapacityAnalyticsView({
     departmentFilter,
     viewScope,
     year,
+  });
+
+  // Strategy D: JavaScript injection for horizontal bars (after data loads)
+  useResourceAllocationOverride({
+    containerSelector: '.ra-enterprise-clean',
+    enabled: !isLoading,
+    dependencies: [departmentFilter, viewScope, rows],
   });
 
   // Fetch run rate data for department widgets
