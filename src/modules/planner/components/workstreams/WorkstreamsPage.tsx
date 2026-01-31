@@ -36,6 +36,7 @@ import { CreateWorkstreamModal } from './CreateWorkstreamModal';
 import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
 import { ArchivedWorkstreamsView } from './ArchivedWorkstreamsView';
 import { WorkstreamCard } from './WorkstreamCard';
+import { WorkstreamMembersDialog } from './WorkstreamMembersDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -173,6 +174,9 @@ export function WorkstreamsPage() {
 
   // Delete dialog
   const [deleteTarget, setDeleteTarget] = useState<Workstream | null>(null);
+
+  // Members dialog
+  const [membersDialogWorkstream, setMembersDialogWorkstream] = useState<Workstream | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -778,16 +782,19 @@ export function WorkstreamsPage() {
                   borderBottom: `1px solid ${COLORS.borderLight}`,
                 }}
               >
-                <TableHeader width="35%">WORKSTREAM</TableHeader>
-                <TableHeader width="20%">LEAD</TableHeader>
-                <TableHeader width="15%">HEALTH</TableHeader>
-                <TableHeader width="10%" center>
+                <TableHeader width="30%">WORKSTREAM</TableHeader>
+                <TableHeader width="18%">LEAD</TableHeader>
+                <TableHeader width="12%">HEALTH</TableHeader>
+                <TableHeader width="8%" center>
                   TASKS
                 </TableHeader>
-                <TableHeader width="10%" center>
+                <TableHeader width="8%" center>
                   OVERDUE
                 </TableHeader>
-                <TableHeader width="10%" />
+                <TableHeader width="8%" center>
+                  MEMBERS
+                </TableHeader>
+                <TableHeader width="8%" />
               </tr>
             </thead>
             <tbody>
@@ -823,6 +830,10 @@ export function WorkstreamsPage() {
                     onArchive={(e) => handleQuickArchive(workstream, e)}
                     onEdit={(e) => handleQuickEdit(workstream, e)}
                     onDelete={(e) => handleRequestDelete(workstream, e)}
+                    onMembersClick={(e) => {
+                      e.stopPropagation();
+                      setMembersDialogWorkstream(workstream);
+                    }}
                   />
                 );
               })}
@@ -912,6 +923,13 @@ export function WorkstreamsPage() {
 
       {/* Create Modal */}
       <CreateWorkstreamModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+
+      {/* Members Dialog */}
+      <WorkstreamMembersDialog
+        open={!!membersDialogWorkstream}
+        onOpenChange={(open) => !open && setMembersDialogWorkstream(null)}
+        workstream={membersDialogWorkstream}
+      />
       </div>
     </div>
   );
@@ -1021,6 +1039,7 @@ const WorkstreamRow: React.FC<{
   onArchive: (e: React.MouseEvent) => void;
   onEdit: (e: React.MouseEvent) => void;
   onDelete: (e: React.MouseEvent) => void;
+  onMembersClick: (e: React.MouseEvent) => void;
 }> = ({
   workstream,
   lead,
@@ -1036,6 +1055,7 @@ const WorkstreamRow: React.FC<{
   onArchive,
   onEdit,
   onDelete,
+  onMembersClick,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -1244,6 +1264,37 @@ const WorkstreamRow: React.FC<{
         }}
       >
         {workstream.overdueCount || 0}
+      </td>
+
+      {/* MEMBERS CELL */}
+      <td
+        style={{
+          padding: '16px 20px',
+          textAlign: 'center',
+        }}
+      >
+        <button
+          onClick={onMembersClick}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: '28px',
+            height: '28px',
+            padding: '0 8px',
+            backgroundColor: (workstream.members?.length || 0) > 0 ? COLORS.accentLighter : 'transparent',
+            border: `1px solid ${(workstream.members?.length || 0) > 0 ? COLORS.accent : COLORS.borderLight}`,
+            borderRadius: '14px',
+            fontSize: '13px',
+            fontWeight: 500,
+            color: (workstream.members?.length || 0) > 0 ? COLORS.accent : COLORS.textMuted,
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
+          title="View members"
+        >
+          {workstream.members?.length || 0}
+        </button>
       </td>
 
       {/* ACTIONS CELL */}
