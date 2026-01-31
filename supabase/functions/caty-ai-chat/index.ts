@@ -25,14 +25,15 @@ const AGGREGATE_KEYWORDS = [
 function detectQueryType(message: string): QueryType {
   const lower = message.toLowerCase();
   
-  // Check for aggregate keywords first
-  if (AGGREGATE_KEYWORDS.some(kw => lower.includes(kw))) {
-    return 'aggregate';
-  }
-  
-  // Check for specific resource identifier (name pattern)
+  // IMPORTANT: Check for specific resource identifier (name pattern) FIRST
+  // This takes priority so queries like "Show contract for John Smith" find the individual
   if (/\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/.test(message)) {
     return 'individual_resource';
+  }
+  
+  // Check for aggregate keywords (only if no individual name was detected)
+  if (AGGREGATE_KEYWORDS.some(kw => lower.includes(kw))) {
+    return 'aggregate';
   }
   
   // Check for resource keywords
