@@ -387,6 +387,22 @@
   line-height: 1.5;
 }
 
+.caty-message-bubble.streaming {
+  border-color: var(--caty-border-focus);
+}
+
+.caty-cursor {
+  display: inline-block;
+  animation: caty-blink 1s step-end infinite;
+  color: var(--caty-text-primary);
+  margin-left: 2px;
+}
+
+@keyframes caty-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
 .caty-message.ai .caty-message-bubble {
   background: var(--caty-surface-card);
   border: 1px solid var(--caty-border);

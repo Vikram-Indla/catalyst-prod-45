@@ -8,12 +8,13 @@ import catalystLogoWhite from '@/assets/catalyst-ai-logo-white.svg';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from './types';
 
-interface CatyMessageProps {
+export interface CatyMessageProps {
   message: ChatMessage;
   userInitials?: string;
   onCopy?: (content: string) => void;
   onRefresh?: () => void;
   onFeedback?: (messageId: string, feedback: 'positive' | 'negative') => void;
+  isStreaming?: boolean;
 }
 
 export function CatyMessageBubble({ 
@@ -21,7 +22,8 @@ export function CatyMessageBubble({
   userInitials = 'U',
   onCopy,
   onRefresh,
-  onFeedback
+  onFeedback,
+  isStreaming = false
 }: CatyMessageProps) {
   const isUser = message.type === 'user';
   const formatTime = (date: Date) => {
@@ -50,8 +52,9 @@ export function CatyMessageBubble({
       </div>
       
       <div className="caty-message-content">
-        <div className="caty-message-bubble">
+        <div className={cn("caty-message-bubble", isStreaming && "streaming")}>
           {renderContent(message.content)}
+          {isStreaming && <span className="caty-cursor">▋</span>}
         </div>
         
         <div className="caty-message-meta">
