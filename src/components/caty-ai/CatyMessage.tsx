@@ -31,12 +31,32 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
     if (message.type !== 'assistant' || message.isHtml) {
       return null;
     }
-    // Only try to parse if the message appears to be complete JSON
+    
     const content = message.content.trim();
-    if (!content.startsWith('{') || !content.endsWith('}')) {
+    
+    // Skip empty or very short content
+    if (!content || content.length < 20) {
       return null;
     }
-    return parseStructuredResponse(content);
+    
+    // Check if it looks like JSON (starts with { and ends with })
+    const isJsonLike = content.startsWith('{') && content.endsWith('}');
+    
+    // Also check for JSON wrapped in markdown code block
+    const hasJsonBlock = content.includes('```json') || content.includes('```');
+    
+    if (!isJsonLike && !hasJsonBlock) {
+      return null;
+    }
+    
+    const parsed = parseStructuredResponse(content);
+    
+    // Debug logging
+    if (!parsed && isJsonLike) {
+      console.log('[CatyMessage] Failed to parse JSON-like content:', content.substring(0, 200));
+    }
+    
+    return parsed;
   }, [message.content, message.type, message.isHtml]);
 
   const renderContent = () => {
@@ -45,7 +65,7 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
       return <div dangerouslySetInnerHTML={{ __html: message.content }} />;
     }
 
-    // Structured JSON response
+    // Structured JSON response - render as card
     if (structuredResponse) {
       return (
         <CatyAnswerCard 
@@ -53,6 +73,26 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
           onAction={onAction}
         />
       );
+    }
+
+    // Check if content looks like JSON but failed to parse - try one more time
+    const content = message.content.trim();
+    if (message.type === 'assistant' && content.startsWith('{') && content.endsWith('}')) {
+      // Last-ditch attempt to parse and render
+      try {
+        const directParsed = JSON.parse(content);
+        if (directParsed.response_type === 'general_answer' || directParsed.response_type === 'resource_answer') {
+          console.log('[CatyMessage] Direct parse succeeded where structured parse failed');
+          return (
+            <CatyAnswerCard 
+              response={directParsed} 
+              onAction={onAction}
+            />
+          );
+        }
+      } catch (e) {
+        console.log('[CatyMessage] Direct JSON parse also failed:', e);
+      }
     }
 
     // Regular text/markdown content

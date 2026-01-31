@@ -154,40 +154,50 @@ export function parseStructuredResponse(content: string): CatyStructuredResponse
   if (!content || content.trim().length < 20) return null;
   
   try {
+    let jsonStr = content.trim();
+    
     // Try to extract JSON from markdown code block first
-    const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/);
-    let jsonStr = jsonMatch ? jsonMatch[1] : content;
-    
-    // Clean the string
-    jsonStr = jsonStr.trim();
-    
-    // Skip if it doesn't look like complete JSON (must start with { and end with })
-    if (!jsonStr.startsWith('{') || !jsonStr.endsWith('}')) {
-      return null;
+    const jsonBlockMatch = jsonStr.match(/```json\s*([\s\S]*?)\s*```/);
+    if (jsonBlockMatch) {
+      jsonStr = jsonBlockMatch[1].trim();
+    } else {
+      // Also try plain code blocks
+      const codeBlockMatch = jsonStr.match(/```\s*([\s\S]*?)\s*```/);
+      if (codeBlockMatch) {
+        jsonStr = codeBlockMatch[1].trim();
+      }
     }
     
-    // Skip if the content still has truncated JSON patterns
-    if (jsonStr.includes(': "') && !jsonStr.includes('"}') && !jsonStr.includes('": null') && !jsonStr.includes('": 0') && !jsonStr.includes('": []')) {
-      // Likely incomplete JSON - wait for more content
+    // Skip if it doesn't look like JSON object
+    if (!jsonStr.startsWith('{') || !jsonStr.endsWith('}')) {
       return null;
     }
     
     // Validate bracket balance before attempting parse
     const openBraces = (jsonStr.match(/{/g) || []).length;
     const closeBraces = (jsonStr.match(/}/g) || []).length;
-    if (openBraces !== closeBraces) {
+    const openBrackets = (jsonStr.match(/\[/g) || []).length;
+    const closeBrackets = (jsonStr.match(/\]/g) || []).length;
+    
+    if (openBraces !== closeBraces || openBrackets !== closeBrackets) {
       return null;
     }
     
     // Parse JSON
     const parsed = JSON.parse(jsonStr);
     
+    // Validate response structure
     if (isValidCatyResponse(parsed)) {
       return parsed;
     }
     
+    // Log if it's a valid JSON but not matching our schema
+    console.log('[parseStructuredResponse] Valid JSON but invalid schema:', 
+      typeof parsed === 'object' ? Object.keys(parsed) : typeof parsed);
+    
     return null;
-  } catch {
+  } catch (error) {
+    console.log('[parseStructuredResponse] Parse error:', error);
     return null;
   }
 }
