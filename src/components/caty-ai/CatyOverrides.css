@@ -944,7 +944,7 @@ button.caty-fab {
   visibility: visible !important;
 }
 
-/* Panel container - ABOVE backdrop */
+/* Panel container - ABOVE backdrop, positioned BOTTOM-RIGHT */
 .caty-widget-container {
   position: fixed !important;
   top: 0 !important;
@@ -956,8 +956,9 @@ button.caty-fab {
   z-index: 9999 !important;
   pointer-events: none !important;
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  align-items: flex-end !important;
+  justify-content: flex-end !important;
+  padding: 24px !important;
 }
 
 /* Panel itself - receives pointer events */
