@@ -46,28 +46,28 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl p-0 bg-background border-border">
+      <DialogContent className="sm:max-w-2xl p-0 bg-popover border-border">
         <DialogHeader className="px-4 pt-4 pb-0">
           <DialogTitle className="sr-only">Search</DialogTitle>
         </DialogHeader>
         
         <div className="flex items-center border-b border-border px-4 pb-4">
-          <Search className="h-5 w-5 text-foreground/60 mr-2" />
+          <Search className="h-5 w-5 text-muted-foreground mr-2" />
           <Input
             placeholder="Search by keywords or work item IDs (e.g., E-101, F-234)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-foreground/50"
+            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground"
             autoFocus
           />
-          <div className="flex items-center gap-1 ml-2 text-xs text-foreground/60 bg-muted px-2 py-1 rounded">
+          <div className="flex items-center gap-1 ml-2 text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
             <span>ESC</span>
           </div>
         </div>
 
         <ScrollArea className="max-h-[400px]">
           {query.trim() && results.length === 0 ? (
-            <div className="p-8 text-center text-foreground/70">
+            <div className="p-8 text-center text-muted-foreground">
               <p>No results found for "{query}"</p>
             </div>
           ) : results.length > 0 ? (
@@ -86,7 +86,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                     <div className="flex-1 text-left">
                       <div className="font-medium text-foreground">{result.title}</div>
                       {result.subtitle && (
-                        <div className="text-sm text-foreground/60">{result.subtitle}</div>
+                        <div className="text-sm text-muted-foreground">{result.subtitle}</div>
                       )}
                     </div>
                   </div>
@@ -94,10 +94,10 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
               ))}
             </div>
           ) : (
-            <div className="p-8 text-center text-foreground/70">
-              <Search className="h-12 w-12 mx-auto mb-3 text-foreground/40" />
-              <p className="text-foreground/70">Start typing to search</p>
-              <p className="text-xs mt-2 text-foreground/50">Try: Epic names, Feature IDs, Story titles</p>
+            <div className="p-8 text-center text-muted-foreground">
+              <Search className="h-12 w-12 mx-auto mb-3 text-muted-foreground/40" />
+              <p className="text-muted-foreground">Start typing to search</p>
+              <p className="text-xs mt-2 text-muted-foreground/70">Try: Epic names, Feature IDs, Story titles</p>
             </div>
           )}
         </ScrollArea>
