@@ -96,16 +96,22 @@
   position: relative;
 }
 
-/* HEADER */
+/* HEADER - WHITE BACKGROUND */
 .caty-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  background: var(--caty-bg-panel);
-  border-bottom: 1px solid var(--caty-border-light);
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  padding: 20px 24px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
   position: relative;
   z-index: 50;
+}
+
+.caty-header * {
+  color: inherit !important;
 }
 
 .caty-header-left {
@@ -115,10 +121,10 @@
 }
 
 .caty-header-icon {
-  width: 52px;
-  height: 52px;
-  background: var(--caty-primary);
-  border-radius: 14px;
+  width: 52px !important;
+  height: 52px !important;
+  background: #2563eb !important;
+  border-radius: 14px !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,9 +134,9 @@
 .caty-header-icon svg { width: 30px; height: 30px; }
 
 .caty-header-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--caty-text-primary);
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
   margin-bottom: 2px;
 }
 
@@ -138,8 +144,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.8125rem;
-  color: var(--caty-text-muted);
+  font-size: 0.8125rem !important;
+  color: #64748b !important;
 }
 
 .caty-status-dot {
@@ -159,14 +165,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--caty-text-muted);
+  color: #64748b !important;
+  background: transparent !important;
   border-radius: 10px;
   transition: all 0.15s ease;
 }
 
 .caty-header-btn:hover {
-  background: var(--caty-bg-muted);
-  color: var(--caty-text-secondary);
+  background: var(--caty-bg-muted) !important;
+  color: var(--caty-text-secondary) !important;
 }
 
 .caty-header-btn:focus-visible {
@@ -174,44 +181,53 @@
   outline-offset: 2px;
 }
 
-.caty-header-btn.escalate { color: var(--caty-primary); }
-.caty-header-btn.escalate:hover { background: var(--caty-primary-muted); }
+.caty-header-btn.escalate { color: var(--caty-primary) !important; }
+.caty-header-btn.escalate:hover { background: var(--caty-primary-muted) !important; }
 .caty-header-btn svg { width: 22px; height: 22px; }
 
-/* CONTEXT BAR */
+/* CONTEXT BAR - LIGHT BLUE, SEPARATE SECTION */
 .caty-context-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 24px;
-  background: var(--caty-primary-subtle);
-  border-bottom: 1px solid var(--caty-border-light);
+  background: #eff6ff !important;
+  padding: 14px 24px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
 }
 
 .caty-context-label {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--caty-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: #64748b !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  flex-shrink: 0 !important;
 }
 
-.caty-context-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.caty-context-tags {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+}
 
 .caty-context-tag {
-  padding: 6px 14px;
-  background: var(--caty-bg-panel);
-  border: 1px solid var(--caty-border-light);
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--caty-text-secondary);
+  padding: 6px 14px !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  color: #475569 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .caty-context-tag.active {
-  background: var(--caty-primary);
-  border-color: var(--caty-primary);
-  color: var(--caty-text-inverse);
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
 }
 
 /* MESSAGES */

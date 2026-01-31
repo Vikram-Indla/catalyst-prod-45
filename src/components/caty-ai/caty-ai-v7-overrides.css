@@ -43,7 +43,19 @@
 .caty-widget .caty-avatar{background-color:var(--caty-primary)!important;border-radius:10px!important}
 .caty-widget .caty-avatar.user{background-color:var(--caty-text-secondary)!important}
 
-.caty-widget .caty-header{padding:20px 24px!important;margin:0!important}
+/* HEADER - FORCE WHITE BACKGROUND */
+.caty-widget .caty-header{background:#ffffff!important;background-color:#ffffff!important;background-image:none!important;padding:20px 24px!important;margin:0!important;border-bottom:1px solid #e2e8f0!important}
+.caty-widget .caty-header-title{color:#0f172a!important;font-weight:700!important}
+.caty-widget .caty-header-subtitle{color:#64748b!important}
+.caty-widget .caty-header-btn{color:#64748b!important;background:transparent!important}
+.caty-widget .caty-header-icon{background:#2563eb!important}
+
+/* CONTEXT BAR - LIGHT BLUE SEPARATE */
+.caty-widget .caty-context-bar{background:#eff6ff!important;padding:14px 24px!important;border-bottom:1px solid #e2e8f0!important}
+.caty-widget .caty-context-label{color:#64748b!important}
+.caty-widget .caty-context-tag{background:#ffffff!important;border:1px solid #e2e8f0!important;color:#475569!important}
+.caty-widget .caty-context-tag.active{background:#2563eb!important;border-color:#2563eb!important;color:#ffffff!important}
+
 .caty-widget .caty-messages{padding:24px!important;margin:0!important;gap:24px!important}
 .caty-widget .caty-input-area{padding:18px 24px 22px!important;margin:0!important}
 
