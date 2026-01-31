@@ -11,9 +11,10 @@ import type { ProbingQuestion, ViewportSection as ViewportSectionType } from '@/
 interface CatyViewportProps {
   selectedDepartmentId: string | null;
   onQuestionClick: (question: ProbingQuestion) => void;
+  onTileClick?: (tileType: 'expiring' | 'overallocated' | 'unallocated') => void;
 }
 
-export function CatyViewport({ selectedDepartmentId, onQuestionClick }: CatyViewportProps) {
+export function CatyViewport({ selectedDepartmentId, onQuestionClick, onTileClick }: CatyViewportProps) {
   const { data: viewportData, isLoading } = useCatyViewportData(selectedDepartmentId);
 
   if (isLoading) {
@@ -26,6 +27,12 @@ export function CatyViewport({ selectedDepartmentId, onQuestionClick }: CatyView
 
   const hasIssues = viewportData.sections.length > 0;
 
+  const handleTileClick = (tileType: 'expiring' | 'overallocated' | 'unallocated') => {
+    if (onTileClick) {
+      onTileClick(tileType);
+    }
+  };
+
   return (
     <div style={styles.viewport}>
       {/* Metrics Dashboard - High Density Grid */}
@@ -35,6 +42,7 @@ export function CatyViewport({ selectedDepartmentId, onQuestionClick }: CatyView
           value={viewportData.stats.totalResources}
           label="Total Resources"
           variant="neutral"
+          isClickable={false}
         />
         <MetricTile 
           icon={Clock}
@@ -43,6 +51,8 @@ export function CatyViewport({ selectedDepartmentId, onQuestionClick }: CatyView
           variant={viewportData.stats.expiringContracts > 0 ? 'danger' : 'neutral'}
           showProgress={viewportData.stats.expiringContracts > 0}
           progressPercent={Math.min((viewportData.stats.expiringContracts / viewportData.stats.totalResources) * 100, 100)}
+          isClickable={true}
+          onClick={() => handleTileClick('expiring')}
         />
         <MetricTile 
           icon={AlertTriangle}
@@ -51,6 +61,8 @@ export function CatyViewport({ selectedDepartmentId, onQuestionClick }: CatyView
           variant={viewportData.stats.overAllocated > 0 ? 'warning' : 'neutral'}
           showProgress={viewportData.stats.overAllocated > 0}
           progressPercent={Math.min((viewportData.stats.overAllocated / viewportData.stats.totalResources) * 100, 100)}
+          isClickable={true}
+          onClick={() => handleTileClick('overallocated')}
         />
         <MetricTile 
           icon={TrendingUp}
@@ -59,6 +71,8 @@ export function CatyViewport({ selectedDepartmentId, onQuestionClick }: CatyView
           variant={viewportData.stats.zeroUtilization > 0 ? 'info' : 'neutral'}
           showProgress={viewportData.stats.zeroUtilization > 0}
           progressPercent={Math.min((viewportData.stats.zeroUtilization / viewportData.stats.totalResources) * 100, 100)}
+          isClickable={true}
+          onClick={() => handleTileClick('unallocated')}
         />
       </div>
 
@@ -104,6 +118,8 @@ interface MetricTileProps {
   variant: 'neutral' | 'danger' | 'warning' | 'info';
   showProgress?: boolean;
   progressPercent?: number;
+  onClick?: () => void;
+  isClickable?: boolean;
 }
 
 const variantColors = {
@@ -113,15 +129,50 @@ const variantColors = {
   info: { bg: '#eff6ff', border: '#bfdbfe', text: '#2563eb', accent: '#3b82f6' },
 };
 
-function MetricTile({ icon: Icon, value, label, variant, showProgress, progressPercent = 0 }: MetricTileProps) {
+function MetricTile({ icon: Icon, value, label, variant, showProgress, progressPercent = 0, onClick, isClickable = false }: MetricTileProps) {
   const colors = variantColors[variant];
   
+  const tileStyle: React.CSSProperties = {
+    ...styles.metricTile,
+    background: colors.bg,
+    borderColor: colors.border,
+    ...(isClickable && {
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+    }),
+  };
+  
+  const handleClick = () => {
+    if (isClickable && onClick) {
+      onClick();
+    }
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isClickable) {
+      e.currentTarget.style.transform = 'translateY(-2px)';
+      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+    }
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isClickable) {
+      e.currentTarget.style.transform = 'translateY(0)';
+      e.currentTarget.style.boxShadow = 'none';
+    }
+  };
+  
   return (
-    <div style={{
-      ...styles.metricTile,
-      background: colors.bg,
-      borderColor: colors.border,
-    }}>
+    <div 
+      style={tileStyle}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onKeyDown={isClickable ? (e) => e.key === 'Enter' && handleClick() : undefined}
+      aria-label={isClickable ? `${label}: ${value}. Click to view details.` : undefined}
+    >
       <div style={styles.metricHeader}>
         <Icon size={14} style={{ color: colors.accent, flexShrink: 0 }} />
         <span style={{ ...styles.metricLabel, color: '#64748b' }}>{label}</span>
