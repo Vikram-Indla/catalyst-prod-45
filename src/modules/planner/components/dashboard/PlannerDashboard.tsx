@@ -171,8 +171,8 @@ export function PlannerDashboard() {
           
           {/* Date range selector - Per V2: NO "This Sprint" option */}
           <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-28 h-8 text-xs">
-              <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+            <SelectTrigger className="w-[130px] h-8 text-xs">
+              <Calendar className="w-3.5 h-3.5 mr-1.5 shrink-0 text-slate-500" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
