@@ -571,6 +571,24 @@ button.caty-department-pill,
   font-weight: 700 !important;
 }
 
+/* LOCKED AVATAR BOX STYLE - Image 1 reference (multi-resource lists) */
+.caty-data-avatar-box {
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  background: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #2563eb !important;
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  flex-shrink: 0 !important;
+}
+
 .caty-data-info {
   flex: 1 !important;
   min-width: 0 !important;
