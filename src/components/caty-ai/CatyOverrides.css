@@ -326,8 +326,8 @@ button.caty-department-pill,
 }
 
 .caty-department-pill.active {
-  background: #2563eb !important;
-  border-color: #2563eb !important;
+  background: #475569 !important;
+  border-color: #475569 !important;
   color: #ffffff !important;
   font-weight: 600 !important;
 }
@@ -559,12 +559,13 @@ button.caty-department-pill,
   width: 48px !important;
   height: 48px !important;
   min-width: 48px !important;
-  background: #64748b !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
   border-radius: 12px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  color: #ffffff !important;
+  color: #475569 !important;
   font-size: 1rem !important;
   font-weight: 700 !important;
 }
@@ -669,12 +670,13 @@ button.caty-department-pill,
   width: 64px !important;
   height: 64px !important;
   min-width: 64px !important;
-  background: #64748b !important;
+  background: #ffffff !important;
+  border: 2px solid #3b82f6 !important;
   border-radius: 16px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  color: #ffffff !important;
+  color: #3b82f6 !important;
   font-size: 1.5rem !important;
   font-weight: 700 !important;
   letter-spacing: -0.02em !important;
