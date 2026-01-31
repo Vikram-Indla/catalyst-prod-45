@@ -1371,12 +1371,15 @@
   }
 }
 
-/* Panel container - positioned above backdrop */
+/* Panel container - positioned above backdrop, full screen overlay for positioning */
 .caty-widget-container {
   position: fixed !important;
   top: 0 !important;
+  left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
   z-index: 9999 !important;
   display: flex !important;
   justify-content: flex-end !important;
@@ -1385,11 +1388,19 @@
   pointer-events: none !important;
 }
 
-/* Panel itself - receives pointer events */
+/* Panel wrapper - receives pointer events */
 .caty-widget-container > .caty-widget,
 .caty-widget-container > div {
   pointer-events: auto !important;
   animation: caty-panel-slidein 0.3s ease-out forwards !important;
+}
+
+/* Override the fixed positioning from caty-panel when inside container */
+.caty-widget-container .caty-panel {
+  position: relative !important;
+  bottom: auto !important;
+  right: auto !important;
+  max-height: calc(100vh - 40px) !important;
 }
 
 /* Panel slide-in animation */

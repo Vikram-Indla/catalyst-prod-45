@@ -49,33 +49,13 @@ export function CatyFabPlaceholder() {
         </div>
       </button>
 
-      {/* Widget Panel */}
+      {/* Widget Panel - CatyWidget handles its own positioning and backdrop */}
       {isOpen && (
-        <div 
-          className="fixed bottom-6 right-6 z-[1000]"
-          style={{ 
-            animation: 'fadeInUp 0.25s ease-out'
-          }}
-        >
-          <CatyWidget 
-            onAction={handleAction}
-            onClose={() => setIsOpen(false)}
-          />
-        </div>
+        <CatyWidget 
+          onAction={handleAction}
+          onClose={() => setIsOpen(false)}
+        />
       )}
-
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </>
   );
 }
