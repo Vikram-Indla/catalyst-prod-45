@@ -86,4 +86,95 @@ const CatyTyping = () => (
   </div>
 );
 
-// Part 2: Main component will be added below
+const CatyEmpty = ({ onSend }: { onSend: (t: string) => void }) => (
+  <div className="caty-empty">
+    <div className="caty-empty-icon"><HubIcon /></div>
+    <h3>Caty AI</h3>
+    <p>Capacity Intelligence Assistant</p>
+    <div className="caty-empty-suggestions">
+      <p className="caty-empty-label">Suggested queries</p>
+      <button onClick={() => onSend('Show Q2 capacity forecast for Delivery')}>Show Q2 capacity forecast for Delivery</button>
+      <button onClick={() => onSend('List expiring contracts this month')}>List expiring contracts this month</button>
+      <button onClick={() => onSend('Find available .NET developers')}>Find available .NET developers</button>
+    </div>
+  </div>
+);
+
+const CatySuggestions = ({ onSend, onEscalate }: { onSend: (t: string) => void; onEscalate: () => void }) => (
+  <div className="caty-suggestions">
+    <button className="caty-suggestion alert" onClick={() => onSend('Show expiring contracts')}>View Expiring Contracts</button>
+    <button className="caty-suggestion" onClick={() => onSend('Find available .NET developers')}>Find .NET Resources</button>
+    <button className="caty-suggestion" onClick={() => onSend('Show Q2 capacity forecast')}>Q2 Forecast</button>
+    <button className="caty-suggestion escalate" onClick={onEscalate}>Connect to Specialist</button>
+  </div>
+);
+
+const CatyInput = ({ onSend, disabled }: { onSend: (t: string) => void; disabled: boolean }) => {
+  const [value, setValue] = useState('');
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const ta = e.target;
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 140) + 'px';
+    setValue(ta.value);
+  };
+
+  const handleSend = () => {
+    if (value.trim() && !disabled) {
+      onSend(value.trim());
+      setValue('');
+      if (ref.current) ref.current.style.height = 'auto';
+    }
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  };
+
+  return (
+    <div className="caty-input-area">
+      <div className="caty-input-wrapper">
+        <button className="caty-input-btn" aria-label="Attach"><Paperclip size={22} /></button>
+        <div className="caty-input-field">
+          <textarea ref={ref} value={value} onChange={handleChange} onKeyDown={handleKey} placeholder="Ask about capacity, contracts, or resource allocation..." rows={1} />
+        </div>
+        <button className="caty-send-btn" onClick={handleSend} disabled={!value.trim() || disabled} aria-label="Send"><Send size={22} /></button>
+      </div>
+    </div>
+  );
+};
+
+const getPreview = (s: CatySession) => {
+  const last = s.messages.filter(m => m.type === 'user').pop();
+  const t = last?.content.replace(/<[^>]*>/g, '') || 'No messages';
+  return t.substring(0, 50) + (t.length > 50 ? '...' : '');
+};
+
+const formatDate = (d: string) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+const CatyHistory = ({ isOpen, sessions, onClose, onLoad, onClear }: { isOpen: boolean; sessions: CatySession[]; onClose: () => void; onLoad: (id: string) => void; onClear: () => void }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="caty-history">
+      <div className="caty-history-header">
+        <h2>Conversation History</h2>
+        <button className="caty-close-btn" onClick={onClose}>&times;</button>
+      </div>
+      <div className="caty-history-list">
+        {sessions.length === 0 ? (
+          <div className="caty-history-empty">No previous conversations</div>
+        ) : sessions.map(s => (
+          <div key={s.id} className="caty-history-item" onClick={() => onLoad(s.id)}>
+            <div className="caty-history-title">{s.context.department}</div>
+            <div className="caty-history-preview">{getPreview(s)}</div>
+            <div className="caty-history-date">{formatDate(s.updated)}</div>
+          </div>
+        ))}
+      </div>
+      <div className="caty-history-actions"><button onClick={onClear}>Clear All History</button></div>
+    </div>
+  );
+};
+
+// Part 3: Main CatyWidget component will be added below
