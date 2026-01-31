@@ -80,10 +80,10 @@
   border: 0;
 }
 
-/* PANEL - 4x width (2000px) */
+/* PANEL - 1200px width */
 .caty-panel {
   width: 100%;
-  max-width: 2000px;
+  max-width: 1200px;
   height: 860px;
   max-height: 94vh;
   background: var(--caty-bg-panel);

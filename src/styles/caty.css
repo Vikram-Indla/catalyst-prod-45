@@ -229,7 +229,7 @@
   bottom: 24px;
   right: 24px;
   width: 100%;
-  max-width: 2000px;
+  max-width: 1200px;
   max-height: calc(100vh - 48px);
   background: var(--caty-surface-page);
   border-radius: var(--caty-radius-xl);
