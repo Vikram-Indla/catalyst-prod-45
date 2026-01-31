@@ -29,6 +29,61 @@ interface CatyWidgetProps {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/caty-ai-chat`;
 
+// Sanitize malformed AI responses and wrap in proper HTML
+const sanitizeResponse = (response: string): string => {
+  // If response doesn't contain any caty- classes, wrap it
+  if (!response.includes('class="caty-')) {
+    // Check for common error patterns
+    if (
+      response.includes('Unable to') ||
+      response.includes('no resource') ||
+      response.includes('Data: unknown') ||
+      response.includes('cannot provide') ||
+      response.includes("don't have") ||
+      response.includes('not available')
+    ) {
+      return `
+<div class="caty-bubble">
+  <p>I couldn't find data for that query. Please try one of these:</p>
+</div>
+<div class="caty-data-card">
+  <div class="caty-data-card-header info">
+    <span class="caty-data-card-title">Available Queries</span>
+  </div>
+  <div class="caty-data-card-body">
+    <div class="caty-data-row">
+      <div class="caty-data-info">
+        <div class="caty-data-name">Show all resources</div>
+        <div class="caty-data-meta">View complete resource inventory</div>
+      </div>
+    </div>
+    <div class="caty-data-row">
+      <div class="caty-data-info">
+        <div class="caty-data-name">Show expiring contracts</div>
+        <div class="caty-data-meta">Contracts ending within 30 days</div>
+      </div>
+    </div>
+    <div class="caty-data-row">
+      <div class="caty-data-info">
+        <div class="caty-data-name">Off-shore teams</div>
+        <div class="caty-data-meta">Resources by country</div>
+      </div>
+    </div>
+  </div>
+</div>`;
+    }
+
+    // Wrap plain text in bubble
+    return `<div class="caty-bubble"><p>${response}</p></div>`;
+  }
+
+  // Remove any "Data: unknown" or "Confidence" text
+  return response
+    .replace(/Data:\s*unknown/gi, '')
+    .replace(/Confidence:\s*\w+/gi, '')
+    .replace(/<p>\s*<\/p>/g, '');
+};
+
 export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProps) {
   const defaultContext: CatyContext = {
     department: 'Delivery Department',
@@ -149,8 +204,9 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           const jsonStr = line.slice(6).trim();
           if (jsonStr === '[DONE]') {
             streamDone = true;
-            // Final update - mark as HTML since edge function returns HTML
-            updateLastAssistantMessage(assistantContent, true);
+            // Final update - sanitize and mark as HTML
+            const cleanResponse = sanitizeResponse(assistantContent);
+            updateLastAssistantMessage(cleanResponse, true);
             break;
           }
 
@@ -177,8 +233,9 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
           if (!raw.startsWith('data: ')) continue;
           const jsonStr = raw.slice(6).trim();
           if (jsonStr === '[DONE]') {
-            // Final update - mark as HTML
-            updateLastAssistantMessage(assistantContent, true);
+            // Final update - sanitize and mark as HTML
+            const cleanResponse = sanitizeResponse(assistantContent);
+            updateLastAssistantMessage(cleanResponse, true);
             continue;
           }
           try {
@@ -192,9 +249,10 @@ export function CatyWidget({ initialContext, onAction, onClose }: CatyWidgetProp
         }
       }
 
-      // Ensure final message is marked as HTML
+      // Ensure final message is sanitized and marked as HTML
       if (assistantContent) {
-        updateLastAssistantMessage(assistantContent, true);
+        const cleanResponse = sanitizeResponse(assistantContent);
+        updateLastAssistantMessage(cleanResponse, true);
       }
 
       return true;
