@@ -13,8 +13,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CatalystLoginPage } from "./components/auth/login";
-// Caty AI chatbot disabled - ready for replacement
-// import { CatyPanelV4 } from "./components/caty";
+// Caty AI chatbot - FAB icon only, functionality unhooked
+import { CatyFabPlaceholder } from "./components/caty/CatyFabPlaceholder";
 // Jira test pages removed - AtlasKit migration complete
 import SlackOAuthCallback from "./pages/SlackOAuthCallback";
 import BrowsePage from "./pages/BrowsePage";
@@ -323,13 +323,13 @@ const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/I
 
 const queryClient = new QueryClient();
 
-// Caty AI chatbot disabled - ready for replacement
-// function CatyWidgetRouteGuard() {
-//   const location = useLocation();
-//   const isCapacityPlannerRoute = location.pathname.startsWith('/enterprise/capacity');
-//   if (!isCapacityPlannerRoute) return null;
-//   return <CatyPanelV4 />;
-// }
+// Caty FAB only on capacity planner - functionality unhooked
+function CatyWidgetRouteGuard() {
+  const location = useLocation();
+  const isCapacityPlannerRoute = location.pathname.startsWith('/enterprise/capacity');
+  if (!isCapacityPlannerRoute) return null;
+  return <CatyFabPlaceholder />;
+}
 
 const App = () => (
   <ErrorBoundary>
@@ -969,7 +969,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
             </Routes>
-              {/* <CatyWidgetRouteGuard /> - Caty AI disabled */}
+              <CatyWidgetRouteGuard />
           </BrowserRouter>
         </TooltipProvider>
       </CatalystToastProvider>
