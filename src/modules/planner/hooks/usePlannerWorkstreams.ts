@@ -74,21 +74,33 @@ export function usePlannerWorkstreams(includeArchived = false) {
       if (error) throw new Error(error.message);
       if (!workstreams) return [];
 
-      // Fetch members for each workstream
-      const { data: members } = await supabase
+      // Fetch members for each workstream (no FK join - profiles fetched separately)
+      const { data: membersRaw } = await supabase
         .from('workstream_members')
-        .select(`
-          id,
-          workstream_id,
-          user_id,
-          role,
-          profiles:user_id (
-            id,
-            full_name,
-            email,
-            avatar_url
-          )
-        `);
+        .select('id, workstream_id, user_id, role');
+
+      // Fetch profile data for all member user_ids
+      const memberUserIds = (membersRaw || [])
+        .map(m => m.user_id)
+        .filter((id): id is string => isValidUUID(id));
+      
+      let profilesMap = new Map<string, { id: string; full_name: string | null; email: string | null; avatar_url: string | null }>();
+      if (memberUserIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, email, avatar_url')
+          .in('id', memberUserIds);
+        
+        (profilesData || []).forEach(p => {
+          profilesMap.set(p.id, p);
+        });
+      }
+
+      // Combine members with their profiles
+      const members = (membersRaw || []).map(m => ({
+        ...m,
+        profiles: m.user_id ? profilesMap.get(m.user_id) || null : null,
+      }));
 
       // Fetch task counts from planner_tasks
       const { data: tasks } = await supabase
