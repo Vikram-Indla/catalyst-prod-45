@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Minus, Trash2 } from 'lucide-react';
+import { Minus, RefreshCw } from 'lucide-react';
 
 interface CatyHeaderProps {
   isOnline?: boolean;
@@ -47,9 +47,9 @@ export const CatyHeader: React.FC<CatyHeaderProps> = ({
         <button 
           className="caty-header-btn" 
           onClick={onClearChat}
-          title="Clear chat"
+          title="Refresh chat"
         >
-          <Trash2 size={18} />
+          <RefreshCw size={18} />
         </button>
       )}
       {onMinimize && (
