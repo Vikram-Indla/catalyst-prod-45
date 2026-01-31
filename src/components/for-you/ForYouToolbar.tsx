@@ -47,21 +47,6 @@ export function ForYouToolbar({
           <LayoutGrid className="w-3.5 h-3.5" />
           View
         </button>
-
-        {/* AI Toggle - Modern Object */}
-        <button
-          onClick={onToggleAIPanel}
-          title="AI Assistant"
-          className={cn(
-            "relative flex items-center justify-center w-10 h-10 border-none rounded-xl cursor-pointer",
-            "bg-gradient-to-br from-status-success to-brand-primary",
-            "shadow-[0_2px_8px_rgba(13,148,136,0.3)] transition-all",
-            "hover:translate-y-[-2px] hover:shadow-[0_4px_16px_rgba(13,148,136,0.4)]",
-            isAIPanelOpen && "shadow-[0_0_0_3px_rgba(13,148,136,0.2),0_4px_16px_rgba(13,148,136,0.4)]"
-          )}
-        >
-          <Zap className="w-5 h-5 text-white" />
-        </button>
       </div>
     </div>
   );
