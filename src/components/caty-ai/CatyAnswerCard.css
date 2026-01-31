@@ -1,0 +1,141 @@
+/* Caty AI V7 — Answer Card Styles */
+
+.caty-answer-card {
+  padding: 16px;
+  background: var(--caty-surface-card);
+  border-radius: var(--caty-radius-lg);
+  border: 1px solid var(--caty-border-subtle);
+}
+
+.caty-answer-card h3 {
+  color: var(--caty-text-primary);
+}
+
+.caty-answer-card h4 {
+  color: var(--caty-text-primary);
+}
+
+/* Markdown Content Styling */
+.caty-markdown-content {
+  color: var(--caty-text-primary);
+  line-height: 1.6;
+}
+
+.caty-markdown-content p {
+  margin-bottom: 10px;
+}
+
+.caty-markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+.caty-markdown-content ul,
+.caty-markdown-content ol {
+  margin-bottom: 12px;
+  padding-left: 20px;
+}
+
+.caty-markdown-content li {
+  margin-bottom: 4px;
+}
+
+.caty-markdown-content strong {
+  font-weight: 600;
+  color: var(--caty-text-primary);
+}
+
+.caty-markdown-content code {
+  background: var(--caty-surface-page);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+}
+
+.caty-markdown-content pre {
+  background: var(--caty-surface-page);
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.caty-markdown-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.caty-markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.caty-markdown-content th,
+.caty-markdown-content td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--caty-border-subtle);
+}
+
+.caty-markdown-content th {
+  font-weight: 600;
+  background: var(--caty-surface-page);
+}
+
+.caty-markdown-content blockquote {
+  border-left: 3px solid var(--caty-accent);
+  padding-left: 12px;
+  margin-left: 0;
+  margin-bottom: 12px;
+  color: var(--caty-text-secondary);
+  font-style: italic;
+}
+
+.caty-markdown-content hr {
+  border: none;
+  border-top: 1px solid var(--caty-border-subtle);
+  margin: 16px 0;
+}
+
+.caty-markdown-content h1 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  margin-top: 16px;
+  color: var(--caty-text-primary);
+}
+
+.caty-markdown-content h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-top: 14px;
+  color: var(--caty-text-primary);
+}
+
+.caty-markdown-content h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 12px;
+  color: var(--caty-text-primary);
+}
+
+/* Action Buttons in Answer Cards */
+.caty-answer-card .caty-btn {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+.caty-answer-card .caty-btn.secondary {
+  background: var(--caty-surface-page);
+  border: 1px solid var(--caty-border-subtle);
+  color: var(--caty-text-primary);
+}
+
+.caty-answer-card .caty-btn.secondary:hover {
+  background: var(--caty-surface-card);
+  border-color: var(--caty-accent);
+}

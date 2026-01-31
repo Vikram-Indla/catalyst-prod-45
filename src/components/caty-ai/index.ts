@@ -4,4 +4,6 @@
 
 export { CatyWidget } from './CatyWidget';
 export { CatyThinking } from './CatyThinking';
+export { CatyAnswerCard } from './CatyAnswerCard';
 export type { CatyMessage, CatySession, CatyContext } from './types';
+export type { CatyStructuredResponse, ResourceAnswerResponse, GeneralAnswerResponse, NextAction } from './schema';
