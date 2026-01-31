@@ -19,7 +19,11 @@ const RESOURCE_KEYWORDS = [
 const AGGREGATE_KEYWORDS = [
   'by department', 'department', 'all resources', 'team', 'everyone', 'summary',
   'overview', 'breakdown', 'distribution', 'across', 'total', 'offshore', 'off-shore',
-  'onsite', 'on-site', 'expiring', 'contracts', 'how many', 'count'
+  'onsite', 'on-site', 'expiring', 'contracts', 'how many', 'count',
+  // Period-related keywords
+  'full year', 'yearly', 'q1', 'q2', 'q3', 'q4', 'h1', 'h2', 'quarter', 'half',
+  'for year', 'for full', 'annual', '2025', '2026', '2027', 'this year', 'next year',
+  'assignments', 'projects', 'project names', 'assignment names'
 ];
 
 function detectQueryType(message: string): QueryType {
@@ -202,7 +206,38 @@ interface TimeRange {
 function parseTimeRange(period: string): TimeRange {
   const now = new Date();
   const year = now.getFullYear();
+  const periodLower = period.toLowerCase();
   
+  // Full year handling
+  if (periodLower.includes('full year') || periodLower.includes('yearly') || periodLower.includes('annual') || periodLower === 'year') {
+    return {
+      label: `Full Year ${year}`,
+      start: `${year}-01-01`,
+      end: `${year}-12-31`
+    };
+  }
+  
+  // Half-year handling (H1, H2)
+  const halfMatch = periodLower.match(/h([12])\s*(\d{4})?/i);
+  if (halfMatch) {
+    const h = parseInt(halfMatch[1]);
+    const y = halfMatch[2] ? parseInt(halfMatch[2]) : year;
+    if (h === 1) {
+      return {
+        label: `H1 ${y}`,
+        start: `${y}-01-01`,
+        end: `${y}-06-30`
+      };
+    } else {
+      return {
+        label: `H2 ${y}`,
+        start: `${y}-07-01`,
+        end: `${y}-12-31`
+      };
+    }
+  }
+  
+  // Quarter handling (Q1, Q2, Q3, Q4)
   const quarterMatch = period.match(/Q([1-4])\s*(\d{4})?/i);
   if (quarterMatch) {
     const q = parseInt(quarterMatch[1]);
@@ -218,6 +253,29 @@ function parseTimeRange(period: string): TimeRange {
   }
   
   return { label: period || 'Current Period', start: null, end: null };
+}
+
+// Helper to detect period from user query text
+function detectPeriodFromQuery(query: string): string | null {
+  const lower = query.toLowerCase();
+  
+  if (lower.includes('full year') || lower.includes('yearly') || lower.includes('annual') || lower.includes('for year') || lower.includes('the year')) {
+    return 'full year';
+  }
+  if (/\bh1\b/.test(lower)) return 'H1';
+  if (/\bh2\b/.test(lower)) return 'H2';
+  if (/\bq1\b/.test(lower)) return 'Q1';
+  if (/\bq2\b/.test(lower)) return 'Q2';
+  if (/\bq3\b/.test(lower)) return 'Q3';
+  if (/\bq4\b/.test(lower)) return 'Q4';
+  
+  // Detect year mentions (2025, 2026, 2027)
+  const yearMatch = lower.match(/\b(202[5-9])\b/);
+  if (yearMatch) {
+    return `Full Year ${yearMatch[1]}`;
+  }
+  
+  return null;
 }
 
 // ============ CONTEXT BUILDER ============
@@ -494,9 +552,22 @@ async function buildAggregateContext(
   context: { department?: string; period?: string; location?: string },
   userQuery: string = ''
 ): Promise<any> {
-  const timeRange = parseTimeRange(context.period || '');
-  const today = new Date().toISOString().split('T')[0];
   const queryLower = userQuery.toLowerCase();
+  
+  // CRITICAL: Detect period from user query first, fallback to context
+  const detectedPeriod = detectPeriodFromQuery(userQuery);
+  const effectivePeriod = detectedPeriod || context.period || '';
+  const timeRange = parseTimeRange(effectivePeriod);
+  
+  console.log('[CATY] Period detection:', { 
+    userQuery, 
+    detectedPeriod, 
+    contextPeriod: context.period, 
+    effectivePeriod,
+    timeRange 
+  });
+  
+  const today = new Date().toISOString().split('T')[0];
   
   // Build date range for allocations
   let dateStart = today;
