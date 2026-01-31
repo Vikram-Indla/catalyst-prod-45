@@ -31,7 +31,12 @@ export const CatyMessageComponent: React.FC<CatyMessageProps> = ({
     if (message.type !== 'assistant' || message.isHtml) {
       return null;
     }
-    return parseStructuredResponse(message.content);
+    // Only try to parse if the message appears to be complete JSON
+    const content = message.content.trim();
+    if (!content.startsWith('{') || !content.endsWith('}')) {
+      return null;
+    }
+    return parseStructuredResponse(content);
   }, [message.content, message.type, message.isHtml]);
 
   const renderContent = () => {

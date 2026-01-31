@@ -151,16 +151,36 @@ export function isValidCatyResponse(response: unknown): response is CatyStructur
 }
 
 export function parseStructuredResponse(content: string): CatyStructuredResponse | null {
+  if (!content || content.trim().length < 20) return null;
+  
   try {
-    // Try to extract JSON from markdown code block
+    // Try to extract JSON from markdown code block first
     const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/);
-    const jsonStr = jsonMatch ? jsonMatch[1] : content;
+    let jsonStr = jsonMatch ? jsonMatch[1] : content;
     
     // Clean the string
-    const cleaned = jsonStr.trim();
+    jsonStr = jsonStr.trim();
+    
+    // Skip if it doesn't look like complete JSON (must start with { and end with })
+    if (!jsonStr.startsWith('{') || !jsonStr.endsWith('}')) {
+      return null;
+    }
+    
+    // Skip if the content still has truncated JSON patterns
+    if (jsonStr.includes(': "') && !jsonStr.includes('"}') && !jsonStr.includes('": null') && !jsonStr.includes('": 0') && !jsonStr.includes('": []')) {
+      // Likely incomplete JSON - wait for more content
+      return null;
+    }
+    
+    // Validate bracket balance before attempting parse
+    const openBraces = (jsonStr.match(/{/g) || []).length;
+    const closeBraces = (jsonStr.match(/}/g) || []).length;
+    if (openBraces !== closeBraces) {
+      return null;
+    }
     
     // Parse JSON
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(jsonStr);
     
     if (isValidCatyResponse(parsed)) {
       return parsed;
