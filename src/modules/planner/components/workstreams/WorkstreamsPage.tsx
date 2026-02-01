@@ -369,7 +369,10 @@ export function WorkstreamsPage() {
     <div
       style={{
         backgroundColor: COLORS.surfacePage,
-        minHeight: '100vh',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
       }}
     >
       {/* PAGE HEADER - Dashboard Style */}
@@ -471,8 +474,8 @@ export function WorkstreamsPage() {
         </div>
       </div>
       
-      {/* Content Container */}
-      <div style={{ padding: '24px' }}>
+      {/* Content Container - Scrollable */}
+      <div style={{ padding: '24px', flex: 1, overflowY: 'auto', minHeight: 0 }}>
 
       {/* SUMMARY CARDS */}
       <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
