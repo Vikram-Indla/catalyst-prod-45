@@ -29,6 +29,22 @@ import {
 } from '@/hooks/useAqd';
 import type { AqdItem } from '@/types/aqd';
 
+// Helper to format week date range with cross-month support
+const formatWeekRange = (startDate: string, endDate: string): string => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  const startMonth = start.toLocaleDateString('en-US', { month: 'short' });
+  const endMonth = end.toLocaleDateString('en-US', { month: 'short' });
+  const startDay = start.getDate();
+  const endDay = end.getDate();
+  
+  if (startMonth === endMonth) {
+    return `${startMonth} ${startDay} – ${endDay}`;
+  }
+  return `${startMonth} ${startDay} – ${endMonth} ${endDay}`;
+};
+
 export function AqdListDetailPage() {
   const { listSlug } = useParams<{ listSlug: string }>();
   const navigate = useNavigate();
@@ -133,7 +149,12 @@ export function AqdListDetailPage() {
               <h1 className="font-semibold text-base">{list.name}</h1>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                 {currentWeek && (
-                  <span>W{String(currentWeek.week_number).padStart(2, '0')} · {format(new Date(currentWeek.start_date), 'MMM d')} – {format(new Date(currentWeek.end_date), 'd')}</span>
+                  <span>
+                    W{String(currentWeek.week_number).padStart(2, '0')} · {formatWeekRange(currentWeek.start_date, currentWeek.end_date)}
+                    {list.created_by_name && (
+                      <span className="ml-2">· 👤 {list.created_by_name}</span>
+                    )}
+                  </span>
                 )}
               </div>
             </div>
@@ -145,17 +166,16 @@ export function AqdListDetailPage() {
               <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="px-3 text-sm font-medium">Current Week</span>
+              <span className="px-3 text-sm font-medium">Current</span>
               <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" disabled>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
             
-            {/* Checkout Button */}
+            {/* Checkout Button - Solid warning style */}
             {top10Items.length > 0 && (
               <Button
-                variant="outline"
-                className="gap-2 border-orange-400 text-orange-600 hover:bg-orange-50"
+                className="gap-2 bg-amber-500 hover:bg-amber-600 text-white border-amber-500 hover:border-amber-600 font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
                 onClick={() => setIsCheckoutOpen(true)}
               >
                 <CheckCircle className="h-4 w-4" />
