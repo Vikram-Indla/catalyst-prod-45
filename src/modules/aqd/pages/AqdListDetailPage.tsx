@@ -124,7 +124,7 @@ export function AqdListDetailPage() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate('/aqd')}
-              className="w-[42px] h-[42px] bg-foreground rounded-lg flex items-center justify-center text-background font-extrabold text-sm cursor-pointer hover:opacity-90 transition-opacity"
+              className="w-[42px] h-[42px] bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center text-primary-foreground font-bold text-sm cursor-pointer hover:opacity-90 transition-opacity"
               title="Back to All Lists"
             >
               10
