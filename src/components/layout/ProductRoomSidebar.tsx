@@ -106,7 +106,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           style={{ 
             height: expanded ? '64px' : '52px',
             borderColor: 'var(--divider)',
-            padding: expanded ? '0 16px' : '0',
+            padding: expanded ? '0 16px' : '0 8px',
             justifyContent: expanded ? 'space-between' : 'center',
             background: 'transparent',
           }}
