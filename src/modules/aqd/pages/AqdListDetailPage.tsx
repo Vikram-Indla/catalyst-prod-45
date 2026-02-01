@@ -27,6 +27,7 @@ import {
   useDeleteAqdItem,
   useReorderAqdItems,
   useCycleAqdItemStatus,
+  useUpdateAqdItem,
   useConfirmCarryover,
   useConfirmAllCarryover,
   useDismissCarryover,
@@ -72,6 +73,7 @@ interface PriorityItemProps {
   onStatusCycle: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onTitleUpdate: (newTitle: string) => void;
   onConfirmCarryover?: () => void;
   onDismissCarryover?: () => void;
   isDraggable?: boolean;
@@ -83,10 +85,13 @@ function PriorityItem({
   onStatusCycle,
   onEdit,
   onDelete,
+  onTitleUpdate,
   onConfirmCarryover,
   onDismissCarryover,
   isDraggable = true,
 }: PriorityItemProps) {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(item.title);
   const isCarryover = item.is_carryover && !item.carryover_confirmed;
   const statusKey = statusMap[item.status];
   
@@ -108,6 +113,28 @@ function PriorityItem({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  // CORRECTION #9: Handle double-click to edit title
+  const handleTitleDoubleClick = () => {
+    setIsEditingTitle(true);
+    setEditedTitle(item.title);
+  };
+
+  const handleTitleBlur = () => {
+    setIsEditingTitle(false);
+    if (editedTitle.trim() && editedTitle !== item.title) {
+      onTitleUpdate(editedTitle.trim());
+    }
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      (e.target as HTMLInputElement).blur();
+    } else if (e.key === 'Escape') {
+      setEditedTitle(item.title);
+      setIsEditingTitle(false);
+    }
+  };
+
   return (
     <div ref={setNodeRef} style={style} className={cn("aqd-item", isCarryover && "aqd-item--carryover")}>
       {/* Drag Handle */}
@@ -122,9 +149,27 @@ function PriorityItem({
       
       {/* Main Content */}
       <div className="aqd-item-main">
-        <div className={cn("aqd-item-title", item.status === 'completed' && "line-through text-gray-400")}>
-          {item.title}
-        </div>
+        {/* CORRECTION #9: Inline title editing with double-click */}
+        {isEditingTitle ? (
+          <input
+            type="text"
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            onBlur={handleTitleBlur}
+            onKeyDown={handleTitleKeyDown}
+            className="aqd-item-title-input w-full text-sm font-medium border border-primary rounded px-2 py-1 outline-none"
+            autoFocus
+          />
+        ) : (
+          <div 
+            className={cn("aqd-item-title cursor-text", item.status === 'completed' && "line-through text-gray-400")}
+            onDoubleClick={handleTitleDoubleClick}
+            title="Double-click to edit"
+          >
+            {item.title}
+          </div>
+        )}
+        
         <div className="aqd-item-meta">
           {item.taskhub_key && (
             <span className="aqd-meta-key">{item.taskhub_key}</span>
@@ -213,6 +258,7 @@ export function AqdListDetailPage() {
   const deleteItem = useDeleteAqdItem();
   const reorderItems = useReorderAqdItems();
   const cycleStatus = useCycleAqdItemStatus();
+  const updateItem = useUpdateAqdItem();
   const confirmCarryover = useConfirmCarryover();
   const confirmAllCarryover = useConfirmAllCarryover();
   const dismissCarryover = useDismissCarryover();
@@ -408,6 +454,7 @@ export function AqdListDetailPage() {
                     onStatusCycle={() => {}}
                     onEdit={() => setSelectedItemId(item.id)}
                     onDelete={() => deleteItem.mutate(item.id)}
+                    onTitleUpdate={(newTitle) => updateItem.mutate({ id: item.id, title: newTitle })}
                     onConfirmCarryover={() => confirmCarryover.mutate(item.id)}
                     onDismissCarryover={() => dismissCarryover.mutate(item.id)}
                     isDraggable={false}
@@ -424,6 +471,7 @@ export function AqdListDetailPage() {
                       onStatusCycle={() => cycleStatus.mutate({ id: priority.id, currentStatus: priority.status })}
                       onEdit={() => setSelectedItemId(priority.id)}
                       onDelete={() => deleteItem.mutate(priority.id)}
+                      onTitleUpdate={(newTitle) => updateItem.mutate({ id: priority.id, title: newTitle })}
                     />
                   ) : (
                     <AqdEmptySlot 
@@ -457,6 +505,7 @@ export function AqdListDetailPage() {
                         onStatusCycle={() => cycleStatus.mutate({ id: item.id, currentStatus: item.status })}
                         onEdit={() => setSelectedItemId(item.id)}
                         onDelete={() => deleteItem.mutate(item.id)}
+                        onTitleUpdate={(newTitle) => updateItem.mutate({ id: item.id, title: newTitle })}
                       />
                     ))}
                   </div>
