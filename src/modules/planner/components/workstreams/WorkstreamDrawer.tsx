@@ -165,10 +165,10 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
   const fetchAllUsers = useCallback(async () => {
     setIsLoadingUsers(true);
     try {
-      // Fetch from resource_inventory with profile link
+      // Fetch from resource_inventory with profile link AND role_name
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select('id, name, profile_id, is_active')
+        .select('id, name, profile_id, is_active, role_name')
         .eq('is_active', true)
         .order('name');
 
@@ -181,7 +181,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
         resourceId: u.id, // resource_inventory.id for lead operations (always valid)
         name: u.name || 'Unknown',
         initials: getInitials(u.name || 'U'),
-        role: 'Team Member',
+        role: u.role_name || 'Team Member', // Use role_name from resource_inventory
         avatarColor: getAvatarColor(u.name || 'U'),
         hasProfile: !!u.profile_id, // track if they have a linked profile
       })));
@@ -786,7 +786,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                     <div style={avatarStyle(lead.avatarColor, 40)}>{lead.initials}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>{lead.name}</div>
-                      <div style={{ fontSize: '12px', color: '#64748b' }}>Product Manager</div>
+                      <div style={{ fontSize: '12px', color: '#64748b' }}>{lead.role}</div>
                     </div>
                   </div>
                 )}
@@ -798,7 +798,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       <div style={avatarStyle(member.avatarColor, 40)}>{member.initials}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>{member.name}</div>
-                        <div style={{ fontSize: '12px', color: '#64748b' }}>Senior Engineer</div>
+                        <div style={{ fontSize: '12px', color: '#64748b' }}>{member.role}</div>
                       </div>
                       <button
                         onClick={() => handleRemoveMember(member.id)}
