@@ -32,7 +32,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 export interface SidebarMenuItem {
   id: string;
-  title: string;
+  title: string | React.ReactNode;
   path: string;
   icon?: LucideIcon | React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   exact?: boolean;
