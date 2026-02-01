@@ -864,18 +864,7 @@ function generateProfileCardHtml(resource: any, metadata: any): string {
   const allocation = resource.allocation_percent ?? 0;
   const utilization = resource.utilization_percent ?? (100 - allocation);
   
-  const provenanceHtml = `
-<details class="caty-provenance">
-  <summary>Data Provenance</summary>
-  <div class="caty-provenance-body">
-    <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
-    <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
-    <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
-    <div class="caty-prov-row"><span>Rows:</span> ${metadata.row_count}</div>
-    <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
-    <div class="caty-prov-row"><span>Confidence:</span> ${metadata.fallback_level === 0 ? 'High' : metadata.fallback_level <= 2 ? 'Medium' : 'Low'}</div>
-  </div>
-</details>`;
+  // NOTE: Data Provenance section removed per user request — no raw JSON/debug data shown
   
   return `<div class="caty-profile-card">
   <div class="caty-profile-header">
@@ -915,8 +904,7 @@ function generateProfileCardHtml(resource: any, metadata: any): string {
       <span class="caty-profile-value">${assignmentsList}</span>
     </div>
   </div>
-</div>
-${provenanceHtml}`;
+</div>`;
 }
 
 function generateDataCardHtml(resources: any[], title: string, metadata: any): string {
@@ -940,18 +928,7 @@ function generateDataCardHtml(resources: any[], title: string, metadata: any): s
 </div>`;
   }).join('\n');
 
-  const provenanceHtml = `
-<details class="caty-provenance">
-  <summary>Data Provenance</summary>
-  <div class="caty-provenance-body">
-    <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
-    <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
-    <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
-    <div class="caty-prov-row"><span>Rows:</span> ${metadata.row_count}</div>
-    <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
-    <div class="caty-prov-row"><span>Confidence:</span> ${metadata.fallback_level === 0 ? 'High' : metadata.fallback_level <= 2 ? 'Medium' : 'Low'}</div>
-  </div>
-</details>`;
+  // NOTE: Data Provenance section removed per user request — no raw JSON/debug data shown
 
   return `<div class="caty-data-card">
   <div class="caty-data-card-header info">
@@ -961,8 +938,7 @@ function generateDataCardHtml(resources: any[], title: string, metadata: any): s
   <div class="caty-data-card-body">
 ${rows}
   </div>
-</div>
-${provenanceHtml}`;
+</div>`;
 }
 
 // ============ TITLE GENERATOR ============
@@ -1004,22 +980,8 @@ function getDataCardTitle(queryPlan: QueryPlan, count: number): string {
 
 function generateNoResultsHtml(queryPlan: QueryPlan, metadata: any): string {
   const searchTerm = queryPlan.entities.resource_name || 'your criteria';
-  const suggestions = metadata.fallbacks_executed?.length > 0 
-    ? `<p style="margin-top: 8px; font-size: 12px; color: #64748b;">Fallbacks tried: ${metadata.fallbacks_executed.join(', ')}</p>`
-    : '';
   
-  const provenanceHtml = `
-<details class="caty-provenance">
-  <summary>Data Provenance</summary>
-  <div class="caty-provenance-body">
-    <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
-    <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
-    <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
-    <div class="caty-prov-row"><span>Rows:</span> 0</div>
-    <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
-    <div class="caty-prov-row"><span>Confidence:</span> Low</div>
-  </div>
-</details>`;
+  // NOTE: Data Provenance section removed per user request — no raw JSON/debug data shown
   
   return `<div class="caty-bubble">
   <p>No resources found matching "${searchTerm}".</p>
@@ -1029,9 +991,7 @@ function generateNoResultsHtml(queryPlan: QueryPlan, metadata: any): string {
     <li>Using a partial name</li>
     <li>Broadening filters</li>
   </ul>
-  ${suggestions}
-</div>
-${provenanceHtml}`;
+</div>`;
 }
 
 // ============ MAIN HANDLER ============
