@@ -1,7 +1,6 @@
 // Aqd¹⁰ Lists Table
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
 import { Pin, MoreHorizontal, Check, Clock, Archive, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -50,13 +49,6 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
     );
   };
 
-  const formatWeekRange = (list: AqdList) => {
-    if (!list.current_week_number) return '—';
-    const weekNum = String(list.current_week_number).padStart(2, '0');
-    const weekStart = list.current_week_start ? format(new Date(list.current_week_start), 'MMM d') : '';
-    return weekStart ? `W${weekNum} - ${weekStart}` : `W${weekNum}`;
-  };
-
   return (
     <div className="bg-background border border-border rounded-lg shadow-sm overflow-hidden">
       <table className="w-full">
@@ -72,13 +64,10 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
               Created By
             </th>
             <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Current Week
-            </th>
-            <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Items
             </th>
             <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Checkout Status
+              Status
             </th>
             <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Actions
@@ -120,9 +109,6 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
               </td>
               <td className="px-4 py-3 text-sm text-muted-foreground">
                 {list.created_by_name || '—'}
-              </td>
-              <td className="px-4 py-3 text-sm text-muted-foreground">
-                {formatWeekRange(list)}
               </td>
               <td className="px-4 py-3">
                 <div className="text-sm font-medium">

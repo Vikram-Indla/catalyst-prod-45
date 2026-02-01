@@ -31067,8 +31067,11 @@ export type Database = {
         Row: {
           created_at: string | null
           created_by: string | null
+          created_by_name: string | null
+          current_week_end: string | null
           current_week_id: string | null
           current_week_number: number | null
+          current_week_start: string | null
           current_week_status: string | null
           description: string | null
           done_items: number | null
