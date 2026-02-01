@@ -75,34 +75,22 @@ interface QueryResult {
 
 // ============ INTENT DETECTION ============
 
-function detectQueryIntent(message: string): QueryIntent {
-  const lower = message.toLowerCase();
-
-  // Contract/expiry intent should win over generic "show X" patterns
-  if (lower.includes('expir') || lower.includes('expiration') || lower.includes('contract') || lower.includes('ending')) {
-    return 'contract_window';
-  }
-
-  // Generic list queries should NOT be treated as a person/resource lookup
-  if (/(?:show|find)\s+(?:all\s+)?resources\b/i.test(lower)) return 'mixed';
-
-  // Check for specific patterns that imply a specific person/resource lookup
-  if (/\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/.test(message)) return 'resource_lookup';
-  if (/(?:who is|about|when is|look up|lookup)\s+\w+/i.test(lower)) return 'resource_lookup';
-  if (lower.includes('vendor')) return 'vendor_filter';
-  if (lower.includes('department') || lower.includes('dept')) return 'department_filter';
-  if (lower.includes('role') || lower.includes('developer') || lower.includes('engineer') || lower.includes('pm')) return 'role_filter';
-  if (lower.includes('offshore') || lower.includes('onsite') || lower.includes('location')) return 'location_filter';
-  if (lower.includes('utilization') || lower.includes('capacity') || lower.includes('allocation')) return 'utilization';
-  if (lower.includes('assignment') || lower.includes('project') || lower.includes('staffing')) return 'assignment_staffing';
-  
-  return 'mixed';
-}
-
 function extractResourceName(message: string): string | null {
-  // Try proper name pattern
-  const nameMatch = message.match(/\b([A-Z][a-z]+)\s+([A-Z][a-z]+)\b/);
-  if (nameMatch) return `${nameMatch[1]} ${nameMatch[2]}`;
+  const trimmed = message.trim();
+  
+  // Try proper name pattern (case-insensitive matching, then normalize)
+  // Pattern: FirstName LastName (e.g., "Vikram Indla", "vikram indla", "VIKRAM INDLA")
+  const nameMatch = trimmed.match(/^([a-zA-Z]+)\s+([a-zA-Z]+)$/i);
+  if (nameMatch) {
+    // Normalize to title case
+    const first = nameMatch[1].charAt(0).toUpperCase() + nameMatch[1].slice(1).toLowerCase();
+    const last = nameMatch[2].charAt(0).toUpperCase() + nameMatch[2].slice(1).toLowerCase();
+    return `${first} ${last}`;
+  }
+  
+  // Try proper name pattern anywhere in message
+  const embeddedNameMatch = message.match(/\b([A-Z][a-z]+)\s+([A-Z][a-z]+)\b/);
+  if (embeddedNameMatch) return `${embeddedNameMatch[1]} ${embeddedNameMatch[2]}`;
   
   // Try single-word names after key phrases
   const singlePatterns = [
@@ -114,9 +102,8 @@ function extractResourceName(message: string): string | null {
     const match = message.match(pattern);
     if (match?.[1]) {
       const name = match[1].toLowerCase();
-      // Avoid treating generic nouns as resource names (critical to prevent false "no results")
+      // Avoid treating generic nouns as resource names
       const exclude = [
-        // stopwords
         'with', 'for', 'from', 'into', 'over', 'under', 'within', 'between',
         'the', 'all', 'my', 'our', 'any', 'some', 'this', 'that',
         'department', 'dept', 'team', 'vendor', 'role',
@@ -128,22 +115,61 @@ function extractResourceName(message: string): string | null {
     }
   }
   
-  // Short input fallback
-  const words = message.trim().split(/\s+/);
-  if (words.length <= 2 && message.trim().length >= 3) {
+  // Short input fallback (1-3 words, looks like a name)
+  const words = trimmed.split(/\s+/);
+  if (words.length <= 3 && trimmed.length >= 3) {
     const aggregateWords = [
-      'summary', 'total', 'count', 'average',
+      'summary', 'total', 'count', 'average', 'show', 'list', 'all',
       'department', 'vendor', 'offshore', 'onsite',
-      'expiring', 'expiry', 'expiration', 'contract',
+      'expiring', 'expiry', 'expiration', 'contract', 'contracts',
       'utilization', 'allocation', 'capacity',
-      'resource', 'resources',
+      'resource', 'resources', 'team', 'teams',
     ];
     if (!aggregateWords.some(kw => message.toLowerCase().includes(kw))) {
-      return message.trim();
+      // Looks like a name - return it normalized
+      return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
     }
   }
   
   return null;
+}
+
+function detectQueryIntent(message: string, extractedName: string | null): QueryIntent {
+  const lower = message.toLowerCase();
+
+  // If we extracted a name and the message is short, this is a resource lookup
+  if (extractedName) {
+    const words = message.trim().split(/\s+/);
+    // Direct name query (1-3 words, no aggregate keywords)
+    if (words.length <= 3) {
+      return 'resource_lookup';
+    }
+    // Name with context phrase
+    if (/(?:who is|about|when is|look up|lookup|show|find)\s+/i.test(lower)) {
+      return 'resource_lookup';
+    }
+  }
+
+  // Contract/expiry intent
+  if (lower.includes('expir') || lower.includes('expiration') || lower.includes('contract') || lower.includes('ending')) {
+    return 'contract_window';
+  }
+
+  // Generic list queries
+  if (/(?:show|find|list)\s+(?:all\s+)?resources\b/i.test(lower)) return 'mixed';
+
+  // Check for proper name patterns (fallback)
+  if (/\b[A-Z][a-z]+\s+[A-Z][a-z]+\b/.test(message)) return 'resource_lookup';
+  if (/(?:who is|about|when is|look up|lookup)\s+\w+/i.test(lower)) return 'resource_lookup';
+  
+  if (lower.includes('vendor')) return 'vendor_filter';
+  if (lower.includes('department') || lower.includes('dept')) return 'department_filter';
+  if (lower.includes('role') || lower.includes('developer') || lower.includes('engineer') || lower.includes('pm')) return 'role_filter';
+  if (lower.includes('offshore') || lower.includes('onsite') || lower.includes('location')) return 'location_filter';
+  if (lower.includes('utilization') || lower.includes('capacity') || lower.includes('allocation')) return 'utilization';
+  if (lower.includes('assignment') || lower.includes('project') || lower.includes('staffing')) return 'assignment_staffing';
+  
+  return 'mixed';
 }
 
 function parseTimeWindow(query: string): { type: 'none' | 'relative' | 'range'; days?: number; start?: string; end?: string; label: string } {
@@ -204,11 +230,9 @@ function parseTimeWindow(query: string): { type: 'none' | 'relative' | 'range'; 
 }
 
 function buildQueryPlan(message: string, context: any): QueryPlan {
-  const intent = detectQueryIntent(message);
-  // Only treat input as a resource lookup when intent is resource_lookup.
-  // This prevents list/contract queries like "Show resources with contracts expiring soon"
-  // from being mis-parsed as a name lookup (e.g., "with").
-  const resourceName = intent === 'resource_lookup' ? extractResourceName(message) : null;
+  // Extract name FIRST, then determine intent based on that
+  const resourceName = extractResourceName(message);
+  const intent = detectQueryIntent(message, resourceName);
   const timeWindow = parseTimeWindow(message);
   
   return {
