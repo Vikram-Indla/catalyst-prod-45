@@ -62,8 +62,14 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
       <table className="w-full">
         <thead className="bg-muted/50 border-b border-border">
           <tr>
+            <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-10">
+              #
+            </th>
             <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
               List Name
+            </th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              Created By
             </th>
             <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Current Week
@@ -72,7 +78,7 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
               Items
             </th>
             <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Status
+              Checkout Status
             </th>
             <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Actions
@@ -80,7 +86,7 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
-          {lists.map((list) => {
+          {lists.map((list, index) => {
             // Create slug from list name
             const listSlug = encodeURIComponent(list.name.toLowerCase().replace(/\s+/g, '-'));
             return (
@@ -89,6 +95,9 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
               onClick={() => navigate(`/aqd/${listSlug}`)}
               className="hover:bg-muted/30 cursor-pointer transition-colors group"
             >
+              <td className="px-4 py-3 text-sm text-muted-foreground font-medium">
+                {index + 1}
+              </td>
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-sm">
@@ -110,16 +119,14 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
                 </div>
               </td>
               <td className="px-4 py-3 text-sm text-muted-foreground">
+                {list.created_by_name || '—'}
+              </td>
+              <td className="px-4 py-3 text-sm text-muted-foreground">
                 {formatWeekRange(list)}
               </td>
               <td className="px-4 py-3">
-                <div className="text-sm">
-                  <span className="font-medium">{list.item_count ?? 0}</span>
-                  {(list.completed_count ?? 0) > 0 && (
-                    <span className="text-green-600 ml-1">
-                      ({list.completed_count} done)
-                    </span>
-                  )}
+                <div className="text-sm font-medium">
+                  {list.completed_count ?? 0}/{list.item_count ?? 0}
                 </div>
               </td>
               <td className="px-4 py-3">
