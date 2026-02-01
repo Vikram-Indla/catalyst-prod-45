@@ -66,8 +66,9 @@ export function InlineAssigneeSelect({ value, assignee, onChange }: InlineAssign
         </button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-56 p-2 bg-popover" 
+        className="w-56 p-2 bg-white dark:bg-slate-900 border border-border shadow-lg" 
         align="start"
+        style={{ zIndex: 99999, backgroundColor: 'white' }}
         onClick={(e) => e.stopPropagation()}
       >
         <Input
