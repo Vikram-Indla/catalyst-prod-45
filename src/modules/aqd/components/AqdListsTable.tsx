@@ -53,7 +53,8 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
   const formatWeekRange = (list: AqdList) => {
     if (!list.current_week_number) return '—';
     const weekNum = String(list.current_week_number).padStart(2, '0');
-    return `W${weekNum}`;
+    const weekStart = list.current_week_start ? format(new Date(list.current_week_start), 'MMM d') : '';
+    return weekStart ? `W${weekNum} - ${weekStart}` : `W${weekNum}`;
   };
 
   return (
