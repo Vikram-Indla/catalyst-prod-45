@@ -9,6 +9,8 @@ import {
   Plus,
   Search,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   List,
   LayoutGrid,
   Archive,
@@ -179,6 +181,10 @@ export function WorkstreamsPage() {
   // Members dialog
   const [membersDialogWorkstream, setMembersDialogWorkstream] = useState<Workstream | null>(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close filter dropdowns on outside click
@@ -297,6 +303,18 @@ export function WorkstreamsPage() {
       return true;
     });
   }, [workstreams, searchQuery, showArchived, healthFilter, leadFilter]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, healthFilter, leadFilter, showArchived]);
+
+  // Paginated workstreams
+  const totalPages = Math.ceil(filteredWorkstreams.length / itemsPerPage);
+  const paginatedWorkstreams = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredWorkstreams.slice(start, start + itemsPerPage);
+  }, [filteredWorkstreams, currentPage, itemsPerPage]);
 
   const filteredUsers = allUsers.filter(
     (u) =>
@@ -802,7 +820,7 @@ export function WorkstreamsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredWorkstreams.map((workstream, index) => {
+              {paginatedWorkstreams.map((workstream, index) => {
                 const lead = workstream.lead
                   ? {
                       id: workstream.lead.id,
@@ -819,7 +837,7 @@ export function WorkstreamsPage() {
                     key={workstream.id}
                     workstream={workstream}
                     lead={lead}
-                    iconColor={getIconColor(index)}
+                    iconColor={getIconColor((currentPage - 1) * itemsPerPage + index)}
                     allUsers={filteredUsers}
                     isDropdownOpen={activeDropdownId === workstream.id}
                     leadSearchQuery={leadSearchQuery}
@@ -853,7 +871,7 @@ export function WorkstreamsPage() {
               gap: '20px',
             }}
           >
-            {filteredWorkstreams.map((ws) => (
+            {paginatedWorkstreams.map((ws, index) => (
               <WorkstreamCard
                 key={ws.id}
                 workstream={ws}
@@ -882,6 +900,88 @@ export function WorkstreamsPage() {
                 onOpenDrawer={openDrawer}
               />
             ))}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {filteredWorkstreams.length > itemsPerPage && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '16px 24px',
+              borderTop: `1px solid ${COLORS.borderLight}`,
+              backgroundColor: COLORS.surfacePage,
+            }}
+          >
+            <span style={{ fontSize: '13px', color: COLORS.textMuted }}>
+              Showing {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, filteredWorkstreams.length)} of {filteredWorkstreams.length}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px',
+                  backgroundColor: currentPage === 1 ? COLORS.surfaceHover : COLORS.surfaceWhite,
+                  border: `1px solid ${COLORS.borderLight}`,
+                  borderRadius: '6px',
+                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                  opacity: currentPage === 1 ? 0.5 : 1,
+                }}
+              >
+                <ChevronLeft size={16} style={{ color: COLORS.textSecondary }} />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minWidth: '32px',
+                    height: '32px',
+                    padding: '0 10px',
+                    backgroundColor: page === currentPage ? COLORS.accent : COLORS.surfaceWhite,
+                    border: `1px solid ${page === currentPage ? COLORS.accent : COLORS.borderLight}`,
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    fontWeight: page === currentPage ? 600 : 500,
+                    color: page === currentPage ? '#ffffff' : COLORS.textSecondary,
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px',
+                  backgroundColor: currentPage === totalPages ? COLORS.surfaceHover : COLORS.surfaceWhite,
+                  border: `1px solid ${COLORS.borderLight}`,
+                  borderRadius: '6px',
+                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                  opacity: currentPage === totalPages ? 0.5 : 1,
+                }}
+              >
+                <ChevronRight size={16} style={{ color: COLORS.textSecondary }} />
+              </button>
+            </div>
           </div>
         )}
       </div>
