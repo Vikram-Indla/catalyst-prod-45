@@ -30669,6 +30669,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_lead: boolean | null
           resource_id: string | null
           role: string | null
           user_id: string | null
@@ -30677,6 +30678,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          is_lead?: boolean | null
           resource_id?: string | null
           role?: string | null
           user_id?: string | null
@@ -30685,6 +30687,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          is_lead?: boolean | null
           resource_id?: string | null
           role?: string | null
           user_id?: string | null
