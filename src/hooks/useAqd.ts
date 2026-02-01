@@ -19,7 +19,7 @@ import type {
   CheckoutWeekInput,
 } from '@/types/aqd';
 import { getNextStatus } from '@/types/aqd';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Query Keys
 export const aqdKeys = {
@@ -197,10 +197,10 @@ export function useCreateAqdList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.lists() });
-      toast.success('List created');
+      catalystToast.success('List created');
     },
     onError: (error) => {
-      toast.error('Failed to create list: ' + error.message);
+      catalystToast.error('Failed to create list', error.message);
     },
   });
 }
@@ -257,10 +257,10 @@ export function useDeleteAqdList() {
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.lists() });
-      toast.success(result === 'archived' ? 'List archived' : 'List permanently deleted');
+      catalystToast.success(result === 'archived' ? 'List archived' : 'List permanently deleted');
     },
     onError: (error) => {
-      toast.error('Failed to delete list: ' + error.message);
+      catalystToast.error('Failed to delete list', error.message);
     },
   });
 }
@@ -279,7 +279,7 @@ export function useArchiveAqdList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.lists() });
-      toast.success('List archived');
+      catalystToast.success('List archived');
     },
   });
 }
@@ -501,10 +501,10 @@ export function useCreateAqdItem() {
     onSuccess: (_, input) => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.items(input.week_id) });
       queryClient.invalidateQueries({ queryKey: aqdKeys.lists() });
-      toast.success('Priority added');
+      catalystToast.success('List item added');
     },
     onError: (error) => {
-      toast.error('Failed to add priority: ' + error.message);
+      catalystToast.error('Failed to add item', error.message);
     },
   });
 }
@@ -524,7 +524,7 @@ export function useUpdateAqdItem() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.all });
-      toast.success('Priority updated');
+      catalystToast.success('Item updated');
     },
   });
 }
@@ -543,7 +543,7 @@ export function useDeleteAqdItem() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.all });
-      toast.success('Priority deleted');
+      catalystToast.success('Item deleted');
     },
   });
 }
@@ -630,7 +630,7 @@ export function useConfirmCarryover() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.all });
-      toast.success('Carryover confirmed');
+      catalystToast.success('Carryover confirmed');
     },
   });
 }
@@ -654,7 +654,7 @@ export function useConfirmAllCarryover() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.all });
-      toast.success('All carryovers confirmed');
+      catalystToast.success('All carryovers confirmed');
     },
   });
 }
@@ -673,7 +673,7 @@ export function useDismissCarryover() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.all });
-      toast.success('Carryover dismissed');
+      catalystToast.success('Carryover dismissed');
     },
   });
 }
@@ -788,10 +788,10 @@ export function useCheckoutWeek() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: aqdKeys.all });
-      toast.success('Checkout complete');
+      catalystToast.success('Checkout complete');
     },
     onError: (error) => {
-      toast.error('Checkout failed: ' + error.message);
+      catalystToast.error('Checkout failed', error.message);
     },
   });
 }
