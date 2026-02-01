@@ -865,14 +865,17 @@ function generateProfileCardHtml(resource: any, metadata: any): string {
   const utilization = resource.utilization_percent ?? (100 - allocation);
   
   const provenanceHtml = `
-<div class="caty-provenance">
-  <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
-  <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
-  <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
-  <div class="caty-prov-row"><span>Rows:</span> ${metadata.row_count}</div>
-  <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
-  <div class="caty-prov-row"><span>Confidence:</span> ${metadata.fallback_level === 0 ? 'High' : metadata.fallback_level <= 2 ? 'Medium' : 'Low'}</div>
-</div>`;
+<details class="caty-provenance">
+  <summary>Data Provenance</summary>
+  <div class="caty-provenance-body">
+    <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
+    <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
+    <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
+    <div class="caty-prov-row"><span>Rows:</span> ${metadata.row_count}</div>
+    <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
+    <div class="caty-prov-row"><span>Confidence:</span> ${metadata.fallback_level === 0 ? 'High' : metadata.fallback_level <= 2 ? 'Medium' : 'Low'}</div>
+  </div>
+</details>`;
   
   return `<div class="caty-profile-card">
   <div class="caty-profile-header">
@@ -938,14 +941,17 @@ function generateDataCardHtml(resources: any[], title: string, metadata: any): s
   }).join('\n');
 
   const provenanceHtml = `
-<div class="caty-provenance">
-  <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
-  <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
-  <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
-  <div class="caty-prov-row"><span>Rows:</span> ${metadata.row_count}</div>
-  <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
-  <div class="caty-prov-row"><span>Confidence:</span> ${metadata.fallback_level === 0 ? 'High' : metadata.fallback_level <= 2 ? 'Medium' : 'Low'}</div>
-</div>`;
+<details class="caty-provenance">
+  <summary>Data Provenance</summary>
+  <div class="caty-provenance-body">
+    <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
+    <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
+    <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
+    <div class="caty-prov-row"><span>Rows:</span> ${metadata.row_count}</div>
+    <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
+    <div class="caty-prov-row"><span>Confidence:</span> ${metadata.fallback_level === 0 ? 'High' : metadata.fallback_level <= 2 ? 'Medium' : 'Low'}</div>
+  </div>
+</details>`;
 
   return `<div class="caty-data-card">
   <div class="caty-data-card-header info">
@@ -1003,14 +1009,17 @@ function generateNoResultsHtml(queryPlan: QueryPlan, metadata: any): string {
     : '';
   
   const provenanceHtml = `
-<div class="caty-provenance">
-  <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
-  <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
-  <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
-  <div class="caty-prov-row"><span>Rows:</span> 0</div>
-  <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
-  <div class="caty-prov-row"><span>Confidence:</span> Low</div>
-</div>`;
+<details class="caty-provenance">
+  <summary>Data Provenance</summary>
+  <div class="caty-provenance-body">
+    <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
+    <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
+    <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
+    <div class="caty-prov-row"><span>Rows:</span> 0</div>
+    <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
+    <div class="caty-prov-row"><span>Confidence:</span> Low</div>
+  </div>
+</details>`;
   
   return `<div class="caty-bubble">
   <p>No resources found matching "${searchTerm}".</p>

@@ -1255,6 +1255,28 @@
   color: #64748b;
 }
 
+/* Make provenance collapsible so auto-scroll doesn't land on a tall debug block */
+.caty-provenance summary {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  color: #475569;
+  outline: none;
+}
+
+/* Remove default marker (we'll keep the native arrow via details/summary UX) */
+.caty-provenance summary::-webkit-details-marker {
+  display: none;
+}
+
+.caty-provenance[open] summary {
+  margin-bottom: 8px;
+}
+
+.caty-provenance-body {
+  padding-top: 2px;
+}
+
 .caty-prov-row {
   display: flex;
   gap: 8px;
