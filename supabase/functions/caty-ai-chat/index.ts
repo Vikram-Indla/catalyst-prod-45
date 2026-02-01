@@ -959,6 +959,72 @@ ${rows}
 ${provenanceHtml}`;
 }
 
+// ============ TITLE GENERATOR ============
+
+function getDataCardTitle(queryPlan: QueryPlan, count: number): string {
+  if (queryPlan.intent === 'resource_lookup' && queryPlan.entities.resource_name) {
+    return `Resources matching "${queryPlan.entities.resource_name}"`;
+  }
+  
+  switch (queryPlan.intent) {
+    case 'contract_window':
+      return `Contracts Expiring (${queryPlan.time_window.label})`;
+    case 'vendor_filter':
+      return queryPlan.entities.vendor_name 
+        ? `Resources from ${queryPlan.entities.vendor_name}`
+        : 'Resources by Vendor';
+    case 'department_filter':
+      return queryPlan.entities.department_name 
+        ? `${queryPlan.entities.department_name} Resources`
+        : 'Resources by Department';
+    case 'role_filter':
+      return queryPlan.entities.role_name 
+        ? `${queryPlan.entities.role_name} Resources`
+        : 'Resources by Role';
+    case 'location_filter':
+      return queryPlan.entities.location === 'Offshore' 
+        ? 'Offshore Resources'
+        : 'Onsite Resources';
+    case 'utilization':
+      return 'Resource Utilization';
+    case 'assignment_staffing':
+      return 'Assignment Staffing';
+    default:
+      return `Resources Found`;
+  }
+}
+
+// ============ NO RESULTS GENERATOR ============
+
+function generateNoResultsHtml(queryPlan: QueryPlan, metadata: any): string {
+  const searchTerm = queryPlan.entities.resource_name || 'your criteria';
+  const suggestions = metadata.fallbacks_executed?.length > 0 
+    ? `<p style="margin-top: 8px; font-size: 12px; color: #64748b;">Fallbacks tried: ${metadata.fallbacks_executed.join(', ')}</p>`
+    : '';
+  
+  const provenanceHtml = `
+<div class="caty-provenance">
+  <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
+  <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
+  <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
+  <div class="caty-prov-row"><span>Rows:</span> 0</div>
+  <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
+  <div class="caty-prov-row"><span>Confidence:</span> Low</div>
+</div>`;
+  
+  return `<div class="caty-bubble">
+  <p>No resources found matching "${searchTerm}".</p>
+  <p style="margin-top: 8px; font-size: 13px;">Try:</p>
+  <ul style="margin: 4px 0 0 16px; font-size: 13px;">
+    <li>Checking the spelling</li>
+    <li>Using a partial name</li>
+    <li>Broadening filters</li>
+  </ul>
+  ${suggestions}
+</div>
+${provenanceHtml}`;
+}
+
 // ============ MAIN HANDLER ============
 
 serve(async (req) => {
@@ -1010,26 +1076,34 @@ serve(async (req) => {
       fallbacks_executed: queryResult.debug.fallbacks_executed,
     };
 
-    // ============ DIRECT RESPONSE FOR RESOURCE LOOKUPS ============
-    // For single resource or multi-resource results with resource_lookup intent,
-    // generate HTML directly without AI to ensure consistent output
-    if (queryPlan.intent === 'resource_lookup' && queryResult.rows.length > 0) {
+    // ============ DIRECT RESPONSE FOR ALL QUERIES WITH RESULTS ============
+    // Generate HTML directly without AI to ensure consistent output
+    // This bypasses the AI entirely and guarantees proper UI component rendering
+    if (queryResult.rows.length > 0 && !queryResult.rows[0]?._diagnostic) {
       let directHtml: string;
       
-      if (queryResult.rows.length === 1) {
-        // Single resource: Profile Card
+      if (queryResult.rows.length === 1 && queryPlan.intent === 'resource_lookup') {
+        // Single resource lookup: Profile Card
         directHtml = generateProfileCardHtml(queryResult.rows[0], metadata);
       } else {
-        // Multiple resources: Data Card
-        const title = queryPlan.entities.resource_name 
-          ? `Resources matching "${queryPlan.entities.resource_name}"`
-          : 'Resources Found';
+        // Multiple resources or aggregate queries: Data Card
+        const title = getDataCardTitle(queryPlan, queryResult.rows.length);
         directHtml = generateDataCardHtml(queryResult.rows, title, metadata);
       }
       
       // Return as SSE stream
       return new Response(
         `data: ${JSON.stringify({ choices: [{ delta: { content: directHtml } }] })}\n\ndata: [DONE]\n\n`,
+        { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } }
+      );
+    }
+    
+    // ============ DIRECT RESPONSE FOR NO RESULTS ============
+    // Generate a "no results" message directly
+    if (queryResult.rows.length === 0 || queryResult.rows[0]?._diagnostic) {
+      const noResultsHtml = generateNoResultsHtml(queryPlan, metadata);
+      return new Response(
+        `data: ${JSON.stringify({ choices: [{ delta: { content: noResultsHtml } }] })}\n\ndata: [DONE]\n\n`,
         { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } }
       );
     }
