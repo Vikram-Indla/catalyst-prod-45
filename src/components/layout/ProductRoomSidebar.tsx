@@ -102,12 +102,18 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
       >
         {/* Header — matching SidebarBase exactly */}
         <div 
-          className="flex items-center justify-between border-b flex-shrink-0"
+          className={cn(
+            "border-b flex-shrink-0",
+            expanded
+              ? "flex items-center justify-between"
+              : "flex flex-col items-center justify-center"
+          )}
           style={{ 
-            height: expanded ? '64px' : '52px',
+            // Collapsed header needs to fit BOTH the badge + toggle without clipping.
+            height: expanded ? '64px' : '72px',
             borderColor: 'var(--divider)',
-            padding: expanded ? '0 16px' : '0 8px',
-            justifyContent: expanded ? 'space-between' : 'center',
+            padding: expanded ? '0 16px' : '6px 0',
+            gap: expanded ? undefined : '4px',
             background: 'transparent',
           }}
         >
@@ -138,7 +144,10 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           {/* Collapse button — matching SidebarBase exactly */}
           <button
             onClick={onToggle}
-            className="w-7 h-7 flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-white/5 dark:hover:bg-white/10 ml-3"
+            className={cn(
+              "flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-white/5 dark:hover:bg-white/10",
+              expanded ? "w-7 h-7 ml-3" : "w-6 h-6"
+            )}
             style={{
               borderColor: 'var(--divider)',
               color: 'var(--text-3)',
