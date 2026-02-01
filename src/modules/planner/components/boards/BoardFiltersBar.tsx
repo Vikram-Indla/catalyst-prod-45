@@ -17,6 +17,8 @@ import type { BoardFilters } from '../../types/planner-boards';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface BoardFiltersBarProps {
   filters: BoardFilters;
@@ -24,18 +26,43 @@ interface BoardFiltersBarProps {
 }
 
 export function BoardFiltersBar({ filters, onFiltersChange }: BoardFiltersBarProps) {
-  // Fetch workstreams - use direct SQL-style query to avoid type recursion
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin, isProgramManager, isLoading: roleLoading } = useUserRole();
+  const canAccessAll = isAdmin || isSuperAdmin || isProgramManager;
+
+  // Fetch workstreams based on user role
   const { data: workstreams = [] } = useQuery({
-    queryKey: ['workstreams'],
+    queryKey: ['board-workstreams', user?.id, canAccessAll],
     queryFn: async (): Promise<{ id: string; name: string; slug: string; color: string }[]> => {
-      const result = await supabase
-        .from('planner_workstreams')
-        .select('id, name, slug, color, is_active')
-        .eq('is_active', true)
-        .order('name');
-      if (result.error) throw result.error;
-      return (result.data || []) as { id: string; name: string; slug: string; color: string }[];
+      if (!user) return [];
+
+      if (canAccessAll) {
+        // Admin/super_admin/manager: fetch ALL workstreams
+        const { data, error } = await supabase
+          .from('planner_workstreams')
+          .select('id, name, slug, color')
+          .eq('is_active', true)
+          .order('name');
+        if (error) throw error;
+        return (data || []) as { id: string; name: string; slug: string; color: string }[];
+      }
+
+      // Regular user: fetch only workstreams they are members of
+      const { data: memberships, error } = await supabase
+        .from('workstream_members')
+        .select(`
+          workstream_id,
+          workstream:planner_workstreams(id, name, slug, color, is_active)
+        `)
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+
+      return (memberships || [])
+        .filter(m => (m.workstream as any)?.is_active)
+        .map(m => m.workstream as { id: string; name: string; slug: string; color: string });
     },
+    enabled: !!user && !roleLoading,
   });
 
   // Fetch assignees (profiles with tasks)
