@@ -1084,6 +1084,8 @@ const WorkstreamRow: React.FC<{
             style={{
               width: '40px',
               height: '40px',
+              minWidth: '40px',
+              minHeight: '40px',
               borderRadius: '10px',
               background: iconColor,
               display: 'flex',
@@ -1092,6 +1094,7 @@ const WorkstreamRow: React.FC<{
               fontSize: '16px',
               fontWeight: 700,
               color: '#ffffff',
+              flexShrink: 0,
             }}
           >
             {workstream.name.charAt(0).toUpperCase()}
@@ -1154,6 +1157,8 @@ const WorkstreamRow: React.FC<{
                   style={{
                     width: '28px',
                     height: '28px',
+                    minWidth: '28px',
+                    minHeight: '28px',
                     borderRadius: '50%',
                     backgroundColor: lead.avatarColor,
                     display: 'flex',
@@ -1162,6 +1167,7 @@ const WorkstreamRow: React.FC<{
                     fontSize: '11px',
                     fontWeight: 600,
                     color: '#ffffff',
+                    flexShrink: 0,
                   }}
                 >
                   {lead.initials}
@@ -1479,6 +1485,8 @@ const DropdownItem: React.FC<{
         style={{
           width: '32px',
           height: '32px',
+          minWidth: '32px',
+          minHeight: '32px',
           borderRadius: '50%',
           backgroundColor: user.avatarColor,
           display: 'flex',
@@ -1487,6 +1495,7 @@ const DropdownItem: React.FC<{
           fontSize: '12px',
           fontWeight: 600,
           color: '#ffffff',
+          flexShrink: 0,
         }}
       >
         {user.initials}
