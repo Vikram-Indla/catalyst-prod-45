@@ -108,6 +108,44 @@ export function useAqdList(id: string | undefined) {
   });
 }
 
+// Hook to fetch AQD list by slug (name-based URL)
+export function useAqdListBySlug(slug: string | undefined) {
+  return useQuery({
+    queryKey: ['aqd', 'list-by-slug', slug],
+    queryFn: async (): Promise<AqdList | null> => {
+      if (!slug) return null;
+      
+      // First try exact match by name (case-insensitive)
+      const { data, error } = await supabase
+        .from('aqd_lists_summary')
+        .select('*')
+        .ilike('name', slug.replace(/-/g, ' '))
+        .maybeSingle();
+
+      if (error) throw new Error(error.message);
+      if (!data) return null;
+      
+      return {
+        id: data.id,
+        name: data.name,
+        description: data.description ?? undefined,
+        created_by: data.created_by ?? '',
+        created_at: data.created_at ?? '',
+        updated_at: data.updated_at ?? '',
+        is_archived: data.is_archived ?? false,
+        is_pinned: data.is_pinned ?? false,
+        settings: data.settings as Record<string, unknown> | undefined,
+        current_week_id: data.current_week_id ?? undefined,
+        current_week_number: data.current_week_number ?? undefined,
+        current_week_status: data.current_week_status as AqdList['current_week_status'],
+        item_count: data.total_items ?? 0,
+        completed_count: data.done_items ?? 0,
+      };
+    },
+    enabled: !!slug,
+  });
+}
+
 export function useCreateAqdList() {
   const queryClient = useQueryClient();
   

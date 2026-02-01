@@ -29,8 +29,9 @@ export function AqdListsPage() {
   const handleCreate = async (data: { name: string; description?: string }) => {
     const result = await createList.mutateAsync(data);
     setIsCreateOpen(false);
-    if (result?.id) {
-      navigate(`/aqd/${result.id}`);
+    if (result?.name) {
+      const slug = encodeURIComponent(result.name.toLowerCase().replace(/\s+/g, '-'));
+      navigate(`/aqd/${slug}`);
     }
   };
 

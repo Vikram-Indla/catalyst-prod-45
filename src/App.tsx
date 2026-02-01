@@ -419,7 +419,7 @@ const App = () => (
               
               {/* Aqd¹⁰ Module - Executive Priority Management */}
               <Route path="/aqd" element={<AqdListsPage />} />
-              <Route path="/aqd/:listId" element={<AqdListDetailPage />} />
+              <Route path="/aqd/:listSlug" element={<AqdListDetailPage />} />
               
               
               
