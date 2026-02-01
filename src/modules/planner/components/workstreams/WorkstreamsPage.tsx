@@ -1404,35 +1404,30 @@ const LeadPickerDropdown: React.FC<{
       onClick={(e) => e.stopPropagation()}
     >
     {/* Search */}
-    <div style={{ padding: '12px', borderBottom: `1px solid ${COLORS.surfaceHover}` }}>
-      <div
+    <div style={{ 
+      padding: '12px', 
+      borderBottom: `1px solid ${COLORS.surfaceHover}`,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+    }}>
+      <Search size={16} style={{ color: COLORS.textLight, flexShrink: 0 }} />
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Search members..."
+        autoFocus
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 12px',
-          backgroundColor: COLORS.surfacePage,
-          borderRadius: '8px',
+          flex: 1,
+          border: 'none',
+          backgroundColor: 'transparent',
+          fontSize: '13px',
+          color: COLORS.textPrimary,
+          outline: 'none',
+          fontFamily: 'inherit',
         }}
-      >
-        <Search size={16} style={{ color: COLORS.textLight }} />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search members..."
-          autoFocus
-          style={{
-            flex: 1,
-            border: 'none',
-            backgroundColor: 'transparent',
-            fontSize: '13px',
-            color: COLORS.textPrimary,
-            outline: 'none',
-            fontFamily: 'inherit',
-          }}
-        />
-      </div>
+      />
     </div>
 
     {/* List */}
