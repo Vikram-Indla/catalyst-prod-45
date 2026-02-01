@@ -145,7 +145,7 @@ export function AqdListDetailPage() {
               <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="px-3 text-sm font-medium">Current</span>
+              <span className="px-3 text-sm font-medium">Current Week</span>
               <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" disabled>
                 <ChevronRight className="h-4 w-4" />
               </Button>
