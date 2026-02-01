@@ -79,10 +79,13 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
-          {lists.map((list) => (
+          {lists.map((list) => {
+            // Create slug from list name
+            const listSlug = encodeURIComponent(list.name.toLowerCase().replace(/\s+/g, '-'));
+            return (
             <tr
               key={list.id}
-              onClick={() => navigate(`/aqd/${list.id}`)}
+              onClick={() => navigate(`/aqd/${listSlug}`)}
               className="hover:bg-muted/30 cursor-pointer transition-colors group"
             >
               <td className="px-4 py-3">
@@ -168,7 +171,8 @@ export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdLi
                 </div>
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
       

@@ -16,7 +16,7 @@ import { AqdCheckoutModal } from '../components/AqdCheckoutModal';
 import { AqdItemPanel } from '../components/AqdItemPanel';
 import { AqdLayout } from '../components/AqdLayout';
 import {
-  useAqdList,
+  useAqdListBySlug,
   useAqdCurrentWeek,
   useAqdItems,
   useCreateAqdItem,
@@ -30,14 +30,15 @@ import {
 import type { AqdItem } from '@/types/aqd';
 
 export function AqdListDetailPage() {
-  const { listId } = useParams<{ listId: string }>();
+  const { listSlug } = useParams<{ listSlug: string }>();
   const navigate = useNavigate();
   
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isOverflowOpen, setIsOverflowOpen] = useState(false);
 
-  const { data: list, isLoading: listLoading } = useAqdList(listId);
+  const { data: list, isLoading: listLoading } = useAqdListBySlug(listSlug);
+  const listId = list?.id;
   const { data: currentWeek, isLoading: weekLoading } = useAqdCurrentWeek(listId);
   const { data: items = [], isLoading: itemsLoading } = useAqdItems(currentWeek?.id);
   
