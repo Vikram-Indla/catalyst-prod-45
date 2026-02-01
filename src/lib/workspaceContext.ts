@@ -21,8 +21,8 @@ export interface WorkspaceContext {
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
   
-  // Taskhub module - separate from Home (includes /taskhub/* and /taskhub/my-tasks)
-  if (pathname.startsWith('/taskhub')) {
+  // Taskhub module - includes /taskhub/* and /aqd/* (AQD is part of Taskhub)
+  if (pathname.startsWith('/taskhub') || pathname.startsWith('/aqd')) {
     return 'taskhub';
   }
   
