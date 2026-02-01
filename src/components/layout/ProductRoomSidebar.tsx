@@ -1,8 +1,18 @@
-import { Lock, ChevronDown, ChevronLeft, ChevronRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History } from 'lucide-react';
+/**
+ * ProductRoomSidebar — Product module sidebar inheriting SidebarBase styling
+ * 
+ * Uses the same token-based styling as EnterpriseSidebar (Strategy Room)
+ * with custom collapsible Ideas group.
+ * 
+ * CATALYST V9.5 NAVIGATION SHELL — Research-Driven Design
+ */
+
+import React from 'react';
+import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
-import { SidebarBase, SidebarConfig, SidebarMenuItem } from './SidebarBase';
+import { SidebarMenuItem } from './SidebarBase';
 import { PRODUCT_ROOM_NAV_ICONS } from '@/components/icons/ProductRoomNavIcons';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
@@ -12,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useFavorites } from '@/hooks/useFavorites';
 
 interface ProductRoomSidebarProps {
   expanded: boolean;
@@ -39,23 +50,24 @@ const IDEAS_NAV_ICONS: Record<string, React.ComponentType<{ className?: string }
   'Analytics': BarChart3,
 };
 
-const productSidebarConfig: SidebarConfig = {
-  badge: 'PR',
-  label: 'Product',
-  items: [
-    { id: 'Product Backlog', title: 'Product Backlog', path: '/industry/backlog', exact: false },
-    { id: 'Product Kanban', title: 'Product Kanban', path: '/industry/kanban', exact: true },
-    { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
-    // Ideas items removed - now rendered as collapsible group
-    { id: 'Requirement Assist', title: 'Requirement Assist™', path: '/product/requirement-assist', exact: true },
-    { id: 'Generation History', title: 'Generation History', path: '/generation-history', exact: true, icon: History },
-  ],
-};
+// Main menu items (before Ideas)
+const MAIN_MENU_ITEMS: SidebarMenuItem[] = [
+  { id: 'Product Backlog', title: 'Product Backlog', path: '/industry/backlog', exact: false },
+  { id: 'Product Kanban', title: 'Product Kanban', path: '/industry/kanban', exact: true },
+  { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
+];
+
+// Items after Ideas group
+const AFTER_IDEAS_ITEMS: SidebarMenuItem[] = [
+  { id: 'Requirement Assist', title: 'Requirement Assist™', path: '/product/requirement-assist', exact: true },
+  { id: 'Generation History', title: 'Generation History', path: '/generation-history', exact: true, icon: History },
+];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
   const { isAdmin } = useUserRole();
   const location = useLocation();
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useFavorites();
   
   // Check if any Ideas route is active
   const isIdeasRouteActive = location.pathname.includes('/industry/ideas') || 
@@ -67,59 +79,6 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
-  // Add settings footer for admins
-  const configWithSettings: SidebarConfig = {
-    ...productSidebarConfig,
-    footerItem: isAdmin ? {
-      id: 'product-settings',
-      title: 'Product Settings',
-      path: '#',
-      icon: Lock,
-      exact: true,
-    } : undefined,
-  };
-
-  return (
-    <ProductSidebarWithCollapsible 
-      config={configWithSettings}
-      expanded={expanded}
-      onToggle={onToggle}
-      className={className}
-      isIdeasRouteActive={isIdeasRouteActive}
-      isActive={isActive}
-      navigate={navigate}
-    />
-  );
-}
-
-// Custom sidebar component with collapsible Ideas group
-function ProductSidebarWithCollapsible({
-  config,
-  expanded,
-  onToggle,
-  className,
-  isIdeasRouteActive,
-  isActive,
-  navigate,
-}: {
-  config: SidebarConfig;
-  expanded: boolean;
-  onToggle: () => void;
-  className?: string;
-  isIdeasRouteActive: boolean;
-  isActive: (path: string, exact?: boolean) => boolean;
-  navigate: (path: string) => void;
-}) {
-  // ChevronLeft and ChevronRight imported from lucide-react at top
-  
-  // Separate items: before Ideas, and after Ideas (Requirement Assist)
-  const itemsBeforeIdeas = config.items?.filter(item => 
-    ['Product Backlog', 'Product Kanban', 'Product Roadmap'].includes(item.id)
-  ) || [];
-  const itemsAfterIdeas = config.items?.filter(item => 
-    item.id === 'Requirement Assist'
-  ) || [];
-
   const handleNavigation = (path: string) => {
     navigate(path);
   };
@@ -128,93 +87,76 @@ function ProductSidebarWithCollapsible({
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'h-full transition-all duration-300 flex-shrink-0 relative flex flex-col overflow-visible',
+          'h-full flex-shrink-0 relative flex flex-col overflow-visible',
+          'transition-all duration-200 ease-in-out',
           className
         )}
         style={{ 
-          width: expanded ? '220px' : '60px',
+          width: expanded ? '240px' : '64px',
           background: 'var(--surface-elevated, var(--surface-1))',
           borderRight: '1px solid var(--divider)',
           boxShadow: '1px 0 3px 0 rgba(0, 0, 0, 0.03)',
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
         }}
       >
-        {/* Toggle Handle */}
-        <button
-          onClick={onToggle}
-          style={{
-            position: 'absolute',
-            right: '-12px',
-            top: '24px',
-            zIndex: 50,
-            width: '24px',
-            height: '24px',
-            borderRadius: '9999px',
-            background: 'var(--surface-1)',
-            border: '1px solid var(--divider)',
-            boxShadow: 'var(--card-shadow)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--icon-default)',
-          }}
-          aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
-        >
-          {expanded ? (
-            <ChevronLeft style={{ width: '16px', height: '16px' }} />
-          ) : (
-            <ChevronRight style={{ width: '16px', height: '16px' }} />
-          )}
-        </button>
-
-        {/* Header */}
+        {/* Header — matching SidebarBase exactly */}
         <div 
+          className="flex items-center justify-between border-b flex-shrink-0"
           style={{ 
-            height: '52px',
-            padding: expanded ? '0 12px' : '0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: expanded ? 'flex-start' : 'center',
-            borderBottom: '1px solid var(--divider)',
-            flexShrink: 0,
+            height: expanded ? '64px' : '52px',
+            borderColor: 'var(--divider)',
+            padding: expanded ? '0 16px' : '0',
+            justifyContent: expanded ? 'space-between' : 'center',
+            background: 'transparent',
           }}
         >
-          <div 
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '6px',
-              background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-              color: '#ffffff',
-              fontSize: '11px',
-              fontWeight: 600,
-              letterSpacing: '0.02em',
-              boxShadow: '0 1px 3px rgba(37, 99, 235, 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            {config.badge}
-          </div>
-          {expanded && (
-            <div style={{ marginLeft: '10px' }}>
-              <div style={{ 
-                fontSize: '14px', 
-                fontWeight: 700, 
-                color: 'var(--text-1)' 
-              }}>
-                {config.label}
-              </div>
+          <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+            {/* Module Badge — 32×32 blue gradient (matching Enterprise/Strategy Room) */}
+            <div 
+              className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                color: '#ffffff',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.02em',
+                boxShadow: '0 1px 3px rgba(37, 99, 235, 0.15)',
+              }}
+            >
+              PR
             </div>
-          )}
+            {expanded && (
+              <span 
+                className="text-[14px] font-semibold truncate tracking-tight"
+                style={{ color: 'var(--text-1)' }}
+              >
+                Product
+              </span>
+            )}
+          </div>
+          {/* Collapse button — matching SidebarBase exactly */}
+          <button
+            onClick={onToggle}
+            className="w-7 h-7 flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-white/5 dark:hover:bg-white/10 ml-3"
+            style={{
+              borderColor: 'var(--divider)',
+              color: 'var(--text-3)',
+            }}
+            aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            {expanded ? (
+              <ChevronsLeft size={14} />
+            ) : (
+              <ChevronsRight size={14} />
+            )}
+          </button>
         </div>
 
         {/* Navigation Menu */}
-        <nav style={{ flex: 1, overflowY: 'auto', padding: '4px 6px' }}>
-          {/* Items before Ideas */}
-          {itemsBeforeIdeas.map((item) => (
+        <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 8px' }}>
+          {/* Main menu items before Ideas */}
+          {MAIN_MENU_ITEMS.map((item) => (
             <MenuItemButton 
               key={item.id}
               item={item}
@@ -222,6 +164,8 @@ function ProductSidebarWithCollapsible({
               expanded={expanded}
               onClick={() => handleNavigation(item.path)}
               iconResolver={(id) => PRODUCT_ROOM_NAV_ICONS[id]}
+              isFavorite={isFavorite}
+              toggleFavorite={toggleFavorite}
             />
           ))}
 
@@ -230,31 +174,21 @@ function ProductSidebarWithCollapsible({
             {/* Group Header */}
             <CollapsibleTrigger asChild>
               <button
+                className={cn(
+                  "group w-full flex items-center rounded-lg border-none cursor-pointer transition-all relative",
+                  expanded ? "px-3 justify-start" : "justify-center",
+                  isIdeasRouteActive 
+                    ? "bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 font-semibold" 
+                    : "bg-transparent text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-medium"
+                )}
                 style={{
-                  width: '100%',
                   height: '44px',
-                  padding: '0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderRadius: '6px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'background 0.15s ease',
+                  gap: '10px',
                   marginBottom: '2px',
                   marginTop: '8px',
-                  position: 'relative',
-                  background: isIdeasRouteActive ? 'var(--nav-active-bg)' : 'transparent',
-                  color: isIdeasRouteActive ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
-                  fontWeight: isIdeasRouteActive ? 600 : 500,
                   fontSize: '13px',
                   fontFamily: 'inherit',
                   outline: 'none',
-                }}
-                onMouseEnter={(e) => { 
-                  if (!isIdeasRouteActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
-                }}
-                onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = isIdeasRouteActive ? 'var(--nav-active-bg)' : 'transparent'; 
                 }}
               >
                 {isIdeasRouteActive && (
@@ -262,36 +196,35 @@ function ProductSidebarWithCollapsible({
                     style={{
                       position: 'absolute',
                       left: 0,
-                      top: '6px',
-                      bottom: '6px',
+                      top: expanded ? '6px' : '10px',
+                      bottom: expanded ? '6px' : '10px',
                       width: '3px',
-                      background: 'hsl(var(--brand-primary))',
+                      background: 'var(--nav-accent-bar, #2563eb)',
                       borderRadius: '0 2px 2px 0',
+                      boxShadow: '1px 0 3px rgba(37, 99, 235, 0.2)',
                     }}
                   />
                 )}
-                <span style={{ 
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  marginLeft: expanded ? '6px' : '14px',
-                }}>
+                <span 
+                  className="flex items-center justify-center flex-shrink-0"
+                  style={{ width: '18px', height: '18px' }}
+                >
                   <Lightbulb 
                     className="h-[18px] w-[18px]" 
-                    style={{ color: isIdeasRouteActive ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)' }}
+                    style={{ 
+                      color: isIdeasRouteActive ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
+                      strokeWidth: 1.75,
+                    }}
                   />
                 </span>
                 {expanded && (
                   <>
-                    <span style={{ flex: 1, textAlign: 'left', lineHeight: '44px' }}>
+                    <span className="flex-1 text-left" style={{ lineHeight: '44px' }}>
                       Ideas
                     </span>
                     <ChevronDown 
-                      className="h-4 w-4 mr-3 transition-transform group-data-[state=open]:rotate-180" 
-                      style={{ color: 'hsl(var(--foreground) / 0.5)' }}
+                      className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" 
+                      style={{ color: 'var(--text-4)' }}
                     />
                   </>
                 )}
@@ -300,7 +233,7 @@ function ProductSidebarWithCollapsible({
 
             {/* Collapsible Content - Ideas submenu */}
             <CollapsibleContent>
-              <div style={{ paddingLeft: expanded ? '16px' : '0' }}>
+              <div style={{ paddingLeft: expanded ? '12px' : '0' }}>
                 {IDEAS_MENU_ITEMS.map((item) => (
                   <MenuItemButton
                     key={item.id}
@@ -310,36 +243,55 @@ function ProductSidebarWithCollapsible({
                     onClick={() => handleNavigation(item.path)}
                     iconResolver={(id) => IDEAS_NAV_ICONS[id]}
                     isChild
+                    isFavorite={isFavorite}
+                    toggleFavorite={toggleFavorite}
                   />
                 ))}
               </div>
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Items after Ideas (Requirement Assist) */}
+          {/* Items after Ideas (Requirement Assist, Generation History) */}
           <div style={{ marginTop: '8px' }}>
-            {itemsAfterIdeas.map((item) => (
+            {AFTER_IDEAS_ITEMS.map((item) => (
               <MenuItemButton 
                 key={item.id}
                 item={item}
                 isActive={isActive(item.path, item.exact)}
                 expanded={expanded}
                 onClick={() => handleNavigation(item.path)}
-                iconResolver={(id) => PRODUCT_ROOM_NAV_ICONS[id]}
+                iconResolver={(id) => PRODUCT_ROOM_NAV_ICONS[id] || item.icon}
+                isFavorite={isFavorite}
+                toggleFavorite={toggleFavorite}
               />
             ))}
           </div>
         </nav>
 
-        {/* Footer Item (e.g., Settings) */}
-        {config.footerItem && (
-          <div style={{ borderTop: '1px solid var(--divider)', padding: '6px' }}>
+        {/* Footer Item (Settings for admins) */}
+        {isAdmin && (
+          <div 
+            className="border-t pt-2 mt-2"
+            style={{ 
+              borderColor: 'var(--divider)', 
+              padding: '8px' 
+            }}
+          >
             <MenuItemButton
-              item={config.footerItem}
+              item={{
+                id: 'product-settings',
+                title: 'Product Settings',
+                path: '#',
+                icon: Lock,
+                exact: true,
+              }}
               isActive={false}
               expanded={expanded}
               onClick={() => toast.info('Product Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
-              iconResolver={(id) => undefined}
+              iconResolver={() => Lock}
+              isFooter
+              isFavorite={isFavorite}
+              toggleFavorite={toggleFavorite}
             />
           </div>
         )}
@@ -348,7 +300,7 @@ function ProductSidebarWithCollapsible({
   );
 }
 
-// Reusable menu item button component
+// Menu item button component — matching SidebarBase renderMenuItem
 function MenuItemButton({
   item,
   isActive,
@@ -356,80 +308,115 @@ function MenuItemButton({
   onClick,
   iconResolver,
   isChild = false,
+  isFooter = false,
+  isFavorite,
+  toggleFavorite,
 }: {
   item: SidebarMenuItem;
   isActive: boolean;
   expanded: boolean;
   onClick: () => void;
-  iconResolver: (id: string) => React.ComponentType<{ className?: string }> | undefined;
+  iconResolver: (id: string) => React.ComponentType<{ className?: string; style?: React.CSSProperties }> | undefined;
   isChild?: boolean;
+  isFooter?: boolean;
+  isFavorite: (path: string) => boolean;
+  toggleFavorite: (path: string) => void;
 }) {
   const CustomIcon = iconResolver(item.id) || item.icon;
+  const starred = isFavorite(item.path);
 
   const menuButton = (
     <button
       onClick={onClick}
+      className={cn(
+        "group w-full flex items-center rounded-lg border-none cursor-pointer transition-all relative",
+        expanded ? "px-3 justify-start" : "justify-center",
+        isActive 
+          ? "bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 font-semibold" 
+          : "bg-transparent text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-medium"
+      )}
       style={{
-        width: '100%',
         height: isChild ? '40px' : '44px',
-        padding: '0',
-        display: 'flex',
-        alignItems: 'center',
-        borderRadius: '6px',
-        border: 'none',
-        cursor: 'pointer',
-        transition: 'background 0.15s ease, color 0.15s ease',
+        gap: '10px',
         marginBottom: '2px',
-        position: 'relative',
-        background: isActive ? 'var(--nav-active-bg)' : 'transparent',
-        color: isActive ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
-        fontWeight: isActive ? 600 : 500,
         fontSize: isChild ? '12px' : '13px',
         fontFamily: 'inherit',
         outline: 'none',
       }}
-      onMouseEnter={(e) => { 
-        if (!isActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
-      }}
-      onMouseLeave={(e) => { 
-        e.currentTarget.style.background = isActive ? 'var(--nav-active-bg)' : 'transparent'; 
-      }}
     >
+      {/* Left Accent Bar */}
       {isActive && (
         <span 
           style={{
             position: 'absolute',
             left: 0,
-            top: '6px',
-            bottom: '6px',
+            top: expanded ? '6px' : '10px',
+            bottom: expanded ? '6px' : '10px',
             width: '3px',
-            background: 'hsl(var(--brand-primary))',
+            background: 'var(--nav-accent-bar, #2563eb)',
             borderRadius: '0 2px 2px 0',
+            boxShadow: '1px 0 3px rgba(37, 99, 235, 0.2)',
           }}
         />
       )}
-      <span style={{ 
-        width: '32px',
-        height: '32px',
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        flexShrink: 0,
-        marginLeft: expanded ? '6px' : '14px',
-      }}>
+      {/* Icon container - 18×18 icons */}
+      <span 
+        className="flex items-center justify-center flex-shrink-0"
+        style={{ 
+          width: isChild ? '16px' : '18px',
+          height: isChild ? '16px' : '18px',
+        }}
+      >
         {CustomIcon && (
           <CustomIcon 
             className={cn("h-[18px] w-[18px]", isChild && "h-[16px] w-[16px]")}
-            style={{ color: isActive ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)' }}
+            style={{ 
+              color: isActive ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
+              strokeWidth: 1.75,
+            }}
           />
         )}
       </span>
       {expanded && (
-        <span style={{ 
-          flex: 1, 
-          textAlign: 'left',
-          lineHeight: isChild ? '40px' : '44px',
-        }}>{item.title}</span>
+        <>
+          <span 
+            className="flex-1 text-left truncate"
+            style={{ lineHeight: isChild ? '40px' : '44px' }}
+          >
+            {item.title}
+          </span>
+          {/* Star button - show on hover (hide for footer items) */}
+          {!isFooter && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFavorite(item.path);
+              }}
+              className={cn(
+                "w-5 h-5 flex items-center justify-center rounded transition-opacity",
+                starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              )}
+              style={{
+                color: starred ? '#f59e0b' : 'var(--text-4)',
+              }}
+              onMouseEnter={(e) => {
+                if (!starred) {
+                  e.currentTarget.style.color = '#f59e0b';
+                  e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!starred) {
+                  e.currentTarget.style.color = 'var(--text-4)';
+                  e.currentTarget.style.background = 'transparent';
+                }
+              }}
+            >
+              <Star size={14} fill={starred ? "currentColor" : "none"} />
+            </button>
+          )}
+        </>
       )}
     </button>
   );
@@ -442,6 +429,7 @@ function MenuItemButton({
         </TooltipTrigger>
         <TooltipContent 
           side="right" 
+          sideOffset={8}
           className="z-[100] bg-popover text-popover-foreground border border-border shadow-md"
         >
           {item.title}
@@ -450,5 +438,7 @@ function MenuItemButton({
     );
   }
 
-  return menuButton;
+  return <React.Fragment key={item.id}>{menuButton}</React.Fragment>;
 }
+
+export default ProductRoomSidebar;
