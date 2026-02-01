@@ -58,27 +58,29 @@ export function AqdListsPage() {
 
   return (
     <AqdLayout>
-      <div className="p-6 max-w-6xl mx-auto">
+      <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900">
         <AqdHeader onCreateList={() => setIsCreateOpen(true)} />
         
-        <div className="mb-4">
-          <div className="relative w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search lists..."
-              className="pl-9"
-            />
+        <div className="flex-1 p-6 max-w-6xl mx-auto w-full">
+          <div className="mb-4">
+            <div className="relative w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search lists..."
+                className="pl-9"
+              />
+            </div>
           </div>
+          
+          <AqdListsTable
+            lists={filteredLists}
+            onTogglePin={(id, isPinned) => togglePin.mutate({ id, is_pinned: isPinned })}
+            onArchive={(id) => archiveList.mutate(id)}
+            onDelete={(id, hasItems) => deleteList.mutate({ id, hasItems })}
+          />
         </div>
-        
-        <AqdListsTable
-          lists={filteredLists}
-          onTogglePin={(id, isPinned) => togglePin.mutate({ id, is_pinned: isPinned })}
-          onArchive={(id) => archiveList.mutate(id)}
-          onDelete={(id, hasItems) => deleteList.mutate({ id, hasItems })}
-        />
         
         <AqdCreateListModal
           isOpen={isCreateOpen}
