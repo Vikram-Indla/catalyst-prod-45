@@ -476,7 +476,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e8f0] dark:border-slate-800 bg-white dark:bg-slate-950 flex-shrink-0">
           {/* Left: Title */}
           <div>
-            <h1 className="text-xl font-bold text-[#0f172a] dark:text-slate-100">Dashboard</h1>
+            <h1 className="text-xl font-bold text-[#0f172a] dark:text-slate-100">Timeline</h1>
             <p className="text-sm text-[#64748b] dark:text-slate-400">
               Overview of tasks, workload, and team progress
             </p>
