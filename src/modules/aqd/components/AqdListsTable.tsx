@@ -2,13 +2,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Pin, MoreHorizontal, Check, Clock, Archive } from 'lucide-react';
+import { Pin, MoreHorizontal, Check, Clock, Archive, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
@@ -17,10 +18,11 @@ import type { AqdList } from '@/types/aqd';
 interface AqdListsTableProps {
   lists: AqdList[];
   onTogglePin: (id: string, isPinned: boolean) => void;
-  onDelete: (id: string) => void;
+  onArchive: (id: string) => void;
+  onDelete: (id: string, hasItems: boolean) => void;
 }
 
-export function AqdListsTable({ lists, onTogglePin, onDelete }: AqdListsTableProps) {
+export function AqdListsTable({ lists, onTogglePin, onArchive, onDelete }: AqdListsTableProps) {
   const navigate = useNavigate();
 
   const getStatusBadge = (list: AqdList) => {
@@ -144,9 +146,22 @@ export function AqdListsTable({ lists, onTogglePin, onDelete }: AqdListsTablePro
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={(e) => {
                         e.stopPropagation();
-                        onDelete(list.id);
+                        onArchive(list.id);
                       }}>
+                        <Archive className="h-4 w-4 mr-2" />
                         Archive List
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const hasItems = (list.item_count ?? 0) > 0;
+                          onDelete(list.id, hasItems);
+                        }}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        {(list.item_count ?? 0) > 0 ? 'Delete (will archive)' : 'Delete Permanently'}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

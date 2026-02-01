@@ -7,7 +7,7 @@ import { AqdHeader } from '../components/AqdHeader';
 import { AqdListsTable } from '../components/AqdListsTable';
 import { AqdCreateListModal } from '../components/AqdCreateListModal';
 import { AqdLayout } from '../components/AqdLayout';
-import { useAqdLists, useCreateAqdList, useToggleAqdListPin, useDeleteAqdList } from '@/hooks/useAqd';
+import { useAqdLists, useCreateAqdList, useToggleAqdListPin, useDeleteAqdList, useArchiveAqdList } from '@/hooks/useAqd';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function AqdListsPage() {
@@ -19,6 +19,7 @@ export function AqdListsPage() {
   const createList = useCreateAqdList();
   const togglePin = useToggleAqdListPin();
   const deleteList = useDeleteAqdList();
+  const archiveList = useArchiveAqdList();
 
   const filteredLists = lists.filter(list => 
     list.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -74,7 +75,8 @@ export function AqdListsPage() {
         <AqdListsTable
           lists={filteredLists}
           onTogglePin={(id, isPinned) => togglePin.mutate({ id, is_pinned: isPinned })}
-          onDelete={(id) => deleteList.mutate(id)}
+          onArchive={(id) => archiveList.mutate(id)}
+          onDelete={(id, hasItems) => deleteList.mutate({ id, hasItems })}
         />
         
         <AqdCreateListModal

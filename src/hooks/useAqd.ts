@@ -190,6 +190,47 @@ export function useDeleteAqdList() {
   const queryClient = useQueryClient();
   
   return useMutation({
+    mutationFn: async ({ id, hasItems }: { id: string; hasItems: boolean }) => {
+      if (hasItems) {
+        // Soft delete (archive) if list has items
+        const { error } = await supabase
+          .from('aqd_lists')
+          .update({ is_archived: true, updated_at: new Date().toISOString() })
+          .eq('id', id);
+        if (error) throw new Error(error.message);
+        return 'archived';
+      } else {
+        // Permanent delete if list is empty
+        // First delete associated weeks
+        const { error: weeksError } = await supabase
+          .from('aqd_weeks')
+          .delete()
+          .eq('list_id', id);
+        if (weeksError) throw new Error(weeksError.message);
+        
+        // Then delete the list
+        const { error } = await supabase
+          .from('aqd_lists')
+          .delete()
+          .eq('id', id);
+        if (error) throw new Error(error.message);
+        return 'deleted';
+      }
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: aqdKeys.lists() });
+      toast.success(result === 'archived' ? 'List archived' : 'List permanently deleted');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete list: ' + error.message);
+    },
+  });
+}
+
+export function useArchiveAqdList() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('aqd_lists')
