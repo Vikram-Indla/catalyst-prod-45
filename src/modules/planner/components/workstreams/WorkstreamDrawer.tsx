@@ -572,7 +572,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           </div>
 
           {/* SAVE INDICATOR */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#16a34a', minHeight: '20px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#16a34a', minHeight: '16px' }}>
             {showSaved && (
               <>
                 <Check size={14} />
@@ -580,9 +580,6 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               </>
             )}
           </div>
-
-          {/* SEPARATOR LINE */}
-          <div style={{ height: '1px', backgroundColor: '#e2e8f0' }} />
         </div>
 
         {/* ============================================================ */}
@@ -595,12 +592,13 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               position: 'sticky',
               top: 0,
               zIndex: 20,
-              padding: '20px',
+              padding: '16px 20px',
               backgroundColor: '#ffffff',
+              borderTop: '1px solid #e2e8f0',
               borderBottom: '1px solid #e2e8f0',
             }}
           >
-            <div style={{ marginBottom: '14px' }}>
+            <div style={{ marginBottom: '12px' }}>
               <span style={sectionLabelStyle}>Work Summary</span>
             </div>
 
