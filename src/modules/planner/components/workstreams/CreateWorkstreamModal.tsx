@@ -69,12 +69,12 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
 
   const handleCreate = async () => {
     try {
-      // BUG #1 FIX: Use profile_id from resource_inventory, not fake ID
+      // FIX: Use resource_inventory.id for lead_id (FK constraint)
       const result = await createWorkstream.mutateAsync({
         name: name.trim(),
         description: description.trim() || undefined,
         color,
-        leadId: selectedLead?.profile_id || null, // Use profile_id!
+        leadId: selectedLead?.id || null, // Use resource_inventory.id, NOT profile_id!
         keyPrefix: code.trim() || undefined, // Pass key_prefix for task keys
       });
 
