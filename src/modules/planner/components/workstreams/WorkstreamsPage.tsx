@@ -4,6 +4,7 @@
 // ============================================================================
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Plus,
   Search,
@@ -1061,7 +1062,15 @@ const WorkstreamRow: React.FC<{
   onMembersClick,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
 
+  // Update anchor rect when dropdown opens
+  useEffect(() => {
+    if (isDropdownOpen && buttonRef.current) {
+      setAnchorRect(buttonRef.current.getBoundingClientRect());
+    }
+  }, [isDropdownOpen]);
   const healthConfig = {
     healthy: { label: 'On Track', bg: COLORS.successBg, color: COLORS.success },
     'at-risk': { label: 'At Risk', bg: COLORS.warningBg, color: COLORS.warningText },
@@ -1138,6 +1147,7 @@ const WorkstreamRow: React.FC<{
       <td style={{ padding: '16px 20px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
         <div ref={dropdownRef}>
           <button
+            ref={buttonRef}
             onClick={(e) => {
               e.stopPropagation();
               onToggleDropdown();
@@ -1213,6 +1223,7 @@ const WorkstreamRow: React.FC<{
               onSearchChange={onLeadSearchChange}
               onSelect={onAssignLead}
               showRemove={!!lead}
+              anchorRect={anchorRect}
             />
           )}
         </div>
@@ -1372,22 +1383,26 @@ const LeadPickerDropdown: React.FC<{
   onSearchChange: (query: string) => void;
   onSelect: (user: TeamMember | null) => void;
   showRemove: boolean;
-}> = ({ users, selectedId, searchQuery, onSearchChange, onSelect, showRemove }) => (
-  <div
-    style={{
-      position: 'absolute',
-      top: 'calc(100% + 4px)',
-      left: 0,
-      width: '280px',
-      backgroundColor: COLORS.surfaceWhite,
-      border: `1px solid ${COLORS.borderLight}`,
-      borderRadius: '12px',
-      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
-      zIndex: 100,
-      overflow: 'hidden',
-    }}
-    onClick={(e) => e.stopPropagation()}
-  >
+  anchorRect: DOMRect | null;
+}> = ({ users, selectedId, searchQuery, onSearchChange, onSelect, showRemove, anchorRect }) => {
+  if (!anchorRect) return null;
+  
+  return createPortal(
+    <div
+      style={{
+        position: 'fixed',
+        top: anchorRect.bottom + 4,
+        left: anchorRect.left,
+        width: '280px',
+        backgroundColor: COLORS.surfaceWhite,
+        border: `1px solid ${COLORS.borderLight}`,
+        borderRadius: '12px',
+        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
+        zIndex: 99999,
+        overflow: 'hidden',
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
     {/* Search */}
     <div style={{ padding: '12px', borderBottom: `1px solid ${COLORS.surfaceHover}` }}>
       <div
@@ -1458,8 +1473,10 @@ const LeadPickerDropdown: React.FC<{
         </button>
       </div>
     )}
-  </div>
-);
+    </div>,
+    document.body
+  );
+};
 
 const DropdownItem: React.FC<{
   user: TeamMember;
