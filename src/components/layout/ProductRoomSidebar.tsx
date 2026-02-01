@@ -117,7 +117,12 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             background: 'transparent',
           }}
         >
-          <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+          <div
+            className={cn(
+              "flex items-center gap-2.5",
+              expanded ? "overflow-hidden min-w-0" : "w-full justify-center overflow-visible"
+            )}
+          >
             {/* Module Badge — 32×32 blue gradient (matching Enterprise/Strategy Room) */}
             <div 
               className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
