@@ -571,42 +571,6 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             </div>
           </div>
 
-          {/* STATUS BANNER */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '12px 14px',
-              backgroundColor: healthConfig.bgColor,
-              border: `1px solid ${healthConfig.borderColor}`,
-              borderRadius: '10px',
-              marginBottom: '12px'
-            }}
-          >
-            <AlertTriangle size={20} style={{ color: healthConfig.color, marginRight: '10px', flexShrink: 0 }} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: healthConfig.color }}>{healthConfig.label}</div>
-              <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                {workstream.overdueCount || 0} overdue · {workstream.taskCount || 0} tasks
-              </div>
-            </div>
-            <button
-              style={{
-                padding: '6px 14px',
-                backgroundColor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '6px',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: '#475569',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              Change Status
-            </button>
-          </div>
-
           {/* SAVE INDICATOR */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#16a34a', minHeight: '20px' }}>
             {showSaved && (
@@ -637,16 +601,32 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               <span style={sectionLabelStyle}>Work Summary</span>
             </div>
 
-            {/* Stats Cards */}
+            {/* Stats Cards - Clickable for filtering */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-              <div style={statCardStyle}>
+              <button
+                onClick={() => {
+                  navigate(`/taskhub/task-list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}`);
+                  onClose();
+                }}
+                style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+              >
                 <div style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{taskCount}</div>
                 <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Total Tasks</div>
-              </div>
-              <div style={statCardStyle}>
+              </button>
+              <button
+                onClick={() => {
+                  navigate(`/taskhub/task-list?workstream=${encodeURIComponent(workstream.slug || workstream.id)}&overdue=true`);
+                  onClose();
+                }}
+                style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fef2f2'; e.currentTarget.style.borderColor = '#fecaca'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+              >
                 <div style={{ fontSize: '28px', fontWeight: 700, color: '#dc2626', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
                 <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Overdue</div>
-              </div>
+              </button>
               <div style={statCardStyle}>
                 <div style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{memberCount}</div>
                 <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Members</div>
