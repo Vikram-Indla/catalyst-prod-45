@@ -56,6 +56,7 @@ export function useAqdLists() {
         name: row.name,
         description: row.description ?? undefined,
         created_by: row.created_by ?? '',
+        created_by_name: row.created_by_name ?? undefined,
         created_at: row.created_at ?? '',
         updated_at: row.updated_at ?? '',
         is_archived: row.is_archived ?? false,
