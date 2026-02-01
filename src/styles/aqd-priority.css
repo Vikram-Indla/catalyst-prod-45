@@ -1,0 +1,551 @@
+/* ============================================================
+   AQD¹⁰ PRIORITY LIST — ENTERPRISE ENHANCEMENT
+   
+   RING-FENCE PROTOCOL:
+   ├── Namespace: --aqd-* (AQD Priority)
+   ├── Wrapper: .aqd-priority-view
+   ├── Layer: @layer aqd-priority
+   └── Purpose: Fill empty space, show all 10 slots
+   
+   METRICS TARGET:
+   ├── Content Coverage: 25% → 85%
+   ├── Visible Slots: 2/10 → 10/10
+   └── Score: 4.5 → 8.5+
+   ============================================================ */
+
+@layer aqd-priority {
+
+/* ─────────────────────────────────────────────────────────────
+   ROOT TOKENS
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view {
+  /* Neutral Foundation */
+  --aqd-white: #ffffff;
+  --aqd-slate-50: #f8fafc;
+  --aqd-slate-100: #f1f5f9;
+  --aqd-slate-200: #e2e8f0;
+  --aqd-slate-300: #cbd5e1;
+  --aqd-slate-400: #94a3b8;
+  --aqd-slate-500: #64748b;
+  --aqd-slate-600: #475569;
+  --aqd-slate-700: #334155;
+  --aqd-slate-800: #1e293b;
+  --aqd-slate-900: #0f172a;
+
+  /* Brand Colors */
+  --aqd-blue-100: #dbeafe;
+  --aqd-blue-500: #3b82f6;
+  --aqd-blue-600: #2563eb;
+  --aqd-green-100: #dcfce7;
+  --aqd-green-500: #22c55e;
+  --aqd-green-600: #16a34a;
+  --aqd-amber-100: #fef3c7;
+  --aqd-amber-500: #f59e0b;
+  --aqd-teal-500: #14b8a6;
+
+  /* Component Sizing */
+  --aqd-rank-size: 32px;
+  --aqd-item-padding: 16px;
+  --aqd-item-gap: 8px;
+  --aqd-border-radius: 12px;
+  --aqd-border-radius-sm: 8px;
+
+  /* Typography */
+  --aqd-font-title: 15px;
+  --aqd-font-meta: 12px;
+  --aqd-font-badge: 12px;
+
+  /* Shadows */
+  --aqd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --aqd-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* Transitions */
+  --aqd-transition: 200ms ease;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PROGRESS BAR
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view .aqd-progress {
+  padding: 16px 24px;
+  background: var(--aqd-slate-50);
+  border-bottom: 1px solid var(--aqd-slate-200);
+}
+
+.aqd-priority-view .aqd-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.aqd-priority-view .aqd-progress-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--aqd-slate-600);
+}
+
+.aqd-priority-view .aqd-progress-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--aqd-slate-800);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.aqd-priority-view .aqd-progress-track {
+  height: 8px;
+  background: var(--aqd-slate-200);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.aqd-priority-view .aqd-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--aqd-green-500), var(--aqd-teal-500));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PRIORITY LIST CONTAINER
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view .aqd-priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--aqd-item-gap);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PRIORITY ITEM — FILLED
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view .aqd-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: var(--aqd-item-padding);
+  background: var(--aqd-white);
+  border: 1px solid var(--aqd-slate-200);
+  border-radius: var(--aqd-border-radius);
+  transition: box-shadow var(--aqd-transition), border-color var(--aqd-transition);
+}
+
+.aqd-priority-view .aqd-item:hover {
+  box-shadow: var(--aqd-shadow-md);
+  border-color: var(--aqd-slate-300);
+}
+
+/* Drag Handle */
+.aqd-priority-view .aqd-drag-handle {
+  color: var(--aqd-slate-300);
+  cursor: grab;
+  padding: 4px 0;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aqd-priority-view .aqd-drag-handle:hover {
+  color: var(--aqd-slate-400);
+}
+
+.aqd-priority-view .aqd-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Rank Badge */
+.aqd-priority-view .aqd-rank {
+  width: var(--aqd-rank-size);
+  height: var(--aqd-rank-size);
+  background: var(--aqd-slate-800);
+  color: var(--aqd-white);
+  border-radius: var(--aqd-border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Top 3 special colors */
+.aqd-priority-view .aqd-rank--1 {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: var(--aqd-slate-900);
+}
+
+.aqd-priority-view .aqd-rank--2 {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+}
+
+.aqd-priority-view .aqd-rank--3 {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+/* Item Main Content */
+.aqd-priority-view .aqd-item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.aqd-priority-view .aqd-item-title {
+  font-size: var(--aqd-font-title);
+  font-weight: 600;
+  color: var(--aqd-slate-800);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+/* Item Metadata Row */
+.aqd-priority-view .aqd-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.aqd-priority-view .aqd-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--aqd-font-meta);
+  color: var(--aqd-slate-500);
+}
+
+.aqd-priority-view .aqd-meta-item svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.aqd-priority-view .aqd-meta-key {
+  padding: 2px 8px;
+  background: var(--aqd-slate-100);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--aqd-slate-600);
+}
+
+.aqd-priority-view .aqd-meta-project {
+  padding: 2px 8px;
+  background: var(--aqd-blue-100);
+  color: var(--aqd-blue-600);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Item Actions */
+.aqd-priority-view .aqd-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Status Badge */
+.aqd-priority-view .aqd-status {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: var(--aqd-font-badge);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: opacity var(--aqd-transition);
+}
+
+.aqd-priority-view .aqd-status:hover {
+  opacity: 0.85;
+}
+
+.aqd-priority-view .aqd-status--todo {
+  background: var(--aqd-slate-100);
+  color: var(--aqd-slate-600);
+}
+
+.aqd-priority-view .aqd-status--progress {
+  background: var(--aqd-amber-100);
+  color: var(--aqd-amber-500);
+}
+
+.aqd-priority-view .aqd-status--done {
+  background: var(--aqd-green-100);
+  color: var(--aqd-green-600);
+}
+
+.aqd-priority-view .aqd-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* More Actions Button */
+.aqd-priority-view .aqd-more-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--aqd-slate-400);
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--aqd-transition), color var(--aqd-transition);
+}
+
+.aqd-priority-view .aqd-more-btn:hover {
+  background: var(--aqd-slate-100);
+  color: var(--aqd-slate-600);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PRIORITY SLOT — EMPTY
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view .aqd-slot-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: var(--aqd-item-padding);
+  background: var(--aqd-slate-50);
+  border: 2px dashed var(--aqd-slate-200);
+  border-radius: var(--aqd-border-radius);
+  transition: border-color var(--aqd-transition), background var(--aqd-transition);
+  cursor: pointer;
+}
+
+.aqd-priority-view .aqd-slot-empty:hover {
+  border-color: var(--aqd-slate-300);
+  background: var(--aqd-white);
+}
+
+.aqd-priority-view .aqd-slot-empty:hover .aqd-rank-empty {
+  background: var(--aqd-slate-300);
+  color: var(--aqd-slate-600);
+}
+
+.aqd-priority-view .aqd-rank-empty {
+  width: var(--aqd-rank-size);
+  height: var(--aqd-rank-size);
+  background: var(--aqd-slate-200);
+  color: var(--aqd-slate-400);
+  border-radius: var(--aqd-border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: background var(--aqd-transition), color var(--aqd-transition);
+}
+
+.aqd-priority-view .aqd-slot-placeholder {
+  font-size: 13px;
+  color: var(--aqd-slate-400);
+  font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ADD INPUT
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view .aqd-add-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--aqd-slate-50);
+  border: 2px dashed var(--aqd-slate-300);
+  border-radius: var(--aqd-border-radius);
+  margin-bottom: 24px;
+  transition: border-color var(--aqd-transition), background var(--aqd-transition);
+}
+
+.aqd-priority-view .aqd-add-input:focus-within {
+  border-color: var(--aqd-blue-500);
+  border-style: solid;
+  background: var(--aqd-white);
+}
+
+.aqd-priority-view .aqd-add-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--aqd-blue-100);
+  color: var(--aqd-blue-600);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.aqd-priority-view .aqd-add-field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--aqd-slate-700);
+  outline: none;
+}
+
+.aqd-priority-view .aqd-add-field::placeholder {
+  color: var(--aqd-slate-400);
+}
+
+.aqd-priority-view .aqd-add-hint {
+  font-size: 12px;
+  color: var(--aqd-slate-400);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.aqd-priority-view .aqd-add-hint kbd {
+  padding: 2px 6px;
+  background: var(--aqd-slate-200);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SECTION HEADER
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view .aqd-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.aqd-priority-view .aqd-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--aqd-slate-800);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.aqd-priority-view .aqd-section-count {
+  padding: 4px 10px;
+  background: var(--aqd-slate-100);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--aqd-slate-600);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view .aqd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--aqd-slate-200);
+}
+
+.aqd-priority-view .aqd-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.aqd-priority-view .aqd-brand-badge {
+  width: 48px;
+  height: 48px;
+  background: var(--aqd-blue-600);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.aqd-priority-view .aqd-brand-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--aqd-slate-800);
+  margin: 0;
+}
+
+.aqd-priority-view .aqd-brand-subtitle {
+  font-size: 13px;
+  color: var(--aqd-slate-500);
+  margin: 0;
+}
+
+/* Week Navigation */
+.aqd-priority-view .aqd-week-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--aqd-slate-100);
+  border-radius: 8px;
+}
+
+.aqd-priority-view .aqd-week-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--aqd-slate-500);
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aqd-priority-view .aqd-week-btn:hover {
+  background: var(--aqd-slate-200);
+}
+
+.aqd-priority-view .aqd-week-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--aqd-slate-700);
+  padding: 0 8px;
+}
+
+/* Checkout Button */
+.aqd-priority-view .aqd-checkout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--aqd-green-500);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--aqd-transition);
+}
+
+.aqd-priority-view .aqd-checkout-btn:hover {
+  background: var(--aqd-green-600);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BODY
+   ───────────────────────────────────────────────────────────── */
+.aqd-priority-view .aqd-body {
+  padding: 20px 24px 32px;
+}
+
+} /* END @layer aqd-priority */

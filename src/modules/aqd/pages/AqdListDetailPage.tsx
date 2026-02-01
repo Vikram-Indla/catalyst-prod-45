@@ -1,20 +1,24 @@
-// Aqd¹⁰ List Detail Page
+// Aqd¹⁰ List Detail Page - Enhanced with All 10 Slots
+import '@/styles/aqd-priority.css';
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight, CheckCircle, User, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, GripVertical, User, Calendar, MoreHorizontal } from 'lucide-react';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, arrayMove, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Badge } from '@/components/ui/badge';
 import { AqdQuickAdd } from '../components/AqdQuickAdd';
-import { AqdPriorityCard } from '../components/AqdPriorityCard';
 import { AqdCarryoverBanner } from '../components/AqdCarryoverBanner';
 import { AqdCheckoutModal } from '../components/AqdCheckoutModal';
 import { AqdItemPanel } from '../components/AqdItemPanel';
 import { AqdLayout } from '../components/AqdLayout';
+import { AqdProgressBar } from '../components/AqdProgressBar';
+import { AqdEmptySlot } from '../components/AqdEmptySlot';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 import {
   useAqdListBySlug,
   useAqdCurrentWeek,
@@ -27,7 +31,10 @@ import {
   useConfirmAllCarryover,
   useDismissCarryover,
 } from '@/hooks/useAqd';
-import type { AqdItem } from '@/types/aqd';
+import type { AqdItem, AqdItemStatus } from '@/types/aqd';
+import { STATUS_CONFIG, AQD_LABEL_COLORS } from '@/types/aqd';
+
+const TOTAL_SLOTS = 10;
 
 // Helper to format week date range with cross-month support
 const formatWeekRange = (startDate: string, endDate: string): string => {
@@ -44,6 +51,150 @@ const formatWeekRange = (startDate: string, endDate: string): string => {
   }
   return `${startMonth} ${startDay} – ${endMonth} ${endDay}`;
 };
+
+// Status mapping
+const statusMap: Record<AqdItemStatus, 'todo' | 'progress' | 'done'> = {
+  'not_started': 'todo',
+  'in_progress': 'progress',
+  'completed': 'done',
+};
+
+const statusLabels: Record<string, string> = {
+  todo: 'To Do',
+  progress: 'In Progress',
+  done: 'Done',
+};
+
+// Enhanced Priority Item using CSS classes
+interface PriorityItemProps {
+  item: AqdItem;
+  rank: number;
+  onStatusCycle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onConfirmCarryover?: () => void;
+  onDismissCarryover?: () => void;
+  isDraggable?: boolean;
+}
+
+function PriorityItem({
+  item,
+  rank,
+  onStatusCycle,
+  onEdit,
+  onDelete,
+  onConfirmCarryover,
+  onDismissCarryover,
+  isDraggable = true,
+}: PriorityItemProps) {
+  const isCarryover = item.is_carryover && !item.carryover_confirmed;
+  const statusKey = statusMap[item.status];
+  
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: item.id,
+    disabled: !isDraggable || isCarryover,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className={cn("aqd-item", isCarryover && "aqd-item--carryover")}>
+      {/* Drag Handle */}
+      <span className="aqd-drag-handle" {...attributes} {...listeners}>
+        <GripVertical size={16} />
+      </span>
+      
+      {/* Rank Badge */}
+      <div className={cn('aqd-rank', `aqd-rank--${rank}`)}>
+        {rank}
+      </div>
+      
+      {/* Main Content */}
+      <div className="aqd-item-main">
+        <div className={cn("aqd-item-title", item.status === 'completed' && "line-through text-gray-400")}>
+          {item.title}
+        </div>
+        <div className="aqd-item-meta">
+          {item.taskhub_key && (
+            <span className="aqd-meta-key">{item.taskhub_key}</span>
+          )}
+          {item.assignee_name && (
+            <span className="aqd-meta-item">
+              <User size={14} />
+              @{item.assignee_name}
+            </span>
+          )}
+          {item.due_date && (
+            <span className="aqd-meta-item">
+              <Calendar size={14} />
+              {format(new Date(item.due_date), 'MMM d')}
+            </span>
+          )}
+          {item.labels.map(label => (
+            <span
+              key={label.id}
+              style={{
+                display: 'inline-block',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: AQD_LABEL_COLORS[label.color]?.text || '#475569',
+                border: `1.5px solid ${AQD_LABEL_COLORS[label.color]?.border || '#cbd5e1'}`,
+                background: 'transparent',
+              }}
+            >
+              {label.name}
+            </span>
+          ))}
+          {isCarryover && (
+            <span className="aqd-meta-project" style={{ background: '#fef3c7', color: '#d97706' }}>
+              From Last Week
+            </span>
+          )}
+        </div>
+      </div>
+      
+      {/* Actions */}
+      <div className="aqd-item-actions">
+        {isCarryover ? (
+          <>
+            <button className="aqd-status aqd-status--done" onClick={onConfirmCarryover}>
+              Confirm
+            </button>
+            <button className="aqd-more-btn" onClick={onDismissCarryover}>
+              Dismiss
+            </button>
+          </>
+        ) : (
+          <>
+            <button 
+              className={cn('aqd-status', `aqd-status--${statusKey}`)}
+              onClick={onStatusCycle}
+            >
+              <span className="aqd-status-dot" />
+              {statusLabels[statusKey]}
+            </button>
+            <button className="aqd-more-btn" onClick={onEdit}>
+              <MoreHorizontal size={18} />
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function AqdListDetailPage() {
   const { listSlug } = useParams<{ listSlug: string }>();
@@ -66,15 +217,27 @@ export function AqdListDetailPage() {
   const confirmAllCarryover = useConfirmAllCarryover();
   const dismissCarryover = useDismissCarryover();
 
-  // Split items into groups
-  const { top10Items, overflowItems, carryoverItems } = useMemo(() => {
+  // Split items into groups and create all 10 slots
+  const { slots, overflowItems, carryoverItems, filledCount } = useMemo(() => {
     const confirmed = items.filter(i => !i.is_carryover || i.carryover_confirmed);
     const carryover = items.filter(i => i.is_carryover && !i.carryover_confirmed);
     
     const top10 = confirmed.filter(i => i.rank <= 10);
     const overflow = confirmed.filter(i => i.rank > 10);
     
-    return { top10Items: top10, overflowItems: overflow, carryoverItems: carryover };
+    // Create array of all 10 slots
+    const allSlots = Array.from({ length: TOTAL_SLOTS }, (_, i) => {
+      const rank = i + 1;
+      const priority = top10.find(p => p.rank === rank);
+      return { rank, priority };
+    });
+    
+    return { 
+      slots: allSlots, 
+      overflowItems: overflow, 
+      carryoverItems: carryover,
+      filledCount: top10.length,
+    };
   }, [items]);
 
   const handleAdd = (title: string, taskhubKey?: string) => {
@@ -91,14 +254,23 @@ export function AqdListDetailPage() {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = top10Items.findIndex(i => i.id === active.id);
-    const newIndex = top10Items.findIndex(i => i.id === over.id);
+    const filledItems = slots.filter(s => s.priority).map(s => s.priority!);
+    const oldIndex = filledItems.findIndex(i => i.id === active.id);
+    const newIndex = filledItems.findIndex(i => i.id === over.id);
     
     if (oldIndex === -1 || newIndex === -1) return;
 
-    const reordered = arrayMove(top10Items, oldIndex, newIndex);
+    const reordered = arrayMove(filledItems, oldIndex, newIndex);
     const updates = reordered.map((item, idx) => ({ id: item.id, rank: idx + 1 }));
     reorderItems.mutate({ items: updates });
+  };
+
+  const handleEmptySlotClick = (rank: number) => {
+    // Focus the quick add input when clicking an empty slot
+    const input = document.querySelector('.aqd-add-field') as HTMLInputElement;
+    if (input) {
+      input.focus();
+    }
   };
 
   const isLoading = listLoading || weekLoading || itemsLoading;
@@ -106,13 +278,15 @@ export function AqdListDetailPage() {
   if (isLoading) {
     return (
       <AqdLayout>
-        <div className="p-6 max-w-4xl mx-auto">
-          <Skeleton className="h-12 w-64 mb-6" />
-          <Skeleton className="h-20 w-full mb-6" />
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map(i => (
-              <Skeleton key={i} className="h-16 w-full" />
-            ))}
+        <div className="aqd-priority-view">
+          <div className="p-6">
+            <Skeleton className="h-12 w-64 mb-6" />
+            <Skeleton className="h-20 w-full mb-6" />
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
+            </div>
           </div>
         </div>
       </AqdLayout>
@@ -122,100 +296,115 @@ export function AqdListDetailPage() {
   if (!list) {
     return (
       <AqdLayout>
-        <div className="p-6 max-w-4xl mx-auto text-center py-12">
-          <div className="text-muted-foreground">List not found</div>
-          <Button variant="link" onClick={() => navigate('/aqd')}>
-            Go back to lists
-          </Button>
+        <div className="aqd-priority-view">
+          <div className="p-6 text-center py-12">
+            <div className="text-gray-500">List not found</div>
+            <Button variant="link" onClick={() => navigate('/aqd')}>
+              Go back to lists
+            </Button>
+          </div>
         </div>
       </AqdLayout>
     );
   }
 
+  const sortableIds = slots.filter(s => s.priority).map(s => s.priority!.id);
+
   return (
     <AqdLayout>
-      <div className={`p-6 max-w-4xl mx-auto transition-all ${selectedItemId ? 'mr-[400px]' : ''}`}>
+      <div className={cn("aqd-priority-view", selectedItemId && "mr-[400px]")}>
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
-          <div className="flex items-center gap-4">
-            <button
+        <div className="aqd-header">
+          <div className="aqd-brand">
+            <div 
+              className="aqd-brand-badge cursor-pointer"
               onClick={() => navigate('/aqd')}
-              className="w-[42px] h-[42px] bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center text-primary-foreground font-bold text-sm cursor-pointer hover:opacity-90 transition-opacity"
               title="Back to All Lists"
             >
               10
-            </button>
+            </div>
             <div>
-              <h1 className="font-semibold text-base">{list.name}</h1>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+              <h1 className="aqd-brand-title">{list.name}</h1>
+              <p className="aqd-brand-subtitle">
                 {currentWeek && (
-                  <span>
+                  <>
                     W{String(currentWeek.week_number).padStart(2, '0')} · {formatWeekRange(currentWeek.start_date, currentWeek.end_date)}
-                    {list.created_by_name && (
-                      <span className="ml-2">· 👤 {list.created_by_name}</span>
-                    )}
-                  </span>
+                    {list.created_by_name && ` · 👤 ${list.created_by_name}`}
+                  </>
                 )}
-              </div>
+              </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            {/* Week Navigator */}
-            <div className="flex items-center bg-muted rounded-full px-1 py-1">
-              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="px-3 text-sm font-medium">Current</span>
-              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" disabled>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="aqd-week-nav">
+              <button className="aqd-week-btn"><ChevronLeft size={16} /></button>
+              <span className="aqd-week-label">Current</span>
+              <button className="aqd-week-btn" disabled><ChevronRight size={16} /></button>
             </div>
-            
-            {/* Checkout Button - Solid warning style */}
-            {top10Items.length > 0 && (
-              <Button
-                className="gap-2 bg-amber-500 hover:bg-amber-600 text-white border-amber-500 hover:border-amber-600 font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
-                onClick={() => setIsCheckoutOpen(true)}
-              >
-                <CheckCircle className="h-4 w-4" />
+            {filledCount > 0 && (
+              <button className="aqd-checkout-btn" onClick={() => setIsCheckoutOpen(true)}>
+                <CheckCircle size={18} />
                 Checkout
-              </Button>
+              </button>
             )}
           </div>
         </div>
-
-        {/* Carryover Banner */}
-        <AqdCarryoverBanner
-          carryoverItems={carryoverItems}
-          onConfirmAll={() => currentWeek && confirmAllCarryover.mutate(currentWeek.id)}
-          onDismissAll={() => {
-            carryoverItems.forEach(item => dismissCarryover.mutate(item.id));
-          }}
-        />
-
-        {/* Quick Add */}
-        <div className="mb-6">
-          <AqdQuickAdd onAdd={handleAdd} disabled={!currentWeek} />
-        </div>
-
-        {/* Top 10 Section */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <h2 className="font-semibold text-sm">Top 10 Priorities</h2>
-            <Badge variant="secondary" className="text-xs">
-              {top10Items.length} / 10
-            </Badge>
+        
+        {/* Progress Bar */}
+        <AqdProgressBar filled={filledCount} total={TOTAL_SLOTS} />
+        
+        {/* Body */}
+        <div className="aqd-body">
+          {/* Carryover Banner */}
+          <AqdCarryoverBanner
+            carryoverItems={carryoverItems}
+            onConfirmAll={() => currentWeek && confirmAllCarryover.mutate(currentWeek.id)}
+            onDismissAll={() => {
+              carryoverItems.forEach(item => dismissCarryover.mutate(item.id));
+            }}
+          />
+          
+          {/* Add Input */}
+          <div className="aqd-add-input">
+            <div className="aqd-add-icon">+</div>
+            <input
+              type="text"
+              className="aqd-add-field"
+              placeholder="Add a priority or enter TaskHub key (e.g., PLN-001)..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const target = e.target as HTMLInputElement;
+                  const value = target.value.trim();
+                  if (value) {
+                    const isTaskKey = /^[A-Z]{2,4}-\d+$/i.test(value);
+                    handleAdd(value, isTaskKey ? value.toUpperCase() : undefined);
+                    target.value = '';
+                  }
+                }
+              }}
+            />
+            <div className="aqd-add-hint">
+              <kbd>↵</kbd> to add
+            </div>
           </div>
-
+          
+          {/* Section Header */}
+          <div className="aqd-section-header">
+            <span className="aqd-section-title">Top 10 Priorities</span>
+            <span className="aqd-section-count">{filledCount} / {TOTAL_SLOTS}</span>
+          </div>
+          
+          {/* Priority List - ALL 10 SLOTS */}
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={top10Items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-2">
+            <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
+              <div className="aqd-priority-list">
                 {/* Carryover items first */}
                 {carryoverItems.map(item => (
-                  <AqdPriorityCard
+                  <PriorityItem
                     key={item.id}
                     item={item}
+                    rank={item.rank}
                     onStatusCycle={() => {}}
                     onEdit={() => setSelectedItemId(item.id)}
                     onDelete={() => deleteItem.mutate(item.id)}
@@ -225,59 +414,64 @@ export function AqdListDetailPage() {
                   />
                 ))}
                 
-                {/* Regular top 10 items */}
-                {top10Items.map(item => (
-                  <AqdPriorityCard
-                    key={item.id}
-                    item={item}
-                    onStatusCycle={() => cycleStatus.mutate({ id: item.id, currentStatus: item.status })}
-                    onEdit={() => setSelectedItemId(item.id)}
-                    onDelete={() => deleteItem.mutate(item.id)}
-                  />
+                {/* All 10 slots */}
+                {slots.map(({ rank, priority }) => (
+                  priority ? (
+                    <PriorityItem
+                      key={priority.id}
+                      item={priority}
+                      rank={rank}
+                      onStatusCycle={() => cycleStatus.mutate({ id: priority.id, currentStatus: priority.status })}
+                      onEdit={() => setSelectedItemId(priority.id)}
+                      onDelete={() => deleteItem.mutate(priority.id)}
+                    />
+                  ) : (
+                    <AqdEmptySlot 
+                      key={`empty-${rank}`} 
+                      rank={rank} 
+                      onClick={() => handleEmptySlotClick(rank)}
+                    />
+                  )
                 ))}
-                
-                {top10Items.length === 0 && carryoverItems.length === 0 && (
-                  <div className="py-8 text-center text-muted-foreground border border-dashed rounded-xl">
-                    <div className="text-2xl mb-2">⭐</div>
-                    <div className="text-sm">No priorities yet. Add your top 10 for this week.</div>
-                  </div>
-                )}
               </div>
             </SortableContext>
           </DndContext>
+          
+          {/* Overflow Section */}
+          {overflowItems.length > 0 && (
+            <div className="mt-6">
+              <Collapsible open={isOverflowOpen} onOpenChange={setIsOverflowOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between mb-2">
+                    <span>Optional Priorities (11–20)</span>
+                    <Badge variant="secondary">{overflowItems.length}</Badge>
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="aqd-priority-list mt-2">
+                    {overflowItems.map(item => (
+                      <PriorityItem
+                        key={item.id}
+                        item={item}
+                        rank={item.rank}
+                        onStatusCycle={() => cycleStatus.mutate({ id: item.id, currentStatus: item.status })}
+                        onEdit={() => setSelectedItemId(item.id)}
+                        onDelete={() => deleteItem.mutate(item.id)}
+                      />
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          )}
         </div>
-
-        {/* Overflow Section */}
-        {overflowItems.length > 0 && (
-          <Collapsible open={isOverflowOpen} onOpenChange={setIsOverflowOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="outline" className="w-full justify-between mb-2">
-                <span>Optional Priorities (11–20)</span>
-                <Badge variant="secondary">{overflowItems.length}</Badge>
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="space-y-2 mt-2">
-                {overflowItems.map(item => (
-                  <AqdPriorityCard
-                    key={item.id}
-                    item={item}
-                    onStatusCycle={() => cycleStatus.mutate({ id: item.id, currentStatus: item.status })}
-                    onEdit={() => setSelectedItemId(item.id)}
-                    onDelete={() => deleteItem.mutate(item.id)}
-                  />
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
 
         {/* Checkout Modal */}
         <AqdCheckoutModal
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
           weekId={currentWeek?.id || ''}
-          items={top10Items}
+          items={slots.filter(s => s.priority).map(s => s.priority!)}
         />
 
         {/* Item Panel */}
