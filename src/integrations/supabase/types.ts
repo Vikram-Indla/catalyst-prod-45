@@ -30788,9 +30788,11 @@ export type Database = {
           description: string | null
           due_date: string | null
           from_week_number: number | null
+          from_week_year: number | null
           id: string | null
           is_carryover: boolean | null
           list_id: string | null
+          list_name: string | null
           rank: number | null
           status: string | null
           taskhub_key: string | null
@@ -30923,19 +30925,25 @@ export type Database = {
           checkout_decision: string | null
           created_at: string | null
           created_by: string | null
-          created_by_name: string | null
+          days_until_due: number | null
           description: string | null
           due_date: string | null
+          due_status: string | null
           id: string | null
           is_carryover: boolean | null
-          labels: Json | null
           list_id: string | null
+          list_name: string | null
           rank: number | null
           status: string | null
           taskhub_key: string | null
           title: string | null
           updated_at: string | null
+          week_end_date: string | null
           week_id: string | null
+          week_number: number | null
+          week_start_date: string | null
+          week_status: string | null
+          week_year: number | null
         }
         Relationships: [
           {
@@ -31054,24 +31062,21 @@ export type Database = {
       }
       aqd_lists_summary: {
         Row: {
-          completed_count: number | null
           created_at: string | null
           created_by: string | null
-          created_by_avatar: string | null
-          created_by_name: string | null
-          current_week_end: string | null
           current_week_id: string | null
           current_week_number: number | null
-          current_week_start: string | null
           current_week_status: string | null
           description: string | null
+          done_items: number | null
           id: string | null
           is_archived: boolean | null
           is_pinned: boolean | null
-          item_count: number | null
-          last_checkout_at: string | null
           name: string | null
+          overdue_items: number | null
+          pending_items: number | null
           settings: Json | null
+          total_items: number | null
           updated_at: string | null
         }
         Relationships: [
@@ -31107,55 +31112,24 @@ export type Database = {
       }
       aqd_week_performance: {
         Row: {
-          carried_count: number | null
+          carryover_items: number | null
           checkout_completed_at: string | null
           checkout_completed_by: string | null
+          checkout_completed_by_name: string | null
+          completion_rate: number | null
           created_at: string | null
+          done_items: number | null
           end_date: string | null
           id: string | null
-          item_decisions: Json | null
           list_id: string | null
+          list_name: string | null
+          pending_items: number | null
           performance_summary: Json | null
-          resolved_count: number | null
           start_date: string | null
           status: string | null
-          unresolved_count: number | null
+          total_items: number | null
           week_number: number | null
           year: number | null
-        }
-        Insert: {
-          carried_count?: never
-          checkout_completed_at?: string | null
-          checkout_completed_by?: string | null
-          created_at?: string | null
-          end_date?: string | null
-          id?: string | null
-          item_decisions?: never
-          list_id?: string | null
-          performance_summary?: Json | null
-          resolved_count?: never
-          start_date?: string | null
-          status?: string | null
-          unresolved_count?: never
-          week_number?: number | null
-          year?: number | null
-        }
-        Update: {
-          carried_count?: never
-          checkout_completed_at?: string | null
-          checkout_completed_by?: string | null
-          created_at?: string | null
-          end_date?: string | null
-          id?: string | null
-          item_decisions?: never
-          list_id?: string | null
-          performance_summary?: Json | null
-          resolved_count?: never
-          start_date?: string | null
-          status?: string | null
-          unresolved_count?: never
-          week_number?: number | null
-          year?: number | null
         }
         Relationships: [
           {
@@ -32710,15 +32684,22 @@ export type Database = {
         }
         Returns: Json
       }
-      aqd_checkout_week: {
-        Args: { p_decisions: Json; p_user_id: string; p_week_id: string }
-        Returns: Json
-      }
+      aqd_checkout_week:
+        | {
+            Args: { p_carryover_item_ids?: string[]; p_week_id: string }
+            Returns: string
+          }
+        | {
+            Args: { p_decisions: Json; p_user_id: string; p_week_id: string }
+            Returns: Json
+          }
       aqd_confirm_carryover: { Args: { p_item_id: string }; Returns: undefined }
       aqd_create_list_with_week: {
         Args: { p_created_by: string; p_name: string }
         Returns: Json
       }
+      aqd_ensure_current_week: { Args: { p_list_id: string }; Returns: string }
+      aqd_get_kpis: { Args: { p_list_id: string }; Returns: Json }
       aqd_get_or_create_current_week: {
         Args: { p_list_id: string }
         Returns: Json
@@ -32742,7 +32723,12 @@ export type Database = {
         }
         Returns: undefined
       }
-      aqd_reorder_items: { Args: { p_items: Json }; Returns: undefined }
+      aqd_reorder_items:
+        | {
+            Args: { p_item_ids: string[]; p_new_ranks: number[] }
+            Returns: undefined
+          }
+        | { Args: { p_items: Json }; Returns: undefined }
       bulk_assign_roles: {
         Args: {
           _notes?: string

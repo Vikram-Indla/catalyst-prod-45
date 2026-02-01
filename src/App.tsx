@@ -321,6 +321,9 @@ const IncidentAnalyticsPage = lazy(() => import("./modules/incidents/analytics/p
 const IncidentInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
 const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/IncidentKanbanPage"));
 
+// Aqd¹⁰ Module
+import { AqdListsPage, AqdListDetailPage } from "./modules/aqd";
+
 
 const queryClient = new QueryClient();
 
@@ -413,6 +416,10 @@ const App = () => (
               
               {/* Starred items page */}
               <Route path="/starred" element={<StarredPage />} />
+              
+              {/* Aqd¹⁰ Module - Executive Priority Management */}
+              <Route path="/aqd" element={<AqdListsPage />} />
+              <Route path="/aqd/:listId" element={<AqdListDetailPage />} />
               
               
               
