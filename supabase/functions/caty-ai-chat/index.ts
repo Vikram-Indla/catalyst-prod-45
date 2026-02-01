@@ -854,6 +854,111 @@ IMPORTANT REMINDERS:
 - For multiple resources: Data Card first, then provenance
 - NEVER output only provenance without main content!`;
 
+// ============ DIRECT RESPONSE GENERATORS ============
+
+function generateProfileCardHtml(resource: any, metadata: any): string {
+  const initials = resource.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+  const contractStart = resource.contract_start_date || 'N/A';
+  const contractEnd = resource.contract_end_date || 'N/A';
+  const assignmentsList = resource.assignments?.length > 0 ? resource.assignments.join(', ') : 'None';
+  const allocation = resource.allocation_percent ?? 0;
+  const utilization = resource.utilization_percent ?? (100 - allocation);
+  
+  const provenanceHtml = `
+<div class="caty-provenance">
+  <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
+  <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
+  <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
+  <div class="caty-prov-row"><span>Rows:</span> ${metadata.row_count}</div>
+  <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
+  <div class="caty-prov-row"><span>Confidence:</span> ${metadata.fallback_level === 0 ? 'High' : metadata.fallback_level <= 2 ? 'Medium' : 'Low'}</div>
+</div>`;
+  
+  return `<div class="caty-profile-card">
+  <div class="caty-profile-header">
+    <div class="caty-profile-avatar">${initials}</div>
+    <div class="caty-profile-identity">
+      <div class="caty-profile-name">${resource.name}</div>
+      <div class="caty-profile-role">${resource.role} • ${resource.department?.name || 'Unknown'}</div>
+    </div>
+  </div>
+  <div class="caty-profile-details">
+    <div class="caty-profile-row">
+      <span class="caty-profile-label">Vendor</span>
+      <span class="caty-profile-value">${resource.vendor?.name || 'No Vendor'}</span>
+    </div>
+    <div class="caty-profile-row">
+      <span class="caty-profile-label">Location</span>
+      <span class="caty-profile-value">${resource.location || 'Unknown'}</span>
+    </div>
+    <div class="caty-profile-row">
+      <span class="caty-profile-label">Allocation</span>
+      <span class="caty-profile-value">${allocation}%</span>
+    </div>
+    <div class="caty-profile-row">
+      <span class="caty-profile-label">Utilization</span>
+      <span class="caty-profile-value">${utilization}%</span>
+    </div>
+    <div class="caty-profile-row">
+      <span class="caty-profile-label">Contract Start</span>
+      <span class="caty-profile-value">${contractStart}</span>
+    </div>
+    <div class="caty-profile-row">
+      <span class="caty-profile-label">Contract End</span>
+      <span class="caty-profile-value">${contractEnd}</span>
+    </div>
+    <div class="caty-profile-row">
+      <span class="caty-profile-label">Assignments</span>
+      <span class="caty-profile-value">${assignmentsList}</span>
+    </div>
+  </div>
+</div>
+${provenanceHtml}`;
+}
+
+function generateDataCardHtml(resources: any[], title: string, metadata: any): string {
+  const rows = resources.slice(0, 20).map((r: any) => {
+    const initials = r.name?.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2) || '??';
+    const contractEnd = r.contract_end_date || 'N/A';
+    const assignments = r.assignments?.length > 0 ? r.assignments.join(', ') : 'None';
+    const allocation = r.allocation_percent ?? 0;
+    
+    return `<div class="caty-data-row">
+  <div class="caty-data-avatar-box">${initials}</div>
+  <div class="caty-data-info">
+    <div class="caty-data-name">${r.name}</div>
+    <div class="caty-data-meta">${r.role || 'Unknown'} • ${r.department?.name || 'Unknown'} • ${r.vendor?.name || 'No Vendor'}</div>
+    <div class="caty-data-assignments">${contractEnd} • ${assignments}</div>
+  </div>
+  <div class="caty-data-tags">
+    <span class="caty-tag location">${r.location || 'Unknown'}</span>
+    <span class="caty-tag util">${allocation}%</span>
+  </div>
+</div>`;
+  }).join('\n');
+
+  const provenanceHtml = `
+<div class="caty-provenance">
+  <div class="caty-prov-row"><span>Tables:</span> ['resources']</div>
+  <div class="caty-prov-row"><span>Filters:</span> ${JSON.stringify(metadata.applied_filters)}</div>
+  <div class="caty-prov-row"><span>Window:</span> ${metadata.window?.label || 'Current Period'}</div>
+  <div class="caty-prov-row"><span>Rows:</span> ${metadata.row_count}</div>
+  <div class="caty-prov-row"><span>Fallbacks:</span> ${JSON.stringify(metadata.fallbacks_executed || [])}</div>
+  <div class="caty-prov-row"><span>Confidence:</span> ${metadata.fallback_level === 0 ? 'High' : metadata.fallback_level <= 2 ? 'Medium' : 'Low'}</div>
+</div>`;
+
+  return `<div class="caty-data-card">
+  <div class="caty-data-card-header info">
+    <span class="caty-data-card-title">${title}</span>
+    <span class="caty-data-card-badge">${resources.length}</span>
+  </div>
+  <div class="caty-data-card-body">
+${rows}
+  </div>
+</div>
+${provenanceHtml}`;
+}
+
 // ============ MAIN HANDLER ============
 
 serve(async (req) => {
@@ -897,20 +1002,46 @@ serve(async (req) => {
       fallbacks: queryResult.debug.fallbacks_executed,
     });
 
-    // Build system prompt with context
+    const metadata = {
+      row_count: queryResult.row_count,
+      applied_filters: queryResult.applied_filters,
+      window: queryResult.window,
+      fallback_level: queryPlan.fallback_level,
+      fallbacks_executed: queryResult.debug.fallbacks_executed,
+    };
+
+    // ============ DIRECT RESPONSE FOR RESOURCE LOOKUPS ============
+    // For single resource or multi-resource results with resource_lookup intent,
+    // generate HTML directly without AI to ensure consistent output
+    if (queryPlan.intent === 'resource_lookup' && queryResult.rows.length > 0) {
+      let directHtml: string;
+      
+      if (queryResult.rows.length === 1) {
+        // Single resource: Profile Card
+        directHtml = generateProfileCardHtml(queryResult.rows[0], metadata);
+      } else {
+        // Multiple resources: Data Card
+        const title = queryPlan.entities.resource_name 
+          ? `Resources matching "${queryPlan.entities.resource_name}"`
+          : 'Resources Found';
+        directHtml = generateDataCardHtml(queryResult.rows, title, metadata);
+      }
+      
+      // Return as SSE stream
+      return new Response(
+        `data: ${JSON.stringify({ choices: [{ delta: { content: directHtml } }] })}\n\ndata: [DONE]\n\n`,
+        { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } }
+      );
+    }
+
+    // ============ AI RESPONSE FOR COMPLEX QUERIES ============
+    // Build system prompt with context for aggregate/complex queries
     const systemPrompt = SYSTEM_PROMPT
       .replace('{department}', context?.department || 'All Departments')
       .replace('{period}', context?.period || 'Current Period')
       .replace('{location}', context?.location || 'All Locations')
       .replace('{resource_context}', JSON.stringify(queryResult.rows, null, 2))
-      .replace('{execution_metadata}', JSON.stringify({
-        row_count: queryResult.row_count,
-        applied_filters: queryResult.applied_filters,
-        window: queryResult.window,
-        fallback_level: queryPlan.fallback_level,
-        fallbacks_executed: queryResult.debug.fallbacks_executed,
-        queries_executed: queryResult.debug.queries_executed,
-      }, null, 2));
+      .replace('{execution_metadata}', JSON.stringify(metadata, null, 2));
 
     // Retry logic for transient AI gateway failures
     const MAX_RETRIES = 2;
@@ -957,7 +1088,7 @@ serve(async (req) => {
         if (response.status >= 500 && attempt < MAX_RETRIES) {
           const errorText = await response.text();
           console.warn(`[CATY] AI gateway error (attempt ${attempt + 1}/${MAX_RETRIES + 1}):`, response.status, errorText);
-          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1))); // exponential backoff
+          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
           continue;
         }
         
