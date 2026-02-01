@@ -16,6 +16,7 @@ import { PlannerSearchBar } from '../PlannerSearchBar';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
 import { usePlannerTasks } from '../../hooks/usePlannerTasks';
 import { usePlannerSearch } from '../../hooks/usePlannerSearch';
+import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';
 import type { GroupByOption } from '../../types';
 
 export interface PlannerBoardsPageProps {
@@ -47,8 +48,16 @@ export function PlannerBoardsPage({
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   
   // Data hooks
-  const teams: { id: string; name: string; color?: string; memberCount?: number }[] = []; // Workstreams removed
+  const { data: workstreamsData = [] } = usePlannerWorkstreams();
   const { data: users = [] } = usePlannerUsers();
+  
+  // Map workstreams to teams format for PlannerSearchBar
+  const teams = useMemo(() => workstreamsData.map(ws => ({
+    id: ws.id,
+    name: ws.name,
+    color: ws.color,
+    memberCount: ws.members?.length || 0
+  })), [workstreamsData]);
 
   // Get workstream ID from URL param (slug/code) or external prop
   const urlWorkstream = searchParams.get('workstream');
