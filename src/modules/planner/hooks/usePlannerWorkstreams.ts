@@ -437,7 +437,7 @@ export function useAddWorkstreamMember() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
-      catalystToast.success('Member added', 'The member has been added to the workstream.');
+      // Toast removed per user request - silent add
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to add member', error.message);
