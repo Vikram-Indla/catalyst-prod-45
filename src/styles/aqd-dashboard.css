@@ -1,0 +1,599 @@
+/* ============================================================
+   AQD¹⁰ EXECUTIVE DASHBOARD — RING-FENCED STYLES
+   
+   RING-FENCE PROTOCOL:
+   ├── Namespace: --aqd-dash-*
+   ├── Wrapper: .aqd-dashboard
+   ├── Layer: @layer aqd-dashboard
+   └── Purpose: Transform empty space into executive dashboard
+   
+   METRICS TARGET:
+   ├── Content Coverage: 20% → 85%
+   ├── Dashboard Elements: 0 → 4 cards
+   ├── Actions per row: 0 → 4 buttons
+   └── Score: 3.2 → 8.5+
+   ============================================================ */
+
+@layer aqd-dashboard {
+
+/* ─────────────────────────────────────────────────────────────
+   ROOT TOKENS
+   ───────────────────────────────────────────────────────────── */
+.aqd-dashboard {
+  /* Neutral Foundation */
+  --aqd-dash-white: #ffffff;
+  --aqd-dash-slate-50: #f8fafc;
+  --aqd-dash-slate-100: #f1f5f9;
+  --aqd-dash-slate-200: #e2e8f0;
+  --aqd-dash-slate-300: #cbd5e1;
+  --aqd-dash-slate-400: #94a3b8;
+  --aqd-dash-slate-500: #64748b;
+  --aqd-dash-slate-600: #475569;
+  --aqd-dash-slate-700: #334155;
+  --aqd-dash-slate-800: #1e293b;
+
+  /* Brand */
+  --aqd-dash-blue-100: #dbeafe;
+  --aqd-dash-blue-500: #3b82f6;
+  --aqd-dash-blue-600: #2563eb;
+  --aqd-dash-green-100: #dcfce7;
+  --aqd-dash-green-500: #22c55e;
+  --aqd-dash-green-600: #16a34a;
+  --aqd-dash-amber-100: #fef3c7;
+  --aqd-dash-amber-500: #f59e0b;
+  --aqd-dash-purple-100: #f3e8ff;
+  --aqd-dash-purple-500: #a855f7;
+  --aqd-dash-teal-500: #14b8a6;
+  --aqd-dash-red-100: #fee2e2;
+  --aqd-dash-red-500: #ef4444;
+
+  /* Sizing */
+  --aqd-dash-radius-sm: 6px;
+  --aqd-dash-radius-md: 8px;
+  --aqd-dash-radius-lg: 12px;
+
+  /* Shadows */
+  --aqd-dash-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --aqd-dash-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --aqd-dash-transition: 150ms ease;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────────────────────────── */
+.aqd-dashboard .aqd-dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px;
+  border-bottom: 1px solid var(--aqd-dash-slate-200);
+}
+
+.aqd-dashboard .aqd-dash-brand h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--aqd-dash-slate-800);
+  margin: 0;
+}
+
+.aqd-dashboard .aqd-dash-brand h1 sup {
+  font-size: 12px;
+  color: var(--aqd-dash-slate-500);
+}
+
+.aqd-dashboard .aqd-dash-brand p {
+  font-size: 14px;
+  color: var(--aqd-dash-slate-500);
+  margin-top: 4px;
+}
+
+.aqd-dashboard .aqd-dash-new-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--aqd-dash-blue-600);
+  color: white;
+  border: none;
+  border-radius: var(--aqd-dash-radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--aqd-dash-transition);
+}
+
+.aqd-dashboard .aqd-dash-new-btn:hover {
+  background: #1d4ed8;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SUMMARY CARDS
+   ───────────────────────────────────────────────────────────── */
+.aqd-dashboard .aqd-dash-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 24px;
+  background: var(--aqd-dash-slate-50);
+  border-bottom: 1px solid var(--aqd-dash-slate-200);
+}
+
+@media (max-width: 768px) {
+  .aqd-dashboard .aqd-dash-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.aqd-dashboard .aqd-dash-card {
+  background: var(--aqd-dash-white);
+  border: 1px solid var(--aqd-dash-slate-200);
+  border-radius: var(--aqd-dash-radius-lg);
+  padding: 20px;
+  text-align: center;
+  transition: box-shadow var(--aqd-dash-transition);
+}
+
+.aqd-dashboard .aqd-dash-card:hover {
+  box-shadow: var(--aqd-dash-shadow-md);
+}
+
+.aqd-dashboard .aqd-dash-card-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 12px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aqd-dashboard .aqd-dash-card-icon--blue {
+  background: var(--aqd-dash-blue-100);
+  color: var(--aqd-dash-blue-600);
+}
+
+.aqd-dashboard .aqd-dash-card-icon--green {
+  background: var(--aqd-dash-green-100);
+  color: var(--aqd-dash-green-600);
+}
+
+.aqd-dashboard .aqd-dash-card-icon--amber {
+  background: var(--aqd-dash-amber-100);
+  color: var(--aqd-dash-amber-500);
+}
+
+.aqd-dashboard .aqd-dash-card-icon--purple {
+  background: var(--aqd-dash-purple-100);
+  color: var(--aqd-dash-purple-500);
+}
+
+.aqd-dashboard .aqd-dash-card-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--aqd-dash-slate-800);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  line-height: 1;
+}
+
+.aqd-dashboard .aqd-dash-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--aqd-dash-slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 6px;
+}
+
+.aqd-dashboard .aqd-dash-card-sub {
+  font-size: 11px;
+  color: var(--aqd-dash-slate-400);
+  margin-top: 4px;
+}
+
+/* Progress mini bar in card */
+.aqd-dashboard .aqd-dash-progress-mini {
+  height: 6px;
+  background: var(--aqd-dash-slate-200);
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.aqd-dashboard .aqd-dash-progress-mini-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--aqd-dash-green-500), var(--aqd-dash-teal-500));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TOOLBAR
+   ───────────────────────────────────────────────────────────── */
+.aqd-dashboard .aqd-dash-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--aqd-dash-slate-200);
+  flex-wrap: wrap;
+}
+
+.aqd-dashboard .aqd-dash-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--aqd-dash-slate-50);
+  border: 1px solid var(--aqd-dash-slate-200);
+  border-radius: var(--aqd-dash-radius-md);
+  min-width: 240px;
+}
+
+.aqd-dashboard .aqd-dash-search input {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--aqd-dash-slate-700);
+  outline: none;
+  width: 100%;
+}
+
+.aqd-dashboard .aqd-dash-search input::placeholder {
+  color: var(--aqd-dash-slate-400);
+}
+
+.aqd-dashboard .aqd-dash-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--aqd-dash-white);
+  border: 1px solid var(--aqd-dash-slate-200);
+  border-radius: var(--aqd-dash-radius-md);
+  font-size: 13px;
+  color: var(--aqd-dash-slate-600);
+  cursor: pointer;
+  transition: background var(--aqd-dash-transition);
+}
+
+.aqd-dashboard .aqd-dash-filter-btn:hover {
+  background: var(--aqd-dash-slate-50);
+}
+
+.aqd-dashboard .aqd-dash-toolbar-spacer {
+  flex: 1;
+}
+
+.aqd-dashboard .aqd-dash-view-toggle {
+  display: flex;
+  background: var(--aqd-dash-slate-100);
+  border-radius: var(--aqd-dash-radius-sm);
+  padding: 4px;
+}
+
+.aqd-dashboard .aqd-dash-view-btn {
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: var(--aqd-dash-slate-500);
+  cursor: pointer;
+  transition: all var(--aqd-dash-transition);
+}
+
+.aqd-dashboard .aqd-dash-view-btn.active {
+  background: var(--aqd-dash-white);
+  color: var(--aqd-dash-slate-700);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TABLE CONTAINER
+   ───────────────────────────────────────────────────────────── */
+.aqd-dashboard .aqd-dash-table-container {
+  padding: 0 24px 24px;
+}
+
+.aqd-dashboard .aqd-dash-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 16px;
+}
+
+.aqd-dashboard .aqd-dash-section-title h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--aqd-dash-slate-700);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.aqd-dashboard .aqd-dash-section-title .count {
+  padding: 2px 10px;
+  background: var(--aqd-dash-slate-100);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--aqd-dash-slate-500);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TABLE
+   ───────────────────────────────────────────────────────────── */
+.aqd-dashboard .aqd-dash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.aqd-dashboard .aqd-dash-table thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--aqd-dash-slate-500);
+  background: var(--aqd-dash-slate-50);
+  border-bottom: 1px solid var(--aqd-dash-slate-200);
+}
+
+.aqd-dashboard .aqd-dash-table tbody tr {
+  border-bottom: 1px solid var(--aqd-dash-slate-100);
+  transition: background var(--aqd-dash-transition);
+  cursor: pointer;
+}
+
+.aqd-dashboard .aqd-dash-table tbody tr:hover {
+  background: var(--aqd-dash-slate-50);
+}
+
+.aqd-dashboard .aqd-dash-table tbody td {
+  padding: 16px;
+  vertical-align: middle;
+}
+
+/* Row Number */
+.aqd-dashboard .aqd-dash-row-num {
+  font-size: 13px;
+  color: var(--aqd-dash-slate-400);
+  font-weight: 500;
+}
+
+/* List Name Cell */
+.aqd-dashboard .aqd-dash-list-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.aqd-dashboard .aqd-dash-list-badge {
+  width: 36px;
+  height: 36px;
+  background: var(--aqd-dash-blue-600);
+  border-radius: var(--aqd-dash-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.aqd-dashboard .aqd-dash-list-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--aqd-dash-slate-800);
+  margin: 0;
+}
+
+.aqd-dashboard .aqd-dash-list-info p {
+  font-size: 12px;
+  color: var(--aqd-dash-slate-400);
+  margin-top: 2px;
+}
+
+/* Owner Cell */
+.aqd-dashboard .aqd-dash-owner {
+  font-size: 13px;
+  color: var(--aqd-dash-slate-600);
+}
+
+/* Progress Cell */
+.aqd-dashboard .aqd-dash-progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.aqd-dashboard .aqd-dash-progress-bar {
+  width: 80px;
+  height: 6px;
+  background: var(--aqd-dash-slate-200);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.aqd-dashboard .aqd-dash-progress-fill {
+  height: 100%;
+  background: var(--aqd-dash-green-500);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.aqd-dashboard .aqd-dash-progress-text {
+  font-size: 12px;
+  color: var(--aqd-dash-slate-500);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Status Badge */
+.aqd-dashboard .aqd-dash-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.aqd-dashboard .aqd-dash-status--active {
+  background: var(--aqd-dash-green-100);
+  color: var(--aqd-dash-green-600);
+}
+
+.aqd-dashboard .aqd-dash-status--archived {
+  background: var(--aqd-dash-slate-100);
+  color: var(--aqd-dash-slate-500);
+}
+
+.aqd-dashboard .aqd-dash-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Action Buttons */
+.aqd-dashboard .aqd-dash-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.aqd-dashboard .aqd-dash-action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--aqd-dash-slate-400);
+  border-radius: var(--aqd-dash-radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--aqd-dash-transition);
+}
+
+.aqd-dashboard .aqd-dash-action-btn:hover {
+  background: var(--aqd-dash-slate-100);
+  color: var(--aqd-dash-slate-600);
+}
+
+.aqd-dashboard .aqd-dash-action-btn--danger:hover {
+  background: var(--aqd-dash-red-100);
+  color: var(--aqd-dash-red-500);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TIP BANNER
+   ───────────────────────────────────────────────────────────── */
+.aqd-dashboard .aqd-dash-tip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--aqd-dash-blue-100);
+  border: 1px solid #93c5fd;
+  border-radius: var(--aqd-dash-radius-lg);
+  margin-top: 20px;
+}
+
+.aqd-dashboard .aqd-dash-tip svg {
+  flex-shrink: 0;
+  color: var(--aqd-dash-blue-600);
+}
+
+.aqd-dashboard .aqd-dash-tip p {
+  font-size: 13px;
+  color: var(--aqd-dash-slate-700);
+  margin: 0;
+}
+
+.aqd-dashboard .aqd-dash-tip strong {
+  color: var(--aqd-dash-slate-800);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   QUICK ACTIONS
+   ───────────────────────────────────────────────────────────── */
+.aqd-dashboard .aqd-dash-quick {
+  padding: 24px;
+  border-top: 1px solid var(--aqd-dash-slate-200);
+  background: var(--aqd-dash-slate-50);
+}
+
+.aqd-dashboard .aqd-dash-quick-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--aqd-dash-slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.aqd-dashboard .aqd-dash-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .aqd-dashboard .aqd-dash-quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aqd-dashboard .aqd-dash-quick-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--aqd-dash-white);
+  border: 1px solid var(--aqd-dash-slate-200);
+  border-radius: var(--aqd-dash-radius-lg);
+  cursor: pointer;
+  transition: all var(--aqd-dash-transition);
+}
+
+.aqd-dashboard .aqd-dash-quick-card:hover {
+  border-color: var(--aqd-dash-blue-500);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.aqd-dashboard .aqd-dash-quick-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--aqd-dash-slate-100);
+  border-radius: var(--aqd-dash-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--aqd-dash-slate-600);
+  flex-shrink: 0;
+  transition: all var(--aqd-dash-transition);
+}
+
+.aqd-dashboard .aqd-dash-quick-card:hover .aqd-dash-quick-icon {
+  background: var(--aqd-dash-blue-100);
+  color: var(--aqd-dash-blue-600);
+}
+
+.aqd-dashboard .aqd-dash-quick-info h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--aqd-dash-slate-700);
+  margin: 0;
+}
+
+.aqd-dashboard .aqd-dash-quick-info p {
+  font-size: 11px;
+  color: var(--aqd-dash-slate-400);
+  margin-top: 2px;
+}
+
+} /* END @layer aqd-dashboard */
