@@ -392,6 +392,7 @@ export function useArchiveWorkstream() {
     },
     onSuccess: (_, { archive }) => {
       queryClient.invalidateQueries({ queryKey: ['planner-workstreams'] });
+      queryClient.invalidateQueries({ queryKey: ['planner-workstreams-archived-count'] });
       catalystToast.success(
         archive ? 'Workstream archived' : 'Workstream restored',
         archive 
