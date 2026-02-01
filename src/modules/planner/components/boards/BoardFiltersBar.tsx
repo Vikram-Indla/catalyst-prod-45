@@ -30,12 +30,11 @@ export function BoardFiltersBar({ filters, onFiltersChange }: BoardFiltersBarPro
     queryFn: async (): Promise<{ id: string; name: string; slug: string; color: string }[]> => {
       const result = await supabase
         .from('planner_workstreams')
-        .select('id, name, slug, color');
+        .select('id, name, slug, color, is_active')
+        .eq('is_active', true)
+        .order('name');
       if (result.error) throw result.error;
-      // Filter and sort in JS to avoid chained query type issues
-      return ((result.data || []) as { id: string; name: string; slug: string; color: string; is_active?: boolean }[])
-        .filter(w => w.is_active !== false)
-        .sort((a, b) => a.name.localeCompare(b.name));
+      return (result.data || []) as { id: string; name: string; slug: string; color: string }[];
     },
   });
 
