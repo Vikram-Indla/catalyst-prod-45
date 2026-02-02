@@ -1,6 +1,6 @@
 /**
  * Task¹⁰ List Detail Page - Weekly Priority View
- * Full MVP: Filters, Side Panel, Drag & Drop, Notes
+ * Full MVP: Filters, Side Panel, Drag & Drop, Notes, Skeleton Loaders
  */
 import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdPriorityCard } from '../components/AqdPriorityCard';
+import { AqdSkeletonPriorityCard } from '../components/AqdSkeletonCard';
 import { AiSuggestionsCard } from '../components/AiSuggestionsCard';
 import { AqdFilterBar } from '../components/AqdFilterBar';
 import { AqdItemDetailPanel } from '../components/AqdItemDetailPanel';
@@ -212,14 +213,18 @@ export function AqdListDetailPage() {
     setSelectedItem(item);
   }, []);
 
-  const isLoading = listLoading || weekLoading || itemsLoading;
+  // Note: itemsLoading is used separately for inline skeleton loading
 
-  if (isLoading) {
+  if (listLoading || weekLoading) {
     return (
       <div className="flex h-full min-h-screen task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
         <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
-        <div className="flex flex-col flex-1 min-w-0 items-center justify-center">
-          <div className="aqd-spinner" />
+        <div className="flex flex-col flex-1 min-w-0">
+          <div className="flex-1 px-6 py-6 overflow-auto">
+            <div className="max-w-4xl w-full">
+              <AqdSkeletonPriorityCard count={5} />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -339,7 +344,9 @@ export function AqdListDetailPage() {
             </div>
 
             {/* Top 10 Priority Cards with Drag & Drop */}
-            {top.length > 0 ? (
+            {itemsLoading ? (
+              <AqdSkeletonPriorityCard count={5} />
+            ) : top.length > 0 ? (
               <AqdDraggableList
                 items={top}
                 onReorder={handleReorder}
@@ -351,9 +358,9 @@ export function AqdListDetailPage() {
             ) : (
               <div className="space-y-2">
                 {Array.from({ length: Math.min(3, AQD_LIMITS.MAX_TOP_ITEMS) }, (_, i) => (
-                  <div key={`empty-${i}`} className="w-full bg-white border border-dashed border-slate-300 rounded-xl p-4 flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-md bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-400">{i + 1}</span>
-                    <span className="text-slate-400 text-sm">Empty slot</span>
+                  <div key={`empty-${i}`} className="w-full bg-white border border-dashed border-slate-300 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                    <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-200 flex items-center justify-center text-sm font-bold text-slate-400">{i + 1}</span>
+                    <span className="text-slate-400 text-sm italic">Empty slot - add a priority above</span>
                   </div>
                 ))}
               </div>
