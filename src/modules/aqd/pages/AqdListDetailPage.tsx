@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdPriorityCard } from '../components/AqdPriorityCard';
+import { AiSuggestionsCard } from '../components/AiSuggestionsCard';
 import { AqdFilterBar } from '../components/AqdFilterBar';
 import { AqdItemDetailPanel } from '../components/AqdItemDetailPanel';
 import { AqdDraggableList } from '../components/AqdDraggableList';
@@ -302,6 +303,15 @@ export function AqdListDetailPage() {
               onAssigneeFilterChange={setAssigneeFilter}
               assignees={uniqueAssignees}
             />
+
+            {/* AI Suggestions Card - only shown when slots available */}
+            {currentWeek && (
+              <AiSuggestionsCard 
+                listId={listId!}
+                weekId={currentWeek.id}
+                currentItemCount={items.length}
+              />
+            )}
 
             {/* Quick Add */}
             <div className="aqd-quick-add t10-quick-add">
