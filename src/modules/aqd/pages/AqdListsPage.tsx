@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdListCard } from '../components/AqdListCard';
 import type { AqdListFull } from '../types/aqd.types';
+import { cn } from '@/lib/utils';
 import styles from '../styles/aqd.module.css';
 import '../styles/task10-override.css';
 
@@ -61,7 +62,10 @@ export function AqdListsPage() {
   };
 
   return (
-    <div className="flex h-full min-h-screen" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
+    <div
+      className={cn('flex h-full min-h-screen task10-app', styles['aqd-root'])}
+      style={{ background: 'var(--aqd-background, #f8fafc)' }}
+    >
       <PlannerSidebar
         expanded={sidebarExpanded}
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
