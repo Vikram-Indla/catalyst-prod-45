@@ -10,6 +10,7 @@
 @import './styles/budget-module.css';
 @import './styles/users-module.css';
 @import './styles/caty.css';
+@import './styles/priority-lists.css';
 
 @tailwind base;
 @tailwind components;
