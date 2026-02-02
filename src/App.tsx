@@ -55,6 +55,7 @@ const TimelineView = lazy(() => import("./pages/project/TimelineView"));
 import { EpicBalancingPage } from "./modules/epic-balancing";
 const UserNotificationSettingsPage = lazy(() => import("./pages/UserNotificationSettingsPage"));
 import { PlannerPage, KanbanPage, MyTasksPage } from "./modules/planner";
+import { AqdListsPage, AqdListDetailPage } from "./modules/aqd";
 
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
@@ -473,6 +474,10 @@ const App = () => (
               {/* Legacy planner routes - redirect to taskhub */}
               <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
               <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
+              
+              {/* AQD¹⁰ Priority Management */}
+              <Route path="/aqd" element={<AqdListsPage />} />
+              <Route path="/aqd/:listId" element={<AqdListDetailPage />} />
               
               
               {/* Mining */}
