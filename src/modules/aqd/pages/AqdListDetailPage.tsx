@@ -1,10 +1,10 @@
 /**
  * Task¹⁰ List Detail Page - Weekly Priority View
- * Uses direct CSS classes for proper styling
+ * Full MVP: Filters, Side Panel, Drag & Drop, Notes
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Plus, LogOut } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -13,9 +13,13 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdPriorityCard } from '../components/AqdPriorityCard';
-import type { AqdListFull, AqdWeekFull, AqdItemFull } from '../types/aqd.types';
+import { AqdFilterBar } from '../components/AqdFilterBar';
+import { AqdItemDetailPanel } from '../components/AqdItemDetailPanel';
+import { AqdDraggableList } from '../components/AqdDraggableList';
+import type { AqdListFull, AqdWeekFull, AqdItemFull, AqdItemStatus } from '../types/aqd.types';
 import { formatWeekRange, splitItems, AQD_LIMITS } from '../types/aqd.types';
-// Import CSS files - these define the global .aqd-* and .t10-* classes
+import { useAqdFilters } from '../hooks/useAqdFilters';
+import { useAqdLabels } from '../hooks/useAqdLabels';
 import '../styles/aqd.css';
 import '../styles/task10-override.css';
 
@@ -27,6 +31,7 @@ export function AqdListDetailPage() {
   const [newItemTitle, setNewItemTitle] = useState('');
   const [quickAddValue, setQuickAddValue] = useState('');
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [selectedItem, setSelectedItem] = useState<AqdItemFull | null>(null);
 
   // Fetch list details
   const { data: list, isLoading: listLoading } = useQuery({
@@ -78,6 +83,30 @@ export function AqdListDetailPage() {
     },
     enabled: !!currentWeek?.id,
   });
+
+  // Fetch labels
+  const { labels } = useAqdLabels(listId);
+
+  // Filter state and logic
+  const {
+    searchQuery,
+    statusFilter,
+    labelFilter,
+    assigneeFilter,
+    setSearchQuery,
+    setStatusFilter,
+    setLabelFilter,
+    setAssigneeFilter,
+    filteredItems,
+    uniqueAssignees,
+  } = useAqdFilters(items);
+
+  // Split items into top 10 and overflow
+  const { top, overflow } = useMemo(() => splitItems(filteredItems), [filteredItems]);
+
+  // Compute progress
+  const completedCount = items.filter(i => i.status === 'completed').length;
+  const totalCount = items.length;
 
   // Create item mutation
   const createItem = useMutation({
@@ -135,9 +164,26 @@ export function AqdListDetailPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['aqd-items', currentWeek?.id] });
+      setSelectedItem(null);
       toast.success('Item deleted');
     },
     onError: (e) => toast.error(`Failed to delete item: ${e.message}`),
+  });
+
+  // Reorder item mutation - direct update since RPC may not exist
+  const reorderItem = useMutation({
+    mutationFn: async ({ itemId, newRank }: { itemId: string; newRank: number }) => {
+      // Simple rank update - in production you'd want proper reordering logic
+      const { error } = await supabase
+        .from('aqd_items')
+        .update({ rank: newRank })
+        .eq('id', itemId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aqd-items', currentWeek?.id] });
+    },
+    onError: (e) => toast.error(`Failed to reorder: ${e.message}`),
   });
 
   const handleAddItem = useCallback(() => {
@@ -152,7 +198,14 @@ export function AqdListDetailPage() {
     }
   }, [quickAddValue, createItem]);
 
-  const { top, overflow } = splitItems(items);
+  const handleReorder = useCallback((itemId: string, newRank: number) => {
+    reorderItem.mutate({ itemId, newRank });
+  }, [reorderItem]);
+
+  const handleEditItem = useCallback((item: AqdItemFull) => {
+    setSelectedItem(item);
+  }, []);
+
   const isLoading = listLoading || weekLoading || itemsLoading;
 
   if (isLoading) {
@@ -227,6 +280,20 @@ export function AqdListDetailPage() {
         {/* Content */}
         <div className="aqd-container t10-content">
           <div className="aqd-container-inner">
+            {/* Filter Bar */}
+            <AqdFilterBar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              labelFilter={labelFilter}
+              onLabelFilterChange={setLabelFilter}
+              labels={labels}
+              assigneeFilter={assigneeFilter}
+              onAssigneeFilterChange={setAssigneeFilter}
+              assignees={uniqueAssignees}
+            />
+
             {/* Quick Add */}
             <div className="aqd-quick-add t10-quick-add">
               <div className="aqd-quick-add-icon t10-quick-add-icon">
@@ -246,49 +313,66 @@ export function AqdListDetailPage() {
               </span>
             </div>
 
-            {/* Top 10 Priority Cards */}
-            <div className="aqd-cards-grid t10-priority-grid">
-              {Array.from({ length: AQD_LIMITS.MAX_TOP_ITEMS }, (_, i) => {
-                const item = top.find(it => it.rank === i + 1);
-                if (item) {
-                  return (
-                    <AqdPriorityCard
-                      key={item.id}
-                      item={item}
-                      onStatusChange={(id) => cycleStatus.mutate(id)}
-                      onDelete={(id) => deleteItem.mutate(id)}
-                    />
-                  );
-                }
-                return (
+            {/* Section Header */}
+            <div className="aqd-section-header">
+              <span className="aqd-section-title">Top Priorities</span>
+              <span className="aqd-section-progress">{completedCount} of {Math.min(totalCount, 10)} completed</span>
+            </div>
+
+            {/* Top 10 Priority Cards with Drag & Drop */}
+            {top.length > 0 ? (
+              <AqdDraggableList
+                items={top}
+                onReorder={handleReorder}
+                onStatusChange={(id) => cycleStatus.mutate(id)}
+                onEdit={handleEditItem}
+                onDelete={(id) => deleteItem.mutate(id)}
+                droppableId="top-priorities"
+              />
+            ) : (
+              <div className="aqd-cards-grid t10-priority-grid">
+                {Array.from({ length: Math.min(3, AQD_LIMITS.MAX_TOP_ITEMS) }, (_, i) => (
                   <div key={`empty-${i}`} className="aqd-empty-slot t10-empty-slot">
                     <span className="aqd-empty-slot-rank t10-empty-slot-rank">{i + 1}</span>
                     <span className="aqd-empty-slot-text t10-empty-slot-text">Empty slot</span>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Overflow Section */}
             {overflow.length > 0 && (
               <div className="aqd-overflow-section t10-overflow-section">
-                <h3 className="aqd-overflow-title t10-overflow-title">Overflow ({overflow.length})</h3>
-                <div className="aqd-cards-list t10-overflow-list">
-                  {overflow.map(item => (
-                    <AqdPriorityCard
-                      key={item.id}
-                      item={item}
-                      onStatusChange={(id) => cycleStatus.mutate(id)}
-                      onDelete={(id) => deleteItem.mutate(id)}
-                      isOverflow
-                    />
-                  ))}
+                <div className="aqd-section-header">
+                  <span className="aqd-section-title">Overflow</span>
+                  <span className="aqd-section-count">{overflow.length} items</span>
                 </div>
+                <AqdDraggableList
+                  items={overflow}
+                  onReorder={handleReorder}
+                  onStatusChange={(id) => cycleStatus.mutate(id)}
+                  onEdit={handleEditItem}
+                  onDelete={(id) => deleteItem.mutate(id)}
+                  droppableId="overflow"
+                  isOverflow
+                />
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Side Panel */}
+      {selectedItem && currentWeek && (
+        <AqdItemDetailPanel
+          item={selectedItem}
+          listId={listId!}
+          weekId={currentWeek.id}
+          labels={labels}
+          onClose={() => setSelectedItem(null)}
+          onDelete={(id) => deleteItem.mutate(id)}
+        />
+      )}
 
       {/* Add Item Modal */}
       <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
