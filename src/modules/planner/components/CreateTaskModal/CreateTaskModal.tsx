@@ -110,9 +110,17 @@ export function CreateTaskModal({
       newErrors.workstream = 'Please select a workstream';
     }
     
+    if (!startDate) {
+      newErrors.startDate = 'Start date is required';
+    }
+    
+    if (!dueDate) {
+      newErrors.dueDate = 'Due date is required';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [title, workstreamId]);
+  }, [title, workstreamId, startDate, dueDate]);
 
   // Handle form submission
   const handleSubmit = useCallback(() => {
@@ -436,6 +444,8 @@ export function CreateTaskModal({
                     value={startDate}
                     onChange={setStartDate}
                     placeholder="Select date..."
+                    required
+                    error={errors.startDate}
                   />
                 </div>
 
@@ -445,6 +455,8 @@ export function CreateTaskModal({
                   value={dueDate}
                   onChange={setDueDate}
                   placeholder="Select date..."
+                  required
+                  error={errors.dueDate}
                 />
               </div>
 
@@ -916,9 +928,11 @@ interface DateDropdownProps {
   value?: string;
   placeholder?: string;
   onChange: (value: string) => void;
+  required?: boolean;
+  error?: string;
 }
 
-function DateDropdown({ label, value, placeholder = 'Select date...', onChange }: DateDropdownProps) {
+function DateDropdown({ label, value, placeholder = 'Select date...', onChange, required, error }: DateDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [viewDate, setViewDate] = useState(() => {
@@ -1017,7 +1031,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange }
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
       }}>
-        {label}
+        {label} {required && <span style={{ color: '#dc2626' }}>*</span>}
       </label>
 
       <div
@@ -1030,7 +1044,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange }
           gap: '10px',
           padding: '10px 14px',
           backgroundColor: COLORS.surfaceCard,
-          border: `1px solid ${isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderFocus : COLORS.borderDefault)}`,
+          border: `1px solid ${error ? '#ef4444' : isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderFocus : COLORS.borderDefault)}`,
           borderRadius: '10px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
@@ -1041,11 +1055,13 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange }
         <span style={{ flex: 1, fontSize: '14px', color: selectedDate ? COLORS.textPrimary : COLORS.textLight }}>
           {selectedDate ? formatDisplayDate(selectedDate) : placeholder}
         </span>
-        {selectedDate && (
+        {selectedDate && !required && (
           <X size={16} style={{ color: COLORS.textLight, cursor: 'pointer' }} onClick={handleClear} />
         )}
         <ChevronDown size={16} style={{ color: COLORS.textLight, transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }} />
       </div>
+      
+      {error && <span style={{ fontSize: '12px', color: '#ef4444' }}>{error}</span>}
 
       {isOpen && (
         <div
