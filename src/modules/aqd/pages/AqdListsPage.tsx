@@ -1,15 +1,15 @@
 /**
- * Task10 Priority Lists Page — Linear-inspired Enterprise UI
+ * Task¹⁰ Priority Lists Page — Enterprise UI v2
  * 
- * CRITICAL FIXES:
- * - Clean "Priorities" wordmark (no childish Task¹⁰ branding)
- * - Compact cards (~70px vs ~120px)
- * - Status-based left borders
- * - Avatar circles for owners
- * - Progress % integrated with bar
+ * ENTERPRISE OVERHAUL:
+ * - Branded header with Task¹⁰ logo + stats
+ * - Section headers (Pinned / All Lists)
+ * - No emoji icons (professional design)
+ * - Hover-reveal menus
+ * - Last updated timestamps
  */
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Plus, Pin, ClipboardList } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -44,6 +44,21 @@ export function AqdListsPage() {
     },
   });
 
+  // Separate pinned and unpinned lists
+  const { pinnedLists, unpinnedLists } = useMemo(() => {
+    const pinned = lists.filter(l => l.is_pinned);
+    const unpinned = lists.filter(l => !l.is_pinned);
+    return { pinnedLists: pinned, unpinnedLists: unpinned };
+  }, [lists]);
+
+  // Calculate aggregate stats
+  const stats = useMemo(() => {
+    const totalItems = lists.reduce((sum, l) => sum + (l.active_item_count || 0), 0);
+    const completedItems = lists.reduce((sum, l) => sum + (l.completed_item_count || 0), 0);
+    const avgCompletion = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+    return { totalLists: lists.length, totalItems, avgCompletion };
+  }, [lists]);
+
   const createList = useMutation({
     mutationFn: async (name: string) => {
       const { data: userData } = await supabase.auth.getUser();
@@ -64,7 +79,6 @@ export function AqdListsPage() {
     onError: (e) => toast.error(`Failed to create list: ${e.message}`),
   });
 
-  // Pin/Unpin list mutation
   const pinList = useMutation({
     mutationFn: async (listId: string) => {
       const list = lists.find(l => l.id === listId);
@@ -81,7 +95,6 @@ export function AqdListsPage() {
     onError: (e) => toast.error(`Failed to update list: ${e.message}`),
   });
 
-  // Archive list mutation
   const archiveList = useMutation({
     mutationFn: async (listId: string) => {
       const { error } = await supabase
@@ -97,7 +110,6 @@ export function AqdListsPage() {
     onError: (e) => toast.error(`Failed to archive list: ${e.message}`),
   });
 
-  // Delete list mutation
   const deleteList = useMutation({
     mutationFn: async (listId: string) => {
       const { error } = await supabase
@@ -125,23 +137,55 @@ export function AqdListsPage() {
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
       />
       <div className="flex flex-col flex-1 min-w-0">
-        {/* Enterprise Clean Header — No childish Task¹⁰ branding */}
-        <header className="priority-header">
-          <div className="priority-header__left">
-            <span className="priority-header__logo">Priorities</span>
-            <div className="priority-header__title-area">
-              <p className="priority-header__subtitle">
-                Focus on your top weekly priorities
-              </p>
+        {/* Enterprise Header with Branding + Stats */}
+        <header className="priority-header-v2">
+          <div className="priority-header-v2__inner">
+            {/* Top row: Logo + Title + Action */}
+            <div className="priority-header-v2__top">
+              <div className="priority-header-v2__brand">
+                {/* Logo badge */}
+                <div className="priority-header-v2__logo">
+                  <span className="priority-header-v2__logo-text">10</span>
+                </div>
+                <span className="priority-header-v2__wordmark">
+                  Task<sup className="priority-header-v2__sup">10</sup>
+                </span>
+                
+                {/* Divider */}
+                <div className="priority-header-v2__divider" />
+                
+                {/* Title */}
+                <div className="priority-header-v2__title-area">
+                  <h1 className="priority-header-v2__title">Priority Lists</h1>
+                  <p className="priority-header-v2__subtitle">Focus on your top 10 weekly priorities</p>
+                </div>
+              </div>
+              
+              <button 
+                className="priority-header-v2__action"
+                onClick={() => setShowCreateModal(true)}
+              >
+                <Plus size={16} />
+                New List
+              </button>
+            </div>
+            
+            {/* Stats row */}
+            <div className="priority-header-v2__stats">
+              <div className="priority-header-v2__stat">
+                <span className="priority-header-v2__stat-value">{stats.totalLists}</span>
+                <span className="priority-header-v2__stat-label">lists</span>
+              </div>
+              <div className="priority-header-v2__stat">
+                <span className="priority-header-v2__stat-value">{stats.totalItems}</span>
+                <span className="priority-header-v2__stat-label">total items</span>
+              </div>
+              <div className="priority-header-v2__stat">
+                <span className="priority-header-v2__stat-value">{stats.avgCompletion}%</span>
+                <span className="priority-header-v2__stat-label">avg completion</span>
+              </div>
             </div>
           </div>
-          <button 
-            className="priority-header__new-btn"
-            onClick={() => setShowCreateModal(true)}
-          >
-            <Plus size={14} />
-            New List
-          </button>
         </header>
 
         {/* Content Area */}
@@ -149,30 +193,65 @@ export function AqdListsPage() {
           {isLoading ? (
             <AqdSkeletonListCard count={3} />
           ) : lists.length === 0 ? (
-            <div className="priority-empty">
-              <div className="priority-empty__icon">📋</div>
-              <h3 className="priority-empty__title">No priority lists yet</h3>
-              <p className="priority-empty__desc">
-                Create your first list to start tracking your weekly priorities
+            <div className="priority-empty-v2">
+              <div className="priority-empty-v2__icon">
+                <ClipboardList size={32} />
+              </div>
+              <h3 className="priority-empty-v2__title">No priority lists yet</h3>
+              <p className="priority-empty-v2__desc">
+                Create your first list to start focusing on your top 10 weekly priorities.
               </p>
               <button 
-                className="priority-empty__btn"
+                className="priority-empty-v2__btn"
                 onClick={() => setShowCreateModal(true)}
               >
-                Create List
+                <Plus size={16} />
+                Create Your First List
               </button>
             </div>
           ) : (
-            <div className="priority-list">
-              {lists.map((list) => (
-                <AqdListCard 
-                  key={list.id} 
-                  list={list}
-                  onPin={(id) => pinList.mutate(id)}
-                  onArchive={(id) => archiveList.mutate(id)}
-                  onDelete={(id) => setDeleteConfirmId(id)}
-                />
-              ))}
+            <div className="priority-sections">
+              {/* Pinned Section */}
+              {pinnedLists.length > 0 && (
+                <section className="priority-section">
+                  <h2 className="priority-section__header">
+                    <Pin size={12} />
+                    Pinned
+                  </h2>
+                  <div className="priority-list">
+                    {pinnedLists.map((list) => (
+                      <AqdListCard 
+                        key={list.id} 
+                        list={list}
+                        onPin={(id) => pinList.mutate(id)}
+                        onArchive={(id) => archiveList.mutate(id)}
+                        onDelete={(id) => setDeleteConfirmId(id)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+              
+              {/* All Lists Section */}
+              <section className="priority-section">
+                <h2 className="priority-section__header">
+                  {pinnedLists.length > 0 ? 'All Lists' : 'Your Lists'}
+                </h2>
+                <div className="priority-list">
+                  {unpinnedLists.map((list) => (
+                    <AqdListCard 
+                      key={list.id} 
+                      list={list}
+                      onPin={(id) => pinList.mutate(id)}
+                      onArchive={(id) => archiveList.mutate(id)}
+                      onDelete={(id) => setDeleteConfirmId(id)}
+                    />
+                  ))}
+                  {unpinnedLists.length === 0 && pinnedLists.length > 0 && (
+                    <p className="priority-section__empty">No unpinned lists</p>
+                  )}
+                </div>
+              </section>
             </div>
           )}
         </div>
