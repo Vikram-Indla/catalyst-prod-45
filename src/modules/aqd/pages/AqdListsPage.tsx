@@ -60,8 +60,9 @@ export function AqdListsPage() {
         expanded={sidebarExpanded}
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
       />
-      <div className="flex flex-col flex-1 min-w-0 min-h-0">
+      <div className="flex flex-col flex-1 min-w-0 min-h-0 overflow-auto">
         <div className={styles['aqd-container']}>
+          <div className={styles['aqd-container-inner']}>
           <header className={styles['aqd-header']}>
             <div className={styles['aqd-header-left']}>
               <div className={styles['aqd-brand']}><span className={styles['aqd-brand-text']}>10</span></div>
@@ -113,6 +114,7 @@ export function AqdListsPage() {
               ))}
             </div>
           )}
+          </div>
         </div>
       </div>
 

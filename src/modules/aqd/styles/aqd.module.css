@@ -60,8 +60,9 @@
 }
 
 .aqd-layout { display: flex; min-height: 100vh; }
-.aqd-main { flex: 1; padding: var(--aqd-space-8); }
-.aqd-container { max-width: 900px; margin: 0 auto; background: var(--aqd-surface); border-radius: var(--aqd-radius-xl); box-shadow: var(--aqd-shadow-card); border: 1px solid var(--aqd-border); padding: var(--aqd-space-6); }
+.aqd-main { flex: 1; padding: var(--aqd-space-8); overflow: auto; }
+.aqd-container { flex: 1; padding: var(--aqd-space-6); overflow: auto; }
+.aqd-container-inner { max-width: 900px; background: var(--aqd-surface); border-radius: var(--aqd-radius-xl); box-shadow: var(--aqd-shadow-card); border: 1px solid var(--aqd-border); padding: var(--aqd-space-6); }
 
 .aqd-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: var(--aqd-space-5); margin-bottom: var(--aqd-space-5); border-bottom: 1px solid var(--aqd-border); }
 .aqd-header-left { display: flex; align-items: center; gap: var(--aqd-space-4); }
