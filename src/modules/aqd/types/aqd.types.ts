@@ -94,6 +94,8 @@ export interface AqdItem {
   list_id: string;
   week_id: string;
   rank: number;
+  previous_rank: number | null;
+  rank_changed_at: string | null;
   title: string;
   description: string | null;
   status: AqdItemStatus;
