@@ -104,9 +104,9 @@ export function AqdListsPage() {
           </div>
         </div>
 
-        {/* Content Area - Left-aligned with max-w-3xl */}
+        {/* Content Area - Full width */}
         <div className="flex-1 px-6 py-6 overflow-auto">
-          <div className="max-w-3xl w-full">
+          <div className="w-full">
             {isLoading ? (
               <AqdSkeletonListCard count={3} />
             ) : lists.length === 0 ? (

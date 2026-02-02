@@ -292,9 +292,9 @@ export function AqdListDetailPage() {
           </div>
         </div>
 
-        {/* Content - Left-aligned with max-w-4xl (896px) */}
+        {/* Content - Full width */}
         <div className="flex-1 px-6 py-6 overflow-auto">
-          <div className="max-w-4xl w-full">
+          <div className="w-full">
             {/* Filter Bar */}
             <AqdFilterBar
               searchQuery={searchQuery}
