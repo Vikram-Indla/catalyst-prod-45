@@ -192,6 +192,145 @@ export type Database = {
           },
         ]
       }
+      aqd_ai_suggestions: {
+        Row: {
+          actioned_at: string | null
+          actioned_by: string | null
+          ai_reasoning: string | null
+          ai_score: number | null
+          created_at: string | null
+          id: string
+          list_id: string
+          status: string | null
+          task_assignee_id: string | null
+          task_assignee_name: string | null
+          task_due_date: string | null
+          task_key: string
+          task_priority: string | null
+          task_title: string
+          week_id: string
+        }
+        Insert: {
+          actioned_at?: string | null
+          actioned_by?: string | null
+          ai_reasoning?: string | null
+          ai_score?: number | null
+          created_at?: string | null
+          id?: string
+          list_id: string
+          status?: string | null
+          task_assignee_id?: string | null
+          task_assignee_name?: string | null
+          task_due_date?: string | null
+          task_key: string
+          task_priority?: string | null
+          task_title: string
+          week_id: string
+        }
+        Update: {
+          actioned_at?: string | null
+          actioned_by?: string | null
+          ai_reasoning?: string | null
+          ai_score?: number | null
+          created_at?: string | null
+          id?: string
+          list_id?: string
+          status?: string | null
+          task_assignee_id?: string | null
+          task_assignee_name?: string | null
+          task_due_date?: string | null
+          task_key?: string
+          task_priority?: string | null
+          task_title?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_ai_suggestions_actioned_by_fkey"
+            columns: ["actioned_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_actioned_by_fkey"
+            columns: ["actioned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_actioned_by_fkey"
+            columns: ["actioned_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_actioned_by_fkey"
+            columns: ["actioned_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_task_assignee_id_fkey"
+            columns: ["task_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_task_assignee_id_fkey"
+            columns: ["task_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_task_assignee_id_fkey"
+            columns: ["task_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_task_assignee_id_fkey"
+            columns: ["task_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_ai_suggestions_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       aqd_item_history: {
         Row: {
           changed_at: string | null
@@ -377,6 +516,7 @@ export type Database = {
       }
       aqd_items: {
         Row: {
+          ai_reasoning: string | null
           assignee_id: string | null
           carryover_confirmed: boolean | null
           carryover_count: number | null
@@ -390,6 +530,7 @@ export type Database = {
           is_carryover: boolean | null
           list_id: string
           rank: number
+          source: string | null
           status: string | null
           taskhub_key: string | null
           title: string
@@ -397,6 +538,7 @@ export type Database = {
           week_id: string
         }
         Insert: {
+          ai_reasoning?: string | null
           assignee_id?: string | null
           carryover_confirmed?: boolean | null
           carryover_count?: number | null
@@ -410,6 +552,7 @@ export type Database = {
           is_carryover?: boolean | null
           list_id: string
           rank: number
+          source?: string | null
           status?: string | null
           taskhub_key?: string | null
           title: string
@@ -417,6 +560,7 @@ export type Database = {
           week_id: string
         }
         Update: {
+          ai_reasoning?: string | null
           assignee_id?: string | null
           carryover_confirmed?: boolean | null
           carryover_count?: number | null
@@ -430,6 +574,7 @@ export type Database = {
           is_carryover?: boolean | null
           list_id?: string
           rank?: number
+          source?: string | null
           status?: string | null
           taskhub_key?: string | null
           title?: string
