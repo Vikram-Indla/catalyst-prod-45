@@ -1,6 +1,6 @@
 /**
  * Task¹⁰ Lists Page - Priority Management Dashboard
- * Uses direct CSS classes for proper styling
+ * Enterprise-grade UI with shadows, hover states, and skeleton loaders
  */
 import { useState } from 'react';
 import { Plus, Target } from 'lucide-react';
@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdListCard } from '../components/AqdListCard';
+import { AqdSkeletonListCard } from '../components/AqdSkeletonCard';
 import type { AqdListFull } from '../types/aqd.types';
 // Import CSS files - these define the global .aqd-* and .t10-* classes
 import '../styles/aqd.css';
@@ -107,9 +108,7 @@ export function AqdListsPage() {
         <div className="flex-1 px-6 py-6 overflow-auto">
           <div className="max-w-3xl w-full">
             {isLoading ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="aqd-spinner" />
-              </div>
+              <AqdSkeletonListCard count={3} />
             ) : lists.length === 0 ? (
               <div className="aqd-empty-state t10-empty-state">
                 <div className="aqd-empty-state-icon t10-empty-icon">
