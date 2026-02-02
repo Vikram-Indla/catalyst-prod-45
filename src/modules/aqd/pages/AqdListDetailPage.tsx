@@ -263,9 +263,9 @@ export function AqdListDetailPage() {
   }
 
   return (
-    <div className="flex h-full min-h-screen task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
+    <div className="flex h-screen overflow-hidden task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
       <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 min-h-0">
         {/* Header */}
         <div className="aqd-header t10-header">
           <div className="aqd-header-left t10-header-left">
@@ -318,7 +318,7 @@ export function AqdListDetailPage() {
         </div>
 
         {/* Content - Full width */}
-        <div className="flex-1 px-6 py-6 overflow-auto">
+        <div className="flex-1 min-h-0 px-6 py-6 overflow-auto">
           <div className="w-full">
             {/* Filter Bar */}
             <AqdFilterBar
