@@ -15,6 +15,7 @@ import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdPriorityCard } from '../components/AqdPriorityCard';
 import type { AqdListFull, AqdWeekFull, AqdItemFull } from '../types/aqd.types';
 import { formatWeekRange, splitItems, AQD_LIMITS } from '../types/aqd.types';
+import { cn } from '@/lib/utils';
 import styles from '../styles/aqd.module.css';
 import '../styles/task10-override.css';
 
@@ -156,7 +157,10 @@ export function AqdListDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-full min-h-screen" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
+      <div
+        className={cn('flex h-full min-h-screen task10-app', styles['aqd-root'])}
+        style={{ background: 'var(--aqd-background, #f8fafc)' }}
+      >
         <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
         <div className="flex flex-col flex-1 min-w-0 items-center justify-center">
           <div className={styles['aqd-spinner']} />
@@ -167,7 +171,10 @@ export function AqdListDetailPage() {
 
   if (!list) {
     return (
-      <div className="flex h-full min-h-screen" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
+      <div
+        className={cn('flex h-full min-h-screen task10-app', styles['aqd-root'])}
+        style={{ background: 'var(--aqd-background, #f8fafc)' }}
+      >
         <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
         <div className="flex flex-col flex-1 min-w-0 items-center justify-center">
           <h3 className="text-lg font-medium mb-4">List not found</h3>
@@ -178,7 +185,10 @@ export function AqdListDetailPage() {
   }
 
   return (
-    <div className="flex h-full min-h-screen" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
+    <div
+      className={cn('flex h-full min-h-screen task10-app', styles['aqd-root'])}
+      style={{ background: 'var(--aqd-background, #f8fafc)' }}
+    >
       <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
       <div className="flex flex-col flex-1 min-w-0">
         {/* Header */}
