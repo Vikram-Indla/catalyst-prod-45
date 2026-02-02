@@ -631,6 +631,48 @@
   gap: var(--ph-space-4);
 }
 
+.planhub-module .ph-ai-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: var(--ph-space-8);
+}
+
+.planhub-module .ph-ai-bubble .prose {
+  font-size: var(--ph-text-base);
+  line-height: 1.6;
+}
+
+.planhub-module .ph-ai-bubble .prose p {
+  margin: 0 0 var(--ph-space-2);
+}
+
+.planhub-module .ph-ai-bubble .prose p:last-child {
+  margin-bottom: 0;
+}
+
+.planhub-module .ph-ai-bubble .prose ul,
+.planhub-module .ph-ai-bubble .prose ol {
+  margin: var(--ph-space-2) 0;
+  padding-left: var(--ph-space-4);
+}
+
+.planhub-module .ph-ai-bubble .prose li {
+  margin: var(--ph-space-1) 0;
+}
+
+.planhub-module .ph-ai-bubble .prose strong {
+  font-weight: var(--ph-font-semibold);
+}
+
+.planhub-module .ph-ai-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .planhub-module .ph-ai-message {
   display: flex;
   gap: var(--ph-space-3);
