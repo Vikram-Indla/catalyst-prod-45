@@ -32602,6 +32602,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      aqd_reorder_item: {
+        Args: { p_item_id: string; p_new_rank: number; p_week_id: string }
+        Returns: undefined
+      }
       aqd_reorder_items:
         | {
             Args: { p_item_ids: string[]; p_new_ranks: number[] }

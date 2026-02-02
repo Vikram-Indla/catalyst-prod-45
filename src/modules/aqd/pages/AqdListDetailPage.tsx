@@ -172,63 +172,18 @@ export function AqdListDetailPage() {
     onError: (e) => toast.error(`Failed to delete item: ${e.message}`),
   });
 
-  // Reorder item mutation - proper bulk reordering to avoid unique constraint violations
+  // Reorder item mutation - uses database function for atomic reordering
   const reorderItem = useMutation({
     mutationFn: async ({ itemId, newRank }: { itemId: string; newRank: number }) => {
-      if (!currentWeek?.id || !items) return;
+      if (!currentWeek?.id) return;
       
-      // Find the item being moved
-      const movingItem = items.find(i => i.id === itemId);
-      if (!movingItem) return;
+      const { error } = await supabase.rpc('aqd_reorder_item', {
+        p_item_id: itemId,
+        p_new_rank: newRank,
+        p_week_id: currentWeek.id
+      });
       
-      const oldRank = movingItem.rank;
-      if (oldRank === newRank) return;
-      
-      // Get all items for this week sorted by rank
-      const sortedItems = [...items].sort((a, b) => a.rank - b.rank);
-      
-      // Calculate rank updates for all affected items
-      const updates: { id: string; rank: number }[] = [];
-      
-      if (oldRank < newRank) {
-        // Moving down: shift items between oldRank and newRank UP by 1
-        for (const item of sortedItems) {
-          if (item.id === itemId) {
-            updates.push({ id: item.id, rank: newRank });
-          } else if (item.rank > oldRank && item.rank <= newRank) {
-            updates.push({ id: item.id, rank: item.rank - 1 });
-          }
-        }
-      } else {
-        // Moving up: shift items between newRank and oldRank DOWN by 1
-        for (const item of sortedItems) {
-          if (item.id === itemId) {
-            updates.push({ id: item.id, rank: newRank });
-          } else if (item.rank >= newRank && item.rank < oldRank) {
-            updates.push({ id: item.id, rank: item.rank + 1 });
-          }
-        }
-      }
-      
-      // Use temporary high ranks to avoid unique constraint violations during update
-      // First, set all affected items to high temporary ranks
-      const tempRankBase = 10000;
-      for (let i = 0; i < updates.length; i++) {
-        const { error } = await supabase
-          .from('aqd_items')
-          .update({ rank: tempRankBase + i })
-          .eq('id', updates[i].id);
-        if (error) throw new Error(error.message);
-      }
-      
-      // Then set to final ranks
-      for (const update of updates) {
-        const { error } = await supabase
-          .from('aqd_items')
-          .update({ rank: update.rank })
-          .eq('id', update.id);
-        if (error) throw new Error(error.message);
-      }
+      if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['aqd-items', currentWeek?.id] });
