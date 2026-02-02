@@ -28,7 +28,7 @@ export function AqdListsPage() {
         .order('is_pinned', { ascending: false })
         .order('updated_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as AqdListFull[];
+      return (data || []) as unknown as AqdListFull[];
     },
   });
 
