@@ -103,9 +103,9 @@ export function AqdListsPage() {
           </div>
         </div>
 
-        {/* Content Area - Left-aligned with max-w-3xl */}
+        {/* Content Area - Left-aligned, fills available space */}
         <div className="flex-1 px-6 py-6 overflow-auto">
-          <div className="max-w-3xl">
+          <div className="max-w-4xl w-full">
             {isLoading ? (
               <div className="flex items-center justify-center py-16">
                 <div className="aqd-spinner" />
