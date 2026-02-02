@@ -9,7 +9,8 @@
  * - Last updated timestamps
  */
 import { useState, useMemo } from 'react';
-import { Plus, Pin, ClipboardList } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Pin, ClipboardList, ArrowLeft } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -29,6 +30,7 @@ export function AqdListsPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: lists = [], isLoading } = useQuery({
     queryKey: ['aqd-lists'],
@@ -49,14 +51,6 @@ export function AqdListsPage() {
     const pinned = lists.filter(l => l.is_pinned);
     const unpinned = lists.filter(l => !l.is_pinned);
     return { pinnedLists: pinned, unpinnedLists: unpinned };
-  }, [lists]);
-
-  // Calculate aggregate stats
-  const stats = useMemo(() => {
-    const totalItems = lists.reduce((sum, l) => sum + (l.active_item_count || 0), 0);
-    const completedItems = lists.reduce((sum, l) => sum + (l.completed_item_count || 0), 0);
-    const avgCompletion = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-    return { totalLists: lists.length, totalItems, avgCompletion };
   }, [lists]);
 
   const createList = useMutation({
@@ -137,54 +131,39 @@ export function AqdListsPage() {
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
       />
       <div className="flex flex-col flex-1 min-w-0">
-        {/* Enterprise Header with Branding + Stats */}
-        <header className="priority-header-v2">
-          <div className="priority-header-v2__inner">
-            {/* Top row: Logo + Title + Action */}
-            <div className="priority-header-v2__top">
-              <div className="priority-header-v2__brand">
-                {/* Logo badge */}
-                <div className="priority-header-v2__logo">
-                  <span className="priority-header-v2__logo-text">10</span>
-                </div>
-                <span className="priority-header-v2__wordmark">
-                  Task<sup className="priority-header-v2__sup">10</sup>
-                </span>
-                
-                {/* Divider */}
-                <div className="priority-header-v2__divider" />
-                
-                {/* Title */}
-                <div className="priority-header-v2__title-area">
-                  <h1 className="priority-header-v2__title">Priority Lists</h1>
-                  <p className="priority-header-v2__subtitle">Focus on your top 10 weekly priorities</p>
-                </div>
-              </div>
-              
+        {/* Minimal Header — Matches Weekly Detail Page Style */}
+        <header className="priority-header-v3">
+          <div className="priority-header-v3__inner">
+            {/* Left: Back + Logo + Title */}
+            <div className="priority-header-v3__left">
               <button 
-                className="priority-header-v2__action"
-                onClick={() => setShowCreateModal(true)}
+                className="priority-header-v3__back"
+                onClick={() => navigate('/taskhub')}
+                aria-label="Go back"
               >
-                <Plus size={16} />
-                New List
+                <ArrowLeft size={20} />
               </button>
+              
+              {/* Logo badge */}
+              <div className="priority-header-v3__logo">
+                <span className="priority-header-v3__logo-text">10</span>
+              </div>
+              <span className="priority-header-v3__wordmark">
+                Task<sup className="priority-header-v3__sup">10</sup>
+              </span>
+              
+              {/* Title */}
+              <h1 className="priority-header-v3__title">Priority Lists</h1>
             </div>
             
-            {/* Stats row */}
-            <div className="priority-header-v2__stats">
-              <div className="priority-header-v2__stat">
-                <span className="priority-header-v2__stat-value">{stats.totalLists}</span>
-                <span className="priority-header-v2__stat-label">lists</span>
-              </div>
-              <div className="priority-header-v2__stat">
-                <span className="priority-header-v2__stat-value">{stats.totalItems}</span>
-                <span className="priority-header-v2__stat-label">total items</span>
-              </div>
-              <div className="priority-header-v2__stat">
-                <span className="priority-header-v2__stat-value">{stats.avgCompletion}%</span>
-                <span className="priority-header-v2__stat-label">avg completion</span>
-              </div>
-            </div>
+            {/* Right: Action */}
+            <button 
+              className="priority-header-v3__action"
+              onClick={() => setShowCreateModal(true)}
+            >
+              <Plus size={16} />
+              New List
+            </button>
           </div>
         </header>
 

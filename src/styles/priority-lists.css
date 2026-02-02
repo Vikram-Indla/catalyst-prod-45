@@ -77,34 +77,52 @@
 
 
 /* ============================================================================
-   HEADER V2 — Enterprise with Branding + Stats
+   HEADER V3 — Minimal Single-Line (Matches Weekly Detail Page)
    ============================================================================ */
 
-.priority-header-v2 {
+.priority-header-v3 {
   background-color: #ffffff;
   border-bottom: 1px solid #e2e8f0;
-  padding: 20px 24px;
+  padding: 16px 24px;
 }
 
-.priority-header-v2__inner {
-  max-width: 900px;
-}
-
-.priority-header-v2__top {
+.priority-header-v3__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  max-width: 100%;
 }
 
-.priority-header-v2__brand {
+.priority-header-v3__left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+}
+
+/* Back button */
+.priority-header-v3__back {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition: all var(--priority-transition-fast);
+  flex-shrink: 0;
+}
+
+.priority-header-v3__back:hover {
+  background-color: #f8fafc;
+  color: #1e293b;
+  border-color: #cbd5e1;
 }
 
 /* Logo badge */
-.priority-header-v2__logo {
+.priority-header-v3__logo {
   width: 40px;
   height: 40px;
   background: linear-gradient(135deg, var(--priority-brand-gradient-start), var(--priority-brand-gradient-end));
@@ -115,7 +133,7 @@
   flex-shrink: 0;
 }
 
-.priority-header-v2__logo-text {
+.priority-header-v3__logo-text {
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
@@ -123,55 +141,35 @@
 }
 
 /* Wordmark */
-.priority-header-v2__wordmark {
-  font-size: 20px;
+.priority-header-v3__wordmark {
+  font-size: 18px;
   font-weight: 700;
   color: #1e293b;
   font-family: var(--priority-font-family);
 }
 
-.priority-header-v2__sup {
-  font-size: 10px;
+.priority-header-v3__sup {
+  font-size: 9px;
   color: var(--priority-brand-primary);
   vertical-align: super;
 }
 
-/* Divider */
-.priority-header-v2__divider {
-  width: 1px;
-  height: 32px;
-  background-color: #e2e8f0;
-}
-
-/* Title area */
-.priority-header-v2__title-area {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.priority-header-v2__title {
-  font-size: 18px;
+/* Title */
+.priority-header-v3__title {
+  font-size: 20px;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
   font-family: var(--priority-font-family);
 }
 
-.priority-header-v2__subtitle {
-  font-size: 13px;
-  color: #64748b;
-  margin: 0;
-  font-family: var(--priority-font-family);
-}
-
-/* Action button */
-.priority-header-v2__action {
+/* Action button — teal to match the reference */
+.priority-header-v3__action {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background-color: #3b82f6;
+  background: linear-gradient(135deg, var(--priority-brand-gradient-start), var(--priority-brand-gradient-end));
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -179,39 +177,14 @@
   font-weight: 600;
   cursor: pointer;
   font-family: var(--priority-font-family);
-  transition: background-color var(--priority-transition-fast);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all var(--priority-transition-fast);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.priority-header-v2__action:hover {
-  background-color: #2563eb;
-}
-
-/* Stats row */
-.priority-header-v2__stats {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #f1f5f9;
-}
-
-.priority-header-v2__stat {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  color: #64748b;
-  font-family: var(--priority-font-family);
-}
-
-.priority-header-v2__stat-value {
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.priority-header-v2__stat-label {
-  font-weight: 400;
+.priority-header-v3__action:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
 }
 
 
