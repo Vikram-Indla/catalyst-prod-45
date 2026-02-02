@@ -8,6 +8,7 @@ import type { AqdItemFull } from '../types/aqd.types';
 import { formatDate } from '../types/aqd.types';
 import { AqdStatusToggle } from './AqdStatusToggle';
 import { AqdLabelBadge } from './AqdLabelBadge';
+import { RankChangeBadge, calculateRankChange } from './RankChangeBadge';
 
 interface AqdPriorityCardProps {
   item: AqdItemFull;
@@ -38,6 +39,22 @@ export function AqdPriorityCard({
     threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
     return dueDate <= threeDaysFromNow;
   })();
+  
+  // Calculate rank change for the indicator badge
+  const isNewThisWeek = (() => {
+    const createdAt = new Date(item.created_at);
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    return createdAt >= startOfWeek && item.previous_rank === null;
+  })();
+  
+  const rankChange = calculateRankChange(
+    item.rank,
+    item.previous_rank ?? null,
+    isNewThisWeek
+  );
 
   // Rank badge styling - Gold/Silver/Bronze for top 3, light style for others
   const getRankBadge = () => {
@@ -83,6 +100,12 @@ export function AqdPriorityCard({
       <div className={getRankBadge()}>
         {item.rank}
       </div>
+
+      {/* Rank Change Indicator - Shows direction + magnitude */}
+      <RankChangeBadge 
+        direction={rankChange.direction} 
+        magnitude={rankChange.magnitude} 
+      />
 
       {/* Status Toggle */}
       <AqdStatusToggle 

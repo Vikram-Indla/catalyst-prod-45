@@ -715,7 +715,9 @@ export type Database = {
           id: string
           is_carryover: boolean | null
           list_id: string
+          previous_rank: number | null
           rank: number
+          rank_changed_at: string | null
           source: string | null
           status: string | null
           taskhub_key: string | null
@@ -737,7 +739,9 @@ export type Database = {
           id?: string
           is_carryover?: boolean | null
           list_id: string
+          previous_rank?: number | null
           rank: number
+          rank_changed_at?: string | null
           source?: string | null
           status?: string | null
           taskhub_key?: string | null
@@ -759,7 +763,9 @@ export type Database = {
           id?: string
           is_carryover?: boolean | null
           list_id?: string
+          previous_rank?: number | null
           rank?: number
+          rank_changed_at?: string | null
           source?: string | null
           status?: string | null
           taskhub_key?: string | null
@@ -31096,6 +31102,7 @@ export type Database = {
     Views: {
       aqd_items_full: {
         Row: {
+          ai_reasoning: string | null
           assignee_avatar: string | null
           assignee_id: string | null
           assignee_name: string | null
@@ -31113,7 +31120,10 @@ export type Database = {
           labels: Json | null
           list_id: string | null
           note_count: number | null
+          previous_rank: number | null
           rank: number | null
+          rank_changed_at: string | null
+          source: string | null
           status: string | null
           taskhub_key: string | null
           title: string | null
