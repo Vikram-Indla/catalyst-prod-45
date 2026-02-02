@@ -192,6 +192,85 @@ export type Database = {
           },
         ]
       }
+      aqd_activity: {
+        Row: {
+          action: string
+          created_at: string | null
+          created_by: string | null
+          field_name: string | null
+          id: string
+          item_id: string
+          metadata: Json | null
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          created_by?: string | null
+          field_name?: string | null
+          id?: string
+          item_id: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          created_by?: string | null
+          field_name?: string | null
+          id?: string
+          item_id?: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_activity_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_activity_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_activity_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_activity_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_activity_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_activity_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       aqd_ai_suggestions: {
         Row: {
           actioned_at: string | null
@@ -450,24 +529,30 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           id: string
+          is_deleted: boolean | null
           item_id: string
           updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           content: string
           created_at?: string | null
           created_by?: string | null
           id?: string
+          is_deleted?: boolean | null
           item_id: string
           updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           content?: string
           created_at?: string | null
           created_by?: string | null
           id?: string
+          is_deleted?: boolean | null
           item_id?: string
           updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -510,6 +595,34 @@ export type Database = {
             columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "aqd_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
         ]
