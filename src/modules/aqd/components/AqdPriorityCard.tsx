@@ -2,7 +2,7 @@
  * Task¹⁰ Priority Card - Weekly Item Card
  * Uses direct CSS classes (not CSS modules) for proper styling
  */
-import { Edit2, Trash2, MoreHorizontal } from 'lucide-react';
+import { Edit2, Trash2, MoreHorizontal, AlertTriangle } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { AqdItemFull } from '../types/aqd.types';
 import { formatDate } from '../types/aqd.types';
@@ -27,6 +27,9 @@ export function AqdPriorityCard({
   const isCompleted = item.status === 'completed';
   const isCarryover = item.is_carryover && item.carryover_count > 0;
   const formattedDueDate = formatDate(item.due_date);
+  
+  // Check if overdue (due date in the past and not completed)
+  const isOverdue = !isCompleted && item.due_date && new Date(item.due_date) < new Date();
 
   // Rank badge styling
   const getRankClass = () => {
@@ -93,7 +96,10 @@ export function AqdPriorityCard({
             </>
           )}
           {formattedDueDate && (
-            <span className="aqd-due-date">Due {formattedDueDate}</span>
+            <span className={`aqd-due-date ${isOverdue ? 'aqd-due-date-overdue' : ''}`}>
+              {isOverdue && <AlertTriangle size={12} className="mr-1" />}
+              Due {formattedDueDate}
+            </span>
           )}
           {!item.taskhub_key && !item.assignee_name && !formattedDueDate && (
             <span className="aqd-meta-item" style={{ opacity: 0.5 }}>

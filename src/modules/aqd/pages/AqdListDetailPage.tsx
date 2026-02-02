@@ -10,7 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdPriorityCard } from '../components/AqdPriorityCard';
 import { AqdFilterBar } from '../components/AqdFilterBar';
@@ -32,6 +33,7 @@ export function AqdListDetailPage() {
   const [quickAddValue, setQuickAddValue] = useState('');
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [selectedItem, setSelectedItem] = useState<AqdItemFull | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Fetch list details
   const { data: list, isLoading: listLoading } = useQuery({
@@ -326,7 +328,7 @@ export function AqdListDetailPage() {
                 onReorder={handleReorder}
                 onStatusChange={(id) => cycleStatus.mutate(id)}
                 onEdit={handleEditItem}
-                onDelete={(id) => deleteItem.mutate(id)}
+                onDelete={(id) => setDeleteConfirmId(id)}
                 droppableId="top-priorities"
               />
             ) : (
@@ -352,7 +354,7 @@ export function AqdListDetailPage() {
                   onReorder={handleReorder}
                   onStatusChange={(id) => cycleStatus.mutate(id)}
                   onEdit={handleEditItem}
-                  onDelete={(id) => deleteItem.mutate(id)}
+                  onDelete={(id) => setDeleteConfirmId(id)}
                   droppableId="overflow"
                   isOverflow
                 />
@@ -370,7 +372,10 @@ export function AqdListDetailPage() {
           weekId={currentWeek.id}
           labels={labels}
           onClose={() => setSelectedItem(null)}
-          onDelete={(id) => deleteItem.mutate(id)}
+          onDelete={(id) => {
+            setSelectedItem(null);
+            setDeleteConfirmId(id);
+          }}
         />
       )}
 
@@ -400,6 +405,32 @@ export function AqdListDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Priority Item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. The item will be permanently removed from this week.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteConfirmId) {
+                  deleteItem.mutate(deleteConfirmId);
+                  setDeleteConfirmId(null);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
