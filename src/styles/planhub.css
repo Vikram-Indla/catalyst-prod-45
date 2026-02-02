@@ -555,6 +555,39 @@
   border-radius: var(--ph-radius-sm) 0 0 var(--ph-radius-sm);
 }
 
+.planhub-module .ph-gantt-label {
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.planhub-module .ph-gantt-body {
+  min-height: 200px;
+}
+
+.planhub-module .ph-gantt-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ph-danger);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.planhub-module .ph-gantt-today::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  background: var(--ph-danger);
+  border-radius: 50%;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    AI CHAT
    ═══════════════════════════════════════════════════════════════════════════════ */
