@@ -47,8 +47,12 @@ export function AqdPriorityCard({
     ? 'aqd-card-title aqd-card-title-completed'
     : 'aqd-card-title';
 
+  const handleCardClick = () => {
+    onEdit?.(item);
+  };
+
   return (
-    <div className={cardClass}>
+    <div className={cardClass} onClick={handleCardClick}>
       {/* Rank Badge */}
       <div className={getRankClass()}>
         {item.rank}

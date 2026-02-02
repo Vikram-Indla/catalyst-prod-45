@@ -1,9 +1,8 @@
 /**
  * Task¹⁰ Label Badge - Outline Style
+ * Uses direct CSS classes (not CSS modules) for proper styling
  */
 import type { AqdLabel } from '../types/aqd.types';
-import { getLabelCssClass } from '../types/aqd.types';
-import styles from '../styles/aqd.module.css';
 
 interface AqdLabelBadgeProps {
   label: AqdLabel;
@@ -26,7 +25,7 @@ export function AqdLabelBadge({ label }: AqdLabelBadgeProps) {
   
   return (
     <span 
-      className={`${styles['aqd-label']} ${styles[colorClass] || ''}`}
+      className={`aqd-label ${colorClass}`}
       style={!colorClass ? { color: label.color, borderColor: label.color } : undefined}
     >
       {label.name}
