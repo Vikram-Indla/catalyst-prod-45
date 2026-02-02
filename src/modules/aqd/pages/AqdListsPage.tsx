@@ -1,6 +1,6 @@
 /**
  * Task¹⁰ Lists Page - Priority Management Dashboard
- * Enterprise Clean header with proper card rendering
+ * Uses direct CSS classes for proper styling
  */
 import { useState } from 'react';
 import { Plus, Target } from 'lucide-react';
@@ -13,8 +13,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdListCard } from '../components/AqdListCard';
 import type { AqdListFull } from '../types/aqd.types';
-import { cn } from '@/lib/utils';
-import styles from '../styles/aqd.module.css';
+// Import CSS files - these define the global .aqd-* and .t10-* classes
+import '../styles/aqd.css';
 import '../styles/task10-override.css';
 
 export function AqdListsPage() {
@@ -62,63 +62,60 @@ export function AqdListsPage() {
   };
 
   return (
-    <div
-      className={cn('flex h-full min-h-screen task10-app', styles['aqd-root'])}
-      style={{ background: 'var(--aqd-background, #f8fafc)' }}
-    >
+    <div className="flex h-full min-h-screen task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
       <PlannerSidebar
         expanded={sidebarExpanded}
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
       />
       <div className="flex flex-col flex-1 min-w-0">
         {/* Enterprise Clean Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-white flex-shrink-0" style={{ borderColor: 'var(--aqd-border, #e2e8f0)' }}>
+        <div className="aqd-header t10-header">
           {/* Left: Brand + Title */}
-          <div className="flex items-center gap-4">
-            <div className={styles['aqd-brand']}>
-              <span className={styles['aqd-brand-task']}>Task</span>
-              <span className={styles['aqd-brand-sup']}>10</span>
+          <div className="aqd-header-left t10-header-left">
+            <div className="aqd-brand">
+              <span className="aqd-brand-task">Task</span>
+              <span className="aqd-brand-sup">10</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold" style={{ color: 'var(--aqd-gray-900, #0f172a)' }}>
+            <div className="t10-header-title-group">
+              <h1 className="aqd-list-title t10-header-title">
                 Priority Lists
               </h1>
-              <p className="text-sm" style={{ color: 'var(--aqd-gray-500, #64748b)' }}>
+              <p className="aqd-list-meta t10-header-meta">
                 Focus on your top 10 weekly priorities
               </p>
             </div>
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2">
-            <Button 
+          <div className="aqd-header-right t10-header-right">
+            <button 
               onClick={() => setShowCreateModal(true)} 
-              className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25"
+              className="t10-btn-primary"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus size={16} />
               New List
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Content Area */}
-        <div className={styles['aqd-container']}>
-          <div className={styles['aqd-container-inner']}>
+        <div className="aqd-container t10-content">
+          <div className="aqd-container-inner">
             {isLoading ? (
-              <div className={styles['aqd-loading']}>
-                <div className={styles['aqd-spinner']} />
+              <div className="aqd-loading">
+                <div className="aqd-spinner" />
               </div>
             ) : lists.length === 0 ? (
-              <div className={styles['aqd-empty-state']}>
-                <div className={styles['aqd-empty-state-icon']}>
+              <div className="aqd-empty-state t10-empty-state">
+                <div className="aqd-empty-state-icon t10-empty-icon">
                   <Target size={32} />
                 </div>
-                <h3 className={styles['aqd-empty-state-title']}>No priority lists yet</h3>
-                <p className={styles['aqd-empty-state-description']}>
+                <h3 className="aqd-empty-state-title t10-empty-title">No priority lists yet</h3>
+                <p className="aqd-empty-state-description t10-empty-description">
                   Create your first priority list to start tracking your top 10 weekly priorities.
                 </p>
                 <button 
-                  className={`${styles['aqd-btn']} ${styles['aqd-btn-primary']}`} 
+                  className="t10-btn-primary" 
                   onClick={() => setShowCreateModal(true)}
                 >
                   <Plus size={16} />
@@ -126,7 +123,7 @@ export function AqdListsPage() {
                 </button>
               </div>
             ) : (
-              <div className={styles['aqd-cards-list']}>
+              <div className="aqd-cards-list t10-lists-grid">
                 {lists.map((list) => (
                   <AqdListCard 
                     key={list.id} 

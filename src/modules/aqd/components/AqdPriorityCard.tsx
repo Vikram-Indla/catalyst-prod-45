@@ -1,6 +1,6 @@
 /**
  * Task¹⁰ Priority Card - Weekly Item Card
- * Features: Rank badge, status toggle, meta separators, labels, carryover, hover actions
+ * Uses direct CSS classes (not CSS modules) for proper styling
  */
 import { Edit2, Trash2, MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -8,7 +8,6 @@ import type { AqdItemFull } from '../types/aqd.types';
 import { formatDate } from '../types/aqd.types';
 import { AqdStatusToggle } from './AqdStatusToggle';
 import { AqdLabelBadge } from './AqdLabelBadge';
-import styles from '../styles/aqd.module.css';
 
 interface AqdPriorityCardProps {
   item: AqdItemFull;
@@ -31,22 +30,22 @@ export function AqdPriorityCard({
 
   // Rank badge styling
   const getRankClass = () => {
-    if (isOverflow) return `${styles['aqd-rank-badge']} ${styles['aqd-rank-badge-overflow']}`;
-    if (item.rank === 1) return `${styles['aqd-rank-badge']} ${styles['aqd-rank-gold']}`;
-    if (item.rank === 2) return `${styles['aqd-rank-badge']} ${styles['aqd-rank-silver']}`;
-    if (item.rank === 3) return `${styles['aqd-rank-badge']} ${styles['aqd-rank-bronze']}`;
-    return styles['aqd-rank-badge'];
+    if (isOverflow) return 'aqd-rank-badge aqd-rank-badge-overflow';
+    if (item.rank === 1) return 'aqd-rank-badge aqd-rank-gold';
+    if (item.rank === 2) return 'aqd-rank-badge aqd-rank-silver';
+    if (item.rank === 3) return 'aqd-rank-badge aqd-rank-bronze';
+    return 'aqd-rank-badge';
   };
 
   // Card class with carryover styling
   const cardClass = isCarryover 
-    ? `${styles['aqd-card']} ${styles['aqd-card-carryover']}`
-    : styles['aqd-card'];
+    ? 'aqd-card aqd-card-carryover t10-priority-card t10-priority-card--carryover'
+    : 'aqd-card t10-priority-card';
 
   // Title class with completed styling
   const titleClass = isCompleted
-    ? `${styles['aqd-card-title']} ${styles['aqd-card-title-completed']}`
-    : styles['aqd-card-title'];
+    ? 'aqd-card-title aqd-card-title-completed'
+    : 'aqd-card-title';
 
   return (
     <div className={cardClass}>
@@ -62,38 +61,38 @@ export function AqdPriorityCard({
       />
 
       {/* Card Body */}
-      <div className={styles['aqd-card-body']}>
+      <div className="aqd-card-body">
         {/* Title Row */}
-        <div className={styles['aqd-card-row-top']}>
+        <div className="aqd-card-row-top">
           <div className={titleClass}>{item.title}</div>
           
           {/* Carryover Badge */}
           {isCarryover && (
-            <span className={styles['aqd-carryover-badge']}>
+            <span className="aqd-carryover-badge">
               ×{item.carryover_count}
             </span>
           )}
         </div>
 
         {/* Meta Row with Separators */}
-        <div className={styles['aqd-card-meta']}>
+        <div className="aqd-card-meta">
           {item.taskhub_key && (
             <>
-              <span className={styles['aqd-taskhub-key']}>{item.taskhub_key}</span>
-              <span className={styles['aqd-meta-separator']}>·</span>
+              <span className="aqd-taskhub-key">{item.taskhub_key}</span>
+              <span className="aqd-meta-separator">·</span>
             </>
           )}
           {item.assignee_name && (
             <>
-              <span className={styles['aqd-meta-item']}>{item.assignee_name}</span>
-              <span className={styles['aqd-meta-separator']}>·</span>
+              <span className="aqd-meta-item">{item.assignee_name}</span>
+              <span className="aqd-meta-separator">·</span>
             </>
           )}
           {formattedDueDate && (
-            <span className={styles['aqd-due-date']}>Due {formattedDueDate}</span>
+            <span className="aqd-due-date">Due {formattedDueDate}</span>
           )}
           {!item.taskhub_key && !item.assignee_name && !formattedDueDate && (
-            <span className={styles['aqd-meta-item']} style={{ opacity: 0.5 }}>
+            <span className="aqd-meta-item" style={{ opacity: 0.5 }}>
               No details
             </span>
           )}
@@ -101,7 +100,7 @@ export function AqdPriorityCard({
 
         {/* Labels Row */}
         {item.labels && item.labels.length > 0 && (
-          <div className={styles['aqd-card-labels']}>
+          <div className="aqd-card-labels">
             {item.labels.map((label) => (
               <AqdLabelBadge key={label.id} label={label} />
             ))}
@@ -110,10 +109,10 @@ export function AqdPriorityCard({
       </div>
 
       {/* Hover Actions */}
-      <div className={styles['aqd-card-actions']}>
+      <div className="aqd-card-actions">
         {onEdit && (
           <button 
-            className={styles['aqd-action-btn']}
+            className="aqd-action-btn"
             onClick={(e) => { e.stopPropagation(); onEdit(item); }}
             title="Edit"
           >
@@ -122,7 +121,7 @@ export function AqdPriorityCard({
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-            <button className={styles['aqd-action-btn']}>
+            <button className="aqd-action-btn">
               <MoreHorizontal size={14} />
             </button>
           </DropdownMenuTrigger>

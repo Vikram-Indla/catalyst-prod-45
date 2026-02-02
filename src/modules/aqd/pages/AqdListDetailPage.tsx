@@ -1,6 +1,6 @@
 /**
  * Task¹⁰ List Detail Page - Weekly Priority View
- * Features: Priority cards, status toggles, carryover indicators, labels
+ * Uses direct CSS classes for proper styling
  */
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -15,8 +15,8 @@ import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdPriorityCard } from '../components/AqdPriorityCard';
 import type { AqdListFull, AqdWeekFull, AqdItemFull } from '../types/aqd.types';
 import { formatWeekRange, splitItems, AQD_LIMITS } from '../types/aqd.types';
-import { cn } from '@/lib/utils';
-import styles from '../styles/aqd.module.css';
+// Import CSS files - these define the global .aqd-* and .t10-* classes
+import '../styles/aqd.css';
 import '../styles/task10-override.css';
 
 export function AqdListDetailPage() {
@@ -157,13 +157,10 @@ export function AqdListDetailPage() {
 
   if (isLoading) {
     return (
-      <div
-        className={cn('flex h-full min-h-screen task10-app', styles['aqd-root'])}
-        style={{ background: 'var(--aqd-background, #f8fafc)' }}
-      >
+      <div className="flex h-full min-h-screen task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
         <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
         <div className="flex flex-col flex-1 min-w-0 items-center justify-center">
-          <div className={styles['aqd-spinner']} />
+          <div className="aqd-spinner" />
         </div>
       </div>
     );
@@ -171,10 +168,7 @@ export function AqdListDetailPage() {
 
   if (!list) {
     return (
-      <div
-        className={cn('flex h-full min-h-screen task10-app', styles['aqd-root'])}
-        style={{ background: 'var(--aqd-background, #f8fafc)' }}
-      >
+      <div className="flex h-full min-h-screen task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
         <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
         <div className="flex flex-col flex-1 min-w-0 items-center justify-center">
           <h3 className="text-lg font-medium mb-4">List not found</h3>
@@ -185,77 +179,75 @@ export function AqdListDetailPage() {
   }
 
   return (
-    <div
-      className={cn('flex h-full min-h-screen task10-app', styles['aqd-root'])}
-      style={{ background: 'var(--aqd-background, #f8fafc)' }}
-    >
+    <div className="flex h-full min-h-screen task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
       <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
       <div className="flex flex-col flex-1 min-w-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-white flex-shrink-0" style={{ borderColor: 'var(--aqd-border, #e2e8f0)' }}>
-          <div className="flex items-center gap-4">
-            <button className={styles['aqd-back-btn']} onClick={() => navigate('/aqd')}>
+        <div className="aqd-header t10-header">
+          <div className="aqd-header-left t10-header-left">
+            <button className="aqd-back-btn t10-btn-back" onClick={() => navigate('/aqd')}>
               <ArrowLeft size={16} />
             </button>
-            <div className={styles['aqd-brand']}>
-              <span className={styles['aqd-brand-task']}>Task</span>
-              <span className={styles['aqd-brand-sup']}>10</span>
+            <div className="aqd-brand">
+              <span className="aqd-brand-task">Task</span>
+              <span className="aqd-brand-sup">10</span>
             </div>
-            <div>
-              <h1 className={styles['aqd-list-title']}>{list.name}</h1>
+            <div className="t10-header-title-group">
+              <h1 className="aqd-list-title t10-header-title">{list.name}</h1>
               {currentWeek && (
-                <div className={styles['aqd-list-meta']}>
-                  Week {currentWeek.week_number} · {formatWeekRange(currentWeek.start_date, currentWeek.end_date)}
+                <div className="aqd-list-meta t10-header-meta">
+                  <span className="t10-week-badge">Week {currentWeek.week_number}</span>
+                  <span>{formatWeekRange(currentWeek.start_date, currentWeek.end_date)}</span>
                 </div>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="aqd-header-right t10-header-right">
             {/* Week Navigator */}
-            <div className={styles['aqd-week-navigator']}>
-              <button className={styles['aqd-week-nav-btn']} disabled>
+            <div className="aqd-week-navigator t10-week-nav">
+              <button className="aqd-week-nav-btn t10-btn-nav" disabled>
                 <ChevronLeft size={16} />
               </button>
-              <span className={styles['aqd-week-current']}>Current</span>
-              <button className={styles['aqd-week-nav-btn']} disabled>
+              <span className="aqd-week-current">Current</span>
+              <button className="aqd-week-nav-btn t10-btn-nav" disabled>
                 <ChevronRight size={16} />
               </button>
             </div>
-            <Button 
+            <button 
               onClick={() => setShowAddModal(true)} 
-              className="gap-2 bg-blue-600 hover:bg-blue-700"
+              className="t10-btn-primary"
               disabled={items.length >= AQD_LIMITS.MAX_TOTAL_ITEMS}
             >
               <Plus size={16} />
               Add Priority
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className={styles['aqd-container']}>
-          <div className={styles['aqd-container-inner']}>
+        <div className="aqd-container t10-content">
+          <div className="aqd-container-inner">
             {/* Quick Add */}
-            <div className={styles['aqd-quick-add']}>
-              <div className={styles['aqd-quick-add-icon']}>
+            <div className="aqd-quick-add t10-quick-add">
+              <div className="aqd-quick-add-icon t10-quick-add-icon">
                 <Plus size={16} />
               </div>
               <input
                 type="text"
-                className={styles['aqd-quick-add-input']}
+                className="aqd-quick-add-input t10-quick-add-input"
                 placeholder="Quick add priority item..."
                 value={quickAddValue}
                 onChange={(e) => setQuickAddValue(e.target.value)}
                 onKeyDown={handleQuickAdd}
                 disabled={items.length >= AQD_LIMITS.MAX_TOTAL_ITEMS}
               />
-              <span className={styles['aqd-quick-add-hint']}>
+              <span className="aqd-quick-add-hint t10-quick-add-hint">
                 Press <kbd>Enter</kbd> to add
               </span>
             </div>
 
             {/* Top 10 Priority Cards */}
-            <div className={styles['aqd-cards-grid']}>
+            <div className="aqd-cards-grid t10-priority-grid">
               {Array.from({ length: AQD_LIMITS.MAX_TOP_ITEMS }, (_, i) => {
                 const item = top.find(it => it.rank === i + 1);
                 if (item) {
@@ -269,9 +261,9 @@ export function AqdListDetailPage() {
                   );
                 }
                 return (
-                  <div key={`empty-${i}`} className={styles['aqd-empty-slot']}>
-                    <span className={styles['aqd-empty-slot-rank']}>{i + 1}</span>
-                    <span className={styles['aqd-empty-slot-text']}>Empty slot</span>
+                  <div key={`empty-${i}`} className="aqd-empty-slot t10-empty-slot">
+                    <span className="aqd-empty-slot-rank t10-empty-slot-rank">{i + 1}</span>
+                    <span className="aqd-empty-slot-text t10-empty-slot-text">Empty slot</span>
                   </div>
                 );
               })}
@@ -279,9 +271,9 @@ export function AqdListDetailPage() {
 
             {/* Overflow Section */}
             {overflow.length > 0 && (
-              <div className={styles['aqd-overflow-section']}>
-                <h3 className={styles['aqd-overflow-title']}>Overflow ({overflow.length})</h3>
-                <div className={styles['aqd-cards-list']}>
+              <div className="aqd-overflow-section t10-overflow-section">
+                <h3 className="aqd-overflow-title t10-overflow-title">Overflow ({overflow.length})</h3>
+                <div className="aqd-cards-list t10-overflow-list">
                   {overflow.map(item => (
                     <AqdPriorityCard
                       key={item.id}
