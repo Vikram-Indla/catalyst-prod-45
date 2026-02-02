@@ -14,6 +14,7 @@ import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdListCard } from '../components/AqdListCard';
 import type { AqdListFull } from '../types/aqd.types';
 import styles from '../styles/aqd.module.css';
+import '../styles/task10-override.css';
 
 export function AqdListsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
