@@ -271,19 +271,21 @@ export function AqdListDetailPage() {
             </div>
           </div>
           <div className="aqd-header-right t10-header-right">
-            {/* Week Navigator */}
-            <div className="aqd-week-navigator t10-week-nav">
-              <button className="aqd-week-nav-btn t10-btn-nav" disabled>
+            {/* Week Navigator - Pill container */}
+            <div className="flex items-center bg-slate-100 rounded-lg p-1">
+              <button className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm text-slate-500 hover:text-slate-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed" disabled>
                 <ChevronLeft size={16} />
               </button>
-              <span className="aqd-week-current">Current</span>
-              <button className="aqd-week-nav-btn t10-btn-nav" disabled>
+              <span className="px-3 py-1.5 text-sm font-medium text-slate-700">
+                Current
+              </span>
+              <button className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm text-slate-500 hover:text-slate-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed" disabled>
                 <ChevronRight size={16} />
               </button>
             </div>
-            {/* ISSUE 4 FIX: Checkout Week button instead of Add Priority */}
+            {/* Checkout Week button with shadow */}
             <button 
-              className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-md transition-colors"
+              className="flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow transition-all"
             >
               <CheckCircle size={16} />
               Checkout Week

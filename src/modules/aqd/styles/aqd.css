@@ -731,22 +731,31 @@
   transition: all var(--aqd-transition-fast);
 }
 
+.aqd-quick-add:hover {
+  border-color: var(--aqd-gray-300);
+}
+
 .aqd-quick-add:focus-within {
   border-color: var(--aqd-primary);
   border-style: solid;
   background: var(--aqd-primary-light);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .aqd-quick-add-icon {
   width: 32px;
   height: 32px;
-  background: var(--aqd-primary-light);
+  background: transparent;
   border-radius: var(--aqd-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--aqd-primary);
+  color: var(--aqd-gray-300);
   flex-shrink: 0;
+}
+
+.aqd-quick-add:focus-within .aqd-quick-add-icon {
+  color: var(--aqd-primary);
 }
 
 .aqd-quick-add-input {
@@ -765,14 +774,25 @@
 .aqd-quick-add-hint {
   font-size: var(--aqd-text-xs);
   color: var(--aqd-gray-400);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .aqd-quick-add-hint kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 2px 6px;
+  min-width: 24px;
   background: var(--aqd-gray-100);
+  border: 1px solid var(--aqd-gray-200);
   border-radius: var(--aqd-radius-sm);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
   font-size: 10px;
   font-weight: var(--aqd-font-medium);
+  color: var(--aqd-gray-500);
+  box-shadow: 0 1px 0 var(--aqd-gray-200);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────────

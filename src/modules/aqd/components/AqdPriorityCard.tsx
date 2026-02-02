@@ -29,8 +29,15 @@ export function AqdPriorityCard({
   const formattedDueDate = formatDate(item.due_date);
   
   // Check if overdue (due date in the past and not completed)
-  const isOverdue = !isCompleted && item.due_date && new Date(item.due_date) < new Date();
-  const isDueToday = !isCompleted && item.due_date && new Date(item.due_date).toDateString() === new Date().toDateString();
+  const dueDate = item.due_date ? new Date(item.due_date) : null;
+  const today = new Date();
+  const isOverdue = !isCompleted && dueDate && dueDate < new Date(today.setHours(0, 0, 0, 0));
+  const isDueToday = !isCompleted && dueDate && dueDate.toDateString() === new Date().toDateString();
+  const isDueSoon = !isCompleted && !isOverdue && !isDueToday && dueDate && (() => {
+    const threeDaysFromNow = new Date();
+    threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+    return dueDate <= threeDaysFromNow;
+  })();
 
   // Rank badge styling - Gold/Silver/Bronze for top 3, light style for others
   const getRankBadge = () => {
@@ -106,13 +113,19 @@ export function AqdPriorityCard({
         <div className="flex items-center flex-wrap gap-0 text-xs text-slate-500 mt-1">
           {item.taskhub_key && (
             <>
-              <span className="font-mono font-semibold text-blue-600">{item.taskhub_key}</span>
+              <span className="font-mono font-semibold text-blue-600 hover:underline cursor-pointer">{item.taskhub_key}</span>
               <span className="mx-2 text-slate-300">·</span>
             </>
           )}
           {item.assignee_name && (
             <>
-              <span>{item.assignee_name}</span>
+              <div className="flex items-center gap-1.5">
+                {/* Mini avatar with initials */}
+                <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center text-[8px] font-bold text-blue-600 shrink-0">
+                  {item.assignee_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                </div>
+                <span>{item.assignee_name}</span>
+              </div>
               <span className="mx-2 text-slate-300">·</span>
             </>
           )}
@@ -120,7 +133,8 @@ export function AqdPriorityCard({
             <span className={`flex items-center gap-1 ${
               isOverdue ? 'text-red-600 font-semibold' : 
               isDueToday ? 'text-amber-600 font-semibold' : 
-              'text-slate-500'
+              isDueSoon ? 'text-slate-600 font-medium' :
+              'text-slate-400'
             }`}>
               {isOverdue && <AlertTriangle size={12} />}
               {isOverdue ? 'Overdue' : isDueToday ? 'Due Today' : `Due ${formattedDueDate}`}
