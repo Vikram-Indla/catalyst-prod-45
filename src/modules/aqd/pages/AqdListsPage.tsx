@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdListCard } from '../components/AqdListCard';
 import { AqdSkeletonListCard } from '../components/AqdSkeletonCard';
@@ -22,6 +23,7 @@ export function AqdListsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: lists = [], isLoading } = useQuery({
@@ -56,6 +58,56 @@ export function AqdListsPage() {
       toast.success('List created successfully');
     },
     onError: (e) => toast.error(`Failed to create list: ${e.message}`),
+  });
+
+  // Pin/Unpin list mutation
+  const pinList = useMutation({
+    mutationFn: async (listId: string) => {
+      const list = lists.find(l => l.id === listId);
+      const { error } = await supabase
+        .from('aqd_lists')
+        .update({ is_pinned: !list?.is_pinned })
+        .eq('id', listId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aqd-lists'] });
+      toast.success('List updated');
+    },
+    onError: (e) => toast.error(`Failed to update list: ${e.message}`),
+  });
+
+  // Archive list mutation
+  const archiveList = useMutation({
+    mutationFn: async (listId: string) => {
+      const { error } = await supabase
+        .from('aqd_lists')
+        .update({ is_archived: true })
+        .eq('id', listId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aqd-lists'] });
+      toast.success('List archived');
+    },
+    onError: (e) => toast.error(`Failed to archive list: ${e.message}`),
+  });
+
+  // Delete list mutation
+  const deleteList = useMutation({
+    mutationFn: async (listId: string) => {
+      const { error } = await supabase
+        .from('aqd_lists')
+        .delete()
+        .eq('id', listId);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aqd-lists'] });
+      setDeleteConfirmId(null);
+      toast.success('List deleted');
+    },
+    onError: (e) => toast.error(`Failed to delete list: ${e.message}`),
   });
 
   const handleCreate = () => {
@@ -132,6 +184,9 @@ export function AqdListsPage() {
                   <AqdListCard 
                     key={list.id} 
                     list={list}
+                    onPin={(id) => pinList.mutate(id)}
+                    onArchive={(id) => archiveList.mutate(id)}
+                    onDelete={(id) => setDeleteConfirmId(id)}
                   />
                 ))}
               </div>
@@ -166,6 +221,27 @@ export function AqdListsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Priority List?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. All items in this list will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deleteConfirmId && deleteList.mutate(deleteConfirmId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteList.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
