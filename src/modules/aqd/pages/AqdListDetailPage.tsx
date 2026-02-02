@@ -206,6 +206,8 @@ export function AqdListDetailPage() {
   }, [quickAddValue, createItem]);
 
   const handleReorder = useCallback((itemId: string, newRank: number) => {
+    // Prevent stacking multiple reorder calls from rapid drags (also avoids confusing UI while refetching)
+    if (reorderItem.isPending) return;
     reorderItem.mutate({ itemId, newRank });
   }, [reorderItem]);
 
