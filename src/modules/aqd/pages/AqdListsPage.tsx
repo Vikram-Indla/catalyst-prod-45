@@ -64,9 +64,12 @@ export function AqdListsPage() {
         <div className={styles['aqd-container-inner']}>
           <header className={styles['aqd-header']}>
             <div className={styles['aqd-header-left']}>
-              <div className={styles['aqd-brand']}><span className={styles['aqd-brand-text']}>10</span></div>
+              <div className={styles['aqd-brand']}>
+                <span className={styles['aqd-brand-task']}>Task</span>
+                <span className={styles['aqd-brand-sup']}>10</span>
+              </div>
               <div>
-                <h1 className={styles['aqd-list-title']}>AQD¹⁰ Priority Lists</h1>
+                <h1 className={styles['aqd-list-title']}>Task<sup className={styles['aqd-title-sup']}>10</sup> Priority Lists</h1>
                 <div className={styles['aqd-list-meta']}>{lists.length} list{lists.length !== 1 ? 's' : ''}</div>
               </div>
             </div>
