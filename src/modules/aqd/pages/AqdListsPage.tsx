@@ -55,14 +55,13 @@ export function AqdListsPage() {
   };
 
   return (
-    <div className="flex h-full min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
+    <div className="flex h-full min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
       <PlannerSidebar
         expanded={sidebarExpanded}
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
       />
-      <div className="flex flex-col flex-1 min-w-0 min-h-0 overflow-auto">
-        <div className={styles['aqd-container']}>
-          <div className={styles['aqd-container-inner']}>
+      <div className="flex flex-col flex-1 min-w-0 overflow-auto p-6">
+        <div className={styles['aqd-container-inner']}>
           <header className={styles['aqd-header']}>
             <div className={styles['aqd-header-left']}>
               <div className={styles['aqd-brand']}><span className={styles['aqd-brand-text']}>10</span></div>
@@ -114,7 +113,6 @@ export function AqdListsPage() {
               ))}
             </div>
           )}
-          </div>
         </div>
       </div>
 
