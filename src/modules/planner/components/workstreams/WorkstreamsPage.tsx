@@ -408,7 +408,8 @@ export function WorkstreamsPage() {
         <div>
           <h1
             style={{
-              fontSize: '20px',
+              fontSize: '1.25rem',
+              lineHeight: '1.75rem',
               fontWeight: 700,
               color: '#0f172a',
               margin: 0,
@@ -418,9 +419,9 @@ export function WorkstreamsPage() {
           </h1>
           <p
             style={{
-              fontSize: '14px',
+              fontSize: '0.875rem',
+              lineHeight: '1.25rem',
               color: '#64748b',
-              marginTop: '2px',
               margin: 0,
             }}
           >
