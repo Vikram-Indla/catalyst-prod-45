@@ -32895,10 +32895,6 @@ export type Database = {
             Args: { p_decisions: Json; p_user_id: string; p_week_id: string }
             Returns: Json
           }
-        | {
-            Args: { p_decisions: Json; p_user_id: string; p_week_id: string }
-            Returns: Json
-          }
       aqd_confirm_carryover: { Args: { p_item_id: string }; Returns: undefined }
       aqd_create_list_with_week: {
         Args: { p_created_by: string; p_name: string }
