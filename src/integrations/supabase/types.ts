@@ -192,6 +192,549 @@ export type Database = {
           },
         ]
       }
+      aqd_item_history: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          field_name: string
+          id: string
+          item_id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          field_name: string
+          id?: string
+          item_id: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          field_name?: string
+          id?: string
+          item_id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_item_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_item_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_item_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_history_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_history_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aqd_item_labels: {
+        Row: {
+          created_at: string | null
+          item_id: string
+          label_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          item_id: string
+          label_id: string
+        }
+        Update: {
+          created_at?: string | null
+          item_id?: string
+          label_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_item_labels_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_labels_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_labels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aqd_item_notes: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          item_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          item_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          item_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_item_notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_item_notes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aqd_items: {
+        Row: {
+          assignee_id: string | null
+          carryover_confirmed: boolean | null
+          carryover_count: number | null
+          carryover_from_week_id: string | null
+          checkout_decision: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          is_carryover: boolean | null
+          list_id: string
+          rank: number
+          status: string | null
+          taskhub_key: string | null
+          title: string
+          updated_at: string | null
+          week_id: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          carryover_confirmed?: boolean | null
+          carryover_count?: number | null
+          carryover_from_week_id?: string | null
+          checkout_decision?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_carryover?: boolean | null
+          list_id: string
+          rank: number
+          status?: string | null
+          taskhub_key?: string | null
+          title: string
+          updated_at?: string | null
+          week_id: string
+        }
+        Update: {
+          assignee_id?: string | null
+          carryover_confirmed?: boolean | null
+          carryover_count?: number | null
+          carryover_from_week_id?: string | null
+          checkout_decision?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_carryover?: boolean | null
+          list_id?: string
+          rank?: number
+          status?: string | null
+          taskhub_key?: string | null
+          title?: string
+          updated_at?: string | null
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_carryover_from_week_id_fkey"
+            columns: ["carryover_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_carryover_from_week_id_fkey"
+            columns: ["carryover_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aqd_labels: {
+        Row: {
+          color: string
+          created_at: string | null
+          id: string
+          list_id: string
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          color: string
+          created_at?: string | null
+          id?: string
+          list_id: string
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          list_id?: string
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_labels_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_labels_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aqd_lists: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_archived: boolean | null
+          is_pinned: boolean | null
+          name: string
+          settings: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_pinned?: boolean | null
+          name: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_pinned?: boolean | null
+          name?: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aqd_weeks: {
+        Row: {
+          checked_out_at: string | null
+          checked_out_by: string | null
+          checkout_notes: string | null
+          created_at: string | null
+          end_date: string
+          id: string
+          list_id: string
+          performance_summary: Json | null
+          start_date: string
+          status: string | null
+          updated_at: string | null
+          week_number: number
+          year: number
+        }
+        Insert: {
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          checkout_notes?: string | null
+          created_at?: string | null
+          end_date: string
+          id?: string
+          list_id: string
+          performance_summary?: Json | null
+          start_date: string
+          status?: string | null
+          updated_at?: string | null
+          week_number: number
+          year: number
+        }
+        Update: {
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          checkout_notes?: string | null
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          list_id?: string
+          performance_summary?: Json | null
+          start_date?: string
+          status?: string | null
+          updated_at?: string | null
+          week_number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_weeks_checked_out_by_fkey"
+            columns: ["checked_out_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_checked_out_by_fkey"
+            columns: ["checked_out_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_checked_out_by_fkey"
+            columns: ["checked_out_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_checked_out_by_fkey"
+            columns: ["checked_out_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assignment_license_allocations: {
         Row: {
           allocation_percent: number
@@ -30220,6 +30763,290 @@ export type Database = {
       }
     }
     Views: {
+      aqd_items_full: {
+        Row: {
+          assignee_avatar: string | null
+          assignee_id: string | null
+          assignee_name: string | null
+          carryover_confirmed: boolean | null
+          carryover_count: number | null
+          carryover_from_week_id: string | null
+          checkout_decision: string | null
+          created_at: string | null
+          created_by: string | null
+          created_by_name: string | null
+          description: string | null
+          due_date: string | null
+          id: string | null
+          is_carryover: boolean | null
+          labels: Json | null
+          list_id: string | null
+          note_count: number | null
+          rank: number | null
+          status: string | null
+          taskhub_key: string | null
+          title: string | null
+          updated_at: string | null
+          week_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_carryover_from_week_id_fkey"
+            columns: ["carryover_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_carryover_from_week_id_fkey"
+            columns: ["carryover_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_weeks_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aqd_lists_full: {
+        Row: {
+          active_item_count: number | null
+          completed_item_count: number | null
+          created_at: string | null
+          created_by: string | null
+          current_week: Json | null
+          description: string | null
+          id: string | null
+          is_archived: boolean | null
+          is_pinned: boolean | null
+          name: string | null
+          owner_avatar: string | null
+          owner_name: string | null
+          settings: Json | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aqd_weeks_full: {
+        Row: {
+          carryover_items: number | null
+          checked_out_at: string | null
+          checked_out_by: string | null
+          checkout_notes: string | null
+          completed_items: number | null
+          created_at: string | null
+          end_date: string | null
+          id: string | null
+          in_progress_items: number | null
+          list_id: string | null
+          not_started_items: number | null
+          pending_carryover_items: number | null
+          performance_summary: Json | null
+          start_date: string | null
+          status: string | null
+          total_items: number | null
+          updated_at: string | null
+          week_number: number | null
+          year: number | null
+        }
+        Insert: {
+          carryover_items?: never
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          checkout_notes?: string | null
+          completed_items?: never
+          created_at?: string | null
+          end_date?: string | null
+          id?: string | null
+          in_progress_items?: never
+          list_id?: string | null
+          not_started_items?: never
+          pending_carryover_items?: never
+          performance_summary?: Json | null
+          start_date?: string | null
+          status?: string | null
+          total_items?: never
+          updated_at?: string | null
+          week_number?: number | null
+          year?: number | null
+        }
+        Update: {
+          carryover_items?: never
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          checkout_notes?: string | null
+          completed_items?: never
+          created_at?: string | null
+          end_date?: string | null
+          id?: string | null
+          in_progress_items?: never
+          list_id?: string | null
+          not_started_items?: never
+          pending_carryover_items?: never
+          performance_summary?: Json | null
+          start_date?: string | null
+          status?: string | null
+          total_items?: never
+          updated_at?: string | null
+          week_number?: number | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aqd_weeks_checked_out_by_fkey"
+            columns: ["checked_out_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_checked_out_by_fkey"
+            columns: ["checked_out_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_checked_out_by_fkey"
+            columns: ["checked_out_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_checked_out_by_fkey"
+            columns: ["checked_out_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aqd_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "aqd_lists_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       license_allocation_totals: {
         Row: {
           allocation_status: string | null
@@ -31737,16 +32564,24 @@ export type Database = {
             Args: { p_decisions: Json; p_user_id: string; p_week_id: string }
             Returns: Json
           }
+        | {
+            Args: { p_decisions: Json; p_user_id: string; p_week_id: string }
+            Returns: Json
+          }
       aqd_confirm_carryover: { Args: { p_item_id: string }; Returns: undefined }
       aqd_create_list_with_week: {
         Args: { p_created_by: string; p_name: string }
         Returns: Json
       }
+      aqd_cycle_item_status: {
+        Args: { p_item_id: string; p_user_id?: string }
+        Returns: string
+      }
       aqd_ensure_current_week: { Args: { p_list_id: string }; Returns: string }
       aqd_get_kpis: { Args: { p_list_id: string }; Returns: Json }
       aqd_get_or_create_current_week: {
         Args: { p_list_id: string }
-        Returns: Json
+        Returns: string
       }
       aqd_get_week_dates: {
         Args: { target_date: string }
@@ -31773,6 +32608,10 @@ export type Database = {
             Returns: undefined
           }
         | { Args: { p_items: Json }; Returns: undefined }
+        | {
+            Args: { p_item_id: string; p_new_rank: number; p_week_id: string }
+            Returns: undefined
+          }
       bulk_assign_roles: {
         Args: {
           _notes?: string
