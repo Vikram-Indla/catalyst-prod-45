@@ -1,6 +1,7 @@
 /**
  * Task¹⁰ Draggable List - Drag & drop reordering with @hello-pangea/dnd
  */
+import { useRef } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { GripVertical } from 'lucide-react';
 import type { AqdItemFull } from '../types/aqd.types';
@@ -25,7 +26,19 @@ export function AqdDraggableList({
   droppableId,
   isOverflow = false,
 }: AqdDraggableListProps) {
+  // Prevent accidental card click (opens detail) right after a drag ends.
+  const blockClickRef = useRef(false);
+
+  const handleDragStart = () => {
+    blockClickRef.current = true;
+  };
+
   const handleDragEnd = (result: DropResult) => {
+    // Allow clicks again shortly after drop (a click event may fire on mouseup).
+    window.setTimeout(() => {
+      blockClickRef.current = false;
+    }, 75);
+
     if (!result.destination) return;
     
     const sourceIndex = result.source.index;
@@ -46,7 +59,7 @@ export function AqdDraggableList({
   };
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <Droppable droppableId={droppableId}>
         {(provided, snapshot) => (
           <div
@@ -60,18 +73,26 @@ export function AqdDraggableList({
                   <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
+                    {...provided.dragHandleProps}
                     className={`aqd-draggable-item ${snapshot.isDragging ? 'aqd-draggable-item-dragging' : ''}`}
                   >
                     {/* Drag Handle */}
                     <div 
-                      {...provided.dragHandleProps}
                       className="aqd-drag-handle"
                     >
                       <GripVertical size={16} />
                     </div>
                     
                     {/* Priority Card */}
-                    <div className="aqd-draggable-card-wrapper">
+                    <div
+                      className="aqd-draggable-card-wrapper"
+                      onClickCapture={(e) => {
+                        if (blockClickRef.current) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                    >
                       <AqdPriorityCard
                         item={item}
                         onStatusChange={onStatusChange}
