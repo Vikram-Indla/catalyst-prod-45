@@ -16,6 +16,7 @@ import { AqdPriorityCard } from '../components/AqdPriorityCard';
 import type { AqdListFull, AqdWeekFull, AqdItemFull } from '../types/aqd.types';
 import { formatWeekRange, splitItems, AQD_LIMITS } from '../types/aqd.types';
 import styles from '../styles/aqd.module.css';
+import '../styles/task10-override.css';
 
 export function AqdListDetailPage() {
   const { listId } = useParams<{ listId: string }>();
