@@ -1,11 +1,31 @@
 /**
- * Task¹⁰ List Card - Dashboard List Item
- * Enterprise-grade styling with shadows, hover lift, and rich content
+ * ============================================================================
+ * PRIORITY LIST CARD — LINEAR-INSPIRED COMPACT DESIGN
+ * 
+ * File: src/modules/aqd/components/AqdListCard.tsx
+ * CSS: src/styles/priority-lists.css (ring-fenced with .priority-* classes)
+ * 
+ * KEY DESIGN DECISIONS:
+ * - Compact height (~70px, not ~120px)
+ * - Percentage integrated with progress bar (not floating far right)
+ * - Avatar circle for owner (not text name)
+ * - Status-based left border (green/amber/red)
+ * - Customizable emoji icons
+ * - Stats show "remaining" only (not green "completed" text)
+ * ============================================================================
  */
 import { useNavigate } from 'react-router-dom';
-import { Pin as PinIcon, MoreHorizontal, Archive, Trash2, ArrowRight, User } from 'lucide-react';
+import { ChevronRight, MoreHorizontal, Pin as PinIcon, Archive, Trash2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { AqdListFull } from '../types/aqd.types';
+import '@/styles/priority-lists.css';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+type ListStatus = 'on-track' | 'behind' | 'blocked';
+type AvatarColor = 'blue' | 'teal' | 'purple' | 'orange' | 'pink';
 
 interface AqdListCardProps {
   list: AqdListFull;
@@ -14,107 +34,174 @@ interface AqdListCardProps {
   onDelete?: (listId: string) => void;
 }
 
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+const AVATAR_COLORS: AvatarColor[] = ['blue', 'teal', 'purple', 'orange', 'pink'];
+
+/**
+ * Get consistent avatar color based on user ID
+ */
+const getAvatarColor = (userId: string): AvatarColor => {
+  const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+};
+
+/**
+ * Get initials from name
+ * "Vikram India" → "VI"
+ */
+const getInitials = (name: string): string => {
+  return name
+    .split(' ')
+    .map(word => word[0])
+    .filter(Boolean)
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+/**
+ * Calculate progress percentage
+ */
+const calculateProgress = (completed: number, total: number): number => {
+  if (total === 0) return 0;
+  return Math.round((completed / total) * 100);
+};
+
+/**
+ * Determine list status based on completion rate
+ * - Green (on-track): ≥ 50% done
+ * - Amber (behind): 25-49% done
+ * - Red (blocked): < 25% done
+ */
+const getListStatus = (completedItems: number, totalItems: number): ListStatus => {
+  if (totalItems === 0) return 'on-track';
+  const rate = completedItems / totalItems;
+  if (rate >= 0.5) return 'on-track';
+  if (rate >= 0.25) return 'behind';
+  return 'blocked';
+};
+
+/**
+ * Get emoji icon based on list name
+ */
+const getListIcon = (name: string): string => {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes('sprint') || lowerName.includes('dev')) return '🔥';
+  if (lowerName.includes('team')) return '👥';
+  if (lowerName.includes('personal')) return '🎯';
+  if (lowerName.includes('product')) return '📦';
+  if (lowerName.includes('weekly')) return '📅';
+  if (lowerName.includes('goal')) return '🎯';
+  return '📋';
+};
+
+// ============================================================================
+// PRIORITY CARD COMPONENT
+// ============================================================================
+
 export function AqdListCard({ list, onPin, onArchive, onDelete }: AqdListCardProps) {
   const navigate = useNavigate();
   
   const totalItems = list.active_item_count || 0;
   const completedItems = list.completed_item_count || 0;
   const remainingItems = totalItems - completedItems;
-  const completionRate = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  const progressPercent = calculateProgress(completedItems, totalItems);
+  const status = getListStatus(completedItems, totalItems);
+  const icon = getListIcon(list.name);
 
   const handleCardClick = () => {
     navigate(`/aqd/${list.id}`);
   };
 
-  // Enterprise card styling with shadows and hover lift
-  const cardClasses = [
-    'w-full bg-white rounded-xl p-5 cursor-pointer',
-    'border border-slate-200',
-    'shadow-sm hover:shadow-lg',
-    'hover:border-slate-300 hover:-translate-y-0.5',
-    'transition-all duration-200 ease-out',
-    'group',
-    list.is_pinned ? 'border-l-4 border-l-teal-500' : '',
-  ].filter(Boolean).join(' ');
-
   return (
-    <div className={cardClasses} onClick={handleCardClick}>
-      {/* Header Row */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
+    <div
+      className={`priority-card priority-card--${status}`}
+      onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
+    >
+      {/* Icon — customizable emoji per list */}
+      <span className="priority-card__icon">{icon}</span>
+
+      {/* Content */}
+      <div className="priority-card__content">
+        <h3 className="priority-card__title">
           {list.is_pinned && (
-            <PinIcon size={14} className="text-teal-600 shrink-0" />
+            <PinIcon size={12} className="inline mr-1.5 text-teal-600" />
           )}
-          <h3 className="text-base font-semibold text-slate-900 leading-tight">
-            {list.name}
-          </h3>
-        </div>
-        
-        {/* Arrow indicator on hover */}
-        <div className="flex items-center gap-2">
-          <ArrowRight 
-            size={18} 
-            className="text-slate-300 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" 
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <button className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100">
-                <MoreHorizontal size={16} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPin?.(list.id); }}>
-                <PinIcon size={14} className="mr-2" />
-                {list.is_pinned ? 'Unpin' : 'Pin'}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive?.(list.id); }}>
-                <Archive size={14} className="mr-2" />
-                Archive
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="text-destructive" 
-                onClick={(e) => { e.stopPropagation(); onDelete?.(list.id); }}
-              >
-                <Trash2 size={14} className="mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {list.name}
+        </h3>
+        <div className="priority-card__meta">
+          {/* Stats — grey only, shows remaining (actionable)
+              NO green "3 completed" mid-sentence */}
+          <span className="priority-card__stats">
+            {totalItems} items · {remainingItems} remaining
+          </span>
+
+          {/* Progress — percentage integrated with bar
+              NOT floating on far right */}
+          <div className="priority-card__progress">
+            <div className="priority-card__progress-track">
+              <div 
+                className="priority-card__progress-fill"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <span className="priority-card__percent">{progressPercent}%</span>
+          </div>
         </div>
       </div>
 
-      {/* Meta Row with item counts */}
-      <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
-        <span>{totalItems} item{totalItems !== 1 ? 's' : ''}</span>
-        <span className="text-slate-300">·</span>
-        <span className="text-emerald-600 font-medium">{completedItems} completed</span>
-        <span className="text-slate-300">·</span>
-        <span>{remainingItems} remaining</span>
-      </div>
-
-      {/* Progress Bar with percentage */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <span>{completedItems} of {totalItems} completed</span>
-          <span className="font-semibold text-slate-700">{completionRate}%</span>
-        </div>
-        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-          <div 
-            className={`h-full rounded-full transition-all duration-500 ease-out ${
-              completionRate === 100 ? 'bg-emerald-500' : 'bg-blue-600'
-            }`}
-            style={{ width: `${completionRate}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Owner info */}
+      {/* Avatar — replaces "👤 Vikram India" text */}
       {list.owner_name && (
-        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
-          <User size={12} />
-          <span>{list.owner_name}</span>
+        <div 
+          className={`priority-card__avatar priority-card__avatar--${getAvatarColor(list.created_by || 'default')}`}
+          title={list.owner_name}
+        >
+          {getInitials(list.owner_name)}
         </div>
       )}
+
+      {/* Actions Menu */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+          <button 
+            className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100"
+            style={{ opacity: 1 }}
+          >
+            <MoreHorizontal size={16} />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" style={{ zIndex: 99999 }}>
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPin?.(list.id); }}>
+            <PinIcon size={14} className="mr-2" />
+            {list.is_pinned ? 'Unpin' : 'Pin'}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive?.(list.id); }}>
+            <Archive size={14} className="mr-2" />
+            Archive
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            className="text-destructive" 
+            onClick={(e) => { e.stopPropagation(); onDelete?.(list.id); }}
+          >
+            <Trash2 size={14} className="mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Arrow — appears on hover */}
+      <ChevronRight className="priority-card__arrow" size={16} />
     </div>
   );
 }
