@@ -3,13 +3,14 @@
  */
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Plus, MoreHorizontal, Settings } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Plus, MoreHorizontal } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import type { AqdListFull, AqdWeekFull, AqdItemFull, AqdItemStatus } from '../types/aqd.types';
 import { formatWeekRange, splitItems, AQD_STATUS_CONFIG, AQD_LIMITS } from '../types/aqd.types';
 import styles from '../styles/aqd.module.css';
@@ -20,6 +21,7 @@ export function AqdListDetailPage() {
   const queryClient = useQueryClient();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newItemTitle, setNewItemTitle] = useState('');
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
   // Fetch list details
   const { data: list, isLoading: listLoading } = useQuery({
@@ -142,17 +144,21 @@ export function AqdListDetailPage() {
 
   if (isLoading) {
     return (
-      <div className={styles['aqd-root']}>
-        <div className={styles['aqd-loading']}><div className={styles['aqd-spinner']} /></div>
+      <div className="flex h-full min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
+        <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
+        <div className="flex flex-col flex-1 min-w-0 min-h-0 items-center justify-center">
+          <div className={styles['aqd-spinner']} />
+        </div>
       </div>
     );
   }
 
   if (!list) {
     return (
-      <div className={styles['aqd-root']}>
-        <div className={styles['aqd-empty-state']}>
-          <h3 className={styles['aqd-empty-state-title']}>List not found</h3>
+      <div className="flex h-full min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
+        <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
+        <div className="flex flex-col flex-1 min-w-0 min-h-0 items-center justify-center">
+          <h3 className="text-lg font-medium mb-4">List not found</h3>
           <Button onClick={() => navigate('/aqd')}>Back to Lists</Button>
         </div>
       </div>
@@ -160,118 +166,117 @@ export function AqdListDetailPage() {
   }
 
   return (
-    <div className={styles['aqd-root']}>
-      <div className={styles['aqd-layout']}>
-        <main className={styles['aqd-main']}>
-          <div className={styles['aqd-container']}>
-            {/* Header */}
-            <header className={styles['aqd-header']}>
-              <div className={styles['aqd-header-left']}>
-                <button className={styles['aqd-back-btn']} onClick={() => navigate('/aqd')}>
-                  <ArrowLeft size={16} />
+    <div className="flex h-full min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
+      <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
+      <div className="flex flex-col flex-1 min-w-0 min-h-0">
+        <div className={styles['aqd-container']}>
+          {/* Header */}
+          <header className={styles['aqd-header']}>
+            <div className={styles['aqd-header-left']}>
+              <button className={styles['aqd-back-btn']} onClick={() => navigate('/aqd')}>
+                <ArrowLeft size={16} />
+              </button>
+              <div className={styles['aqd-brand']}><span className={styles['aqd-brand-text']}>10</span></div>
+              <div>
+                <h1 className={styles['aqd-list-title']}>{list.name}</h1>
+                {currentWeek && (
+                  <div className={styles['aqd-list-meta']}>
+                    Week {currentWeek.week_number} • {formatWeekRange(currentWeek.start_date, currentWeek.end_date)}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className={styles['aqd-header-right']}>
+              {/* Week navigator */}
+              <div className={styles['aqd-week-navigator']}>
+                <button className={styles['aqd-week-nav-btn']} disabled>
+                  <ChevronLeft size={16} />
                 </button>
-                <div className={styles['aqd-brand']}><span className={styles['aqd-brand-text']}>10</span></div>
-                <div>
-                  <h1 className={styles['aqd-list-title']}>{list.name}</h1>
-                  {currentWeek && (
-                    <div className={styles['aqd-list-meta']}>
-                      Week {currentWeek.week_number} • {formatWeekRange(currentWeek.start_date, currentWeek.end_date)}
-                    </div>
-                  )}
-                </div>
+                <span className={styles['aqd-week-current']}>Current</span>
+                <button className={styles['aqd-week-nav-btn']} disabled>
+                  <ChevronRight size={16} />
+                </button>
               </div>
-              <div className={styles['aqd-header-right']}>
-                {/* Week navigator */}
-                <div className={styles['aqd-week-navigator']}>
-                  <button className={styles['aqd-week-nav-btn']} disabled>
-                    <ChevronLeft size={16} />
-                  </button>
-                  <span className={styles['aqd-week-current']}>Current</span>
-                  <button className={styles['aqd-week-nav-btn']} disabled>
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-                <Button 
-                  onClick={() => setShowAddModal(true)} 
-                  className="gap-2"
-                  disabled={items.length >= AQD_LIMITS.MAX_TOTAL_ITEMS}
-                >
-                  <Plus size={16} />Add Priority
-                </Button>
-              </div>
-            </header>
+              <Button 
+                onClick={() => setShowAddModal(true)} 
+                className="gap-2"
+                disabled={items.length >= AQD_LIMITS.MAX_TOTAL_ITEMS}
+              >
+                <Plus size={16} />Add Priority
+              </Button>
+            </div>
+          </header>
 
-            {/* Priority Cards Grid */}
-            <div className={styles['aqd-cards-grid']}>
-              {/* Top 10 slots */}
-              {Array.from({ length: AQD_LIMITS.MAX_TOP_ITEMS }, (_, i) => {
-                const item = top.find(it => it.rank === i + 1);
-                if (item) {
-                  return (
-                    <div key={item.id} className={styles['aqd-card']}>
-                      <div className={getRankBadgeClass(item.rank)}>{item.rank}</div>
-                      <div className={styles['aqd-card-body']}>
-                        <div className={styles['aqd-card-row-top']}>
-                          <div className={styles['aqd-card-title']}>{item.title}</div>
-                        </div>
-                        <div className={styles['aqd-card-meta']}>
-                          {item.taskhub_key && (
-                            <span className={styles['aqd-meta-item']}>{item.taskhub_key}</span>
-                          )}
-                          {item.assignee_name && (
-                            <span className={styles['aqd-meta-item']}>{item.assignee_name}</span>
-                          )}
-                        </div>
-                      </div>
-                      <button
-                        className={getStatusClass(item.status)}
-                        onClick={() => cycleStatus.mutate(item.id)}
-                        title={`Click to change status (${AQD_STATUS_CONFIG[item.status].label})`}
-                      />
-                      <button className={styles['aqd-action-btn']}>
-                        <MoreHorizontal size={14} />
-                      </button>
-                    </div>
-                  );
-                }
+          {/* Priority Cards Grid */}
+          <div className={styles['aqd-cards-grid']}>
+            {/* Top 10 slots */}
+            {Array.from({ length: AQD_LIMITS.MAX_TOP_ITEMS }, (_, i) => {
+              const item = top.find(it => it.rank === i + 1);
+              if (item) {
                 return (
-                  <div key={`empty-${i}`} className={styles['aqd-empty-slot']}>
-                    <span className={styles['aqd-empty-slot-rank']}>{i + 1}</span>
-                    <span className={styles['aqd-empty-slot-text']}>Empty slot</span>
+                  <div key={item.id} className={styles['aqd-card']}>
+                    <div className={getRankBadgeClass(item.rank)}>{item.rank}</div>
+                    <div className={styles['aqd-card-body']}>
+                      <div className={styles['aqd-card-row-top']}>
+                        <div className={styles['aqd-card-title']}>{item.title}</div>
+                      </div>
+                      <div className={styles['aqd-card-meta']}>
+                        {item.taskhub_key && (
+                          <span className={styles['aqd-meta-item']}>{item.taskhub_key}</span>
+                        )}
+                        {item.assignee_name && (
+                          <span className={styles['aqd-meta-item']}>{item.assignee_name}</span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      className={getStatusClass(item.status)}
+                      onClick={() => cycleStatus.mutate(item.id)}
+                      title={`Click to change status (${AQD_STATUS_CONFIG[item.status].label})`}
+                    />
+                    <button className={styles['aqd-action-btn']}>
+                      <MoreHorizontal size={14} />
+                    </button>
                   </div>
                 );
-              })}
-            </div>
-
-            {/* Overflow section */}
-            {overflow.length > 0 && (
-              <div className={styles['aqd-overflow-section']}>
-                <h3 className={styles['aqd-overflow-title']}>Overflow ({overflow.length})</h3>
-                <div className={styles['aqd-cards-list']}>
-                  {overflow.map(item => (
-                    <div key={item.id} className={styles['aqd-card']}>
-                      <div className={styles['aqd-rank-badge']}>{item.rank}</div>
-                      <div className={styles['aqd-card-body']}>
-                        <div className={styles['aqd-card-row-top']}>
-                          <div className={styles['aqd-card-title']}>{item.title}</div>
-                        </div>
-                        <div className={styles['aqd-card-meta']}>
-                          {item.taskhub_key && (
-                            <span className={styles['aqd-meta-item']}>{item.taskhub_key}</span>
-                          )}
-                        </div>
-                      </div>
-                      <button
-                        className={getStatusClass(item.status)}
-                        onClick={() => cycleStatus.mutate(item.id)}
-                      />
-                    </div>
-                  ))}
+              }
+              return (
+                <div key={`empty-${i}`} className={styles['aqd-empty-slot']}>
+                  <span className={styles['aqd-empty-slot-rank']}>{i + 1}</span>
+                  <span className={styles['aqd-empty-slot-text']}>Empty slot</span>
                 </div>
-              </div>
-            )}
+              );
+            })}
           </div>
-        </main>
+
+          {/* Overflow section */}
+          {overflow.length > 0 && (
+            <div className={styles['aqd-overflow-section']}>
+              <h3 className={styles['aqd-overflow-title']}>Overflow ({overflow.length})</h3>
+              <div className={styles['aqd-cards-list']}>
+                {overflow.map(item => (
+                  <div key={item.id} className={styles['aqd-card']}>
+                    <div className={styles['aqd-rank-badge']}>{item.rank}</div>
+                    <div className={styles['aqd-card-body']}>
+                      <div className={styles['aqd-card-row-top']}>
+                        <div className={styles['aqd-card-title']}>{item.title}</div>
+                      </div>
+                      <div className={styles['aqd-card-meta']}>
+                        {item.taskhub_key && (
+                          <span className={styles['aqd-meta-item']}>{item.taskhub_key}</span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      className={getStatusClass(item.status)}
+                      onClick={() => cycleStatus.mutate(item.id)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Add Item Modal */}
