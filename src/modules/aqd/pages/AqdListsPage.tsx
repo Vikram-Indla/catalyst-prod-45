@@ -72,9 +72,14 @@ export function AqdListsPage() {
         <div className="aqd-header t10-header">
           {/* Left: Brand + Title */}
           <div className="aqd-header-left t10-header-left">
-            <div className="aqd-brand">
-              <span className="aqd-brand-task">Task</span>
-              <span className="aqd-brand-sup">10</span>
+            {/* ISSUE 6 FIX: Gradient icon + wordmark logo */}
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-extrabold">
+                10
+              </div>
+              <span className="text-lg font-bold text-slate-900">
+                Task<sup className="text-xs font-bold text-teal-600 -top-1 relative">10</sup>
+              </span>
             </div>
             <div className="t10-header-title-group">
               <h1 className="aqd-list-title t10-header-title">

@@ -31,18 +31,16 @@ export function AqdPriorityCard({
   // Check if overdue (due date in the past and not completed)
   const isOverdue = !isCompleted && item.due_date && new Date(item.due_date) < new Date();
 
-  // Rank badge styling
+  // Rank badge styling - ISSUE 1 FIX: Light gray badges instead of dark
   const getRankClass = () => {
-    if (isOverflow) return 'aqd-rank-badge aqd-rank-badge-overflow';
-    if (item.rank === 1) return 'aqd-rank-badge aqd-rank-gold';
-    if (item.rank === 2) return 'aqd-rank-badge aqd-rank-silver';
-    if (item.rank === 3) return 'aqd-rank-badge aqd-rank-bronze';
-    return 'aqd-rank-badge';
+    if (isCarryover) return 'w-7 h-7 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-bold shrink-0';
+    if (isOverflow) return 'w-7 h-7 rounded-md bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold shrink-0';
+    return 'w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center text-sm font-bold shrink-0';
   };
 
-  // Card class with carryover styling
+  // Card class with carryover styling - ISSUE 3 FIX: White bg with left border only
   const cardClass = isCarryover 
-    ? 'aqd-card aqd-card-carryover t10-priority-card t10-priority-card--carryover'
+    ? 'aqd-card t10-priority-card bg-white border-l-4 border-l-amber-500'
     : 'aqd-card t10-priority-card';
 
   // Title class with completed styling

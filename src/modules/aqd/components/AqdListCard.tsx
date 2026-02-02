@@ -3,7 +3,7 @@
  * Uses direct CSS classes (not CSS modules) for proper styling
  */
 import { useNavigate } from 'react-router-dom';
-import { Pin, MoreHorizontal, Archive, Trash2 } from 'lucide-react';
+import { Pin as PinIcon, MoreHorizontal, Archive, Trash2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { AqdListFull } from '../types/aqd.types';
 
@@ -25,22 +25,18 @@ export function AqdListCard({ list, onPin, onArchive, onDelete }: AqdListCardPro
     navigate(`/aqd/${list.id}`);
   };
 
+  // ISSUE 8 & 9 FIX: Light badge, icon instead of emoji for pin
   return (
     <div 
-      className="aqd-card t10-list-card"
+      className={`aqd-card t10-list-card ${list.is_pinned ? 'border-l-4 border-l-teal-500' : ''}`}
       onClick={handleCardClick}
     >
-      {/* Rank/Pin Badge */}
-      <div className="aqd-rank-badge">
-        {list.is_pinned ? <Pin size={14} /> : totalItems}
-      </div>
-
       {/* Card Body */}
       <div className="aqd-card-body">
         {/* Title Row */}
         <div className="aqd-card-row-top">
-          <div className="aqd-card-title">
-            {list.is_pinned && <Pin size={12} className="inline mr-1 text-blue-500" />}
+          <div className="aqd-card-title flex items-center gap-1.5">
+            {list.is_pinned && <PinIcon size={14} className="text-teal-600 shrink-0" />}
             {list.name}
           </div>
         </div>
@@ -64,10 +60,10 @@ export function AqdListCard({ list, onPin, onArchive, onDelete }: AqdListCardPro
           )}
         </div>
 
-        {/* Progress Bar */}
-        <div className="aqd-progress-bar">
+        {/* Progress Bar - ISSUE 5 FIX: Solid blue instead of gradient */}
+        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
           <div 
-            className="aqd-progress-bar-fill" 
+            className="h-full bg-blue-600 rounded-full transition-all" 
             style={{ width: `${completionRate}%` }}
           />
         </div>
@@ -83,7 +79,7 @@ export function AqdListCard({ list, onPin, onArchive, onDelete }: AqdListCardPro
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPin?.(list.id); }}>
-              <Pin size={14} className="mr-2" />
+              <PinIcon size={14} className="mr-2" />
               {list.is_pinned ? 'Unpin' : 'Pin'}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive?.(list.id); }}>
