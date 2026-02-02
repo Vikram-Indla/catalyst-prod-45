@@ -103,11 +103,11 @@ export function AqdListsPage() {
           </div>
         </div>
 
-        {/* Content Area */}
-        <div className="aqd-container t10-content">
-          <div className="aqd-container-inner">
+        {/* Content Area - Left-aligned with max-w-3xl */}
+        <div className="flex-1 px-6 py-6 overflow-auto">
+          <div className="max-w-3xl">
             {isLoading ? (
-              <div className="aqd-loading">
+              <div className="flex items-center justify-center py-16">
                 <div className="aqd-spinner" />
               </div>
             ) : lists.length === 0 ? (
@@ -128,7 +128,7 @@ export function AqdListsPage() {
                 </button>
               </div>
             ) : (
-              <div className="aqd-cards-list t10-lists-grid">
+              <div className="space-y-3">
                 {lists.map((list) => (
                   <AqdListCard 
                     key={list.id} 

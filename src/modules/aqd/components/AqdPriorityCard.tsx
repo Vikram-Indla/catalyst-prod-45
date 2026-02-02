@@ -39,9 +39,10 @@ export function AqdPriorityCard({
   };
 
   // Card class with carryover styling - ISSUE 3 FIX: White bg with left border only
+  // Width fix: w-full for full container width
   const cardClass = isCarryover 
-    ? 'aqd-card t10-priority-card bg-white border-l-4 border-l-amber-500'
-    : 'aqd-card t10-priority-card';
+    ? 'w-full bg-white border border-slate-200 rounded-xl p-4 cursor-pointer hover:border-slate-300 hover:shadow-md transition-all flex items-start gap-3 border-l-4 border-l-amber-500'
+    : 'w-full bg-white border border-slate-200 rounded-xl p-4 cursor-pointer hover:border-slate-300 hover:shadow-md transition-all flex items-start gap-3';
 
   // Title class with completed styling
   const titleClass = isCompleted

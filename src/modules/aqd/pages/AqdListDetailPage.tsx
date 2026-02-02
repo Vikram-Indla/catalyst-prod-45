@@ -283,9 +283,9 @@ export function AqdListDetailPage() {
           </div>
         </div>
 
-        {/* Content */}
-        <div className="aqd-container t10-content">
-          <div className="aqd-container-inner">
+        {/* Content - Left-aligned with max-w-4xl (896px) */}
+        <div className="flex-1 px-6 py-6 overflow-auto">
+          <div className="max-w-4xl">
             {/* Filter Bar */}
             <AqdFilterBar
               searchQuery={searchQuery}
@@ -336,11 +336,11 @@ export function AqdListDetailPage() {
                 droppableId="top-priorities"
               />
             ) : (
-              <div className="aqd-cards-grid t10-priority-grid">
+              <div className="space-y-2">
                 {Array.from({ length: Math.min(3, AQD_LIMITS.MAX_TOP_ITEMS) }, (_, i) => (
-                  <div key={`empty-${i}`} className="aqd-empty-slot t10-empty-slot">
-                    <span className="aqd-empty-slot-rank t10-empty-slot-rank">{i + 1}</span>
-                    <span className="aqd-empty-slot-text t10-empty-slot-text">Empty slot</span>
+                  <div key={`empty-${i}`} className="w-full bg-white border border-dashed border-slate-300 rounded-xl p-4 flex items-center gap-3">
+                    <span className="w-7 h-7 rounded-md bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-400">{i + 1}</span>
+                    <span className="text-slate-400 text-sm">Empty slot</span>
                   </div>
                 ))}
               </div>
@@ -348,7 +348,7 @@ export function AqdListDetailPage() {
 
             {/* Overflow Section */}
             {overflow.length > 0 && (
-              <div className="aqd-overflow-section t10-overflow-section">
+              <div className="mt-6">
                 <div className="aqd-section-header">
                   <span className="aqd-section-title">Overflow</span>
                   <span className="aqd-section-count">{overflow.length} items</span>
