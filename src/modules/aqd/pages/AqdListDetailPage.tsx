@@ -4,7 +4,7 @@
  */
 import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Plus, LogOut } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Plus, CheckCircle } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -243,9 +243,14 @@ export function AqdListDetailPage() {
             <button className="aqd-back-btn t10-btn-back" onClick={() => navigate('/aqd')}>
               <ArrowLeft size={16} />
             </button>
-            <div className="aqd-brand">
-              <span className="aqd-brand-task">Task</span>
-              <span className="aqd-brand-sup">10</span>
+            {/* ISSUE 6 FIX: Gradient icon + wordmark */}
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-extrabold">
+                10
+              </div>
+              <span className="text-lg font-bold text-slate-900">
+                Task<sup className="text-xs font-bold text-teal-600 -top-1 relative">10</sup>
+              </span>
             </div>
             <div className="t10-header-title-group">
               <h1 className="aqd-list-title t10-header-title">{list.name}</h1>
@@ -268,13 +273,12 @@ export function AqdListDetailPage() {
                 <ChevronRight size={16} />
               </button>
             </div>
+            {/* ISSUE 4 FIX: Checkout Week button instead of Add Priority */}
             <button 
-              onClick={() => setShowAddModal(true)} 
-              className="t10-btn-primary"
-              disabled={items.length >= AQD_LIMITS.MAX_TOTAL_ITEMS}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-md transition-colors"
             >
-              <Plus size={16} />
-              Add Priority
+              <CheckCircle size={16} />
+              Checkout Week
             </button>
           </div>
         </div>
