@@ -3,12 +3,23 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+interface AIRequest {
+  plan_id: string;
+  message: string;
+  context?: {
+    include_tasks?: boolean;
+    include_resources?: boolean;
+    structured_query?: string;
+  };
+}
+
 serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
@@ -17,7 +28,10 @@ serve(async (req) => {
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
 
     if (!lovableApiKey) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      return new Response(JSON.stringify({ error: "AI service not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -25,7 +39,7 @@ serve(async (req) => {
     // Verify auth
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: "Missing authorization" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -41,7 +55,9 @@ serve(async (req) => {
       });
     }
 
-    const { plan_id, message, context } = await req.json();
+    // Parse request
+    const body: AIRequest = await req.json();
+    const { plan_id, message, context } = body;
 
     if (!plan_id || !message) {
       return new Response(JSON.stringify({ error: "Missing plan_id or message" }), {
@@ -50,10 +66,23 @@ serve(async (req) => {
       });
     }
 
-    // Fetch plan data
+    // Check AI config (optional - for feature toggle)
+    const { data: aiConfig } = await supabase
+      .from("planhub_ai_config")
+      .select("*")
+      .single();
+
+    if (aiConfig && aiConfig.features_enabled?.assistant_enabled === false) {
+      return new Response(JSON.stringify({ error: "AI Assistant is disabled" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Fetch plan data with lead info
     const { data: plan, error: planError } = await supabase
       .from("planhub_plans")
-      .select("*")
+      .select("*, lead:profiles(full_name)")
       .eq("id", plan_id)
       .single();
 
@@ -64,68 +93,83 @@ serve(async (req) => {
       });
     }
 
-    // Fetch tasks if requested
+    // Fetch tasks (default: include)
     let tasks: any[] = [];
-    if (context?.include_tasks) {
+    if (context?.include_tasks !== false) {
       const { data } = await supabase
         .from("planhub_tasks")
-        .select("*")
+        .select("wbs, name, type, days, progress, is_flagged, start_date, end_date")
         .eq("plan_id", plan_id)
         .order("position");
       tasks = data || [];
     }
 
-    // Fetch resources if requested
+    // Fetch resources (default: include)
     let resources: any[] = [];
-    if (context?.include_resources) {
+    if (context?.include_resources !== false) {
       const { data } = await supabase
         .from("planhub_resources")
-        .select("*")
+        .select("name, role, utilization, is_skeleton, skills, vendor")
         .eq("plan_id", plan_id);
       resources = data || [];
     }
 
-    // Build context for AI
-    const planContext = `
-# Project Plan: ${plan.name} (${plan.code})
+    // Calculate stats
+    const taskStats = {
+      total: tasks.filter(t => t.type === "task").length,
+      completed: tasks.filter(t => t.type === "task" && t.progress === 100).length,
+      flagged: tasks.filter(t => t.is_flagged).length,
+      phases: tasks.filter(t => t.type === "phase").length,
+      milestones: tasks.filter(t => t.type === "milestone").length,
+    };
 
-## Overview
-- Status: ${plan.status}
-- Health: ${plan.health}
-- Confidence: ${plan.confidence}%
-- Sentiment: ${plan.sentiment}
-- Start Date: ${plan.start_date || 'Not set'}
-- End Date: ${plan.end_date || 'Not set'}
-- Budget: ${plan.budget ? `${plan.currency} ${plan.budget.toLocaleString()}` : 'Not set'}
+    const resourceStats = {
+      total: resources.length,
+      skeleton: resources.filter(r => r.is_skeleton).length,
+      avgUtil: resources.length 
+        ? Math.round(resources.reduce((s, r) => s + r.utilization, 0) / resources.length) 
+        : 0,
+      overloaded: resources.filter(r => r.utilization > 100).length,
+    };
 
-## Tasks (${tasks.length} total)
-${tasks.map(t => `- [${t.wbs}] ${t.name} (${t.type}) - ${t.progress}% complete, ${t.days} days${t.is_flagged ? ' ⚠️ FLAGGED' : ''}`).join('\n')}
+    // Build comprehensive system prompt
+    const systemPrompt = `You are PlanHub AI, an intelligent assistant for enterprise project planning.
 
-## Resources (${resources.length} total)
-${resources.map(r => `- ${r.name} (${r.role}) - ${r.utilization}% utilization${r.vendor ? ` [${r.vendor}]` : ''}`).join('\n')}
+## Plan Context
+**Plan:** ${plan.name} (${plan.code})
+**Status:** ${plan.status} | **Health:** ${plan.health}
+**Lead:** ${plan.lead?.full_name || "Unassigned"}
+**Confidence:** ${plan.confidence}%
+**Sentiment:** ${plan.sentiment}
+**Start Date:** ${plan.start_date || "Not set"}
+**End Date:** ${plan.end_date || "Not set"}
+**Budget:** ${plan.budget ? `${plan.currency} ${plan.budget.toLocaleString()}` : "Not set"}
 
-## Analysis Hints
-- Tasks with progress < 50% and near deadline are at risk
-- High utilization (>90%) indicates resource constraints
-- Flagged items need attention
-- Critical path includes longest-duration phases
-`;
+## Task Summary
+- Total Tasks: ${taskStats.total} | Completed: ${taskStats.completed} | Flagged: ${taskStats.flagged}
+- Phases: ${taskStats.phases} | Milestones: ${taskStats.milestones}
 
-    const systemPrompt = `You are PlanHub AI, an expert project management assistant. You help users analyze and improve their project plans.
+## Resource Summary
+- Total: ${resourceStats.total} | Skeleton (TBH): ${resourceStats.skeleton}
+- Avg Utilization: ${resourceStats.avgUtil}% | Overallocated: ${resourceStats.overloaded}
 
-You have access to the following project data:
-${planContext}
+## Task List
+${tasks.map(t => `- [${t.wbs}] ${t.name} (${t.type}) - ${t.progress}%${t.is_flagged ? " 🚩" : ""}`).join("\n")}
 
-Guidelines:
-- Be concise and actionable in your responses
-- Use bullet points and numbered lists for clarity
-- Highlight risks and issues proactively
-- Suggest specific improvements when relevant
-- Format responses with markdown for readability
-- When discussing tasks, reference their WBS numbers
-- Calculate metrics like completion percentage, resource loading, etc.
+## Resource List
+${resources.map(r => `- ${r.name}${r.is_skeleton ? " (TBH)" : ""}: ${r.role} - ${r.utilization}%${r.vendor ? ` [${r.vendor}]` : ""}`).join("\n")}
 
-Current date: ${new Date().toISOString().split('T')[0]}`;
+## Instructions
+- Provide specific, actionable insights based on the plan data
+- Reference tasks and resources by name when discussing them
+- Use plan statistics to support your analysis
+- Format responses with **bold** for emphasis and bullet points for lists
+- Use numbered lists for recommendations
+- Be concise but comprehensive
+- Highlight risks, blockers, and items needing attention
+- Calculate completion percentages and resource loading when relevant
+
+Current date: ${new Date().toISOString().split("T")[0]}`;
 
     // Call Lovable AI Gateway
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -135,13 +179,13 @@ Current date: ${new Date().toISOString().split('T')[0]}`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: aiConfig?.model || "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: message },
         ],
-        temperature: 0.7,
-        max_tokens: 1024,
+        temperature: aiConfig?.temperature ?? 0.7,
+        max_tokens: aiConfig?.max_tokens ?? 1024,
       }),
     });
 
@@ -160,19 +204,30 @@ Current date: ${new Date().toISOString().split('T')[0]}`;
       }
       const errorText = await aiResponse.text();
       console.error("AI Gateway error:", aiResponse.status, errorText);
-      throw new Error("AI request failed");
+      return new Response(JSON.stringify({ error: "AI request failed" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const aiData = await aiResponse.json();
-    const aiMessage = aiData.choices?.[0]?.message?.content || "I couldn't generate a response.";
+    const aiMessage = aiData.choices?.[0]?.message?.content || "Unable to generate response.";
 
     // Generate contextual suggestions
-    const suggestions = generateSuggestions(plan, tasks, resources, message);
+    const suggestions = generateSuggestions(plan, tasks, resources, message, aiMessage);
+
+    // Log activity
+    await supabase.from("planhub_activity_log").insert({
+      plan_id,
+      action: "access",
+      details: { type: "ai_query", preview: message.substring(0, 50) },
+      user_id: user.id,
+    });
 
     return new Response(
       JSON.stringify({
         message: aiMessage,
-        suggestions,
+        suggestions: suggestions.slice(0, 4),
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -181,7 +236,7 @@ Current date: ${new Date().toISOString().split('T')[0]}`;
   } catch (error) {
     console.error("PlanHub AI error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Internal server error" }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -190,39 +245,55 @@ Current date: ${new Date().toISOString().split('T')[0]}`;
   }
 });
 
-function generateSuggestions(plan: any, tasks: any[], resources: any[], lastMessage: string): string[] {
+function generateSuggestions(
+  plan: any,
+  tasks: any[],
+  resources: any[],
+  lastMessage: string,
+  aiResponse: string
+): string[] {
   const suggestions: string[] = [];
+  const msgLower = lastMessage.toLowerCase();
+  const responseLower = aiResponse.toLowerCase();
 
   // Risk-related
   const flaggedCount = tasks.filter(t => t.is_flagged).length;
-  if (flaggedCount > 0) {
+  if (flaggedCount > 0 && !msgLower.includes("flag")) {
     suggestions.push(`Show me the ${flaggedCount} flagged items`);
   }
 
+  // Response-based suggestions
+  if (responseLower.includes("risk") && !msgLower.includes("mitigat")) {
+    suggestions.push("Recommend mitigations");
+  }
+  if (responseLower.includes("resource") && !msgLower.includes("rebalance")) {
+    suggestions.push("How to rebalance resources?");
+  }
+
   // Progress-related
-  const behindSchedule = tasks.filter(t => t.progress < 50 && t.type !== 'milestone').length;
-  if (behindSchedule > 0) {
+  const behindSchedule = tasks.filter(t => t.progress < 50 && t.type !== "milestone").length;
+  if (behindSchedule > 0 && !msgLower.includes("behind") && !msgLower.includes("attention")) {
     suggestions.push(`Which ${behindSchedule} tasks need attention?`);
   }
 
   // Resource-related
-  const overloaded = resources.filter(r => r.utilization > 90).length;
-  if (overloaded > 0) {
-    suggestions.push(`${overloaded} resources are overloaded. How to rebalance?`);
+  const overloaded = resources.filter(r => r.utilization > 100).length;
+  if (overloaded > 0 && !msgLower.includes("overload")) {
+    suggestions.push(`${overloaded} resources are overallocated`);
   }
 
-  // Generic helpful suggestions
-  if (!lastMessage.toLowerCase().includes('risk')) {
-    suggestions.push('What are the top risks?');
+  // Generic helpful suggestions based on what wasn't asked
+  if (!msgLower.includes("risk") && !responseLower.includes("risk")) {
+    suggestions.push("What are the top risks?");
   }
-  if (!lastMessage.toLowerCase().includes('critical')) {
-    suggestions.push('Show critical path analysis');
+  if (!msgLower.includes("critical") && !msgLower.includes("path")) {
+    suggestions.push("Show critical path analysis");
   }
-  if (!lastMessage.toLowerCase().includes('budget')) {
-    suggestions.push('How is the budget tracking?');
+  if (!msgLower.includes("budget") && !msgLower.includes("cost")) {
+    suggestions.push("How is the budget tracking?");
   }
-  if (!lastMessage.toLowerCase().includes('timeline')) {
-    suggestions.push('Can we optimize the timeline?');
+  if (!msgLower.includes("timeline") && !msgLower.includes("schedule")) {
+    suggestions.push("Can we optimize the timeline?");
   }
 
   return suggestions.slice(0, 4);
