@@ -1,8 +1,10 @@
 /**
- * Task¹⁰ Item Detail Panel - Full CRUD for Labels, Notes, Description + Activity History
+ * Task¹⁰ Item Detail Panel - Enterprise Grade
+ * Removed: Checklist, AI Generate (out of scope)
+ * Fixed: Status toggle colors, Labels CRUD
  */
 import { useState, useEffect } from 'react';
-import { X, Calendar, User, Tag, FileText, Clock, MessageSquare, History, Trash2, Check, Loader2, ListChecks } from 'lucide-react';
+import { X, Calendar, Tag, FileText, Clock, MessageSquare, History, Trash2, Check } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -11,12 +13,10 @@ import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { AqdItemFull, AqdLabel, AqdItemStatus } from '../types/aqd.types';
-import { AQD_STATUS_CONFIG, getStatusLabel } from '../types/aqd.types';
 import { NotesSection } from './NotesSection';
 import { DescriptionEditor } from './DescriptionEditor';
 import { LabelSelector } from './LabelSelector';
 import { ActivityTimeline } from './ActivityTimeline';
-import { ChecklistSection } from './ChecklistSection';
 import { logActivity } from '../hooks/useAqdItemDetail';
 
 interface AqdItemDetailPanelProps {
@@ -245,16 +245,6 @@ export function AqdItemDetailPanel({
 
               <Divider />
 
-              {/* Checklist */}
-              <SectionLabel icon={<ListChecks className="w-3.5 h-3.5" />}>Checklist</SectionLabel>
-              <ChecklistSection 
-                itemId={item.id} 
-                itemTitle={item.title}
-                itemDescription={item.description || undefined}
-              />
-
-              <Divider />
-
               {/* Notes */}
               <SectionLabel icon={<MessageSquare className="w-3.5 h-3.5" />}>
                 Notes ({item.note_count || 0})
@@ -342,52 +332,64 @@ interface StatusToggleProps {
 }
 
 const STATUS_OPTIONS = [
-  { id: 'not_started', label: 'To Do', activeClass: 'bg-slate-100 text-slate-700 ring-1 ring-slate-300' },
-  { id: 'in_progress', label: 'In Progress', activeClass: 'bg-amber-50 text-amber-700 ring-1 ring-amber-300' },
-  { id: 'completed', label: 'Completed', activeClass: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300' },
+  { 
+    id: 'not_started', 
+    label: 'To Do',
+    activeBg: 'bg-slate-100',
+    activeText: 'text-slate-700',
+    activeRing: 'ring-slate-300',
+    dotActive: 'border-slate-500',
+  },
+  { 
+    id: 'in_progress', 
+    label: 'In Progress',
+    activeBg: 'bg-amber-50',
+    activeText: 'text-amber-700',
+    activeRing: 'ring-amber-300',
+    dotActive: 'bg-amber-500 border-amber-500',
+  },
+  { 
+    id: 'completed', 
+    label: 'Completed',
+    activeBg: 'bg-emerald-50',
+    activeText: 'text-emerald-700',
+    activeRing: 'ring-emerald-300',
+    dotActive: 'bg-emerald-500 border-emerald-500',
+  },
 ];
 
 function StatusToggle({ value, onChange, disabled }: StatusToggleProps) {
   return (
     <div className="flex gap-2 mb-4 flex-wrap">
-      {STATUS_OPTIONS.map((status) => (
-        <button
-          key={status.id}
-          onClick={() => onChange(status.id)}
-          disabled={disabled}
-          className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
-            value === status.id
-              ? status.activeClass
-              : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
-          )}
-        >
-          <StatusIndicator status={status.id} isActive={value === status.id} />
-          {status.label}
-        </button>
-      ))}
+      {STATUS_OPTIONS.map((status) => {
+        const isActive = value === status.id;
+        
+        return (
+          <button
+            key={status.id}
+            onClick={() => onChange(status.id)}
+            disabled={disabled}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
+              isActive 
+                ? `${status.activeBg} ${status.activeText} ring-1 ${status.activeRing}`
+                : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+            )}
+          >
+            {/* Status indicator - gray for inactive, colored for active */}
+            <span className={cn(
+              "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all",
+              isActive ? status.dotActive : "border-slate-300"
+            )}>
+              {status.id === 'completed' && isActive && (
+                <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+              )}
+            </span>
+            {status.label}
+          </button>
+        );
+      })}
     </div>
-  );
-}
-
-function StatusIndicator({ status, isActive }: { status: string; isActive: boolean }) {
-  if (status === 'completed' && isActive) {
-    return (
-      <span className="w-3 h-3 rounded-full bg-emerald-500 flex items-center justify-center">
-        <Check className="w-2 h-2 text-white" />
-      </span>
-    );
-  }
-  
-  if (status === 'in_progress' && isActive) {
-    return <span className="w-3 h-3 rounded-full bg-amber-500" />;
-  }
-  
-  return (
-    <span className={cn(
-      "w-3 h-3 rounded-full border-2",
-      isActive ? "border-slate-500" : "border-slate-300"
-    )} />
   );
 }
 
