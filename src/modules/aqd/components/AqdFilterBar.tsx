@@ -1,5 +1,5 @@
 /**
- * Task¹⁰ Filter Bar - Status, Assignee, Label filters + Search
+ * Task¹⁰ Filter Bar - Enterprise styled Status, Assignee, Label filters + Search
  */
 import { Search, X } from 'lucide-react';
 import type { AqdLabel, AqdItemStatus } from '../types/aqd.types';
@@ -23,6 +23,8 @@ const STATUS_OPTIONS: { value: AqdItemStatus | 'all'; label: string }[] = [
   { value: 'in_progress', label: 'In Progress' },
   { value: 'completed', label: 'Completed' },
 ];
+
+const selectStyles = "px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 font-medium cursor-pointer hover:bg-slate-100 hover:border-slate-300 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all";
 
 export function AqdFilterBar({
   searchQuery,
@@ -48,37 +50,35 @@ export function AqdFilterBar({
     onSearchChange('');
   };
 
-  const selectedStatus = STATUS_OPTIONS.find(s => s.value === statusFilter);
-  const selectedLabel = labels.find(l => l.id === labelFilter);
-  const selectedAssignee = assignees.find(a => a.id === assigneeFilter);
-
   return (
-    <div className="aqd-filter-bar">
-      {/* Search Input */}
-      <div className="aqd-filter-search">
-        <Search size={16} className="aqd-filter-search-icon" />
-        <input
-          type="text"
-          className="aqd-filter-search-input"
-          placeholder="Search items..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-        {searchQuery && (
-          <button
-            className="aqd-filter-search-clear"
-            onClick={() => onSearchChange('')}
-          >
-            <X size={14} />
-          </button>
-        )}
-      </div>
+    <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm mb-5">
+      <div className="flex items-center gap-3">
+        {/* Search Input */}
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search items..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-transparent rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+          />
+          {searchQuery && (
+            <button
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded"
+              onClick={() => onSearchChange('')}
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
 
-      {/* ISSUE 7 FIX: Native select dropdowns instead of pills */}
-      <div className="aqd-filter-dropdowns flex items-center gap-2">
+        {/* Divider */}
+        <div className="w-px h-8 bg-slate-200" />
+
         {/* Status Filter */}
         <select 
-          className="px-3 py-1.5 text-sm border border-slate-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={`${selectStyles} min-w-[130px]`}
           value={statusFilter}
           onChange={(e) => onStatusFilterChange(e.target.value as AqdItemStatus | 'all')}
         >
@@ -91,7 +91,7 @@ export function AqdFilterBar({
 
         {/* Assignee Filter */}
         <select 
-          className="px-3 py-1.5 text-sm border border-slate-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={`${selectStyles} min-w-[140px]`}
           value={assigneeFilter}
           onChange={(e) => onAssigneeFilterChange(e.target.value)}
         >
@@ -105,7 +105,7 @@ export function AqdFilterBar({
 
         {/* Label Filter */}
         <select 
-          className="px-3 py-1.5 text-sm border border-slate-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={`${selectStyles} min-w-[120px]`}
           value={labelFilter}
           onChange={(e) => onLabelFilterChange(e.target.value)}
         >
@@ -119,7 +119,10 @@ export function AqdFilterBar({
 
         {/* Clear Filters */}
         {activeFiltersCount > 0 && (
-          <button className="aqd-filter-clear flex items-center gap-1 px-2 py-1 text-sm text-slate-500 hover:text-slate-700" onClick={clearAllFilters}>
+          <button 
+            className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" 
+            onClick={clearAllFilters}
+          >
             <X size={14} />
             Clear ({activeFiltersCount})
           </button>
