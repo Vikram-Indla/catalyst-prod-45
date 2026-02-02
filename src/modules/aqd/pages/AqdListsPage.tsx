@@ -1,5 +1,6 @@
 /**
- * AQD¹⁰ Lists Page - Priority Management Dashboard
+ * Task¹⁰ Lists Page - Priority Management Dashboard
+ * Enterprise Clean header matching /taskhub/timeline
  */
 import { useState } from 'react';
 import { Plus, Target, MoreHorizontal, Pin, Trash2, Archive } from 'lucide-react';
@@ -55,29 +56,45 @@ export function AqdListsPage() {
   };
 
   return (
-    <div className="flex h-full min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+    <div className="flex h-full min-h-screen bg-[#f8fafc] dark:bg-slate-950">
       <PlannerSidebar
         expanded={sidebarExpanded}
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
       />
-      <div className="flex flex-col flex-1 min-w-0 overflow-auto p-6">
-        <div className={styles['aqd-container-inner']}>
-          <header className={styles['aqd-header']}>
-            <div className={styles['aqd-header-left']}>
-              <div className={styles['aqd-brand']}>
-                <span className={styles['aqd-brand-task']}>Task</span>
-                <span className={styles['aqd-brand-sup']}>10</span>
-              </div>
-              <div>
-                <h1 className={styles['aqd-list-title']}>Task<sup className={styles['aqd-title-sup']}>10</sup> Priority Lists</h1>
-                <div className={styles['aqd-list-meta']}>{lists.length} list{lists.length !== 1 ? 's' : ''}</div>
-              </div>
+      <div className="flex flex-col flex-1 min-w-0">
+        {/* Enterprise Clean Header - matching /taskhub/timeline */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e8f0] dark:border-slate-800 bg-white dark:bg-slate-950 flex-shrink-0">
+          {/* Left: Brand + Title */}
+          <div className="flex items-center gap-4">
+            {/* Task¹⁰ Brand Badge */}
+            <div className={styles['aqd-brand']}>
+              <span className={styles['aqd-brand-task']}>Task</span>
+              <span className={styles['aqd-brand-sup']}>10</span>
             </div>
-            <div className={styles['aqd-header-right']}>
-              <Button onClick={() => setShowCreateModal(true)} className="gap-2"><Plus size={16} />New List</Button>
+            <div>
+              <h1 className="text-xl font-bold text-[#0f172a] dark:text-slate-100">
+                Priority Lists
+              </h1>
+              <p className="text-sm text-[#64748b] dark:text-slate-400">
+                Focus on your top 10 weekly priorities
+              </p>
             </div>
-          </header>
+          </div>
 
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2">
+            <Button 
+              onClick={() => setShowCreateModal(true)} 
+              className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New List
+            </Button>
+          </div>
+        </div>
+
+        {/* Content Area */}
+        <div className="flex-1 overflow-auto p-6">
           {isLoading ? (
             <div className={styles['aqd-loading']}><div className={styles['aqd-spinner']} /></div>
           ) : lists.length === 0 ? (
