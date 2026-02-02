@@ -1,0 +1,437 @@
+/* ============================================================================
+   TASK10 PRIORITY LISTS — RING-FENCED DESIGN SYSTEM
+   
+   File: src/styles/priority-lists.css
+   Namespace: --priority-* / .priority-*
+   Benchmark: Linear, Asana, Notion
+   Score Target: 8.2/10
+   
+   CRITICAL: Import this file in your Priority Lists component
+   import '@/styles/priority-lists.css';
+   ============================================================================ */
+
+/* ============================================================================
+   CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+   ============================================================================ */
+
+:root {
+  /* Typography */
+  --priority-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --priority-title-size: 14px;
+  --priority-title-weight: 600;
+  --priority-title-color: #1e293b;
+  --priority-meta-size: 12px;
+  --priority-meta-weight: 400;
+  --priority-meta-color: #64748b;
+  --priority-percent-size: 12px;
+  --priority-percent-weight: 500;
+  --priority-percent-color: #64748b;
+  
+  /* Status Border Colors */
+  --priority-status-on-track: #22c55e;
+  --priority-status-behind: #f59e0b;
+  --priority-status-blocked: #ef4444;
+  --priority-status-default: #e2e8f0;
+  
+  /* Surfaces */
+  --priority-bg-page: #f8fafc;
+  --priority-bg-card: #ffffff;
+  
+  /* Borders */
+  --priority-border-card: #e2e8f0;
+  --priority-border-card-hover: #cbd5e1;
+  
+  /* Progress Bar */
+  --priority-progress-track: #e2e8f0;
+  --priority-progress-fill: #3b82f6;
+  
+  /* Avatars */
+  --priority-avatar-blue: #3b82f6;
+  --priority-avatar-teal: #14b8a6;
+  --priority-avatar-purple: #8b5cf6;
+  --priority-avatar-orange: #f97316;
+  --priority-avatar-pink: #ec4899;
+  
+  /* Shadows */
+  --priority-shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.04);
+  
+  /* Spacing */
+  --priority-page-padding: 24px;
+  --priority-card-padding-x: 16px;
+  --priority-card-padding-y: 14px;
+  --priority-card-gap: 8px;
+  --priority-card-radius: 10px;
+  
+  /* Sizing */
+  --priority-avatar-size: 28px;
+  --priority-icon-size: 18px;
+  --priority-progress-height: 6px;
+  --priority-status-border-width: 3px;
+  
+  /* Transitions */
+  --priority-transition-fast: 0.1s ease;
+  --priority-transition-normal: 0.15s ease;
+}
+
+
+/* ============================================================================
+   PAGE CONTAINER
+   ============================================================================ */
+
+.priority-page {
+  min-height: 100vh;
+  background-color: var(--priority-bg-page);
+}
+
+
+/* ============================================================================
+   HEADER — Clean, no childish branding
+   ============================================================================ */
+
+.priority-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.priority-header__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Clean wordmark — no superscript, no badge */
+.priority-header__logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.priority-header__title-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.priority-header__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.priority-header__subtitle {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.priority-header__new-btn {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--priority-font-family);
+  transition: background-color var(--priority-transition-fast);
+}
+
+.priority-header__new-btn:hover {
+  background-color: #2563eb;
+}
+
+.priority-header__new-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+
+/* ============================================================================
+   LIST CONTAINER
+   ============================================================================ */
+
+.priority-container {
+  padding: var(--priority-page-padding);
+}
+
+.priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--priority-card-gap);
+  max-width: 900px;
+}
+
+
+/* ============================================================================
+   LIST CARD — Compact, Linear-inspired
+   
+   CRITICAL CHANGES FROM CURRENT:
+   - Height reduced from ~120px to ~70px
+   - Percentage next to progress bar (not far right)
+   - Avatar instead of text name
+   - Status-based left border
+   - Emoji icon instead of generic checklist
+   ============================================================================ */
+
+.priority-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: var(--priority-card-padding-y) var(--priority-card-padding-x);
+  background-color: var(--priority-bg-card);
+  border: 1px solid var(--priority-border-card);
+  border-radius: var(--priority-card-radius);
+  cursor: pointer;
+  font-family: var(--priority-font-family);
+  transition: all var(--priority-transition-normal);
+}
+
+.priority-card:hover {
+  border-color: var(--priority-border-card-hover);
+  box-shadow: var(--priority-shadow-card-hover);
+}
+
+/* Focus state for accessibility */
+.priority-card:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+
+/* ============================================================================
+   STATUS-BASED LEFT BORDER
+   
+   MEANING:
+   - Green = On track (progress as expected)
+   - Amber = Behind (needs attention)
+   - Red = Blocked (critical issue)
+   ============================================================================ */
+
+.priority-card--on-track {
+  border-left: var(--priority-status-border-width) solid var(--priority-status-on-track);
+}
+
+.priority-card--behind {
+  border-left: var(--priority-status-border-width) solid var(--priority-status-behind);
+}
+
+.priority-card--blocked {
+  border-left: var(--priority-status-border-width) solid var(--priority-status-blocked);
+}
+
+
+/* ============================================================================
+   ICON — Customizable emoji per list
+   ============================================================================ */
+
+.priority-card__icon {
+  font-size: var(--priority-icon-size);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+
+/* ============================================================================
+   CONTENT AREA
+   ============================================================================ */
+
+.priority-card__content {
+  flex: 1;
+  min-width: 0;  /* Allows text truncation */
+}
+
+/* Title — Hero element */
+.priority-card__title {
+  font-size: var(--priority-title-size);
+  font-weight: var(--priority-title-weight);
+  color: var(--priority-title-color);
+  margin: 0 0 6px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Meta row — stats and progress */
+.priority-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+/* ============================================================================
+   STATS — Grey only, shows remaining (actionable)
+   
+   CRITICAL: No green "3 completed" mid-sentence
+   Show: "12 items · 9 remaining"
+   ============================================================================ */
+
+.priority-card__stats {
+  font-size: var(--priority-meta-size);
+  font-weight: var(--priority-meta-weight);
+  color: var(--priority-meta-color);
+  white-space: nowrap;
+}
+
+
+/* ============================================================================
+   PROGRESS — Integrated percentage
+   
+   CRITICAL: Percentage directly after bar, NOT floating far right
+   ============================================================================ */
+
+.priority-card__progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 200px;
+}
+
+.priority-card__progress-track {
+  flex: 1;
+  height: var(--priority-progress-height);
+  background-color: var(--priority-progress-track);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.priority-card__progress-fill {
+  height: 100%;
+  background-color: var(--priority-progress-fill);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Percentage — directly after bar */
+.priority-card__percent {
+  font-size: var(--priority-percent-size);
+  font-weight: var(--priority-percent-weight);
+  color: var(--priority-percent-color);
+  min-width: 32px;
+  text-align: right;
+}
+
+
+/* ============================================================================
+   AVATAR — Replaces text owner name
+   
+   CRITICAL: 28px circle with initials, NOT "👤 Vikram India"
+   ============================================================================ */
+
+.priority-card__avatar {
+  width: var(--priority-avatar-size);
+  height: var(--priority-avatar-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+/* Avatar color variants */
+.priority-card__avatar--blue { background-color: var(--priority-avatar-blue); }
+.priority-card__avatar--teal { background-color: var(--priority-avatar-teal); }
+.priority-card__avatar--purple { background-color: var(--priority-avatar-purple); }
+.priority-card__avatar--orange { background-color: var(--priority-avatar-orange); }
+.priority-card__avatar--pink { background-color: var(--priority-avatar-pink); }
+
+
+/* ============================================================================
+   ARROW — Appears on hover
+   ============================================================================ */
+
+.priority-card__arrow {
+  color: #94a3b8;
+  opacity: 0;
+  transition: opacity var(--priority-transition-fast);
+  flex-shrink: 0;
+}
+
+.priority-card:hover .priority-card__arrow {
+  opacity: 1;
+}
+
+
+/* ============================================================================
+   EMPTY STATE
+   ============================================================================ */
+
+.priority-empty {
+  text-align: center;
+  padding: 60px 24px;
+  color: #64748b;
+}
+
+.priority-empty__icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.priority-empty__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.priority-empty__desc {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.priority-empty__btn {
+  padding: 10px 20px;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--priority-font-family);
+  transition: background-color var(--priority-transition-fast);
+}
+
+.priority-empty__btn:hover {
+  background-color: #2563eb;
+}
+
+
+/* ============================================================================
+   LOADING STATE
+   ============================================================================ */
+
+.priority-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.priority-loading__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: priority-spin 0.8s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes priority-spin {
+  to { transform: rotate(360deg); }
+}

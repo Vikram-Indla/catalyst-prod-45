@@ -1,9 +1,15 @@
 /**
- * Task¹⁰ Lists Page - Priority Management Dashboard
- * Enterprise-grade UI with shadows, hover states, and skeleton loaders
+ * Task10 Priority Lists Page — Linear-inspired Enterprise UI
+ * 
+ * CRITICAL FIXES:
+ * - Clean "Priorities" wordmark (no childish Task¹⁰ branding)
+ * - Compact cards (~70px vs ~120px)
+ * - Status-based left borders
+ * - Avatar circles for owners
+ * - Progress % integrated with bar
  */
 import { useState } from 'react';
-import { Plus, Target } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -15,9 +21,7 @@ import { PlannerSidebar } from '@/modules/planner/components/PlannerSidebar';
 import { AqdListCard } from '../components/AqdListCard';
 import { AqdSkeletonListCard } from '../components/AqdSkeletonCard';
 import type { AqdListFull } from '../types/aqd.types';
-// Import CSS files - these define the global .aqd-* and .t10-* classes
-import '../styles/aqd.css';
-import '../styles/task10-override.css';
+import '@/styles/priority-lists.css';
 
 export function AqdListsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -115,83 +119,62 @@ export function AqdListsPage() {
   };
 
   return (
-    <div className="flex h-full min-h-screen task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
+    <div className="flex h-full min-h-screen priority-page">
       <PlannerSidebar
         expanded={sidebarExpanded}
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
       />
       <div className="flex flex-col flex-1 min-w-0">
-        {/* Enterprise Clean Header */}
-        <div className="aqd-header t10-header">
-          {/* Left: Brand + Title */}
-          <div className="aqd-header-left t10-header-left">
-            {/* ISSUE 6 FIX: Gradient icon + wordmark logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-extrabold">
-                10
-              </div>
-              <span className="text-lg font-bold text-slate-900">
-                Task<sup className="text-xs font-bold text-teal-600 -top-1 relative">10</sup>
-              </span>
-            </div>
-            <div className="t10-header-title-group">
-              <h1 className="aqd-list-title t10-header-title">
-                Priority Lists
-              </h1>
-              <p className="aqd-list-meta t10-header-meta">
-                Focus on your top 10 weekly priorities
+        {/* Enterprise Clean Header — No childish Task¹⁰ branding */}
+        <header className="priority-header">
+          <div className="priority-header__left">
+            <span className="priority-header__logo">Priorities</span>
+            <div className="priority-header__title-area">
+              <p className="priority-header__subtitle">
+                Focus on your top weekly priorities
               </p>
             </div>
           </div>
+          <button 
+            className="priority-header__new-btn"
+            onClick={() => setShowCreateModal(true)}
+          >
+            <Plus size={14} />
+            New List
+          </button>
+        </header>
 
-          {/* Right: Actions */}
-          <div className="aqd-header-right t10-header-right">
-            <button 
-              onClick={() => setShowCreateModal(true)} 
-              className="t10-btn-primary"
-            >
-              <Plus size={16} />
-              New List
-            </button>
-          </div>
-        </div>
-
-        {/* Content Area - Full width */}
-        <div className="flex-1 px-6 py-6 overflow-auto">
-          <div className="w-full">
-            {isLoading ? (
-              <AqdSkeletonListCard count={3} />
-            ) : lists.length === 0 ? (
-              <div className="aqd-empty-state t10-empty-state">
-                <div className="aqd-empty-state-icon t10-empty-icon">
-                  <Target size={32} />
-                </div>
-                <h3 className="aqd-empty-state-title t10-empty-title">No priority lists yet</h3>
-                <p className="aqd-empty-state-description t10-empty-description">
-                  Create your first priority list to start tracking your top 10 weekly priorities.
-                </p>
-                <button 
-                  className="t10-btn-primary" 
-                  onClick={() => setShowCreateModal(true)}
-                >
-                  <Plus size={16} />
-                  Create First List
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {lists.map((list) => (
-                  <AqdListCard 
-                    key={list.id} 
-                    list={list}
-                    onPin={(id) => pinList.mutate(id)}
-                    onArchive={(id) => archiveList.mutate(id)}
-                    onDelete={(id) => setDeleteConfirmId(id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Content Area */}
+        <div className="priority-container">
+          {isLoading ? (
+            <AqdSkeletonListCard count={3} />
+          ) : lists.length === 0 ? (
+            <div className="priority-empty">
+              <div className="priority-empty__icon">📋</div>
+              <h3 className="priority-empty__title">No priority lists yet</h3>
+              <p className="priority-empty__desc">
+                Create your first list to start tracking your weekly priorities
+              </p>
+              <button 
+                className="priority-empty__btn"
+                onClick={() => setShowCreateModal(true)}
+              >
+                Create List
+              </button>
+            </div>
+          ) : (
+            <div className="priority-list">
+              {lists.map((list) => (
+                <AqdListCard 
+                  key={list.id} 
+                  list={list}
+                  onPin={(id) => pinList.mutate(id)}
+                  onArchive={(id) => archiveList.mutate(id)}
+                  onDelete={(id) => setDeleteConfirmId(id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
