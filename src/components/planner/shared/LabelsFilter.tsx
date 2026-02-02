@@ -1,10 +1,11 @@
 // ============================================================================
-// SHARED: LabelsFilter — Filter dropdown for labels
+// SHARED: LabelsFilter — Filter dropdown for labels with task counts
 // ============================================================================
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Tag, ChevronDown, Check } from 'lucide-react';
 import { useLabels } from '../task-modal/hooks/useLabels';
+import { useLabelTaskCounts } from '@/modules/planner/hooks/useLabelTaskCounts';
 
 interface LabelsFilterProps {
   selectedLabels: string[];
@@ -29,6 +30,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { labels } = useLabels();
+  const { data: labelCounts = {} } = useLabelTaskCounts();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -112,7 +114,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
             position: 'absolute',
             top: 'calc(100% + 4px)',
             left: 0,
-            width: '240px',
+            width: '260px',
             backgroundColor: COLORS.surfaceCard,
             border: `1px solid ${COLORS.borderDefault}`,
             borderRadius: '12px',
@@ -155,6 +157,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
           <div style={{ maxHeight: '280px', overflowY: 'auto', padding: '8px' }}>
             {labels.map(label => {
               const isSelected = selectedLabels.includes(label.id);
+              const taskCount = labelCounts[label.id] || 0;
               return (
                 <div
                   key={label.id}
@@ -187,6 +190,20 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
                   />
                   <span style={{ flex: 1, fontSize: '14px', color: COLORS.textPrimary }}>
                     {label.name}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      color: COLORS.textMuted,
+                      backgroundColor: COLORS.surfaceHover,
+                      padding: '2px 8px',
+                      borderRadius: '10px',
+                      minWidth: '24px',
+                      textAlign: 'center'
+                    }}
+                  >
+                    {taskCount}
                   </span>
                   {isSelected && <Check size={16} style={{ color: COLORS.accent }} />}
                 </div>
