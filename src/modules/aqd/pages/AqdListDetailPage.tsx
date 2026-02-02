@@ -4,7 +4,7 @@
  */
 import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Plus, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, CheckCircle, Loader2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -19,6 +19,8 @@ import { AiSuggestionsCard } from '../components/AiSuggestionsCard';
 import { AqdFilterBar } from '../components/AqdFilterBar';
 import { AqdItemDetailPanel } from '../components/AqdItemDetailPanel';
 import { AqdDraggableList } from '../components/AqdDraggableList';
+import { AqdCheckoutModal } from '../components/AqdCheckoutModal';
+import { useAqdCheckout } from '../hooks/useAqdCheckout';
 import type { AqdListFull, AqdWeekFull, AqdItemFull, AqdItemStatus } from '../types/aqd.types';
 import { formatWeekRange, splitItems, AQD_LIMITS } from '../types/aqd.types';
 import { useAqdFilters } from '../hooks/useAqdFilters';
@@ -36,6 +38,7 @@ export function AqdListDetailPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [selectedItem, setSelectedItem] = useState<AqdItemFull | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
 
   // Fetch list details
   const { data: list, isLoading: listLoading } = useQuery({
@@ -193,6 +196,21 @@ export function AqdListDetailPage() {
     onError: (e) => toast.error(`Failed to reorder: ${e.message}`),
   });
 
+  // Checkout week mutation
+  const checkoutWeek = useAqdCheckout();
+
+  const handleCheckout = useCallback((decisions: Array<{ item_id: string; decision: 'resolved' | 'carry' | 'leave' }>) => {
+    if (!currentWeek?.id) return;
+    checkoutWeek.mutate(
+      { weekId: currentWeek.id, decisions },
+      {
+        onSuccess: () => {
+          setShowCheckoutModal(false);
+        },
+      }
+    );
+  }, [currentWeek?.id, checkoutWeek]);
+
   const handleAddItem = useCallback(() => {
     if (newItemTitle.trim()) {
       createItem.mutate(newItemTitle.trim());
@@ -285,9 +303,15 @@ export function AqdListDetailPage() {
             </div>
             {/* Checkout Week button with shadow */}
             <button 
-              className="flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow transition-all"
+              onClick={() => setShowCheckoutModal(true)}
+              disabled={checkoutWeek.isPending}
+              className="flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow transition-all disabled:opacity-60"
             >
-              <CheckCircle size={16} />
+              {checkoutWeek.isPending ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <CheckCircle size={16} />
+              )}
               Checkout Week
             </button>
           </div>
@@ -456,6 +480,16 @@ export function AqdListDetailPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Checkout Modal */}
+      <AqdCheckoutModal
+        open={showCheckoutModal}
+        onOpenChange={setShowCheckoutModal}
+        items={items}
+        weekId={currentWeek?.id || ''}
+        onCheckout={handleCheckout}
+        isLoading={checkoutWeek.isPending}
+      />
     </div>
   );
 }
