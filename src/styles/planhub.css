@@ -1168,6 +1168,175 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
+   REPORT CENTER
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.planhub-module .ph-report-stats {
+  display: flex;
+  gap: var(--ph-space-6);
+  margin-bottom: var(--ph-space-6);
+  padding: var(--ph-space-4);
+  background: var(--ph-surface);
+  border: 1px solid var(--ph-border);
+  border-radius: var(--ph-radius-lg);
+}
+
+.planhub-module .ph-report-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ph-space-1);
+}
+
+.planhub-module .ph-report-stat-label {
+  font-size: var(--ph-text-sm);
+  color: var(--ph-gray-500);
+}
+
+.planhub-module .ph-report-stat-value {
+  font-size: var(--ph-text-xl);
+  font-weight: var(--ph-font-bold);
+  color: var(--ph-gray-900);
+}
+
+.planhub-module .ph-report-section-title {
+  font-size: var(--ph-text-base);
+  font-weight: var(--ph-font-semibold);
+  color: var(--ph-gray-700);
+  margin-bottom: var(--ph-space-4);
+}
+
+.planhub-module .ph-report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--ph-space-4);
+}
+
+.planhub-module .ph-report-card {
+  background: var(--ph-surface);
+  border: 1px solid var(--ph-border);
+  border-radius: var(--ph-radius-lg);
+  padding: var(--ph-space-5);
+  display: flex;
+  flex-direction: column;
+  transition: border-color var(--ph-transition-base), box-shadow var(--ph-transition-base);
+}
+
+.planhub-module .ph-report-card:hover {
+  border-color: var(--ph-primary-border);
+  box-shadow: var(--ph-shadow-md);
+}
+
+.planhub-module .ph-report-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--ph-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--ph-space-4);
+}
+
+.planhub-module .ph-report-icon.schedule {
+  background: var(--ph-primary-light);
+  color: var(--ph-primary);
+}
+
+.planhub-module .ph-report-icon.resource {
+  background: var(--ph-teal-light);
+  color: var(--ph-teal);
+}
+
+.planhub-module .ph-report-icon.budget {
+  background: var(--ph-success-light);
+  color: var(--ph-success);
+}
+
+.planhub-module .ph-report-icon.risk {
+  background: var(--ph-warning-light);
+  color: var(--ph-warning);
+}
+
+.planhub-module .ph-report-icon.ai {
+  background: var(--ph-purple-light);
+  color: var(--ph-purple);
+}
+
+.planhub-module .ph-report-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ph-space-2);
+  margin-bottom: var(--ph-space-2);
+}
+
+.planhub-module .ph-report-card-title {
+  font-size: var(--ph-text-base);
+  font-weight: var(--ph-font-semibold);
+  color: var(--ph-gray-900);
+}
+
+.planhub-module .ph-report-ai-badge {
+  font-size: var(--ph-text-xs);
+  font-weight: var(--ph-font-semibold);
+  color: var(--ph-purple);
+  background: var(--ph-purple-light);
+  padding: 2px 8px;
+  border-radius: var(--ph-radius-full);
+}
+
+.planhub-module .ph-report-card-description {
+  font-size: var(--ph-text-sm);
+  color: var(--ph-gray-500);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.planhub-module .ph-report-generate-btn {
+  margin-top: var(--ph-space-4);
+  width: 100%;
+}
+
+.planhub-module .ph-report-table-container {
+  background: var(--ph-surface);
+  border: 1px solid var(--ph-border);
+  border-radius: var(--ph-radius-lg);
+  overflow: hidden;
+}
+
+.planhub-module .ph-report-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.planhub-module .ph-report-table th {
+  padding: var(--ph-space-3) var(--ph-space-4);
+  text-align: left;
+  font-size: var(--ph-text-xs);
+  font-weight: var(--ph-font-semibold);
+  color: var(--ph-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--ph-gray-50);
+  border-bottom: 1px solid var(--ph-border);
+}
+
+.planhub-module .ph-report-table td {
+  padding: var(--ph-space-3) var(--ph-space-4);
+  font-size: var(--ph-text-sm);
+  color: var(--ph-gray-700);
+  border-bottom: 1px solid var(--ph-border);
+}
+
+.planhub-module .ph-report-table-empty {
+  text-align: center;
+  color: var(--ph-gray-400);
+  padding: var(--ph-space-8) var(--ph-space-4) !important;
+}
+
+.planhub-module .ph-spin {
+  animation: ph-spin 1s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
    UTILITIES
    ═══════════════════════════════════════════════════════════════════════════════ */
 
