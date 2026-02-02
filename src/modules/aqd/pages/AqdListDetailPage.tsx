@@ -263,7 +263,7 @@ export function AqdListDetailPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
+    <div className="flex h-full min-h-screen task10-app aqd-root" style={{ background: 'var(--aqd-background, #f8fafc)' }}>
       <PlannerSidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
       <div className="flex flex-col flex-1 min-w-0 min-h-0">
         {/* Header */}
@@ -318,7 +318,11 @@ export function AqdListDetailPage() {
         </div>
 
         {/* Content - Full width */}
-        <div className="flex-1 min-h-0 px-6 py-6 overflow-auto">
+        {/*
+          DnD constraint: @hello-pangea/dnd only supports ONE scroll parent.
+          We intentionally avoid an inner overflow container here and allow the page (window) to scroll.
+        */}
+        <div className="flex-1 px-6 py-6">
           <div className="w-full">
             {/* Filter Bar */}
             <AqdFilterBar
