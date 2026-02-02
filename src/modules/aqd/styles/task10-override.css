@@ -635,12 +635,23 @@
 
 .t10-quick-add-input {
   flex: 1;
-  border: none;
-  background: transparent;
+  border: none !important;
+  background: transparent !important;
   font-family: var(--t10-font-sans);
   font-size: var(--t10-text-base);
   color: var(--t10-text-primary);
-  outline: none;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  margin: 0;
+}
+
+.t10-quick-add-input:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .t10-quick-add-input::placeholder {
