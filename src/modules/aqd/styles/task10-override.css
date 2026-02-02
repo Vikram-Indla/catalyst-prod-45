@@ -324,8 +324,8 @@
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  background: var(--t10-accent-light);
-  color: var(--t10-accent);
+  background: var(--t10-info-light);
+  color: var(--t10-info);
   border-radius: var(--t10-radius-full);
   font-size: var(--t10-text-xs);
   font-weight: 600;
