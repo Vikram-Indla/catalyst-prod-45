@@ -4,7 +4,6 @@
  */
 import { Check } from 'lucide-react';
 import type { AqdItemStatus } from '../types/aqd.types';
-import styles from '../styles/aqd.module.css';
 
 interface AqdStatusToggleProps {
   status: AqdItemStatus;
@@ -15,17 +14,17 @@ interface AqdStatusToggleProps {
 
 const STATUS_CONFIG = {
   not_started: {
-    className: styles['aqd-status-todo'],
+    className: 'aqd-status-todo',
     label: 'To Do',
     nextLabel: 'Mark In Progress',
   },
   in_progress: {
-    className: styles['aqd-status-progress'],
+    className: 'aqd-status-progress',
     label: 'In Progress',
     nextLabel: 'Mark Complete',
   },
   completed: {
-    className: styles['aqd-status-done'],
+    className: 'aqd-status-done',
     label: 'Completed',
     nextLabel: 'Reset to To Do',
   },
@@ -38,7 +37,7 @@ export function AqdStatusToggle({ status, onClick, disabled = false, size = 'md'
   return (
     <button
       type="button"
-      className={`${styles['aqd-status-toggle']} ${config.className} ${sizeClass}`}
+      className={`aqd-status-toggle ${config.className} ${sizeClass}`}
       onClick={(e) => {
         e.stopPropagation();
         if (!disabled) onClick();
