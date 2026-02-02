@@ -1,13 +1,17 @@
 /* ============================================================================
-   TASK10 PRIORITY LISTS — RING-FENCED DESIGN SYSTEM
+   TASK¹⁰ PRIORITY LISTS — ENTERPRISE V2 DESIGN SYSTEM
    
    File: src/styles/priority-lists.css
    Namespace: --priority-* / .priority-*
-   Benchmark: Linear, Asana, Notion
-   Score Target: 8.2/10
+   Score Target: 9.5/10 GOD-TIER
    
-   CRITICAL: Import this file in your Priority Lists component
-   import '@/styles/priority-lists.css';
+   ENTERPRISE OVERHAUL:
+   - Branded header with Task¹⁰ logo + stats
+   - No emoji icons (professional design)
+   - Section headers (Pinned / All Lists)
+   - Hover-reveal menus
+   - Shadow + lift on hover
+   - Last updated timestamps
    ============================================================================ */
 
 /* ============================================================================
@@ -17,21 +21,16 @@
 :root {
   /* Typography */
   --priority-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --priority-title-size: 14px;
-  --priority-title-weight: 600;
-  --priority-title-color: #1e293b;
-  --priority-meta-size: 12px;
-  --priority-meta-weight: 400;
-  --priority-meta-color: #64748b;
-  --priority-percent-size: 12px;
-  --priority-percent-weight: 500;
-  --priority-percent-color: #64748b;
+  
+  /* Brand Colors */
+  --priority-brand-primary: #14b8a6;
+  --priority-brand-gradient-start: #14b8a6;
+  --priority-brand-gradient-end: #0891b2;
   
   /* Status Border Colors */
   --priority-status-on-track: #22c55e;
   --priority-status-behind: #f59e0b;
   --priority-status-blocked: #ef4444;
-  --priority-status-default: #e2e8f0;
   
   /* Surfaces */
   --priority-bg-page: #f8fafc;
@@ -44,6 +43,7 @@
   /* Progress Bar */
   --priority-progress-track: #e2e8f0;
   --priority-progress-fill: #3b82f6;
+  --priority-progress-complete: #10b981;
   
   /* Avatars */
   --priority-avatar-blue: #3b82f6;
@@ -53,24 +53,16 @@
   --priority-avatar-pink: #ec4899;
   
   /* Shadows */
-  --priority-shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --priority-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --priority-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
   
   /* Spacing */
   --priority-page-padding: 24px;
-  --priority-card-padding-x: 16px;
-  --priority-card-padding-y: 14px;
-  --priority-card-gap: 8px;
-  --priority-card-radius: 10px;
-  
-  /* Sizing */
-  --priority-avatar-size: 28px;
-  --priority-icon-size: 18px;
-  --priority-progress-height: 6px;
-  --priority-status-border-width: 3px;
+  --priority-card-radius: 12px;
   
   /* Transitions */
   --priority-transition-fast: 0.1s ease;
-  --priority-transition-normal: 0.15s ease;
+  --priority-transition-normal: 0.2s ease;
 }
 
 
@@ -85,7 +77,447 @@
 
 
 /* ============================================================================
-   HEADER — Clean, no childish branding
+   HEADER V2 — Enterprise with Branding + Stats
+   ============================================================================ */
+
+.priority-header-v2 {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 20px 24px;
+}
+
+.priority-header-v2__inner {
+  max-width: 900px;
+}
+
+.priority-header-v2__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.priority-header-v2__brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Logo badge */
+.priority-header-v2__logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--priority-brand-gradient-start), var(--priority-brand-gradient-end));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.priority-header-v2__logo-text {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--priority-font-family);
+}
+
+/* Wordmark */
+.priority-header-v2__wordmark {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  font-family: var(--priority-font-family);
+}
+
+.priority-header-v2__sup {
+  font-size: 10px;
+  color: var(--priority-brand-primary);
+  vertical-align: super;
+}
+
+/* Divider */
+.priority-header-v2__divider {
+  width: 1px;
+  height: 32px;
+  background-color: #e2e8f0;
+}
+
+/* Title area */
+.priority-header-v2__title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.priority-header-v2__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  font-family: var(--priority-font-family);
+}
+
+.priority-header-v2__subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  font-family: var(--priority-font-family);
+}
+
+/* Action button */
+.priority-header-v2__action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--priority-font-family);
+  transition: background-color var(--priority-transition-fast);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.priority-header-v2__action:hover {
+  background-color: #2563eb;
+}
+
+/* Stats row */
+.priority-header-v2__stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.priority-header-v2__stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #64748b;
+  font-family: var(--priority-font-family);
+}
+
+.priority-header-v2__stat-value {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.priority-header-v2__stat-label {
+  font-weight: 400;
+}
+
+
+/* ============================================================================
+   CONTENT CONTAINER
+   ============================================================================ */
+
+.priority-container {
+  padding: var(--priority-page-padding);
+}
+
+.priority-sections {
+  max-width: 900px;
+}
+
+.priority-section {
+  margin-bottom: 24px;
+}
+
+.priority-section__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  font-family: var(--priority-font-family);
+}
+
+.priority-section__header svg {
+  width: 12px;
+  height: 12px;
+}
+
+.priority-section__empty {
+  font-size: 14px;
+  color: #94a3b8;
+  font-family: var(--priority-font-family);
+  padding: 16px 0;
+}
+
+.priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+/* ============================================================================
+   LIST CARD V2 — Enterprise Design
+   ============================================================================ */
+
+.priority-card-v2 {
+  background-color: var(--priority-bg-card);
+  border: 1px solid var(--priority-border-card);
+  border-radius: var(--priority-card-radius);
+  padding: 20px;
+  cursor: pointer;
+  font-family: var(--priority-font-family);
+  transition: all var(--priority-transition-normal);
+  box-shadow: var(--priority-shadow-card);
+}
+
+.priority-card-v2:hover {
+  border-color: var(--priority-border-card-hover);
+  box-shadow: var(--priority-shadow-card-hover);
+  transform: translateY(-1px);
+}
+
+.priority-card-v2:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Pinned state — left border accent */
+.priority-card-v2--pinned {
+  border-left: 4px solid var(--priority-brand-primary);
+}
+
+
+/* ============================================================================
+   CARD HEADER
+   ============================================================================ */
+
+.priority-card-v2__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.priority-card-v2__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.priority-card-v2__pin-icon {
+  color: var(--priority-brand-primary);
+  fill: var(--priority-brand-primary);
+  flex-shrink: 0;
+}
+
+.priority-card-v2__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.priority-card-v2__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Avatar */
+.priority-card-v2__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.priority-card-v2__avatar--blue { background-color: var(--priority-avatar-blue); }
+.priority-card-v2__avatar--teal { background-color: var(--priority-avatar-teal); }
+.priority-card-v2__avatar--purple { background-color: var(--priority-avatar-purple); }
+.priority-card-v2__avatar--orange { background-color: var(--priority-avatar-orange); }
+.priority-card-v2__avatar--pink { background-color: var(--priority-avatar-pink); }
+
+/* Menu — hidden until hover */
+.priority-card-v2__menu {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--priority-transition-fast);
+}
+
+.priority-card-v2:hover .priority-card-v2__menu {
+  opacity: 1;
+}
+
+.priority-card-v2__menu:hover {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+
+/* ============================================================================
+   CARD STATS
+   ============================================================================ */
+
+.priority-card-v2__stats {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.priority-card-v2__stats-empty {
+  color: #94a3b8;
+}
+
+.priority-card-v2__stats-completed,
+.priority-card-v2__stats-total {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.priority-card-v2__stats-remaining {
+  color: #94a3b8;
+}
+
+
+/* ============================================================================
+   PROGRESS BAR
+   ============================================================================ */
+
+.priority-card-v2__progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.priority-card-v2__progress-track {
+  flex: 1;
+  height: 8px;
+  background-color: var(--priority-progress-track);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.priority-card-v2__progress-fill {
+  height: 100%;
+  background-color: var(--priority-progress-fill);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.priority-card-v2__progress-fill--complete {
+  background-color: var(--priority-progress-complete);
+}
+
+.priority-card-v2__percent {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  min-width: 36px;
+  text-align: right;
+}
+
+.priority-card-v2__percent--complete {
+  color: #10b981;
+}
+
+
+/* ============================================================================
+   CARD FOOTER
+   ============================================================================ */
+
+.priority-card-v2__footer {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+
+/* ============================================================================
+   EMPTY STATE V2
+   ============================================================================ */
+
+.priority-empty-v2 {
+  text-align: center;
+  padding: 80px 24px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.priority-empty-v2__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background-color: #f1f5f9;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.priority-empty-v2__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+  font-family: var(--priority-font-family);
+}
+
+.priority-empty-v2__desc {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+  font-family: var(--priority-font-family);
+}
+
+.priority-empty-v2__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--priority-font-family);
+  transition: background-color var(--priority-transition-fast);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.priority-empty-v2__btn:hover {
+  background-color: #2563eb;
+}
+
+
+/* ============================================================================
+   LEGACY STYLES (PRESERVED FOR COMPATIBILITY)
    ============================================================================ */
 
 .priority-header {
@@ -103,7 +535,6 @@
   gap: 16px;
 }
 
-/* Clean wordmark — no superscript, no badge */
 .priority-header__logo {
   font-size: 16px;
   font-weight: 600;
@@ -113,12 +544,6 @@
 .priority-header__title-area {
   display: flex;
   flex-direction: column;
-}
-
-.priority-header__title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
 }
 
 .priority-header__subtitle {
@@ -146,47 +571,15 @@
   background-color: #2563eb;
 }
 
-.priority-header__new-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
-
-/* ============================================================================
-   LIST CONTAINER
-   ============================================================================ */
-
-.priority-container {
-  padding: var(--priority-page-padding);
-}
-
-.priority-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--priority-card-gap);
-  max-width: 900px;
-}
-
-
-/* ============================================================================
-   LIST CARD — Compact, Linear-inspired
-   
-   CRITICAL CHANGES FROM CURRENT:
-   - Height reduced from ~120px to ~70px
-   - Percentage next to progress bar (not far right)
-   - Avatar instead of text name
-   - Status-based left border
-   - Emoji icon instead of generic checklist
-   ============================================================================ */
-
+/* Legacy card styles */
 .priority-card {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: var(--priority-card-padding-y) var(--priority-card-padding-x);
+  padding: 14px 16px;
   background-color: var(--priority-bg-card);
   border: 1px solid var(--priority-border-card);
-  border-radius: var(--priority-card-radius);
+  border-radius: 10px;
   cursor: pointer;
   font-family: var(--priority-font-family);
   transition: all var(--priority-transition-normal);
@@ -194,97 +587,53 @@
 
 .priority-card:hover {
   border-color: var(--priority-border-card-hover);
-  box-shadow: var(--priority-shadow-card-hover);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
-
-/* Focus state for accessibility */
-.priority-card:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-
-/* ============================================================================
-   STATUS-BASED LEFT BORDER
-   
-   MEANING:
-   - Green = On track (progress as expected)
-   - Amber = Behind (needs attention)
-   - Red = Blocked (critical issue)
-   ============================================================================ */
 
 .priority-card--on-track {
-  border-left: var(--priority-status-border-width) solid var(--priority-status-on-track);
+  border-left: 3px solid var(--priority-status-on-track);
 }
 
 .priority-card--behind {
-  border-left: var(--priority-status-border-width) solid var(--priority-status-behind);
+  border-left: 3px solid var(--priority-status-behind);
 }
 
 .priority-card--blocked {
-  border-left: var(--priority-status-border-width) solid var(--priority-status-blocked);
+  border-left: 3px solid var(--priority-status-blocked);
 }
 
-
-/* ============================================================================
-   ICON — Customizable emoji per list
-   ============================================================================ */
-
 .priority-card__icon {
-  font-size: var(--priority-icon-size);
+  font-size: 18px;
   flex-shrink: 0;
   line-height: 1;
 }
 
-
-/* ============================================================================
-   CONTENT AREA
-   ============================================================================ */
-
 .priority-card__content {
   flex: 1;
-  min-width: 0;  /* Allows text truncation */
+  min-width: 0;
 }
 
-/* Title — Hero element */
 .priority-card__title {
-  font-size: var(--priority-title-size);
-  font-weight: var(--priority-title-weight);
-  color: var(--priority-title-color);
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
   margin: 0 0 6px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Meta row — stats and progress */
 .priority-card__meta {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-
-/* ============================================================================
-   STATS — Grey only, shows remaining (actionable)
-   
-   CRITICAL: No green "3 completed" mid-sentence
-   Show: "12 items · 9 remaining"
-   ============================================================================ */
-
 .priority-card__stats {
-  font-size: var(--priority-meta-size);
-  font-weight: var(--priority-meta-weight);
-  color: var(--priority-meta-color);
+  font-size: 12px;
+  color: #64748b;
   white-space: nowrap;
 }
-
-
-/* ============================================================================
-   PROGRESS — Integrated percentage
-   
-   CRITICAL: Percentage directly after bar, NOT floating far right
-   ============================================================================ */
 
 .priority-card__progress {
   display: flex;
@@ -296,38 +645,30 @@
 
 .priority-card__progress-track {
   flex: 1;
-  height: var(--priority-progress-height);
-  background-color: var(--priority-progress-track);
+  height: 6px;
+  background-color: #e2e8f0;
   border-radius: 3px;
   overflow: hidden;
 }
 
 .priority-card__progress-fill {
   height: 100%;
-  background-color: var(--priority-progress-fill);
+  background-color: #3b82f6;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
 
-/* Percentage — directly after bar */
 .priority-card__percent {
-  font-size: var(--priority-percent-size);
-  font-weight: var(--priority-percent-weight);
-  color: var(--priority-percent-color);
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
   min-width: 32px;
   text-align: right;
 }
 
-
-/* ============================================================================
-   AVATAR — Replaces text owner name
-   
-   CRITICAL: 28px circle with initials, NOT "👤 Vikram India"
-   ============================================================================ */
-
 .priority-card__avatar {
-  width: var(--priority-avatar-size);
-  height: var(--priority-avatar-size);
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -338,17 +679,11 @@
   flex-shrink: 0;
 }
 
-/* Avatar color variants */
-.priority-card__avatar--blue { background-color: var(--priority-avatar-blue); }
-.priority-card__avatar--teal { background-color: var(--priority-avatar-teal); }
-.priority-card__avatar--purple { background-color: var(--priority-avatar-purple); }
-.priority-card__avatar--orange { background-color: var(--priority-avatar-orange); }
-.priority-card__avatar--pink { background-color: var(--priority-avatar-pink); }
-
-
-/* ============================================================================
-   ARROW — Appears on hover
-   ============================================================================ */
+.priority-card__avatar--blue { background-color: #3b82f6; }
+.priority-card__avatar--teal { background-color: #14b8a6; }
+.priority-card__avatar--purple { background-color: #8b5cf6; }
+.priority-card__avatar--orange { background-color: #f97316; }
+.priority-card__avatar--pink { background-color: #ec4899; }
 
 .priority-card__arrow {
   color: #94a3b8;
@@ -361,11 +696,7 @@
   opacity: 1;
 }
 
-
-/* ============================================================================
-   EMPTY STATE
-   ============================================================================ */
-
+/* Empty state */
 .priority-empty {
   text-align: center;
   padding: 60px 24px;
@@ -408,11 +739,7 @@
   background-color: #2563eb;
 }
 
-
-/* ============================================================================
-   LOADING STATE
-   ============================================================================ */
-
+/* Loading state */
 .priority-loading {
   display: flex;
   align-items: center;
