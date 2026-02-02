@@ -10,7 +10,7 @@
 @import './styles/budget-module.css';
 @import './styles/users-module.css';
 @import './styles/caty.css';
-@import './styles/priority-lists.css';
+/* @import './styles/priority-lists.css'; - removed for Task¹⁰ rebuild */
 
 @tailwind base;
 @tailwind components;
