@@ -26,9 +26,10 @@ export function AqdListCard({ list, onPin, onArchive, onDelete }: AqdListCardPro
   };
 
   // ISSUE 8 & 9 FIX: Light badge, icon instead of emoji for pin
+  // Width fix: w-full for full container width
   return (
     <div 
-      className={`aqd-card t10-list-card ${list.is_pinned ? 'border-l-4 border-l-teal-500' : ''}`}
+      className={`w-full bg-white border border-slate-200 rounded-xl p-5 cursor-pointer hover:border-slate-300 hover:shadow-md transition-all flex items-start gap-3 ${list.is_pinned ? 'border-l-4 border-l-teal-500' : ''}`}
       onClick={handleCardClick}
     >
       {/* Card Body */}

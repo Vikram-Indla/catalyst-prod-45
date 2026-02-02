@@ -97,8 +97,9 @@
 }
 
 .aqd-container-inner {
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 896px; /* max-w-4xl equivalent */
+  width: 100%;
+  /* Left-aligned, not centered */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────────
