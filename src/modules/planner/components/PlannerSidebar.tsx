@@ -10,7 +10,6 @@ import {
   CheckSquare,
   List,
   Layers,
-  Target,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from '@/components/layout/SidebarBase';
 
@@ -34,8 +33,6 @@ export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebar
           { id: 'boards', title: 'Boards', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
           { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
           { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
-          { id: 'aqd', title: 'Task¹⁰', path: '/aqd', icon: Target, exact: false },
-          
         ],
       },
     ],
