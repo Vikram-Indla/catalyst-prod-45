@@ -319,15 +319,18 @@
   color: var(--t10-text-muted);
 }
 
-.t10-week-badge {
+.t10-week-badge,
+.task10-app .t10-week-badge,
+.aqd-root .t10-week-badge,
+span.t10-week-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  background: #dbeafe !important;
+  background-color: #dbeafe !important;
   color: #2563eb !important;
-  border-radius: var(--t10-radius-full);
-  font-size: var(--t10-text-xs);
+  border-radius: 9999px;
+  font-size: 11px;
   font-weight: 600;
 }
 
