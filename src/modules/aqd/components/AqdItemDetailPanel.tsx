@@ -2,7 +2,7 @@
  * Task¹⁰ Item Detail Panel - Full CRUD for Labels, Notes, Description + Activity History
  */
 import { useState, useEffect } from 'react';
-import { X, Calendar, User, Tag, FileText, Clock, MessageSquare, History, Trash2, Check, Loader2 } from 'lucide-react';
+import { X, Calendar, User, Tag, FileText, Clock, MessageSquare, History, Trash2, Check, Loader2, ListChecks } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -16,6 +16,7 @@ import { NotesSection } from './NotesSection';
 import { DescriptionEditor } from './DescriptionEditor';
 import { LabelSelector } from './LabelSelector';
 import { ActivityTimeline } from './ActivityTimeline';
+import { ChecklistSection } from './ChecklistSection';
 import { logActivity } from '../hooks/useAqdItemDetail';
 
 interface AqdItemDetailPanelProps {
@@ -240,6 +241,16 @@ export function AqdItemDetailPanel({
               <DescriptionEditor
                 value={description}
                 onChange={handleSaveDescription}
+              />
+
+              <Divider />
+
+              {/* Checklist */}
+              <SectionLabel icon={<ListChecks className="w-3.5 h-3.5" />}>Checklist</SectionLabel>
+              <ChecklistSection 
+                itemId={item.id} 
+                itemTitle={item.title}
+                itemDescription={item.description || undefined}
               />
 
               <Divider />
