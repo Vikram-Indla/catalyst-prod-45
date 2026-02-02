@@ -10,7 +10,7 @@
  */
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pin, ClipboardList, ArrowLeft } from 'lucide-react';
+import { Plus, Pin, ClipboardList } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -136,13 +136,6 @@ export function AqdListsPage() {
           <div className="priority-header-v3__inner">
             {/* Left: Back + Logo + Title */}
             <div className="priority-header-v3__left">
-              <button 
-                className="priority-header-v3__back"
-                onClick={() => navigate('/taskhub')}
-                aria-label="Go back"
-              >
-                <ArrowLeft size={20} />
-              </button>
               
               {/* Logo badge */}
               <div className="priority-header-v3__logo">

@@ -4,7 +4,7 @@
  */
 import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Plus, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, CheckCircle } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -249,9 +249,6 @@ export function AqdListDetailPage() {
         {/* Header */}
         <div className="aqd-header t10-header">
           <div className="aqd-header-left t10-header-left">
-            <button className="aqd-back-btn t10-btn-back" onClick={() => navigate('/aqd')}>
-              <ArrowLeft size={16} />
-            </button>
             {/* ISSUE 6 FIX: Gradient icon + wordmark */}
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-extrabold">
