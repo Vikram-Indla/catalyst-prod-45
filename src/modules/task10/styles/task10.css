@@ -1216,8 +1216,78 @@
   transition: all 0.15s !important;
 }
 
-.t10-module .t10-ai-add-btn:hover {
+.t10-module .t10-ai-add-btn:hover:not(:disabled) {
   background: var(--t10-blue-dark) !important;
+}
+
+.t10-module .t10-ai-add-btn:disabled {
+  background: var(--t10-gray-300) !important;
+  cursor: not-allowed !important;
+}
+
+.t10-module .t10-ai-add-btn svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* AI Enhanced Badge */
+.t10-module .t10-ai-enhanced-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 2px 8px !important;
+  margin-left: 8px !important;
+  background: linear-gradient(135deg, var(--t10-purple-50) 0%, var(--t10-blue-50) 100%) !important;
+  border: 1px solid var(--t10-purple-100) !important;
+  border-radius: var(--t10-radius-sm) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: var(--t10-purple) !important;
+  text-transform: uppercase !important;
+}
+
+.t10-module .t10-ai-enhanced-badge svg {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* AI Suggestion Reason */
+.t10-module .t10-ai-suggestion-reason {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-top: 6px !important;
+  padding: 6px 10px !important;
+  background: linear-gradient(135deg, var(--t10-purple-50) 0%, var(--t10-blue-50) 100%) !important;
+  border-radius: var(--t10-radius-sm) !important;
+  font-size: 12px !important;
+  color: var(--t10-purple) !important;
+  font-style: italic !important;
+}
+
+.t10-module .t10-ai-suggestion-reason svg {
+  width: 12px !important;
+  height: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+/* AI Loading/Error/Empty States */
+.t10-module .t10-ai-loading,
+.t10-module .t10-ai-error,
+.t10-module .t10-ai-empty {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  padding: 32px !important;
+  font-size: 14px !important;
+  color: var(--t10-gray-500) !important;
+}
+
+.t10-module .t10-ai-error {
+  color: var(--t10-danger) !important;
+  background: var(--t10-danger-50) !important;
+  border-radius: var(--t10-radius-lg) !important;
 }
 
 .t10-module .t10-ai-footer {

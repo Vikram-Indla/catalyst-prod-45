@@ -9,3 +9,4 @@ export {
   useBulkUpdateT10Items,
   useCarryoverT10Items,
 } from './useT10Items';
+export { useT10AISuggestions, useAddSuggestionToT10 } from './useT10AISuggestions';

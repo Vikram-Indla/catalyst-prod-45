@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Zap, Plus, ChevronDown, Info, Check } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Plus, ChevronDown, Check } from 'lucide-react';
 import { T10PriorityCard } from '../components/week/T10PriorityCard';
 import { T10SortableList } from '../components/week/T10SortableList';
 import { T10SidePanel } from '../components/panel/T10SidePanel';
 import { T10CheckoutModal } from '../components/modals/T10CheckoutModal';
+import { T10AISuggestionsPanel } from '../components/week/T10AISuggestionsPanel';
 import { 
   useT10ListById, 
   useT10Weeks, 
@@ -67,7 +68,6 @@ export function T10WeekPage() {
   const [mockItems, setMockItems] = useState(initialMockItems);
   const displayItems = useMockMode ? mockItems : items;
   
-  const [aiExpanded, setAiExpanded] = useState(false);
   const [bufferExpanded, setBufferExpanded] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
@@ -338,57 +338,14 @@ export function T10WeekPage() {
       </header>
 
       {(!currentWeek?.is_checked_out || useMockMode) && (
-        <div className="t10-ai-banner">
-          <div className="t10-ai-collapsed" onClick={() => setAiExpanded(!aiExpanded)}>
-            <div className="t10-ai-collapsed-left">
-              <div className="t10-ai-icon-wrapper"><Zap size={20} /></div>
-              <div>
-                <div className="t10-ai-collapsed-title">AI Suggestions</div>
-                <div className="t10-ai-collapsed-subtitle">
-                  Based on participants: <strong>Ibrahim A., Vikram I., Maali A.</strong> · {10 - topTenItems.length} slots available
-                </div>
-              </div>
-            </div>
-            <button className={`t10-ai-toggle ${aiExpanded ? 'expanded' : ''}`}>
-              {aiExpanded ? 'Close' : 'Review 2 tasks'}
-              <ChevronDown size={16} />
-            </button>
-          </div>
-          {aiExpanded && (
-            <div className="t10-ai-expanded">
-              <div className="t10-ai-info-box">
-                <Info size={16} />
-                Showing HIGH and CRITICAL priority tasks from TaskHub assigned to this list's participants
-              </div>
-              <div className="t10-ai-suggestion-card">
-                <div className="t10-ai-suggestion-checkbox" />
-                <div className="t10-ai-priority-badge critical">Critical</div>
-                <div className="t10-ai-suggestion-content">
-                  <div className="t10-ai-suggestion-title">Security vulnerability patch for authentication module</div>
-                  <div className="t10-ai-suggestion-meta">
-                    <span className="t10-ai-suggestion-key">TSK-201</span>
-                    Assigned to <strong>Vikram I.</strong>
-                    Due Feb 4
-                  </div>
-                </div>
-                <button className="t10-ai-add-btn">Add</button>
-              </div>
-              <div className="t10-ai-suggestion-card">
-                <div className="t10-ai-suggestion-checkbox" />
-                <div className="t10-ai-priority-badge high">High</div>
-                <div className="t10-ai-suggestion-content">
-                  <div className="t10-ai-suggestion-title">Client onboarding process documentation update</div>
-                  <div className="t10-ai-suggestion-meta">
-                    <span className="t10-ai-suggestion-key">TSK-198</span>
-                    Assigned to <strong>Ibrahim A.</strong>
-                    Due Feb 5
-                  </div>
-                </div>
-                <button className="t10-ai-add-btn">Add</button>
-              </div>
-            </div>
-          )}
-        </div>
+        <T10AISuggestionsPanel
+          listId={listId}
+          weekId={currentWeek?.id}
+          participants={[]} // Could be populated from list participants
+          participantNames={['Ibrahim A.', 'Vikram I.', 'Maali A.']} // Mock for now
+          currentTopTenCount={topTenItems.length}
+          disabled={currentWeek?.is_checked_out && !useMockMode}
+        />
       )}
 
       {(!currentWeek?.is_checked_out || useMockMode) && (
