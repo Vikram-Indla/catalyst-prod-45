@@ -184,16 +184,18 @@ export async function deleteT10Item(itemId: string): Promise<void> {
 
 /**
  * Reorder items (batch update ranks)
+ * @param baseRank - Starting rank (default 1 for top 10, use 11+ for buffer)
  */
 export async function reorderT10Items(
   weekId: string, 
-  itemIds: string[]
+  itemIds: string[],
+  baseRank: number = 1
 ): Promise<void> {
   // Update each item's rank based on position in array
   for (let i = 0; i < itemIds.length; i++) {
     const { error } = await supabase
       .from('t10_items')
-      .update({ rank: i + 1 })
+      .update({ rank: baseRank + i })
       .eq('id', itemIds[i]);
 
     if (error) throw new Error(error.message);
