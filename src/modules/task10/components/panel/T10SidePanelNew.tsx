@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// COMPONENT: T10SidePanelNew
+// COMPONENT: T10SidePanelNew (V2 Design Tokens)
 // Purpose: Complete 480px side panel with database-wired fields and auto-save
-// Prompt 8 of 9 Complete Rebuild
+// Refactored: Using task10-v2.css design tokens
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -31,6 +31,7 @@ import { T10DateFieldNew } from './T10DateFieldNew';
 import { T10LabelsFieldNew } from './T10LabelsFieldNew';
 import { T10ActivityTimeline } from './T10ActivityTimeline';
 import { formatT10RelativeTime } from '../../utils';
+import '../../styles/task10-v2.css';
 
 interface T10SidePanelNewProps {
   itemId: string;
@@ -201,38 +202,16 @@ export function T10SidePanelNew({
 
   if (isLoading || !item) {
     return createPortal(
-      <>
+      <div className="t10-module-v2">
         {/* Overlay */}
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            zIndex: 500,
-            animation: 't10-fadeIn 200ms ease',
-          }}
-          onClick={handleOverlayClick}
-        />
+        <div className="t10-panel-overlay" onClick={handleOverlayClick} />
         {/* Panel Loading */}
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            right: 0,
-            width: '480px',
-            maxWidth: '100vw',
-            height: '100vh',
-            backgroundColor: '#ffffff',
-            boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.12)',
-            zIndex: 501,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ textAlign: 'center', color: '#64748b' }}>Loading...</div>
+        <div className="t10-panel">
+          <div className="t10-loading-center">
+            <span className="t10-loading-text">Loading...</span>
+          </div>
         </div>
-      </>,
+      </div>,
       document.body
     );
   }
@@ -240,103 +219,29 @@ export function T10SidePanelNew({
   const isCompleted = item.status === 'done';
 
   const panelContent = (
-    <>
+    <div className="t10-module-v2">
       {/* Overlay */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
-          zIndex: 500,
-          animation: isClosing ? undefined : 't10-fadeIn 200ms ease',
-        }}
+      <div 
+        className={`t10-panel-overlay ${isClosing ? 't10-panel-overlay-closing' : ''}`}
         onClick={handleOverlayClick}
       />
 
       {/* Panel */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          width: '480px',
-          maxWidth: '100vw',
-          height: '100vh',
-          backgroundColor: '#ffffff',
-          boxShadow:
-            '-8px 0 32px rgba(0, 0, 0, 0.12), -2px 0 8px rgba(0, 0, 0, 0.08)',
-          zIndex: 501,
-          display: 'flex',
-          flexDirection: 'column',
-          animation: isClosing
-            ? 't10-slideOutRight 200ms ease forwards'
-            : 't10-slideInRight 250ms ease',
-        }}
-      >
+      <div className={`t10-panel ${isClosing ? 't10-panel-closing' : ''}`}>
         {/* Header */}
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-            padding: '16px 20px',
-            flexShrink: 0,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '8px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '28px',
-                  height: '28px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: '#ffffff',
-                }}
-              >
-                {item.rank}
-              </div>
-              <h2
-                style={{
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  margin: 0,
-                }}
-              >
-                Task¹⁰ Priority
-              </h2>
+        <div className="t10-panel-header">
+          <div className="t10-panel-header-row">
+            <div className="t10-panel-header-left">
+              <div className="t10-panel-rank-badge">{item.rank}</div>
+              <h2 className="t10-panel-title-label">Task¹⁰ Priority</h2>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div className="t10-panel-header-actions">
               {item.taskhub_key && (
                 <button
                   type="button"
                   onClick={handleExternalLink}
                   title="Open in TaskHub"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    borderRadius: '6px',
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    cursor: 'pointer',
-                  }}
+                  className="t10-panel-header-btn"
                 >
                   <ExternalLink size={18} />
                 </button>
@@ -344,18 +249,7 @@ export function T10SidePanelNew({
               <button
                 type="button"
                 title="More actions"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '32px',
-                  height: '32px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  borderRadius: '6px',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  cursor: 'pointer',
-                }}
+                className="t10-panel-header-btn"
               >
                 <MoreHorizontal size={18} />
               </button>
@@ -363,50 +257,20 @@ export function T10SidePanelNew({
                 type="button"
                 onClick={handleClose}
                 title="Close (ESC)"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '32px',
-                  height: '32px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  borderRadius: '6px',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  cursor: 'pointer',
-                }}
+                className="t10-panel-header-btn"
               >
                 <X size={18} />
               </button>
             </div>
           </div>
           {item.taskhub_key && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span
-                style={{
-                  fontFamily: "'SF Mono', Monaco, monospace",
-                  fontSize: '13px',
-                  color: 'rgba(255, 255, 255, 0.9)',
-                }}
-              >
-                {item.taskhub_key}
-              </span>
+            <div className="t10-panel-key-row">
+              <span className="t10-panel-key">{item.taskhub_key}</span>
               <button
                 type="button"
                 onClick={handleCopyKey}
                 title={copiedKey ? 'Copied!' : 'Copy key'}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '24px',
-                  height: '24px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  borderRadius: '4px',
-                  color: 'rgba(255, 255, 255, 0.6)',
-                  cursor: 'pointer',
-                }}
+                className="t10-panel-copy-btn"
               >
                 {copiedKey ? <Check size={14} /> : <Copy size={14} />}
               </button>
@@ -415,12 +279,7 @@ export function T10SidePanelNew({
         </div>
 
         {/* Title Section */}
-        <div
-          style={{
-            padding: '20px',
-            borderBottom: '1px solid #f3f4f6',
-          }}
-        >
+        <div className="t10-panel-title-section">
           {isEditingTitle ? (
             <input
               type="text"
@@ -435,32 +294,12 @@ export function T10SidePanelNew({
                 }
               }}
               autoFocus
-              style={{
-                width: '100%',
-                fontSize: '20px',
-                fontWeight: 600,
-                color: '#111827',
-                backgroundColor: '#ffffff',
-                border: '2px solid #2563eb',
-                borderRadius: '6px',
-                padding: '4px 8px',
-                margin: '-4px -8px',
-                outline: 'none',
-              }}
+              className="t10-panel-title-input"
             />
           ) : (
             <h3
               onClick={() => setIsEditingTitle(true)}
-              style={{
-                fontSize: '20px',
-                fontWeight: 600,
-                color: '#111827',
-                margin: 0,
-                lineHeight: 1.4,
-                cursor: 'text',
-                padding: '4px 0',
-                borderRadius: '6px',
-              }}
+              className="t10-panel-title-display"
             >
               {item.title}
             </h3>
@@ -468,77 +307,31 @@ export function T10SidePanelNew({
         </div>
 
         {/* Tabs */}
-        <div
-          style={{
-            display: 'flex',
-            borderBottom: '1px solid #e5e7eb',
-            padding: '0 20px',
-          }}
-        >
+        <div className="t10-panel-tabs">
           <button
             type="button"
             onClick={() => setActiveTab('details')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 500,
-              color: activeTab === 'details' ? '#2563eb' : '#6b7280',
-              background: 'transparent',
-              border: 'none',
-              borderBottom:
-                activeTab === 'details' ? '2px solid #2563eb' : '2px solid transparent',
-              marginBottom: '-1px',
-              cursor: 'pointer',
-            }}
+            className={`t10-panel-tab ${activeTab === 'details' ? 't10-panel-tab-active' : ''}`}
           >
             Details
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('activity')}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: 500,
-              color: activeTab === 'activity' ? '#2563eb' : '#6b7280',
-              background: 'transparent',
-              border: 'none',
-              borderBottom:
-                activeTab === 'activity' ? '2px solid #2563eb' : '2px solid transparent',
-              marginBottom: '-1px',
-              cursor: 'pointer',
-            }}
+            className={`t10-panel-tab ${activeTab === 'activity' ? 't10-panel-tab-active' : ''}`}
           >
             Activity
           </button>
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 0 }}>
+        <div className="t10-panel-content">
           {activeTab === 'details' && (
-            <div style={{ padding: '20px' }}>
+            <div className="t10-panel-body">
               {/* Status Field */}
-              <div style={{ marginBottom: '24px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '8px',
-                  }}
-                >
-                  <label
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      color: '#6b7280',
-                    }}
-                  >
+              <div className="t10-field-group">
+                <div className="t10-field-header">
+                  <label className="t10-field-label">
                     <Clock size={14} />
                     Status
                   </label>
@@ -548,61 +341,20 @@ export function T10SidePanelNew({
                   role="checkbox"
                   aria-checked={isCompleted}
                   tabIndex={0}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 16px',
-                    backgroundColor: isCompleted ? '#ecfdf5' : '#f9fafb',
-                    border: isCompleted ? '1px solid #10b981' : '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                  }}
+                  className={`t10-status-toggle ${isCompleted ? 't10-status-toggle-done' : ''}`}
                 >
-                  <div
-                    style={{
-                      width: '24px',
-                      height: '24px',
-                      border: isCompleted
-                        ? '2px solid #10b981'
-                        : '2px solid #d1d5db',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: isCompleted ? '#10b981' : 'transparent',
-                      flexShrink: 0,
-                    }}
-                  >
+                  <div className={`t10-status-checkbox ${isCompleted ? 't10-status-checkbox-done' : ''}`}>
                     {isCompleted && <Check size={14} color="#ffffff" />}
                   </div>
-                  <span
-                    style={{
-                      fontSize: '14px',
-                      color: isCompleted ? '#10b981' : '#374151',
-                      fontWeight: isCompleted ? 500 : 400,
-                    }}
-                  >
+                  <span className={`t10-status-text ${isCompleted ? 't10-status-text-done' : ''}`}>
                     {isCompleted ? 'Completed' : 'Mark as completed'}
                   </span>
                 </div>
               </div>
 
               {/* Assignee Field */}
-              <div style={{ marginBottom: '24px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    color: '#6b7280',
-                    marginBottom: '8px',
-                  }}
-                >
+              <div className="t10-field-group">
+                <div className="t10-field-label">
                   <User size={14} />
                   Assigned To
                 </div>
@@ -615,20 +367,8 @@ export function T10SidePanelNew({
               </div>
 
               {/* Due Date Field */}
-              <div style={{ marginBottom: '24px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    color: '#6b7280',
-                    marginBottom: '8px',
-                  }}
-                >
+              <div className="t10-field-group">
+                <div className="t10-field-label">
                   <Calendar size={14} />
                   Due Date
                 </div>
@@ -639,20 +379,8 @@ export function T10SidePanelNew({
               </div>
 
               {/* Labels Field */}
-              <div style={{ marginBottom: '24px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    color: '#6b7280',
-                    marginBottom: '8px',
-                  }}
-                >
+              <div className="t10-field-group">
+                <div className="t10-field-label">
                   <Tag size={14} />
                   Labels
                 </div>
@@ -663,40 +391,14 @@ export function T10SidePanelNew({
               </div>
 
               {/* Description Field */}
-              <div style={{ marginBottom: '24px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '8px',
-                  }}
-                >
-                  <label
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      color: '#6b7280',
-                    }}
-                  >
+              <div className="t10-field-group">
+                <div className="t10-field-header">
+                  <label className="t10-field-label">
                     <FileText size={14} />
                     Description
                   </label>
                   {descriptionStatus !== 'idle' && (
-                    <span
-                      style={{
-                        fontSize: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        color: descriptionStatus === 'saving' ? '#2563eb' : '#10b981',
-                      }}
-                    >
+                    <span className={`t10-save-status ${descriptionStatus === 'saving' ? 't10-save-status-saving' : 't10-save-status-saved'}`}>
                       {descriptionStatus === 'saving' && 'Saving...'}
                       {descriptionStatus === 'saved' && (
                         <>
@@ -711,70 +413,35 @@ export function T10SidePanelNew({
                   value={descriptionValue}
                   onChange={(e) => setDescriptionValue(e.target.value)}
                   placeholder="Add a description..."
-                  style={{
-                    width: '100%',
-                    minHeight: '120px',
-                    padding: '12px 14px',
-                    fontSize: '14px',
-                    lineHeight: 1.6,
-                    color: '#111827',
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    resize: 'none',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                  }}
+                  className="t10-description-textarea"
                 />
               </div>
             </div>
           )}
 
           {activeTab === 'activity' && (
-            <div style={{ padding: '20px' }}>
+            <div className="t10-panel-body">
               <T10ActivityTimeline itemId={item.id} />
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 20px',
-            background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)',
-            borderTop: '1px solid #e5e7eb',
-            flexShrink: 0,
-          }}
-        >
-          <span style={{ fontSize: '13px', color: '#6b7280' }}>
+        <div className="t10-panel-footer">
+          <span className="t10-panel-footer-meta">
             Created {formatT10RelativeTime(item.created_at)}
           </span>
           <button
             type="button"
             onClick={handleDelete}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 12px',
-              fontSize: '13px',
-              fontWeight: 500,
-              color: '#ef4444',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-            }}
+            className="t10-btn-delete"
           >
             <Trash2 size={16} />
             Delete
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 
   return createPortal(panelContent, document.body);
