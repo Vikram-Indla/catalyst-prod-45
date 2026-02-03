@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { 
-  X, Check, User, Calendar, Tag, FileText, Plus, CheckCircle, Edit, 
+  X, Check, User, Calendar, Tag, FileText, Plus, Clock, Edit, 
   Trash2, Save
 } from 'lucide-react';
 import type { T10Item } from '../../types';
 import { getRelativeTime, getRankTier, formatShortDate } from '../../utils';
 import { T10AssigneePicker } from './T10AssigneePicker';
 import { T10ActivityTimeline } from './T10ActivityTimeline';
+import { T10LabelPicker } from './T10LabelPicker';
 
 interface T10SidePanelProps {
   item: T10Item | null;
@@ -18,23 +19,18 @@ interface T10SidePanelProps {
   isReadOnly?: boolean;
 }
 
-const LABEL_OPTIONS = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'BLOCKED', 'NEEDS-REVIEW'];
-
 export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isReadOnly = false }: T10SidePanelProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'activity'>('details');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
-  const [showLabelPicker, setShowLabelPicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showAssigneePicker, setShowAssigneePicker] = useState(false);
   const [editDate, setEditDate] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   
   const titleInputRef = useRef<HTMLInputElement>(null);
   const descriptionTimeoutRef = useRef<NodeJS.Timeout>();
-  const labelPickerRef = useRef<HTMLDivElement>(null);
   const datePickerRef = useRef<HTMLDivElement>(null);
   const assigneeFieldRef = useRef<HTMLDivElement>(null);
 
@@ -49,14 +45,13 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
   }, [item?.id]);
 
   // Close on Escape key
+  // Close on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (isEditingTitle) {
           setIsEditingTitle(false);
           setEditTitle(item?.title || '');
-        } else if (showLabelPicker) {
-          setShowLabelPicker(false);
         } else if (showDatePicker) {
           setShowDatePicker(false);
         } else {
@@ -68,14 +63,11 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
     }
-  }, [isOpen, onClose, isEditingTitle, showLabelPicker, showDatePicker, item?.title]);
+  }, [isOpen, onClose, isEditingTitle, showDatePicker, item?.title]);
 
   // Close pickers on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (labelPickerRef.current && !labelPickerRef.current.contains(e.target as Node)) {
-        setShowLabelPicker(false);
-      }
       if (datePickerRef.current && !datePickerRef.current.contains(e.target as Node)) {
         setShowDatePicker(false);
       }
@@ -128,12 +120,6 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
     }
   };
 
-  // Handle label selection
-  const handleLabelSelect = (label: string) => {
-    onUpdate({ label: label === item?.label ? undefined : label });
-    setShowLabelPicker(false);
-  };
-
   // Handle date change
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
@@ -163,17 +149,6 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
     return { background: 'transparent', border: '2px dashed #d1d5db', color: '#9ca3af' };
   };
 
-  const getLabelColor = (label: string) => {
-    switch (label) {
-      case 'CRITICAL': return { bg: '#fef2f2', color: '#dc2626', border: '#fecaca' };
-      case 'HIGH': return { bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' };
-      case 'MEDIUM': return { bg: '#fffbeb', color: '#d97706', border: '#fde68a' };
-      case 'LOW': return { bg: '#f0fdf4', color: '#16a34a', border: '#bbf7d0' };
-      case 'BLOCKED': return { bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' };
-      case 'NEEDS-REVIEW': return { bg: '#f5f3ff', color: '#7c3aed', border: '#ddd6fe' };
-      default: return { bg: '#f3f4f6', color: '#374151', border: '#e5e7eb' };
-    }
-  };
 
   const panelContent = (
     <>
@@ -188,12 +163,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
             <div className="t10-panel-rank" style={getRankStyles()}>
               {item.rank}
             </div>
-            <span className="t10-panel-title-text">Priority #{item.rank}</span>
-            {item.carryover_count > 0 && (
-              <span className="t10-carryover-badge" style={{ marginLeft: '8px' }}>
-                ×{item.carryover_count}
-              </span>
-            )}
+            <span className="t10-panel-title-text">Task<sup>10</sup> Priority</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {hasChanges && (
@@ -260,8 +230,8 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
               {/* Status */}
               <div className="t10-field">
                 <div className="t10-field-label">
-                  <CheckCircle size={14} />
-                  Status
+                  <Clock size={14} />
+                  STATUS
                 </div>
                 <div
                   className={`t10-status-checkbox ${isReadOnly ? 'disabled' : ''}`}
@@ -356,56 +326,16 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
               </div>
 
               {/* Labels */}
-              <div className="t10-field" ref={labelPickerRef}>
+              <div className="t10-field">
                 <div className="t10-field-label">
                   <Tag size={14} />
-                  Priority Label
+                  LABELS
                 </div>
-                <div 
-                  className="t10-field-value t10-field-clickable"
-                  onClick={() => !isReadOnly && setShowLabelPicker(!showLabelPicker)}
-                >
-                  {item.label ? (
-                    <span 
-                      className="t10-label-chip"
-                      style={{
-                        background: getLabelColor(item.label).bg,
-                        color: getLabelColor(item.label).color,
-                        border: `1px solid ${getLabelColor(item.label).border}`,
-                      }}
-                    >
-                      {item.label}
-                    </span>
-                  ) : (
-                    <span style={{ color: '#9ca3af' }}>
-                      <Plus size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-                      Add label
-                    </span>
-                  )}
-                </div>
-                
-                {showLabelPicker && !isReadOnly && (
-                  <div className="t10-label-picker-dropdown">
-                    {LABEL_OPTIONS.map((label) => {
-                      const colors = getLabelColor(label);
-                      return (
-                        <button
-                          key={label}
-                          className={`t10-label-option ${item.label === label ? 'selected' : ''}`}
-                          onClick={() => handleLabelSelect(label)}
-                          style={{
-                            background: colors.bg,
-                            color: colors.color,
-                            border: `1px solid ${colors.border}`,
-                          }}
-                        >
-                          {label}
-                          {item.label === label && <Check size={14} />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                <T10LabelPicker
+                  currentLabel={item.label}
+                  onSelect={(label) => onUpdate({ label })}
+                  isReadOnly={isReadOnly}
+                />
               </div>
 
               {/* Description */}
