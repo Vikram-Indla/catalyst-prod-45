@@ -89,7 +89,7 @@ export function T10ListCard({ list, onClick, onMenuClick }: T10ListCardProps) {
               {getStatusLabel()}
             </span>
             <button 
-              className="t10-icon-btn t10-icon-btn--ghost"
+              className="t10-menu-btn"
               onClick={(e) => {
                 e.stopPropagation();
                 onMenuClick?.(e);
