@@ -1911,11 +1911,16 @@
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 12px !important;
+  gap: 8px !important;
   padding: 40px 20px !important;
   color: #9ca3af !important;
   font-size: 14px !important;
   text-align: center !important;
+}
+
+.t10-activity-empty .t10-activity-hint {
+  font-size: 12px !important;
+  color: #d1d5db !important;
 }
 
 .t10-activity-loading svg {

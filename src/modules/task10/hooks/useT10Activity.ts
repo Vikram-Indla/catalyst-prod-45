@@ -14,8 +14,8 @@ interface DbT10Activity {
 
 function mapDbToT10Activity(db: DbT10Activity): T10Activity {
   const actorName = db.actor?.full_name || 'System';
-  const metadata = db.metadata as Record<string, string> || {};
-  const description = metadata.description || getDefaultDescription(db.activity_type, metadata);
+  const metadata = db.metadata || {};
+  const description = (metadata.description as string) || getDefaultDescription(db.activity_type, metadata);
   
   return {
     id: db.id,
@@ -27,17 +27,19 @@ function mapDbToT10Activity(db: DbT10Activity): T10Activity {
   };
 }
 
-function getDefaultDescription(type: string, metadata: Record<string, unknown>): string {
+function getDefaultDescription(type: string, metadata: Record<string, unknown> | null): string {
+  const meta = metadata || {};
   switch (type) {
     case 'created': return 'Created this priority';
     case 'completed': return 'Marked as completed';
-    case 'ranked': 
-      const oldRank = metadata.oldRank;
-      const newRank = metadata.newRank;
+    case 'ranked': {
+      const oldRank = meta.oldRank;
+      const newRank = meta.newRank;
       return oldRank && newRank ? `Moved from rank #${oldRank} to #${newRank}` : 'Changed rank';
-    case 'assigned': return metadata.assigneeName ? `Assigned to ${metadata.assigneeName}` : 'Updated assignee';
-    case 'carried': return `Carried over to next week`;
-    case 'updated': return metadata.field ? `Updated ${metadata.field}` : 'Updated item';
+    }
+    case 'assigned': return meta.assigneeName ? `Assigned to ${meta.assigneeName}` : 'Updated assignee';
+    case 'carried': return 'Carried over to next week';
+    case 'updated': return meta.field ? `Updated ${meta.field}` : 'Updated item';
     default: return 'Updated item';
   }
 }
@@ -54,10 +56,24 @@ export function useT10Activity(itemId: string | undefined) {
           actor:profiles!t10_activity_performed_by_fkey(id, full_name)
         `)
         .eq('item_id', itemId)
-        .order('performed_at', { ascending: false });
+        .order('performed_at', { ascending: false })
+        .limit(50); // Limit to prevent large payloads
 
       if (error) throw new Error(error.message);
-      return (data || []).map((row) => mapDbToT10Activity(row as unknown as DbT10Activity));
+      
+      // Safely map DB rows to T10Activity type
+      return (data || []).map((row) => {
+        const dbRow: DbT10Activity = {
+          id: row.id,
+          item_id: row.item_id,
+          activity_type: row.activity_type,
+          performed_by: row.performed_by,
+          performed_at: row.performed_at,
+          metadata: row.metadata as Record<string, unknown> | null,
+          actor: row.actor as { id: string; full_name: string | null } | null,
+        };
+        return mapDbToT10Activity(dbRow);
+      });
     },
     enabled: !!itemId,
     staleTime: 30 * 1000, // 30 seconds

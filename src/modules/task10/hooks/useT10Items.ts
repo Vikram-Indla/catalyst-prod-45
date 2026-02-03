@@ -68,10 +68,33 @@ export function useT10Items(weekId: string | undefined) {
           assignee:profiles!t10_items_assignee_id_fkey(id, full_name)
         `)
         .eq('week_id', weekId)
-        .order('rank', { ascending: true });
+        .order('rank', { ascending: true })
+        .limit(100); // Reasonable limit for a week's items
 
       if (error) throw new Error(error.message);
-      return (data || []).map(mapDbToT10Item);
+      return (data || []).map((row) => {
+        const dbRow: DbT10ItemWithProfile = {
+          id: row.id,
+          week_id: row.week_id,
+          rank: row.rank,
+          title: row.title,
+          taskhub_key: row.taskhub_key,
+          assignee_id: row.assignee_id,
+          due_date: row.due_date,
+          label: row.label,
+          description: row.description,
+          status: row.status,
+          carryover_count: row.carryover_count,
+          created_by: row.created_by,
+          updated_by: row.updated_by,
+          completed_by: row.completed_by,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          completed_at: row.completed_at,
+          assignee: row.assignee as { id: string; full_name: string | null } | null,
+        };
+        return mapDbToT10Item(dbRow);
+      });
     },
     enabled: !!weekId,
     staleTime: 30 * 1000, // 30 seconds
