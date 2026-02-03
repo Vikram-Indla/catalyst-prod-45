@@ -295,50 +295,65 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 .catalyst-module--task10 .t10-list-card__title-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
-.catalyst-module--task10 .t10-list-card__id {
-  font-family: var(--t10-font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--t10-blue);
-  background: var(--t10-blue-50);
+/* List ID Badge - T10-XXX */
+.catalyst-module--task10 .t10-list-id {
+  display: inline-flex;
+  align-items: center;
   padding: 4px 10px;
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
   border-radius: 6px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .catalyst-module--task10 .t10-list-card__title {
   font-size: 17px;
   font-weight: 700;
   color: var(--t10-gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .catalyst-module--task10 .t10-list-card__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
-/* Status badges */
+/* Status badges - Full pill styling */
 .catalyst-module--task10 .t10-status-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
   font-size: 12px;
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
 }
 
+/* Active - Green pill with dot */
 .catalyst-module--task10 .t10-status-badge--active {
-  background: #ecfdf5;
+  background-color: #ecfdf5;
   color: #10b981;
 }
 
@@ -346,19 +361,20 @@
   content: '';
   width: 6px;
   height: 6px;
-  background: #10b981;
+  background-color: #10b981;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
+/* Inactive - Gray filled pill, NO dot */
 .catalyst-module--task10 .t10-status-badge--inactive {
-  background: #f3f4f6;
+  background-color: #f3f4f6;
   color: #6b7280;
 }
 
-/* No dot for inactive */
-
+/* Archived - Orange/yellow pill */
 .catalyst-module--task10 .t10-status-badge--archived {
-  background: #fef3c7;
+  background-color: #fef3c7;
   color: #d97706;
 }
 
