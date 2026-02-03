@@ -401,6 +401,13 @@
   font-size: 14px !important;
   color: var(--t10-gray-900) !important;
   background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
 }
 
 .t10-module .t10-search-bar input::placeholder {
@@ -416,9 +423,27 @@
   border: none !important;
   outline: none !important;
   background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
   font-family: var(--t10-font) !important;
   font-size: 14px !important;
   color: var(--t10-gray-900) !important;
+}
+
+/* HARD OVERRIDE: ensure no nested input border/background can win */
+.t10-module.t10-module .t10-search-bar .t10-search-input,
+.t10-module.t10-module .t10-search-bar input.t10-search-input,
+.t10-module.t10-module .t10-search-bar input {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .t10-module .t10-search-clear {
@@ -4252,8 +4277,8 @@
   padding: 8px 16px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: var(--t10-blue) !important;
-  background-color: var(--t10-blue-50) !important;
+  color: var(--t10-white) !important;
+  background-color: var(--t10-blue) !important;
   border: none !important;
   border-radius: var(--t10-radius-md) !important;
   cursor: pointer !important;
@@ -4261,7 +4286,9 @@
 }
 
 .t10-module .t10-no-active-week-btn:hover {
-  background-color: var(--t10-blue-100) !important;
+  background-color: var(--t10-blue-dark) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--t10-shadow-md) !important;
 }
 
 .t10-module .t10-no-active-week-btn svg {
