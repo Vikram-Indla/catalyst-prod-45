@@ -19,7 +19,7 @@ import {
   useT10BufferItems,
 } from '../../hooks';
 import type { T10ItemFull } from '../../types';
-import '../../styles/task10.css';
+import '../../styles/task10-v2.css';
 
 export function T10WeekViewNew() {
   const { listId, weekId } = useParams<{ listId: string; weekId: string }>();

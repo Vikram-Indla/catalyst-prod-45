@@ -73,11 +73,16 @@ export function useT10List(listId: string | null) {
         .from('t10_list_summary')
         .select('*')
         .eq('id', listId)
-        .single();
+        .maybeSingle(); // Use maybeSingle() to return null instead of error when no row found
 
       if (error) {
         console.error('Error fetching T10 list:', error);
         throw new Error(error.message);
+      }
+
+      if (!data) {
+        console.log('[T10] List not found:', listId);
+        return null;
       }
 
       console.log('[T10] List fetched:', data?.key);
