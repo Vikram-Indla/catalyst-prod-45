@@ -3,7 +3,7 @@
 // Priority management for a specific week
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { 
@@ -13,6 +13,7 @@ import {
   useToggleT10ItemStatus,
   useCreateT10Item,
   useUpdateT10Item,
+  useReorderT10Items,
   useAddT10SuggestionToWeek,
   useDismissT10Suggestion,
 } from '../hooks';
@@ -21,7 +22,7 @@ import {
   T10WeekHeader,
   T10AIBanner,
   T10QuickAdd,
-  T10PriorityCard,
+  T10SortablePriorityList,
   T10BufferSection,
   T10SidePanel,
   T10CheckoutModal,
@@ -41,6 +42,7 @@ export function T10WeekViewPage() {
   const toggleStatus = useToggleT10ItemStatus();
   const createItem = useCreateT10Item();
   const updateItem = useUpdateT10Item();
+  const reorderItems = useReorderT10Items();
   const addSuggestion = useAddT10SuggestionToWeek();
   const dismissSuggestion = useDismissT10Suggestion();
   
@@ -63,6 +65,14 @@ export function T10WeekViewPage() {
       weekId: week.id,
     });
   };
+
+  const handleReorder = useCallback((itemIds: string[]) => {
+    if (!week) return;
+    reorderItems.mutate({
+      weekId: week.id,
+      itemIds,
+    });
+  }, [week, reorderItems]);
 
   const handleQuickAdd = (title: string) => {
     if (!week) return;
@@ -173,22 +183,13 @@ export function T10WeekViewPage() {
               </span>
             </div>
             
-            <div className="t10-priority-list">
-              {week.items.length === 0 ? (
-                <div className="t10-priority-empty">
-                  <p>No priorities yet. Add your first item below.</p>
-                </div>
-              ) : (
-                week.items.map((item) => (
-                  <T10PriorityCard
-                    key={item.id}
-                    item={item}
-                    onToggleStatus={handleToggleStatus}
-                    onClick={() => setSelectedItem(item)}
-                  />
-                ))
-              )}
-            </div>
+            <T10SortablePriorityList
+              items={week.items}
+              onToggleStatus={handleToggleStatus}
+              onItemClick={setSelectedItem}
+              onReorder={handleReorder}
+              disabled={reorderItems.isPending}
+            />
             
             {/* Quick Add */}
             <T10QuickAdd
