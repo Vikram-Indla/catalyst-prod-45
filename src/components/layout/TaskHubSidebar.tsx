@@ -2,15 +2,18 @@
  * TaskHubSidebar — TaskHub module sidebar using SidebarBase
  * 
  * Uses the shared SidebarBase component for consistent styling across all non-admin sidebars.
- * Includes navigation for Task¹⁰, My Tasks, Workstreams, and Calendar.
+ * Matches the PlannerSidebar navigation structure.
  */
 
 import { 
-  LayoutList,
-  ListTodo,
-  Layers,
-  CalendarDays,
+  LayoutDashboard,
+  LayoutGrid, 
+  GanttChartSquare,
   Settings,
+  CheckSquare,
+  List,
+  Layers,
+  Target,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -23,15 +26,23 @@ interface TaskHubSidebarProps {
 const taskHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
   label: 'TaskHub',
-  items: [
-    { id: 'task10', title: 'Task¹⁰', path: '/taskhub/task10', icon: LayoutList, exact: false },
-    { id: 'my-tasks', title: 'My Tasks', path: '/taskhub/my-tasks', icon: ListTodo, exact: false },
-    { id: 'workstreams', title: 'Workstreams', path: '/taskhub/workstreams', icon: Layers, exact: false },
-    { id: 'calendar', title: 'Calendar', path: '/taskhub/calendar', icon: CalendarDays, exact: false },
+  sections: [
+    {
+      title: '',
+      items: [
+        { id: 'dashboard', title: 'Dashboard', path: '/taskhub/dashboard', icon: LayoutDashboard, exact: true },
+        { id: 'workstreams', title: 'Workstreams', path: '/taskhub/workstreams', icon: Layers, exact: true },
+        { id: 'my-tasks', title: 'My Tasks', path: '/taskhub/my-tasks', icon: CheckSquare, exact: true },
+        { id: 'boards', title: 'Boards', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
+        { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
+        { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
+        { id: 'task10', title: 'Task¹⁰', path: '/taskhub/task10', icon: Target, exact: false },
+      ],
+    },
   ],
   footerItem: {
     id: 'settings',
-    title: 'TaskHub Settings',
+    title: 'Settings',
     path: '/taskhub/settings',
     icon: Settings,
     exact: true,

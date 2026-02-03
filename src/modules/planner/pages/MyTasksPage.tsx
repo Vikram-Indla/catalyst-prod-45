@@ -5,7 +5,6 @@
 
 import { useState, useCallback } from 'react';
 import { PageChrome } from '@/components/layout/PageChrome';
-import { PlannerSidebar } from '../components/PlannerSidebar';
 import { MyTasksContent } from '../components/my-tasks';
 import { useMyTasksRealtime } from '../hooks/useMyTasksRealtime';
 import { TaskDetailDrawer } from '../components/TaskDetailDrawer/TaskDetailDrawer';
@@ -77,14 +76,8 @@ export function MyTasksPage() {
   }, []);
 
   return (
-    <div className="flex h-full min-h-0">
-      {/* Planner Sidebar (Navigation) */}
-      <PlannerSidebar
-        expanded={!sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
-
-      {/* Main Content with PageChrome - flex-1 to fill remaining width */}
+    <div className="flex h-full min-h-0 flex-1">
+      {/* Main Content with PageChrome */}
       <PageChrome hideHeader className="flex-1">
         <div className="flex flex-col h-full bg-[hsl(var(--background))]">
           {/* My Tasks Content - Budget Planner Aligned */}
