@@ -2936,3 +2936,51 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CROSS-SECTION DRAG & DROP
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-zone-highlight {
+  background: var(--t10-blue-50) !important;
+  border: 2px dashed var(--t10-blue) !important;
+  border-radius: var(--t10-radius-lg) !important;
+  transition: all 0.2s ease !important;
+}
+
+.t10-module .t10-drop-zone-active {
+  background: var(--t10-blue-100) !important;
+}
+
+.t10-module .t10-drop-hint {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--t10-blue) !important;
+  background: var(--t10-blue-50) !important;
+  padding: 4px 10px !important;
+  border-radius: var(--t10-radius-sm) !important;
+  margin-left: auto !important;
+  animation: t10-pulse 1s infinite !important;
+}
+
+.t10-module .t10-drop-hint-inline {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--t10-blue) !important;
+  margin-left: 12px !important;
+  animation: t10-pulse 1s infinite !important;
+}
+
+.t10-module .t10-empty-buffer {
+  padding: 24px !important;
+  text-align: center !important;
+  color: var(--t10-gray-400) !important;
+  font-size: 13px !important;
+  border: 2px dashed var(--t10-gray-200) !important;
+  border-radius: var(--t10-radius-md) !important;
+  background: var(--t10-gray-50) !important;
+}
+
+.t10-module .t10-buffer-list {
+  min-height: 60px !important;
+}

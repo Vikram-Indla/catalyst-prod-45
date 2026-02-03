@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Plus, ChevronDown, Check, Calendar } from 'lucide-react';
-import { T10PriorityCard } from '../components/week/T10PriorityCard';
-import { T10SortableList } from '../components/week/T10SortableList';
+import { ArrowLeft, CheckCircle, Plus, Check, Calendar } from 'lucide-react';
+import { T10UnifiedSortableList } from '../components/week/T10UnifiedSortableList';
 import { T10WeekNavigation } from '../components/week/T10WeekNavigation';
 import { T10SidePanel } from '../components/panel/T10SidePanel';
 import { T10CheckoutModal } from '../components/modals/T10CheckoutModal';
 import { T10AISuggestionsPanel } from '../components/week/T10AISuggestionsPanel';
-import { 
+import {
   useT10ListById, 
   useT10Weeks, 
   useT10Items, 
@@ -79,39 +78,23 @@ export function T10WeekPage() {
   const topTenItems = displayItems.filter(i => i.rank <= 10).sort((a, b) => a.rank - b.rank);
   const bufferItems = displayItems.filter(i => i.rank > 10).sort((a, b) => a.rank - b.rank);
 
-  // Handle reorder via drag-and-drop
-  const handleReorder = useCallback(async (activeId: string, overId: string) => {
-    const oldIndex = topTenItems.findIndex(i => i.id === activeId);
-    const newIndex = topTenItems.findIndex(i => i.id === overId);
-    
-    if (oldIndex === -1 || newIndex === -1) return;
-    
-    // Calculate new ranks
-    const reordered = [...topTenItems];
-    const [moved] = reordered.splice(oldIndex, 1);
-    reordered.splice(newIndex, 0, moved);
-    
-    const updates = reordered.map((item, idx) => ({
+  // Handle reorder via drag-and-drop (unified for top10 and buffer)
+  const handleReorderAll = useCallback(async (updatedItems: T10Item[], movedItemId: string, oldRank: number, newRank: number) => {
+    const updates = updatedItems.map(item => ({
       id: item.id,
-      rank: idx + 1,
+      rank: item.rank,
     }));
 
     if (useMockMode) {
-      setMockItems(prev => {
-        const buffer = prev.filter(i => i.rank > 10);
-        const updated = reordered.map((item, idx) => ({ ...item, rank: idx + 1 }));
-        return [...updated, ...buffer];
-      });
-      toast({ title: "Reordered", description: `"${moved.title}" moved to rank ${newIndex + 1}.` });
+      setMockItems(updatedItems);
     } else {
       try {
         await bulkUpdateItems.mutateAsync({ updates });
-        toast({ title: "Reordered", description: `"${moved.title}" moved to rank ${newIndex + 1}.` });
       } catch (error) {
         toast({ title: "Error", description: "Failed to save new order.", variant: "destructive" });
       }
     }
-  }, [topTenItems, useMockMode, bulkUpdateItems, toast]);
+  }, [useMockMode, bulkUpdateItems, toast]);
 
 
   const handleCardClick = (itemId: string) => {
@@ -398,54 +381,16 @@ export function T10WeekPage() {
         </div>
       )}
 
-      <div className="t10-cards-section">
-        <div className="t10-section-header">
-          <span className="t10-section-title">Top 10 Priorities</span>
-        </div>
-        {topTenItems.length > 0 ? (
-          <T10SortableList
-            items={topTenItems}
-            onReorder={handleReorder}
-            onCardClick={handleCardClick}
-            onToggleStatus={handleToggleStatus}
-            disabled={currentWeek?.is_checked_out}
-          />
-        ) : (
-          <div className="t10-cards-list">
-            <div className="t10-empty-state">
-              <p>No priorities for this week yet. Add items using the quick add above.</p>
-            </div>
-          </div>
-        )}
-        
-        {bufferItems.length > 0 && (
-          <div className="t10-buffer-section">
-            <button 
-              className={`t10-buffer-toggle ${bufferExpanded ? 'expanded' : ''}`} 
-              onClick={() => setBufferExpanded(!bufferExpanded)}
-            >
-              <div className="t10-buffer-toggle-left">
-                <span>Buffer Queue</span>
-                <span className="t10-buffer-count">{bufferItems.length} items</span>
-              </div>
-              <ChevronDown size={18} />
-            </button>
-            {bufferExpanded && (
-              <div className="t10-buffer-list">
-                {bufferItems.map(item => (
-                  <T10PriorityCard 
-                    key={item.id} 
-                    item={item} 
-                    onClick={() => handleCardClick(item.id)} 
-                    onToggleStatus={() => handleToggleStatus(item.id)}
-                    isDraggable={false}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      <T10UnifiedSortableList
+        topTenItems={topTenItems}
+        bufferItems={bufferItems}
+        onReorderAll={handleReorderAll}
+        onCardClick={handleCardClick}
+        onToggleStatus={handleToggleStatus}
+        disabled={currentWeek?.is_checked_out}
+        bufferExpanded={bufferExpanded}
+        onToggleBuffer={() => setBufferExpanded(!bufferExpanded)}
+      />
 
       <T10SidePanel 
         item={displayItems.find(i => i.id === selectedItemId) || null} 
