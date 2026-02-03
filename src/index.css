@@ -11,6 +11,7 @@
 @import './styles/users-module.css';
 @import './styles/caty.css';
 /* @import './styles/priority-lists.css'; - removed for Task¹⁰ rebuild */
+@import './modules/task10/styles/task10-complete.css';
 
 @tailwind base;
 @tailwind components;
