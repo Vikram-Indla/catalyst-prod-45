@@ -55,6 +55,9 @@ const TimelineView = lazy(() => import("./pages/project/TimelineView"));
 import { EpicBalancingPage } from "./modules/epic-balancing";
 const UserNotificationSettingsPage = lazy(() => import("./pages/UserNotificationSettingsPage"));
 import { PlannerPage, KanbanPage, MyTasksPage } from "./modules/planner";
+// Task10 pages
+const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
+const T10WeekPage = lazy(() => import("./modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
 // PlanHub pages
 import {
   PlanLibraryPage,
@@ -480,6 +483,10 @@ const App = () => (
               <Route path="/taskhub/:view" element={<PlannerPage />} />
               <Route path="/taskhub-kanban" element={<KanbanPage />} />
               <Route path="/taskhub/my-tasks" element={<MyTasksPage />} />
+              
+              {/* Task10 Module */}
+              <Route path="/taskhub/task10" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
+              <Route path="/taskhub/task10/list/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPage /></Suspense>} />
               {/* Legacy planner routes - redirect to taskhub */}
               <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
               <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
