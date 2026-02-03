@@ -76,12 +76,14 @@ export function T10ListCard({ list, onClick, onMenuClick }: T10ListCardProps) {
     <div className="t10-list-card">
       {/* Main clickable area */}
       <div className="t10-list-card__main" onClick={onClick}>
-        {/* Header row */}
+        {/* HEADER ROW - Everything on one line */}
         <div className="t10-list-card__header">
+          {/* Left side: ID + Title */}
           <div className="t10-list-card__title-row">
-            <span className="t10-list-card__id">{list.list_key}</span>
-            <span className="t10-list-card__title">{list.name}</span>
+            <span className="t10-list-id">{list.list_key}</span>
+            <h3 className="t10-list-card__title">{list.name}</h3>
           </div>
+          {/* Right side: Status + Menu */}
           <div className="t10-list-card__actions">
             <span className={`t10-status-badge t10-status-badge--${list.status}`}>
               {getStatusLabel()}
@@ -93,7 +95,7 @@ export function T10ListCard({ list, onClick, onMenuClick }: T10ListCardProps) {
                 onMenuClick?.(e);
               }}
             >
-              <MoreVertical className="t10-icon-btn__icon" />
+              <MoreVertical size={20} />
             </button>
           </div>
         </div>
