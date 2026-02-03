@@ -1,89 +1,108 @@
-import React, { useState } from 'react';
-import { Search, Tag, User, Calendar, Clock, ChevronDown } from 'lucide-react';
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPONENT: T10SearchBar
+// Purpose: Real-time search with 300ms debounce
+// ═══════════════════════════════════════════════════════════════════════════════
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Search, X } from 'lucide-react';
 
 interface T10SearchBarProps {
-  onSearch: (query: string) => void;
-  onFilterChange: (filters: Record<string, boolean>) => void;
+  onSearch: (value: string) => void;
+  placeholder?: string;
+  isLoading?: boolean;
+  debounceMs?: number;
 }
 
-export function T10SearchBar({ onSearch, onFilterChange }: T10SearchBarProps) {
-  const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState<Record<string, boolean>>({
-    label: false,
-    assignee: false,
-    date: false,
-    status: false,
-  });
+export function T10SearchBar({
+  onSearch,
+  placeholder = 'Search lists and items by label, assignee, or keyword...',
+  isLoading = false,
+  debounceMs = 300,
+}: T10SearchBarProps) {
+  const [localValue, setLocalValue] = useState('');
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSearch = (value: string) => {
-    setQuery(value);
-    onSearch(value);
+  // Debounced onChange handler
+  const debouncedOnSearch = useCallback(
+    (newValue: string) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      debounceTimerRef.current = setTimeout(() => {
+        onSearch(newValue);
+        console.log('[T10] Search debounced:', newValue || '(empty)');
+      }, debounceMs);
+    },
+    [onSearch, debounceMs]
+  );
+
+  // Handle input change
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setLocalValue(newValue);
+    debouncedOnSearch(newValue);
   };
 
-  const toggleFilter = (key: string) => {
-    const newFilters = { ...filters, [key]: !filters[key] };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
+  // Handle clear
+  const handleClear = () => {
+    setLocalValue('');
+    onSearch('');
+    inputRef.current?.focus();
+    console.log('[T10] Search cleared');
   };
 
-  const clearFilters = () => {
-    const clearedFilters = { label: false, assignee: false, date: false, status: false };
-    setFilters(clearedFilters);
-    onFilterChange(clearedFilters);
+  // Handle keyboard shortcuts
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && localValue) {
+      e.preventDefault();
+      handleClear();
+    }
   };
 
-  const hasActiveFilters = Object.values(filters).some(Boolean);
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  const showClear = localValue.length > 0;
 
   return (
     <div className="t10-search-section">
       <div className="t10-search-bar">
-        <Search size={20} />
+        <Search className="t10-search-icon" size={20} />
         <input
+          ref={inputRef}
           type="text"
-          placeholder="Search lists and items by label, assignee, or keyword..."
-          value={query}
-          onChange={(e) => handleSearch(e.target.value)}
+          className="t10-search-input"
+          value={localValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          aria-label="Search lists"
         />
-      </div>
-      <div className="t10-search-filters">
+
+        {/* Loading indicator */}
+        {isLoading && <div className="t10-search-loading" />}
+
+        {/* Clear button */}
         <button
-          className={`t10-filter-btn ${filters.label ? 'active' : ''}`}
-          onClick={() => toggleFilter('label')}
+          type="button"
+          className={`t10-search-clear ${showClear ? 't10-visible' : ''}`}
+          onClick={handleClear}
+          aria-label="Clear search"
+          tabIndex={showClear ? 0 : -1}
         >
-          <Tag size={16} />
-          Label
-          <ChevronDown size={16} />
+          <X size={14} />
         </button>
-        <button
-          className={`t10-filter-btn ${filters.assignee ? 'active' : ''}`}
-          onClick={() => toggleFilter('assignee')}
-        >
-          <User size={16} />
-          Assigned To
-          <ChevronDown size={16} />
-        </button>
-        <button
-          className={`t10-filter-btn ${filters.date ? 'active' : ''}`}
-          onClick={() => toggleFilter('date')}
-        >
-          <Calendar size={16} />
-          Date Range
-          <ChevronDown size={16} />
-        </button>
-        <button
-          className={`t10-filter-btn ${filters.status ? 'active' : ''}`}
-          onClick={() => toggleFilter('status')}
-        >
-          <Clock size={16} />
-          Status
-          <ChevronDown size={16} />
-        </button>
-        {hasActiveFilters && (
-          <button className="t10-clear-filters" onClick={clearFilters}>
-            Clear all
-          </button>
-        )}
       </div>
     </div>
   );
 }
+
+export default T10SearchBar;
