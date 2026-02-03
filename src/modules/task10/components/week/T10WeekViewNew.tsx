@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// COMPONENT: T10WeekViewNew (FINAL VERSION)
+// COMPONENT: T10WeekViewNew (V2 Design Tokens)
 // Purpose: Complete week view with modals, side panel, and past week read-only
-// Prompt 9 of 9 Complete Rebuild
+// Refactored: Using task10-v2.css design tokens
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
@@ -88,28 +88,17 @@ export function T10WeekViewNew() {
   // Error state
   if (listError || (!isLoading && !list)) {
     return (
-      <div className="t10-module t10-week-view-container">
-        <div className="t10-week-view-content">
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '64px 24px',
-              textAlign: 'center',
-            }}
-          >
-            <AlertCircle size={48} style={{ color: '#ef4444', marginBottom: '16px' }} />
-            <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#111827', margin: '0 0 8px' }}>
-              List not found
-            </h2>
-            <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '24px' }}>
+      <div className="t10-module-v2 t10-week-container">
+        <div className="t10-week-content">
+          <div className="t10-error-center">
+            <AlertCircle size={48} className="t10-error-icon" />
+            <h2 className="t10-error-title">List not found</h2>
+            <p className="t10-error-text">
               The list you're looking for doesn't exist or has been deleted.
             </p>
             <button
               type="button"
-              className="t10-btn t10-btn-primary"
+              className="t10-btn-new"
               onClick={() => navigate('/taskhub/task10')}
             >
               Back to Lists
@@ -123,21 +112,11 @@ export function T10WeekViewNew() {
   // Loading state
   if (isLoading || !list || !currentWeek) {
     return (
-      <div className="t10-module t10-week-view-container">
-        <div className="t10-week-view-content">
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '64px 24px',
-            }}
-          >
+      <div className="t10-module-v2 t10-week-container">
+        <div className="t10-week-content">
+          <div className="t10-loading-center">
             <div className="t10-week-loading-spinner" />
-            <p style={{ fontSize: '14px', color: '#64748b', marginTop: '16px' }}>
-              Loading week...
-            </p>
+            <p className="t10-loading-text">Loading week...</p>
           </div>
         </div>
       </div>
@@ -145,7 +124,7 @@ export function T10WeekViewNew() {
   }
 
   return (
-    <div className="t10-module t10-week-view-container">
+    <div className="t10-module-v2 t10-week-container">
       {/* Header */}
       <T10WeekHeader
         list={list}
@@ -158,37 +137,15 @@ export function T10WeekViewNew() {
       />
 
       {/* Content */}
-      <div className="t10-week-view-content">
+      <div className="t10-week-content">
         {/* Past Week Banner */}
         {!isCurrentWeek && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '12px 16px',
-              backgroundColor: '#f3f4f6',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              marginBottom: '16px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '32px',
-                height: '32px',
-                backgroundColor: '#e5e7eb',
-                borderRadius: '6px',
-                color: '#6b7280',
-              }}
-            >
+          <div className="t10-past-week-banner">
+            <div className="t10-past-week-icon">
               <Lock size={16} />
             </div>
-            <p style={{ fontSize: '14px', color: '#4b5563', margin: 0 }}>
-              <strong style={{ color: '#374151' }}>Past week (read-only)</strong> — You can view items but cannot edit this week.
+            <p className="t10-past-week-text">
+              <strong>Past week (read-only)</strong> — You can view items but cannot edit this week.
             </p>
           </div>
         )}
@@ -197,121 +154,46 @@ export function T10WeekViewNew() {
         {isCurrentWeek && <T10AIBanner />}
 
         {/* Priority Section */}
-        <div className="t10-week-section" style={{ marginTop: '24px' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '16px',
-            }}
-          >
-            <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#111827', margin: 0 }}>
-              This Week's Priorities
-            </h2>
-            <span style={{ fontSize: '13px', color: '#6b7280' }}>
-              <strong>{totalCount}</strong>/10 slots filled ·{' '}
-              <strong>{completedCount}</strong> completed
+        <div className="t10-week-section">
+          <div className="t10-week-section-header">
+            <h2 className="t10-week-section-title">This Week's Priorities</h2>
+            <span className="t10-week-section-meta">
+              <strong>{totalCount}</strong>/10 slots filled · <strong>{completedCount}</strong> completed
             </span>
           </div>
 
           {/* Priority Cards */}
           {items && items.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="t10-priority-list">
               {(items as T10ItemFull[]).map((item) => (
                 <div
                   key={item.id}
                   onClick={() => handleItemClick(item)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '14px',
-                    padding: '14px 16px',
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    opacity: item.status === 'done' ? 0.7 : 1,
-                  }}
+                  className={`t10-priority-card ${item.status === 'done' ? 't10-priority-card-done' : ''}`}
                 >
                   {/* Rank Badge */}
-                  <div
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '14px',
-                      fontWeight: 700,
-                      color: item.rank <= 5 ? '#ffffff' : '#6b7280',
-                      background:
-                        item.rank <= 5
-                          ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
-                          : '#f3f4f6',
-                      borderRadius: '8px',
-                      boxShadow: item.rank <= 5 ? '0 2px 8px rgba(37, 99, 235, 0.3)' : 'none',
-                    }}
-                  >
+                  <div className={`t10-priority-rank ${item.rank <= 5 ? 't10-priority-rank-high' : 't10-priority-rank-low'}`}>
                     {item.rank}
                   </div>
 
                   {/* Content */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: '#111827',
-                        textDecoration: item.status === 'done' ? 'line-through' : 'none',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                  <div className="t10-priority-content">
+                    <div className={`t10-priority-title ${item.status === 'done' ? 't10-priority-title-done' : ''}`}>
                       {item.title}
                     </div>
                     {item.taskhub_key && (
-                      <span
-                        style={{
-                          fontFamily: "'SF Mono', Monaco, monospace",
-                          fontSize: '11px',
-                          color: '#6b7280',
-                        }}
-                      >
-                        {item.taskhub_key}
-                      </span>
+                      <span className="t10-priority-key">{item.taskhub_key}</span>
                     )}
                   </div>
 
                   {/* Status */}
                   {item.status === 'done' && (
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        fontWeight: 500,
-                        color: '#10b981',
-                        padding: '4px 8px',
-                        backgroundColor: '#ecfdf5',
-                        borderRadius: '9999px',
-                      }}
-                    >
-                      Done
-                    </span>
+                    <span className="t10-badge t10-badge-done">Done</span>
                   )}
 
                   {/* Carryover indicator */}
                   {item.carryover_count > 0 && (
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        fontWeight: 500,
-                        color: '#f59e0b',
-                        padding: '4px 8px',
-                        backgroundColor: '#fffbeb',
-                        borderRadius: '9999px',
-                      }}
-                    >
+                    <span className="t10-badge t10-badge-carryover">
                       →×{item.carryover_count + 1}
                     </span>
                   )}
@@ -323,20 +205,7 @@ export function T10WeekViewNew() {
                 <button
                   type="button"
                   onClick={() => handleAddItem(items.length + 1)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    padding: '14px 16px',
-                    backgroundColor: 'transparent',
-                    border: '2px dashed #d1d5db',
-                    borderRadius: '10px',
-                    color: '#9ca3af',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                  }}
+                  className="t10-add-item-btn"
                 >
                   <Plus size={16} />
                   Add priority item
@@ -344,23 +213,15 @@ export function T10WeekViewNew() {
               )}
             </div>
           ) : (
-            <div
-              style={{
-                padding: '48px 24px',
-                backgroundColor: '#ffffff',
-                border: '1px solid #e5e7eb',
-                borderRadius: '12px',
-                textAlign: 'center',
-              }}
-            >
-              <p style={{ fontSize: '14px', color: '#6b7280', margin: '0 0 16px' }}>
+            <div className="t10-week-empty">
+              <p className="t10-week-empty-text">
                 {isCurrentWeek ? 'No priorities yet. Add your first item!' : 'No items were added to this week.'}
               </p>
               {isCurrentWeek && (
                 <button
                   type="button"
                   onClick={() => handleAddItem(1)}
-                  className="t10-btn t10-btn-primary"
+                  className="t10-btn-new"
                 >
                   <Plus size={16} />
                   Add First Priority
@@ -372,69 +233,24 @@ export function T10WeekViewNew() {
 
         {/* Buffer Zone */}
         {bufferItems && bufferItems.length > 0 && (
-          <div className="t10-week-section" style={{ marginTop: '24px' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '16px',
-              }}
-            >
-              <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#6b7280', margin: 0 }}>
-                Buffer Zone
-              </h2>
-              <span style={{ fontSize: '13px', color: '#9ca3af' }}>
+          <div className="t10-week-section">
+            <div className="t10-week-section-header">
+              <h2 className="t10-week-section-title t10-week-section-title-muted">Buffer Zone</h2>
+              <span className="t10-week-section-meta">
                 <strong>{bufferItems.length}</strong> items waiting
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="t10-priority-list">
               {bufferItems.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => handleItemClick(item)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '14px',
-                    padding: '12px 16px',
-                    backgroundColor: '#ffffff',
-                    border: '2px dashed #e5e7eb',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                  }}
+                  className="t10-buffer-card"
                 >
-                  <div
-                    style={{
-                      width: '28px',
-                      height: '28px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: '#9ca3af',
-                      backgroundColor: 'transparent',
-                      border: '2px dashed #d1d5db',
-                      borderRadius: '6px',
-                    }}
-                  >
-                    {item.rank}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: '#6b7280',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {item.title}
-                    </div>
+                  <div className="t10-buffer-rank">{item.rank}</div>
+                  <div className="t10-priority-content">
+                    <div className="t10-buffer-title">{item.title}</div>
                   </div>
                 </div>
               ))}
