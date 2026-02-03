@@ -127,24 +127,8 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
           </div>
         </div>
       ) : (
-        <div 
-          className="t10-no-active-week"
-          style={{
-            padding: '20px',
-            background: '#f8fafc',
-            borderRadius: '12px',
-            textAlign: 'center',
-            marginTop: '12px',
-          }}
-        >
-          <p 
-            className="t10-no-active-week-text"
-            style={{
-              fontSize: '14px',
-              color: '#64748b',
-              marginBottom: '12px',
-            }}
-          >
+        <div className="t10-no-active-week">
+          <p className="t10-no-active-week-text">
             No active week
           </p>
           <button
@@ -152,26 +136,8 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
             className="t10-no-active-week-btn"
             onClick={handleStartWeek}
             disabled={createWeek.isPending}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              height: '36px',
-              padding: '0 16px',
-              fontFamily: 'Inter, system-ui, sans-serif',
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#ffffff',
-              background: '#3b82f6',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: createWeek.isPending ? 'not-allowed' : 'pointer',
-              opacity: createWeek.isPending ? 0.6 : 1,
-              transition: 'all 0.15s ease',
-            }}
           >
-            <Plus size={16} style={{ color: '#ffffff' }} />
+            <Plus size={16} />
             {createWeek.isPending ? 'Starting...' : 'Start this week'}
           </button>
         </div>
