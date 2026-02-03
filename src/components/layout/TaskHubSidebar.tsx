@@ -13,7 +13,6 @@ import {
   CheckSquare,
   List,
   Layers,
-  Target,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -36,7 +35,6 @@ const taskHubSidebarConfig: SidebarConfig = {
         { id: 'boards', title: 'Boards', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
         { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
         { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
-        { id: 'task10', title: 'Task¹⁰', path: '/taskhub/task10', icon: Target, exact: false },
       ],
     },
   ],
