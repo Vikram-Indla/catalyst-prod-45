@@ -49,3 +49,10 @@ export {
   useDismissT10Suggestion,
   useCreateT10Suggestion,
 } from './useSuggestions';
+
+// Profiles hooks
+export {
+  profilesKeys,
+  useProfiles,
+  type ProfileOption,
+} from './useProfiles';

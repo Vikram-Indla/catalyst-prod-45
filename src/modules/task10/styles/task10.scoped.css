@@ -2287,3 +2287,274 @@
   flex: 1;
   overflow-y: auto;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Dropdown Components (Side Panel)
+   ───────────────────────────────────────────────────────────────────────── */
+
+.catalyst-module--task10 .t10-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.catalyst-module--task10 .t10-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--t10-white);
+  border: 1px solid var(--t10-gray-200);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--t10-transition-fast);
+  text-align: left;
+  font-size: 14px;
+  color: var(--t10-gray-800);
+}
+
+.catalyst-module--task10 .t10-dropdown-trigger:hover {
+  border-color: var(--t10-gray-300);
+  background: var(--t10-gray-50);
+}
+
+.catalyst-module--task10 .t10-dropdown-trigger:focus {
+  outline: none;
+  border-color: var(--t10-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.catalyst-module--task10 .t10-dropdown-chevron {
+  color: var(--t10-gray-400);
+  transition: transform var(--t10-transition-fast);
+  flex-shrink: 0;
+}
+
+.catalyst-module--task10 .t10-dropdown-chevron--open {
+  transform: rotate(180deg);
+}
+
+.catalyst-module--task10 .t10-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--t10-white);
+  border: 1px solid var(--t10-gray-200);
+  border-radius: 8px;
+  box-shadow: var(--t10-shadow-card-hover);
+  z-index: 100;
+  animation: t10-dropdown-in 0.15s ease;
+}
+
+.catalyst-module--task10 .t10-dropdown-menu--labels {
+  max-height: 320px;
+}
+
+@keyframes t10-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.catalyst-module--task10 .t10-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  color: var(--t10-gray-700);
+  transition: background var(--t10-transition-fast);
+}
+
+.catalyst-module--task10 .t10-dropdown-item:hover {
+  background: var(--t10-gray-50);
+}
+
+.catalyst-module--task10 .t10-dropdown-item--active {
+  background: var(--t10-blue-50);
+  color: var(--t10-blue);
+}
+
+.catalyst-module--task10 .t10-dropdown-item--muted {
+  color: var(--t10-gray-500);
+}
+
+.catalyst-module--task10 .t10-dropdown-divider {
+  height: 1px;
+  background: var(--t10-gray-100);
+  margin: 4px 0;
+}
+
+.catalyst-module--task10 .t10-dropdown-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.catalyst-module--task10 .t10-dropdown-item-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.catalyst-module--task10 .t10-dropdown-item-email {
+  font-size: 12px;
+  color: var(--t10-gray-400);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.catalyst-module--task10 .t10-dropdown-check {
+  color: var(--t10-blue);
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Status Toggle Button
+   ───────────────────────────────────────────────────────────────────────── */
+
+.catalyst-module--task10 .t10-status-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: none;
+  transition: all var(--t10-transition-fast);
+}
+
+.catalyst-module--task10 .t10-status-toggle--todo {
+  background: var(--t10-gray-100);
+  color: var(--t10-gray-600);
+}
+
+.catalyst-module--task10 .t10-status-toggle--todo:hover {
+  background: var(--t10-gray-200);
+  color: var(--t10-gray-700);
+}
+
+.catalyst-module--task10 .t10-status-toggle--done {
+  background: var(--t10-success-50);
+  color: var(--t10-success-600);
+}
+
+.catalyst-module--task10 .t10-status-toggle--done:hover {
+  background: #d1fae5;
+  color: var(--t10-success-600);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Date Picker
+   ───────────────────────────────────────────────────────────────────────── */
+
+.catalyst-module--task10 .t10-date-picker {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.catalyst-module--task10 .t10-date-input {
+  width: 100%;
+  padding: 10px 36px 10px 12px;
+  background: var(--t10-white);
+  border: 1px solid var(--t10-gray-200);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--t10-gray-800);
+  transition: all var(--t10-transition-fast);
+}
+
+.catalyst-module--task10 .t10-date-input:hover {
+  border-color: var(--t10-gray-300);
+}
+
+.catalyst-module--task10 .t10-date-input:focus {
+  outline: none;
+  border-color: var(--t10-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.catalyst-module--task10 .t10-date-clear {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--t10-gray-400);
+  cursor: pointer;
+  transition: all var(--t10-transition-fast);
+}
+
+.catalyst-module--task10 .t10-date-clear:hover {
+  background: var(--t10-gray-100);
+  color: var(--t10-gray-600);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Label Chip
+   ───────────────────────────────────────────────────────────────────────── */
+
+.catalyst-module--task10 .t10-label-chip {
+  display: inline-flex;
+  padding: 4px 10px;
+  background: var(--t10-blue-50);
+  color: var(--t10-blue);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Saving Indicator
+   ───────────────────────────────────────────────────────────────────────── */
+
+.catalyst-module--task10 .t10-saving-indicator {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--t10-gray-400);
+  animation: t10-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes t10-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Avatar Placeholder (Small Variant)
+   ───────────────────────────────────────────────────────────────────────── */
+
+.catalyst-module--task10 .t10-panel-details__avatar-placeholder--sm {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
