@@ -3,7 +3,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { Plus } from 'lucide-react';
-import '../../../task10/styles/task10.scoped.css';
 
 interface T10HeaderProps {
   onCreateList?: () => void;
