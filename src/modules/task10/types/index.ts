@@ -1,5 +1,20 @@
 // Task10 TypeScript Types
 
+export interface T10User {
+  id: string;
+  email: string;
+  full_name: string;
+  avatar_url?: string;
+  initials: string;
+}
+
+export interface T10Label {
+  id: string;
+  name: string;
+  color: string;
+  description?: string;
+}
+
 export interface T10List {
   id: string;
   key: string; // T10-001
