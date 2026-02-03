@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { 
-  X, Check, User, Calendar, Tag, FileText, Plus, Clock, Edit, 
+  X, Check, User, Calendar, Tag, FileText, Plus, Clock, 
   Trash2, Save
 } from 'lucide-react';
 import type { T10Item } from '../../types';
@@ -202,7 +202,6 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
               style={{ cursor: isReadOnly ? 'default' : 'pointer' }}
             >
               {item.title}
-              {!isReadOnly && <Edit size={14} style={{ marginLeft: '8px', color: '#9ca3af', verticalAlign: 'middle' }} />}
             </h2>
           )}
         </div>
@@ -238,9 +237,9 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
                   onClick={() => !isReadOnly && onUpdate({ status: isCompleted ? 'todo' : 'done' })}
                 >
                   <div className={`t10-checkbox ${isCompleted ? 'checked' : ''}`} style={{ width: '26px', height: '26px' }}>
-                    <Check size={14} />
+                    {isCompleted && <Check size={14} strokeWidth={3} />}
                   </div>
-                  <span className={`t10-status-text ${isCompleted ? 'completed' : ''}`}>
+                  <span style={{ fontSize: '14px', color: isCompleted ? '#10b981' : '#4b5563', fontWeight: isCompleted ? 600 : 400 }}>
                     {isCompleted ? 'Completed' : 'Mark as completed'}
                   </span>
                 </div>
