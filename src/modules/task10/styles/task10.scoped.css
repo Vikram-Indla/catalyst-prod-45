@@ -357,6 +357,14 @@
   white-space: nowrap !important;
 }
 
+/* Dot element (used by component; avoids text bullet characters) */
+.catalyst-module--task10 .t10-status-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
 /* ACTIVE = Green pill with green dot */
 .catalyst-module--task10 .t10-status-badge--active,
 .catalyst-module--task10 .t10-status-badge.t10-status-badge--active {
@@ -364,15 +372,11 @@
   color: #10b981 !important;
 }
 
+/* No pseudo-element dot (dot is rendered as a child element) */
 .catalyst-module--task10 .t10-status-badge--active::before,
 .catalyst-module--task10 .t10-status-badge.t10-status-badge--active::before {
-  content: '' !important;
-  display: inline-block !important;
-  width: 6px !important;
-  height: 6px !important;
-  background-color: #10b981 !important;
-  border-radius: 50% !important;
-  flex-shrink: 0 !important;
+  display: none !important;
+  content: none !important;
 }
 
 /* INACTIVE = Gray pill, NO dot */
@@ -430,7 +434,7 @@
 .catalyst-module--task10 .t10-progress-bar {
   width: 100%;
   height: 6px;
-  background: var(--t10-gray-100);
+  background: var(--t10-gray-200);
   border-radius: 3px;
   overflow: hidden;
   margin: 12px 0;
@@ -2113,8 +2117,8 @@
   color: var(--t10-gray-400);
 }
 
-/* Status Badge */
-.catalyst-module--task10 .t10-status-badge {
+/* Status Badge (side panel item status) */
+.catalyst-module--task10 .t10-panel-details__field .t10-status-badge {
   display: inline-block;
   padding: 4px 10px;
   border-radius: 6px;
@@ -2122,22 +2126,22 @@
   font-weight: 500;
 }
 
-.catalyst-module--task10 .t10-status-badge--todo {
+.catalyst-module--task10 .t10-panel-details__field .t10-status-badge--todo {
   background: var(--t10-blue-50);
   color: var(--t10-blue);
 }
 
-.catalyst-module--task10 .t10-status-badge--done {
+.catalyst-module--task10 .t10-panel-details__field .t10-status-badge--done {
   background: var(--t10-success-50);
   color: var(--t10-success);
 }
 
-.catalyst-module--task10 .t10-status-badge--resolved {
+.catalyst-module--task10 .t10-panel-details__field .t10-status-badge--resolved {
   background: var(--t10-purple-50);
   color: var(--t10-purple);
 }
 
-.catalyst-module--task10 .t10-status-badge--removed {
+.catalyst-module--task10 .t10-panel-details__field .t10-status-badge--removed {
   background: var(--t10-gray-100);
   color: var(--t10-gray-500);
 }
