@@ -77,14 +77,12 @@ export function T10PriorityCard({
         </div>
       </div>
       
-      <T10Checkbox 
-        checked={isCompleted}
-        onChange={(checked) => {
-          // Prevent card click from triggering
-          event?.stopPropagation?.();
-          onToggleStatus(item.id, checked);
-        }}
-      />
+      <div onClick={(e) => e.stopPropagation()}>
+        <T10Checkbox 
+          checked={isCompleted}
+          onChange={(checked) => onToggleStatus(item.id, checked)}
+        />
+      </div>
     </div>
   );
 }
