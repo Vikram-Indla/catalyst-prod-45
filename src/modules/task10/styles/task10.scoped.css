@@ -446,6 +446,23 @@
   color: var(--t10-white);
 }
 
+/* Drag and Drop styles */
+.catalyst-module--task10 .t10-priority-card--dragging {
+  opacity: 0.5;
+  box-shadow: var(--t10-shadow-card-hover);
+  border-color: var(--t10-blue);
+}
+
+.t10-priority-card--overlay {
+  transform: rotate(2deg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+.t10-priority-card--overlay .t10-priority-card {
+  border-color: var(--t10-blue);
+  background: var(--t10-white);
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    AI Banner (Purple themed)
    ───────────────────────────────────────────────────────────────────────── */
