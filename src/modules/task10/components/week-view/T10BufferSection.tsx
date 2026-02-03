@@ -120,17 +120,52 @@ export function T10BufferSection({
   if (items.length === 0) return null;
 
   return (
-    <div className="t10-buffer-section">
+    <div className="t10-buffer-section" style={{ marginTop: '24px' }}>
+      {/* Buffer toggle with dashed border box */}
       <button 
         className="t10-buffer-section__toggle"
         onClick={() => setIsExpanded(!isExpanded)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          padding: '16px 20px',
+          border: '2px dashed #e5e7eb',
+          borderRadius: '10px',
+          background: '#ffffff',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = '#d1d5db';
+          e.currentTarget.style.background = '#f9fafb';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = '#e5e7eb';
+          e.currentTarget.style.background = '#ffffff';
+        }}
       >
-        <div className="t10-buffer-section__toggle-content">
-          {isExpanded ? <ChevronUp /> : <ChevronDown />}
-          <span className="t10-buffer-section__title">Buffer Items</span>
-          <span className="t10-buffer-section__count">{items.length}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ color: '#9ca3af' }}>
+            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </div>
+          <div>
+            <span style={{ fontWeight: 600, color: '#374151', fontSize: '14px' }}>Buffer Items</span>
+            <span style={{ 
+              marginLeft: '8px', 
+              padding: '2px 8px', 
+              backgroundColor: '#f3f4f6', 
+              borderRadius: '9999px',
+              fontSize: '12px',
+              fontWeight: 600,
+              color: '#6b7280',
+            }}>
+              {items.length}
+            </span>
+          </div>
         </div>
-        <span className="t10-buffer-section__hint">
+        <span style={{ fontSize: '13px', color: '#9ca3af' }}>
           Items ranked 11+ waiting to move into Top 10
         </span>
       </button>
