@@ -1,5 +1,5 @@
-import React from 'react';
-import { Check, GripVertical } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Check, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { T10Item } from '../../types';
@@ -7,12 +7,23 @@ import { getRankTier, getDueStatus, formatShortDate } from '../../utils';
 
 interface T10PriorityCardProps {
   item: T10Item;
+  previousRank?: number;
   onClick: () => void;
   onToggleStatus: () => void;
   isDraggable?: boolean;
 }
 
-export function T10PriorityCard({ item, onClick, onToggleStatus, isDraggable = true }: T10PriorityCardProps) {
+export function T10PriorityCard({ 
+  item, 
+  previousRank,
+  onClick, 
+  onToggleStatus, 
+  isDraggable = true 
+}: T10PriorityCardProps) {
+  const [showRankChange, setShowRankChange] = useState(false);
+  const [rankDiff, setRankDiff] = useState(0);
+  const [fadeOut, setFadeOut] = useState(false);
+
   const rankTier = getRankTier(item.rank);
   const dueStatus = item.due_date ? getDueStatus(item.due_date) : 'normal';
   const isCompleted = item.status === 'done';
@@ -35,6 +46,32 @@ export function T10PriorityCard({ item, onClick, onToggleStatus, isDraggable = t
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : undefined,
   };
+
+  // Show rank change badge when rank changes
+  useEffect(() => {
+    if (previousRank !== undefined && previousRank !== item.rank) {
+      const diff = previousRank - item.rank; // Positive = moved up, Negative = moved down
+      setRankDiff(diff);
+      setShowRankChange(true);
+      setFadeOut(false);
+
+      // Start fade out after 2.5 seconds
+      const fadeTimer = setTimeout(() => {
+        setFadeOut(true);
+      }, 2500);
+
+      // Hide badge after 3 seconds
+      const hideTimer = setTimeout(() => {
+        setShowRankChange(false);
+        setFadeOut(false);
+      }, 3000);
+
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(hideTimer);
+      };
+    }
+  }, [item.rank, previousRank]);
 
   return (
     <div
@@ -59,6 +96,14 @@ export function T10PriorityCard({ item, onClick, onToggleStatus, isDraggable = t
       <div className={`t10-rank t10-rank-${rankTier}`}>
         {item.rank}
       </div>
+
+      {/* Rank Change Badge */}
+      {showRankChange && rankDiff !== 0 && (
+        <span className={`t10-rank-change ${rankDiff > 0 ? 'up' : 'down'} ${fadeOut ? 'fade-out' : ''}`}>
+          {rankDiff > 0 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+          {Math.abs(rankDiff)}
+        </span>
+      )}
 
       {/* Content */}
       <div className="t10-card-content">
