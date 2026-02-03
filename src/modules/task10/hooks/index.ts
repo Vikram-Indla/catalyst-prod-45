@@ -10,3 +10,4 @@ export {
   useCarryoverT10Items,
 } from './useT10Items';
 export { useT10AISuggestions, useAddSuggestionToT10 } from './useT10AISuggestions';
+export { useProfiles, type T10Profile } from './useProfiles';

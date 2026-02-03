@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import type { T10Item, T10Activity } from '../../types';
 import { getRelativeTime, getRankTier, formatShortDate } from '../../utils';
+import { T10AssigneePicker } from './T10AssigneePicker';
+import type { T10Profile } from '../../hooks/useProfiles';
 
 interface T10SidePanelProps {
   item: T10Item | null;
@@ -31,6 +33,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
   const [editDescription, setEditDescription] = useState('');
   const [showLabelPicker, setShowLabelPicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showAssigneePicker, setShowAssigneePicker] = useState(false);
   const [editDate, setEditDate] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -39,6 +42,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
   const descriptionTimeoutRef = useRef<NodeJS.Timeout>();
   const labelPickerRef = useRef<HTMLDivElement>(null);
   const datePickerRef = useRef<HTMLDivElement>(null);
+  const assigneeFieldRef = useRef<HTMLDivElement>(null);
 
   // Sync local state with item
   useEffect(() => {
@@ -279,12 +283,15 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
               </div>
 
               {/* Assignee */}
-              <div className="t10-field">
+              <div className="t10-field" ref={assigneeFieldRef}>
                 <div className="t10-field-label">
                   <User size={14} />
                   Assigned To
                 </div>
-                <div className="t10-field-value">
+                <div 
+                  className="t10-field-value t10-field-clickable"
+                  onClick={() => !isReadOnly && setShowAssigneePicker(!showAssigneePicker)}
+                >
                   {item.assignee_name ? (
                     <>
                       <span className="t10-avatar t10-avatar-sm">{item.assignee_initials}</span>
@@ -297,6 +304,22 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
                     </span>
                   )}
                 </div>
+                
+                <T10AssigneePicker
+                  currentAssigneeId={item.assignee_id}
+                  currentAssigneeName={item.assignee_name}
+                  currentAssigneeInitials={item.assignee_initials}
+                  onSelect={(profile) => {
+                    if (profile) {
+                      onUpdate({ assignee_id: profile.id });
+                    } else {
+                      onUpdate({ assignee_id: undefined });
+                    }
+                  }}
+                  anchorRef={assigneeFieldRef}
+                  isOpen={showAssigneePicker && !isReadOnly}
+                  onClose={() => setShowAssigneePicker(false)}
+                />
               </div>
 
               {/* Due Date */}
