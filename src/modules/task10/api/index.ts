@@ -9,6 +9,7 @@ export {
   createT10List,
   updateT10List,
   deleteT10List,
+  duplicateT10List,
 } from './lists.api';
 
 // Weeks API
