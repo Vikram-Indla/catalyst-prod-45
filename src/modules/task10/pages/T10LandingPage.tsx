@@ -128,7 +128,7 @@ export function T10LandingPage() {
       <T10Header onCreateList={() => setIsCreateModalOpen(true)} />
       
       <main className="t10-main">
-        <div className="t10-container">
+        <div className="t10-container t10-container--narrow">
           {/* Toolbar */}
           <div className="t10-toolbar">
             <T10SearchBar 

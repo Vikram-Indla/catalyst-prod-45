@@ -22,8 +22,10 @@
   
   /* Semantic colors */
   --t10-success: #10b981;
+  --t10-success-600: #059669;
   --t10-success-50: #ecfdf5;
   --t10-warning: #f59e0b;
+  --t10-warning-600: #d97706;
   --t10-warning-50: #fffbeb;
   --t10-danger: #ef4444;
   --t10-danger-50: #fef2f2;
@@ -67,6 +69,11 @@
   font-family: var(--t10-font-family);
   background-color: var(--t10-gray-50);
   min-height: 100%;
+}
+
+/* Landing page: narrower column (per spec) */
+.catalyst-module--task10 .t10-container--narrow {
+  max-width: 900px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -440,6 +447,12 @@
   margin: 12px 0;
 }
 
+/* Landing list cards: constrain progress bar width (visual breathing room) */
+.catalyst-module--task10 .t10-list-card .t10-progress-bar {
+  width: 50%;
+  max-width: 220px;
+}
+
 .catalyst-module--task10 .t10-progress-bar__fill {
   height: 100%;
   background: var(--t10-blue);
@@ -556,7 +569,7 @@
 
 .catalyst-module--task10 .t10-week-history__timestamp {
   font-size: 12px;
-  color: var(--t10-gray-400);
+  color: var(--t10-gray-500);
   margin-bottom: 4px;
 }
 
@@ -566,11 +579,11 @@
 }
 
 .catalyst-module--task10 .t10-week-history__stats .closed {
-  color: var(--t10-success);
+  color: var(--t10-success-600);
 }
 
 .catalyst-module--task10 .t10-week-history__stats .carried {
-  color: var(--t10-warning);
+  color: var(--t10-warning-600);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
