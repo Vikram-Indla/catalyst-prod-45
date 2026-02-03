@@ -45,6 +45,7 @@ export function T10ActivityTimeline({ itemId }: T10ActivityTimelineProps) {
     return (
       <div className="t10-activity-empty">
         <span>No activity recorded yet</span>
+        <span className="t10-activity-hint">Activity will appear here when changes are made</span>
       </div>
     );
   }
