@@ -608,7 +608,7 @@
   border: 1px solid var(--t10-gray-200);
   border-radius: 8px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  z-index: 50;
+  z-index: 100000; /* Ensure it's above everything */
 }
 
 .catalyst-module--task10 .t10-dropdown-menu__item {
@@ -648,7 +648,8 @@
 .catalyst-module--task10 .t10-dropdown-menu__backdrop {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 99999; /* Just below the menu */
+  background: transparent; /* Invisible but clickable */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
