@@ -45,29 +45,23 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
   }, []);
 
   return (
-    <div 
-      className="t10-search-section"
-      style={{
-        marginBottom: '24px',
-      }}
-    >
+    <div style={{ marginBottom: '24px' }}>
+      {/* SINGLE CONTAINER - NO NESTED RECTANGLES */}
       <div 
-        className="t10-search-bar"
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
           height: '48px',
           padding: '0 16px',
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
+          backgroundColor: '#ffffff',
+          border: isFocused ? '2px solid #2563eb' : '1px solid #e2e8f0',
           borderRadius: '12px',
-          boxShadow: 'none',
+          boxShadow: isFocused ? '0 4px 12px rgba(37, 99, 235, 0.1)' : 'none',
           transition: 'all 0.15s ease',
         }}
       >
         <Search 
-          className="t10-search-icon" 
           size={18} 
           style={{ 
             flexShrink: 0, 
@@ -77,7 +71,6 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
         <input
           ref={inputRef}
           type="text"
-          className="t10-search-input"
           placeholder="Search lists..."
           value={value}
           onChange={handleChange}
@@ -91,16 +84,17 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: '14px',
             color: '#1e293b',
-            background: 'transparent',
+            backgroundColor: 'transparent',
             border: 'none',
             borderRadius: 0,
             outline: 'none',
             boxShadow: 'none',
+            WebkitAppearance: 'none',
+            appearance: 'none',
           }}
         />
         {!isFocused && !value && (
           <kbd 
-            className="t10-search-kbd"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -110,7 +104,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
               fontSize: '12px',
               fontFamily: 'monospace',
               color: '#94a3b8',
-              background: '#f1f5f9',
+              backgroundColor: '#f1f5f9',
               border: '1px solid #e2e8f0',
               borderRadius: '6px',
             }}
