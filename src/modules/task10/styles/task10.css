@@ -1872,16 +1872,19 @@
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
-  padding: 12px 14px !important;
+  padding: 14px !important;
   background: #f9fafb !important;
-  border: 1px solid #e5e7eb !important;
   border-radius: 8px !important;
   cursor: pointer !important;
   transition: all 0.15s !important;
 }
 
 .t10-status-checkbox:hover {
-  border-color: #10b981 !important;
+  background: #f3f4f6 !important;
+}
+
+.t10-status-checkbox.disabled {
+  cursor: default !important;
 }
 
 .t10-status-text {
@@ -1890,8 +1893,8 @@
 }
 
 .t10-status-text.completed {
-  text-decoration: line-through !important;
-  color: #9ca3af !important;
+  color: #10b981 !important;
+  font-weight: 600 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
