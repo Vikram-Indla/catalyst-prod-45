@@ -232,12 +232,15 @@ export function T10WeekPage() {
       });
 
       // Create next week
-      const nextWeekStart = new Date(currentWeek.week_start_date);
+      const nextWeekStart = new Date(currentWeek.week_start);
       nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+      const nextWeekEnd = new Date(nextWeekStart);
+      nextWeekEnd.setDate(nextWeekEnd.getDate() + 6);
       
       const newWeek = await createWeek.mutateAsync({
-        listId,
-        weekStartDate: nextWeekStart.toISOString(),
+        list_id: listId,
+        week_start: nextWeekStart.toISOString().split('T')[0],
+        week_end: nextWeekEnd.toISOString().split('T')[0],
       });
 
       // Carry over items
@@ -265,17 +268,21 @@ export function T10WeekPage() {
     
     setIsCreatingWeek(true);
     try {
-      const weekStart = getWeekStartDate(new Date());
+      const weekStartStr = getWeekStartDate(new Date());
+      const weekStartDate = new Date(weekStartStr);
+      const weekEndDate = new Date(weekStartDate);
+      weekEndDate.setDate(weekEndDate.getDate() + 6);
       
       // Create the new week
       const newWeek = await createWeek.mutateAsync({
-        listId,
-        weekStartDate: weekStart,
+        list_id: listId,
+        week_start: weekStartDate.toISOString().split('T')[0],
+        week_end: weekEndDate.toISOString().split('T')[0],
       });
 
       // Check if there's a previous week with incomplete items to carry over
-      const previousWeek = dbWeeks[0]; // Most recent week (sorted desc)
-      if (previousWeek && !previousWeek.is_checked_out) {
+      const previousWeek = dbWeeks[1]; // Previous week (index 0 is newly created)
+      if (previousWeek && previousWeek.status !== 'completed') {
         // Get incomplete items from previous week
         const incompleteItems = displayItems.filter(i => i.status === 'todo');
         if (incompleteItems.length > 0) {
@@ -306,7 +313,7 @@ export function T10WeekPage() {
   // Format current week date for checkout modal
   const formatWeekDisplayForModal = () => {
     if (currentWeek) {
-      const start = new Date(currentWeek.week_start_date);
+      const start = new Date(currentWeek.week_start);
       const end = new Date(start);
       end.setDate(end.getDate() + 6);
       return formatWeekRange(start, end);
@@ -338,7 +345,7 @@ export function T10WeekPage() {
           <div className="t10-week-progress">
             <strong>{completedCount}</strong>/10 completed
           </div>
-          {currentWeek?.is_checked_out ? (
+          {currentWeek?.status === 'completed' ? (
             <span className="t10-checked-out-badge">
               <Check size={16} /> Week Closed
             </span>
@@ -351,18 +358,18 @@ export function T10WeekPage() {
         </div>
       </header>
 
-      {(!currentWeek?.is_checked_out || useMockMode) && (
+      {(currentWeek?.status !== 'completed' || useMockMode) && (
         <T10AISuggestionsPanel
           listId={listId}
           weekId={currentWeek?.id}
           participants={[]} // Could be populated from list participants
           participantNames={['Ibrahim A.', 'Vikram I.', 'Maali A.']} // Mock for now
           currentTopTenCount={topTenItems.length}
-          disabled={currentWeek?.is_checked_out && !useMockMode}
+          disabled={currentWeek?.status === 'completed' && !useMockMode}
         />
       )}
 
-      {(!currentWeek?.is_checked_out || useMockMode) && (
+      {(currentWeek?.status !== 'completed' || useMockMode) && (
         <div className="t10-quick-add">
           <div className={`t10-quick-add-icon ${quickAddValue ? 'active' : ''}`}>
             <Plus size={18} />
@@ -387,7 +394,7 @@ export function T10WeekPage() {
         onReorderAll={handleReorderAll}
         onCardClick={handleCardClick}
         onToggleStatus={handleToggleStatus}
-        disabled={currentWeek?.is_checked_out}
+        disabled={currentWeek?.status === 'completed'}
         bufferExpanded={bufferExpanded}
         onToggleBuffer={() => setBufferExpanded(!bufferExpanded)}
       />
