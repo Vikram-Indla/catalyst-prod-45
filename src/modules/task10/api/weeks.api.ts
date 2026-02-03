@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { supabase } from '@/integrations/supabase/client';
-import type { T10WeekRow, T10WeekWithItems, T10ItemStatus } from '../types';
+import type { T10WeekRow, T10WeekWithItems, T10ItemStatus, CheckoutDecision } from '../types';
 import type { Database } from '@/integrations/supabase/types';
 
 type DbT10Week = Database['public']['Tables']['t10_weeks']['Row'];
@@ -119,13 +119,23 @@ export async function fetchT10Week(weekId: string): Promise<T10WeekWithItems> {
 }
 
 /**
- * Check out a week (finalize and create next week)
+ * Checkout request input
  */
-export async function checkoutT10Week(weekId: string): Promise<T10WeekRow> {
+export interface CheckoutT10WeekInput {
+  weekId: string;
+  decisions: Record<string, CheckoutDecision>; // itemId -> 'resolved' | 'carry' | 'remove'
+}
+
+/**
+ * Check out a week with user decisions for each incomplete item
+ */
+export async function checkoutT10Week(input: CheckoutT10WeekInput): Promise<T10WeekRow> {
+  const { weekId, decisions } = input;
+  
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
-  // Get current week data
+  // Get current week data with items
   const { data: currentWeek, error: fetchError } = await supabase
     .from('t10_weeks')
     .select('*, items:t10_items(*)')
@@ -135,9 +145,55 @@ export async function checkoutT10Week(weekId: string): Promise<T10WeekRow> {
   if (fetchError) throw new Error(fetchError.message);
 
   const items = currentWeek.items || [];
-  const closedCount = items.filter((i: any) => i.status === 'done' || i.status === 'resolved').length;
-  const carriedCount = items.filter((i: any) => i.status === 'todo').length;
-  const removedCount = items.filter((i: any) => i.status === 'removed').length;
+  
+  // Process each item based on user decisions
+  let resolvedCount = 0;
+  let carryCount = 0;
+  let removedCount = 0;
+  
+  // Items that were already done/resolved count as closed
+  const alreadyDoneItems = items.filter((i: any) => i.status === 'done' || i.status === 'resolved');
+  resolvedCount += alreadyDoneItems.length;
+
+  // Process incomplete items based on decisions
+  const incompleteItems = items.filter((i: any) => i.status === 'todo');
+  const itemsToCarry: any[] = [];
+  
+  for (const item of incompleteItems) {
+    const decision = decisions[item.id] || 'carry'; // Default to carry if no decision
+    
+    if (decision === 'resolved') {
+      // Mark as done in current week
+      await supabase
+        .from('t10_items')
+        .update({ 
+          status: 'done',
+          completed_at: new Date().toISOString(),
+          completed_by: user.id,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id,
+        })
+        .eq('id', item.id);
+      resolvedCount++;
+      
+    } else if (decision === 'remove') {
+      // Mark as removed (soft delete - update status)
+      await supabase
+        .from('t10_items')
+        .update({ 
+          status: 'removed',
+          updated_at: new Date().toISOString(),
+          updated_by: user.id,
+        })
+        .eq('id', item.id);
+      removedCount++;
+      
+    } else {
+      // carry - will be copied to next week
+      itemsToCarry.push(item);
+      carryCount++;
+    }
+  }
 
   // Mark current week as checked out
   const { error: updateError } = await supabase
@@ -146,8 +202,8 @@ export async function checkoutT10Week(weekId: string): Promise<T10WeekRow> {
       is_checked_out: true,
       checked_out_at: new Date().toISOString(),
       checked_out_by: user.id,
-      closed_count: closedCount,
-      carried_count: carriedCount,
+      closed_count: resolvedCount,
+      carried_count: carryCount,
       removed_count: removedCount,
     })
     .eq('id', weekId);
@@ -173,11 +229,9 @@ export async function checkoutT10Week(weekId: string): Promise<T10WeekRow> {
 
   if (createError) throw new Error(createError.message);
 
-  // Carry over incomplete items
-  const incompleteItems = items.filter((i: any) => i.status === 'todo');
-  
-  if (incompleteItems.length > 0) {
-    const carryOverItems = incompleteItems.map((item: any, index: number) => ({
+  // Carry over items with incremented carryover count
+  if (itemsToCarry.length > 0) {
+    const carryOverItems = itemsToCarry.map((item: any, index: number) => ({
       week_id: newWeek.id,
       title: item.title,
       description: item.description,
@@ -193,6 +247,20 @@ export async function checkoutT10Week(weekId: string): Promise<T10WeekRow> {
 
     await supabase.from('t10_items').insert(carryOverItems);
   }
+
+  // Log activity
+  await supabase.from('t10_activity').insert({
+    item_id: null, // Week-level activity
+    activity_type: 'week_checked_out',
+    performed_by: user.id,
+    metadata: {
+      week_id: weekId,
+      new_week_id: newWeek.id,
+      resolved_count: resolvedCount,
+      carried_count: carryCount,
+      removed_count: removedCount,
+    },
+  });
 
   return mapDbWeekToRow(newWeek);
 }

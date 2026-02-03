@@ -17,6 +17,7 @@ export {
   fetchT10CurrentWeek,
   fetchT10Week,
   checkoutT10Week,
+  type CheckoutT10WeekInput,
 } from './weeks.api';
 
 // Items API
