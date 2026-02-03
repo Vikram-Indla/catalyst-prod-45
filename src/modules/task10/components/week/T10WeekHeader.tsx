@@ -40,7 +40,7 @@ export function T10WeekHeader({
   const hasCompletedItems = completedCount > 0;
 
   const handleWeekChange = (weekId: string) => {
-    navigate(`/taskhub/task10/${list.id}/week/${weekId}`, { replace: true });
+    navigate(`/taskhub/task10/list/${list.id}/week/${weekId}`, { replace: true });
     onWeekChange(weekId);
   };
 

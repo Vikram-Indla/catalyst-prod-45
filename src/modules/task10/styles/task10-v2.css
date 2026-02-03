@@ -379,6 +379,60 @@
   margin: 0 2px;
 }
 
+/* Feature Cards - Empty State Onboarding */
+.t10-feature-cards {
+  display: flex;
+  justify-content: center;
+  gap: var(--t10-space-4);
+  margin-top: var(--t10-space-10);
+  flex-wrap: wrap;
+}
+
+.t10-feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--t10-space-5);
+  width: 160px;
+  background: var(--t10-bg-card);
+  border: 1px solid var(--t10-border-subtle);
+  border-radius: var(--t10-radius-xl);
+  text-align: center;
+  transition: all var(--t10-transition-normal);
+}
+
+.t10-feature-card:hover {
+  border-color: var(--t10-border-default);
+  box-shadow: var(--t10-shadow-md);
+  transform: translateY(-2px);
+}
+
+.t10-feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--t10-space-3);
+  color: var(--t10-accent);
+  background: var(--t10-accent-subtle);
+  border-radius: var(--t10-radius-lg);
+}
+
+.t10-feature-title {
+  font-size: var(--t10-text-base);
+  font-weight: 600;
+  color: var(--t10-text-primary);
+  margin: 0 0 var(--t10-space-1);
+}
+
+.t10-feature-text {
+  font-size: var(--t10-text-sm);
+  color: var(--t10-text-tertiary);
+  line-height: 1.4;
+  margin: 0;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    LIST CARDS
    ───────────────────────────────────────────────────────────────────────────── */

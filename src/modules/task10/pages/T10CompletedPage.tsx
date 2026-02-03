@@ -19,7 +19,7 @@ export function T10CompletedPage() {
   });
 
   const handleListClick = (listId: string) => {
-    navigate(`/task10/list/${listId}`);
+    navigate(`/taskhub/task10/list/${listId}`);
   };
 
   return (
