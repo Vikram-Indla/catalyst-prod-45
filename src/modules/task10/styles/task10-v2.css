@@ -2353,6 +2353,7 @@
    LANDING SEARCH BAR - FLAT DESIGN (remove box-in-box)
    ───────────────────────────────────────────────────────────────────────────── */
 
+.t10-module-v2.t10-module-v2 .t10-search-section,
 .t10-module-v2 .t10-search-section {
   margin-bottom: var(--t10-space-6) !important;
   padding: 0 !important;
@@ -2361,6 +2362,7 @@
   box-shadow: none !important;
 }
 
+.t10-module-v2.t10-module-v2 .t10-search-bar,
 .t10-module-v2 .t10-search-bar {
   display: flex !important;
   align-items: center !important;
@@ -2374,11 +2376,14 @@
   transition: all var(--t10-transition-fast) !important;
 }
 
+.t10-module-v2.t10-module-v2 .t10-search-bar:focus-within,
 .t10-module-v2 .t10-search-bar:focus-within {
   border-color: var(--t10-accent) !important;
   box-shadow: var(--t10-shadow-focus) !important;
 }
 
+.t10-module-v2.t10-module-v2 .t10-search-bar .t10-search-icon,
+.t10-module-v2.t10-module-v2 .t10-search-bar svg,
 .t10-module-v2 .t10-search-bar .t10-search-icon,
 .t10-module-v2 .t10-search-bar svg.t10-search-icon {
   flex-shrink: 0 !important;
@@ -2387,6 +2392,8 @@
   color: var(--t10-text-tertiary) !important;
 }
 
+.t10-module-v2.t10-module-v2 .t10-search-bar .t10-search-input,
+.t10-module-v2.t10-module-v2 .t10-search-bar input,
 .t10-module-v2 .t10-search-bar .t10-search-input,
 .t10-module-v2 .t10-search-bar input.t10-search-input,
 .t10-module-v2 .t10-search-bar input {
@@ -2404,6 +2411,8 @@
   box-shadow: none !important;
 }
 
+.t10-module-v2.t10-module-v2 .t10-search-bar .t10-search-input::placeholder,
+.t10-module-v2.t10-module-v2 .t10-search-bar input::placeholder,
 .t10-module-v2 .t10-search-bar .t10-search-input::placeholder,
 .t10-module-v2 .t10-search-bar input::placeholder {
   color: var(--t10-text-tertiary) !important;
@@ -2450,51 +2459,52 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .t10-module-v2 .t10-no-active-week {
-  padding: var(--t10-space-5);
-  background: var(--t10-bg-subtle);
-  border-radius: var(--t10-radius-lg);
-  text-align: center;
-  margin-top: var(--t10-space-3);
+  padding: var(--t10-space-5) !important;
+  background: var(--t10-bg-subtle) !important;
+  border-radius: var(--t10-radius-lg) !important;
+  text-align: center !important;
+  margin-top: var(--t10-space-3) !important;
 }
 
 .t10-module-v2 .t10-no-active-week-text {
-  font-size: var(--t10-text-md);
-  color: var(--t10-text-secondary);
-  margin-bottom: var(--t10-space-3);
+  font-size: var(--t10-text-md) !important;
+  color: var(--t10-text-secondary) !important;
+  margin-bottom: var(--t10-space-3) !important;
 }
 
 .t10-module-v2 .t10-no-active-week-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--t10-space-2);
-  height: 36px;
-  padding: 0 var(--t10-space-4);
-  font-family: var(--t10-font);
-  font-size: var(--t10-text-md);
-  font-weight: 500;
-  color: #ffffff;
-  background: var(--t10-accent);
-  border: none;
-  border-radius: var(--t10-radius-md);
-  cursor: pointer;
-  transition: all var(--t10-transition-fast);
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--t10-space-2) !important;
+  height: 36px !important;
+  padding: 0 var(--t10-space-4) !important;
+  font-family: var(--t10-font) !important;
+  font-size: var(--t10-text-md) !important;
+  font-weight: 500 !important;
+  color: #ffffff !important;
+  background: var(--t10-accent) !important;
+  border: none !important;
+  border-radius: var(--t10-radius-md) !important;
+  cursor: pointer !important;
+  transition: all var(--t10-transition-fast) !important;
 }
 
 .t10-module-v2 .t10-no-active-week-btn:hover {
-  background: var(--t10-accent-hover);
+  background: var(--t10-accent-hover) !important;
 }
 
 .t10-module-v2 .t10-no-active-week-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.98) !important;
 }
 
 .t10-module-v2 .t10-no-active-week-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
 }
 
 .t10-module-v2 .t10-no-active-week-btn svg {
-  width: 16px;
-  height: 16px;
+  width: 16px !important;
+  height: 16px !important;
+  color: #ffffff !important;
 }
