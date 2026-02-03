@@ -55,7 +55,9 @@ const TimelineView = lazy(() => import("./pages/project/TimelineView"));
 import { EpicBalancingPage } from "./modules/epic-balancing";
 const UserNotificationSettingsPage = lazy(() => import("./pages/UserNotificationSettingsPage"));
 import { PlannerPage, KanbanPage, MyTasksPage } from "./modules/planner";
-// Task¹⁰ removed - module deleted for rebuild
+// Task¹⁰ Priority Management - reimplemented
+const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
+const T10WeekViewPage = lazy(() => import("./modules/task10/pages/T10WeekViewPage").then(m => ({ default: m.T10WeekViewPage })));
 // PlanHub pages
 import {
   PlanLibraryPage,
@@ -485,8 +487,9 @@ const App = () => (
               <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
               <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
               
-              {/* Task¹⁰ Priority Management - removed for rebuild */}
-              
+              {/* Task¹⁰ Priority Management */}
+              <Route path="/taskhub/task10" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
+              <Route path="/taskhub/task10/list/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekViewPage /></Suspense>} />
               {/* PlanHub Module */}
               <Route path="/planhub" element={<PlanLibraryPage />} />
               <Route path="/planhub/plan/:planId" element={<PlanEditorPage />} />
