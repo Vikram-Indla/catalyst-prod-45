@@ -59,6 +59,8 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
         is_current: true,
       });
       console.log('[T10] New week started for list:', list.key, newWeek.id);
+      // Navigate to the newly created week
+      navigate(`/taskhub/task10/list/${list.id}/week/${newWeek.id}`);
     } catch (error) {
       console.error('[T10] Failed to start week:', error);
     }

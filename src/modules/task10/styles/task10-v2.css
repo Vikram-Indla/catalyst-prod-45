@@ -2432,3 +2432,57 @@
   border-radius: 50%;
   animation: t10-spin 0.6s linear infinite;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NO ACTIVE WEEK STATE - BLUE FILLED BUTTON
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.t10-module-v2 .t10-no-active-week {
+  padding: var(--t10-space-5);
+  background: var(--t10-bg-subtle);
+  border-radius: var(--t10-radius-lg);
+  text-align: center;
+  margin-top: var(--t10-space-3);
+}
+
+.t10-module-v2 .t10-no-active-week-text {
+  font-size: var(--t10-text-md);
+  color: var(--t10-text-secondary);
+  margin-bottom: var(--t10-space-3);
+}
+
+.t10-module-v2 .t10-no-active-week-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--t10-space-2);
+  height: 36px;
+  padding: 0 var(--t10-space-4);
+  font-family: var(--t10-font);
+  font-size: var(--t10-text-md);
+  font-weight: 500;
+  color: #ffffff;
+  background: var(--t10-accent);
+  border: none;
+  border-radius: var(--t10-radius-md);
+  cursor: pointer;
+  transition: all var(--t10-transition-fast);
+}
+
+.t10-module-v2 .t10-no-active-week-btn:hover {
+  background: var(--t10-accent-hover);
+}
+
+.t10-module-v2 .t10-no-active-week-btn:active {
+  transform: scale(0.98);
+}
+
+.t10-module-v2 .t10-no-active-week-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.t10-module-v2 .t10-no-active-week-btn svg {
+  width: 16px;
+  height: 16px;
+}
