@@ -4262,3 +4262,475 @@
   --t10-red: #ef4444;
   --t10-red-50: #fef2f2;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROMPT 6: WEEK VIEW V2 HEADER STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Week View Container */
+.t10-module.t10-week-view-container {
+  min-height: 100vh !important;
+  background-color: var(--t10-gray-50) !important;
+}
+
+.t10-module .t10-week-view-content {
+  max-width: 1000px !important;
+  margin: 0 auto !important;
+  padding: 0 24px 48px !important;
+}
+
+/* Week Header V2 */
+.t10-module .t10-week-header-v2 {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid var(--t10-gray-200) !important;
+  padding: 16px 24px 20px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+}
+
+.t10-module .t10-week-header-v2-top {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+}
+
+.t10-module .t10-week-header-v2-left {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.t10-module .t10-week-header-v2-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.t10-module .t10-back-link-v2 {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--t10-gray-600) !important;
+  text-decoration: none !important;
+  padding: 4px 0 !important;
+  margin-bottom: 8px !important;
+  transition: color 0.15s !important;
+}
+
+.t10-module .t10-back-link-v2:hover {
+  color: var(--t10-blue) !important;
+}
+
+.t10-module .t10-back-link-v2 svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.t10-module .t10-week-header-v2-title {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: var(--t10-gray-900) !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+}
+
+.t10-module .t10-week-header-v2-subtitle {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-size: 14px !important;
+  color: var(--t10-gray-500) !important;
+  margin-top: 4px !important;
+}
+
+.t10-module .t10-week-header-v2-date {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.t10-module .t10-week-header-v2-date svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.t10-module .t10-week-header-v2-status {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 2px 8px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border-radius: 9999px !important;
+}
+
+.t10-module .t10-week-header-v2-status-current {
+  background-color: var(--t10-green-50) !important;
+  color: var(--t10-green) !important;
+}
+
+.t10-module .t10-week-header-v2-status-past {
+  background-color: var(--t10-gray-100) !important;
+  color: var(--t10-gray-500) !important;
+}
+
+/* Week Selector V2 */
+.t10-module .t10-week-selector-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.t10-module .t10-week-selector-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 8px 12px !important;
+  font-family: var(--t10-font) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--t10-gray-600) !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--t10-gray-200) !important;
+  border-radius: var(--t10-radius-md) !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.t10-module .t10-week-selector-btn:hover:not(:disabled) {
+  background-color: var(--t10-gray-50) !important;
+  border-color: var(--t10-gray-300) !important;
+  color: var(--t10-gray-800) !important;
+}
+
+.t10-module .t10-week-selector-btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.t10-module .t10-week-selector-btn svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.t10-module .t10-week-selector-current {
+  padding: 8px 16px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--t10-gray-700) !important;
+  background-color: var(--t10-gray-100) !important;
+  border-radius: var(--t10-radius-md) !important;
+}
+
+/* Checkout Button */
+.t10-module .t10-btn-checkout {
+  background-color: var(--t10-teal) !important;
+  color: #ffffff !important;
+}
+
+.t10-module .t10-btn-checkout:hover:not(:disabled) {
+  background-color: #0f766e !important;
+}
+
+.t10-module .t10-btn-checkout:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.t10-module .t10-btn-checkout svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROMPT 6: AI BANNER V2 STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-ai-banner-v2 {
+  margin: 24px 0 !important;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%) !important;
+  border: 1px solid #ddd6fe !important;
+  border-radius: var(--t10-radius-xl) !important;
+  overflow: hidden !important;
+  animation: t10-fadeIn 300ms ease !important;
+}
+
+.t10-module .t10-ai-banner-v2-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px 20px !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s !important;
+}
+
+.t10-module .t10-ai-banner-v2-header:hover {
+  background-color: rgba(139, 92, 246, 0.05) !important;
+}
+
+.t10-module .t10-ai-banner-v2-header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.t10-module .t10-ai-banner-v2-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  background-color: #8b5cf6 !important;
+  border-radius: var(--t10-radius-lg) !important;
+  color: #ffffff !important;
+}
+
+.t10-module .t10-ai-banner-v2-icon svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.t10-module .t10-ai-banner-v2-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #6d28d9 !important;
+  margin: 0 !important;
+}
+
+.t10-module .t10-ai-banner-v2-subtitle {
+  font-size: 13px !important;
+  color: #7c3aed !important;
+  margin: 2px 0 0 !important;
+}
+
+.t10-module .t10-ai-banner-v2-header-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.t10-module .t10-ai-banner-v2-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 6px 12px !important;
+  font-family: var(--t10-font) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #7c3aed !important;
+  background-color: #ffffff !important;
+  border: 1px solid #ddd6fe !important;
+  border-radius: var(--t10-radius-md) !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.t10-module .t10-ai-banner-v2-action:hover {
+  background-color: #f5f3ff !important;
+  border-color: #c4b5fd !important;
+}
+
+.t10-module .t10-ai-banner-v2-action svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.t10-module .t10-ai-banner-v2-dismiss {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: var(--t10-radius-md) !important;
+  color: #8b5cf6 !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.t10-module .t10-ai-banner-v2-dismiss:hover {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+.t10-module .t10-ai-banner-v2-dismiss svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.t10-module .t10-ai-banner-v2-content {
+  padding: 0 20px 16px !important;
+  border-top: 1px solid #ede9fe !important;
+}
+
+.t10-module .t10-ai-banner-v2-suggestions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding-top: 16px !important;
+}
+
+.t10-module .t10-ai-suggestion-v2 {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #ede9fe !important;
+  border-radius: var(--t10-radius-lg) !important;
+  transition: all 0.15s !important;
+}
+
+.t10-module .t10-ai-suggestion-v2:hover {
+  border-color: #c4b5fd !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1) !important;
+}
+
+.t10-module .t10-ai-suggestion-v2-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  background-color: #f5f3ff !important;
+  border-radius: var(--t10-radius-md) !important;
+  color: #8b5cf6 !important;
+  flex-shrink: 0 !important;
+}
+
+.t10-module .t10-ai-suggestion-v2-icon svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.t10-module .t10-ai-suggestion-v2-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.t10-module .t10-ai-suggestion-v2-text {
+  font-size: 14px !important;
+  color: var(--t10-gray-700) !important;
+  margin: 0 0 4px !important;
+}
+
+.t10-module .t10-ai-suggestion-v2-reason {
+  font-size: 12px !important;
+  color: var(--t10-gray-500) !important;
+  margin: 0 !important;
+}
+
+.t10-module .t10-ai-suggestion-v2-action {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 4px 8px !important;
+  font-family: var(--t10-font) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #7c3aed !important;
+  background-color: #f5f3ff !important;
+  border: none !important;
+  border-radius: var(--t10-radius-md) !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+  flex-shrink: 0 !important;
+}
+
+.t10-module .t10-ai-suggestion-v2-action:hover {
+  background-color: #ede9fe !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROMPT 6: WEEK SECTION STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-week-section {
+  margin-top: 24px !important;
+}
+
+.t10-module .t10-week-section-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 16px !important;
+}
+
+.t10-module .t10-week-section-title {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: var(--t10-gray-500) !important;
+  margin: 0 !important;
+}
+
+.t10-module .t10-week-section-stats {
+  font-size: 13px !important;
+  color: var(--t10-gray-500) !important;
+}
+
+.t10-module .t10-week-section-stats strong {
+  color: var(--t10-gray-700) !important;
+}
+
+/* Loading State for Week View */
+.t10-module .t10-week-loading {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 64px 24px !important;
+  text-align: center !important;
+}
+
+.t10-module .t10-week-loading-spinner {
+  width: 40px !important;
+  height: 40px !important;
+  border: 3px solid var(--t10-gray-200) !important;
+  border-top-color: var(--t10-blue) !important;
+  border-radius: 50% !important;
+  animation: t10-spin 0.8s linear infinite !important;
+  margin-bottom: 16px !important;
+}
+
+.t10-module .t10-week-loading-text {
+  font-size: 14px !important;
+  color: var(--t10-gray-500) !important;
+  margin: 0 !important;
+}
+
+/* Error State */
+.t10-module .t10-week-error {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 64px 24px !important;
+  text-align: center !important;
+}
+
+.t10-module .t10-week-error-icon {
+  width: 48px !important;
+  height: 48px !important;
+  color: var(--t10-red) !important;
+  margin-bottom: 16px !important;
+}
+
+.t10-module .t10-week-error-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--t10-gray-900) !important;
+  margin: 0 0 8px !important;
+}
+
+.t10-module .t10-week-error-text {
+  font-size: 14px !important;
+  color: var(--t10-gray-500) !important;
+  margin: 0 0 24px !important;
+}
