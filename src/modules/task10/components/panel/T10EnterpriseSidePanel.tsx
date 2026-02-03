@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   X, Check, User, Calendar, Tag, FileText, Plus, Clock, 
-  Trash2, ChevronDown, Search, Loader2, ExternalLink,
-  Copy, MoreHorizontal, Archive, Flag
+  Trash2, ChevronDown, Search, Loader2, Copy
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useT10Users } from '../../hooks/useT10Users';
@@ -81,7 +80,6 @@ export function T10EnterpriseSidePanel({
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   
   // Dropdown states
-  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [labelDropdownOpen, setLabelDropdownOpen] = useState(false);
@@ -93,7 +91,6 @@ export function T10EnterpriseSidePanel({
   const [editDate, setEditDate] = useState('');
   
   // Refs
-  const moreMenuRef = useRef<HTMLDivElement>(null);
   const assigneeInputRef = useRef<HTMLInputElement>(null);
   const labelInputRef = useRef<HTMLInputElement>(null);
   const descriptionTimeoutRef = useRef<NodeJS.Timeout>();
@@ -119,8 +116,7 @@ export function T10EnterpriseSidePanel({
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (moreMenuOpen) setMoreMenuOpen(false);
-        else if (assigneeDropdownOpen) setAssigneeDropdownOpen(false);
+        if (assigneeDropdownOpen) setAssigneeDropdownOpen(false);
         else if (labelDropdownOpen) setLabelDropdownOpen(false);
         else if (datePickerOpen) setDatePickerOpen(false);
         else onClose();
@@ -135,18 +131,8 @@ export function T10EnterpriseSidePanel({
         document.body.style.overflow = '';
       };
     }
-  }, [isOpen, moreMenuOpen, assigneeDropdownOpen, labelDropdownOpen, datePickerOpen, onClose]);
+  }, [isOpen, assigneeDropdownOpen, labelDropdownOpen, datePickerOpen, onClose]);
 
-  // Click outside for more menu
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
-        setMoreMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Focus input when dropdown opens
   useEffect(() => {
@@ -173,44 +159,11 @@ export function T10EnterpriseSidePanel({
   // ═══════════════════════════════════════════════════════════════════════════
   // CTA HANDLERS
   // ═══════════════════════════════════════════════════════════════════════════
-  const handleOpenInTaskHub = () => {
-    if (item?.taskhub_key) {
-      // Open TaskHub task detail page
-      const taskHubUrl = `/taskhub/tasks?key=${item.taskhub_key}`;
-      window.open(taskHubUrl, '_blank');
-      toast.success('Opening in TaskHub...');
-    } else {
-      toast.info('No TaskHub key linked to this item');
-    }
-  };
-
-  const handleCopyLink = () => {
-    const url = `${window.location.origin}/taskhub/task10/item/${item?.id}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
-    setMoreMenuOpen(false);
-  };
-
   const handleCopyTaskKey = () => {
     if (item?.taskhub_key) {
       navigator.clipboard.writeText(item.taskhub_key);
       toast.success(`Copied ${item.taskhub_key}`);
     }
-  };
-
-  const handleDuplicate = () => {
-    toast.info('Duplicate functionality coming soon');
-    setMoreMenuOpen(false);
-  };
-
-  const handleArchive = () => {
-    toast.info('Archive functionality coming soon');
-    setMoreMenuOpen(false);
-  };
-
-  const handleSetPriority = () => {
-    toast.info('Priority settings coming soon');
-    setMoreMenuOpen(false);
   };
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -436,127 +389,34 @@ export function T10EnterpriseSidePanel({
             </div>
           </div>
           
-          {/* Right side: CTAs */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            {/* Open in TaskHub */}
-            <button
-              onClick={handleOpenInTaskHub}
-              style={{
-                width: '32px',
-                height: '32px',
-                border: 'none',
-                background: 'transparent',
-                color: COLORS.gray500,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '6px',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = COLORS.gray100;
-                e.currentTarget.style.color = COLORS.gray700;
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = COLORS.gray500;
-              }}
-              title="Open in TaskHub"
-            >
-              <ExternalLink size={18} />
-            </button>
-
-            {/* More Menu */}
-            <div ref={moreMenuRef} style={{ position: 'relative' }}>
-              <button
-                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  border: 'none',
-                  background: moreMenuOpen ? COLORS.gray100 : 'transparent',
-                  color: COLORS.gray500,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '6px',
-                  transition: 'all 0.15s',
-                }}
-                onMouseEnter={e => {
-                  if (!moreMenuOpen) {
-                    e.currentTarget.style.background = COLORS.gray100;
-                    e.currentTarget.style.color = COLORS.gray700;
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!moreMenuOpen) {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = COLORS.gray500;
-                  }
-                }}
-                title="More actions"
-              >
-                <MoreHorizontal size={18} />
-              </button>
-
-              {/* More Menu Dropdown */}
-              {moreMenuOpen && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    right: 0,
-                    marginTop: '4px',
-                    width: '200px',
-                    background: COLORS.white,
-                    border: `1px solid ${COLORS.gray200}`,
-                    borderRadius: '10px',
-                    boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-                    zIndex: 100,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <MoreMenuItem icon={<Copy size={16} />} label="Copy link" onClick={handleCopyLink} />
-                  <MoreMenuItem icon={<Copy size={16} />} label="Duplicate" onClick={handleDuplicate} />
-                  <MoreMenuItem icon={<Archive size={16} />} label="Archive" onClick={handleArchive} />
-                  <MoreMenuItem icon={<Flag size={16} />} label="Set priority" onClick={handleSetPriority} />
-                  <div style={{ height: '1px', background: COLORS.gray100, margin: '4px 0' }} />
-                  <MoreMenuItem icon={<ExternalLink size={16} />} label="Open in TaskHub" onClick={handleOpenInTaskHub} />
-                </div>
-              )}
-            </div>
-            
-            {/* Close Button */}
-            <button
-              onClick={onClose}
-              style={{
-                width: '32px',
-                height: '32px',
-                border: 'none',
-                background: 'transparent',
-                color: COLORS.gray500,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '6px',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = COLORS.red50;
-                e.currentTarget.style.color = COLORS.red;
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = COLORS.gray500;
-              }}
-              title="Close (Esc)"
-            >
-              <X size={18} />
-            </button>
-          </div>
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            style={{
+              width: '36px',
+              height: '36px',
+              border: 'none',
+              background: 'transparent',
+              color: COLORS.gray500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '8px',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = COLORS.gray100;
+              e.currentTarget.style.color = COLORS.gray700;
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = COLORS.gray500;
+            }}
+            title="Close (Esc)"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
