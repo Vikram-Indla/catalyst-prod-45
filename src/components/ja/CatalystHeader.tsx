@@ -149,7 +149,7 @@ export function CatalystHeader() {
     { label: "Project", isLabel: true, moduleKey: "project", visibleToProductOwner: true },
     { label: "Releases", path: "/releases/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "Operations", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
-    { label: "Taskhub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
+    { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
     { label: "PlanHub", path: "/planhub", moduleKey: "planhub", visibleToProductOwner: true },
   ];
 
@@ -495,8 +495,8 @@ export function CatalystHeader() {
                         )}
                       </Popover>
                     )
-                  ) : item.label === "Taskhub" ? (
-                    // Taskhub: Direct navigation to taskhub boards
+                  ) : item.label === "TaskHub" ? (
+                    // TaskHub: Direct navigation to taskhub boards
                     <button
                       style={{
                         ...navButtonStyle,

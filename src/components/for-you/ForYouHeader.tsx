@@ -15,7 +15,7 @@ const MODE_TABS: { key: ModeFilter; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'ops', label: 'Operations' },
   { key: 'del', label: 'Delivery' },
-  { key: 'pln', label: 'Taskhub' },
+  { key: 'pln', label: 'TaskHub' },
 ];
 
 export function ForYouHeader({ activeMode, onModeChange }: ForYouHeaderProps) {
