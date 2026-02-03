@@ -64,3 +64,16 @@ export function addWeeks(dateString: string, weeks: number): string {
   date.setDate(date.getDate() + weeks * 7);
   return date.toISOString();
 }
+
+export function formatWeekRange(start: Date, end: Date): string {
+  const startMonth = start.toLocaleDateString('en-US', { month: 'short' });
+  const endMonth = end.toLocaleDateString('en-US', { month: 'short' });
+  const startDay = start.getDate();
+  const endDay = end.getDate();
+  const year = end.getFullYear();
+  
+  if (startMonth === endMonth) {
+    return `${startMonth} ${startDay}–${endDay}, ${year}`;
+  }
+  return `${startMonth} ${startDay} – ${endMonth} ${endDay}, ${year}`;
+}

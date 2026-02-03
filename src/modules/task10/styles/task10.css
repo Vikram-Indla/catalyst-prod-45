@@ -2385,3 +2385,283 @@
 .t10-module .t10-rank.updated {
   animation: t10-rank-pulse 0.3s ease !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WEEK NAVIGATION DROPDOWN
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-week-selector {
+  position: relative !important;
+}
+
+.t10-module .t10-week-selector-trigger {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 14px !important;
+  background: var(--t10-white) !important;
+  border: 1px solid var(--t10-gray-200) !important;
+  border-radius: var(--t10-radius-lg) !important;
+  font-family: var(--t10-font) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--t10-gray-800) !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+  min-width: 200px !important;
+}
+
+.t10-module .t10-week-selector-trigger:hover {
+  border-color: var(--t10-gray-300) !important;
+  background: var(--t10-gray-50) !important;
+}
+
+.t10-module .t10-week-selector-trigger.open {
+  border-color: var(--t10-blue) !important;
+  box-shadow: 0 0 0 3px var(--t10-blue-50) !important;
+}
+
+.t10-module .t10-week-selector-trigger svg {
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--t10-gray-500) !important;
+}
+
+.t10-module .t10-week-selector-date {
+  flex: 1 !important;
+  text-align: left !important;
+}
+
+.t10-module .t10-week-selector-chevron {
+  transition: transform 0.2s !important;
+}
+
+.t10-module .t10-week-selector-chevron.rotated {
+  transform: rotate(180deg) !important;
+}
+
+.t10-module .t10-week-status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 2px 8px !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.t10-module .t10-week-status-badge.current {
+  background: var(--t10-blue-50) !important;
+  color: var(--t10-blue) !important;
+}
+
+.t10-module .t10-week-status-badge.closed {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+}
+
+.t10-module .t10-week-dropdown {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  min-width: 320px !important;
+  background: var(--t10-white) !important;
+  border: 1px solid var(--t10-gray-200) !important;
+  border-radius: var(--t10-radius-xl) !important;
+  box-shadow: var(--t10-shadow-xl) !important;
+  z-index: 100 !important;
+  overflow: hidden !important;
+  animation: t10-dropdown-enter 0.15s ease !important;
+}
+
+@keyframes t10-dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.t10-module .t10-week-dropdown-header {
+  padding: 12px 16px !important;
+  background: var(--t10-gray-50) !important;
+  border-bottom: 1px solid var(--t10-gray-200) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--t10-gray-600) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.t10-module .t10-week-dropdown-list {
+  max-height: 280px !important;
+  overflow-y: auto !important;
+}
+
+.t10-module .t10-week-dropdown-empty {
+  padding: 24px 16px !important;
+  text-align: center !important;
+  color: var(--t10-gray-500) !important;
+  font-size: 14px !important;
+}
+
+.t10-module .t10-week-dropdown-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: 12px 16px !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--t10-gray-100) !important;
+  font-family: var(--t10-font) !important;
+  cursor: pointer !important;
+  transition: background 0.1s !important;
+  text-align: left !important;
+}
+
+.t10-module .t10-week-dropdown-item:last-child {
+  border-bottom: none !important;
+}
+
+.t10-module .t10-week-dropdown-item:hover {
+  background: var(--t10-gray-50) !important;
+}
+
+.t10-module .t10-week-dropdown-item.selected {
+  background: var(--t10-blue-50) !important;
+}
+
+.t10-module .t10-week-dropdown-item.closed {
+  opacity: 0.7 !important;
+}
+
+.t10-module .t10-week-dropdown-item-main {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.t10-module .t10-week-dropdown-item-date {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--t10-gray-900) !important;
+}
+
+.t10-module .t10-week-dropdown-item-label {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  width: fit-content !important;
+}
+
+.t10-module .t10-week-dropdown-item-label.current {
+  background: var(--t10-blue-50) !important;
+  color: var(--t10-blue) !important;
+}
+
+.t10-module .t10-week-dropdown-item-label.active {
+  background: var(--t10-success-50) !important;
+  color: var(--t10-success) !important;
+}
+
+.t10-module .t10-week-dropdown-item-label.closed {
+  background: var(--t10-gray-100) !important;
+  color: var(--t10-gray-500) !important;
+}
+
+.t10-module .t10-week-dropdown-item-stats {
+  display: flex !important;
+  gap: 12px !important;
+  font-size: 12px !important;
+  color: var(--t10-gray-500) !important;
+}
+
+.t10-module .t10-week-dropdown-check {
+  color: var(--t10-blue) !important;
+  flex-shrink: 0 !important;
+}
+
+.t10-module .t10-week-dropdown-footer {
+  padding: 12px 16px !important;
+  background: var(--t10-gray-50) !important;
+  border-top: 1px solid var(--t10-gray-200) !important;
+}
+
+.t10-module .t10-week-create-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 10px 16px !important;
+  background: var(--t10-blue) !important;
+  border: none !important;
+  border-radius: var(--t10-radius-lg) !important;
+  font-family: var(--t10-font) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: white !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.t10-module .t10-week-create-btn:hover:not(:disabled) {
+  background: var(--t10-blue-dark) !important;
+}
+
+.t10-module .t10-week-create-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.t10-module .t10-week-create-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Empty week state */
+.t10-module .t10-no-week-state {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 80px 40px !important;
+  text-align: center !important;
+}
+
+.t10-module .t10-no-week-icon {
+  width: 80px !important;
+  height: 80px !important;
+  background: var(--t10-blue-50) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 24px !important;
+}
+
+.t10-module .t10-no-week-icon svg {
+  width: 40px !important;
+  height: 40px !important;
+  color: var(--t10-blue) !important;
+}
+
+.t10-module .t10-no-week-title {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: var(--t10-gray-900) !important;
+  margin-bottom: 8px !important;
+}
+
+.t10-module .t10-no-week-subtitle {
+  font-size: 14px !important;
+  color: var(--t10-gray-500) !important;
+  margin-bottom: 24px !important;
+  max-width: 360px !important;
+}
