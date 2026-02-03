@@ -6,8 +6,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { useT10Lists, useDuplicateT10List } from '../hooks';
+import { useT10Lists } from '../hooks';
 import type { T10ListStatus, T10ListRow, T10ListWithStats } from '../types';
 import {
   T10Header,
@@ -25,7 +24,6 @@ import '../styles/task10.scoped.css';
 export function T10LandingPage() {
   const navigate = useNavigate();
   const { data: lists, isLoading, error } = useT10Lists();
-  const duplicateList = useDuplicateT10List();
   
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,28 +75,12 @@ export function T10LandingPage() {
     setMenuList(list);
   };
 
-  const handleDuplicateList = async (list: T10ListWithStats) => {
-    try {
-      const newListId = await duplicateList.mutateAsync(list.id);
-      toast.success(`Duplicated "${list.name}"`);
-      navigate(`/taskhub/task10/list/${newListId}`);
-    } catch (err) {
-      toast.error('Failed to duplicate list');
-    }
-  };
-
   const getMenuItems = (list: T10ListWithStats): DropdownMenuItem[] => [
     {
       id: 'rename',
       label: 'Rename',
       icon: 'edit',
       onClick: () => setRenameList(list),
-    },
-    {
-      id: 'duplicate',
-      label: 'Duplicate',
-      icon: 'duplicate',
-      onClick: () => handleDuplicateList(list),
     },
     {
       id: 'archive',

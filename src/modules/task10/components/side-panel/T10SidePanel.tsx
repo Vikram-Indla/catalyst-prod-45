@@ -1,11 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TASK¹⁰ SIDE PANEL DRAWER COMPONENT
-// Right-side slide-in drawer with proper Tailwind styling
+// Right-side slide-in drawer matching reference design
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react';
 import { X, Trash2 } from 'lucide-react';
-import { formatDistanceToNow, parseISO } from 'date-fns';
+import { format, parseISO, formatDistanceToNow } from 'date-fns';
 import type { T10ItemWithAssignee } from '../../types';
 import { T10PanelDetailsTab } from './T10PanelDetailsTab';
 import { T10PanelActivityTab } from './T10PanelActivityTab';
@@ -18,10 +18,9 @@ interface T10SidePanelProps {
   onClose: () => void;
   onUpdate?: (itemId: string, updates: Partial<T10ItemWithAssignee>) => void;
   onDelete?: (itemId: string) => void;
-  isSaving?: boolean;
 }
 
-export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isSaving = false }: T10SidePanelProps) {
+export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete }: T10SidePanelProps) {
   const [activeTab, setActiveTab] = useState<TabType>('details');
 
   // Reset to details tab when a new item is selected
@@ -54,7 +53,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isSavi
     };
   }, [isOpen]);
 
-  if (!item || !isOpen) return null;
+  if (!item) return null;
 
   // Get creator info
   const creatorName = item.created_by ? 'User' : 'System';
@@ -62,102 +61,76 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isSavi
     ? formatDistanceToNow(parseISO(item.created_at), { addSuffix: true })
     : '';
 
-  const getRankLabel = (rank: number) => {
-    if (rank <= 5) return 'Top 5';
-    if (rank <= 10) return 'Top 10';
-    return 'Buffer';
-  };
-
-  const getRankColor = (rank: number) => {
-    if (rank <= 5) return 'bg-blue-600 text-white';
-    if (rank <= 10) return 'bg-gray-500 text-white';
-    return 'bg-gray-300 text-gray-700';
-  };
-
   return (
     <>
-      {/* ══════════════════════════════════════════════════════════════
-          BACKDROP - Semi-transparent overlay
-      ══════════════════════════════════════════════════════════════ */}
+      {/* Backdrop overlay */}
       <div 
-        className="fixed inset-0 bg-black/30 z-40 transition-opacity"
+        className={`t10-drawer-backdrop ${isOpen ? 't10-drawer-backdrop--visible' : ''}`}
         onClick={onClose}
         aria-hidden="true"
       />
       
-      {/* ══════════════════════════════════════════════════════════════
-          PANEL - Fixed position, slides from right
-      ══════════════════════════════════════════════════════════════ */}
+      {/* Drawer panel */}
       <aside 
-        className="fixed top-0 right-0 bottom-0 w-[420px] bg-white shadow-2xl z-50 flex flex-col"
+        className={`t10-drawer ${isOpen ? 't10-drawer--open' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
       >
-        {/* ══════════════════════════════════════════════════════════════
-            HEADER
-        ══════════════════════════════════════════════════════════════ */}
-        <header className="flex-shrink-0 px-6 py-4 border-b border-gray-200">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0 pr-4">
-              {item.taskhub_key && (
-                <span className="inline-block px-2 py-0.5 text-xs font-medium text-blue-600 bg-blue-50 rounded mb-2">
-                  {item.taskhub_key}
-                </span>
-              )}
-              <h2 id="drawer-title" className="text-lg font-semibold text-gray-900 leading-tight">
-                {item.title}
-              </h2>
+        {/* Header */}
+        <header className="t10-drawer__header">
+          <div className="t10-drawer__header-left">
+            {/* Rank badge */}
+            <div className="t10-drawer__rank-badge">
+              {item.rank}
             </div>
-            <button 
-              onClick={onClose}
-              className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Close panel"
-            >
-              <X size={20} />
-            </button>
+            <span className="t10-drawer__header-title">Task¹⁰ Priority</span>
           </div>
+          <button 
+            className="t10-drawer__close-btn"
+            onClick={onClose}
+            aria-label="Close panel"
+          >
+            <X size={20} />
+          </button>
         </header>
 
-        {/* ══════════════════════════════════════════════════════════════
-            TABS
-        ══════════════════════════════════════════════════════════════ */}
-        <nav className="flex-shrink-0 flex border-b border-gray-200" role="tablist">
+        {/* Task key & title */}
+        <div className="t10-drawer__task-info">
+          {item.taskhub_key && (
+            <span className="t10-drawer__task-key">{item.taskhub_key}</span>
+          )}
+          <h2 id="drawer-title" className="t10-drawer__task-title">
+            {item.title}
+          </h2>
+        </div>
+        
+        {/* Tabs */}
+        <nav className="t10-drawer__tabs" role="tablist">
           <button
             role="tab"
             aria-selected={activeTab === 'details'}
+            className={`t10-drawer__tab ${activeTab === 'details' ? 't10-drawer__tab--active' : ''}`}
             onClick={() => setActiveTab('details')}
-            className={`flex-1 py-3 text-sm font-medium text-center border-b-2 transition-colors ${
-              activeTab === 'details'
-                ? 'text-blue-600 border-blue-600'
-                : 'text-gray-500 border-transparent hover:text-gray-700'
-            }`}
           >
             Details
           </button>
           <button
             role="tab"
             aria-selected={activeTab === 'activity'}
+            className={`t10-drawer__tab ${activeTab === 'activity' ? 't10-drawer__tab--active' : ''}`}
             onClick={() => setActiveTab('activity')}
-            className={`flex-1 py-3 text-sm font-medium text-center border-b-2 transition-colors ${
-              activeTab === 'activity'
-                ? 'text-blue-600 border-blue-600'
-                : 'text-gray-500 border-transparent hover:text-gray-700'
-            }`}
           >
             Activity
           </button>
         </nav>
         
-        {/* ══════════════════════════════════════════════════════════════
-            CONTENT - Scrollable
-        ══════════════════════════════════════════════════════════════ */}
-        <div className="flex-1 overflow-y-auto" role="tabpanel">
+        {/* Content area */}
+        <div className="t10-drawer__content" role="tabpanel">
           {activeTab === 'details' && (
             <T10PanelDetailsTab 
               item={item} 
               onUpdate={onUpdate}
-              isSaving={isSaving}
             />
           )}
           {activeTab === 'activity' && (
@@ -165,24 +138,20 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isSavi
           )}
         </div>
 
-        {/* ══════════════════════════════════════════════════════════════
-            FOOTER
-        ══════════════════════════════════════════════════════════════ */}
-        <footer className="flex-shrink-0 px-6 py-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">
-              Created by <span className="font-medium">{creatorName}</span> · {createdAgo}
-            </span>
-            {onDelete && (
-              <button 
-                onClick={() => onDelete(item.id)}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <Trash2 size={16} />
-                Delete
-              </button>
-            )}
-          </div>
+        {/* Footer */}
+        <footer className="t10-drawer__footer">
+          <span className="t10-drawer__footer-meta">
+            Created by <strong>{creatorName}</strong> · {createdAgo}
+          </span>
+          {onDelete && (
+            <button 
+              className="t10-drawer__delete-btn"
+              onClick={() => onDelete(item.id)}
+            >
+              <Trash2 size={16} />
+              Delete
+            </button>
+          )}
         </footer>
       </aside>
     </>

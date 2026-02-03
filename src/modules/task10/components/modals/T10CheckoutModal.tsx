@@ -60,7 +60,7 @@ export function T10CheckoutModal({ isOpen, week, items, onClose, onSuccess }: T1
     if (!week) return;
 
     try {
-      await checkoutWeek.mutateAsync({ weekId: week.id, decisions });
+      await checkoutWeek.mutateAsync(week.id);
       onSuccess?.();
       onClose();
     } catch (error) {

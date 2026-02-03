@@ -8,8 +8,7 @@ import {
   fetchT10List, 
   createT10List, 
   updateT10List, 
-  deleteT10List,
-  duplicateT10List 
+  deleteT10List 
 } from '../api';
 import type { T10ListInsert, T10ListUpdate } from '../types';
 
@@ -79,20 +78,6 @@ export function useDeleteT10List() {
 
   return useMutation({
     mutationFn: (listId: string) => deleteT10List(listId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: t10ListsKeys.all });
-    },
-  });
-}
-
-/**
- * Duplicate a Task10 list
- */
-export function useDuplicateT10List() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (listId: string) => duplicateT10List(listId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: t10ListsKeys.all });
     },

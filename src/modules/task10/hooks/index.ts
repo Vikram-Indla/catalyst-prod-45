@@ -10,7 +10,6 @@ export {
   useCreateT10List,
   useUpdateT10List,
   useDeleteT10List,
-  useDuplicateT10List,
 } from './useLists';
 
 // Weeks hooks

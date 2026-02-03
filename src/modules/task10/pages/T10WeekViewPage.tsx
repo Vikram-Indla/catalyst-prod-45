@@ -19,7 +19,6 @@ import {
   useToggleT10ItemStatus,
   useCreateT10Item,
   useUpdateT10Item,
-  useDeleteT10Item,
   useReorderT10Items,
   useAddT10SuggestionToWeek,
   useDismissT10Suggestion,
@@ -50,7 +49,6 @@ export function T10WeekViewPage() {
   const toggleStatus = useToggleT10ItemStatus();
   const createItem = useCreateT10Item();
   const updateItem = useUpdateT10Item();
-  const deleteItem = useDeleteT10Item();
   const reorderItems = useReorderT10Items();
   const addSuggestion = useAddT10SuggestionToWeek();
   const dismissSuggestion = useDismissT10Suggestion();
@@ -130,15 +128,6 @@ export function T10WeekViewPage() {
       weekId: week.id,
       input: updates,
     });
-  };
-
-  const handleItemDelete = (itemId: string) => {
-    if (!week) return;
-    deleteItem.mutate({ 
-      itemId, 
-      weekId: week.id,
-    });
-    setSelectedItem(null);
   };
 
   // Loading state
@@ -258,8 +247,6 @@ export function T10WeekViewPage() {
         isOpen={!!selectedItem}
         onClose={() => setSelectedItem(null)}
         onUpdate={handleItemUpdate}
-        onDelete={handleItemDelete}
-        isSaving={updateItem.isPending}
       />
       
       {/* Checkout Modal */}

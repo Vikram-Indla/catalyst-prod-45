@@ -3,12 +3,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useEffect, useRef } from 'react';
-import { Edit2, Archive, Trash2, RotateCcw, Copy } from 'lucide-react';
+import { Edit2, Archive, Trash2, RotateCcw } from 'lucide-react';
 
 export interface DropdownMenuItem {
   id: string;
   label: string;
-  icon?: 'edit' | 'archive' | 'delete' | 'restore' | 'duplicate';
+  icon?: 'edit' | 'archive' | 'delete' | 'restore';
   variant?: 'default' | 'danger';
   onClick: () => void;
 }
@@ -24,7 +24,6 @@ const iconMap = {
   archive: Archive,
   delete: Trash2,
   restore: RotateCcw,
-  duplicate: Copy,
 };
 
 export function T10DropdownMenu({ items, position, onClose }: T10DropdownMenuProps) {
