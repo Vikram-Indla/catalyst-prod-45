@@ -19747,6 +19747,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "t10_item_labels_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "t10_week_items"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "t10_item_labels_label_id_fkey"
             columns: ["label_id"]
             isOneToOne: false
@@ -19815,8 +19822,22 @@ export type Database = {
             foreignKeyName: "t10_items_carried_from_week_id_fkey"
             columns: ["carried_from_week_id"]
             isOneToOne: false
+            referencedRelation: "t10_completed_weeks"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
             referencedRelation: "t10_completed_weeks_summary"
             referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["current_week_id"]
           },
           {
             foreignKeyName: "t10_items_carried_from_week_id_fkey"
@@ -19836,8 +19857,22 @@ export type Database = {
             foreignKeyName: "t10_items_week_id_fkey"
             columns: ["week_id"]
             isOneToOne: false
+            referencedRelation: "t10_completed_weeks"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
             referencedRelation: "t10_completed_weeks_summary"
             referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["current_week_id"]
           },
           {
             foreignKeyName: "t10_items_week_id_fkey"
@@ -19884,6 +19919,8 @@ export type Database = {
       }
       t10_lists: {
         Row: {
+          archived_at: string | null
+          archived_by: string | null
           created_at: string | null
           created_by: string | null
           description: string | null
@@ -19894,6 +19931,8 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
@@ -19904,6 +19943,8 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          archived_at?: string | null
+          archived_by?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
@@ -19969,6 +20010,13 @@ export type Database = {
             foreignKeyName: "t10_weeks_list_id_fkey"
             columns: ["list_id"]
             isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
             referencedRelation: "t10_list_performance"
             referencedColumns: ["list_id"]
           },
@@ -19985,6 +20033,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "t10_lists"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_week_items"
+            referencedColumns: ["list_id"]
           },
         ]
       }
@@ -31593,8 +31648,22 @@ export type Database = {
             foreignKeyName: "t10_items_carried_from_week_id_fkey"
             columns: ["carried_from_week_id"]
             isOneToOne: false
+            referencedRelation: "t10_completed_weeks"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
             referencedRelation: "t10_completed_weeks_summary"
             referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["current_week_id"]
           },
           {
             foreignKeyName: "t10_items_carried_from_week_id_fkey"
@@ -31614,8 +31683,22 @@ export type Database = {
             foreignKeyName: "t10_items_week_id_fkey"
             columns: ["week_id"]
             isOneToOne: false
+            referencedRelation: "t10_completed_weeks"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
             referencedRelation: "t10_completed_weeks_summary"
             referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["current_week_id"]
           },
           {
             foreignKeyName: "t10_items_week_id_fkey"
@@ -31629,6 +31712,13 @@ export type Database = {
             columns: ["week_id"]
             isOneToOne: false
             referencedRelation: "t10_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_cards"
             referencedColumns: ["id"]
           },
           {
@@ -31652,6 +31742,13 @@ export type Database = {
             referencedRelation: "t10_lists"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_week_items"
+            referencedColumns: ["list_id"]
+          },
         ]
       }
       t10_completed_summary_stats: {
@@ -31664,6 +31761,62 @@ export type Database = {
           total_weeks_completed: number | null
         }
         Relationships: []
+      }
+      t10_completed_weeks: {
+        Row: {
+          carried_forward_count: number | null
+          checkout_at: string | null
+          checkout_by: string | null
+          checkout_by_name: string | null
+          completed_count: number | null
+          completion_rate: number | null
+          dropped_count: number | null
+          list_id: string | null
+          list_key: string | null
+          list_name: string | null
+          status_badge: string | null
+          total_count: number | null
+          week_end: string | null
+          week_id: string | null
+          week_start: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_performance"
+            referencedColumns: ["list_id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_week_items"
+            referencedColumns: ["list_id"]
+          },
+        ]
       }
       t10_completed_weeks_summary: {
         Row: {
@@ -31691,6 +31844,13 @@ export type Database = {
             foreignKeyName: "t10_weeks_list_id_fkey"
             columns: ["list_id"]
             isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
             referencedRelation: "t10_list_performance"
             referencedColumns: ["list_id"]
           },
@@ -31707,6 +31867,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "t10_lists"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_week_items"
+            referencedColumns: ["list_id"]
           },
         ]
       }
@@ -31735,8 +31902,22 @@ export type Database = {
             foreignKeyName: "t10_items_week_id_fkey"
             columns: ["week_id"]
             isOneToOne: false
+            referencedRelation: "t10_completed_weeks"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
             referencedRelation: "t10_completed_weeks_summary"
             referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["current_week_id"]
           },
           {
             foreignKeyName: "t10_items_week_id_fkey"
@@ -31753,6 +31934,32 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      t10_list_cards: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          completed_count: number | null
+          completion_percent: number | null
+          created_at: string | null
+          created_by: string | null
+          creator_avatar: string | null
+          creator_name: string | null
+          current_week_id: string | null
+          description: string | null
+          id: string | null
+          key: string | null
+          name: string | null
+          past_weeks: Json | null
+          past_weeks_count: number | null
+          slots_available: number | null
+          status: string | null
+          total_count: number | null
+          updated_at: string | null
+          week_end: string | null
+          week_start: string | null
+        }
+        Relationships: []
       }
       t10_list_performance: {
         Row: {
@@ -31789,6 +31996,67 @@ export type Database = {
           week_status: string | null
         }
         Relationships: []
+      }
+      t10_week_items: {
+        Row: {
+          assignee_avatar: string | null
+          assignee_id: string | null
+          assignee_name: string | null
+          carryover_count: number | null
+          completed_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string | null
+          is_buffer: boolean | null
+          labels: Json | null
+          list_id: string | null
+          list_key: string | null
+          list_name: string | null
+          rank: number | null
+          status: string | null
+          taskhub_key: string | null
+          title: string | null
+          week_end: string | null
+          week_id: string | null
+          week_start: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_completed_weeks"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_completed_weeks_summary"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_cards"
+            referencedColumns: ["current_week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["current_week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tm_folders_with_counts: {
         Row: {
@@ -33221,6 +33489,7 @@ export type Database = {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
       }
+      t10_archive_list: { Args: { p_list_id: string }; Returns: Json }
       t10_checkout_week: {
         Args: {
           p_carry_forward_item_ids?: string[]
@@ -33229,6 +33498,7 @@ export type Database = {
         }
         Returns: Json
       }
+      t10_restore_list: { Args: { p_list_id: string }; Returns: Json }
       test_connector: { Args: { p_connector_id: string }; Returns: Json }
       text2ltree: { Args: { "": string }; Returns: unknown }
       tm_add_attachment: {
