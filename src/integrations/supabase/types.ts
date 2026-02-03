@@ -19729,6 +19729,13 @@ export type Database = {
             foreignKeyName: "t10_item_labels_item_id_fkey"
             columns: ["item_id"]
             isOneToOne: false
+            referencedRelation: "t10_completed_items_detail"
+            referencedColumns: ["item_id"]
+          },
+          {
+            foreignKeyName: "t10_item_labels_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
             referencedRelation: "t10_items"
             referencedColumns: ["id"]
           },
@@ -19751,7 +19758,9 @@ export type Database = {
       t10_items: {
         Row: {
           assignee_id: string | null
+          carried_from_week_id: string | null
           carryover_count: number | null
+          completed_at: string | null
           created_at: string | null
           created_by: string | null
           description: string | null
@@ -19767,7 +19776,9 @@ export type Database = {
         }
         Insert: {
           assignee_id?: string | null
+          carried_from_week_id?: string | null
           carryover_count?: number | null
+          completed_at?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
@@ -19783,7 +19794,9 @@ export type Database = {
         }
         Update: {
           assignee_id?: string | null
+          carried_from_week_id?: string | null
           carryover_count?: number | null
+          completed_at?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
@@ -19798,6 +19811,34 @@ export type Database = {
           week_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_completed_weeks_summary"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["current_week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_completed_weeks_summary"
+            referencedColumns: ["week_id"]
+          },
           {
             foreignKeyName: "t10_items_week_id_fkey"
             columns: ["week_id"]
@@ -19876,8 +19917,12 @@ export type Database = {
       }
       t10_weeks: {
         Row: {
+          carried_forward_count: number | null
+          checkout_at: string | null
+          checkout_by: string | null
           completed_count: number | null
           created_at: string | null
+          dropped_count: number | null
           id: string
           is_current: boolean | null
           list_id: string
@@ -19888,8 +19933,12 @@ export type Database = {
           week_start: string
         }
         Insert: {
+          carried_forward_count?: number | null
+          checkout_at?: string | null
+          checkout_by?: string | null
           completed_count?: number | null
           created_at?: string | null
+          dropped_count?: number | null
           id?: string
           is_current?: boolean | null
           list_id: string
@@ -19900,8 +19949,12 @@ export type Database = {
           week_start: string
         }
         Update: {
+          carried_forward_count?: number | null
+          checkout_at?: string | null
+          checkout_by?: string | null
           completed_count?: number | null
           created_at?: string | null
+          dropped_count?: number | null
           id?: string
           is_current?: boolean | null
           list_id?: string
@@ -19912,6 +19965,13 @@ export type Database = {
           week_start?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_performance"
+            referencedColumns: ["list_id"]
+          },
           {
             foreignKeyName: "t10_weeks_list_id_fkey"
             columns: ["list_id"]
@@ -31503,6 +31563,153 @@ export type Database = {
         }
         Relationships: []
       }
+      t10_completed_items_detail: {
+        Row: {
+          assignee_avatar: string | null
+          assignee_id: string | null
+          assignee_name: string | null
+          carried_from_week_id: string | null
+          carryover_count: number | null
+          completed_at: string | null
+          description: string | null
+          due_date: string | null
+          is_buffer: boolean | null
+          item_created_at: string | null
+          item_id: string | null
+          item_status: string | null
+          labels: Json | null
+          list_id: string | null
+          list_key: string | null
+          list_name: string | null
+          rank: number | null
+          taskhub_key: string | null
+          title: string | null
+          week_end: string | null
+          week_id: string | null
+          week_start: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_completed_weeks_summary"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["current_week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_carried_from_week_id_fkey"
+            columns: ["carried_from_week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_completed_weeks_summary"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["current_week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_performance"
+            referencedColumns: ["list_id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      t10_completed_summary_stats: {
+        Row: {
+          avg_completion_rate: number | null
+          total_carried_forward: number | null
+          total_dropped: number | null
+          total_items_completed: number | null
+          total_lists_completed: number | null
+          total_weeks_completed: number | null
+        }
+        Relationships: []
+      }
+      t10_completed_weeks_summary: {
+        Row: {
+          carried_forward_count: number | null
+          checkout_at: string | null
+          checkout_by: string | null
+          checkout_by_avatar: string | null
+          checkout_by_name: string | null
+          completed_count: number | null
+          completion_rate: number | null
+          dropped_count: number | null
+          list_id: string | null
+          list_key: string | null
+          list_name: string | null
+          total_count: number | null
+          total_weeks_in_list: number | null
+          week_end: string | null
+          week_id: string | null
+          week_number: number | null
+          week_start: string | null
+          week_status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_performance"
+            referencedColumns: ["list_id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "t10_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       t10_items_full: {
         Row: {
           assignee_avatar: string | null
@@ -31528,6 +31735,13 @@ export type Database = {
             foreignKeyName: "t10_items_week_id_fkey"
             columns: ["week_id"]
             isOneToOne: false
+            referencedRelation: "t10_completed_weeks_summary"
+            referencedColumns: ["week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
             referencedRelation: "t10_list_summary"
             referencedColumns: ["current_week_id"]
           },
@@ -31539,6 +31753,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      t10_list_performance: {
+        Row: {
+          avg_completion_rate: number | null
+          list_id: string | null
+          list_key: string | null
+          list_name: string | null
+          recurring_carryovers: Json | null
+          total_carried_forward: number | null
+          total_completed: number | null
+          total_weeks: number | null
+          weeks_breakdown: Json | null
+        }
+        Relationships: []
       }
       t10_list_summary: {
         Row: {
@@ -32991,6 +33219,14 @@ export type Database = {
       sort_queue_by_priority: { Args: { p_run_id: string }; Returns: Json }
       start_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
+        Returns: Json
+      }
+      t10_checkout_week: {
+        Args: {
+          p_carry_forward_item_ids?: string[]
+          p_drop_item_ids?: string[]
+          p_week_id: string
+        }
         Returns: Json
       }
       test_connector: { Args: { p_connector_id: string }; Returns: Json }

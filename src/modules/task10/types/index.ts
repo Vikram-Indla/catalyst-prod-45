@@ -388,3 +388,9 @@ export interface T10PaginatedResponse<T> {
   pageSize: number;
   hasMore: boolean;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMPLETED VIEW TYPES (re-export)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export * from './completed';
