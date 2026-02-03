@@ -3,9 +3,17 @@
 // Re-export all landing page components
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Header & Search
+// Header & Search (Original)
 export { T10Header } from './T10Header';
 export { T10SearchBar } from './T10SearchBar';
+
+// Header & Search (New Linear-inspired v2)
+export { T10HeaderNew } from './T10HeaderNew';
+export { T10SearchBarNew } from './T10SearchBarNew';
+export { T10Tabs } from './T10Tabs';
+export { T10EmptyState } from './T10EmptyState';
+export { T10KeyboardShortcuts } from './T10KeyboardShortcuts';
+export { T10NewListModal } from './T10NewListModal';
 
 // Filters
 export { T10FilterBar } from './T10FilterBar';
@@ -15,7 +23,7 @@ export { T10AssigneeFilter } from './T10AssigneeFilter';
 export { T10DateRangeFilter } from './T10DateRangeFilter';
 export { T10StatusFilter } from './T10StatusFilter';
 
-// List Cards (Prompt 5)
+// List Cards (Original)
 export { T10ListCard } from './T10ListCard';
 export { T10ListCardNew } from './T10ListCardNew';
 export { T10ListCardMenu } from './T10ListCardMenu';
@@ -23,3 +31,7 @@ export { T10StatusBadge } from './T10StatusBadge';
 export { T10ProgressBar } from './T10ProgressBar';
 export { T10WeekHistory } from './T10WeekHistory';
 export { T10ListsContainer } from './T10ListsContainer';
+
+// List Cards (New Linear-inspired v2)
+export { T10ListCardMinimal } from './T10ListCardMinimal';
+export { T10ListsContainerNew } from './T10ListsContainerNew';

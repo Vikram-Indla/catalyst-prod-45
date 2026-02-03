@@ -6,6 +6,7 @@
 
 // Pages
 export { T10LandingPage } from './pages/T10LandingPage';
+export { T10LandingPageNew } from './pages/T10LandingPageNew';
 export { T10WeekPage } from './pages/T10WeekPage';
 export { T10WeekView } from './components/week/T10WeekView';
 export { T10WeekViewNew } from './components/week/T10WeekViewNew';
