@@ -1,59 +1,99 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TASK¹⁰ PANEL ACTIVITY TAB COMPONENT
+// Timeline matching reference design with proper icons
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { formatDistanceToNow, parseISO } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { 
   Plus, 
   Check, 
   ArrowUpDown, 
-  UserPlus, 
-  UserMinus, 
+  User, 
   Edit2, 
-  CheckCircle, 
-  RefreshCw, 
-  Trash2, 
-  RotateCcw,
   Loader2,
 } from 'lucide-react';
 import { useT10ItemActivity } from '../../hooks';
 import type { T10ActivityType } from '../../types';
-import { getActivityIconColor, getActivityLabel } from '../../types';
+import { getActivityIconColor } from '../../types';
 
 interface T10PanelActivityTabProps {
   itemId: string;
 }
 
+// Map activity types to icons
 const iconMap: Record<T10ActivityType, React.ElementType> = {
   created: Plus,
   completed: Check,
-  uncompleted: RotateCcw,
+  uncompleted: Check,
   rank_changed: ArrowUpDown,
-  assigned: UserPlus,
-  unassigned: UserMinus,
+  assigned: User,
+  unassigned: User,
   updated: Edit2,
-  resolved: CheckCircle,
-  carried: RefreshCw,
-  removed: Trash2,
-  restored: RotateCcw,
+  resolved: Check,
+  carried: ArrowUpDown,
+  removed: Plus,
+  restored: Plus,
 };
 
-const colorClasses: Record<string, string> = {
-  blue: 't10-activity-icon--blue',
-  green: 't10-activity-icon--green',
-  purple: 't10-activity-icon--purple',
-  orange: 't10-activity-icon--orange',
-  gray: 't10-activity-icon--gray',
-  red: 't10-activity-icon--red',
-};
+// Get formatted activity message
+function getActivityMessage(activity: any): { action: string; detail?: string } {
+  const type = activity.activity_type;
+  const performer = activity.performer?.full_name || 'System';
+  const meta = activity.metadata as any;
+
+  switch (type) {
+    case 'completed':
+      return { action: 'Marked as completed', detail: `by ${performer}` };
+    case 'uncompleted':
+      return { action: 'Marked as incomplete', detail: `by ${performer}` };
+    case 'rank_changed':
+      return { 
+        action: 'Rank changed', 
+        detail: `from #${meta?.old_rank || '?'} to #${meta?.new_rank || '?'} by ${performer}` 
+      };
+    case 'updated':
+      return { action: 'Description updated', detail: `by ${performer}` };
+    case 'assigned':
+      const oldAssignee = meta?.old_assignee || 'Unassigned';
+      const newAssignee = meta?.new_assignee || 'Unassigned';
+      return { 
+        action: 'Assigned', 
+        detail: `changed from ${oldAssignee} → ${newAssignee} by ${performer}` 
+      };
+    case 'created':
+      return { action: 'Created', detail: `by ${performer}` };
+    default:
+      return { action: type.replace(/_/g, ' '), detail: `by ${performer}` };
+  }
+}
+
+// Format timestamp
+function formatTimestamp(dateStr: string): string {
+  const date = parseISO(dateStr);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  const time = format(date, 'h:mm a');
+
+  if (isToday) {
+    return `Today · ${time}`;
+  } else if (isYesterday) {
+    return `Yesterday · ${time}`;
+  } else {
+    return `${format(date, 'MMM d, yyyy')} · ${time}`;
+  }
+}
 
 export function T10PanelActivityTab({ itemId }: T10PanelActivityTabProps) {
   const { data: activities, isLoading, error } = useT10ItemActivity(itemId);
 
   if (isLoading) {
     return (
-      <div className="t10-panel-activity t10-panel-activity--loading">
-        <Loader2 className="t10-spinner" />
+      <div className="t10-activity t10-activity--loading">
+        <Loader2 className="t10-activity__spinner" />
         <span>Loading activity...</span>
       </div>
     );
@@ -61,7 +101,7 @@ export function T10PanelActivityTab({ itemId }: T10PanelActivityTabProps) {
 
   if (error) {
     return (
-      <div className="t10-panel-activity t10-panel-activity--error">
+      <div className="t10-activity t10-activity--error">
         <span>Failed to load activity</span>
       </div>
     );
@@ -69,54 +109,36 @@ export function T10PanelActivityTab({ itemId }: T10PanelActivityTabProps) {
 
   if (!activities || activities.length === 0) {
     return (
-      <div className="t10-panel-activity t10-panel-activity--empty">
+      <div className="t10-activity t10-activity--empty">
         <span>No activity yet</span>
       </div>
     );
   }
 
   return (
-    <div className="t10-panel-activity">
-      <div className="t10-activity-timeline">
-        {activities.map((activity, index) => {
-          const Icon = iconMap[activity.activity_type];
-          const colorClass = colorClasses[getActivityIconColor(activity.activity_type)];
-          const isLast = index === activities.length - 1;
-          
-          return (
-            <div key={activity.id} className="t10-activity-item">
-              <div className="t10-activity-item__line-container">
-                <div className={`t10-activity-item__icon ${colorClass}`}>
-                  <Icon />
-                </div>
-                {!isLast && <div className="t10-activity-item__line" />}
-              </div>
-              
-              <div className="t10-activity-item__content">
-                <div className="t10-activity-item__header">
-                  <span className="t10-activity-item__user">
-                    {activity.performer?.full_name || 'System'}
-                  </span>
-                  <span className="t10-activity-item__action">
-                    {getActivityLabel(activity.activity_type)}
-                  </span>
-                </div>
-                
-                {/* Show metadata for certain activity types */}
-                {activity.activity_type === 'rank_changed' && activity.metadata && (
-                  <div className="t10-activity-item__meta">
-                    Moved from #{(activity.metadata as any).old_rank} to #{(activity.metadata as any).new_rank}
-                  </div>
-                )}
-                
-                <div className="t10-activity-item__time">
-                  {formatDistanceToNow(parseISO(activity.performed_at), { addSuffix: true })}
-                </div>
-              </div>
+    <div className="t10-activity">
+      {activities.map((activity) => {
+        const Icon = iconMap[activity.activity_type] || Plus;
+        const iconColor = getActivityIconColor(activity.activity_type);
+        const message = getActivityMessage(activity);
+        
+        return (
+          <div key={activity.id} className="t10-activity__item">
+            <div className={`t10-activity__icon t10-activity__icon--${iconColor}`}>
+              <Icon size={14} />
             </div>
-          );
-        })}
-      </div>
+            <div className="t10-activity__content">
+              <p className="t10-activity__message">
+                <strong>{message.action}</strong>
+                {message.detail && <span> {message.detail}</span>}
+              </p>
+              <span className="t10-activity__time">
+                {formatTimestamp(activity.performed_at)}
+              </span>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
