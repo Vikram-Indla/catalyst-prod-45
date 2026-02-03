@@ -1,0 +1,55 @@
+// Task10 Module Constants
+export const T10_MODULE_SLUG = 'task10';
+export const T10_ROUTE_PREFIX = '/task10';
+export const T10_TOP_NAV_LABEL = 'Task¹⁰';
+export const T10_SIDEBAR_LABEL = 'Priority Lists';
+
+// Status
+export const T10_LIST_STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+} as const;
+
+export const T10_ITEM_STATUS = {
+  TODO: 'todo',
+  DONE: 'done',
+} as const;
+
+// Rank Tiers
+export const T10_RANK_TIERS = {
+  TOP: [1, 2, 3, 4, 5],
+  MID: [6, 7, 8, 9, 10],
+  BUFFER: 'buffer',
+} as const;
+
+// Colors
+export const T10_COLORS = {
+  brand: '#0d9488',
+  brandDark: '#0f766e',
+  blue: '#2563eb',
+  blueDark: '#1d4ed8',
+  success: '#10b981',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  purple: '#8b5cf6',
+} as const;
+
+// Activity Types
+export const T10_ACTIVITY_TYPES = {
+  CREATED: 'created',
+  UPDATED: 'updated',
+  COMPLETED: 'completed',
+  RANKED: 'ranked',
+  ASSIGNED: 'assigned',
+  CARRIED: 'carried',
+} as const;
+
+// Labels
+export const T10_DEFAULT_LABELS = [
+  'HR',
+  'FINANCE',
+  'TECH',
+  'LEGAL',
+  'OPERATIONS',
+  'MARKETING',
+] as const;
