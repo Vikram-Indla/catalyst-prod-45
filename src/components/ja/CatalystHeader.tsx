@@ -150,6 +150,7 @@ export function CatalystHeader() {
     { label: "Releases", path: "/releases/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "Operations", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
     { label: "Taskhub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
+    { label: "PlanHub", path: "/planhub", moduleKey: "planhub", visibleToProductOwner: true },
   ];
 
   // Get all nav items with their enabled status based on role-based module access
