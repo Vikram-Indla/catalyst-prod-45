@@ -2046,3 +2046,113 @@
   color: var(--t10-text-secondary) !important;
   margin: 0 !important;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   WEEK HISTORY (Collapsible Past Weeks on List Cards)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.t10-module-v2 .t10-week-history {
+  margin-top: var(--t10-space-4);
+  border-top: 1px solid var(--t10-border-subtle);
+  padding-top: var(--t10-space-3);
+}
+
+.t10-module-v2 .t10-week-history-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--t10-space-2);
+  width: 100%;
+  padding: var(--t10-space-2) 0;
+  font-family: var(--t10-font);
+  font-size: var(--t10-text-sm);
+  font-weight: 500;
+  color: var(--t10-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--t10-transition-fast);
+}
+
+.t10-module-v2 .t10-week-history-toggle:hover {
+  color: var(--t10-text-primary);
+}
+
+.t10-module-v2 .t10-week-history-toggle svg {
+  transition: transform var(--t10-transition-fast);
+}
+
+.t10-module-v2 .t10-week-history-toggle.t10-expanded svg {
+  transform: rotate(180deg);
+}
+
+.t10-module-v2 .t10-week-history-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t10-text-tertiary);
+  background: var(--t10-bg-subtle);
+  border-radius: var(--t10-radius-full);
+}
+
+.t10-module-v2 .t10-week-history-list {
+  list-style: none;
+  margin: var(--t10-space-2) 0 0 0;
+  padding: 0;
+}
+
+.t10-module-v2 .t10-week-history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--t10-space-3);
+  padding: var(--t10-space-2) var(--t10-space-3);
+  margin-bottom: 2px;
+  border-radius: var(--t10-radius-md);
+  cursor: pointer;
+  transition: all var(--t10-transition-fast);
+}
+
+.t10-module-v2 .t10-week-history-item:hover {
+  background: var(--t10-bg-subtle);
+}
+
+.t10-module-v2 .t10-week-history-item:focus {
+  outline: none;
+  background: var(--t10-bg-subtle);
+  box-shadow: 0 0 0 2px var(--t10-accent-subtle);
+}
+
+.t10-module-v2 .t10-week-history-item.t10-complete .t10-week-history-date {
+  color: var(--t10-success);
+}
+
+.t10-module-v2 .t10-week-history-date {
+  font-size: var(--t10-text-sm);
+  font-weight: 500;
+  color: var(--t10-text-primary);
+}
+
+.t10-module-v2 .t10-week-history-stats {
+  font-size: var(--t10-text-sm);
+  color: var(--t10-text-tertiary);
+  margin-left: auto;
+}
+
+.t10-module-v2 .t10-week-history-complete-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: var(--t10-success);
+}
+
+.t10-module-v2 .t10-week-history-complete-badge svg {
+  width: 14px;
+  height: 14px;
+}

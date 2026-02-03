@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Check, ArrowRight, X } from 'lucide-react';
+import { Check, ArrowRight, X, Circle } from 'lucide-react';
 import { useT10CompletedItems } from '../../hooks/useT10Completed';
 import { formatT10Date } from '../../utils';
 import type { T10CompletedItem } from '../../types/completed';
@@ -19,6 +19,9 @@ interface Props {
   totalCount: number;
 }
 
+// Map database status values to display status
+type ItemStatus = 'done' | 'todo' | 'completed' | 'carried_forward' | 'dropped';
+
 export function T10CompletedItemsList({
   weekId,
   checkoutAt,
@@ -30,25 +33,33 @@ export function T10CompletedItemsList({
 }: Props) {
   const { data: items, isLoading } = useT10CompletedItems(weekId);
 
-  const getStatusIcon = (status: T10CompletedItem['item_status']) => {
+  const getStatusIcon = (status: ItemStatus) => {
     switch (status) {
+      case 'done':
       case 'completed':
         return <Check size={14} className="t10-status-done" />;
       case 'carried_forward':
         return <ArrowRight size={14} className="t10-status-fwd" />;
       case 'dropped':
         return <X size={14} className="t10-status-drop" />;
+      case 'todo':
+      default:
+        return <Circle size={14} className="t10-status-todo" />;
     }
   };
 
-  const getStatusLabel = (status: T10CompletedItem['item_status']) => {
+  const getStatusLabel = (status: ItemStatus) => {
     switch (status) {
+      case 'done':
       case 'completed':
         return 'Done';
       case 'carried_forward':
         return 'Fwd';
       case 'dropped':
         return 'Drop';
+      case 'todo':
+      default:
+        return 'Todo';
     }
   };
 
@@ -108,8 +119,8 @@ export function T10CompletedItemsList({
               </td>
               <td>
                 <span className={`t10-item-status ${item.item_status}`}>
-                  {getStatusIcon(item.item_status)}
-                  {getStatusLabel(item.item_status)}
+                  {getStatusIcon(item.item_status as ItemStatus)}
+                  {getStatusLabel(item.item_status as ItemStatus)}
                 </span>
               </td>
               <td>

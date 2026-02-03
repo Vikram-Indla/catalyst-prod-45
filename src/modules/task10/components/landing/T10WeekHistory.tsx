@@ -2,10 +2,12 @@
 // COMPONENT: T10WeekHistory
 // Purpose: Collapsible past weeks section — CRITICAL FEATURE
 // This component fetches week history directly from the database
+// Clicking a past week navigates to that week's detail view
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useT10WeekHistory } from '../../hooks';
 import { formatT10WeekRange } from '../../utils';
 
@@ -15,6 +17,7 @@ interface T10WeekHistoryProps {
 
 export function T10WeekHistory({ listId }: T10WeekHistoryProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
   
   // CRITICAL: Fetch past weeks from database
   const { data: pastWeeks, isLoading } = useT10WeekHistory(listId);
@@ -32,6 +35,12 @@ export function T10WeekHistory({ listId }: T10WeekHistoryProps) {
     e.stopPropagation(); // Prevent card click
     setIsExpanded(!isExpanded);
     console.log('[T10] Week history toggled:', isExpanded ? 'collapsed' : 'expanded', '| List:', listId);
+  };
+
+  const handleWeekClick = (e: React.MouseEvent, weekId: string) => {
+    e.stopPropagation(); // Prevent card click
+    console.log('[T10] Past week clicked:', weekId);
+    navigate(`/taskhub/task10/list/${listId}/week/${weekId}`);
   };
 
   return (
@@ -58,6 +67,15 @@ export function T10WeekHistory({ listId }: T10WeekHistoryProps) {
               <li 
                 key={week.id} 
                 className={`t10-week-history-item ${isComplete ? 't10-complete' : ''}`}
+                onClick={(e) => handleWeekClick(e, week.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleWeekClick(e as unknown as React.MouseEvent, week.id);
+                  }
+                }}
               >
                 <span className="t10-week-history-date">
                   {formatT10WeekRange(week.week_start, week.week_end)}
