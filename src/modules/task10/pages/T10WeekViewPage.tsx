@@ -35,6 +35,7 @@ import {
   T10CheckoutModal,
 } from '../components';
 import '../styles/task10.scoped.css';
+import '../styles/task10-complete.css';
 
 export function T10WeekViewPage() {
   const { listId } = useParams<{ listId: string }>();
@@ -133,7 +134,7 @@ export function T10WeekViewPage() {
   // Loading state
   if (listLoading || weekLoading) {
     return (
-      <div className="catalyst-module--task10">
+      <div className="catalyst-module--task10 t10-module">
         <div className="t10-loading">
           <Loader2 className="t10-spinner" />
           <span>Loading week...</span>
@@ -145,7 +146,7 @@ export function T10WeekViewPage() {
   // Error state
   if (listError || weekError || !list) {
     return (
-      <div className="catalyst-module--task10">
+      <div className="catalyst-module--task10 t10-module">
         <div className="t10-error">
           <span>Failed to load week data. Please try again.</span>
           <button 
@@ -162,7 +163,7 @@ export function T10WeekViewPage() {
   // No current week
   if (!week) {
     return (
-      <div className="catalyst-module--task10">
+      <div className="catalyst-module--task10 t10-module">
         <div className="t10-empty-state">
           <h3>No active week</h3>
           <p>There's no active week for this list.</p>
@@ -178,7 +179,7 @@ export function T10WeekViewPage() {
   }
 
   return (
-    <div className="catalyst-module--task10">
+    <div className="catalyst-module--task10 t10-module">
       {/* Header */}
       <T10WeekHeader
         list={list}
