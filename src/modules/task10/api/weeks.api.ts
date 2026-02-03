@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { supabase } from '@/integrations/supabase/client';
-import type { T10WeekRow, T10WeekWithItems, T10ItemStatus } from '../types';
+import type { T10WeekRow, T10WeekWithItems, T10WeekHistory, T10ItemStatus, CheckoutDecision } from '../types';
 import type { Database } from '@/integrations/supabase/types';
 
 type DbT10Week = Database['public']['Tables']['t10_weeks']['Row'];
@@ -29,17 +29,31 @@ function mapDbWeekToRow(dbWeek: DbT10Week): T10WeekRow {
 }
 
 /**
- * Fetch all weeks for a list
+ * Fetch all weeks for a list (with user info for history display)
  */
-export async function fetchT10Weeks(listId: string): Promise<T10WeekRow[]> {
+export async function fetchT10Weeks(listId: string): Promise<T10WeekHistory[]> {
   const { data, error } = await supabase
     .from('t10_weeks')
-    .select('*')
+    .select(`
+      *,
+      checked_out_user:profiles!t10_weeks_checked_out_by_fkey(id, full_name, avatar_url)
+    `)
     .eq('list_id', listId)
     .order('week_start_date', { ascending: false });
 
   if (error) throw new Error(error.message);
-  return (data || []).map(mapDbWeekToRow);
+  return (data || []).map((w: any) => ({
+    id: w.id,
+    week_start_date: w.week_start_date,
+    week_end_date: w.week_end_date,
+    is_checked_out: w.is_checked_out,
+    checked_out_by: w.checked_out_by,
+    checked_out_at: w.checked_out_at,
+    closed_count: w.closed_count,
+    carried_count: w.carried_count,
+    removed_count: w.removed_count,
+    checked_out_user: w.checked_out_user,
+  }));
 }
 
 /**
@@ -120,8 +134,13 @@ export async function fetchT10Week(weekId: string): Promise<T10WeekWithItems> {
 
 /**
  * Check out a week (finalize and create next week)
+ * @param weekId - The week ID to checkout
+ * @param decisions - Map of itemId to decision (resolved/carry/remove)
  */
-export async function checkoutT10Week(weekId: string): Promise<T10WeekRow> {
+export async function checkoutT10Week(
+  weekId: string, 
+  decisions: Record<string, CheckoutDecision> = {}
+): Promise<T10WeekRow> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
@@ -134,7 +153,24 @@ export async function checkoutT10Week(weekId: string): Promise<T10WeekRow> {
 
   if (fetchError) throw new Error(fetchError.message);
 
-  const items = currentWeek.items || [];
+  const items: any[] = currentWeek.items || [];
+  
+  // Process decisions - update item statuses based on user decisions
+  for (const item of items) {
+    const decision = decisions[item.id];
+    if (decision === 'resolved') {
+      // Mark as resolved/done
+      await supabase.from('t10_items').update({ status: 'resolved' }).eq('id', item.id);
+      item.status = 'resolved';
+    } else if (decision === 'remove') {
+      // Mark as removed
+      await supabase.from('t10_items').update({ status: 'removed' }).eq('id', item.id);
+      item.status = 'removed';
+    }
+    // 'carry' keeps status as 'todo'
+  }
+
+  // Calculate counts based on final statuses
   const closedCount = items.filter((i: any) => i.status === 'done' || i.status === 'resolved').length;
   const carriedCount = items.filter((i: any) => i.status === 'todo').length;
   const removedCount = items.filter((i: any) => i.status === 'removed').length;
@@ -173,11 +209,11 @@ export async function checkoutT10Week(weekId: string): Promise<T10WeekRow> {
 
   if (createError) throw new Error(createError.message);
 
-  // Carry over incomplete items
-  const incompleteItems = items.filter((i: any) => i.status === 'todo');
+  // Carry over items marked as 'carry' (still 'todo')
+  const carryItems = items.filter((i: any) => i.status === 'todo');
   
-  if (incompleteItems.length > 0) {
-    const carryOverItems = incompleteItems.map((item: any, index: number) => ({
+  if (carryItems.length > 0) {
+    const carryOverItems = carryItems.map((item: any, index: number) => ({
       week_id: newWeek.id,
       title: item.title,
       description: item.description,

@@ -10,6 +10,7 @@ import {
   checkoutT10Week 
 } from '../api';
 import { t10ListsKeys } from './useLists';
+import type { CheckoutPayload } from '../types';
 
 // Query keys
 export const t10WeeksKeys = {
@@ -59,8 +60,8 @@ export function useCheckoutT10Week() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (weekId: string) => checkoutT10Week(weekId),
-    onSuccess: (newWeek) => {
+    mutationFn: ({ weekId, decisions }: CheckoutPayload) => checkoutT10Week(weekId, decisions),
+    onSuccess: () => {
       // Invalidate weeks queries for this list
       queryClient.invalidateQueries({ queryKey: t10WeeksKeys.all });
       // Invalidate list stats

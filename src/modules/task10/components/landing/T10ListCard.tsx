@@ -5,18 +5,10 @@
 
 import { useState } from 'react';
 import { MoreVertical, Clock, ChevronDown, Check } from 'lucide-react';
-import { format, startOfWeek } from 'date-fns';
+import { format, startOfWeek, parseISO } from 'date-fns';
 import type { T10ListWithStats } from '../../types';
+import { useT10Weeks } from '../../hooks';
 import { StatusBadge } from '../shared';
-
-interface WeekHistoryItem {
-  id: string;
-  date: string;
-  checkedOutBy: string;
-  checkedOutAt: string;
-  closedCount: number;
-  carriedCount: number;
-}
 
 interface T10ListCardProps {
   list: T10ListWithStats;
@@ -26,6 +18,12 @@ interface T10ListCardProps {
 
 export function T10ListCard({ list, onClick, onMenuClick }: T10ListCardProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
+  
+  // Fetch weeks history when history is expanded
+  const { data: weeks = [] } = useT10Weeks(historyOpen ? list.id : undefined);
+  
+  // Filter to only checked-out weeks for history
+  const weekHistory = weeks.filter(w => w.is_checked_out);
   
   const progress = list.item_count > 0 
     ? Math.round((list.completed_count / list.item_count) * 100) 
@@ -38,26 +36,6 @@ export function T10ListCard({ list, onClick, onMenuClick }: T10ListCardProps) {
   // Current week date
   const currentWeekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
   const weekOfDate = format(currentWeekStart, 'MMM d, yyyy');
-
-  // Mock week history - in real implementation, fetch from API
-  const weekHistory: WeekHistoryItem[] = [
-    {
-      id: '1',
-      date: 'Jan 27, 2026',
-      checkedOutBy: 'Vikram Rao',
-      checkedOutAt: 'Jan 31, 2026 at 5:42 PM',
-      closedCount: 7,
-      carriedCount: 3,
-    },
-    {
-      id: '2',
-      date: 'Jan 20, 2026',
-      checkedOutBy: 'Sarah Chen',
-      checkedOutAt: 'Jan 24, 2026 at 6:15 PM',
-      closedCount: 8,
-      carriedCount: 2,
-    },
-  ];
 
   const handleToggleHistory = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -141,24 +119,34 @@ export function T10ListCard({ list, onClick, onMenuClick }: T10ListCardProps) {
       {/* Expandable history */}
       {historyOpen && (
         <div className="t10-week-history">
-          {weekHistory.map((week) => (
-            <div key={week.id} className="t10-week-history__item">
-              <div className="t10-week-history__check">
-                <Check size={12} />
-              </div>
-              <span className="t10-week-history__date">{week.date}</span>
-              <div className="t10-week-history__info">
-                <div className="t10-week-history__author">
-                  Checked out by <strong>{week.checkedOutBy}</strong>
+          {weekHistory.length === 0 ? (
+            <div className="t10-week-history__empty">No past weeks yet</div>
+          ) : (
+            weekHistory.map((week) => (
+              <div key={week.id} className="t10-week-history__item">
+                <div className="t10-week-history__check">
+                  <Check size={12} />
                 </div>
-                <div className="t10-week-history__timestamp">{week.checkedOutAt}</div>
-                <div className="t10-week-history__stats">
-                  <span className="closed">{week.closedCount} closed</span> · 
-                  <span className="carried"> {week.carriedCount} carried</span>
+                <span className="t10-week-history__date">
+                  {format(parseISO(week.week_start_date), 'MMM d, yyyy')}
+                </span>
+                <div className="t10-week-history__info">
+                  <div className="t10-week-history__author">
+                    Checked out by <strong>{week.checked_out_user?.full_name || 'User'}</strong>
+                  </div>
+                  {week.checked_out_at && (
+                    <div className="t10-week-history__timestamp">
+                      {format(parseISO(week.checked_out_at), "MMM d, yyyy 'at' h:mm a")}
+                    </div>
+                  )}
+                  <div className="t10-week-history__stats">
+                    <span className="closed">{week.closed_count} closed</span> · 
+                    <span className="carried"> {week.carried_count} carried</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
     </div>

@@ -57,3 +57,8 @@ export interface CheckoutSummary {
   carry_count: number;
   remove_count: number;
 }
+
+export interface CheckoutPayload {
+  weekId: string;
+  decisions: Record<string, CheckoutDecision>;
+}
