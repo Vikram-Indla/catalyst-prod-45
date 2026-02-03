@@ -1,10 +1,10 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TASK¹⁰ CHECKOUT MODAL COMPONENT
-// End-of-week checkout with item decisions - Reference design match
+// End-of-week checkout with item decisions
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useMemo, useEffect } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, CheckCircle, ArrowRight, Trash2, AlertTriangle } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { useCheckoutT10Week } from '../../hooks';
 import type { T10WeekRow, T10ItemWithAssignee, CheckoutDecision } from '../../types';
@@ -24,7 +24,7 @@ export function T10CheckoutModal({ isOpen, week, items, onClose, onSuccess }: T1
 
   // Calculate completed and incomplete items
   const completedItems = useMemo(() => 
-    items.filter(item => item.status === 'done'),
+    items.filter(item => item.status === 'done' || item.status === 'resolved'),
     [items]
   );
 
@@ -51,6 +51,13 @@ export function T10CheckoutModal({ isOpen, week, items, onClose, onSuccess }: T1
     return { resolved, carry, remove };
   }, [decisions]);
 
+  // Check for items carried multiple times
+  const hasMultiCarryWarning = useMemo(() => {
+    return incompleteItems.some(item => 
+      item.carryover_count >= 2 && decisions[item.id] === 'carry'
+    );
+  }, [incompleteItems, decisions]);
+
   const handleDecisionChange = (itemId: string, decision: CheckoutDecision) => {
     setDecisions(prev => ({ ...prev, [itemId]: decision }));
   };
@@ -60,7 +67,10 @@ export function T10CheckoutModal({ isOpen, week, items, onClose, onSuccess }: T1
     if (!week) return;
 
     try {
-      await checkoutWeek.mutateAsync(week.id);
+      await checkoutWeek.mutateAsync({
+        weekId: week.id,
+        decisions,
+      });
       onSuccess?.();
       onClose();
     } catch (error) {
@@ -70,147 +80,205 @@ export function T10CheckoutModal({ isOpen, week, items, onClose, onSuccess }: T1
 
   if (!isOpen || !week) return null;
 
-  const weekRange = `${format(parseISO(week.week_start_date), 'MMM d')} – ${format(parseISO(week.week_end_date), 'MMM d, yyyy')}`;
+  const weekDateFormatted = format(parseISO(week.week_start_date), 'MMM d, yyyy');
 
   return (
-    <div className="t10-checkout-backdrop" onClick={onClose}>
-      <div className="t10-checkout-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <header className="t10-checkout-modal__header">
-          <h2 className="t10-checkout-modal__title">Checkout Week</h2>
-          <p className="t10-checkout-modal__date">{weekRange}</p>
-        </header>
-        
-        <form onSubmit={handleSubmit} className="t10-checkout-modal__form">
-          {/* Scrollable Content */}
-          <div className="t10-checkout-modal__content">
-            {/* Stats Cards */}
-            <div className="t10-checkout-stats">
-              <div className="t10-checkout-stats__card">
-                <span className="t10-checkout-stats__value t10-checkout-stats__value--completed">
-                  {completedItems.length}
-                </span>
-                <span className="t10-checkout-stats__label">COMPLETED</span>
-              </div>
-              <div className="t10-checkout-stats__card">
-                <span className="t10-checkout-stats__value t10-checkout-stats__value--remaining">
-                  {incompleteItems.length}
-                </span>
-                <span className="t10-checkout-stats__label">REMAINING</span>
-              </div>
-              <div className="t10-checkout-stats__card">
-                <span className="t10-checkout-stats__value t10-checkout-stats__value--total">
-                  {items.length}
-                </span>
-                <span className="t10-checkout-stats__label">TOTAL</span>
-              </div>
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+        onClick={onClose}
+      >
+        {/* Modal */}
+        <div 
+          className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <header className="flex items-start justify-between p-6 border-b border-gray-200">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Checkout Week</h2>
+              <p className="text-sm text-gray-500 mt-1">Week of {weekDateFormatted}</p>
             </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X size={20} className="text-gray-400" />
+            </button>
+          </header>
 
-            {/* Item Decision List */}
-            {incompleteItems.length > 0 && (
-              <div className="t10-checkout-section-label">
-                Incomplete Items — Choose action for each:
+          <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {/* Stats Bar */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-emerald-600">{completedItems.length}</div>
+                  <div className="text-xs font-medium text-emerald-600 uppercase tracking-wide">Completed</div>
+                </div>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-amber-600">{incompleteItems.length}</div>
+                  <div className="text-xs font-medium text-amber-600 uppercase tracking-wide">Remaining</div>
+                </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-600">{items.length}</div>
+                  <div className="text-xs font-medium text-blue-600 uppercase tracking-wide">Total</div>
+                </div>
               </div>
-            )}
-            
-            <div className="t10-checkout-items">
+
+              {/* Items List */}
               {incompleteItems.length === 0 ? (
-                <div className="t10-checkout-items__empty">
-                  <p>All items completed! Ready to checkout.</p>
+                <div className="text-center py-8">
+                  <CheckCircle size={48} className="text-emerald-500 mx-auto mb-3" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">All items completed!</h3>
+                  <p className="text-sm text-gray-500">
+                    Great work! All items in this week have been completed.
+                  </p>
                 </div>
               ) : (
-                incompleteItems.map((item) => (
-                  <div key={item.id} className="t10-checkout-item-card">
-                    <div className="t10-checkout-item-card__header">
-                      <span className="t10-checkout-item-card__rank">{item.rank}</span>
-                      <span className="t10-checkout-item-card__title">{item.title}</span>
-                    </div>
-                    
-                    <div className="t10-checkout-item-card__options">
-                      <label className="t10-checkout-radio">
-                        <input
-                          type="radio"
-                          name={`decision-${item.id}`}
-                          checked={decisions[item.id] === 'resolved'}
-                          onChange={() => handleDecisionChange(item.id, 'resolved')}
-                        />
-                        <span className="t10-checkout-radio__circle"></span>
-                        <span className="t10-checkout-radio__label">Mark Resolved</span>
-                      </label>
-                      
-                      <label className="t10-checkout-radio">
-                        <input
-                          type="radio"
-                          name={`decision-${item.id}`}
-                          checked={decisions[item.id] === 'carry'}
-                          onChange={() => handleDecisionChange(item.id, 'carry')}
-                        />
-                        <span className="t10-checkout-radio__circle"></span>
-                        <span className="t10-checkout-radio__label">Carry to Next Week</span>
-                      </label>
-                      
-                      <label className="t10-checkout-radio">
-                        <input
-                          type="radio"
-                          name={`decision-${item.id}`}
-                          checked={decisions[item.id] === 'remove'}
-                          onChange={() => handleDecisionChange(item.id, 'remove')}
-                        />
-                        <span className="t10-checkout-radio__circle"></span>
-                        <span className="t10-checkout-radio__label">Remove</span>
-                      </label>
-                    </div>
+                <>
+                  <p className="text-sm font-medium text-gray-700 mb-4">
+                    What would you like to do with the remaining items?
+                  </p>
+
+                  <div className="space-y-3">
+                    {incompleteItems.map((item) => (
+                      <div 
+                        key={item.id}
+                        className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
+                      >
+                        {/* Item Info */}
+                        <div className="flex items-start gap-3 mb-3">
+                          <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-sm font-semibold flex items-center justify-center">
+                            {item.rank}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 leading-tight">{item.title}</p>
+                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                              {item.taskhub_key && (
+                                <span className="text-xs text-gray-500 font-mono">{item.taskhub_key}</span>
+                              )}
+                              {item.label && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                  {item.label}
+                                </span>
+                              )}
+                              {item.carryover_count > 0 && (
+                                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded flex items-center gap-1">
+                                  <ArrowRight size={10} />
+                                  Carried {item.carryover_count}x
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Selector */}
+                        <div className="flex items-center gap-6 pl-10">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name={`decision-${item.id}`}
+                              checked={decisions[item.id] === 'resolved'}
+                              onChange={() => handleDecisionChange(item.id, 'resolved')}
+                              className="w-4 h-4 text-emerald-600 border-gray-300 focus:ring-emerald-500"
+                            />
+                            <span className="text-sm text-gray-700">Resolved</span>
+                          </label>
+
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name={`decision-${item.id}`}
+                              checked={decisions[item.id] === 'carry'}
+                              onChange={() => handleDecisionChange(item.id, 'carry')}
+                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm text-gray-700">Carry Forward</span>
+                          </label>
+
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name={`decision-${item.id}`}
+                              checked={decisions[item.id] === 'remove'}
+                              onChange={() => handleDecisionChange(item.id, 'remove')}
+                              className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                            />
+                            <span className="text-sm text-gray-700">Remove</span>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))
+                </>
               )}
             </div>
 
-            {/* Summary Bar */}
-            {incompleteItems.length > 0 && (
-              <div className="t10-checkout-summary-bar">
-                <span className="t10-checkout-summary-bar__resolved">
-                  {summary.resolved} will be resolved
-                </span>
-                <span className="t10-checkout-summary-bar__separator">·</span>
-                <span className="t10-checkout-summary-bar__carry">
-                  {summary.carry} will carry over
-                </span>
-                <span className="t10-checkout-summary-bar__separator">·</span>
-                <span className="t10-checkout-summary-bar__remove">
-                  {summary.remove} will be removed
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Footer Actions - Always visible */}
-          <footer className="t10-checkout-modal__footer">
-            <button 
-              type="button" 
-              className="t10-checkout-btn-cancel"
-              onClick={onClose}
-              disabled={checkoutWeek.isPending}
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit" 
-              className="t10-checkout-btn-confirm"
-              disabled={checkoutWeek.isPending}
-            >
-              {checkoutWeek.isPending ? (
-                <>
-                  <Loader2 className="t10-spinner" size={16} />
-                  Processing...
-                </>
-              ) : (
-                'Confirm Checkout'
+            {/* Footer */}
+            <footer className="border-t border-gray-200 p-6 bg-gray-50">
+              {/* Summary */}
+              {incompleteItems.length > 0 && (
+                <div className="flex items-center gap-4 text-sm mb-4">
+                  <span className="flex items-center gap-1.5 text-emerald-600">
+                    <CheckCircle size={14} />
+                    {summary.resolved} resolved
+                  </span>
+                  <span className="flex items-center gap-1.5 text-blue-600">
+                    <ArrowRight size={14} />
+                    {summary.carry} carry forward
+                  </span>
+                  <span className="flex items-center gap-1.5 text-red-600">
+                    <Trash2 size={14} />
+                    {summary.remove} removed
+                  </span>
+                </div>
               )}
-            </button>
-          </footer>
-        </form>
+
+              {/* Warning for items carried multiple times */}
+              {hasMultiCarryWarning && (
+                <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg mb-4">
+                  <AlertTriangle size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-amber-800">
+                    Some items have been carried forward multiple times. Consider resolving or removing them.
+                  </p>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={checkoutWeek.isPending}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={checkoutWeek.isPending}
+                  className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                >
+                  {checkoutWeek.isPending ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle size={16} />
+                      Confirm Checkout
+                    </>
+                  )}
+                </button>
+              </div>
+            </footer>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

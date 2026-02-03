@@ -7,7 +7,8 @@ import {
   fetchT10Weeks, 
   fetchT10CurrentWeek, 
   fetchT10Week, 
-  checkoutT10Week 
+  checkoutT10Week,
+  type CheckoutT10WeekInput,
 } from '../api';
 import { t10ListsKeys } from './useLists';
 
@@ -53,14 +54,14 @@ export function useT10Week(weekId: string | undefined) {
 }
 
 /**
- * Check out a week (finalize and create next week)
+ * Check out a week with item decisions (finalize and create next week)
  */
 export function useCheckoutT10Week() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (weekId: string) => checkoutT10Week(weekId),
-    onSuccess: (newWeek) => {
+    mutationFn: (input: CheckoutT10WeekInput) => checkoutT10Week(input),
+    onSuccess: () => {
       // Invalidate weeks queries for this list
       queryClient.invalidateQueries({ queryKey: t10WeeksKeys.all });
       // Invalidate list stats
