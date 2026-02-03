@@ -4,7 +4,7 @@ import type { T10List } from '../types';
 
 interface DbT10List {
   id: string;
-  list_key: string;
+  key: string;
   name: string;
   description: string | null;
   status: string;
@@ -16,7 +16,7 @@ interface DbT10List {
 function mapDbToT10List(db: DbT10List): T10List {
   return {
     id: db.id,
-    key: db.list_key,
+    key: db.key,
     name: db.name,
     status: db.status as 'active' | 'inactive',
     created_by: db.created_by || '',
@@ -70,13 +70,13 @@ export function useCreateT10List() {
       // Generate a unique key
       const { data: existingLists } = await supabase
         .from('t10_lists')
-        .select('list_key')
+        .select('key')
         .order('created_at', { ascending: false })
         .limit(1);
 
       let nextKey = 'T10-001';
       if (existingLists && existingLists.length > 0) {
-        const lastKey = existingLists[0].list_key;
+        const lastKey = existingLists[0].key;
         const lastNum = parseInt(lastKey.replace('T10-', ''), 10);
         nextKey = `T10-${String(lastNum + 1).padStart(3, '0')}`;
       }
@@ -84,7 +84,7 @@ export function useCreateT10List() {
       const { data, error } = await supabase
         .from('t10_lists')
         .insert({
-          list_key: nextKey,
+          key: nextKey,
           name,
           status: 'active',
           created_by: user.user.id,
