@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Zap, Plus, ChevronDown, Info, Check } from 'lucide-react';
 import { T10PriorityCard } from '../components/week/T10PriorityCard';
+import { T10SortableList } from '../components/week/T10SortableList';
 import { T10SidePanel } from '../components/panel/T10SidePanel';
 import { T10CheckoutModal } from '../components/modals/T10CheckoutModal';
 import { 
@@ -14,6 +15,7 @@ import {
   useDeleteT10Item,
   useCheckoutT10Week,
   useCarryoverT10Items,
+  useBulkUpdateT10Items,
 } from '../hooks';
 import { getWeekStartDate } from '../utils';
 import type { T10Item, T10CheckoutDecision } from '../types';
@@ -45,6 +47,7 @@ export function T10WeekPage() {
   const createWeek = useCreateT10Week();
   const checkoutWeek = useCheckoutT10Week();
   const carryoverItems = useCarryoverT10Items();
+  const bulkUpdateItems = useBulkUpdateT10Items();
   
   // Current week navigation
   const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
@@ -74,6 +77,40 @@ export function T10WeekPage() {
   const completedCount = displayItems.filter(i => i.status === 'done').length;
   const topTenItems = displayItems.filter(i => i.rank <= 10).sort((a, b) => a.rank - b.rank);
   const bufferItems = displayItems.filter(i => i.rank > 10).sort((a, b) => a.rank - b.rank);
+
+  // Handle reorder via drag-and-drop
+  const handleReorder = useCallback(async (activeId: string, overId: string) => {
+    const oldIndex = topTenItems.findIndex(i => i.id === activeId);
+    const newIndex = topTenItems.findIndex(i => i.id === overId);
+    
+    if (oldIndex === -1 || newIndex === -1) return;
+    
+    // Calculate new ranks
+    const reordered = [...topTenItems];
+    const [moved] = reordered.splice(oldIndex, 1);
+    reordered.splice(newIndex, 0, moved);
+    
+    const updates = reordered.map((item, idx) => ({
+      id: item.id,
+      rank: idx + 1,
+    }));
+
+    if (useMockMode) {
+      setMockItems(prev => {
+        const buffer = prev.filter(i => i.rank > 10);
+        const updated = reordered.map((item, idx) => ({ ...item, rank: idx + 1 }));
+        return [...updated, ...buffer];
+      });
+      toast({ title: "Reordered", description: `"${moved.title}" moved to rank ${newIndex + 1}.` });
+    } else {
+      try {
+        await bulkUpdateItems.mutateAsync({ updates });
+        toast({ title: "Reordered", description: `"${moved.title}" moved to rank ${newIndex + 1}.` });
+      } catch (error) {
+        toast({ title: "Error", description: "Failed to save new order.", variant: "destructive" });
+      }
+    }
+  }, [topTenItems, useMockMode, bulkUpdateItems, toast]);
 
   // Format current week date
   const formatWeekDisplay = () => {
@@ -377,22 +414,21 @@ export function T10WeekPage() {
         <div className="t10-section-header">
           <span className="t10-section-title">Top 10 Priorities</span>
         </div>
-        <div className="t10-cards-list">
-          {topTenItems.length > 0 ? (
-            topTenItems.map(item => (
-              <T10PriorityCard 
-                key={item.id} 
-                item={item} 
-                onClick={() => handleCardClick(item.id)} 
-                onToggleStatus={() => handleToggleStatus(item.id)} 
-              />
-            ))
-          ) : (
+        {topTenItems.length > 0 ? (
+          <T10SortableList
+            items={topTenItems}
+            onReorder={handleReorder}
+            onCardClick={handleCardClick}
+            onToggleStatus={handleToggleStatus}
+            disabled={currentWeek?.is_checked_out}
+          />
+        ) : (
+          <div className="t10-cards-list">
             <div className="t10-empty-state">
               <p>No priorities for this week yet. Add items using the quick add above.</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
         
         {bufferItems.length > 0 && (
           <div className="t10-buffer-section">
@@ -413,7 +449,8 @@ export function T10WeekPage() {
                     key={item.id} 
                     item={item} 
                     onClick={() => handleCardClick(item.id)} 
-                    onToggleStatus={() => handleToggleStatus(item.id)} 
+                    onToggleStatus={() => handleToggleStatus(item.id)}
+                    isDraggable={false}
                   />
                 ))}
               </div>

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, GripVertical } from 'lucide-react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { T10Item } from '../../types';
 import { getRankTier, getDueStatus, formatShortDate } from '../../utils';
 
@@ -7,18 +9,52 @@ interface T10PriorityCardProps {
   item: T10Item;
   onClick: () => void;
   onToggleStatus: () => void;
+  isDraggable?: boolean;
 }
 
-export function T10PriorityCard({ item, onClick, onToggleStatus }: T10PriorityCardProps) {
+export function T10PriorityCard({ item, onClick, onToggleStatus, isDraggable = true }: T10PriorityCardProps) {
   const rankTier = getRankTier(item.rank);
   const dueStatus = item.due_date ? getDueStatus(item.due_date) : 'normal';
   const isCompleted = item.status === 'done';
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: item.id,
+    disabled: !isDraggable,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : undefined,
+  };
+
   return (
     <div
-      className={`t10-card ${isCompleted ? 'completed' : ''} ${item.carryover_count > 0 ? 'carryover' : ''}`}
+      ref={setNodeRef}
+      style={style}
+      className={`t10-card ${isCompleted ? 'completed' : ''} ${item.carryover_count > 0 ? 'carryover' : ''} ${isDragging ? 'dragging' : ''}`}
       onClick={onClick}
     >
+      {/* Drag Handle */}
+      {isDraggable && (
+        <div 
+          className="t10-drag-handle"
+          {...attributes}
+          {...listeners}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <GripVertical size={16} />
+        </div>
+      )}
+
       {/* Rank Badge */}
       <div className={`t10-rank t10-rank-${rankTier}`}>
         {item.rank}
