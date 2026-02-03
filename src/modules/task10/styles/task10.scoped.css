@@ -340,47 +340,66 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   STATUS BADGES — CRITICAL: MUST HAVE BACKGROUNDS
+   STATUS BADGES — CRITICAL: MUST HAVE BACKGROUNDS (PILL SHAPE)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .catalyst-module--task10 .t10-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 12px !important;
+  border-radius: 9999px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
 }
 
 /* ACTIVE = Green pill with green dot */
-.catalyst-module--task10 .t10-status-badge--active {
+.catalyst-module--task10 .t10-status-badge--active,
+.catalyst-module--task10 .t10-status-badge.t10-status-badge--active {
   background-color: #ecfdf5 !important;  /* green-50 - REQUIRED */
   color: #10b981 !important;
 }
 
-.catalyst-module--task10 .t10-status-badge--active::before {
-  content: '';
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  background-color: #10b981;
-  border-radius: 50%;
-  flex-shrink: 0;
+.catalyst-module--task10 .t10-status-badge--active::before,
+.catalyst-module--task10 .t10-status-badge.t10-status-badge--active::before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 6px !important;
+  height: 6px !important;
+  background-color: #10b981 !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
 }
 
 /* INACTIVE = Gray pill, NO dot */
-.catalyst-module--task10 .t10-status-badge--inactive {
+.catalyst-module--task10 .t10-status-badge--inactive,
+.catalyst-module--task10 .t10-status-badge.t10-status-badge--inactive {
   background-color: #f3f4f6 !important;  /* gray-100 - REQUIRED */
   color: #6b7280 !important;
 }
 
-/* ARCHIVED = Darker gray pill */
-.catalyst-module--task10 .t10-status-badge--archived {
+/* Ensure NO dot for inactive */
+.catalyst-module--task10 .t10-status-badge--inactive::before,
+.catalyst-module--task10 .t10-status-badge.t10-status-badge--inactive::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* ARCHIVED = Darker gray pill, NO dot */
+.catalyst-module--task10 .t10-status-badge--archived,
+.catalyst-module--task10 .t10-status-badge.t10-status-badge--archived {
   background-color: #e5e7eb !important;
   color: #4b5563 !important;
+}
+
+.catalyst-module--task10 .t10-status-badge--archived::before,
+.catalyst-module--task10 .t10-status-badge.t10-status-badge--archived::before {
+  display: none !important;
+  content: none !important;
 }
 
 /* Meta line (Created by) */
@@ -433,8 +452,9 @@
   color: var(--t10-gray-700);
 }
 
+/* Slots available - MUST be orange */
 .catalyst-module--task10 .t10-list-card__stats .slots {
-  color: var(--t10-blue);
+  color: #f59e0b !important;  /* orange/warning color */
 }
 
 /* Week history toggle */
