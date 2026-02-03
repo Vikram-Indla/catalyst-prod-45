@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { usePlanSubscription } from '@/hooks/usePlanHubSubscriptions';
 import TaskGrid from '../components/TaskGrid';
 import GanttChart from '../components/GanttChart';
 import type { FeatureSettings, PlanWithLead, TaskRow, TaskTreeNode } from '@/types/planhub.types';
@@ -20,6 +21,9 @@ type ViewMode = 'split' | 'tasks' | 'gantt';
 export default function PlanEditor({ planId, onBack, features }: Props) {
   const queryClient = useQueryClient();
   const [viewMode, setViewMode] = useState<ViewMode>('split');
+
+  // Real-time subscription for collaborative editing
+  usePlanSubscription(planId);
 
   // Fetch plan
   const { data: plan, isLoading: planLoading } = useQuery({
