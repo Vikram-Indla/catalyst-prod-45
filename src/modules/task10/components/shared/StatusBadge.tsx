@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TASK¹⁰ STATUS BADGE
 // Pill-shaped badges with filled backgrounds for list status indicators.
-// Uses inline styles with hex colors to guarantee visibility.
+// Uses BOTH CSS classes AND inline styles for maximum compatibility.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type { T10ListStatus } from '../../types';
@@ -16,7 +16,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   if (status === 'active') {
     return (
       <span
-        className={className}
+        className={`t10-status-badge t10-status-badge--active ${className || ''}`}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -34,6 +34,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
         }}
       >
         <span
+          className="t10-status-badge__dot"
           style={{
             width: '6px',
             height: '6px',
@@ -51,7 +52,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   if (status === 'inactive') {
     return (
       <span
-        className={className}
+        className={`t10-status-badge t10-status-badge--inactive ${className || ''}`}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -75,7 +76,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   // Archived badge: darker gray pill, no dot
   return (
     <span
-      className={className}
+      className={`t10-status-badge t10-status-badge--archived ${className || ''}`}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
