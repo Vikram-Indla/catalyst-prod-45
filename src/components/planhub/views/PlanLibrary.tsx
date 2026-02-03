@@ -24,7 +24,7 @@ export default function PlanLibrary({ onPlanSelect }: Props) {
     queryFn: async () => {
       let query = supabase
         .from('planhub_plans')
-        .select('*, lead:profiles(id, full_name, avatar_url)')
+        .select('*, lead:profiles!planhub_plans_lead_id_fkey(id, full_name, avatar_url)')
         .order('updated_at', { ascending: false });
 
       if (filters.status) query = query.eq('status', filters.status);
