@@ -276,20 +276,43 @@ export function T10WeekPage() {
     }
   };
 
-  // Create new week handler
+  // Create new week handler with auto-carryover from previous week
   const handleCreateWeek = async () => {
     if (!listId) return;
     
     setIsCreatingWeek(true);
     try {
       const weekStart = getWeekStartDate(new Date());
-      await createWeek.mutateAsync({
+      
+      // Create the new week
+      const newWeek = await createWeek.mutateAsync({
         listId,
         weekStartDate: weekStart,
       });
+
+      // Check if there's a previous week with incomplete items to carry over
+      const previousWeek = dbWeeks[0]; // Most recent week (sorted desc)
+      if (previousWeek && !previousWeek.is_checked_out) {
+        // Get incomplete items from previous week
+        const incompleteItems = displayItems.filter(i => i.status === 'todo');
+        if (incompleteItems.length > 0) {
+          await carryoverItems.mutateAsync({
+            sourceItems: incompleteItems,
+            targetWeekId: newWeek.id,
+          });
+          toast({ 
+            title: "Week started", 
+            description: `${incompleteItems.length} item${incompleteItems.length > 1 ? 's' : ''} carried over from previous week.` 
+          });
+        } else {
+          toast({ title: "Week started", description: "Your new week has been created." });
+        }
+      } else {
+        toast({ title: "Week started", description: "Your new week has been created." });
+      }
+
       // Navigate to the new week (index 0 since sorted desc)
       setCurrentWeekIndex(0);
-      toast({ title: "Week started", description: "Your new week has been created." });
     } catch (error) {
       toast({ title: "Error", description: "Failed to create week.", variant: "destructive" });
     } finally {
