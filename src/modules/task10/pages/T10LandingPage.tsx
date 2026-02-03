@@ -18,7 +18,7 @@ import {
   T10RenameListModal,
   T10DeleteListModal,
 } from '../components';
-import type { DropdownMenuItem } from '../components';
+import type { DropdownMenuItem, FilterState } from '../components';
 import '../styles/task10.scoped.css';
 
 export function T10LandingPage() {
@@ -27,8 +27,7 @@ export function T10LandingPage() {
   
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<T10ListStatus | 'all'>('all');
-  const [sortBy, setSortBy] = useState<'recent' | 'name' | 'progress'>('recent');
+  const [filters, setFilters] = useState<FilterState>({});
   
   // Modal State
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -46,8 +45,8 @@ export function T10LandingPage() {
     let result = [...lists];
     
     // Filter by status
-    if (statusFilter !== 'all') {
-      result = result.filter(list => list.status === statusFilter);
+    if (filters.status && filters.status !== 'all') {
+      result = result.filter(list => list.status === filters.status);
     }
     
     // Filter by search query
@@ -59,21 +58,11 @@ export function T10LandingPage() {
       );
     }
     
-    // Sort
-    if (sortBy === 'name') {
-      result.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === 'progress') {
-      result.sort((a, b) => {
-        const aProgress = a.item_count > 0 ? a.completed_count / a.item_count : 0;
-        const bProgress = b.item_count > 0 ? b.completed_count / b.item_count : 0;
-        return bProgress - aProgress;
-      });
-    } else {
-      result.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-    }
+    // Sort by most recent
+    result.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     
     return result;
-  }, [lists, statusFilter, searchQuery, sortBy]);
+  }, [lists, filters, searchQuery]);
 
   const handleListClick = (list: T10ListWithStats) => {
     navigate(`/taskhub/task10/list/${list.id}`);
@@ -147,10 +136,8 @@ export function T10LandingPage() {
               onChange={setSearchQuery} 
             />
             <T10FilterBar 
-              selectedFilter={statusFilter}
-              onFilterChange={setStatusFilter}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
+              filters={filters}
+              onFilterChange={setFilters}
             />
           </div>
           

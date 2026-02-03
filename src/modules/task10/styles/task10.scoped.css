@@ -155,7 +155,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Filter Buttons
+   Filter Dropdown Buttons
    ───────────────────────────────────────────────────────────────────────── */
 
 .catalyst-module--task10 .t10-filter-bar {
@@ -165,10 +165,14 @@
   flex-wrap: wrap;
 }
 
+.catalyst-module--task10 .t10-filter-dropdown {
+  position: relative;
+}
+
 .catalyst-module--task10 .t10-filter-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 8px 14px;
   border: 1px solid var(--t10-gray-200);
   border-radius: 8px;
@@ -197,33 +201,107 @@
   transition: transform var(--t10-transition);
 }
 
-.catalyst-module--task10 .t10-filter-btn--active .t10-filter-btn__chevron {
-  transform: rotate(180deg);
+.catalyst-module--task10 .t10-filter-btn__clear {
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+  transition: opacity var(--t10-transition);
+}
+
+.catalyst-module--task10 .t10-filter-btn__clear:hover {
+  opacity: 1;
+}
+
+.catalyst-module--task10 .t10-filter-dropdown__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+.catalyst-module--task10 .t10-filter-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 180px;
+  background: var(--t10-white);
+  border: 1px solid var(--t10-gray-200);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.catalyst-module--task10 .t10-filter-dropdown__item {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--t10-gray-700);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t10-transition-fast);
+}
+
+.catalyst-module--task10 .t10-filter-dropdown__item:hover {
+  background: var(--t10-gray-50);
+}
+
+.catalyst-module--task10 .t10-filter-dropdown__item--selected {
+  background: var(--t10-blue-50);
+  color: var(--t10-blue);
+  font-weight: 500;
+}
+
+.catalyst-module--task10 .t10-filter-clear-all {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--t10-danger);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--t10-transition);
+}
+
+.catalyst-module--task10 .t10-filter-clear-all:hover {
+  color: #dc2626;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   List Cards
+   List Cards (Full Width)
    ───────────────────────────────────────────────────────────────────────── */
 
 .catalyst-module--task10 .t10-list-card {
   background: var(--t10-white);
   border: 1px solid var(--t10-gray-200);
   border-radius: var(--t10-card-radius);
-  padding: var(--t10-card-padding);
+  overflow: hidden;
   transition: var(--t10-transition);
-  cursor: pointer;
 }
 
 .catalyst-module--task10 .t10-list-card:hover {
-  box-shadow: var(--t10-shadow-card-hover);
   border-color: var(--t10-gray-300);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.catalyst-module--task10 .t10-list-card__main {
+  padding: var(--t10-card-padding);
+  cursor: pointer;
 }
 
 .catalyst-module--task10 .t10-list-card__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 4px;
+}
+
+.catalyst-module--task10 .t10-list-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .catalyst-module--task10 .t10-list-card__id {
@@ -240,37 +318,72 @@
   font-size: 17px;
   font-weight: 700;
   color: var(--t10-gray-900);
-  margin-bottom: 8px;
 }
 
-.catalyst-module--task10 .t10-list-card__status {
+.catalyst-module--task10 .t10-list-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Status badges */
+.catalyst-module--task10 .t10-status-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
   font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 12px;
 }
 
-.catalyst-module--task10 .t10-list-card__status-dot {
-  width: 8px;
-  height: 8px;
+.catalyst-module--task10 .t10-status-badge--active {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.catalyst-module--task10 .t10-status-badge--active::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #10b981;
   border-radius: 50%;
 }
 
-.catalyst-module--task10 .t10-list-card__status--active .t10-list-card__status-dot {
-  background: var(--t10-success);
+.catalyst-module--task10 .t10-status-badge--inactive {
+  background: #f3f4f6;
+  color: #6b7280;
 }
 
-.catalyst-module--task10 .t10-list-card__status--active {
-  color: var(--t10-success);
+/* No dot for inactive */
+
+.catalyst-module--task10 .t10-status-badge--archived {
+  background: #fef3c7;
+  color: #d97706;
 }
 
-.catalyst-module--task10 .t10-list-card__status--inactive .t10-list-card__status-dot {
-  background: var(--t10-gray-400);
-}
-
-.catalyst-module--task10 .t10-list-card__status--inactive {
+/* Meta line (Created by) */
+.catalyst-module--task10 .t10-list-card__meta {
+  font-size: 13px;
   color: var(--t10-gray-500);
+  margin-bottom: 16px;
+}
+
+.catalyst-module--task10 .t10-list-card__meta strong {
+  color: var(--t10-gray-700);
+  font-weight: 600;
+}
+
+/* Week info */
+.catalyst-module--task10 .t10-list-card__week {
+  font-size: 14px;
+  color: var(--t10-gray-600);
+  margin-bottom: 12px;
+}
+
+.catalyst-module--task10 .t10-list-card__week strong {
+  color: var(--t10-gray-800);
+  font-weight: 600;
 }
 
 /* Progress bar */
@@ -297,6 +410,122 @@
 
 .catalyst-module--task10 .t10-list-card__stats strong {
   color: var(--t10-gray-700);
+}
+
+.catalyst-module--task10 .t10-list-card__stats .slots {
+  color: var(--t10-blue);
+}
+
+/* Week history toggle */
+.catalyst-module--task10 .t10-week-history-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--t10-gray-50);
+  border-top: 1px solid var(--t10-gray-100);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--t10-gray-600);
+  transition: background var(--t10-transition);
+}
+
+.catalyst-module--task10 .t10-week-history-toggle:hover {
+  background: var(--t10-gray-100);
+}
+
+.catalyst-module--task10 .t10-week-history-toggle__text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalyst-module--task10 .t10-week-history-toggle__chevron {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--t10-transition);
+}
+
+.catalyst-module--task10 .t10-week-history-toggle--expanded .t10-week-history-toggle__chevron {
+  transform: rotate(180deg);
+}
+
+/* Week history items */
+.catalyst-module--task10 .t10-week-history {
+  border-top: 1px solid var(--t10-gray-100);
+  padding: 16px 24px;
+  background: var(--t10-gray-50);
+}
+
+.catalyst-module--task10 .t10-week-history__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--t10-gray-100);
+}
+
+.catalyst-module--task10 .t10-week-history__item:last-child {
+  border-bottom: none;
+}
+
+.catalyst-module--task10 .t10-week-history__check {
+  width: 20px;
+  height: 20px;
+  background: var(--t10-success);
+  color: var(--t10-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.catalyst-module--task10 .t10-week-history__check svg {
+  width: 12px;
+  height: 12px;
+}
+
+.catalyst-module--task10 .t10-week-history__date {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--t10-gray-800);
+  min-width: 120px;
+}
+
+.catalyst-module--task10 .t10-week-history__info {
+  flex: 1;
+}
+
+.catalyst-module--task10 .t10-week-history__author {
+  font-size: 13px;
+  color: var(--t10-gray-600);
+  margin-bottom: 2px;
+}
+
+.catalyst-module--task10 .t10-week-history__author strong {
+  color: var(--t10-gray-700);
+}
+
+.catalyst-module--task10 .t10-week-history__timestamp {
+  font-size: 12px;
+  color: var(--t10-gray-400);
+  margin-bottom: 4px;
+}
+
+.catalyst-module--task10 .t10-week-history__stats {
+  font-size: 12px;
+  color: var(--t10-gray-500);
+}
+
+.catalyst-module--task10 .t10-week-history__stats .closed {
+  color: var(--t10-success);
+}
+
+.catalyst-module--task10 .t10-week-history__stats .carried {
+  color: var(--t10-warning);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -1330,13 +1559,13 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Lists Grid
+   Lists Container (Single Column, Full Width)
    ───────────────────────────────────────────────────────────────────────── */
 
 .catalyst-module--task10 .t10-lists-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
