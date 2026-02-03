@@ -8,7 +8,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, Download, FileText } from 'lucide-react';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
 import type { KanbanTask } from './types/kanban';
-import { PlannerSidebar } from './components/PlannerSidebar';
 import { KanbanBoard, TaskDetailDrawer } from './components/kanban';
 import { PlannerTaskList } from './components/PlannerTaskList';
 import { PlannerTimeline } from './components/PlannerTimeline';
@@ -449,15 +448,7 @@ export function PlannerPage() {
   
 
   return (
-    <div className="flex h-full min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
-      {/* Sidebar (must start at top of module area, like other modules) */}
-      <PlannerSidebar
-        expanded={!sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
-
-      {/* Right column: header + search + view content */}
-      <div className="flex flex-col flex-1 min-w-0 min-h-0">
+    <div className="flex flex-col flex-1 min-w-0 min-h-0" style={{ backgroundColor: 'var(--bg)' }}>
         {/* Header with breadcrumb - hidden on views that have their own headers */}
         {activeView !== 'dashboard' && activeView !== 'boards' && activeView !== 'task-list' && activeView !== 'timeline' && activeView !== 'calendar' && activeView !== 'workstreams' && (
           <div className="shrink-0" style={{ backgroundColor: 'var(--bg)', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
@@ -645,7 +636,6 @@ export function PlannerPage() {
           onCreate={handleCreateTeam}
           users={users}
         />
-      </div>
     </div>
   );
 }
