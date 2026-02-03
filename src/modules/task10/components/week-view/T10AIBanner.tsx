@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
-import { Sparkles, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { Sparkles, ChevronDown, ChevronUp, Plus, RefreshCw } from 'lucide-react';
 import type { T10AISuggestionWithAssignee } from '../../types';
 import { getPriorityColor, getPriorityBgColor } from '../../types';
 
@@ -13,14 +13,95 @@ interface T10AIBannerProps {
   suggestions: T10AISuggestionWithAssignee[];
   onAddSuggestion?: (suggestionId: string) => void;
   onDismiss?: (suggestionId: string) => void;
+  onGenerateSuggestions?: () => void;
+  isGenerating?: boolean;
 }
 
-export function T10AIBanner({ suggestions, onAddSuggestion, onDismiss }: T10AIBannerProps) {
+export function T10AIBanner({ 
+  suggestions, 
+  onAddSuggestion, 
+  onDismiss,
+  onGenerateSuggestions,
+  isGenerating = false,
+}: T10AIBannerProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const pendingSuggestions = suggestions.filter(s => !s.is_added);
   
-  if (pendingSuggestions.length === 0) return null;
+  // Show "Generate" button when no suggestions exist
+  if (pendingSuggestions.length === 0) {
+    return (
+      <div 
+        className="t10-ai-banner"
+        style={{
+          background: '#faf5ff',
+          border: '1px solid #e9d5ff',
+          borderRadius: '12px',
+          marginBottom: '20px',
+        }}
+      >
+        <div 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 18px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div 
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                border: '2px solid #9333ea',
+                backgroundColor: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Sparkles size={18} style={{ color: '#9333ea' }} />
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontWeight: 700, color: '#7c3aed', fontSize: '14px' }}>
+                AI Suggestions
+              </span>
+              <span style={{ color: '#9ca3af' }}>·</span>
+              <span style={{ color: '#6b7280', fontSize: '14px' }}>
+                Find tasks from TaskHub to add to your Top 10
+              </span>
+            </div>
+          </div>
+          
+          <button 
+            onClick={onGenerateSuggestions}
+            disabled={isGenerating}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              backgroundColor: isGenerating ? '#d1d5db' : '#9333ea',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: isGenerating ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.2s ease',
+            }}
+            onMouseEnter={(e) => !isGenerating && (e.currentTarget.style.backgroundColor = '#7c3aed')}
+            onMouseLeave={(e) => !isGenerating && (e.currentTarget.style.backgroundColor = '#9333ea')}
+          >
+            <RefreshCw size={14} className={isGenerating ? 'animate-spin' : ''} />
+            {isGenerating ? 'Scanning TaskHub...' : 'Generate from TaskHub'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 

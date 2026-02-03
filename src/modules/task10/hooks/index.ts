@@ -56,3 +56,12 @@ export {
   useProfiles,
   type ProfileOption,
 } from './useProfiles';
+
+// TaskHub Integration hooks
+export {
+  taskHubIntegrationKeys,
+  useTaskHubCandidates,
+  useGenerateT10Suggestions,
+  useClearT10Suggestions,
+  type TaskHubTask,
+} from './useTaskHubIntegration';
