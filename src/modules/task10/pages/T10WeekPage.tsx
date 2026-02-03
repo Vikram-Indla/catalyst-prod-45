@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Plus, ChevronDown, Check } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Plus, ChevronDown, Check, Calendar } from 'lucide-react';
 import { T10PriorityCard } from '../components/week/T10PriorityCard';
 import { T10SortableList } from '../components/week/T10SortableList';
+import { T10WeekNavigation } from '../components/week/T10WeekNavigation';
 import { T10SidePanel } from '../components/panel/T10SidePanel';
 import { T10CheckoutModal } from '../components/modals/T10CheckoutModal';
 import { T10AISuggestionsPanel } from '../components/week/T10AISuggestionsPanel';
@@ -18,7 +19,7 @@ import {
   useCarryoverT10Items,
   useBulkUpdateT10Items,
 } from '../hooks';
-import { getWeekStartDate } from '../utils';
+import { getWeekStartDate, formatWeekRange } from '../utils';
 import type { T10Item, T10CheckoutDecision } from '../types';
 import { useToast } from '@/hooks/use-toast';
 import '../styles/task10.css';
@@ -73,7 +74,7 @@ export function T10WeekPage() {
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [quickAddValue, setQuickAddValue] = useState('');
-
+  const [isCreatingWeek, setIsCreatingWeek] = useState(false);
   const completedCount = displayItems.filter(i => i.status === 'done').length;
   const topTenItems = displayItems.filter(i => i.rank <= 10).sort((a, b) => a.rank - b.rank);
   const bufferItems = displayItems.filter(i => i.rank > 10).sort((a, b) => a.rank - b.rank);
@@ -112,14 +113,6 @@ export function T10WeekPage() {
     }
   }, [topTenItems, useMockMode, bulkUpdateItems, toast]);
 
-  // Format current week date
-  const formatWeekDisplay = () => {
-    if (currentWeek) {
-      const start = new Date(currentWeek.week_start_date);
-      return start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-    return 'Feb 2, 2026'; // Mock date
-  };
 
   const handleCardClick = (itemId: string) => {
     setSelectedItemId(itemId);
@@ -283,8 +276,37 @@ export function T10WeekPage() {
     }
   };
 
-  const canNavigatePrev = currentWeekIndex > 0;
-  const canNavigateNext = currentWeekIndex < dbWeeks.length - 1;
+  // Create new week handler
+  const handleCreateWeek = async () => {
+    if (!listId) return;
+    
+    setIsCreatingWeek(true);
+    try {
+      const weekStart = getWeekStartDate(new Date());
+      await createWeek.mutateAsync({
+        listId,
+        weekStartDate: weekStart,
+      });
+      // Navigate to the new week (index 0 since sorted desc)
+      setCurrentWeekIndex(0);
+      toast({ title: "Week started", description: "Your new week has been created." });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to create week.", variant: "destructive" });
+    } finally {
+      setIsCreatingWeek(false);
+    }
+  };
+
+  // Format current week date for checkout modal
+  const formatWeekDisplayForModal = () => {
+    if (currentWeek) {
+      const start = new Date(currentWeek.week_start_date);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      return formatWeekRange(start, end);
+    }
+    return 'Feb 2–8, 2026'; // Mock date
+  };
 
   return (
     <div className="t10-module">
@@ -296,30 +318,16 @@ export function T10WeekPage() {
           </button>
           <span className="t10-list-title">{list?.name || 'Weekly Team Priorities'}</span>
         </div>
-        <div className="t10-week-nav">
-          <button 
-            className="t10-week-nav-btn" 
-            disabled={!canNavigatePrev}
-            onClick={() => setCurrentWeekIndex(prev => prev - 1)}
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <div className="t10-week-date">
-            {formatWeekDisplay()}
-            {currentWeek?.is_checked_out && (
-              <span className="t10-week-checked-badge">
-                <Check size={12} /> Checked Out
-              </span>
-            )}
-          </div>
-          <button 
-            className="t10-week-nav-btn" 
-            disabled={!canNavigateNext}
-            onClick={() => setCurrentWeekIndex(prev => prev + 1)}
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
+        
+        <T10WeekNavigation
+          weeks={dbWeeks}
+          currentWeek={currentWeek || null}
+          currentWeekIndex={currentWeekIndex}
+          onNavigate={setCurrentWeekIndex}
+          onCreateWeek={handleCreateWeek}
+          isCreating={isCreatingWeek}
+        />
+        
         <div className="t10-week-header-right">
           <div className="t10-week-progress">
             <strong>{completedCount}</strong>/10 completed
@@ -328,12 +336,12 @@ export function T10WeekPage() {
             <span className="t10-checked-out-badge">
               <Check size={16} /> Week Closed
             </span>
-          ) : (
+          ) : currentWeek ? (
             <button className="t10-btn t10-btn-primary" onClick={() => setCheckoutOpen(true)}>
               <CheckCircle size={18} />
               Checkout Week
             </button>
-          )}
+          ) : null}
         </div>
       </header>
 
@@ -427,7 +435,7 @@ export function T10WeekPage() {
       <T10CheckoutModal 
         isOpen={checkoutOpen} 
         onClose={() => setCheckoutOpen(false)} 
-        weekDate={`${formatWeekDisplay()} – Feb 8, 2026`}
+        weekDate={formatWeekDisplayForModal()}
         items={displayItems.filter(i => i.rank <= 10)} 
         completedCount={completedCount} 
         onCheckout={handleCheckout} 
