@@ -85,3 +85,13 @@ export {
   useT10Checkout,
   useT10ExportCSV,
 } from './useT10Completed';
+
+// List Cards (Vertical Implementation)
+export {
+  useT10ListCards,
+  useT10CompletedWeeksView,
+  useT10WeekItemsView,
+  useT10ArchiveList,
+  useT10RestoreList,
+  t10ListCardsKeys,
+} from './useTask10ListCards';
