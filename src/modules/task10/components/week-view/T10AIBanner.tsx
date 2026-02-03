@@ -1,5 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TASK¹⁰ AI BANNER COMPONENT
+// - Icon with purple BORDER (not filled)
+// - Purple styled Review button
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
@@ -21,59 +23,154 @@ export function T10AIBanner({ suggestions, onAddSuggestion, onDismiss }: T10AIBa
   if (pendingSuggestions.length === 0) return null;
 
   return (
-    <div className="t10-ai-banner">
-      <div className="t10-ai-banner__header">
-        <div className="t10-ai-banner__icon">
-          <Sparkles />
+    <div 
+      className="t10-ai-banner"
+      style={{
+        background: '#faf5ff',
+        border: '1px solid #e9d5ff',
+        borderRadius: '12px',
+        marginBottom: '20px',
+      }}
+    >
+      <div 
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '14px 18px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Icon with purple BORDER, not filled */}
+          <div 
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              border: '2px solid #9333ea',
+              backgroundColor: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Sparkles size={18} style={{ color: '#9333ea' }} />
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontWeight: 700, color: '#7c3aed', fontSize: '14px' }}>
+              AI Suggestions
+            </span>
+            <span style={{ color: '#9ca3af' }}>·</span>
+            <span style={{ color: '#6b7280', fontSize: '14px' }}>
+              {pendingSuggestions.length} task{pendingSuggestions.length !== 1 ? 's' : ''} recommended for your Top 10
+            </span>
+          </div>
         </div>
-        <div className="t10-ai-banner__content">
-          <span className="t10-ai-banner__title">AI Suggestions</span>
-          <span style={{ color: '#4b5563', marginLeft: '6px' }}>·</span>
-          <span className="t10-ai-banner__subtitle" style={{ marginLeft: '6px' }}>
-            {pendingSuggestions.length} task{pendingSuggestions.length !== 1 ? 's' : ''} recommended for your Top 10
-          </span>
-        </div>
+        
+        {/* Purple styled button */}
         <button 
-          className="t10-ai-banner__toggle"
           onClick={() => setIsExpanded(!isExpanded)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 14px',
+            backgroundColor: '#9333ea',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '13px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'background-color 0.2s ease',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7c3aed'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9333ea'}
         >
           {isExpanded ? 'Hide' : 'Review'}
-          {isExpanded ? <ChevronUp className="t10-ai-banner__toggle-icon" /> : <ChevronDown className="t10-ai-banner__toggle-icon" />}
+          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
       </div>
       
       {isExpanded && (
-        <div className="t10-ai-banner__suggestions">
+        <div 
+          style={{
+            borderTop: '1px solid #e9d5ff',
+            padding: '12px 18px',
+          }}
+        >
           {pendingSuggestions.map((suggestion) => (
-            <div key={suggestion.id} className="t10-ai-suggestion">
-              <div className="t10-ai-suggestion__left">
+            <div 
+              key={suggestion.id} 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 14px',
+                backgroundColor: '#ffffff',
+                borderRadius: '8px',
+                marginBottom: '8px',
+                border: '1px solid #f3e8ff',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span 
-                  className="t10-ai-suggestion__priority"
                   style={{ 
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
                     color: getPriorityColor(suggestion.priority),
                     backgroundColor: getPriorityBgColor(suggestion.priority),
                   }}
                 >
                   {suggestion.priority}
                 </span>
-                <span className="t10-ai-suggestion__title">{suggestion.title}</span>
+                <span style={{ fontSize: '14px', fontWeight: 500, color: '#1f2937' }}>
+                  {suggestion.title}
+                </span>
                 {suggestion.taskhub_key && (
-                  <span className="t10-ai-suggestion__key">{suggestion.taskhub_key}</span>
+                  <span style={{ fontSize: '12px', fontFamily: 'monospace', color: '#9ca3af' }}>
+                    {suggestion.taskhub_key}
+                  </span>
                 )}
               </div>
               
-              <div className="t10-ai-suggestion__actions">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <button 
-                  className="t10-btn t10-btn--sm t10-btn--outline"
                   onClick={() => onDismiss?.(suggestion.id)}
+                  style={{
+                    padding: '6px 12px',
+                    backgroundColor: 'transparent',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    color: '#6b7280',
+                    cursor: 'pointer',
+                  }}
                 >
                   Dismiss
                 </button>
                 <button 
-                  className="t10-btn t10-btn--sm t10-btn--primary"
                   onClick={() => onAddSuggestion?.(suggestion.id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '6px 12px',
+                    backgroundColor: '#9333ea',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    color: '#ffffff',
+                    cursor: 'pointer',
+                  }}
                 >
-                  <Plus className="t10-btn__icon" />
+                  <Plus size={14} />
                   Add
                 </button>
               </div>

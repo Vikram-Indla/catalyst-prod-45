@@ -1718,6 +1718,12 @@
   color: var(--t10-gray-400);
   cursor: grab;
   flex-shrink: 0;
+  touch-action: none; /* Critical for dnd-kit to work */
+  user-select: none;
+}
+
+.catalyst-module--task10 .t10-priority-card__drag-handle:active {
+  cursor: grabbing;
 }
 
 .catalyst-module--task10 .t10-priority-card__drag-icon {
