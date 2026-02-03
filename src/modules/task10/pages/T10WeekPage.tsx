@@ -1,47 +1,68 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Zap, Plus, ChevronDown, Info, Check } from 'lucide-react';
 import { T10PriorityCard } from '../components/week/T10PriorityCard';
 import { T10SidePanel } from '../components/panel/T10SidePanel';
 import { T10CheckoutModal } from '../components/modals/T10CheckoutModal';
+import { 
+  useT10ListById, 
+  useT10Weeks, 
+  useT10Items, 
+  useCreateT10Week,
+  useCreateT10Item,
+  useUpdateT10Item,
+  useDeleteT10Item,
+  useCheckoutT10Week,
+  useCarryoverT10Items,
+} from '../hooks';
+import { getWeekStartDate } from '../utils';
 import type { T10Item, T10CheckoutDecision } from '../types';
 import { useToast } from '@/hooks/use-toast';
 import '../styles/task10.css';
 
+// Mock data for when database is empty
 const initialMockItems: T10Item[] = [
   { id: '1', week_id: 'w1', rank: 1, title: 'Interview senior engineering candidates for Platform team', taskhub_key: 'TSK-142', assignee_name: 'Ibrahim A.', assignee_initials: 'IA', due_date: '2026-02-03', label: 'HR', status: 'todo', carryover_count: 0, created_at: '', updated_at: '' },
-  { id: '2', week_id: 'w1', rank: 2, title: 'Complete vendor contract negotiations with legal review', taskhub_key: '', assignee_name: 'Vikram I.', assignee_initials: 'VI', due_date: '2026-02-07', label: 'OPERATIONS', status: 'todo', carryover_count: 2, created_at: '', updated_at: '' },
+  { id: '2', week_id: 'w1', rank: 2, title: 'Complete vendor contract negotiations with legal review', assignee_name: 'Vikram I.', assignee_initials: 'VI', due_date: '2026-02-07', label: 'OPERATIONS', status: 'todo', carryover_count: 2, created_at: '', updated_at: '' },
   { id: '3', week_id: 'w1', rank: 3, title: 'Review sales pipeline for February targets', taskhub_key: 'PLN-008', assignee_name: 'Ibrahim A.', assignee_initials: 'IA', due_date: '2026-02-01', label: 'FINANCE', status: 'todo', carryover_count: 0, created_at: '', updated_at: '' },
   { id: '4', week_id: 'w1', rank: 4, title: 'Finalize Q1 budget forecast with department heads', taskhub_key: 'PLN-004', assignee_name: 'Vikram I.', assignee_initials: 'VI', due_date: '2026-02-04', label: 'FINANCE', status: 'done', carryover_count: 0, created_at: '', updated_at: '' },
   { id: '5', week_id: 'w1', rank: 5, title: 'Architecture review for Phase 2 data migration', taskhub_key: 'TSK-089', assignee_name: 'Maali A.', assignee_initials: 'MA', due_date: '2026-02-04', label: 'TECH', status: 'todo', carryover_count: 0, created_at: '', updated_at: '' },
-  { id: '6', week_id: 'w1', rank: 6, title: 'Submit compliance documentation to regulatory body', taskhub_key: '', assignee_name: 'Vikram I.', assignee_initials: 'VI', due_date: '2026-02-03', label: 'LEGAL', status: 'done', carryover_count: 0, created_at: '', updated_at: '' },
-  { id: '7', week_id: 'w1', rank: 7, title: 'Prepare quarterly board presentation slides', taskhub_key: '', assignee_name: 'Ibrahim A.', assignee_initials: 'IA', due_date: '2026-02-06', label: 'FINANCE', status: 'todo', carryover_count: 0, created_at: '', updated_at: '' },
+  { id: '6', week_id: 'w1', rank: 6, title: 'Submit compliance documentation to regulatory body', assignee_name: 'Vikram I.', assignee_initials: 'VI', due_date: '2026-02-03', label: 'LEGAL', status: 'done', carryover_count: 0, created_at: '', updated_at: '' },
+  { id: '7', week_id: 'w1', rank: 7, title: 'Prepare quarterly board presentation slides', assignee_name: 'Ibrahim A.', assignee_initials: 'IA', due_date: '2026-02-06', label: 'FINANCE', status: 'todo', carryover_count: 0, created_at: '', updated_at: '' },
   { id: '8', week_id: 'w1', rank: 8, title: 'Review and approve new vendor contracts', taskhub_key: 'TSK-102', assignee_name: 'Maali A.', assignee_initials: 'MA', due_date: '2026-02-09', label: 'LEGAL', status: 'done', carryover_count: 0, created_at: '', updated_at: '' },
-  { id: '11', week_id: 'w1', rank: 11, title: 'Research competitor pricing strategies', taskhub_key: '', assignee_name: 'Maali A.', assignee_initials: 'MA', due_date: '2026-02-12', label: 'FINANCE', status: 'todo', carryover_count: 0, created_at: '', updated_at: '' },
+  { id: '11', week_id: 'w1', rank: 11, title: 'Research competitor pricing strategies', assignee_name: 'Maali A.', assignee_initials: 'MA', due_date: '2026-02-12', label: 'FINANCE', status: 'todo', carryover_count: 0, created_at: '', updated_at: '' },
   { id: '12', week_id: 'w1', rank: 12, title: 'Draft security audit response', taskhub_key: 'TSK-156', assignee_name: 'Vikram I.', assignee_initials: 'VI', due_date: '2026-02-14', label: 'TECH', status: 'todo', carryover_count: 0, created_at: '', updated_at: '' },
 ];
-
-interface WeekData {
-  id: string;
-  startDate: string;
-  displayDate: string;
-  isCheckedOut: boolean;
-  items: T10Item[];
-}
 
 export function T10WeekPage() {
   const navigate = useNavigate();
   const { listId } = useParams();
   const { toast } = useToast();
   
-  // Week navigation state
-  const [weeks, setWeeks] = useState<WeekData[]>([
-    { id: 'w1', startDate: '2026-02-02', displayDate: 'Feb 2, 2026', isCheckedOut: false, items: initialMockItems }
-  ]);
-  const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
+  // Database hooks
+  const { data: list } = useT10ListById(listId);
+  const { data: dbWeeks = [] } = useT10Weeks(listId);
+  const createWeek = useCreateT10Week();
+  const checkoutWeek = useCheckoutT10Week();
+  const carryoverItems = useCarryoverT10Items();
   
-  const currentWeek = weeks[currentWeekIndex];
-  const items = currentWeek?.items || [];
+  // Current week navigation
+  const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
+  const currentWeek = dbWeeks[currentWeekIndex];
+  
+  // Items for current week
+  const { data: dbItems = [] } = useT10Items(currentWeek?.id);
+  const createItem = useCreateT10Item();
+  const updateItem = useUpdateT10Item();
+  const deleteItem = useDeleteT10Item();
+  
+  // Use mock data if database is empty
+  const items = dbItems.length > 0 ? dbItems : (currentWeek ? [] : initialMockItems);
+  const useMockMode = !currentWeek && dbWeeks.length === 0;
+
+  // Local state for mock mode
+  const [mockItems, setMockItems] = useState(initialMockItems);
+  const displayItems = useMockMode ? mockItems : items;
   
   const [aiExpanded, setAiExpanded] = useState(false);
   const [bufferExpanded, setBufferExpanded] = useState(false);
@@ -50,148 +71,183 @@ export function T10WeekPage() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [quickAddValue, setQuickAddValue] = useState('');
 
-  const completedCount = items.filter(i => i.status === 'done').length;
-  const topTenItems = items.filter(i => i.rank <= 10).sort((a, b) => a.rank - b.rank);
-  const bufferItems = items.filter(i => i.rank > 10).sort((a, b) => a.rank - b.rank);
+  const completedCount = displayItems.filter(i => i.status === 'done').length;
+  const topTenItems = displayItems.filter(i => i.rank <= 10).sort((a, b) => a.rank - b.rank);
+  const bufferItems = displayItems.filter(i => i.rank > 10).sort((a, b) => a.rank - b.rank);
+
+  // Format current week date
+  const formatWeekDisplay = () => {
+    if (currentWeek) {
+      const start = new Date(currentWeek.week_start_date);
+      return start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    return 'Feb 2, 2026'; // Mock date
+  };
 
   const handleCardClick = (itemId: string) => {
     setSelectedItemId(itemId);
     setSidePanelOpen(true);
   };
 
-  const handleToggleStatus = (itemId: string) => {
-    setWeeks(prevWeeks => prevWeeks.map((week, idx) => {
-      if (idx !== currentWeekIndex) return week;
-      return {
-        ...week,
-        items: week.items.map(item => 
-          item.id === itemId 
-            ? { ...item, status: item.status === 'done' ? 'todo' : 'done' } 
-            : item
-        )
-      };
-    }));
+  const handleToggleStatus = async (itemId: string) => {
+    const item = displayItems.find(i => i.id === itemId);
+    if (!item) return;
+    
+    const newStatus = item.status === 'done' ? 'todo' : 'done';
+    
+    if (useMockMode) {
+      setMockItems(prev => prev.map(i => i.id === itemId ? { ...i, status: newStatus } : i));
+    } else {
+      try {
+        await updateItem.mutateAsync({ itemId, updates: { status: newStatus } });
+      } catch (error) {
+        toast({ title: "Error", description: "Failed to update item status.", variant: "destructive" });
+      }
+    }
   };
 
-  const handleUpdateItem = (updates: Partial<T10Item>) => {
+  const handleUpdateItem = async (updates: Partial<T10Item>) => {
     if (!selectedItemId) return;
-    setWeeks(prevWeeks => prevWeeks.map((week, idx) => {
-      if (idx !== currentWeekIndex) return week;
-      return {
-        ...week,
-        items: week.items.map(item => 
-          item.id === selectedItemId ? { ...item, ...updates } : item
-        )
-      };
-    }));
+    
+    if (useMockMode) {
+      setMockItems(prev => prev.map(item => 
+        item.id === selectedItemId ? { ...item, ...updates } : item
+      ));
+    } else {
+      try {
+        await updateItem.mutateAsync({ 
+          itemId: selectedItemId, 
+          updates: {
+            title: updates.title,
+            rank: updates.rank,
+            taskhubKey: updates.taskhub_key,
+            assigneeId: updates.assignee_id,
+            dueDate: updates.due_date,
+            label: updates.label,
+            description: updates.description,
+            status: updates.status,
+          }
+        });
+      } catch (error) {
+        toast({ title: "Error", description: "Failed to update item.", variant: "destructive" });
+      }
+    }
   };
 
-  const handleDeleteItem = () => {
+  const handleDeleteItem = async () => {
     if (!selectedItemId) return;
-    setWeeks(prevWeeks => prevWeeks.map((week, idx) => {
-      if (idx !== currentWeekIndex) return week;
-      return {
-        ...week,
-        items: week.items.filter(item => item.id !== selectedItemId)
-      };
-    }));
+    
+    if (useMockMode) {
+      setMockItems(prev => prev.filter(item => item.id !== selectedItemId));
+    } else if (currentWeek) {
+      try {
+        await deleteItem.mutateAsync({ itemId: selectedItemId, weekId: currentWeek.id });
+      } catch (error) {
+        toast({ title: "Error", description: "Failed to delete item.", variant: "destructive" });
+      }
+    }
+    
     setSidePanelOpen(false);
     setSelectedItemId(null);
-    toast({
-      title: "Item deleted",
-      description: "The priority item has been removed.",
-    });
+    toast({ title: "Item deleted", description: "The priority item has been removed." });
   };
 
-  const handleQuickAdd = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && quickAddValue.trim()) {
-      const newRank = Math.max(...items.map(i => i.rank), 0) + 1;
+  const handleQuickAdd = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter' || !quickAddValue.trim()) return;
+
+    const newRank = Math.max(...displayItems.map(i => i.rank), 0) + 1;
+    const title = quickAddValue.trim();
+    
+    // Check if it looks like a TaskHub key
+    const keyMatch = title.match(/^([A-Z]+-\d+)/);
+    const taskhubKey = keyMatch ? keyMatch[1] : undefined;
+
+    if (useMockMode) {
       const newItem: T10Item = {
         id: `new-${Date.now()}`,
-        week_id: currentWeek.id,
+        week_id: 'mock',
         rank: newRank > 10 ? newRank : 10,
-        title: quickAddValue.trim(),
+        title,
+        taskhub_key: taskhubKey,
         status: 'todo',
         carryover_count: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
+      setMockItems(prev => [...prev, newItem]);
+    } else if (currentWeek) {
+      try {
+        await createItem.mutateAsync({
+          weekId: currentWeek.id,
+          title,
+          rank: newRank > 10 ? newRank : 10,
+          taskhubKey,
+        });
+      } catch (error) {
+        toast({ title: "Error", description: "Failed to add item.", variant: "destructive" });
+      }
+    }
 
-      // Check if it looks like a TaskHub key
-      const keyMatch = quickAddValue.match(/^([A-Z]+-\d+)/);
-      if (keyMatch) {
-        newItem.taskhub_key = keyMatch[1];
+    setQuickAddValue('');
+    toast({ title: "Item added", description: `"${title}" added to buffer queue.` });
+  };
+
+  const handleCheckout = async (decisions: T10CheckoutDecision[]) => {
+    const carriedItems = decisions.filter(d => d.decision === 'carry');
+    const resolvedItems = decisions.filter(d => d.decision === 'resolved');
+    const removedItems = decisions.filter(d => d.decision === 'remove');
+
+    if (useMockMode) {
+      // Mock checkout logic
+      toast({
+        title: "Week checked out successfully",
+        description: `${resolvedItems.length} resolved, ${carriedItems.length} carried to next week.`,
+      });
+      setCheckoutOpen(false);
+      return;
+    }
+
+    if (!currentWeek || !listId) return;
+
+    try {
+      // Mark current week as checked out
+      await checkoutWeek.mutateAsync({
+        weekId: currentWeek.id,
+        closedCount: resolvedItems.length,
+        carriedCount: carriedItems.length,
+        removedCount: removedItems.length,
+      });
+
+      // Create next week
+      const nextWeekStart = new Date(currentWeek.week_start_date);
+      nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+      
+      const newWeek = await createWeek.mutateAsync({
+        listId,
+        weekStartDate: nextWeekStart.toISOString(),
+      });
+
+      // Carry over items
+      if (carriedItems.length > 0) {
+        const itemsToCarry = displayItems.filter(i => carriedItems.some(c => c.itemId === i.id));
+        await carryoverItems.mutateAsync({
+          sourceItems: itemsToCarry,
+          targetWeekId: newWeek.id,
+        });
       }
 
-      setWeeks(prevWeeks => prevWeeks.map((week, idx) => {
-        if (idx !== currentWeekIndex) return week;
-        return { ...week, items: [...week.items, newItem] };
-      }));
-      
-      setQuickAddValue('');
+      setCheckoutOpen(false);
       toast({
-        title: "Item added",
-        description: `"${newItem.title}" added to buffer queue.`,
+        title: "Week checked out successfully",
+        description: `${resolvedItems.length} resolved, ${carriedItems.length} carried to next week.`,
       });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to checkout week.", variant: "destructive" });
     }
   };
 
-  const handleCheckout = (decisions: T10CheckoutDecision[]) => {
-    const carriedItems = decisions.filter(d => d.decision === 'carry');
-    const resolvedItems = decisions.filter(d => d.decision === 'resolved');
-    
-    // Mark current week as checked out
-    const updatedWeeks = [...weeks];
-    updatedWeeks[currentWeekIndex] = {
-      ...updatedWeeks[currentWeekIndex],
-      isCheckedOut: true,
-      items: updatedWeeks[currentWeekIndex].items.map(item => {
-        const decision = decisions.find(d => d.itemId === item.id);
-        if (decision?.decision === 'resolved') {
-          return { ...item, status: 'done' as const };
-        }
-        return item;
-      }).filter(item => {
-        const decision = decisions.find(d => d.itemId === item.id);
-        return decision?.decision !== 'remove';
-      })
-    };
-
-    // Create new week with carried items
-    const nextWeekDate = new Date('2026-02-09');
-    const newWeekItems: T10Item[] = carriedItems.map((carried, idx) => {
-      const originalItem = items.find(i => i.id === carried.itemId);
-      return {
-        ...originalItem!,
-        id: `carried-${Date.now()}-${idx}`,
-        week_id: `w${weeks.length + 1}`,
-        rank: idx + 1,
-        carryover_count: (originalItem?.carryover_count || 0) + 1,
-        status: 'todo' as const,
-      };
-    });
-
-    const newWeek: WeekData = {
-      id: `w${weeks.length + 1}`,
-      startDate: '2026-02-09',
-      displayDate: 'Feb 9, 2026',
-      isCheckedOut: false,
-      items: newWeekItems,
-    };
-
-    updatedWeeks.push(newWeek);
-    setWeeks(updatedWeeks);
-    setCurrentWeekIndex(updatedWeeks.length - 1);
-    setCheckoutOpen(false);
-
-    toast({
-      title: "Week checked out successfully",
-      description: `${resolvedItems.length} resolved, ${carriedItems.length} carried to next week.`,
-    });
-  };
-
   const canNavigatePrev = currentWeekIndex > 0;
-  const canNavigateNext = currentWeekIndex < weeks.length - 1;
+  const canNavigateNext = currentWeekIndex < dbWeeks.length - 1;
 
   return (
     <div className="t10-module">
@@ -201,7 +257,7 @@ export function T10WeekPage() {
             <ArrowLeft size={18} />
             Back
           </button>
-          <span className="t10-list-title">Weekly Team Priorities</span>
+          <span className="t10-list-title">{list?.name || 'Weekly Team Priorities'}</span>
         </div>
         <div className="t10-week-nav">
           <button 
@@ -212,8 +268,8 @@ export function T10WeekPage() {
             <ChevronLeft size={18} />
           </button>
           <div className="t10-week-date">
-            {currentWeek?.displayDate}
-            {currentWeek?.isCheckedOut && (
+            {formatWeekDisplay()}
+            {currentWeek?.is_checked_out && (
               <span className="t10-week-checked-badge">
                 <Check size={12} /> Checked Out
               </span>
@@ -231,7 +287,7 @@ export function T10WeekPage() {
           <div className="t10-week-progress">
             <strong>{completedCount}</strong>/10 completed
           </div>
-          {currentWeek?.isCheckedOut ? (
+          {currentWeek?.is_checked_out ? (
             <span className="t10-checked-out-badge">
               <Check size={16} /> Week Closed
             </span>
@@ -244,7 +300,7 @@ export function T10WeekPage() {
         </div>
       </header>
 
-      {!currentWeek?.isCheckedOut && (
+      {(!currentWeek?.is_checked_out || useMockMode) && (
         <div className="t10-ai-banner">
           <div className="t10-ai-collapsed" onClick={() => setAiExpanded(!aiExpanded)}>
             <div className="t10-ai-collapsed-left">
@@ -298,7 +354,7 @@ export function T10WeekPage() {
         </div>
       )}
 
-      {!currentWeek?.isCheckedOut && (
+      {(!currentWeek?.is_checked_out || useMockMode) && (
         <div className="t10-quick-add">
           <div className={`t10-quick-add-icon ${quickAddValue ? 'active' : ''}`}>
             <Plus size={18} />
@@ -367,7 +423,7 @@ export function T10WeekPage() {
       </div>
 
       <T10SidePanel 
-        item={items.find(i => i.id === selectedItemId) || null} 
+        item={displayItems.find(i => i.id === selectedItemId) || null} 
         isOpen={sidePanelOpen} 
         onClose={() => { setSidePanelOpen(false); setSelectedItemId(null); }} 
         onUpdate={handleUpdateItem} 
@@ -377,8 +433,8 @@ export function T10WeekPage() {
       <T10CheckoutModal 
         isOpen={checkoutOpen} 
         onClose={() => setCheckoutOpen(false)} 
-        weekDate={`${currentWeek?.displayDate} – Feb 8, 2026`}
-        items={items.filter(i => i.rank <= 10)} 
+        weekDate={`${formatWeekDisplay()} – Feb 8, 2026`}
+        items={displayItems.filter(i => i.rank <= 10)} 
         completedCount={completedCount} 
         onCheckout={handleCheckout} 
       />
