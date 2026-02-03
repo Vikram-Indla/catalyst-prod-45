@@ -6,14 +6,12 @@ import { getWeekStartDate } from '../utils';
 interface DbT10Week {
   id: string;
   list_id: string;
-  week_start_date: string;
-  week_end_date: string;
-  is_checked_out: boolean;
-  checked_out_by: string | null;
-  checked_out_at: string | null;
-  closed_count: number;
-  carried_count: number;
-  removed_count: number;
+  week_start: string;
+  week_end: string;
+  status: string;
+  is_current: boolean;
+  completed_count: number;
+  total_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -22,13 +20,13 @@ function mapDbToT10Week(db: DbT10Week): T10Week {
   return {
     id: db.id,
     list_id: db.list_id,
-    week_start_date: db.week_start_date,
-    is_checked_out: db.is_checked_out,
-    checked_out_by: db.checked_out_by || undefined,
-    checked_out_by_name: undefined, // Will be populated separately if needed
-    checked_out_at: db.checked_out_at || undefined,
-    closed_count: db.closed_count,
-    carried_count: db.carried_count,
+    week_start_date: db.week_start,
+    is_checked_out: db.status === 'completed',
+    checked_out_by: undefined,
+    checked_out_by_name: undefined,
+    checked_out_at: undefined,
+    closed_count: db.completed_count,
+    carried_count: 0, // Not tracked in new schema, computed differently
   };
 }
 
@@ -41,7 +39,7 @@ export function useT10Weeks(listId: string | undefined) {
         .from('t10_weeks')
         .select('*')
         .eq('list_id', listId)
-        .order('week_start_date', { ascending: false });
+        .order('week_start', { ascending: false });
 
       if (error) throw new Error(error.message);
       return (data || []).map(mapDbToT10Week);
@@ -58,14 +56,26 @@ export function useT10CurrentWeek(listId: string | undefined) {
     queryFn: async () => {
       if (!listId) return null;
       
+      // First try to get the week marked as current
+      const { data: currentData, error: currentError } = await supabase
+        .from('t10_weeks')
+        .select('*')
+        .eq('list_id', listId)
+        .eq('is_current', true)
+        .maybeSingle();
+
+      if (currentError) throw new Error(currentError.message);
+      if (currentData) return mapDbToT10Week(currentData);
+      
+      // Fallback: get the most recent week
       const currentWeekStart = getWeekStartDate(new Date()).split('T')[0];
       
       const { data, error } = await supabase
         .from('t10_weeks')
         .select('*')
         .eq('list_id', listId)
-        .gte('week_start_date', currentWeekStart)
-        .order('week_start_date', { ascending: true })
+        .gte('week_start', currentWeekStart)
+        .order('week_start', { ascending: true })
         .limit(1)
         .maybeSingle();
 
@@ -87,12 +97,21 @@ export function useCreateT10Week() {
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 6);
 
+      // Set previous current week to not current
+      await supabase
+        .from('t10_weeks')
+        .update({ is_current: false })
+        .eq('list_id', listId)
+        .eq('is_current', true);
+
       const { data, error } = await supabase
         .from('t10_weeks')
         .insert({
           list_id: listId,
-          week_start_date: weekStart.toISOString().split('T')[0],
-          week_end_date: weekEnd.toISOString().split('T')[0],
+          week_start: weekStart.toISOString().split('T')[0],
+          week_end: weekEnd.toISOString().split('T')[0],
+          is_current: true,
+          status: 'active',
         })
         .select()
         .single();
@@ -122,17 +141,13 @@ export function useCheckoutT10Week() {
       carriedCount: number;
       removedCount: number;
     }) => {
-      const { data: user } = await supabase.auth.getUser();
-      
       const { data, error } = await supabase
         .from('t10_weeks')
         .update({
-          is_checked_out: true,
-          checked_out_by: user.user?.id || null,
-          checked_out_at: new Date().toISOString(),
-          closed_count: closedCount,
-          carried_count: carriedCount,
-          removed_count: removedCount,
+          status: 'completed',
+          is_current: false,
+          completed_count: closedCount,
+          total_count: closedCount + carriedCount + removedCount,
         })
         .eq('id', weekId)
         .select()

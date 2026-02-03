@@ -10,16 +10,13 @@ interface DbT10Item {
   taskhub_key: string | null;
   assignee_id: string | null;
   due_date: string | null;
-  label: string | null;
   description: string | null;
   status: string;
   carryover_count: number;
+  is_buffer: boolean;
   created_by: string | null;
-  updated_by: string | null;
-  completed_by: string | null;
   created_at: string;
   updated_at: string;
-  completed_at: string | null;
 }
 
 interface DbT10ItemWithProfile extends DbT10Item {
@@ -47,7 +44,7 @@ function mapDbToT10Item(db: DbT10ItemWithProfile): T10Item {
     assignee_name: assigneeName,
     assignee_initials: getInitials(assigneeName),
     due_date: db.due_date || undefined,
-    label: db.label || undefined,
+    label: undefined, // Labels are now in a separate junction table
     description: db.description || undefined,
     status: db.status as 'todo' | 'done',
     carryover_count: db.carryover_count,
@@ -63,13 +60,10 @@ export function useT10Items(weekId: string | undefined) {
       if (!weekId) return [];
       const { data, error } = await supabase
         .from('t10_items')
-        .select(`
-          *,
-          assignee:profiles!t10_items_assignee_id_fkey(id, full_name)
-        `)
+        .select('*')
         .eq('week_id', weekId)
         .order('rank', { ascending: true })
-        .limit(100); // Reasonable limit for a week's items
+        .limit(100);
 
       if (error) throw new Error(error.message);
       return (data || []).map((row) => {
@@ -81,23 +75,20 @@ export function useT10Items(weekId: string | undefined) {
           taskhub_key: row.taskhub_key,
           assignee_id: row.assignee_id,
           due_date: row.due_date,
-          label: row.label,
           description: row.description,
           status: row.status,
           carryover_count: row.carryover_count,
+          is_buffer: row.is_buffer,
           created_by: row.created_by,
-          updated_by: row.updated_by,
-          completed_by: row.completed_by,
           created_at: row.created_at,
           updated_at: row.updated_at,
-          completed_at: row.completed_at,
-          assignee: row.assignee as { id: string; full_name: string | null } | null,
+          assignee: null, // Will fetch separately if needed
         };
         return mapDbToT10Item(dbRow);
       });
     },
     enabled: !!weekId,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 30 * 1000,
     refetchOnWindowFocus: false,
   });
 }
@@ -127,17 +118,22 @@ export function useCreateT10Item() {
           taskhub_key: item.taskhubKey || null,
           assignee_id: item.assigneeId || null,
           due_date: item.dueDate || null,
-          label: item.label || null,
           description: item.description || null,
           status: 'todo',
           carryover_count: 0,
+          is_buffer: item.rank > 10,
           created_by: user.user?.id || null,
         })
         .select()
         .single();
 
       if (error) throw error;
-      return mapDbToT10Item(data);
+      
+      const dbRow: DbT10ItemWithProfile = {
+        ...data,
+        assignee: null,
+      };
+      return mapDbToT10Item(dbRow);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['t10-items', variables.weekId] });
@@ -165,29 +161,18 @@ export function useUpdateT10Item() {
         status: 'todo' | 'done';
       }>;
     }) => {
-      const { data: user } = await supabase.auth.getUser();
-      
-      const dbUpdates: Record<string, unknown> = {
-        updated_by: user.user?.id || null,
-      };
+      const dbUpdates: Record<string, unknown> = {};
 
       if (updates.title !== undefined) dbUpdates.title = updates.title;
-      if (updates.rank !== undefined) dbUpdates.rank = updates.rank;
+      if (updates.rank !== undefined) {
+        dbUpdates.rank = updates.rank;
+        dbUpdates.is_buffer = updates.rank > 10;
+      }
       if (updates.taskhubKey !== undefined) dbUpdates.taskhub_key = updates.taskhubKey || null;
       if (updates.assigneeId !== undefined) dbUpdates.assignee_id = updates.assigneeId || null;
       if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate || null;
-      if (updates.label !== undefined) dbUpdates.label = updates.label || null;
       if (updates.description !== undefined) dbUpdates.description = updates.description || null;
-      if (updates.status !== undefined) {
-        dbUpdates.status = updates.status;
-        if (updates.status === 'done') {
-          dbUpdates.completed_by = user.user?.id || null;
-          dbUpdates.completed_at = new Date().toISOString();
-        } else {
-          dbUpdates.completed_by = null;
-          dbUpdates.completed_at = null;
-        }
-      }
+      if (updates.status !== undefined) dbUpdates.status = updates.status;
 
       const { data, error } = await supabase
         .from('t10_items')
@@ -197,7 +182,12 @@ export function useUpdateT10Item() {
         .single();
 
       if (error) throw error;
-      return mapDbToT10Item(data);
+      
+      const dbRow: DbT10ItemWithProfile = {
+        ...data,
+        assignee: null,
+      };
+      return mapDbToT10Item(dbRow);
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['t10-items', data.week_id] });
@@ -235,7 +225,10 @@ export function useBulkUpdateT10Items() {
     }) => {
       const promises = updates.map(async (update) => {
         const dbUpdates: Record<string, unknown> = {};
-        if (update.rank !== undefined) dbUpdates.rank = update.rank;
+        if (update.rank !== undefined) {
+          dbUpdates.rank = update.rank;
+          dbUpdates.is_buffer = update.rank > 10;
+        }
         if (update.status !== undefined) dbUpdates.status = update.status;
 
         const { error } = await supabase
@@ -274,10 +267,10 @@ export function useCarryoverT10Items() {
         taskhub_key: item.taskhub_key || null,
         assignee_id: item.assignee_id || null,
         due_date: item.due_date || null,
-        label: item.label || null,
         description: item.description || null,
         status: 'todo',
         carryover_count: item.carryover_count + 1,
+        is_buffer: (idx + 1) > 10,
         created_by: user.user?.id || null,
       }));
 
@@ -287,7 +280,13 @@ export function useCarryoverT10Items() {
         .select();
 
       if (error) throw error;
-      return (data || []).map(mapDbToT10Item);
+      return (data || []).map((row) => {
+        const dbRow: DbT10ItemWithProfile = {
+          ...row,
+          assignee: null,
+        };
+        return mapDbToT10Item(dbRow);
+      });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['t10-items', variables.targetWeekId] });

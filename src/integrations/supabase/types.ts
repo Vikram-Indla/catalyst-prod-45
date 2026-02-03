@@ -19611,13 +19611,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "t10_activity_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: false
-            referencedRelation: "t10_items"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "t10_activity_performed_by_fkey"
             columns: ["performed_by"]
             isOneToOne: false
@@ -19713,11 +19706,44 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      t10_item_labels: {
+        Row: {
+          created_at: string | null
+          item_id: string
+          label_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          item_id: string
+          label_id: string
+        }
+        Update: {
+          created_at?: string | null
+          item_id?: string
+          label_id?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "t10_ai_suggestions_list_id_fkey"
-            columns: ["list_id"]
+            foreignKeyName: "t10_item_labels_item_id_fkey"
+            columns: ["item_id"]
             isOneToOne: false
-            referencedRelation: "t10_lists"
+            referencedRelation: "t10_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_item_labels_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "t10_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_item_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "t10_labels"
             referencedColumns: ["id"]
           },
         ]
@@ -19725,173 +19751,59 @@ export type Database = {
       t10_items: {
         Row: {
           assignee_id: string | null
-          carryover_count: number
-          completed_at: string | null
-          completed_by: string | null
-          created_at: string
+          carryover_count: number | null
+          created_at: string | null
           created_by: string | null
           description: string | null
           due_date: string | null
           id: string
-          label: string | null
+          is_buffer: boolean | null
           rank: number
-          status: string
+          status: string | null
           taskhub_key: string | null
           title: string
-          updated_at: string
-          updated_by: string | null
+          updated_at: string | null
           week_id: string
         }
         Insert: {
           assignee_id?: string | null
-          carryover_count?: number
-          completed_at?: string | null
-          completed_by?: string | null
-          created_at?: string
+          carryover_count?: number | null
+          created_at?: string | null
           created_by?: string | null
           description?: string | null
           due_date?: string | null
           id?: string
-          label?: string | null
+          is_buffer?: boolean | null
           rank: number
-          status?: string
+          status?: string | null
           taskhub_key?: string | null
           title: string
-          updated_at?: string
-          updated_by?: string | null
+          updated_at?: string | null
           week_id: string
         }
         Update: {
           assignee_id?: string | null
-          carryover_count?: number
-          completed_at?: string | null
-          completed_by?: string | null
-          created_at?: string
+          carryover_count?: number | null
+          created_at?: string | null
           created_by?: string | null
           description?: string | null
           due_date?: string | null
           id?: string
-          label?: string | null
+          is_buffer?: boolean | null
           rank?: number
-          status?: string
+          status?: string | null
           taskhub_key?: string | null
           title?: string
-          updated_at?: string
-          updated_by?: string | null
+          updated_at?: string | null
           week_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "t10_items_assignee_id_fkey"
-            columns: ["assignee_id"]
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
             isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "t10_items_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_items_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "t10_items_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_items_completed_by_fkey"
-            columns: ["completed_by"]
-            isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "t10_items_completed_by_fkey"
-            columns: ["completed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_items_completed_by_fkey"
-            columns: ["completed_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "t10_items_completed_by_fkey"
-            columns: ["completed_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_items_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "t10_items_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_items_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "t10_items_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_items_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "t10_items_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_items_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "t10_items_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["current_week_id"]
           },
           {
             foreignKeyName: "t10_items_week_id_fkey"
@@ -19931,136 +19843,80 @@ export type Database = {
       }
       t10_lists: {
         Row: {
-          created_at: string
+          created_at: string | null
           created_by: string | null
           description: string | null
           id: string
-          list_key: string
+          key: string
           name: string
-          status: string
-          updated_at: string
+          status: string | null
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           created_by?: string | null
           description?: string | null
           id?: string
-          list_key: string
+          key: string
           name: string
-          status?: string
-          updated_at?: string
+          status?: string | null
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           created_by?: string | null
           description?: string | null
           id?: string
-          list_key?: string
+          key?: string
           name?: string
-          status?: string
-          updated_at?: string
+          status?: string | null
+          updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "t10_lists_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "t10_lists_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_lists_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "t10_lists_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       t10_weeks: {
         Row: {
-          carried_count: number
-          checked_out_at: string | null
-          checked_out_by: string | null
-          closed_count: number
-          created_at: string
+          completed_count: number | null
+          created_at: string | null
           id: string
-          is_checked_out: boolean
+          is_current: boolean | null
           list_id: string
-          removed_count: number
-          updated_at: string
-          week_end_date: string
-          week_start_date: string
+          status: string | null
+          total_count: number | null
+          updated_at: string | null
+          week_end: string
+          week_start: string
         }
         Insert: {
-          carried_count?: number
-          checked_out_at?: string | null
-          checked_out_by?: string | null
-          closed_count?: number
-          created_at?: string
+          completed_count?: number | null
+          created_at?: string | null
           id?: string
-          is_checked_out?: boolean
+          is_current?: boolean | null
           list_id: string
-          removed_count?: number
-          updated_at?: string
-          week_end_date: string
-          week_start_date: string
+          status?: string | null
+          total_count?: number | null
+          updated_at?: string | null
+          week_end: string
+          week_start: string
         }
         Update: {
-          carried_count?: number
-          checked_out_at?: string | null
-          checked_out_by?: string | null
-          closed_count?: number
-          created_at?: string
+          completed_count?: number | null
+          created_at?: string | null
           id?: string
-          is_checked_out?: boolean
+          is_current?: boolean | null
           list_id?: string
-          removed_count?: number
-          updated_at?: string
-          week_end_date?: string
-          week_start_date?: string
+          status?: string | null
+          total_count?: number | null
+          updated_at?: string | null
+          week_end?: string
+          week_start?: string
         }
         Relationships: [
           {
-            foreignKeyName: "t10_weeks_checked_out_by_fkey"
-            columns: ["checked_out_by"]
+            foreignKeyName: "t10_weeks_list_id_fkey"
+            columns: ["list_id"]
             isOneToOne: false
-            referencedRelation: "planner_dashboard_team_workload"
-            referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "t10_weeks_checked_out_by_fkey"
-            columns: ["checked_out_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "t10_weeks_checked_out_by_fkey"
-            columns: ["checked_out_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
-            referencedColumns: ["auth_user_id"]
-          },
-          {
-            foreignKeyName: "t10_weeks_checked_out_by_fkey"
-            columns: ["checked_out_by"]
-            isOneToOne: false
-            referencedRelation: "tm_users"
+            referencedRelation: "t10_list_summary"
             referencedColumns: ["id"]
           },
           {
@@ -31647,6 +31503,65 @@ export type Database = {
         }
         Relationships: []
       }
+      t10_items_full: {
+        Row: {
+          assignee_avatar: string | null
+          assignee_id: string | null
+          assignee_name: string | null
+          carryover_count: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string | null
+          is_buffer: boolean | null
+          labels: Json | null
+          rank: number | null
+          status: string | null
+          taskhub_key: string | null
+          title: string | null
+          updated_at: string | null
+          week_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_list_summary"
+            referencedColumns: ["current_week_id"]
+          },
+          {
+            foreignKeyName: "t10_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "t10_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      t10_list_summary: {
+        Row: {
+          completed_count: number | null
+          created_at: string | null
+          created_by: string | null
+          creator_avatar: string | null
+          creator_name: string | null
+          current_week_id: string | null
+          description: string | null
+          id: string | null
+          key: string | null
+          name: string | null
+          status: string | null
+          total_count: number | null
+          total_weeks: number | null
+          updated_at: string | null
+          week_end: string | null
+          week_start: string | null
+          week_status: string | null
+        }
+        Relationships: []
+      }
       tm_folders_with_counts: {
         Row: {
           case_count: number | null
@@ -32549,6 +32464,7 @@ export type Database = {
         Returns: string
       }
       generate_planner_task_key: { Args: never; Returns: string }
+      generate_t10_key: { Args: never; Returns: string }
       generate_work_item_display_id: {
         Args: {
           p_generation_id: string
