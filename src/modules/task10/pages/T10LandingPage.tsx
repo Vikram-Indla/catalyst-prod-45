@@ -18,10 +18,10 @@ const mockLists: T10List[] = [
 ];
 
 const mockWeekHistory: T10Week[] = [
-  { id: 'w1', list_id: '1', week_start_date: '2026-01-26T00:00:00Z', is_checked_out: true, checked_out_by_name: 'Ibrahim A.', checked_out_at: 'Jan 31, 2026 · 10:45 AM', closed_count: 8, carried_count: 2 },
-  { id: 'w2', list_id: '1', week_start_date: '2026-01-19T00:00:00Z', is_checked_out: true, checked_out_by_name: 'Vikram I.', checked_out_at: 'Jan 25, 2026 · 3:20 PM', closed_count: 7, carried_count: 3 },
-  { id: 'w3', list_id: '1', week_start_date: '2026-01-12T00:00:00Z', is_checked_out: true, checked_out_by_name: 'Vikram I.', checked_out_at: 'Jan 18, 2026 · 5:00 PM', closed_count: 9, carried_count: 1 },
-  { id: 'w4', list_id: '1', week_start_date: '2026-01-05T00:00:00Z', is_checked_out: true, checked_out_by_name: 'Vikram I.', checked_out_at: 'Jan 11, 2026 · 4:30 PM', closed_count: 10, carried_count: 0 },
+  { id: 'w1', list_id: '1', week_start: '2026-01-26', week_end: '2026-02-01', status: 'completed', is_current: false, completed_count: 8, total_count: 10, created_at: '2026-01-26T00:00:00Z', updated_at: '2026-01-31T10:45:00Z' },
+  { id: 'w2', list_id: '1', week_start: '2026-01-19', week_end: '2026-01-25', status: 'completed', is_current: false, completed_count: 7, total_count: 10, created_at: '2026-01-19T00:00:00Z', updated_at: '2026-01-25T15:20:00Z' },
+  { id: 'w3', list_id: '1', week_start: '2026-01-12', week_end: '2026-01-18', status: 'completed', is_current: false, completed_count: 9, total_count: 10, created_at: '2026-01-12T00:00:00Z', updated_at: '2026-01-18T17:00:00Z' },
+  { id: 'w4', list_id: '1', week_start: '2026-01-05', week_end: '2026-01-11', status: 'completed', is_current: false, completed_count: 10, total_count: 10, created_at: '2026-01-05T00:00:00Z', updated_at: '2026-01-11T16:30:00Z' },
 ];
 
 export function T10LandingPage() {
@@ -52,7 +52,7 @@ export function T10LandingPage() {
 
   const handleCreate = async (name: string) => {
     try {
-      await createList.mutateAsync(name);
+      await createList.mutateAsync({ name });
       toast({ title: "List created", description: `"${name}" has been created.` });
       setCreateModalOpen(false);
     } catch (error) {
@@ -99,7 +99,7 @@ export function T10LandingPage() {
               <T10ListCard
                 key={list.id}
                 list={list}
-                currentWeek={list.status === 'active' ? { id: 'cw', list_id: list.id, week_start_date: '2026-02-02T00:00:00Z', is_checked_out: false } : undefined}
+                currentWeek={list.status === 'active' ? { id: 'cw', list_id: list.id, week_start: '2026-02-02', week_end: '2026-02-08', status: 'active' as const, is_current: true, completed_count: 3, total_count: 8, created_at: '2026-02-02T00:00:00Z', updated_at: '2026-02-02T00:00:00Z' } : undefined}
                 completedCount={3}
                 totalCount={8}
                 slotsAvailable={2}
