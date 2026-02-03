@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { T10Header } from '../components/landing/T10Header';
 import { T10SearchBar } from '../components/landing/T10SearchBar';
+import { T10FilterBar } from '../components/landing/T10FilterBar';
 import { T10ListCard } from '../components/landing/T10ListCard';
 import { T10CreateModal } from '../components/modals/T10CreateModal';
 import { T10RenameModal } from '../components/modals/T10RenameModal';
 import { T10DeleteModal } from '../components/modals/T10DeleteModal';
-import { useT10Lists, useCreateT10List, useRenameT10List, useDeleteT10List, useT10Weeks } from '../hooks';
+import { useT10Lists, useCreateT10List, useRenameT10List, useDeleteT10List, useT10Filters } from '../hooks';
 import type { T10List, T10Week } from '../types';
 import { useToast } from '@/hooks/use-toast';
 import '../styles/task10.css';
@@ -31,11 +32,21 @@ export function T10LandingPage() {
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedList, setSelectedList] = useState<T10List | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
+
+  // Filter state management hook
+  const {
+    filters,
+    setSearch,
+    setLabels,
+    setAssignees,
+    setDateRange,
+    setStatus,
+    resetFilters,
+    hasActiveFilters,
+  } = useT10Filters();
 
   // Database hooks
-  const { data: dbLists, isLoading } = useT10Lists();
+  const { data: dbLists, isLoading } = useT10Lists(filters);
   const createList = useCreateT10List();
   const renameList = useRenameT10List();
   const deleteList = useDeleteT10List();
@@ -43,11 +54,10 @@ export function T10LandingPage() {
   // Use database lists if available, otherwise fallback to mock
   const lists = dbLists && dbLists.length > 0 ? dbLists : mockLists;
 
-  // Filter lists
+  // Filter lists by search (additional client-side filter since search is local)
   const filteredLists = lists.filter(list => {
-    const matchesSearch = list.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || list.status === filterStatus;
-    return matchesSearch && matchesStatus;
+    const matchesSearch = !filters.search || list.name.toLowerCase().includes(filters.search.toLowerCase());
+    return matchesSearch;
   });
 
   const handleCreate = async (name: string) => {
@@ -87,9 +97,21 @@ export function T10LandingPage() {
       <T10Header onCreateList={() => setCreateModalOpen(true)} userInitials="VI" />
       <div className="t10-container">
         <T10SearchBar 
-          onSearch={setSearchQuery} 
+          onSearch={setSearch} 
           onFilterChange={() => {}} 
         />
+        
+        {/* Filter Bar */}
+        <T10FilterBar
+          filters={filters}
+          onLabelChange={setLabels}
+          onAssigneeChange={setAssignees}
+          onDateRangeChange={setDateRange}
+          onStatusChange={setStatus}
+          onClearAll={resetFilters}
+          hasActiveFilters={hasActiveFilters}
+        />
+        
         <div className="t10-section-label">Your Lists</div>
         {isLoading ? (
           <div className="t10-loading">Loading lists...</div>
