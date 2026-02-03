@@ -44,7 +44,7 @@ export function T10LandingPage() {
               totalCount={8}
               slotsAvailable={2}
               weekHistory={list.id === '1' ? mockWeekHistory : []}
-              onClick={() => navigate(`/task10/list/${list.id}`)}
+              onClick={() => navigate(`/taskhub/task10/list/${list.id}`)}
               onRename={() => { setSelectedList(list); setRenameModalOpen(true); }}
               onDelete={() => { setSelectedList(list); setDeleteModalOpen(true); }}
             />

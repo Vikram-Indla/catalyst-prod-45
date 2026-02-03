@@ -41,7 +41,7 @@ export function T10WeekPage() {
     <div className="t10-module">
       <header className="t10-week-header">
         <div className="t10-week-header-left">
-          <button className="t10-back-btn" onClick={() => navigate('/task10')}><ArrowLeft size={18} />Back</button>
+          <button className="t10-back-btn" onClick={() => navigate('/taskhub/task10')}><ArrowLeft size={18} />Back</button>
           <span className="t10-list-title">Weekly Team Priorities</span>
         </div>
         <div className="t10-week-nav">
