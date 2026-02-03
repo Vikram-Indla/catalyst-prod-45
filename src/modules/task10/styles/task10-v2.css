@@ -2348,3 +2348,87 @@
 .t10-module-v2 .t10-dropdown-search-input:focus {
   outline: none;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LANDING SEARCH BAR - FLAT DESIGN (remove box-in-box)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.t10-module-v2 .t10-search-section {
+  margin-bottom: var(--t10-space-6);
+}
+
+.t10-module-v2 .t10-search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--t10-space-3);
+  height: 48px;
+  padding: 0 var(--t10-space-4);
+  background: var(--t10-bg-card);
+  border: 1px solid var(--t10-border-default);
+  border-radius: var(--t10-radius-lg);
+  transition: all var(--t10-transition-fast);
+}
+
+.t10-module-v2 .t10-search-bar:focus-within {
+  border-color: var(--t10-accent);
+  box-shadow: var(--t10-shadow-focus);
+}
+
+.t10-module-v2 .t10-search-bar .t10-search-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--t10-text-tertiary);
+}
+
+.t10-module-v2 .t10-search-bar .t10-search-input {
+  flex: 1;
+  height: 100%;
+  padding: 0;
+  font-family: var(--t10-font);
+  font-size: var(--t10-text-md);
+  color: var(--t10-text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.t10-module-v2 .t10-search-bar .t10-search-input::placeholder {
+  color: var(--t10-text-tertiary);
+}
+
+.t10-module-v2 .t10-search-bar .t10-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--t10-radius-sm);
+  color: var(--t10-text-tertiary);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--t10-transition-fast);
+}
+
+.t10-module-v2 .t10-search-bar .t10-search-clear.t10-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.t10-module-v2 .t10-search-bar .t10-search-clear:hover {
+  background: var(--t10-bg-subtle);
+  color: var(--t10-text-primary);
+}
+
+.t10-module-v2 .t10-search-bar .t10-search-loading {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--t10-border-default);
+  border-top-color: var(--t10-accent);
+  border-radius: 50%;
+  animation: t10-spin 0.6s linear infinite;
+}
