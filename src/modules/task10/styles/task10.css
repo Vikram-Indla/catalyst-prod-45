@@ -2005,6 +2005,147 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   SIDE PANEL EDITABLE FIELDS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-panel-title-input {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+  background: #ffffff !important;
+  border: 2px solid #2563eb !important;
+  border-radius: 6px !important;
+  outline: none !important;
+  font-family: var(--t10-font) !important;
+}
+
+.t10-module .t10-field-clickable {
+  cursor: pointer !important;
+}
+
+.t10-module .t10-field-clickable:hover {
+  background: #f3f4f6 !important;
+  border-color: #2563eb !important;
+}
+
+.t10-module .t10-status-checkbox.disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+.t10-module .t10-date-display {
+  font-weight: 500 !important;
+  color: #111827 !important;
+}
+
+.t10-module .t10-date-picker-dropdown {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  padding: 12px !important;
+  z-index: 10 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.t10-module .t10-date-input {
+  width: 100% !important;
+  padding: 10px 12px !important;
+  font-size: 14px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  outline: none !important;
+  font-family: var(--t10-font) !important;
+}
+
+.t10-module .t10-date-input:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+.t10-module .t10-clear-date-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 8px !important;
+  background: transparent !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  color: #6b7280 !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.t10-module .t10-clear-date-btn:hover {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+}
+
+.t10-module .t10-label-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 4px 10px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+}
+
+.t10-module .t10-label-picker-dropdown {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  padding: 8px !important;
+  z-index: 10 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+
+.t10-module .t10-label-option {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 12px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+
+.t10-module .t10-label-option:hover {
+  transform: scale(1.02) !important;
+}
+
+.t10-module .t10-label-option.selected {
+  box-shadow: 0 0 0 2px #2563eb !important;
+}
+
+.t10-module .t10-field {
+  position: relative !important;
+  margin-bottom: 20px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    CHECKOUT MODAL
    ═══════════════════════════════════════════════════════════════════════════ */
 
