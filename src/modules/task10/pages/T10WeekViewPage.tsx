@@ -1,6 +1,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TASK¹⁰ WEEK VIEW PAGE
-// Priority management for a specific week
+// Reference Layout:
+// 1. Header: Back | Title | Date nav | Completion | Checkout
+// 2. AI Banner
+// 3. Quick Add input (ABOVE the priority list)
+// 4. "TOP 10 PRIORITIES" section header
+// 5. Priority cards 1-10
+// 6. Buffer section (11+)
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useMemo, useCallback } from 'react';
@@ -52,12 +58,12 @@ export function T10WeekViewPage() {
   const [selectedItem, setSelectedItem] = useState<T10ItemWithAssignee | null>(null);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   
-  // Computed stats
+  // Computed stats - count only top 10 items for "X/10 completed"
   const stats = useMemo(() => {
-    if (!week) return { completed: 0, total: 0 };
-    const allItems = [...(week.items || []), ...(week.buffer_items || [])];
-    const completed = allItems.filter(i => i.status === 'done' || i.status === 'resolved').length;
-    return { completed, total: allItems.length };
+    if (!week) return { completed: 0, total: 10 };
+    const top10 = week.items.slice(0, 10);
+    const completed = top10.filter(i => i.status === 'done' || i.status === 'resolved').length;
+    return { completed, total: 10 };
   }, [week]);
 
   const handleToggleStatus = (itemId: string, _done: boolean) => {
@@ -78,7 +84,6 @@ export function T10WeekViewPage() {
 
   const handleBufferReorder = useCallback((itemIds: string[]) => {
     if (!week) return;
-    // Buffer items start at rank 11, so we offset by 10 + top 10 count
     const baseRank = week.items.length + 1;
     reorderItems.mutate({
       weekId: week.id,
@@ -89,10 +94,10 @@ export function T10WeekViewPage() {
 
   const handleQuickAdd = (title: string) => {
     if (!week) return;
-    const nextRank = Math.max(
-      ...([...week.items, ...week.buffer_items].map(i => i.rank)),
-      0
-    ) + 1;
+    const allItems = [...week.items, ...week.buffer_items];
+    const nextRank = allItems.length > 0 
+      ? Math.max(...allItems.map(i => i.rank)) + 1 
+      : 1;
     
     createItem.mutate({
       week_id: week.id,
@@ -154,7 +159,7 @@ export function T10WeekViewPage() {
     );
   }
 
-  // No current week (shouldn't happen normally)
+  // No current week
   if (!week) {
     return (
       <div className="catalyst-module--task10">
@@ -174,6 +179,7 @@ export function T10WeekViewPage() {
 
   return (
     <div className="catalyst-module--task10">
+      {/* Header */}
       <T10WeekHeader
         list={list}
         week={week}
@@ -194,14 +200,26 @@ export function T10WeekViewPage() {
             isGenerating={generateSuggestions.isPending}
           />
           
-          {/* Priority Items */}
-          <section className="t10-priority-section">
-            <div className="t10-section-header">
-              <h2 className="t10-section-title">Top 10 Priorities</h2>
-              <span className="t10-section-count">
-                {week.items.filter(i => i.status === 'done' || i.status === 'resolved').length} / {week.items.length}
-              </span>
-            </div>
+          {/* Quick Add - ABOVE the priority list section */}
+          <T10QuickAdd
+            onAdd={handleQuickAdd}
+            disabled={createItem.isPending}
+          />
+          
+          {/* Priority Items Section */}
+          <section className="t10-priority-section" style={{ marginTop: '24px' }}>
+            <h2 
+              style={{ 
+                fontSize: '11px', 
+                fontWeight: 700, 
+                color: '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                marginBottom: '16px',
+              }}
+            >
+              TOP 10 PRIORITIES
+            </h2>
             
             <T10SortablePriorityList
               items={week.items}
@@ -209,16 +227,6 @@ export function T10WeekViewPage() {
               onItemClick={setSelectedItem}
               onReorder={handleReorder}
               disabled={reorderItems.isPending}
-            />
-            
-            {/* Quick Add */}
-            <T10QuickAdd
-              onAdd={handleQuickAdd}
-              disabled={createItem.isPending}
-              placeholder={week.items.length >= 10 
-                ? "Add to buffer (rank 11+)..." 
-                : "Add new priority item..."
-              }
             />
           </section>
           
@@ -249,7 +257,6 @@ export function T10WeekViewPage() {
         onClose={() => setIsCheckoutModalOpen(false)}
         onSuccess={() => {
           setIsCheckoutModalOpen(false);
-          // Refresh will happen via query invalidation
         }}
       />
     </div>

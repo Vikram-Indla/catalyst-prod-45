@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TASK¹⁰ QUICK ADD COMPONENT
-// Dashed circle icon that turns solid blue on focus
+// Reference: Dashed circle icon, "Add a priority or paste TaskHub key...", "Enter to add"
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
@@ -14,7 +14,7 @@ interface T10QuickAddProps {
 
 export function T10QuickAdd({ 
   onAdd, 
-  placeholder = 'Add new priority item...', 
+  placeholder = 'Add a priority or paste TaskHub key...', 
   disabled = false 
 }: T10QuickAddProps) {
   const [value, setValue] = useState('');
@@ -39,30 +39,9 @@ export function T10QuickAdd({
     }
   };
 
-  // Dynamic icon styles based on focus state
-  const iconContainerStyle: React.CSSProperties = {
-    width: '36px',
-    height: '36px',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    transition: 'all 0.2s ease',
-    border: isFocused ? '2px solid #2563eb' : '2px dashed #d1d5db',
-    backgroundColor: isFocused ? '#eff6ff' : 'transparent',
-  };
-
-  const iconStyle: React.CSSProperties = {
-    width: '18px',
-    height: '18px',
-    color: isFocused ? '#2563eb' : '#9ca3af',
-    transition: 'color 0.2s ease',
-  };
-
   return (
     <form 
-      className={`t10-quick-add ${isFocused ? 't10-quick-add--focused' : ''}`}
+      className="t10-quick-add"
       onSubmit={handleSubmit}
       style={{
         display: 'flex',
@@ -75,14 +54,32 @@ export function T10QuickAdd({
         transition: 'all 0.2s ease',
       }}
     >
-      {/* Dashed circle that becomes solid on focus */}
-      <div style={iconContainerStyle}>
-        <Plus style={iconStyle} />
+      {/* Dashed circle that becomes solid blue on focus */}
+      <div 
+        style={{
+          width: '36px',
+          height: '36px',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          transition: 'all 0.2s ease',
+          border: isFocused ? '2px solid #2563eb' : '2px dashed #d1d5db',
+          backgroundColor: isFocused ? '#eff6ff' : 'transparent',
+        }}
+      >
+        <Plus 
+          size={18} 
+          style={{ 
+            color: isFocused ? '#2563eb' : '#9ca3af',
+            transition: 'color 0.2s ease',
+          }} 
+        />
       </div>
       
       <input
         type="text"
-        className="t10-quick-add__input"
         placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -100,28 +97,29 @@ export function T10QuickAdd({
         }}
       />
       
-      {/* Hint or Add button */}
-      {value.trim() ? (
-        <button 
-          type="submit" 
-          className="t10-btn t10-btn--sm t10-btn--primary"
-          disabled={disabled}
-          style={{
-            padding: '6px 12px',
-            backgroundColor: '#2563eb',
-            color: '#ffffff',
-            fontSize: '13px',
+      {/* Hint text */}
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '6px',
+          flexShrink: 0,
+        }}
+      >
+        <span 
+          style={{ 
+            padding: '4px 8px',
+            backgroundColor: '#f3f4f6',
+            borderRadius: '4px',
+            fontSize: '12px', 
+            color: '#6b7280',
             fontWeight: 500,
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
           }}
         >
-          Add
-        </button>
-      ) : (
-        <span style={{ fontSize: '12px', color: '#9ca3af' }}>Press Enter</span>
-      )}
+          Enter
+        </span>
+        <span style={{ fontSize: '12px', color: '#9ca3af' }}>to add</span>
+      </div>
     </form>
   );
 }
