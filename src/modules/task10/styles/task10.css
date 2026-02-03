@@ -2238,3 +2238,80 @@
     transform: rotate(360deg);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DRAG & DROP
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-drag-handle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 34px !important;
+  color: var(--t10-gray-300) !important;
+  cursor: grab !important;
+  flex-shrink: 0 !important;
+  margin-left: -6px !important;
+  margin-right: -4px !important;
+  transition: color 0.15s !important;
+  touch-action: none !important;
+}
+
+.t10-module .t10-drag-handle:hover {
+  color: var(--t10-gray-500) !important;
+}
+
+.t10-module .t10-drag-handle:active {
+  cursor: grabbing !important;
+  color: var(--t10-blue) !important;
+}
+
+.t10-module .t10-card.dragging {
+  opacity: 0.5 !important;
+  box-shadow: var(--t10-shadow-lg) !important;
+  border-color: var(--t10-blue) !important;
+  transform: scale(1.02) !important;
+  z-index: 1000 !important;
+}
+
+.t10-module .t10-card-overlay {
+  pointer-events: none !important;
+}
+
+.t10-module .t10-card-overlay .t10-card {
+  box-shadow: var(--t10-shadow-xl) !important;
+  border-color: var(--t10-blue) !important;
+  transform: rotate(2deg) !important;
+  background: var(--t10-white) !important;
+}
+
+.t10-module .t10-cards-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  min-height: 100px !important;
+}
+
+/* Drop placeholder styling */
+.t10-module .t10-card[data-sortable-placeholder="true"] {
+  background: var(--t10-blue-50) !important;
+  border: 2px dashed var(--t10-blue) !important;
+  opacity: 0.5 !important;
+}
+
+/* Reorder animation */
+.t10-module .t10-card {
+  transition: transform 0.2s ease, box-shadow 0.15s ease, opacity 0.15s ease !important;
+}
+
+/* Rank update animation */
+@keyframes t10-rank-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.t10-module .t10-rank.updated {
+  animation: t10-rank-pulse 0.3s ease !important;
+}
