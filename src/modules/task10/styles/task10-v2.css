@@ -2210,3 +2210,95 @@
   width: 14px;
   height: 14px;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ASSIGNEE FILTER - VIBRANT DESIGN
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.t10-module-v2 .t10-assignee-list {
+  padding: var(--t10-space-2) 0;
+}
+
+.t10-module-v2 .t10-assignee-option {
+  display: flex;
+  align-items: center;
+  gap: var(--t10-space-3);
+  width: 100%;
+  padding: var(--t10-space-3) var(--t10-space-4);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--t10-transition-fast);
+  text-align: left;
+}
+
+.t10-module-v2 .t10-assignee-option:hover {
+  background: var(--t10-bg-subtle);
+}
+
+.t10-module-v2 .t10-assignee-option.t10-selected {
+  background: var(--t10-accent-subtle);
+}
+
+.t10-module-v2 .t10-assignee-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+}
+
+.t10-module-v2 .t10-assignee-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.t10-module-v2 .t10-assignee-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.t10-module-v2 .t10-assignee-name {
+  font-size: var(--t10-text-md);
+  font-weight: 500;
+  color: var(--t10-text-primary);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t10-module-v2 .t10-assignee-email {
+  font-size: var(--t10-text-sm);
+  color: var(--t10-text-tertiary);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t10-module-v2 .t10-assignee-check {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t10-accent);
+}
+
+.t10-module-v2 .t10-assignee-option.t10-selected .t10-assignee-name {
+  color: var(--t10-accent);
+}

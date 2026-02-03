@@ -9,6 +9,17 @@ import { T10FilterDropdown } from './T10FilterDropdown';
 import { useT10Users } from '../../hooks';
 import { getT10Initials } from '../../utils';
 
+// Generate consistent avatar color from name
+function getAvatarColor(name: string | null): string {
+  if (!name) return 'hsl(220, 70%, 55%)';
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash % 360);
+  return `hsl(${hue}, 65%, 50%)`;
+}
+
 interface T10AssigneeFilterProps {
   selectedAssignees: string[];
   onApply: (userIds: string[]) => void;
@@ -20,12 +31,14 @@ export function T10AssigneeFilter({ selectedAssignees, onApply }: T10AssigneeFil
 
   const { data: users, isLoading } = useT10Users();
 
-  // Filter users by search query
+  // Filter users by search query (name or email)
   const filteredUsers = useMemo(() => {
     if (!users) return [];
     if (!searchQuery) return users;
+    const q = searchQuery.toLowerCase();
     return users.filter(user =>
-      user.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+      user.full_name?.toLowerCase().includes(q) ||
+      user.email?.toLowerCase().includes(q)
     );
   }, [users, searchQuery]);
 
@@ -71,7 +84,7 @@ export function T10AssigneeFilter({ selectedAssignees, onApply }: T10AssigneeFil
           <input
             type="text"
             className="t10-dropdown-search-input"
-            placeholder="Search people..."
+            placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -79,7 +92,7 @@ export function T10AssigneeFilter({ selectedAssignees, onApply }: T10AssigneeFil
       </div>
 
       {/* Options */}
-      <div className="t10-dropdown-options">
+      <div className="t10-dropdown-options t10-assignee-list">
         {isLoading ? (
           <div className="t10-dropdown-empty">Loading users...</div>
         ) : filteredUsers.length === 0 ? (
@@ -90,28 +103,47 @@ export function T10AssigneeFilter({ selectedAssignees, onApply }: T10AssigneeFil
           filteredUsers.map(user => {
             const isSelected = localSelected.includes(user.id);
             const initials = getT10Initials(user.full_name);
+            const avatarColor = getAvatarColor(user.full_name);
+            
             return (
               <button
                 key={user.id}
                 type="button"
-                className={`t10-dropdown-option ${isSelected ? 't10-selected' : ''}`}
+                className={`t10-assignee-option ${isSelected ? 't10-selected' : ''}`}
                 onClick={() => handleToggle(user.id)}
                 role="option"
                 aria-selected={isSelected}
               >
-                <div className="t10-dropdown-option-checkbox">
-                  <Check size={12} />
-                </div>
-                <div className="t10-dropdown-avatar">
+                {/* Avatar */}
+                <div 
+                  className="t10-assignee-avatar"
+                  style={{ backgroundColor: avatarColor }}
+                >
                   {user.avatar_url ? (
                     <img src={user.avatar_url} alt={user.full_name || ''} />
                   ) : (
                     initials
                   )}
                 </div>
-                <span className="t10-dropdown-option-label">
-                  {user.full_name || 'Unknown User'}
-                </span>
+                
+                {/* Name & Email */}
+                <div className="t10-assignee-info">
+                  <span className="t10-assignee-name">
+                    {user.full_name || 'Unknown User'}
+                  </span>
+                  {user.email && (
+                    <span className="t10-assignee-email">
+                      {user.email}
+                    </span>
+                  )}
+                </div>
+
+                {/* Selection indicator */}
+                {isSelected && (
+                  <div className="t10-assignee-check">
+                    <Check size={16} />
+                  </div>
+                )}
               </button>
             );
           })
