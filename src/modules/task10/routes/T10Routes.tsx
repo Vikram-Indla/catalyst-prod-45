@@ -7,6 +7,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { T10LandingPageNew } from '../pages/T10LandingPageNew';
+import { T10CompletedPage } from '../pages/T10CompletedPage';
 import { T10WeekViewNew } from '../components/week/T10WeekViewNew';
 
 export function T10Routes() {
@@ -14,6 +15,9 @@ export function T10Routes() {
     <Routes>
       {/* Landing page - List of all T10 lists */}
       <Route index element={<T10LandingPageNew />} />
+
+      {/* Completed weeks verification view */}
+      <Route path="completed" element={<T10CompletedPage />} />
 
       {/* List detail - redirects to current week */}
       <Route path="list/:listId" element={<T10WeekViewNew />} />

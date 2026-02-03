@@ -75,3 +75,13 @@ export {
 export { useT10AISuggestions, useAddSuggestionToT10 } from './useT10AISuggestions';
 export { useT10Activity, useLogT10Activity, useT10ActivityLogger } from './useT10Activity';
 export { useProfiles, type T10Profile } from './useProfiles';
+
+// Completed View
+export {
+  useT10CompletedSummary,
+  useT10CompletedWeeks,
+  useT10CompletedItems,
+  useT10ListPerformance,
+  useT10Checkout,
+  useT10ExportCSV,
+} from './useT10Completed';

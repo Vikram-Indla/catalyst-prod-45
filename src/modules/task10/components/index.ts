@@ -9,3 +9,6 @@ export * from './modals/T10RenameModal';
 export * from './modals/T10DeleteModal';
 export * from './modals/T10CheckoutModal';
 export * from './shared/T10LoadingStates';
+
+// Completed View
+export * from './completed';

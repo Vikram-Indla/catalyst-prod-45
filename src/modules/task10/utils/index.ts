@@ -58,6 +58,28 @@ export function formatShortDate(dateString: string): string {
 }
 
 /**
+ * Format date range for display (alias for formatT10WeekRange)
+ */
+export function formatT10DateRange(start: string | null, end: string | null): string {
+  if (!start || !end) return '';
+  
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  
+  const startFormatted = startDate.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+  
+  const endFormatted = endDate.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+  
+  return `${startFormatted} – ${endFormatted}`;
+}
+
+/**
  * Format week range for display
  */
 export function formatT10WeekRange(start: string | null, end: string | null): string {
