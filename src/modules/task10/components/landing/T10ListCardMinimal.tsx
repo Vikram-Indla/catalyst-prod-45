@@ -30,7 +30,7 @@ export function T10ListCardMinimal({ list, onRename, onDelete }: T10ListCardMini
 
   const handleCardClick = () => {
     if (currentWeek) {
-      navigate(`/task10/list/${list.id}`);
+      navigate(`/taskhub/task10/list/${list.id}/week/${currentWeek.id}`);
     }
   };
 
@@ -44,7 +44,7 @@ export function T10ListCardMinimal({ list, onRename, onDelete }: T10ListCardMini
         week_end: end,
         is_current: true,
       });
-      navigate(`/task10/list/${list.id}`);
+      navigate(`/taskhub/task10/list/${list.id}`);
     } catch (err) {
       console.error('[T10] Failed to create week:', err);
     }
@@ -179,7 +179,7 @@ export function T10ListCardMinimal({ list, onRename, onDelete }: T10ListCardMini
                 className="t10-history-item"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/task10/list/${list.id}/week/${week.id}`);
+                  navigate(`/taskhub/task10/list/${list.id}/week/${week.id}`);
                 }}
               >
                 <span className="t10-history-date">

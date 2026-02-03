@@ -92,7 +92,7 @@ export function T10LandingPageNew() {
   }, []);
 
   const handleListCreated = (listId: string) => {
-    navigate(`/task10/list/${listId}`);
+    navigate(`/taskhub/task10/list/${listId}`);
   };
 
   const handleRename = (list: T10ListSummary) => {
