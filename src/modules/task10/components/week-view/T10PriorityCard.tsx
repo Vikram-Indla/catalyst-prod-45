@@ -2,9 +2,11 @@
 // TASK¹⁰ PRIORITY CARD COMPONENT
 // - Completed items: strikethrough + faded opacity
 // - Carryover items: orange left border accent
+// - Fixed drag-and-drop with proper touch-action and event handling
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { GripVertical, RotateCcw } from 'lucide-react';
+import { GripVertical, RotateCcw, Calendar } from 'lucide-react';
+import { format, isToday, isPast, parseISO } from 'date-fns';
 import type { T10ItemWithAssignee } from '../../types';
 import { T10RankBadge } from './T10RankBadge';
 import { T10Checkbox } from './T10Checkbox';
@@ -26,6 +28,21 @@ export function T10PriorityCard({
 }: T10PriorityCardProps) {
   const isCompleted = item.status === 'done' || item.status === 'resolved';
   const isCarryover = item.carryover_count > 0;
+
+  // Due date helpers
+  const getDueStatus = (): 'overdue' | 'today' | 'upcoming' | null => {
+    if (!item.due_date) return null;
+    try {
+      const dueDate = parseISO(item.due_date);
+      if (isToday(dueDate)) return 'today';
+      if (isPast(dueDate)) return 'overdue';
+      return 'upcoming';
+    } catch {
+      return null;
+    }
+  };
+
+  const dueStatus = getDueStatus();
 
   // Build card styles with inline for reliable rendering
   const cardStyle: React.CSSProperties = {
@@ -50,16 +67,26 @@ export function T10PriorityCard({
     textDecoration: isCompleted ? 'line-through' : 'none',
   };
 
+  // Drag handle style with touch-action: none for proper dnd-kit behavior
+  const dragHandleStyle: React.CSSProperties = {
+    color: '#d1d5db',
+    cursor: 'grab',
+    flexShrink: 0,
+    touchAction: 'none', // Critical for drag to work
+    userSelect: 'none',
+    padding: '4px',
+  };
+
   return (
     <div 
       className={`t10-priority-card ${isCarryover ? 't10-priority-card--carryover' : ''} ${isDragging ? 't10-priority-card--dragging' : ''} ${isCompleted ? 't10-priority-card--completed' : ''}`}
       style={cardStyle}
       onClick={onClick}
     >
-      {/* Drag Handle */}
+      {/* Drag Handle - with touch-action: none and proper event handling */}
       <div 
         className="t10-priority-card__drag-handle" 
-        style={{ color: '#d1d5db', cursor: 'grab', flexShrink: 0 }}
+        style={dragHandleStyle}
         {...dragHandleProps}
       >
         <GripVertical size={18} />
@@ -90,6 +117,7 @@ export function T10PriorityCard({
         </div>
         
         <div className="t10-priority-card__meta" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          {/* Assignee */}
           {item.assignee && (
             <span className="t10-priority-card__assignee" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#6b7280' }}>
               {item.assignee.avatar_url ? (
@@ -118,6 +146,7 @@ export function T10PriorityCard({
             </span>
           )}
           
+          {/* Label */}
           {item.label && (
             <span 
               className="t10-priority-card__label"
@@ -131,6 +160,26 @@ export function T10PriorityCard({
               }}
             >
               {item.label}
+            </span>
+          )}
+          
+          {/* Due date with color coding */}
+          {item.due_date && dueStatus && (
+            <span 
+              className="t10-priority-card__due-date"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: dueStatus === 'overdue' ? '#dc2626' : dueStatus === 'today' ? '#d97706' : '#6b7280',
+              }}
+            >
+              <Calendar size={12} />
+              {dueStatus === 'overdue' && 'Overdue: '}
+              {dueStatus === 'today' && 'Due today'}
+              {dueStatus === 'upcoming' && format(parseISO(item.due_date), 'MMM d')}
             </span>
           )}
           
@@ -154,7 +203,7 @@ export function T10PriorityCard({
         </div>
       </div>
       
-      {/* Checkbox */}
+      {/* Checkbox with pop animation */}
       <div onClick={(e) => e.stopPropagation()}>
         <T10Checkbox 
           checked={isCompleted}

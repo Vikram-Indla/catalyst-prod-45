@@ -51,21 +51,22 @@ function SortableItem({ item, onToggleStatus, onClick }: SortableItemProps) {
     isDragging,
   } = useSortable({ id: item.id });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
     position: 'relative' as const,
+    touchAction: 'none', // Critical for drag to work on touch devices
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} {...attributes}>
       <T10PriorityCard
         item={item}
         onToggleStatus={onToggleStatus}
         onClick={onClick}
         isDragging={isDragging}
-        dragHandleProps={{ ...attributes, ...listeners }}
+        dragHandleProps={{ ...listeners }}
       />
     </div>
   );
