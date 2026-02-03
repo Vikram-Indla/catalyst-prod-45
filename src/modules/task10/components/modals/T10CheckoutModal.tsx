@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { CheckCircle, RotateCcw, Trash2, Info, Check } from 'lucide-react';
 import type { T10Item, T10CheckoutDecision } from '../../types';
 
 interface T10CheckoutModalProps {
@@ -10,6 +11,8 @@ interface T10CheckoutModalProps {
   onCheckout: (decisions: T10CheckoutDecision[]) => void;
 }
 
+type DecisionType = 'resolved' | 'carry' | 'remove';
+
 export function T10CheckoutModal({ 
   isOpen, 
   onClose, 
@@ -19,29 +22,84 @@ export function T10CheckoutModal({
   onCheckout 
 }: T10CheckoutModalProps) {
   const incompleteItems = items.filter(i => i.status === 'todo');
-  const [decisions, setDecisions] = useState<Record<string, 'resolved' | 'carry' | 'remove'>>(
-    Object.fromEntries(incompleteItems.map(item => [item.id, 'carry']))
-  );
+  const [decisions, setDecisions] = useState<Record<string, DecisionType>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Reset decisions when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setDecisions(Object.fromEntries(incompleteItems.map(item => [item.id, 'carry' as DecisionType])));
+      setShowSuccess(false);
+      setIsSubmitting(false);
+    }
+  }, [isOpen]);
 
   const resolvedCount = Object.values(decisions).filter(d => d === 'resolved').length;
   const carryCount = Object.values(decisions).filter(d => d === 'carry').length;
   const removeCount = Object.values(decisions).filter(d => d === 'remove').length;
 
-  const handleDecisionChange = (itemId: string, decision: 'resolved' | 'carry' | 'remove') => {
+  const handleDecisionChange = (itemId: string, decision: DecisionType) => {
     setDecisions(prev => ({ ...prev, [itemId]: decision }));
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    setIsSubmitting(true);
+    
     const checkoutDecisions: T10CheckoutDecision[] = incompleteItems.map(item => ({
       itemId: item.id,
       rank: item.rank,
       title: item.title,
       decision: decisions[item.id] || 'carry'
     }));
-    onCheckout(checkoutDecisions);
+
+    // Simulate processing time
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    setShowSuccess(true);
+    
+    // Auto-close after success animation
+    setTimeout(() => {
+      onCheckout(checkoutDecisions);
+      setShowSuccess(false);
+    }, 1500);
   };
 
+  // Handle escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isSubmitting) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isSubmitting, onClose]);
+
   if (!isOpen) return null;
+
+  // Success state
+  if (showSuccess) {
+    return (
+      <div className={`t10-modal-overlay ${isOpen ? 'open' : ''}`}>
+        <div className="t10-modal t10-checkout-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="t10-checkout-success">
+            <div className="t10-checkout-success-icon">
+              <Check size={32} />
+            </div>
+            <h3 className="t10-checkout-success-title">Week Checked Out!</h3>
+            <p className="t10-checkout-success-subtitle">
+              {carryCount > 0 && `${carryCount} item${carryCount > 1 ? 's' : ''} carried to next week`}
+              {carryCount > 0 && resolvedCount > 0 && ' · '}
+              {resolvedCount > 0 && `${resolvedCount} marked resolved`}
+              {(carryCount > 0 || resolvedCount > 0) && removeCount > 0 && ' · '}
+              {removeCount > 0 && `${removeCount} removed`}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`t10-modal-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
@@ -69,60 +127,101 @@ export function T10CheckoutModal({
         </div>
 
         {/* Items */}
-        {incompleteItems.length > 0 && (
-          <div className="t10-checkout-items">
-            {incompleteItems.map(item => (
-              <div key={item.id} className="t10-checkout-item">
-                <div className="t10-checkout-item-header">
-                  <div className="t10-checkout-item-rank">{item.rank}</div>
-                  <div className="t10-checkout-item-title">{item.title}</div>
+        {incompleteItems.length > 0 ? (
+          <>
+            <div className="t10-checkout-section-header">
+              <Info size={16} />
+              <span>What would you like to do with remaining items?</span>
+            </div>
+            <div className="t10-checkout-items">
+              {incompleteItems.map(item => (
+                <div key={item.id} className="t10-checkout-item">
+                  <div className="t10-checkout-item-header">
+                    <div className="t10-checkout-item-rank">{item.rank}</div>
+                    <div className="t10-checkout-item-info">
+                      <div className="t10-checkout-item-title">{item.title}</div>
+                      {item.taskhub_key && (
+                        <span className="t10-checkout-item-key">{item.taskhub_key}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="t10-checkout-options">
+                    <button
+                      className={`t10-checkout-option-btn ${decisions[item.id] === 'resolved' ? 'selected resolved' : ''}`}
+                      onClick={() => handleDecisionChange(item.id, 'resolved')}
+                    >
+                      <CheckCircle size={16} />
+                      <span>Resolved</span>
+                    </button>
+                    <button
+                      className={`t10-checkout-option-btn ${decisions[item.id] === 'carry' ? 'selected carry' : ''}`}
+                      onClick={() => handleDecisionChange(item.id, 'carry')}
+                    >
+                      <RotateCcw size={16} />
+                      <span>Carry Over</span>
+                    </button>
+                    <button
+                      className={`t10-checkout-option-btn ${decisions[item.id] === 'remove' ? 'selected remove' : ''}`}
+                      onClick={() => handleDecisionChange(item.id, 'remove')}
+                    >
+                      <Trash2 size={16} />
+                      <span>Remove</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="t10-checkout-options">
-                  <label className={`t10-checkout-option ${decisions[item.id] === 'resolved' ? 'selected' : ''}`}>
-                    <input
-                      type="radio"
-                      name={`decision-${item.id}`}
-                      checked={decisions[item.id] === 'resolved'}
-                      onChange={() => handleDecisionChange(item.id, 'resolved')}
-                    />
-                    Mark Resolved
-                  </label>
-                  <label className={`t10-checkout-option ${decisions[item.id] === 'carry' ? 'selected' : ''}`}>
-                    <input
-                      type="radio"
-                      name={`decision-${item.id}`}
-                      checked={decisions[item.id] === 'carry'}
-                      onChange={() => handleDecisionChange(item.id, 'carry')}
-                    />
-                    Carry to Next Week
-                  </label>
-                  <label className={`t10-checkout-option ${decisions[item.id] === 'remove' ? 'selected' : ''}`}>
-                    <input
-                      type="radio"
-                      name={`decision-${item.id}`}
-                      checked={decisions[item.id] === 'remove'}
-                      onChange={() => handleDecisionChange(item.id, 'remove')}
-                    />
-                    Remove
-                  </label>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="t10-checkout-all-done">
+            <CheckCircle size={40} />
+            <h4>All items completed!</h4>
+            <p>Great work this week. No remaining items to decide on.</p>
           </div>
         )}
 
         {/* Summary */}
         <div className="t10-checkout-summary">
-          {resolvedCount} will be resolved · {carryCount} will carry over · {removeCount} will be removed
+          <div className="t10-checkout-summary-icon"><Info size={16} /></div>
+          <div className="t10-checkout-summary-text">
+            {incompleteItems.length > 0 ? (
+              <>
+                <strong>{resolvedCount}</strong> will be marked as resolved · 
+                <strong> {carryCount}</strong> will carry to next week
+                {carryCount > 0 && <span className="t10-checkout-summary-note"> (carryover count +1)</span>}
+                {removeCount > 0 && <> · <strong>{removeCount}</strong> will be removed</>}
+              </>
+            ) : (
+              'Ready to start a fresh week!'
+            )}
+          </div>
         </div>
 
         {/* Footer */}
         <div className="t10-checkout-footer">
-          <button className="t10-btn t10-btn-secondary" onClick={onClose}>
+          <button 
+            className="t10-btn t10-btn-secondary" 
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </button>
-          <button className="t10-btn t10-btn-primary" onClick={handleCheckout}>
-            Confirm Checkout
+          <button 
+            className="t10-btn t10-btn-primary" 
+            onClick={handleCheckout}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="t10-spinner" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <CheckCircle size={18} />
+                Confirm Checkout
+              </>
+            )}
           </button>
         </div>
       </div>
