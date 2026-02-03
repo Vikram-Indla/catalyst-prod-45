@@ -165,7 +165,13 @@ export function T10LandingPage() {
               )}
             </div>
           ) : (
-            <div className="t10-lists-grid">
+            <div 
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+              }}
+            >
               {filteredLists.map((list) => (
                 <T10ListCard
                   key={list.id}

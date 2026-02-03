@@ -12,14 +12,33 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  // NOTE: This intentionally uses Tailwind utility classes (not text bullets)
-  // to guarantee a pill background + dot.
+  // Uses inline styles for maximum compatibility (CSS overrides were breaking this)
   if (status === 'active') {
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wide rounded-full bg-emerald-50 text-emerald-700 ${className || ''}`}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '4px 12px',
+          backgroundColor: '#ecfdf5',
+          color: '#059669',
+          borderRadius: '9999px',
+          fontSize: '11px',
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+        }}
+        className={className}
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+        <span
+          style={{
+            width: '6px',
+            height: '6px',
+            backgroundColor: '#10b981',
+            borderRadius: '50%',
+          }}
+        />
         Active
       </span>
     );
@@ -28,7 +47,19 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   if (status === 'inactive') {
     return (
       <span
-        className={`inline-flex items-center px-3 py-1 text-xs font-semibold uppercase tracking-wide rounded-full bg-gray-100 text-gray-600 ${className || ''}`}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '4px 12px',
+          backgroundColor: '#f3f4f6',
+          color: '#6b7280',
+          borderRadius: '9999px',
+          fontSize: '11px',
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+        }}
+        className={className}
       >
         Inactive
       </span>
@@ -38,7 +69,19 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   // Archived
   return (
     <span
-      className={`inline-flex items-center px-3 py-1 text-xs font-semibold uppercase tracking-wide rounded-full bg-gray-200 text-gray-700 ${className || ''}`}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '4px 12px',
+        backgroundColor: '#e5e7eb',
+        color: '#374151',
+        borderRadius: '9999px',
+        fontSize: '11px',
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+      }}
+      className={className}
     >
       Archived
     </span>

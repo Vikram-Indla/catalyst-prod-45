@@ -81,10 +81,12 @@ export function T10SortablePriorityList({
 }: T10SortablePriorityListProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   
+  // Lower activation distance to make clicks work better
+  // distance: 5 means you need to drag 5px before drag starts, allowing clicks through
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
