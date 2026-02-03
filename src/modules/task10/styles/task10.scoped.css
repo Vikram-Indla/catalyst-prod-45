@@ -686,8 +686,20 @@
   border-color: var(--t10-gray-300);
 }
 
+/* Carryover items: orange left border accent (4px) */
 .catalyst-module--task10 .t10-priority-card--carryover {
-  border-left: 3px solid var(--t10-warning);
+  border-left: 4px solid #f59e0b !important;
+}
+
+/* Completed items: faded + strikethrough */
+.catalyst-module--task10 .t10-priority-card--completed {
+  opacity: 0.7;
+  background-color: #f9fafb !important;
+}
+
+.catalyst-module--task10 .t10-priority-card--completed .t10-priority-card__title {
+  text-decoration: line-through;
+  color: #9ca3af;
 }
 
 /* Rank badges */

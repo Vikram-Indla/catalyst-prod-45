@@ -28,7 +28,8 @@ export function T10AIBanner({ suggestions, onAddSuggestion, onDismiss }: T10AIBa
         </div>
         <div className="t10-ai-banner__content">
           <span className="t10-ai-banner__title">AI Suggestions</span>
-          <span className="t10-ai-banner__subtitle">
+          <span style={{ color: '#4b5563', marginLeft: '6px' }}>·</span>
+          <span className="t10-ai-banner__subtitle" style={{ marginLeft: '6px' }}>
             {pendingSuggestions.length} task{pendingSuggestions.length !== 1 ? 's' : ''} recommended for your Top 10
           </span>
         </div>
