@@ -82,8 +82,8 @@ export function T10PriorityCard({ item, onClick, onToggleStatus, isDraggable = t
             <span className="t10-card-label">{item.label}</span>
           )}
           {item.carryover_count > 0 && (
-            <span className="t10-carryover-badge">
-              →×{item.carryover_count}
+            <span className="t10-carryover-badge" title={`Carried over ${item.carryover_count} time${item.carryover_count > 1 ? 's' : ''}`}>
+              ×{item.carryover_count}
             </span>
           )}
         </div>

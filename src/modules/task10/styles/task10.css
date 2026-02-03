@@ -1543,14 +1543,30 @@
 .t10-module .t10-carryover-badge {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 4px !important;
-  padding: 3px 8px !important;
-  background: var(--t10-warning-50) !important;
-  border: 1px solid var(--t10-warning) !important;
+  gap: 3px !important;
+  padding: 2px 7px !important;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+  border: 1px solid #f59e0b !important;
   border-radius: var(--t10-radius-sm) !important;
-  font-size: 11px !important;
+  font-size: 10px !important;
   font-weight: 700 !important;
-  color: var(--t10-warning) !important;
+  color: #b45309 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+}
+
+.t10-module .t10-carryover-badge::before {
+  content: '↻' !important;
+  font-size: 11px !important;
+}
+
+/* Highlight carryover cards */
+.t10-module .t10-card.carryover {
+  border-left: 3px solid #f59e0b !important;
+}
+
+.t10-module .t10-card.carryover .t10-rank {
+  box-shadow: 0 0 0 2px #fef3c7 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
