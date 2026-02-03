@@ -6,14 +6,14 @@
 
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { T10LandingPage } from '../pages/T10LandingPage';
+import { T10LandingPageNew } from '../pages/T10LandingPageNew';
 import { T10WeekViewNew } from '../components/week/T10WeekViewNew';
 
 export function T10Routes() {
   return (
     <Routes>
       {/* Landing page - List of all T10 lists */}
-      <Route index element={<T10LandingPage />} />
+      <Route index element={<T10LandingPageNew />} />
 
       {/* List detail - redirects to current week */}
       <Route path="list/:listId" element={<T10WeekViewNew />} />
