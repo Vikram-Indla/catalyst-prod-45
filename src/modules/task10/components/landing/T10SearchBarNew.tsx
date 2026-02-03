@@ -45,21 +45,80 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
   }, []);
 
   return (
-    <div className="t10-search-ghost">
-      <Search className="t10-search-ghost-icon" size={16} />
-      <input
-        ref={inputRef}
-        type="text"
-        className="t10-search-ghost-input"
-        placeholder="Search lists..."
-        value={value}
-        onChange={handleChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-      />
-      {!isFocused && !value && (
-        <kbd className="t10-search-ghost-kbd">/</kbd>
-      )}
+    <div 
+      className="t10-search-section"
+      style={{
+        marginBottom: '24px',
+      }}
+    >
+      <div 
+        className="t10-search-bar"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          height: '48px',
+          padding: '0 16px',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '12px',
+          boxShadow: 'none',
+          transition: 'all 0.15s ease',
+        }}
+      >
+        <Search 
+          className="t10-search-icon" 
+          size={18} 
+          style={{ 
+            flexShrink: 0, 
+            color: '#94a3b8',
+          }} 
+        />
+        <input
+          ref={inputRef}
+          type="text"
+          className="t10-search-input"
+          placeholder="Search lists..."
+          value={value}
+          onChange={handleChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          style={{
+            flex: 1,
+            height: '100%',
+            padding: 0,
+            margin: 0,
+            fontFamily: 'Inter, system-ui, sans-serif',
+            fontSize: '14px',
+            color: '#1e293b',
+            background: 'transparent',
+            border: 'none',
+            borderRadius: 0,
+            outline: 'none',
+            boxShadow: 'none',
+          }}
+        />
+        {!isFocused && !value && (
+          <kbd 
+            className="t10-search-kbd"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '24px',
+              padding: '0 8px',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              color: '#94a3b8',
+              background: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              borderRadius: '6px',
+            }}
+          >
+            /
+          </kbd>
+        )}
+      </div>
     </div>
   );
 }
