@@ -108,8 +108,8 @@ export function useReorderT10Items() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ weekId, itemIds }: { weekId: string; itemIds: string[] }) => 
-      reorderT10Items(weekId, itemIds),
+    mutationFn: ({ weekId, itemIds, baseRank = 1 }: { weekId: string; itemIds: string[]; baseRank?: number }) => 
+      reorderT10Items(weekId, itemIds, baseRank),
     onSuccess: (_, { weekId }) => {
       queryClient.invalidateQueries({ queryKey: t10ItemsKeys.list(weekId) });
       queryClient.invalidateQueries({ queryKey: t10WeeksKeys.all });

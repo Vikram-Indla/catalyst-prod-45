@@ -12,6 +12,8 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -21,6 +23,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useState } from 'react';
 import type { T10ItemWithAssignee } from '../../types';
 import { T10PriorityCard } from './T10PriorityCard';
 
@@ -51,7 +54,7 @@ function SortableItem({ item, onToggleStatus, onClick }: SortableItemProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isDragging ? 10 : undefined,
+    opacity: isDragging ? 0.5 : 1,
     position: 'relative' as const,
   };
 
@@ -75,10 +78,12 @@ export function T10SortablePriorityList({
   onReorder,
   disabled = false,
 }: T10SortablePriorityListProps) {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement before drag starts
+        distance: 8,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -87,9 +92,18 @@ export function T10SortablePriorityList({
   );
 
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
+  const activeItem = useMemo(
+    () => items.find((item) => item.id === activeId),
+    [items, activeId]
+  );
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  }, []);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
+      setActiveId(null);
       const { active, over } = event;
 
       if (over && active.id !== over.id) {
@@ -114,6 +128,7 @@ export function T10SortablePriorityList({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       <SortableContext
@@ -132,6 +147,18 @@ export function T10SortablePriorityList({
           ))}
         </div>
       </SortableContext>
+      
+      <DragOverlay>
+        {activeItem ? (
+          <div className="t10-priority-card--overlay">
+            <T10PriorityCard
+              item={activeItem}
+              onToggleStatus={() => {}}
+              isDragging
+            />
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 }

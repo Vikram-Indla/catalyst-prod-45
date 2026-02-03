@@ -74,6 +74,17 @@ export function T10WeekViewPage() {
     });
   }, [week, reorderItems]);
 
+  const handleBufferReorder = useCallback((itemIds: string[]) => {
+    if (!week) return;
+    // Buffer items start at rank 11, so we offset by 10 + top 10 count
+    const baseRank = week.items.length + 1;
+    reorderItems.mutate({
+      weekId: week.id,
+      itemIds,
+      baseRank,
+    });
+  }, [week, reorderItems]);
+
   const handleQuickAdd = (title: string) => {
     if (!week) return;
     const nextRank = Math.max(
@@ -207,6 +218,8 @@ export function T10WeekViewPage() {
             items={week.buffer_items}
             onToggleStatus={handleToggleStatus}
             onItemClick={setSelectedItem}
+            onReorder={handleBufferReorder}
+            disabled={reorderItems.isPending}
           />
         </div>
       </main>
