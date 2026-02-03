@@ -96,10 +96,7 @@ export function T10LandingPage() {
     <div className="t10-module">
       <T10Header onCreateList={() => setCreateModalOpen(true)} userInitials="VI" />
       <div className="t10-container">
-        <T10SearchBar 
-          onSearch={setSearch} 
-          onFilterChange={() => {}} 
-        />
+        <T10SearchBar onSearch={setSearch} />
         
         {/* Filter Bar */}
         <T10FilterBar
