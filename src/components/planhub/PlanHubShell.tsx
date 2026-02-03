@@ -4,6 +4,7 @@ import {
   Bot, FileBarChart, ChevronLeft 
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useSettingsSubscription } from '@/hooks/usePlanHubSubscriptions';
 import '@/styles/planhub.css';
 
 // Import views
@@ -23,6 +24,9 @@ export default function PlanHubShell() {
   const [features, setFeatures] = useState<FeatureSettings | null>(null);
   const [aiEnabled, setAiEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Real-time settings subscription via shared hook
+  useSettingsSubscription();
 
   useEffect(() => {
     loadSettings();
