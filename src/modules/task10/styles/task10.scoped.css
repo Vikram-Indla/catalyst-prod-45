@@ -3427,7 +3427,8 @@
   width: 100%;
   max-width: 520px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   animation: t10-modal-enter 0.2s ease-out;
 }
 
@@ -3459,6 +3460,21 @@
   font-size: 14px;
   color: #6b7280;
   margin-top: 6px;
+}
+
+/* Form layout */
+.t10-checkout-modal__form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Scrollable content area */
+.t10-checkout-modal__content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 /* Stats Cards */
@@ -3507,9 +3523,17 @@
   text-transform: uppercase;
 }
 
+/* Section Label */
+.t10-checkout-section-label {
+  padding: 16px 24px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
 /* Items List */
 .t10-checkout-items {
-  padding: 20px 24px;
+  padding: 8px 24px 20px;
   max-height: 340px;
   overflow-y: auto;
   display: flex;

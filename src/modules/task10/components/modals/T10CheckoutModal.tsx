@@ -81,100 +81,109 @@ export function T10CheckoutModal({ isOpen, week, items, onClose, onSuccess }: T1
           <p className="t10-checkout-modal__date">{weekRange}</p>
         </header>
         
-        <form onSubmit={handleSubmit}>
-          {/* Stats Cards */}
-          <div className="t10-checkout-stats">
-            <div className="t10-checkout-stats__card">
-              <span className="t10-checkout-stats__value t10-checkout-stats__value--completed">
-                {completedItems.length}
-              </span>
-              <span className="t10-checkout-stats__label">COMPLETED</span>
-            </div>
-            <div className="t10-checkout-stats__card">
-              <span className="t10-checkout-stats__value t10-checkout-stats__value--remaining">
-                {incompleteItems.length}
-              </span>
-              <span className="t10-checkout-stats__label">REMAINING</span>
-            </div>
-            <div className="t10-checkout-stats__card">
-              <span className="t10-checkout-stats__value t10-checkout-stats__value--total">
-                {items.length}
-              </span>
-              <span className="t10-checkout-stats__label">TOTAL</span>
-            </div>
-          </div>
-
-          {/* Item Decision List */}
-          <div className="t10-checkout-items">
-            {incompleteItems.length === 0 ? (
-              <div className="t10-checkout-items__empty">
-                <p>All items completed! Ready to checkout.</p>
+        <form onSubmit={handleSubmit} className="t10-checkout-modal__form">
+          {/* Scrollable Content */}
+          <div className="t10-checkout-modal__content">
+            {/* Stats Cards */}
+            <div className="t10-checkout-stats">
+              <div className="t10-checkout-stats__card">
+                <span className="t10-checkout-stats__value t10-checkout-stats__value--completed">
+                  {completedItems.length}
+                </span>
+                <span className="t10-checkout-stats__label">COMPLETED</span>
               </div>
-            ) : (
-              incompleteItems.map((item) => (
-                <div key={item.id} className="t10-checkout-item-card">
-                  <div className="t10-checkout-item-card__header">
-                    <span className="t10-checkout-item-card__rank">{item.rank}</span>
-                    <span className="t10-checkout-item-card__title">{item.title}</span>
-                  </div>
-                  
-                  <div className="t10-checkout-item-card__options">
-                    <label className="t10-checkout-radio">
-                      <input
-                        type="radio"
-                        name={`decision-${item.id}`}
-                        checked={decisions[item.id] === 'resolved'}
-                        onChange={() => handleDecisionChange(item.id, 'resolved')}
-                      />
-                      <span className="t10-checkout-radio__circle"></span>
-                      <span className="t10-checkout-radio__label">Mark Resolved</span>
-                    </label>
-                    
-                    <label className="t10-checkout-radio t10-checkout-radio--selected">
-                      <input
-                        type="radio"
-                        name={`decision-${item.id}`}
-                        checked={decisions[item.id] === 'carry'}
-                        onChange={() => handleDecisionChange(item.id, 'carry')}
-                      />
-                      <span className="t10-checkout-radio__circle"></span>
-                      <span className="t10-checkout-radio__label">Carry to Next Week</span>
-                    </label>
-                    
-                    <label className="t10-checkout-radio">
-                      <input
-                        type="radio"
-                        name={`decision-${item.id}`}
-                        checked={decisions[item.id] === 'remove'}
-                        onChange={() => handleDecisionChange(item.id, 'remove')}
-                      />
-                      <span className="t10-checkout-radio__circle"></span>
-                      <span className="t10-checkout-radio__label">Remove</span>
-                    </label>
-                  </div>
+              <div className="t10-checkout-stats__card">
+                <span className="t10-checkout-stats__value t10-checkout-stats__value--remaining">
+                  {incompleteItems.length}
+                </span>
+                <span className="t10-checkout-stats__label">REMAINING</span>
+              </div>
+              <div className="t10-checkout-stats__card">
+                <span className="t10-checkout-stats__value t10-checkout-stats__value--total">
+                  {items.length}
+                </span>
+                <span className="t10-checkout-stats__label">TOTAL</span>
+              </div>
+            </div>
+
+            {/* Item Decision List */}
+            {incompleteItems.length > 0 && (
+              <div className="t10-checkout-section-label">
+                Incomplete Items — Choose action for each:
+              </div>
+            )}
+            
+            <div className="t10-checkout-items">
+              {incompleteItems.length === 0 ? (
+                <div className="t10-checkout-items__empty">
+                  <p>All items completed! Ready to checkout.</p>
                 </div>
-              ))
+              ) : (
+                incompleteItems.map((item) => (
+                  <div key={item.id} className="t10-checkout-item-card">
+                    <div className="t10-checkout-item-card__header">
+                      <span className="t10-checkout-item-card__rank">{item.rank}</span>
+                      <span className="t10-checkout-item-card__title">{item.title}</span>
+                    </div>
+                    
+                    <div className="t10-checkout-item-card__options">
+                      <label className="t10-checkout-radio">
+                        <input
+                          type="radio"
+                          name={`decision-${item.id}`}
+                          checked={decisions[item.id] === 'resolved'}
+                          onChange={() => handleDecisionChange(item.id, 'resolved')}
+                        />
+                        <span className="t10-checkout-radio__circle"></span>
+                        <span className="t10-checkout-radio__label">Mark Resolved</span>
+                      </label>
+                      
+                      <label className="t10-checkout-radio">
+                        <input
+                          type="radio"
+                          name={`decision-${item.id}`}
+                          checked={decisions[item.id] === 'carry'}
+                          onChange={() => handleDecisionChange(item.id, 'carry')}
+                        />
+                        <span className="t10-checkout-radio__circle"></span>
+                        <span className="t10-checkout-radio__label">Carry to Next Week</span>
+                      </label>
+                      
+                      <label className="t10-checkout-radio">
+                        <input
+                          type="radio"
+                          name={`decision-${item.id}`}
+                          checked={decisions[item.id] === 'remove'}
+                          onChange={() => handleDecisionChange(item.id, 'remove')}
+                        />
+                        <span className="t10-checkout-radio__circle"></span>
+                        <span className="t10-checkout-radio__label">Remove</span>
+                      </label>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Summary Bar */}
+            {incompleteItems.length > 0 && (
+              <div className="t10-checkout-summary-bar">
+                <span className="t10-checkout-summary-bar__resolved">
+                  {summary.resolved} will be resolved
+                </span>
+                <span className="t10-checkout-summary-bar__separator">·</span>
+                <span className="t10-checkout-summary-bar__carry">
+                  {summary.carry} will carry over
+                </span>
+                <span className="t10-checkout-summary-bar__separator">·</span>
+                <span className="t10-checkout-summary-bar__remove">
+                  {summary.remove} will be removed
+                </span>
+              </div>
             )}
           </div>
 
-          {/* Summary Bar */}
-          {incompleteItems.length > 0 && (
-            <div className="t10-checkout-summary-bar">
-              <span className="t10-checkout-summary-bar__resolved">
-                {summary.resolved} will be resolved
-              </span>
-              <span className="t10-checkout-summary-bar__separator">·</span>
-              <span className="t10-checkout-summary-bar__carry">
-                {summary.carry} will carry over
-              </span>
-              <span className="t10-checkout-summary-bar__separator">·</span>
-              <span className="t10-checkout-summary-bar__remove">
-                {summary.remove} will be removed
-              </span>
-            </div>
-          )}
-
-          {/* Footer Actions */}
+          {/* Footer Actions - Always visible */}
           <footer className="t10-checkout-modal__footer">
             <button 
               type="button" 
