@@ -2354,47 +2354,59 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .t10-module-v2 .t10-search-section {
-  margin-bottom: var(--t10-space-6);
+  margin-bottom: var(--t10-space-6) !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .t10-module-v2 .t10-search-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--t10-space-3);
-  height: 48px;
-  padding: 0 var(--t10-space-4);
-  background: var(--t10-bg-card);
-  border: 1px solid var(--t10-border-default);
-  border-radius: var(--t10-radius-lg);
-  transition: all var(--t10-transition-fast);
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--t10-space-3) !important;
+  height: 48px !important;
+  padding: 0 var(--t10-space-4) !important;
+  background: var(--t10-bg-card) !important;
+  border: 1px solid var(--t10-border-default) !important;
+  border-radius: var(--t10-radius-lg) !important;
+  box-shadow: none !important;
+  transition: all var(--t10-transition-fast) !important;
 }
 
 .t10-module-v2 .t10-search-bar:focus-within {
-  border-color: var(--t10-accent);
-  box-shadow: var(--t10-shadow-focus);
+  border-color: var(--t10-accent) !important;
+  box-shadow: var(--t10-shadow-focus) !important;
 }
 
-.t10-module-v2 .t10-search-bar .t10-search-icon {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  color: var(--t10-text-tertiary);
+.t10-module-v2 .t10-search-bar .t10-search-icon,
+.t10-module-v2 .t10-search-bar svg.t10-search-icon {
+  flex-shrink: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: var(--t10-text-tertiary) !important;
 }
 
-.t10-module-v2 .t10-search-bar .t10-search-input {
-  flex: 1;
-  height: 100%;
-  padding: 0;
-  font-family: var(--t10-font);
-  font-size: var(--t10-text-md);
-  color: var(--t10-text-primary);
-  background: transparent;
-  border: none;
-  outline: none;
+.t10-module-v2 .t10-search-bar .t10-search-input,
+.t10-module-v2 .t10-search-bar input.t10-search-input,
+.t10-module-v2 .t10-search-bar input {
+  flex: 1 !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: var(--t10-font) !important;
+  font-size: var(--t10-text-md) !important;
+  color: var(--t10-text-primary) !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-.t10-module-v2 .t10-search-bar .t10-search-input::placeholder {
-  color: var(--t10-text-tertiary);
+.t10-module-v2 .t10-search-bar .t10-search-input::placeholder,
+.t10-module-v2 .t10-search-bar input::placeholder {
+  color: var(--t10-text-tertiary) !important;
 }
 
 .t10-module-v2 .t10-search-bar .t10-search-clear {
