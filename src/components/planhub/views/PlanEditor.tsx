@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   ChevronLeft, Plus, Flag, LayoutGrid, BarChart2, 
   Columns, History, Play
@@ -6,6 +6,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { usePlanSubscription } from '@/hooks/usePlanHubSubscriptions';
+import { useLogPlanAccess, useLogTaskActivity } from '@/hooks/usePlanHubActivity';
 import TaskGrid from '../components/TaskGrid';
 import GanttChart from '../components/GanttChart';
 import type { FeatureSettings, PlanWithLead, TaskRow, TaskTreeNode } from '@/types/planhub.types';
@@ -24,6 +25,17 @@ export default function PlanEditor({ planId, onBack, features }: Props) {
 
   // Real-time subscription for collaborative editing
   usePlanSubscription(planId);
+
+  // Activity logging
+  const logAccess = useLogPlanAccess();
+  const taskActivity = useLogTaskActivity();
+
+  // Log plan access on mount (debounced)
+  useEffect(() => {
+    if (planId) {
+      logAccess(planId);
+    }
+  }, [planId]);
 
   // Fetch plan
   const { data: plan, isLoading: planLoading } = useQuery({
@@ -94,10 +106,12 @@ export default function PlanEditor({ planId, onBack, features }: Props) {
         .single();
 
       if (error) throw new Error(error.message);
-      return data;
+      return { ...data, type };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['planhub', 'tasks', planId] });
+      // Log task creation
+      taskActivity.logCreate(planId, data.name, data.type);
     },
   });
 
