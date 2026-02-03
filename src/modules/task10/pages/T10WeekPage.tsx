@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Plus, Check, Calendar } from 'lucide-react';
 import { T10UnifiedSortableList } from '../components/week/T10UnifiedSortableList';
 import { T10WeekNavigation } from '../components/week/T10WeekNavigation';
-import { T10SidePanel } from '../components/panel/T10SidePanel';
+import { T10EnterpriseSidePanel } from '../components/panel/T10EnterpriseSidePanel';
 import { T10CheckoutModal } from '../components/modals/T10CheckoutModal';
 import { T10AISuggestionsPanel } from '../components/week/T10AISuggestionsPanel';
 import {
@@ -392,7 +392,7 @@ export function T10WeekPage() {
         onToggleBuffer={() => setBufferExpanded(!bufferExpanded)}
       />
 
-      <T10SidePanel 
+      <T10EnterpriseSidePanel 
         item={displayItems.find(i => i.id === selectedItemId) || null} 
         isOpen={sidePanelOpen} 
         onClose={() => { setSidePanelOpen(false); setSelectedItemId(null); }} 
