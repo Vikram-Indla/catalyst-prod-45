@@ -20,6 +20,7 @@ import {
 } from '../components';
 import type { DropdownMenuItem, FilterState } from '../components';
 import '../styles/task10.scoped.css';
+import '../styles/task10-complete.css';
 
 export function T10LandingPage() {
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ export function T10LandingPage() {
 
   if (isLoading) {
     return (
-      <div className="catalyst-module--task10">
+      <div className="catalyst-module--task10 t10-module">
         <T10Header onCreateList={() => setIsCreateModalOpen(true)} />
         <div className="t10-loading">
           <Loader2 className="t10-spinner" />
@@ -114,7 +115,7 @@ export function T10LandingPage() {
 
   if (error) {
     return (
-      <div className="catalyst-module--task10">
+      <div className="catalyst-module--task10 t10-module">
         <T10Header onCreateList={() => setIsCreateModalOpen(true)} />
         <div className="t10-error">
           <span>Failed to load lists. Please try again.</span>
@@ -124,7 +125,7 @@ export function T10LandingPage() {
   }
 
   return (
-    <div className="catalyst-module--task10">
+    <div className="catalyst-module--task10 t10-module">
       <T10Header onCreateList={() => setIsCreateModalOpen(true)} />
       
       <main className="t10-main">
