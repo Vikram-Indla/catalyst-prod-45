@@ -22,7 +22,7 @@ interface PlannerSidebarProps {
 export function PlannerSidebar({ expanded, onToggle, className }: PlannerSidebarProps) {
   const plannerSidebarConfig: SidebarConfig = {
     badge: 'TH',
-    label: 'Taskhub',
+    label: 'TaskHub',
     sections: [
       {
         title: '',
