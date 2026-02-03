@@ -19,9 +19,10 @@ const AVAILABLE_LABELS = [
 interface T10PanelDetailsTabProps {
   item: T10ItemWithAssignee;
   onUpdate?: (itemId: string, updates: Partial<T10ItemWithAssignee>) => void;
+  isSaving?: boolean;
 }
 
-export function T10PanelDetailsTab({ item, onUpdate }: T10PanelDetailsTabProps) {
+export function T10PanelDetailsTab({ item, onUpdate, isSaving = false }: T10PanelDetailsTabProps) {
   const [description, setDescription] = useState(item.description || '');
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
@@ -103,7 +104,39 @@ export function T10PanelDetailsTab({ item, onUpdate }: T10PanelDetailsTabProps) 
   };
 
   return (
-    <div className="t10-details">
+    <div className="t10-details" style={{ position: 'relative' }}>
+      {/* SAVING INDICATOR */}
+      {isSaving && (
+        <div 
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 10px',
+            backgroundColor: '#eff6ff',
+            borderRadius: '6px',
+            fontSize: '12px',
+            color: '#2563eb',
+            fontWeight: 500,
+            zIndex: 10,
+          }}
+        >
+          <span 
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: '#2563eb',
+              animation: 'pulse 1s infinite',
+            }}
+          />
+          Saving...
+        </div>
+      )}
+      
       {/* STATUS */}
       <div className="t10-details__field">
         <label className="t10-details__label">

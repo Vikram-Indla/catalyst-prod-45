@@ -259,6 +259,7 @@ export function T10WeekViewPage() {
         onClose={() => setSelectedItem(null)}
         onUpdate={handleItemUpdate}
         onDelete={handleItemDelete}
+        isSaving={updateItem.isPending}
       />
       
       {/* Checkout Modal */}

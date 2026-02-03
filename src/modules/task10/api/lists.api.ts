@@ -208,6 +208,110 @@ export async function deleteT10List(listId: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Duplicate a list with its current week and items
+ */
+export async function duplicateT10List(listId: string): Promise<string> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  // Fetch original list
+  const { data: originalList, error: listError } = await supabase
+    .from('t10_lists')
+    .select('*')
+    .eq('id', listId)
+    .single();
+
+  if (listError) throw new Error(listError.message);
+
+  // Generate next list_key
+  const { data: lastList } = await supabase
+    .from('t10_lists')
+    .select('list_key')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  let nextNum = 1;
+  if (lastList?.list_key) {
+    const match = lastList.list_key.match(/T10-(\d+)/);
+    if (match) {
+      nextNum = parseInt(match[1], 10) + 1;
+    }
+  }
+  const listKey = `T10-${String(nextNum).padStart(3, '0')}`;
+
+  // Create new list
+  const { data: newList, error: createError } = await supabase
+    .from('t10_lists')
+    .insert({
+      list_key: listKey,
+      name: `${originalList.name} (Copy)`,
+      description: originalList.description,
+      status: 'active',
+      created_by: user.id,
+    })
+    .select()
+    .single();
+
+  if (createError) throw new Error(createError.message);
+
+  // Create first week for new list
+  const weekStart = getWeekStart(new Date());
+  const weekEnd = getWeekEnd(weekStart);
+
+  const { data: newWeek, error: weekError } = await supabase
+    .from('t10_weeks')
+    .insert({
+      list_id: newList.id,
+      week_start_date: weekStart.toISOString().split('T')[0],
+      week_end_date: weekEnd.toISOString().split('T')[0],
+      is_checked_out: false,
+    })
+    .select()
+    .single();
+
+  if (weekError) throw new Error(weekError.message);
+
+  // Get items from original list's current week
+  const { data: originalWeek } = await supabase
+    .from('t10_weeks')
+    .select('id')
+    .eq('list_id', listId)
+    .eq('is_checked_out', false)
+    .order('week_start_date', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (originalWeek) {
+    const { data: originalItems } = await supabase
+      .from('t10_items')
+      .select('*')
+      .eq('week_id', originalWeek.id)
+      .order('rank', { ascending: true });
+
+    if (originalItems && originalItems.length > 0) {
+      const itemsToInsert = originalItems.map(item => ({
+        week_id: newWeek.id,
+        rank: item.rank,
+        title: item.title,
+        description: item.description,
+        taskhub_key: item.taskhub_key,
+        assignee_id: item.assignee_id,
+        due_date: item.due_date,
+        label: item.label,
+        status: 'todo' as const,
+        carryover_count: 0,
+        created_by: user.id,
+      }));
+
+      await supabase.from('t10_items').insert(itemsToInsert);
+    }
+  }
+
+  return newList.id;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════

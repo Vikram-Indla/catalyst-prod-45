@@ -18,9 +18,10 @@ interface T10SidePanelProps {
   onClose: () => void;
   onUpdate?: (itemId: string, updates: Partial<T10ItemWithAssignee>) => void;
   onDelete?: (itemId: string) => void;
+  isSaving?: boolean;
 }
 
-export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete }: T10SidePanelProps) {
+export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isSaving = false }: T10SidePanelProps) {
   const [activeTab, setActiveTab] = useState<TabType>('details');
 
   // Reset to details tab when a new item is selected
@@ -131,6 +132,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete }: T10S
             <T10PanelDetailsTab 
               item={item} 
               onUpdate={onUpdate}
+              isSaving={isSaving}
             />
           )}
           {activeTab === 'activity' && (
