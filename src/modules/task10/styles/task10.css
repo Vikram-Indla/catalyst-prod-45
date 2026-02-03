@@ -2822,3 +2822,117 @@
   margin-bottom: 24px !important;
   max-width: 360px !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RANK CHANGE BADGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-rank-change {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  padding: 2px 6px !important;
+  border-radius: var(--t10-radius-sm) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  margin-left: 8px !important;
+  animation: t10-rank-change-pop 0.3s ease-out !important;
+}
+
+.t10-module .t10-rank-change.up {
+  background: var(--t10-success-50) !important;
+  color: var(--t10-success) !important;
+}
+
+.t10-module .t10-rank-change.down {
+  background: var(--t10-danger-50) !important;
+  color: var(--t10-danger) !important;
+}
+
+.t10-module .t10-rank-change svg {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+@keyframes t10-rank-change-pop {
+  0% { 
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Fade out after display */
+.t10-module .t10-rank-change.fade-out {
+  animation: t10-rank-change-fade 0.5s ease-out forwards !important;
+}
+
+@keyframes t10-rank-change-fade {
+  to {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REORDER TOAST
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-reorder-toast {
+  position: fixed !important;
+  bottom: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 20px !important;
+  background: var(--t10-gray-900) !important;
+  color: white !important;
+  border-radius: var(--t10-radius-lg) !important;
+  box-shadow: var(--t10-shadow-xl) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  z-index: 1000 !important;
+  animation: t10-toast-slide-up 0.3s ease-out !important;
+}
+
+.t10-module .t10-reorder-toast svg {
+  width: 18px !important;
+  height: 18px !important;
+  color: var(--t10-success) !important;
+}
+
+@keyframes t10-toast-slide-up {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DROP ZONE INDICATOR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-module .t10-drop-indicator {
+  height: 4px !important;
+  background: var(--t10-blue) !important;
+  border-radius: 2px !important;
+  margin: 4px 0 !important;
+  animation: t10-pulse 1s infinite !important;
+}
+
+@keyframes t10-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
