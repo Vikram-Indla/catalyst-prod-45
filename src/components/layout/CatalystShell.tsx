@@ -10,6 +10,7 @@ import { ProjectSidebar } from './ProjectSidebar';
 import { ReleaseRoomSidebar } from './OperationsSidebar';
 import { TestManagementSidebar } from './TestManagementSidebar';
 import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
+import { PlanHubSidebar } from './PlanHubSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -74,6 +75,9 @@ function CatalystShellContent() {
   
   // Check if on test management route
   const isTestsRoute = location.pathname.startsWith('/tests');
+  
+  // Check if on PlanHub route
+  const isPlanHubRoute = location.pathname.startsWith('/planhub');
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
@@ -154,6 +158,16 @@ function CatalystShellContent() {
     if (isProductRoute && isModuleEnabled('PRODUCT')) {
       return (
         <ProductRoomSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
+    // PlanHub sidebar
+    if (isPlanHubRoute) {
+      return (
+        <PlanHubSidebar
           expanded={sidebarExpanded}
           onToggle={() => setSidebarExpanded(!sidebarExpanded)}
         />

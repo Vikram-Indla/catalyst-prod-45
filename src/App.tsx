@@ -56,7 +56,16 @@ import { EpicBalancingPage } from "./modules/epic-balancing";
 const UserNotificationSettingsPage = lazy(() => import("./pages/UserNotificationSettingsPage"));
 import { PlannerPage, KanbanPage, MyTasksPage } from "./modules/planner";
 // Task¹⁰ removed - module deleted for rebuild
-import PlanHubShell from "./components/planhub/PlanHubShell";
+// PlanHub pages
+import {
+  PlanLibraryPage,
+  PlanEditorPage,
+  ScenarioComparePage,
+  MasterPlanPage,
+  ResourcesPage as PlanHubResourcesPage,
+  AIAssistantPage as PlanHubAIPage,
+  ReportCenterPage as PlanHubReportsPage,
+} from "./pages/planhub";
 
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
@@ -479,7 +488,13 @@ const App = () => (
               {/* Task¹⁰ Priority Management - removed for rebuild */}
               
               {/* PlanHub Module */}
-              <Route path="/planhub" element={<PlanHubShell />} />
+              <Route path="/planhub" element={<PlanLibraryPage />} />
+              <Route path="/planhub/plan/:planId" element={<PlanEditorPage />} />
+              <Route path="/planhub/compare" element={<ScenarioComparePage />} />
+              <Route path="/planhub/master" element={<MasterPlanPage />} />
+              <Route path="/planhub/resources" element={<PlanHubResourcesPage />} />
+              <Route path="/planhub/ai" element={<PlanHubAIPage />} />
+              <Route path="/planhub/reports" element={<PlanHubReportsPage />} />
               
               {/* Mining */}
               <Route path="/mining" element={<MiningComingSoon />} />
