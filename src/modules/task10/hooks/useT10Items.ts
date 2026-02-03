@@ -74,6 +74,8 @@ export function useT10Items(weekId: string | undefined) {
       return (data || []).map(mapDbToT10Item);
     },
     enabled: !!weekId,
+    staleTime: 30 * 1000, // 30 seconds
+    refetchOnWindowFocus: false,
   });
 }
 

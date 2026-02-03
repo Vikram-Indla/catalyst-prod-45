@@ -1904,6 +1904,32 @@
   gap: 0 !important;
 }
 
+.t10-activity-loading,
+.t10-activity-error,
+.t10-activity-empty {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  padding: 40px 20px !important;
+  color: #9ca3af !important;
+  font-size: 14px !important;
+  text-align: center !important;
+}
+
+.t10-activity-loading svg {
+  color: #2563eb !important;
+}
+
+.t10-activity-error {
+  color: #dc2626 !important;
+}
+
+.t10-activity-error svg {
+  color: #dc2626 !important;
+}
+
 .t10-activity-item {
   display: flex !important;
   gap: 14px !important;
@@ -1948,6 +1974,11 @@
 .t10-activity-icon.assigned {
   background: #f0fdfa !important;
   color: #0d9488 !important;
+}
+
+.t10-activity-icon.carried {
+  background: #fff7ed !important;
+  color: #ea580c !important;
 }
 
 .t10-activity-content {
@@ -3157,4 +3188,105 @@
   text-align: center !important;
   color: #9ca3af !important;
   font-size: 13px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOADING SKELETONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-loading-skeleton {
+  padding: 20px !important;
+}
+
+.t10-skeleton-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px 20px !important;
+  margin-bottom: 16px !important;
+}
+
+.t10-skeleton-quickadd {
+  padding: 0 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.t10-skeleton-cards {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: 0 20px !important;
+}
+
+.t10-skeleton-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 16px !important;
+  background: #ffffff !important;
+  border-radius: 8px !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.t10-skeleton-card-content {
+  flex: 1 !important;
+}
+
+.t10-skeleton-line {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%) !important;
+  background-size: 200% 100% !important;
+  animation: t10-shimmer 1.5s infinite !important;
+  border-radius: 4px !important;
+}
+
+.t10-skeleton-circle {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%) !important;
+  background-size: 200% 100% !important;
+  animation: t10-shimmer 1.5s infinite !important;
+}
+
+@keyframes t10-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ERROR STATE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-error-state {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  padding: 60px 40px !important;
+  text-align: center !important;
+}
+
+.t10-error-icon {
+  font-size: 48px !important;
+}
+
+.t10-error-state h3 {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+  margin: 0 !important;
+}
+
+.t10-error-state p {
+  font-size: 14px !important;
+  color: #6b7280 !important;
+  margin: 0 !important;
+  max-width: 300px !important;
+}
+
+/* Enhanced empty state */
+.t10-empty-icon {
+  font-size: 48px !important;
+  margin-bottom: 8px !important;
 }

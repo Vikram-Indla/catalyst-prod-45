@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   X, Check, User, Calendar, Tag, FileText, Plus, CheckCircle, Edit, 
-  ArrowRight, UserPlus, Trash2, Save, RotateCcw, AlertCircle 
+  Trash2, Save
 } from 'lucide-react';
-import type { T10Item, T10Activity } from '../../types';
+import type { T10Item } from '../../types';
 import { getRelativeTime, getRankTier, formatShortDate } from '../../utils';
 import { T10AssigneePicker } from './T10AssigneePicker';
-import type { T10Profile } from '../../hooks/useProfiles';
+import { T10ActivityTimeline } from './T10ActivityTimeline';
 
 interface T10SidePanelProps {
   item: T10Item | null;
@@ -19,12 +19,6 @@ interface T10SidePanelProps {
 }
 
 const LABEL_OPTIONS = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'BLOCKED', 'NEEDS-REVIEW'];
-
-const mockActivity: T10Activity[] = [
-  { id: '1', item_id: '1', type: 'created', description: 'Created this priority', actor_name: 'Vikram I.', created_at: '2026-02-01T10:00:00Z' },
-  { id: '2', item_id: '1', type: 'ranked', description: 'Moved to rank #1', actor_name: 'Ibrahim A.', created_at: '2026-02-01T14:30:00Z' },
-  { id: '3', item_id: '1', type: 'assigned', description: 'Assigned to Vikram I.', actor_name: 'Maali A.', created_at: '2026-02-02T09:00:00Z' },
-];
 
 export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isReadOnly = false }: T10SidePanelProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'activity'>('details');
@@ -430,28 +424,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
               </div>
             </>
           ) : (
-            <div className="t10-activity-list">
-              {mockActivity.map((activity) => (
-                <div key={activity.id} className="t10-activity-item">
-                  <div className={`t10-activity-icon ${activity.type}`}>
-                    {activity.type === 'created' && <Plus size={16} />}
-                    {activity.type === 'completed' && <Check size={16} />}
-                    {activity.type === 'updated' && <Edit size={16} />}
-                    {activity.type === 'ranked' && <ArrowRight size={16} />}
-                    {activity.type === 'assigned' && <UserPlus size={16} />}
-                    {activity.type === 'carried' && <RotateCcw size={16} />}
-                  </div>
-                  <div className="t10-activity-content">
-                    <div className="t10-activity-text">
-                      <strong>{activity.actor_name}</strong> {activity.description}
-                    </div>
-                    <div className="t10-activity-meta">
-                      {getRelativeTime(activity.created_at)}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <T10ActivityTimeline itemId={item.id} />
           )}
         </div>
 

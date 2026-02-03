@@ -43,10 +43,12 @@ export function useT10Weeks(listId: string | undefined) {
         .eq('list_id', listId)
         .order('week_start_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       return (data || []).map(mapDbToT10Week);
     },
     enabled: !!listId,
+    staleTime: 60 * 1000, // 1 minute
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -67,10 +69,12 @@ export function useT10CurrentWeek(listId: string | undefined) {
         .limit(1)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       return data ? mapDbToT10Week(data) : null;
     },
     enabled: !!listId,
+    staleTime: 60 * 1000, // 1 minute
+    refetchOnWindowFocus: false,
   });
 }
 
