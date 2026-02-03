@@ -50,7 +50,7 @@ export interface T10CompletedItem {
   description: string | null;
   taskhub_key: string | null;
   due_date: string | null;
-  item_status: 'completed' | 'carried_forward' | 'dropped';
+  item_status: 'done' | 'todo' | 'completed' | 'carried_forward' | 'dropped';
   completed_at: string | null;
   carryover_count: number;
   is_buffer: boolean;
