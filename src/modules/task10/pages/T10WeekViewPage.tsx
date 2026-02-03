@@ -34,8 +34,7 @@ import {
   T10SidePanel,
   T10CheckoutModal,
 } from '../components';
-import '../styles/task10.scoped.css';
-import '../styles/task10-complete.css';
+// CSS is imported globally via index.css
 
 export function T10WeekViewPage() {
   const { listId } = useParams<{ listId: string }>();

@@ -19,8 +19,7 @@ import {
   T10DeleteListModal,
 } from '../components';
 import type { DropdownMenuItem, FilterState } from '../components';
-import '../styles/task10.scoped.css';
-import '../styles/task10-complete.css';
+// CSS is imported globally via index.css
 
 export function T10LandingPage() {
   const navigate = useNavigate();
