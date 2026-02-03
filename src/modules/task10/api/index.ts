@@ -44,3 +44,11 @@ export {
   dismissT10Suggestion,
   createT10Suggestion,
 } from './suggestions.api';
+
+// TaskHub Integration API
+export {
+  fetchTaskHubTasksForSuggestion,
+  generateT10SuggestionsFromTaskHub,
+  clearT10Suggestions,
+  type TaskHubTask,
+} from './taskhub-integration.api';

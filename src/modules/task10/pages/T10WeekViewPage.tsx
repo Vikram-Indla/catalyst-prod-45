@@ -16,6 +16,7 @@ import {
   useReorderT10Items,
   useAddT10SuggestionToWeek,
   useDismissT10Suggestion,
+  useGenerateT10Suggestions,
 } from '../hooks';
 import type { T10ItemWithAssignee } from '../types';
 import {
@@ -45,6 +46,7 @@ export function T10WeekViewPage() {
   const reorderItems = useReorderT10Items();
   const addSuggestion = useAddT10SuggestionToWeek();
   const dismissSuggestion = useDismissT10Suggestion();
+  const generateSuggestions = useGenerateT10Suggestions();
   
   // UI State
   const [selectedItem, setSelectedItem] = useState<T10ItemWithAssignee | null>(null);
@@ -107,6 +109,11 @@ export function T10WeekViewPage() {
   const handleDismissSuggestion = (suggestionId: string) => {
     if (!listId) return;
     dismissSuggestion.mutate({ suggestionId, listId });
+  };
+
+  const handleGenerateSuggestions = () => {
+    if (!listId || !week) return;
+    generateSuggestions.mutate({ listId, weekId: week.id, count: 5 });
   };
 
   const handleItemUpdate = (itemId: string, updates: Partial<T10ItemWithAssignee>) => {
@@ -183,6 +190,8 @@ export function T10WeekViewPage() {
             suggestions={suggestions}
             onAddSuggestion={handleAddSuggestion}
             onDismiss={handleDismissSuggestion}
+            onGenerateSuggestions={handleGenerateSuggestions}
+            isGenerating={generateSuggestions.isPending}
           />
           
           {/* Priority Items */}
