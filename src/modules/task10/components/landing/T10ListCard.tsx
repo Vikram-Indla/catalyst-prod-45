@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { MoreVertical, Clock, ChevronDown, Check } from 'lucide-react';
 import { format, startOfWeek } from 'date-fns';
 import type { T10ListWithStats } from '../../types';
+import { StatusBadge } from '../shared';
 
 interface WeekHistoryItem {
   id: string;
@@ -85,9 +86,7 @@ export function T10ListCard({ list, onClick, onMenuClick }: T10ListCardProps) {
           </div>
           {/* Right side: Status + Menu */}
           <div className="t10-list-card__actions">
-            <span className={`t10-status-badge t10-status-badge--${list.status}`}>
-              {getStatusLabel()}
-            </span>
+            <StatusBadge status={list.status} />
             <button 
               className="t10-menu-btn"
               onClick={(e) => {
@@ -167,3 +166,4 @@ export function T10ListCard({ list, onClick, onMenuClick }: T10ListCardProps) {
 }
 
 export default T10ListCard;
+

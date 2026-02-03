@@ -40,40 +40,52 @@ export function T10DropdownMenu({ items, position, onClose }: T10DropdownMenuPro
       if (e.key === 'Escape') onClose();
     };
 
+    // If the user scrolls, a fixed-position menu can look like a "bottom toolbar".
+    // Close it immediately to avoid a persistent floating action strip.
+    const handleScrollOrResize = () => onClose();
+
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    window.addEventListener('resize', handleScrollOrResize);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      window.removeEventListener('resize', handleScrollOrResize);
     };
   }, [onClose]);
 
   return (
-    <div
-      ref={menuRef}
-      className="t10-dropdown-menu"
-      style={{ top: position.y, left: position.x }}
-    >
-      {items.map((item) => {
-        const Icon = item.icon ? iconMap[item.icon] : null;
-        return (
-          <button
-            key={item.id}
-            className={`t10-dropdown-menu__item ${
-              item.variant === 'danger' ? 't10-dropdown-menu__item--danger' : ''
-            }`}
-            onClick={() => {
-              item.onClick();
-              onClose();
-            }}
-          >
-            {Icon && <Icon className="t10-dropdown-menu__icon" />}
-            {item.label}
-          </button>
-        );
-      })}
-    </div>
+    <>
+      <div className="t10-dropdown-menu__backdrop" onClick={onClose} />
+      <div
+        ref={menuRef}
+        className="t10-dropdown-menu"
+        style={{ top: position.y, left: position.x }}
+      >
+        {items.map((item) => {
+          const Icon = item.icon ? iconMap[item.icon] : null;
+          return (
+            <button
+              key={item.id}
+              className={`t10-dropdown-menu__item ${
+                item.variant === 'danger' ? 't10-dropdown-menu__item--danger' : ''
+              }`}
+              onClick={() => {
+                item.onClick();
+                onClose();
+              }}
+            >
+              {Icon && <Icon className="t10-dropdown-menu__icon" />}
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
 export default T10DropdownMenu;
+
