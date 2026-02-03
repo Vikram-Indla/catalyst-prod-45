@@ -1,6 +1,53 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// HOOK: useT10Items
+// Purpose: CRUD operations for Task¹⁰ items including drag-drop reordering
+// ═══════════════════════════════════════════════════════════════════════════════
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { T10Item } from '../types';
+import type {
+  T10Item,
+  T10ItemFull,
+  T10ItemCreateInput,
+  T10ItemUpdateInput,
+  T10ItemReorderInput,
+  T10ItemLabelsInput,
+  T10Label,
+} from '../types';
+import { t10WeekKeys } from './useT10Weeks';
+import { t10ListKeys } from './useT10Lists';
+
+// Query keys
+export const t10ItemKeys = {
+  all: ['t10-items'] as const,
+  byWeek: (weekId: string) => [...t10ItemKeys.all, 'week', weekId] as const,
+  item: (itemId: string) => [...t10ItemKeys.all, 'item', itemId] as const,
+  buffer: (weekId: string) => [...t10ItemKeys.all, 'buffer', weekId] as const,
+};
+
+// Helper to get initials from name
+function getInitials(name: string | null | undefined): string {
+  if (!name) return '';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
+// Helper to parse labels from JSON
+function parseLabels(labels: unknown): T10Label[] {
+  if (!labels) return [];
+  if (Array.isArray(labels)) return labels as T10Label[];
+  if (typeof labels === 'string') {
+    try {
+      return JSON.parse(labels) as T10Label[];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
 
 interface DbT10Item {
   id: string;
@@ -20,16 +67,8 @@ interface DbT10Item {
 }
 
 interface DbT10ItemWithProfile extends DbT10Item {
-  assignee?: { id: string; full_name: string | null } | null;
-}
-
-function getInitials(name: string | null | undefined): string {
-  if (!name) return '';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase();
+  assignee?: { id: string; full_name: string | null; avatar_url?: string | null } | null;
+  labels?: unknown;
 }
 
 function mapDbToT10Item(db: DbT10ItemWithProfile): T10Item {
@@ -48,16 +87,31 @@ function mapDbToT10Item(db: DbT10ItemWithProfile): T10Item {
     description: db.description || undefined,
     status: db.status as 'todo' | 'done',
     carryover_count: db.carryover_count,
+    is_buffer: db.is_buffer,
+    created_by: db.created_by,
     created_at: db.created_at,
     updated_at: db.updated_at,
   };
 }
 
-export function useT10Items(weekId: string | undefined) {
+function mapDbToT10ItemFull(db: DbT10ItemWithProfile): T10ItemFull {
+  const base = mapDbToT10Item(db);
+  return {
+    ...base,
+    assignee_avatar: db.assignee?.avatar_url || null,
+    labels: parseLabels(db.labels),
+  };
+}
+
+/**
+ * Fetch all items for a week (ranked 1-10, not buffer)
+ */
+export function useT10Items(weekId: string | undefined | null) {
   return useQuery({
-    queryKey: ['t10-items', weekId],
-    queryFn: async () => {
+    queryKey: t10ItemKeys.byWeek(weekId || ''),
+    queryFn: async (): Promise<T10Item[]> => {
       if (!weekId) return [];
+
       const { data, error } = await supabase
         .from('t10_items')
         .select('*')
@@ -65,7 +119,14 @@ export function useT10Items(weekId: string | undefined) {
         .order('rank', { ascending: true })
         .limit(100);
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching T10 items:', error);
+        throw new Error(error.message);
+      }
+
+      // Log for Stage D verification
+      console.log('[T10] Items fetched for week:', weekId, '| Count:', data?.length);
+
       return (data || []).map((row) => {
         const dbRow: DbT10ItemWithProfile = {
           id: row.id,
@@ -82,7 +143,7 @@ export function useT10Items(weekId: string | undefined) {
           created_by: row.created_by,
           created_at: row.created_at,
           updated_at: row.updated_at,
-          assignee: null, // Will fetch separately if needed
+          assignee: null,
         };
         return mapDbToT10Item(dbRow);
       });
@@ -93,6 +154,118 @@ export function useT10Items(weekId: string | undefined) {
   });
 }
 
+/**
+ * Fetch buffer items (ranked 11+)
+ */
+export function useT10BufferItems(weekId: string | null) {
+  return useQuery({
+    queryKey: t10ItemKeys.buffer(weekId || ''),
+    queryFn: async (): Promise<T10ItemFull[]> => {
+      if (!weekId) return [];
+
+      const { data, error } = await supabase
+        .from('t10_items_full')
+        .select('*')
+        .eq('week_id', weekId)
+        .eq('is_buffer', true)
+        .order('rank', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching buffer items:', error);
+        throw new Error(error.message);
+      }
+
+      console.log('[T10] Buffer items fetched:', data?.length);
+
+      return (data || []).map(item => ({
+        ...mapDbToT10Item(item as unknown as DbT10ItemWithProfile),
+        assignee_avatar: (item as unknown as DbT10ItemWithProfile).assignee?.avatar_url || null,
+        labels: parseLabels((item as unknown as DbT10ItemWithProfile).labels),
+      })) as T10ItemFull[];
+    },
+    enabled: !!weekId,
+  });
+}
+
+/**
+ * Fetch single item by ID
+ */
+export function useT10Item(itemId: string | null) {
+  return useQuery({
+    queryKey: t10ItemKeys.item(itemId || ''),
+    queryFn: async (): Promise<T10ItemFull | null> => {
+      if (!itemId) return null;
+
+      const { data, error } = await supabase
+        .from('t10_items_full')
+        .select('*')
+        .eq('id', itemId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching T10 item:', error);
+        throw new Error(error.message);
+      }
+
+      console.log('[T10] Item fetched:', data?.title);
+
+      return mapDbToT10ItemFull(data as unknown as DbT10ItemWithProfile);
+    },
+    enabled: !!itemId,
+  });
+}
+
+/**
+ * Create new item
+ */
+export function useT10CreateItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: T10ItemCreateInput): Promise<T10ItemFull> => {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { data, error } = await supabase
+        .from('t10_items')
+        .insert({
+          week_id: input.week_id,
+          rank: input.rank,
+          title: input.title,
+          description: input.description || null,
+          taskhub_key: input.taskhub_key || null,
+          assignee_id: input.assignee_id || null,
+          due_date: input.due_date || null,
+          is_buffer: input.is_buffer ?? false,
+          created_by: user?.id,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating T10 item:', error);
+        throw new Error(error.message);
+      }
+
+      console.log('[T10] Item created:', data.title);
+
+      // Fetch full item with labels
+      const { data: fullItem } = await supabase
+        .from('t10_items_full')
+        .select('*')
+        .eq('id', data.id)
+        .single();
+
+      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemWithProfile);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(data.week_id) });
+      queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
+      queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
+    },
+  });
+}
+
+// Alias for backward compatibility
 export function useCreateT10Item() {
   const queryClient = useQueryClient();
 
@@ -141,6 +314,49 @@ export function useCreateT10Item() {
   });
 }
 
+/**
+ * Update item
+ */
+export function useT10UpdateItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: T10ItemUpdateInput): Promise<T10ItemFull> => {
+      const { id, ...updates } = input;
+
+      const { data, error } = await supabase
+        .from('t10_items')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating T10 item:', error);
+        throw new Error(error.message);
+      }
+
+      console.log('[T10] Item updated:', data.title);
+
+      // Fetch full item
+      const { data: fullItem } = await supabase
+        .from('t10_items_full')
+        .select('*')
+        .eq('id', data.id)
+        .single();
+
+      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemWithProfile);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(data.week_id) });
+      queryClient.setQueryData(t10ItemKeys.item(data.id), data);
+      queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
+      queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
+    },
+  });
+}
+
+// Alias for backward compatibility
 export function useUpdateT10Item() {
   const queryClient = useQueryClient();
 
@@ -195,6 +411,174 @@ export function useUpdateT10Item() {
   });
 }
 
+/**
+ * Toggle item status (todo <-> done)
+ */
+export function useT10ToggleItemStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (item: T10ItemFull): Promise<T10ItemFull> => {
+      const newStatus = item.status === 'done' ? 'todo' : 'done';
+
+      const { data, error } = await supabase
+        .from('t10_items')
+        .update({ status: newStatus })
+        .eq('id', item.id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error toggling item status:', error);
+        throw new Error(error.message);
+      }
+
+      console.log('[T10] Item status toggled:', item.title, '->', newStatus);
+
+      const { data: fullItem } = await supabase
+        .from('t10_items_full')
+        .select('*')
+        .eq('id', data.id)
+        .single();
+
+      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemWithProfile);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(data.week_id) });
+      queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
+      queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
+    },
+  });
+}
+
+/**
+ * Reorder items (drag-drop)
+ * Uses optimistic updates for smooth UX
+ */
+export function useT10ReorderItems() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: T10ItemReorderInput): Promise<void> => {
+      const { week_id, item_id, new_rank } = input;
+
+      // Get current items
+      const { data: items, error: fetchError } = await supabase
+        .from('t10_items')
+        .select('id, rank')
+        .eq('week_id', week_id)
+        .eq('is_buffer', false)
+        .order('rank', { ascending: true });
+
+      if (fetchError) throw new Error(fetchError.message);
+
+      const currentItem = items?.find(i => i.id === item_id);
+      if (!currentItem) throw new Error('Item not found');
+
+      const old_rank = currentItem.rank;
+      if (old_rank === new_rank) return;
+
+      // Calculate new ranks for affected items
+      const updates: { id: string; rank: number }[] = [];
+
+      items?.forEach(item => {
+        if (item.id === item_id) {
+          updates.push({ id: item.id, rank: new_rank });
+        } else if (old_rank < new_rank) {
+          // Moving down: shift items between old and new up
+          if (item.rank > old_rank && item.rank <= new_rank) {
+            updates.push({ id: item.id, rank: item.rank - 1 });
+          }
+        } else {
+          // Moving up: shift items between new and old down
+          if (item.rank >= new_rank && item.rank < old_rank) {
+            updates.push({ id: item.id, rank: item.rank + 1 });
+          }
+        }
+      });
+
+      // Apply updates
+      for (const update of updates) {
+        const { error } = await supabase
+          .from('t10_items')
+          .update({ rank: update.rank })
+          .eq('id', update.id);
+
+        if (error) throw new Error(error.message);
+      }
+
+      console.log('[T10] Items reordered:', item_id, 'from', old_rank, 'to', new_rank);
+    },
+    onMutate: async (input) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: t10ItemKeys.byWeek(input.week_id) });
+
+      // Snapshot previous value
+      const previousItems = queryClient.getQueryData<T10ItemFull[]>(
+        t10ItemKeys.byWeek(input.week_id)
+      );
+
+      // Optimistically update
+      if (previousItems) {
+        const newItems = [...previousItems];
+        const itemIndex = newItems.findIndex(i => i.id === input.item_id);
+        if (itemIndex !== -1) {
+          const [item] = newItems.splice(itemIndex, 1);
+          newItems.splice(input.new_rank - 1, 0, item);
+          // Update ranks
+          newItems.forEach((item, index) => {
+            item.rank = index + 1;
+          });
+          queryClient.setQueryData(t10ItemKeys.byWeek(input.week_id), newItems);
+        }
+      }
+
+      return { previousItems };
+    },
+    onError: (err, input, context) => {
+      // Rollback on error
+      if (context?.previousItems) {
+        queryClient.setQueryData(
+          t10ItemKeys.byWeek(input.week_id),
+          context.previousItems
+        );
+      }
+    },
+    onSettled: (_, __, input) => {
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(input.week_id) });
+    },
+  });
+}
+
+/**
+ * Delete item
+ */
+export function useT10DeleteItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (item: T10ItemFull): Promise<void> => {
+      const { error } = await supabase
+        .from('t10_items')
+        .delete()
+        .eq('id', item.id);
+
+      if (error) {
+        console.error('Error deleting T10 item:', error);
+        throw new Error(error.message);
+      }
+
+      console.log('[T10] Item deleted:', item.title);
+    },
+    onSuccess: (_, item) => {
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(item.week_id) });
+      queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
+      queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
+    },
+  });
+}
+
+// Alias for backward compatibility
 export function useDeleteT10Item() {
   const queryClient = useQueryClient();
 
@@ -214,6 +598,9 @@ export function useDeleteT10Item() {
   });
 }
 
+/**
+ * Bulk update items
+ */
 export function useBulkUpdateT10Items() {
   const queryClient = useQueryClient();
 
@@ -247,6 +634,9 @@ export function useBulkUpdateT10Items() {
   });
 }
 
+/**
+ * Carryover items to new week
+ */
 export function useCarryoverT10Items() {
   const queryClient = useQueryClient();
 
@@ -290,6 +680,48 @@ export function useCarryoverT10Items() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['t10-items', variables.targetWeekId] });
+    },
+  });
+}
+
+/**
+ * Update item labels
+ */
+export function useT10UpdateItemLabels() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: T10ItemLabelsInput): Promise<void> => {
+      const { item_id, label_ids } = input;
+
+      // Delete existing labels
+      await supabase
+        .from('t10_item_labels')
+        .delete()
+        .eq('item_id', item_id);
+
+      // Insert new labels
+      if (label_ids.length > 0) {
+        const { error } = await supabase
+          .from('t10_item_labels')
+          .insert(
+            label_ids.map(label_id => ({
+              item_id,
+              label_id,
+            }))
+          );
+
+        if (error) {
+          console.error('Error updating item labels:', error);
+          throw new Error(error.message);
+        }
+      }
+
+      console.log('[T10] Item labels updated:', item_id, label_ids.length, 'labels');
+    },
+    onSuccess: (_, input) => {
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.item(input.item_id) });
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.all });
     },
   });
 }
