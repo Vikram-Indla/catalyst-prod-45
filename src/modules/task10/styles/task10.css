@@ -2984,3 +2984,177 @@
 .t10-module .t10-buffer-list {
   min-height: 60px !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ASSIGNEE PICKER DROPDOWN
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.t10-assignee-dropdown {
+  width: 320px !important;
+  max-height: 400px !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden !important;
+}
+
+.t10-assignee-search {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 12px !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  background: #fafafa !important;
+}
+
+.t10-assignee-search svg {
+  color: #9ca3af !important;
+  flex-shrink: 0 !important;
+}
+
+.t10-assignee-search input {
+  flex: 1 !important;
+  border: none !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  color: #111827 !important;
+  outline: none !important;
+}
+
+.t10-assignee-search input::placeholder {
+  color: #9ca3af !important;
+}
+
+.t10-assignee-search-clear {
+  padding: 4px !important;
+  border: none !important;
+  background: #e5e7eb !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #6b7280 !important;
+}
+
+.t10-assignee-search-clear:hover {
+  background: #d1d5db !important;
+}
+
+.t10-assignee-options {
+  max-height: 320px !important;
+  overflow-y: auto !important;
+  padding: 8px !important;
+}
+
+.t10-assignee-option {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  padding: 10px 12px !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  transition: background 0.15s !important;
+}
+
+.t10-assignee-option:hover {
+  background: #f3f4f6 !important;
+}
+
+.t10-assignee-option.selected {
+  background: #eff6ff !important;
+}
+
+.t10-assignee-option.unassign {
+  color: #dc2626 !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  border-radius: 8px 8px 0 0 !important;
+  margin-bottom: 4px !important;
+}
+
+.t10-assignee-option.unassign:hover {
+  background: #fef2f2 !important;
+}
+
+.t10-assignee-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+
+.t10-assignee-avatar.empty {
+  background: #e5e7eb !important;
+  color: #6b7280 !important;
+}
+
+.t10-assignee-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.t10-assignee-info {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.t10-assignee-name {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #111827 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.t10-assignee-email {
+  font-size: 12px !important;
+  color: #6b7280 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.t10-assignee-check {
+  color: #2563eb !important;
+  flex-shrink: 0 !important;
+}
+
+.t10-assignee-action {
+  color: #dc2626 !important;
+  flex-shrink: 0 !important;
+}
+
+.t10-assignee-loading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 24px !important;
+  color: #6b7280 !important;
+  font-size: 13px !important;
+}
+
+.t10-assignee-empty {
+  padding: 24px !important;
+  text-align: center !important;
+  color: #9ca3af !important;
+  font-size: 13px !important;
+}

@@ -22,7 +22,21 @@ interface DbT10Item {
   completed_at: string | null;
 }
 
-function mapDbToT10Item(db: DbT10Item): T10Item {
+interface DbT10ItemWithProfile extends DbT10Item {
+  assignee?: { id: string; full_name: string | null } | null;
+}
+
+function getInitials(name: string | null | undefined): string {
+  if (!name) return '';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
+function mapDbToT10Item(db: DbT10ItemWithProfile): T10Item {
+  const assigneeName = db.assignee?.full_name || undefined;
   return {
     id: db.id,
     week_id: db.week_id,
@@ -30,8 +44,8 @@ function mapDbToT10Item(db: DbT10Item): T10Item {
     title: db.title,
     taskhub_key: db.taskhub_key || undefined,
     assignee_id: db.assignee_id || undefined,
-    assignee_name: undefined, // Will be populated from profile join
-    assignee_initials: undefined,
+    assignee_name: assigneeName,
+    assignee_initials: getInitials(assigneeName),
     due_date: db.due_date || undefined,
     label: db.label || undefined,
     description: db.description || undefined,
@@ -49,11 +63,14 @@ export function useT10Items(weekId: string | undefined) {
       if (!weekId) return [];
       const { data, error } = await supabase
         .from('t10_items')
-        .select('*')
+        .select(`
+          *,
+          assignee:profiles!t10_items_assignee_id_fkey(id, full_name)
+        `)
         .eq('week_id', weekId)
         .order('rank', { ascending: true });
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       return (data || []).map(mapDbToT10Item);
     },
     enabled: !!weekId,
