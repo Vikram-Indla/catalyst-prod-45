@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom';
 import { 
   X, Check, User, Calendar, Tag, FileText, Plus, Clock, 
   Trash2, ChevronDown, Search, Loader2, ExternalLink,
-  Copy, MoreHorizontal, ArrowRight, UserPlus, Edit3,
-  CheckCircle2
+  Copy, MoreHorizontal, Archive, Flag
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useT10Users } from '../../hooks/useT10Users';
 import { useT10Labels, useCreateT10Label } from '../../hooks/useT10Labels';
 import { T10ActivityTimeline } from './T10ActivityTimeline';
@@ -22,8 +22,31 @@ interface T10EnterpriseSidePanelProps {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// LABEL COLOR PRESETS
+// CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════
+const COLORS = {
+  white: '#ffffff',
+  gray50: '#f8fafc',
+  gray100: '#f1f5f9',
+  gray200: '#e2e8f0',
+  gray300: '#cbd5e1',
+  gray400: '#94a3b8',
+  gray500: '#64748b',
+  gray600: '#475569',
+  gray700: '#334155',
+  gray800: '#1e293b',
+  gray900: '#0f172a',
+  blue: '#3b82f6',
+  blue50: '#eff6ff',
+  blueDark: '#1d4ed8',
+  teal: '#0d9488',
+  teal50: '#f0fdfa',
+  green: '#22c55e',
+  green50: '#f0fdf4',
+  red: '#ef4444',
+  red50: '#fef2f2',
+};
+
 const LABEL_COLORS = [
   { name: 'Red', value: '#ef4444' },
   { name: 'Orange', value: '#f97316' },
@@ -55,10 +78,10 @@ export function T10EnterpriseSidePanel({
   // ═══════════════════════════════════════════════════════════════════════════
   const [activeTab, setActiveTab] = useState<'details' | 'activity'>('details');
   const [description, setDescription] = useState('');
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [editedTitle, setEditedTitle] = useState('');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   
   // Dropdown states
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [assigneeDropdownOpen, setAssigneeDropdownOpen] = useState(false);
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [labelDropdownOpen, setLabelDropdownOpen] = useState(false);
@@ -70,7 +93,7 @@ export function T10EnterpriseSidePanel({
   const [editDate, setEditDate] = useState('');
   
   // Refs
-  const panelRef = useRef<HTMLDivElement>(null);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
   const assigneeInputRef = useRef<HTMLInputElement>(null);
   const labelInputRef = useRef<HTMLInputElement>(null);
   const descriptionTimeoutRef = useRef<NodeJS.Timeout>();
@@ -88,17 +111,17 @@ export function T10EnterpriseSidePanel({
   useEffect(() => {
     if (item) {
       setDescription(item.description || '');
-      setEditedTitle(item.title);
       setEditDate(item.due_date || '');
+      setSaveStatus('idle');
     }
   }, [item?.id]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (assigneeDropdownOpen) setAssigneeDropdownOpen(false);
+        if (moreMenuOpen) setMoreMenuOpen(false);
+        else if (assigneeDropdownOpen) setAssigneeDropdownOpen(false);
         else if (labelDropdownOpen) setLabelDropdownOpen(false);
-        else if (isEditingTitle) setIsEditingTitle(false);
         else if (datePickerOpen) setDatePickerOpen(false);
         else onClose();
       }
@@ -112,7 +135,18 @@ export function T10EnterpriseSidePanel({
         document.body.style.overflow = '';
       };
     }
-  }, [isOpen, assigneeDropdownOpen, labelDropdownOpen, isEditingTitle, datePickerOpen, onClose]);
+  }, [isOpen, moreMenuOpen, assigneeDropdownOpen, labelDropdownOpen, datePickerOpen, onClose]);
+
+  // Click outside for more menu
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Focus input when dropdown opens
   useEffect(() => {
@@ -127,8 +161,60 @@ export function T10EnterpriseSidePanel({
     }
   }, [labelDropdownOpen]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (descriptionTimeoutRef.current) {
+        clearTimeout(descriptionTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // ═══════════════════════════════════════════════════════════════════════════
-  // HANDLERS
+  // CTA HANDLERS
+  // ═══════════════════════════════════════════════════════════════════════════
+  const handleOpenInTaskHub = () => {
+    if (item?.taskhub_key) {
+      // Open TaskHub task detail page
+      const taskHubUrl = `/taskhub/tasks?key=${item.taskhub_key}`;
+      window.open(taskHubUrl, '_blank');
+      toast.success('Opening in TaskHub...');
+    } else {
+      toast.info('No TaskHub key linked to this item');
+    }
+  };
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/taskhub/task10/item/${item?.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard');
+    setMoreMenuOpen(false);
+  };
+
+  const handleCopyTaskKey = () => {
+    if (item?.taskhub_key) {
+      navigator.clipboard.writeText(item.taskhub_key);
+      toast.success(`Copied ${item.taskhub_key}`);
+    }
+  };
+
+  const handleDuplicate = () => {
+    toast.info('Duplicate functionality coming soon');
+    setMoreMenuOpen(false);
+  };
+
+  const handleArchive = () => {
+    toast.info('Archive functionality coming soon');
+    setMoreMenuOpen(false);
+  };
+
+  const handleSetPriority = () => {
+    toast.info('Priority settings coming soon');
+    setMoreMenuOpen(false);
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FIELD HANDLERS
   // ═══════════════════════════════════════════════════════════════════════════
   const handleAssigneeSelect = (user: T10User) => {
     onUpdate({ 
@@ -138,10 +224,12 @@ export function T10EnterpriseSidePanel({
     });
     setAssigneeDropdownOpen(false);
     setAssigneeSearch('');
+    toast.success(`Assigned to ${user.full_name}`);
   };
 
   const handleRemoveAssignee = () => {
     onUpdate({ assignee_id: undefined, assignee_name: undefined, assignee_initials: undefined });
+    toast.success('Assignee removed');
   };
 
   // Get current label object from labels array
@@ -153,7 +241,6 @@ export function T10EnterpriseSidePanel({
   const handleLabelSelect = (label: T10Label) => {
     const currentLabel = getCurrentLabel();
     if (currentLabel?.id === label.id) {
-      // Toggle off
       onUpdate({ label: undefined });
     } else {
       onUpdate({ label: label.name });
@@ -175,35 +262,44 @@ export function T10EnterpriseSidePanel({
         color: newLabelColor
       });
       
-      // Auto-add to item
       onUpdate({ label: newLabel.name });
-      
       setNewLabelName('');
       setShowCreateLabel(false);
       setLabelDropdownOpen(false);
+      toast.success(`Label "${newLabel.name}" created`);
     } catch (error) {
+      toast.error('Failed to create label');
       console.error('Failed to create label:', error);
     }
   };
 
-  const handleTitleSave = () => {
-    if (editedTitle.trim() && editedTitle !== item?.title) {
-      onUpdate({ title: editedTitle.trim() });
-    }
-    setIsEditingTitle(false);
-  };
-
+  // AUTO-SAVE for description with visual feedback
   const handleDescriptionChange = useCallback((value: string) => {
     setDescription(value);
+    setSaveStatus('saving');
     
     if (descriptionTimeoutRef.current) {
       clearTimeout(descriptionTimeoutRef.current);
     }
     
-    descriptionTimeoutRef.current = setTimeout(() => {
-      onUpdate({ description: value });
+    descriptionTimeoutRef.current = setTimeout(async () => {
+      try {
+        await onUpdate({ description: value });
+        setSaveStatus('saved');
+        // Reset to idle after 2 seconds
+        setTimeout(() => setSaveStatus('idle'), 2000);
+      } catch (error) {
+        setSaveStatus('idle');
+        toast.error('Failed to save description');
+      }
     }, 800);
   }, [onUpdate]);
+
+  const handleStatusToggle = () => {
+    const newStatus = item?.status === 'done' ? 'todo' : 'done';
+    onUpdate({ status: newStatus });
+    toast.success(newStatus === 'done' ? 'Marked as completed' : 'Marked as incomplete');
+  };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
@@ -218,20 +314,14 @@ export function T10EnterpriseSidePanel({
     setDatePickerOpen(false);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-
   // ═══════════════════════════════════════════════════════════════════════════
-  // RENDER HELPERS
+  // RENDER
   // ═══════════════════════════════════════════════════════════════════════════
   if (!isOpen || !item) return null;
 
   const isCompleted = item.status === 'done';
   const rankTier = getRankTier(item.rank);
   const currentLabel = getCurrentLabel();
-
-  // Filter labels based on search
   const filteredLabels = labels.filter(label =>
     label.name.toLowerCase().includes(labelSearch.toLowerCase())
   );
@@ -246,11 +336,10 @@ export function T10EnterpriseSidePanel({
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          background: 'rgba(15, 23, 42, 0.5)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
           zIndex: 9998,
-          transition: 'opacity 0.2s ease',
         }}
       />
 
@@ -258,7 +347,6 @@ export function T10EnterpriseSidePanel({
           PANEL
       ═══════════════════════════════════════════════════════════════════ */}
       <div
-        ref={panelRef}
         style={{
           position: 'fixed',
           right: 0,
@@ -266,8 +354,8 @@ export function T10EnterpriseSidePanel({
           height: '100vh',
           width: '480px',
           maxWidth: '100vw',
-          background: '#ffffff',
-          boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.12), -2px 0 8px rgba(0, 0, 0, 0.08)',
+          background: COLORS.white,
+          boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.12)',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
@@ -275,20 +363,20 @@ export function T10EnterpriseSidePanel({
         }}
       >
         {/* ═══════════════════════════════════════════════════════════════════
-            HEADER
+            HEADER (with gradient)
         ═══════════════════════════════════════════════════════════════════ */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '16px 24px',
-            background: 'linear-gradient(to bottom, #f8fafc, #f1f5f9)',
-            borderBottom: '1px solid #e2e8f0',
+            padding: '16px 20px',
+            background: `linear-gradient(to bottom, ${COLORS.gray50}, ${COLORS.white})`,
+            borderBottom: `1px solid ${COLORS.gray200}`,
             flexShrink: 0,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {/* Rank Badge */}
             <div
               style={{
@@ -301,13 +389,13 @@ export function T10EnterpriseSidePanel({
                 fontSize: '16px',
                 fontWeight: 800,
                 background: rankTier === 'top' 
-                  ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+                  ? `linear-gradient(135deg, ${COLORS.blue} 0%, ${COLORS.blueDark} 100%)`
                   : rankTier === 'mid'
-                    ? 'linear-gradient(135deg, #64748b 0%, #475569 100%)'
+                    ? COLORS.gray500
                     : 'transparent',
-                border: rankTier === 'buffer' ? '2px dashed #cbd5e1' : 'none',
-                color: rankTier === 'buffer' ? '#94a3b8' : 'white',
-                boxShadow: rankTier !== 'buffer' ? '0 2px 8px rgba(0, 0, 0, 0.15)' : 'none',
+                border: rankTier === 'buffer' ? `2px dashed ${COLORS.gray300}` : 'none',
+                color: rankTier === 'buffer' ? COLORS.gray400 : 'white',
+                boxShadow: rankTier === 'top' ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
               }}
             >
               {item.rank}
@@ -316,17 +404,16 @@ export function T10EnterpriseSidePanel({
             <div>
               <div style={{ 
                 fontSize: '11px', 
-                fontWeight: 600, 
-                color: '#64748b',
+                fontWeight: 700, 
+                color: COLORS.gray500,
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
-                marginBottom: '2px'
               }}>
-                Task<sup style={{ fontSize: '8px' }}>10</sup> Priority
+                TASK<sup style={{ fontSize: '8px' }}>10</sup> PRIORITY
               </div>
               {item.taskhub_key && (
                 <button
-                  onClick={() => copyToClipboard(item.taskhub_key!)}
+                  onClick={handleCopyTaskKey}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -338,7 +425,7 @@ export function T10EnterpriseSidePanel({
                     fontFamily: "'SF Mono', Monaco, monospace",
                     fontSize: '13px',
                     fontWeight: 600,
-                    color: '#0d9488',
+                    color: COLORS.teal,
                   }}
                   title="Click to copy"
                 >
@@ -349,55 +436,17 @@ export function T10EnterpriseSidePanel({
             </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Right side: CTAs */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {/* Open in TaskHub */}
             <button
+              onClick={handleOpenInTaskHub}
               style={{
                 width: '32px',
                 height: '32px',
                 border: 'none',
                 background: 'transparent',
-                color: '#64748b',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '6px',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              title="Open in TaskHub"
-            >
-              <ExternalLink size={18} />
-            </button>
-            <button
-              style={{
-                width: '32px',
-                height: '32px',
-                border: 'none',
-                background: 'transparent',
-                color: '#64748b',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '6px',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              title="More actions"
-            >
-              <MoreHorizontal size={18} />
-            </button>
-            <button
-              onClick={onClose}
-              style={{
-                width: '32px',
-                height: '32px',
-                border: 'none',
-                background: 'transparent',
-                color: '#64748b',
+                color: COLORS.gray500,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -406,12 +455,102 @@ export function T10EnterpriseSidePanel({
                 transition: 'all 0.15s',
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = '#fee2e2';
-                e.currentTarget.style.color = '#dc2626';
+                e.currentTarget.style.background = COLORS.gray100;
+                e.currentTarget.style.color = COLORS.gray700;
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = '#64748b';
+                e.currentTarget.style.color = COLORS.gray500;
+              }}
+              title="Open in TaskHub"
+            >
+              <ExternalLink size={18} />
+            </button>
+
+            {/* More Menu */}
+            <div ref={moreMenuRef} style={{ position: 'relative' }}>
+              <button
+                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  border: 'none',
+                  background: moreMenuOpen ? COLORS.gray100 : 'transparent',
+                  color: COLORS.gray500,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '6px',
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => {
+                  if (!moreMenuOpen) {
+                    e.currentTarget.style.background = COLORS.gray100;
+                    e.currentTarget.style.color = COLORS.gray700;
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!moreMenuOpen) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = COLORS.gray500;
+                  }
+                }}
+                title="More actions"
+              >
+                <MoreHorizontal size={18} />
+              </button>
+
+              {/* More Menu Dropdown */}
+              {moreMenuOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    marginTop: '4px',
+                    width: '200px',
+                    background: COLORS.white,
+                    border: `1px solid ${COLORS.gray200}`,
+                    borderRadius: '10px',
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+                    zIndex: 100,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <MoreMenuItem icon={<Copy size={16} />} label="Copy link" onClick={handleCopyLink} />
+                  <MoreMenuItem icon={<Copy size={16} />} label="Duplicate" onClick={handleDuplicate} />
+                  <MoreMenuItem icon={<Archive size={16} />} label="Archive" onClick={handleArchive} />
+                  <MoreMenuItem icon={<Flag size={16} />} label="Set priority" onClick={handleSetPriority} />
+                  <div style={{ height: '1px', background: COLORS.gray100, margin: '4px 0' }} />
+                  <MoreMenuItem icon={<ExternalLink size={16} />} label="Open in TaskHub" onClick={handleOpenInTaskHub} />
+                </div>
+              )}
+            </div>
+            
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              style={{
+                width: '32px',
+                height: '32px',
+                border: 'none',
+                background: 'transparent',
+                color: COLORS.gray500,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '6px',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = COLORS.red50;
+                e.currentTarget.style.color = COLORS.red;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = COLORS.gray500;
               }}
               title="Close (Esc)"
             >
@@ -421,80 +560,47 @@ export function T10EnterpriseSidePanel({
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            TITLE (Inline Editable)
+            TITLE (NO edit icon - removed per spec)
         ═══════════════════════════════════════════════════════════════════ */}
-        <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid #f1f5f9' }}>
-          {isEditingTitle && !isReadOnly ? (
-            <input
-              type="text"
-              value={editedTitle}
-              onChange={e => setEditedTitle(e.target.value)}
-              onBlur={handleTitleSave}
-              onKeyDown={e => {
-                if (e.key === 'Enter') handleTitleSave();
-                if (e.key === 'Escape') {
-                  setEditedTitle(item.title);
-                  setIsEditingTitle(false);
-                }
-              }}
-              autoFocus
-              style={{
-                width: '100%',
-                fontSize: '18px',
-                fontWeight: 600,
-                color: '#0f172a',
-                border: '2px solid #3b82f6',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                outline: 'none',
-                background: '#eff6ff',
-              }}
-            />
-          ) : (
-            <h2
-              onClick={() => !isReadOnly && setIsEditingTitle(true)}
-              style={{
-                margin: 0,
-                fontSize: '18px',
-                fontWeight: 600,
-                color: '#0f172a',
-                lineHeight: 1.4,
-                cursor: isReadOnly ? 'default' : 'pointer',
-                padding: '8px 12px',
-                marginLeft: '-12px',
-                borderRadius: '8px',
-                transition: 'background 0.15s',
-              }}
-              onMouseEnter={e => !isReadOnly && (e.currentTarget.style.background = '#f8fafc')}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              title={isReadOnly ? undefined : "Click to edit"}
-            >
-              {item.title}
-              {!isReadOnly && <Edit3 size={14} style={{ marginLeft: '8px', opacity: 0.3, verticalAlign: 'middle' }} />}
-            </h2>
-          )}
+        <div style={{ 
+          padding: '20px 20px 16px', 
+          borderBottom: `1px solid ${COLORS.gray100}` 
+        }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: '18px',
+              fontWeight: 600,
+              color: COLORS.gray900,
+              lineHeight: 1.4,
+            }}
+          >
+            {item.title}
+          </h2>
+          {/* NO EDIT ICON - Removed per critique */}
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
             TABS
         ═══════════════════════════════════════════════════════════════════ */}
-        <div style={{ 
-          display: 'flex', 
-          borderBottom: '1px solid #e2e8f0',
-          padding: '0 24px',
+        <div style={{
+          display: 'flex',
+          borderBottom: `1px solid ${COLORS.gray200}`,
+          padding: '0 20px',
+          flexShrink: 0,
         }}>
-          {['details', 'activity'].map(tab => (
+          {(['details', 'activity'] as const).map(tab => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab as 'details' | 'activity')}
+              onClick={() => setActiveTab(tab)}
               style={{
                 padding: '12px 16px',
-                fontSize: '13px',
+                fontSize: '14px',
                 fontWeight: 600,
-                color: activeTab === tab ? '#3b82f6' : '#64748b',
+                color: activeTab === tab ? COLORS.blue : COLORS.gray500,
                 background: 'none',
                 border: 'none',
-                borderBottom: activeTab === tab ? '2px solid #3b82f6' : '2px solid transparent',
+                borderBottom: `2px solid ${activeTab === tab ? COLORS.blue : 'transparent'}`,
                 cursor: 'pointer',
                 transition: 'all 0.15s',
                 textTransform: 'capitalize',
@@ -508,50 +614,42 @@ export function T10EnterpriseSidePanel({
         {/* ═══════════════════════════════════════════════════════════════════
             CONTENT
         ═══════════════════════════════════════════════════════════════════ */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
           {activeTab === 'details' ? (
             <>
-              {/* ═══════════════════════════════════════════════════════════
-                  STATUS
-              ═══════════════════════════════════════════════════════════ */}
-              <div style={{ marginBottom: '24px' }}>
+              {/* STATUS */}
+              <FieldSection>
                 <FieldLabel icon={<Clock size={14} />} label="Status" />
                 <button
-                  onClick={() => !isReadOnly && onUpdate({ status: isCompleted ? 'todo' : 'done' })}
+                  onClick={() => !isReadOnly && handleStatusToggle()}
                   disabled={isReadOnly}
                   style={{
                     width: '100%',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    padding: '12px 14px',
-                    background: isCompleted ? '#f0fdf4' : '#f8fafc',
-                    border: isCompleted ? '1px solid #86efac' : '1px solid #e2e8f0',
+                    padding: '14px',
+                    background: isCompleted ? COLORS.green50 : COLORS.gray50,
+                    border: `1px solid ${isCompleted ? '#86efac' : COLORS.gray200}`,
                     borderRadius: '10px',
                     cursor: isReadOnly ? 'default' : 'pointer',
                     transition: 'all 0.15s',
                     textAlign: 'left',
                     opacity: isReadOnly ? 0.7 : 1,
                   }}
-                  onMouseEnter={e => {
-                    if (!isCompleted && !isReadOnly) e.currentTarget.style.borderColor = '#22c55e';
-                  }}
-                  onMouseLeave={e => {
-                    if (!isCompleted && !isReadOnly) e.currentTarget.style.borderColor = '#e2e8f0';
-                  }}
                 >
-                  {/* Checkbox Circle - CRITICAL FIX */}
+                  {/* Circle Checkbox - 26x26px */}
                   <div
                     style={{
                       width: '26px',
                       height: '26px',
                       borderRadius: '50%',
-                      border: isCompleted ? 'none' : '2px solid #cbd5e1',
-                      background: isCompleted ? '#22c55e' : 'white',
+                      border: isCompleted ? 'none' : `2px solid ${COLORS.gray300}`,
+                      background: isCompleted ? COLORS.green : COLORS.white,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      transition: 'all 0.2s',
+                      transition: 'all 0.15s',
                       flexShrink: 0,
                     }}
                   >
@@ -560,651 +658,429 @@ export function T10EnterpriseSidePanel({
                   <span style={{
                     fontSize: '14px',
                     fontWeight: isCompleted ? 600 : 400,
-                    color: isCompleted ? '#16a34a' : '#475569',
+                    color: isCompleted ? COLORS.green : COLORS.gray600,
                   }}>
                     {isCompleted ? 'Completed' : 'Mark as completed'}
                   </span>
-                  {isCompleted && (
-                    <CheckCircle2 size={16} color="#22c55e" style={{ marginLeft: 'auto' }} />
-                  )}
                 </button>
-              </div>
+              </FieldSection>
 
-              {/* ═══════════════════════════════════════════════════════════
-                  ASSIGNEE (With User Search from Database)
-              ═══════════════════════════════════════════════════════════ */}
-              <div style={{ marginBottom: '24px', position: 'relative' }}>
+              {/* ASSIGNEE */}
+              <FieldSection>
                 <FieldLabel icon={<User size={14} />} label="Assigned To" />
-                <button
-                  onClick={() => !isReadOnly && setAssigneeDropdownOpen(!assigneeDropdownOpen)}
-                  disabled={isReadOnly}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '12px 14px',
-                    background: '#f8fafc',
-                    border: assigneeDropdownOpen ? '1px solid #3b82f6' : '1px solid #e2e8f0',
-                    borderRadius: '10px',
-                    cursor: isReadOnly ? 'default' : 'pointer',
-                    transition: 'all 0.15s',
-                    textAlign: 'left',
-                    opacity: isReadOnly ? 0.7 : 1,
-                  }}
-                  onMouseEnter={e => !assigneeDropdownOpen && !isReadOnly && (e.currentTarget.style.borderColor = '#94a3b8')}
-                  onMouseLeave={e => !assigneeDropdownOpen && !isReadOnly && (e.currentTarget.style.borderColor = '#e2e8f0')}
-                >
-                  {item.assignee_name ? (
-                    <>
-                      <Avatar initials={item.assignee_initials || 'U'} size={28} />
-                      <span style={{ flex: 1, fontSize: '14px', color: '#1e293b' }}>
-                        {item.assignee_name}
-                      </span>
-                      {!isReadOnly && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveAssignee();
-                          }}
-                          style={{
-                            width: '20px',
-                            height: '20px',
-                            border: 'none',
-                            background: 'transparent',
-                            color: '#94a3b8',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: '4px',
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                          onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
-                        >
-                          <X size={14} />
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <div style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '50%',
-                        border: '2px dashed #cbd5e1',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#94a3b8',
-                      }}>
-                        <Plus size={14} />
-                      </div>
-                      <span style={{ fontSize: '14px', color: '#94a3b8' }}>
-                        Add assignee
-                      </span>
-                    </>
-                  )}
-                  <ChevronDown 
-                    size={16} 
-                    color="#94a3b8"
-                    style={{ 
-                      marginLeft: 'auto',
-                      transform: assigneeDropdownOpen ? 'rotate(180deg)' : 'none',
-                      transition: 'transform 0.2s'
-                    }} 
-                  />
-                </button>
-
-                {/* Assignee Dropdown */}
-                {assigneeDropdownOpen && !isReadOnly && (
-                  <div
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => !isReadOnly && setAssigneeDropdownOpen(!assigneeDropdownOpen)}
+                    disabled={isReadOnly}
                     style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      right: 0,
-                      marginTop: '4px',
-                      background: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
-                      zIndex: 100,
-                      overflow: 'hidden',
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '12px 14px',
+                      background: COLORS.gray50,
+                      border: `1px solid ${assigneeDropdownOpen ? COLORS.blue : COLORS.gray200}`,
+                      borderRadius: '10px',
+                      cursor: isReadOnly ? 'default' : 'pointer',
+                      transition: 'all 0.15s',
+                      textAlign: 'left',
+                      opacity: isReadOnly ? 0.7 : 1,
                     }}
                   >
-                    {/* Search Input */}
-                    <div style={{ padding: '12px', borderBottom: '1px solid #f1f5f9' }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '8px 12px',
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                      }}>
-                        <Search size={16} color="#94a3b8" />
-                        <input
-                          ref={assigneeInputRef}
-                          type="text"
-                          value={assigneeSearch}
-                          onChange={e => setAssigneeSearch(e.target.value)}
-                          placeholder="Search by name or email..."
-                          style={{
-                            flex: 1,
-                            border: 'none',
-                            background: 'transparent',
-                            fontSize: '14px',
-                            color: '#1e293b',
-                            outline: 'none',
-                          }}
-                        />
-                        {assigneeSearch && (
+                    {item.assignee_name ? (
+                      <>
+                        <Avatar initials={item.assignee_initials || 'U'} size={28} />
+                        <span style={{ flex: 1, fontSize: '14px', color: COLORS.gray800 }}>
+                          {item.assignee_name}
+                        </span>
+                        {!isReadOnly && (
                           <button
-                            onClick={() => setAssigneeSearch('')}
+                            onClick={(e) => { e.stopPropagation(); handleRemoveAssignee(); }}
                             style={{
+                              width: '20px',
+                              height: '20px',
                               border: 'none',
                               background: 'transparent',
+                              color: COLORS.gray400,
                               cursor: 'pointer',
-                              color: '#94a3b8',
                               display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '4px',
                             }}
                           >
                             <X size={14} />
                           </button>
                         )}
-                      </div>
-                    </div>
-
-                    {/* User List */}
-                    <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
-                      {usersLoading ? (
-                        <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>
-                          <Loader2 size={20} className="animate-spin" />
+                      </>
+                    ) : (
+                      <>
+                        <div style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          border: `2px dashed ${COLORS.gray300}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                          <Plus size={14} color={COLORS.gray400} />
                         </div>
-                      ) : users.length === 0 ? (
-                        <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
-                          No users found
-                        </div>
-                      ) : (
-                        users.map(user => (
-                          <button
-                            key={user.id}
-                            onClick={() => handleAssigneeSelect(user)}
-                            style={{
-                              width: '100%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '12px',
-                              padding: '10px 16px',
-                              border: 'none',
-                              background: item.assignee_id === user.id ? '#eff6ff' : 'transparent',
-                              cursor: 'pointer',
-                              textAlign: 'left',
-                              transition: 'background 0.1s',
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                            onMouseLeave={e => e.currentTarget.style.background = item.assignee_id === user.id ? '#eff6ff' : 'transparent'}
-                          >
-                            <Avatar initials={user.initials} avatarUrl={user.avatar_url} size={32} />
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontSize: '14px', fontWeight: 500, color: '#1e293b' }}>
-                                {user.full_name}
+                        <span style={{ fontSize: '14px', color: COLORS.gray400 }}>
+                          Add assignee
+                        </span>
+                      </>
+                    )}
+                    <ChevronDown size={16} color={COLORS.gray400} style={{ marginLeft: 'auto' }} />
+                  </button>
+
+                  {/* Assignee Dropdown */}
+                  {assigneeDropdownOpen && !isReadOnly && (
+                    <Dropdown>
+                      <DropdownSearch
+                        ref={assigneeInputRef}
+                        value={assigneeSearch}
+                        onChange={setAssigneeSearch}
+                        placeholder="Search by name or email..."
+                      />
+                      <DropdownList>
+                        {usersLoading ? (
+                          <DropdownLoading />
+                        ) : users.length === 0 ? (
+                          <DropdownEmpty>No users found</DropdownEmpty>
+                        ) : (
+                          users.map(user => (
+                            <DropdownItem
+                              key={user.id}
+                              onClick={() => handleAssigneeSelect(user)}
+                              selected={item.assignee_id === user.id}
+                            >
+                              <Avatar initials={user.initials} avatarUrl={user.avatar_url} size={32} />
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: '14px', fontWeight: 500, color: COLORS.gray800 }}>
+                                  {user.full_name || 'Unnamed User'}
+                                </div>
+                                <div style={{ fontSize: '12px', color: COLORS.gray500 }}>
+                                  {user.email}
+                                </div>
                               </div>
-                              <div style={{ fontSize: '12px', color: '#64748b' }}>
-                                {user.email}
-                              </div>
-                            </div>
-                            {item.assignee_id === user.id && (
-                              <Check size={16} color="#3b82f6" />
-                            )}
-                          </button>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* ═══════════════════════════════════════════════════════════
-                  DUE DATE
-              ═══════════════════════════════════════════════════════════ */}
-              <div style={{ marginBottom: '24px', position: 'relative' }}>
-                <FieldLabel icon={<Calendar size={14} />} label="Due Date" />
-                <button
-                  onClick={() => !isReadOnly && setDatePickerOpen(!datePickerOpen)}
-                  disabled={isReadOnly}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '12px 14px',
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '10px',
-                    cursor: isReadOnly ? 'default' : 'pointer',
-                    transition: 'all 0.15s',
-                    textAlign: 'left',
-                    opacity: isReadOnly ? 0.7 : 1,
-                  }}
-                  onMouseEnter={e => !isReadOnly && (e.currentTarget.style.borderColor = '#94a3b8')}
-                  onMouseLeave={e => !isReadOnly && (e.currentTarget.style.borderColor = '#e2e8f0')}
-                >
-                  <Calendar size={18} color={item.due_date ? '#3b82f6' : '#94a3b8'} />
-                  <span style={{ 
-                    flex: 1, 
-                    fontSize: '14px', 
-                    color: item.due_date ? '#1e293b' : '#94a3b8' 
-                  }}>
-                    {item.due_date 
-                      ? new Date(item.due_date).toLocaleDateString('en-US', { 
-                          weekday: 'short', 
-                          month: 'short', 
-                          day: 'numeric' 
-                        })
-                      : 'Add due date'
-                    }
-                  </span>
-                  {item.due_date && !isReadOnly && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClearDate();
-                      }}
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: 'none',
-                        background: 'transparent',
-                        color: '#94a3b8',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '4px',
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                      onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                  <ChevronDown size={16} color="#94a3b8" />
-                </button>
-
-                {/* Date Picker Dropdown */}
-                {datePickerOpen && !isReadOnly && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      marginTop: '4px',
-                      background: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
-                      zIndex: 100,
-                      padding: '12px',
-                    }}
-                  >
-                    <input
-                      type="date"
-                      value={editDate}
-                      onChange={handleDateChange}
-                      style={{
-                        padding: '8px 12px',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        outline: 'none',
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* ═══════════════════════════════════════════════════════════
-                  LABELS (With Create New)
-              ═══════════════════════════════════════════════════════════ */}
-              <div style={{ marginBottom: '24px', position: 'relative' }}>
-                <FieldLabel icon={<Tag size={14} />} label="Labels" />
-                
-                {/* Current Labels */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-                  {currentLabel && (
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '6px 10px',
-                        background: `${currentLabel.color}15`,
-                        border: `1px solid ${currentLabel.color}40`,
-                        borderRadius: '6px',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: currentLabel.color,
-                      }}
-                    >
-                      <span style={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        background: currentLabel.color,
-                      }} />
-                      {currentLabel.name}
-                      {!isReadOnly && (
-                        <button
-                          onClick={handleRemoveLabel}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '14px',
-                            height: '14px',
-                            border: 'none',
-                            background: 'transparent',
-                            color: currentLabel.color,
-                            cursor: 'pointer',
-                            opacity: 0.6,
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                          onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
-                        >
-                          <X size={12} />
-                        </button>
-                      )}
-                    </span>
-                  )}
-                  
-                  {/* Add Label Button */}
-                  {!isReadOnly && (
-                    <button
-                      onClick={() => setLabelDropdownOpen(!labelDropdownOpen)}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        padding: '6px 10px',
-                        background: 'transparent',
-                        border: '1px dashed #cbd5e1',
-                        borderRadius: '6px',
-                        fontSize: '12px',
-                        fontWeight: 500,
-                        color: '#64748b',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.borderColor = '#94a3b8';
-                        e.currentTarget.style.background = '#f8fafc';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = '#cbd5e1';
-                        e.currentTarget.style.background = 'transparent';
-                      }}
-                    >
-                      <Plus size={14} />
-                      Add
-                    </button>
+                              {item.assignee_id === user.id && (
+                                <Check size={16} color={COLORS.blue} />
+                              )}
+                            </DropdownItem>
+                          ))
+                        )}
+                      </DropdownList>
+                    </Dropdown>
                   )}
                 </div>
+              </FieldSection>
 
-                {/* Labels Dropdown */}
-                {labelDropdownOpen && !isReadOnly && (
-                  <div
+              {/* DUE DATE */}
+              <FieldSection>
+                <FieldLabel icon={<Calendar size={14} />} label="Due Date" />
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => !isReadOnly && setDatePickerOpen(!datePickerOpen)}
+                    disabled={isReadOnly}
                     style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      right: 0,
-                      marginTop: '4px',
-                      background: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
-                      zIndex: 100,
-                      overflow: 'hidden',
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '12px 14px',
+                      background: COLORS.gray50,
+                      border: `1px solid ${COLORS.gray200}`,
+                      borderRadius: '10px',
+                      cursor: isReadOnly ? 'default' : 'pointer',
+                      transition: 'all 0.15s',
+                      textAlign: 'left',
+                      opacity: isReadOnly ? 0.7 : 1,
                     }}
                   >
-                    {/* Search Input */}
-                    <div style={{ padding: '12px', borderBottom: '1px solid #f1f5f9' }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '8px 12px',
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                      }}>
-                        <Search size={16} color="#94a3b8" />
+                    <Calendar size={18} color={item.due_date ? COLORS.blue : COLORS.gray400} />
+                    <span style={{ 
+                      flex: 1, 
+                      fontSize: '14px', 
+                      color: item.due_date ? COLORS.gray800 : COLORS.gray400 
+                    }}>
+                      {item.due_date 
+                        ? new Date(item.due_date).toLocaleDateString('en-US', { 
+                            weekday: 'short', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })
+                        : 'Add due date'
+                      }
+                    </span>
+                    {item.due_date && !isReadOnly && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleClearDate(); }}
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          border: 'none',
+                          background: 'transparent',
+                          color: COLORS.gray400,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
+                    <ChevronDown size={16} color={COLORS.gray400} />
+                  </button>
+
+                  {/* Date Picker */}
+                  {datePickerOpen && !isReadOnly && (
+                    <Dropdown>
+                      <div style={{ padding: '12px' }}>
                         <input
-                          ref={labelInputRef}
-                          type="text"
-                          value={labelSearch}
-                          onChange={e => setLabelSearch(e.target.value)}
-                          placeholder="Search or create label..."
+                          type="date"
+                          value={editDate}
+                          onChange={handleDateChange}
+                          autoFocus
                           style={{
-                            flex: 1,
-                            border: 'none',
-                            background: 'transparent',
+                            width: '100%',
+                            padding: '10px 12px',
+                            border: `1px solid ${COLORS.gray200}`,
+                            borderRadius: '8px',
                             fontSize: '14px',
-                            color: '#1e293b',
                             outline: 'none',
                           }}
                         />
                       </div>
-                    </div>
+                    </Dropdown>
+                  )}
+                </div>
+              </FieldSection>
 
-                    {/* Label List */}
-                    <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                      {labelsLoading ? (
-                        <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>
-                          <Loader2 size={20} className="animate-spin" />
-                        </div>
-                      ) : (
-                        <>
-                          {filteredLabels.map(label => {
-                            const isSelected = currentLabel?.id === label.id;
-                            return (
+              {/* LABELS */}
+              <FieldSection>
+                <FieldLabel icon={<Tag size={14} />} label="Labels" />
+                <div style={{ position: 'relative' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {currentLabel && (
+                      <LabelChip 
+                        label={currentLabel} 
+                        onRemove={isReadOnly ? undefined : handleRemoveLabel} 
+                      />
+                    )}
+                    
+                    {!isReadOnly && (
+                      <button
+                        onClick={() => setLabelDropdownOpen(!labelDropdownOpen)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '6px 10px',
+                          background: 'transparent',
+                          border: `1px dashed ${COLORS.gray300}`,
+                          borderRadius: '6px',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          color: COLORS.gray500,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        <Plus size={14} />
+                        Add
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Labels Dropdown */}
+                  {labelDropdownOpen && !isReadOnly && (
+                    <Dropdown style={{ marginTop: '8px' }}>
+                      <DropdownSearch
+                        ref={labelInputRef}
+                        value={labelSearch}
+                        onChange={setLabelSearch}
+                        placeholder="Search or create label..."
+                      />
+                      <DropdownList>
+                        {labelsLoading ? (
+                          <DropdownLoading />
+                        ) : (
+                          <>
+                            {filteredLabels.map(label => {
+                              const isSelected = currentLabel?.id === label.id;
+                              return (
+                                <DropdownItem
+                                  key={label.id}
+                                  onClick={() => handleLabelSelect(label)}
+                                  selected={isSelected}
+                                >
+                                  <span style={{
+                                    width: '12px',
+                                    height: '12px',
+                                    borderRadius: '3px',
+                                    background: label.color,
+                                  }} />
+                                  <span style={{ flex: 1, fontSize: '14px', fontWeight: 500, color: COLORS.gray800 }}>
+                                    {label.name}
+                                  </span>
+                                  {isSelected && <Check size={16} color={COLORS.blue} />}
+                                </DropdownItem>
+                              );
+                            })}
+
+                            {/* Create New Label Option */}
+                            {labelSearch && !filteredLabels.some(l => 
+                              l.name.toLowerCase() === labelSearch.toLowerCase()
+                            ) && (
                               <button
-                                key={label.id}
-                                onClick={() => handleLabelSelect(label)}
+                                onClick={() => {
+                                  setNewLabelName(labelSearch);
+                                  setShowCreateLabel(true);
+                                }}
                                 style={{
                                   width: '100%',
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: '12px',
-                                  padding: '10px 16px',
+                                  padding: '10px 14px',
                                   border: 'none',
-                                  background: isSelected ? '#f8fafc' : 'transparent',
+                                  borderTop: `1px solid ${COLORS.gray100}`,
+                                  background: 'transparent',
                                   cursor: 'pointer',
                                   textAlign: 'left',
-                                  transition: 'background 0.1s',
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                                onMouseLeave={e => e.currentTarget.style.background = isSelected ? '#f8fafc' : 'transparent'}
+                                onMouseEnter={e => e.currentTarget.style.background = COLORS.gray50}
+                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                               >
-                                <span style={{
-                                  width: '12px',
-                                  height: '12px',
-                                  borderRadius: '3px',
-                                  background: label.color,
-                                }} />
-                                <span style={{ 
-                                  flex: 1, 
-                                  fontSize: '14px', 
-                                  fontWeight: 500, 
-                                  color: '#1e293b' 
-                                }}>
-                                  {label.name}
+                                <Plus size={16} color={COLORS.blue} />
+                                <span style={{ fontSize: '14px', color: COLORS.blue, fontWeight: 500 }}>
+                                  Create "{labelSearch}"
                                 </span>
-                                {isSelected && <Check size={16} color="#3b82f6" />}
                               </button>
-                            );
-                          })}
+                            )}
+                          </>
+                        )}
+                      </DropdownList>
 
-                          {/* Create New Label Option */}
-                          {labelSearch && !filteredLabels.some(l => 
-                            l.name.toLowerCase() === labelSearch.toLowerCase()
-                          ) && (
+                      {/* Create Label Form */}
+                      {showCreateLabel && (
+                        <div style={{ 
+                          padding: '12px', 
+                          borderTop: `1px solid ${COLORS.gray200}`,
+                          background: COLORS.gray50,
+                        }}>
+                          <div style={{ marginBottom: '10px' }}>
+                            <div style={{ 
+                              fontSize: '12px', 
+                              fontWeight: 600, 
+                              color: COLORS.gray600,
+                              marginBottom: '6px',
+                            }}>
+                              Choose a color
+                            </div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                              {LABEL_COLORS.map(color => (
+                                <button
+                                  key={color.value}
+                                  onClick={() => setNewLabelColor(color.value)}
+                                  style={{
+                                    width: '22px',
+                                    height: '22px',
+                                    borderRadius: '4px',
+                                    background: color.value,
+                                    border: newLabelColor === color.value 
+                                      ? '2px solid #1e293b' 
+                                      : '2px solid transparent',
+                                    cursor: 'pointer',
+                                  }}
+                                  title={color.name}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px' }}>
                             <button
-                              onClick={() => {
-                                setNewLabelName(labelSearch);
-                                setShowCreateLabel(true);
-                              }}
+                              onClick={() => { setShowCreateLabel(false); setLabelSearch(''); }}
                               style={{
-                                width: '100%',
+                                flex: 1,
+                                padding: '8px',
+                                border: `1px solid ${COLORS.gray200}`,
+                                borderRadius: '6px',
+                                background: COLORS.white,
+                                fontSize: '13px',
+                                fontWeight: 500,
+                                color: COLORS.gray600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleCreateLabel}
+                              disabled={createLabelMutation.isPending}
+                              style={{
+                                flex: 1,
+                                padding: '8px',
+                                border: 'none',
+                                borderRadius: '6px',
+                                background: COLORS.blue,
+                                fontSize: '13px',
+                                fontWeight: 600,
+                                color: 'white',
+                                cursor: 'pointer',
+                                opacity: createLabelMutation.isPending ? 0.7 : 1,
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '12px',
-                                padding: '10px 16px',
-                                border: 'none',
-                                borderTop: '1px solid #f1f5f9',
-                                background: 'transparent',
-                                cursor: 'pointer',
-                                textAlign: 'left',
+                                justifyContent: 'center',
+                                gap: '6px',
                               }}
-                              onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                              <Plus size={16} color="#3b82f6" />
-                              <span style={{ fontSize: '14px', color: '#3b82f6', fontWeight: 500 }}>
-                                Create "{labelSearch}"
-                              </span>
+                              {createLabelMutation.isPending && (
+                                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                              )}
+                              Create
                             </button>
-                          )}
-                        </>
-                      )}
-                    </div>
-
-                    {/* Create Label Form */}
-                    {showCreateLabel && (
-                      <div style={{ 
-                        padding: '16px', 
-                        borderTop: '1px solid #e2e8f0',
-                        background: '#f8fafc',
-                      }}>
-                        <div style={{ marginBottom: '12px' }}>
-                          <label style={{ 
-                            fontSize: '12px', 
-                            fontWeight: 600, 
-                            color: '#64748b',
-                            display: 'block',
-                            marginBottom: '6px',
-                          }}>
-                            Label Name
-                          </label>
-                          <input
-                            type="text"
-                            value={newLabelName}
-                            onChange={e => setNewLabelName(e.target.value)}
-                            style={{
-                              width: '100%',
-                              padding: '8px 12px',
-                              border: '1px solid #e2e8f0',
-                              borderRadius: '6px',
-                              fontSize: '14px',
-                              outline: 'none',
-                            }}
-                          />
-                        </div>
-                        
-                        <div style={{ marginBottom: '12px' }}>
-                          <label style={{ 
-                            fontSize: '12px', 
-                            fontWeight: 600, 
-                            color: '#64748b',
-                            display: 'block',
-                            marginBottom: '6px',
-                          }}>
-                            Color
-                          </label>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                            {LABEL_COLORS.map(color => (
-                              <button
-                                key={color.value}
-                                onClick={() => setNewLabelColor(color.value)}
-                                style={{
-                                  width: '24px',
-                                  height: '24px',
-                                  borderRadius: '6px',
-                                  background: color.value,
-                                  border: newLabelColor === color.value 
-                                    ? '2px solid #1e293b' 
-                                    : '2px solid transparent',
-                                  cursor: 'pointer',
-                                  transition: 'transform 0.1s',
-                                }}
-                                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-                                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                                title={color.name}
-                              />
-                            ))}
                           </div>
                         </div>
+                      )}
+                    </Dropdown>
+                  )}
+                </div>
+              </FieldSection>
 
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button
-                            onClick={() => {
-                              setShowCreateLabel(false);
-                              setNewLabelName('');
-                            }}
-                            style={{
-                              flex: 1,
-                              padding: '8px',
-                              border: '1px solid #e2e8f0',
-                              borderRadius: '6px',
-                              background: 'white',
-                              fontSize: '13px',
-                              fontWeight: 500,
-                              color: '#64748b',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={handleCreateLabel}
-                            disabled={!newLabelName.trim() || createLabelMutation.isPending}
-                            style={{
-                              flex: 1,
-                              padding: '8px',
-                              border: 'none',
-                              borderRadius: '6px',
-                              background: '#3b82f6',
-                              fontSize: '13px',
-                              fontWeight: 500,
-                              color: 'white',
-                              cursor: newLabelName.trim() ? 'pointer' : 'not-allowed',
-                              opacity: newLabelName.trim() ? 1 : 0.5,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '6px',
-                            }}
-                          >
-                            {createLabelMutation.isPending && (
-                              <Loader2 size={14} className="animate-spin" />
-                            )}
-                            Create
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* ═══════════════════════════════════════════════════════════
-                  DESCRIPTION
-              ═══════════════════════════════════════════════════════════ */}
-              <div style={{ marginBottom: '24px' }}>
-                <FieldLabel icon={<FileText size={14} />} label="Description" />
+              {/* DESCRIPTION (with AUTO-SAVE indicator) */}
+              <FieldSection>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <FieldLabel icon={<FileText size={14} />} label="Description" />
+                  
+                  {/* Auto-save status indicator */}
+                  {saveStatus !== 'idle' && (
+                    <span style={{
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      color: saveStatus === 'saved' ? COLORS.green : COLORS.gray500,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}>
+                      {saveStatus === 'saving' && (
+                        <>
+                          <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} />
+                          Saving...
+                        </>
+                      )}
+                      {saveStatus === 'saved' && (
+                        <>
+                          <Check size={12} />
+                          Saved
+                        </>
+                      )}
+                    </span>
+                  )}
+                </div>
                 <textarea
                   value={description}
                   onChange={e => handleDescriptionChange(e.target.value)}
@@ -1214,56 +1090,54 @@ export function T10EnterpriseSidePanel({
                     width: '100%',
                     minHeight: '120px',
                     padding: '14px',
-                    border: '1px solid #e2e8f0',
+                    border: `1px solid ${COLORS.gray200}`,
                     borderRadius: '10px',
                     fontSize: '14px',
                     lineHeight: 1.6,
-                    color: '#1e293b',
-                    background: '#ffffff',
+                    color: COLORS.gray800,
+                    background: COLORS.white,
                     resize: 'none',
                     outline: 'none',
-                    transition: 'border-color 0.15s, box-shadow 0.15s',
                     fontFamily: 'inherit',
+                    transition: 'border-color 0.15s, box-shadow 0.15s',
                     opacity: isReadOnly ? 0.7 : 1,
                   }}
                   onFocus={e => {
                     if (!isReadOnly) {
-                      e.currentTarget.style.borderColor = '#3b82f6';
+                      e.currentTarget.style.borderColor = COLORS.blue;
                       e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
                     }
                   }}
                   onBlur={e => {
-                    e.currentTarget.style.borderColor = '#e2e8f0';
+                    e.currentTarget.style.borderColor = COLORS.gray200;
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 />
-              </div>
+              </FieldSection>
             </>
           ) : (
-            /* ═══════════════════════════════════════════════════════════
-                ACTIVITY TAB
-            ═══════════════════════════════════════════════════════════ */
+            /* ACTIVITY TAB */
             <T10ActivityTimeline itemId={item.id} />
           )}
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            FOOTER
+            FOOTER (with gradient)
         ═══════════════════════════════════════════════════════════════════ */}
         <div
           style={{
-            padding: '16px 24px',
-            borderTop: '1px solid #e2e8f0',
-            background: 'linear-gradient(to bottom, #f8fafc, #f1f5f9)',
+            padding: '16px 20px',
+            borderTop: `1px solid ${COLORS.gray100}`,
+            background: `linear-gradient(to bottom, ${COLORS.gray50}, ${COLORS.gray100})`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexShrink: 0,
           }}
         >
-          <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+          <span style={{ fontSize: '12px', color: COLORS.gray400 }}>
             Created {getRelativeTime(item.created_at)}
-          </div>
+          </span>
           {!isReadOnly && (
             <button
               onClick={onDelete}
@@ -1274,15 +1148,15 @@ export function T10EnterpriseSidePanel({
                 padding: '8px 14px',
                 border: 'none',
                 background: 'transparent',
-                color: '#ef4444',
+                color: COLORS.red,
                 fontFamily: 'inherit',
                 fontSize: '13px',
                 fontWeight: 600,
                 cursor: 'pointer',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 transition: 'all 0.15s',
               }}
-              onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
+              onMouseEnter={e => e.currentTarget.style.background = COLORS.red50}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               <Trash2 size={16} />
@@ -1291,6 +1165,13 @@ export function T10EnterpriseSidePanel({
           )}
         </div>
       </div>
+
+      {/* Animations */}
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   );
 
@@ -1300,6 +1181,10 @@ export function T10EnterpriseSidePanel({
 // ═══════════════════════════════════════════════════════════════════════════
 // HELPER COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════
+
+function FieldSection({ children }: { children: React.ReactNode }) {
+  return <div style={{ marginBottom: '24px' }}>{children}</div>;
+}
 
 function FieldLabel({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
@@ -1312,7 +1197,7 @@ function FieldLabel({ icon, label }: { icon: React.ReactNode; label: string }) {
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
-        color: '#64748b',
+        color: COLORS.gray500,
         marginBottom: '10px',
       }}
     >
@@ -1333,27 +1218,230 @@ function Avatar({ initials, avatarUrl, size = 32 }: { initials: string; avatarUr
           height: size,
           borderRadius: '50%',
           objectFit: 'cover',
+          flexShrink: 0,
         }}
       />
     );
   }
-
+  
   return (
     <div
       style={{
         width: size,
         height: size,
         borderRadius: '50%',
-        background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+        background: `linear-gradient(135deg, ${COLORS.blue} 0%, ${COLORS.blueDark} 100%)`,
         color: 'white',
         fontSize: size * 0.4,
         fontWeight: 600,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        flexShrink: 0,
       }}
     >
       {initials}
     </div>
+  );
+}
+
+function LabelChip({ label, onRemove }: { label: T10Label; onRemove?: () => void }) {
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '6px 10px',
+        background: `${label.color}15`,
+        border: `1px solid ${label.color}40`,
+        borderRadius: '6px',
+        fontSize: '12px',
+        fontWeight: 600,
+        color: label.color,
+      }}
+    >
+      <span style={{
+        width: '8px',
+        height: '8px',
+        borderRadius: '50%',
+        background: label.color,
+      }} />
+      {label.name}
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '14px',
+            height: '14px',
+            border: 'none',
+            background: 'transparent',
+            color: label.color,
+            cursor: 'pointer',
+            opacity: 0.6,
+          }}
+        >
+          <X size={12} />
+        </button>
+      )}
+    </span>
+  );
+}
+
+function MoreMenuItem({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 14px',
+        border: 'none',
+        background: 'transparent',
+        fontSize: '14px',
+        color: COLORS.gray700,
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'background 0.1s',
+      }}
+      onMouseEnter={e => e.currentTarget.style.background = COLORS.gray50}
+      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+function Dropdown({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        right: 0,
+        marginTop: '4px',
+        background: COLORS.white,
+        border: `1px solid ${COLORS.gray200}`,
+        borderRadius: '12px',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
+        zIndex: 100,
+        overflow: 'hidden',
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+const DropdownSearch = React.forwardRef<HTMLInputElement, { 
+  value: string; 
+  onChange: (v: string) => void; 
+  placeholder: string 
+}>(({ value, onChange, placeholder }, ref) => {
+  return (
+    <div style={{ padding: '10px', borderBottom: `1px solid ${COLORS.gray100}` }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '8px 12px',
+        background: COLORS.gray50,
+        border: `1px solid ${COLORS.gray200}`,
+        borderRadius: '8px',
+      }}>
+        <Search size={16} color={COLORS.gray400} />
+        <input
+          ref={ref}
+          type="text"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          style={{
+            flex: 1,
+            border: 'none',
+            background: 'transparent',
+            fontSize: '14px',
+            color: COLORS.gray800,
+            outline: 'none',
+          }}
+        />
+        {value && (
+          <button
+            onClick={() => onChange('')}
+            style={{
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              color: COLORS.gray400,
+              display: 'flex',
+            }}
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+});
+
+DropdownSearch.displayName = 'DropdownSearch';
+
+function DropdownList({ children }: { children: React.ReactNode }) {
+  return <div style={{ maxHeight: '220px', overflowY: 'auto' }}>{children}</div>;
+}
+
+function DropdownLoading() {
+  return (
+    <div style={{ padding: '20px', textAlign: 'center', color: COLORS.gray500 }}>
+      <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
+    </div>
+  );
+}
+
+function DropdownEmpty({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ padding: '20px', textAlign: 'center', color: COLORS.gray500, fontSize: '14px' }}>
+      {children}
+    </div>
+  );
+}
+
+function DropdownItem({ 
+  children, 
+  onClick, 
+  selected = false,
+}: { 
+  children: React.ReactNode; 
+  onClick: () => void; 
+  selected?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '10px 14px',
+        border: 'none',
+        background: selected ? COLORS.blue50 : 'transparent',
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'background 0.1s',
+      }}
+      onMouseEnter={e => e.currentTarget.style.background = COLORS.gray50}
+      onMouseLeave={e => e.currentTarget.style.background = selected ? COLORS.blue50 : 'transparent'}
+    >
+      {children}
+    </button>
   );
 }
