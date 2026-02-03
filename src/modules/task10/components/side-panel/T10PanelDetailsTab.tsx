@@ -136,59 +136,87 @@ export function T10PanelDetailsTab({ item, onUpdate }: T10PanelDetailsTabProps) 
             <User className="t10-panel-details__label-icon" />
             Assignee
           </span>
-          <div className="t10-dropdown-container" ref={assigneeRef}>
+          <div className="t10-assignee-select" ref={assigneeRef}>
             <button
               onClick={() => setShowAssigneeDropdown(!showAssigneeDropdown)}
-              className="t10-dropdown-trigger"
+              className="t10-assignee-select__trigger"
               disabled={profilesLoading}
             >
               {item.assignee ? (
-                <div className="t10-panel-details__assignee">
-                  {item.assignee.avatar_url ? (
-                    <img 
-                      src={item.assignee.avatar_url} 
-                      alt={item.assignee.full_name || ''} 
-                      className="t10-panel-details__avatar"
-                    />
-                  ) : (
-                    <span className="t10-panel-details__avatar-placeholder">
-                      {(item.assignee.full_name || 'U').charAt(0)}
-                    </span>
-                  )}
-                  <span>{item.assignee.full_name}</span>
+                <div className="t10-assignee-select__selected">
+                  <span className="t10-assignee-select__avatar">
+                    {(item.assignee.full_name || 'U').charAt(0).toUpperCase()}
+                  </span>
+                  <span className="t10-assignee-select__name">{item.assignee.full_name}</span>
                 </div>
               ) : (
-                <span className="t10-panel-details__empty">Unassigned</span>
+                <div className="t10-assignee-select__empty">
+                  <User size={16} className="t10-assignee-select__empty-icon" />
+                  <span>Unassigned</span>
+                </div>
               )}
-              <ChevronDown size={16} className={`t10-dropdown-chevron ${showAssigneeDropdown ? 't10-dropdown-chevron--open' : ''}`} />
+              <ChevronDown 
+                size={16} 
+                className={`t10-assignee-select__chevron ${showAssigneeDropdown ? 't10-assignee-select__chevron--open' : ''}`} 
+              />
             </button>
             
             {showAssigneeDropdown && (
-              <div className="t10-dropdown-menu">
-                <button
-                  onClick={() => handleAssigneeChange(null)}
-                  className="t10-dropdown-item t10-dropdown-item--muted"
-                >
-                  <X size={14} />
-                  <span>Unassign</span>
-                </button>
-                <div className="t10-dropdown-divider" />
-                {profiles.map((profile: ProfileOption) => (
+              <div className="t10-assignee-select__dropdown">
+                {/* Search input */}
+                <div className="t10-assignee-select__search">
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    className="t10-assignee-select__search-input"
+                    autoFocus
+                  />
+                </div>
+                
+                {/* Options list */}
+                <div className="t10-assignee-select__options">
+                  {/* Unassign option */}
                   <button
-                    key={profile.id}
-                    onClick={() => handleAssigneeChange(profile.id)}
-                    className={`t10-dropdown-item ${item.assignee_id === profile.id ? 't10-dropdown-item--active' : ''}`}
+                    onClick={() => handleAssigneeChange(null)}
+                    className={`t10-assignee-select__option ${!item.assignee_id ? 't10-assignee-select__option--active' : ''}`}
                   >
-                    <span className="t10-panel-details__avatar-placeholder t10-panel-details__avatar-placeholder--sm">
-                      {(profile.full_name || profile.email || 'U').charAt(0)}
+                    <span className="t10-assignee-select__option-avatar t10-assignee-select__option-avatar--empty">
+                      <X size={12} />
                     </span>
-                    <div className="t10-dropdown-item-content">
-                      <span className="t10-dropdown-item-name">{profile.full_name || 'Unknown'}</span>
-                      <span className="t10-dropdown-item-email">{profile.email}</span>
-                    </div>
-                    {item.assignee_id === profile.id && <Check size={14} className="t10-dropdown-check" />}
+                    <span className="t10-assignee-select__option-label">Unassign</span>
                   </button>
-                ))}
+                  
+                  <div className="t10-assignee-select__divider" />
+                  
+                  {/* Loading state */}
+                  {profilesLoading && (
+                    <div className="t10-assignee-select__loading">Loading users...</div>
+                  )}
+                  
+                  {/* User options */}
+                  {profiles.map((profile: ProfileOption) => (
+                    <button
+                      key={profile.id}
+                      onClick={() => handleAssigneeChange(profile.id)}
+                      className={`t10-assignee-select__option ${item.assignee_id === profile.id ? 't10-assignee-select__option--active' : ''}`}
+                    >
+                      <span className="t10-assignee-select__option-avatar">
+                        {(profile.full_name || profile.email || 'U').charAt(0).toUpperCase()}
+                      </span>
+                      <div className="t10-assignee-select__option-info">
+                        <span className="t10-assignee-select__option-name">
+                          {profile.full_name || 'Unknown'}
+                        </span>
+                        <span className="t10-assignee-select__option-email">
+                          {profile.email}
+                        </span>
+                      </div>
+                      {item.assignee_id === profile.id && (
+                        <Check size={14} className="t10-assignee-select__check" />
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
