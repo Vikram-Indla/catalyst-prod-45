@@ -1,11 +1,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TASK¹⁰ SIDE PANEL DRAWER COMPONENT
-// Right-side slide-in drawer matching reference design
+// Right-side slide-in drawer using portal and inline styles for reliability
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Trash2 } from 'lucide-react';
-import { format, parseISO, formatDistanceToNow } from 'date-fns';
+import { parseISO, formatDistanceToNow } from 'date-fns';
 import type { T10ItemWithAssignee } from '../../types';
 import { T10PanelDetailsTab } from './T10PanelDetailsTab';
 import { T10PanelActivityTab } from './T10PanelActivityTab';
@@ -53,7 +54,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete }: T10S
     };
   }, [isOpen]);
 
-  if (!item) return null;
+  if (!isOpen || !item) return null;
 
   // Get creator info
   const creatorName = item.created_by ? 'User' : 'System';
@@ -61,72 +62,186 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete }: T10S
     ? formatDistanceToNow(parseISO(item.created_at), { addSuffix: true })
     : '';
 
-  return (
+  const panelContent = (
     <>
       {/* Backdrop overlay */}
       <div 
-        className={`t10-drawer-backdrop ${isOpen ? 't10-drawer-backdrop--visible' : ''}`}
         onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          zIndex: 9998,
+        }}
         aria-hidden="true"
       />
       
       {/* Drawer panel */}
       <aside 
-        className={`t10-drawer ${isOpen ? 't10-drawer--open' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: '420px',
+          maxWidth: '100vw',
+          backgroundColor: '#ffffff',
+          boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.15)',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
       >
         {/* Header */}
-        <header className="t10-drawer__header">
-          <div className="t10-drawer__header-left">
+        <header 
+          style={{
+            flexShrink: 0,
+            padding: '16px 24px',
+            borderBottom: '1px solid #e5e7eb',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {/* Rank badge */}
-            <div className="t10-drawer__rank-badge">
+            <div 
+              style={{
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                background: item.rank <= 5 
+                  ? 'linear-gradient(135deg, #3b82f6, #1d4ed8)' 
+                  : item.rank <= 10 ? '#6b7280' : 'transparent',
+                border: item.rank > 10 ? '2px dashed #d1d5db' : 'none',
+                color: item.rank <= 10 ? '#ffffff' : '#9ca3af',
+                fontSize: '14px',
+                fontWeight: 700,
+              }}
+            >
               {item.rank}
             </div>
-            <span className="t10-drawer__header-title">Task¹⁰ Priority</span>
+            <span style={{ fontSize: '14px', fontWeight: 500, color: '#6b7280' }}>
+              Task¹⁰ Priority
+            </span>
           </div>
           <button 
-            className="t10-drawer__close-btn"
             onClick={onClose}
             aria-label="Close panel"
+            style={{
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: 'none',
+              background: 'transparent',
+              borderRadius: '6px',
+              color: '#9ca3af',
+              cursor: 'pointer',
+            }}
           >
             <X size={20} />
           </button>
         </header>
 
         {/* Task key & title */}
-        <div className="t10-drawer__task-info">
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb' }}>
           {item.taskhub_key && (
-            <span className="t10-drawer__task-key">{item.taskhub_key}</span>
+            <span 
+              style={{
+                display: 'inline-flex',
+                padding: '2px 8px',
+                backgroundColor: '#eff6ff',
+                border: '1px solid #dbeafe',
+                borderRadius: '4px',
+                fontFamily: 'SF Mono, Monaco, monospace',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#2563eb',
+                marginBottom: '8px',
+              }}
+            >
+              {item.taskhub_key}
+            </span>
           )}
-          <h2 id="drawer-title" className="t10-drawer__task-title">
+          <h2 
+            id="drawer-title" 
+            style={{
+              margin: 0,
+              fontSize: '18px',
+              fontWeight: 700,
+              color: '#111827',
+              lineHeight: 1.4,
+            }}
+          >
             {item.title}
           </h2>
         </div>
         
         {/* Tabs */}
-        <nav className="t10-drawer__tabs" role="tablist">
+        <nav 
+          role="tablist"
+          style={{
+            flexShrink: 0,
+            display: 'flex',
+            borderBottom: '1px solid #e5e7eb',
+          }}
+        >
           <button
             role="tab"
             aria-selected={activeTab === 'details'}
-            className={`t10-drawer__tab ${activeTab === 'details' ? 't10-drawer__tab--active' : ''}`}
             onClick={() => setActiveTab('details')}
+            style={{
+              flex: 1,
+              padding: '12px',
+              border: 'none',
+              background: 'transparent',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: activeTab === 'details' ? '#2563eb' : '#6b7280',
+              borderBottom: activeTab === 'details' ? '2px solid #2563eb' : '2px solid transparent',
+              cursor: 'pointer',
+            }}
           >
             Details
           </button>
           <button
             role="tab"
             aria-selected={activeTab === 'activity'}
-            className={`t10-drawer__tab ${activeTab === 'activity' ? 't10-drawer__tab--active' : ''}`}
             onClick={() => setActiveTab('activity')}
+            style={{
+              flex: 1,
+              padding: '12px',
+              border: 'none',
+              background: 'transparent',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: activeTab === 'activity' ? '#2563eb' : '#6b7280',
+              borderBottom: activeTab === 'activity' ? '2px solid #2563eb' : '2px solid transparent',
+              cursor: 'pointer',
+            }}
           >
             Activity
           </button>
         </nav>
         
         {/* Content area */}
-        <div className="t10-drawer__content" role="tabpanel">
+        <div 
+          role="tabpanel"
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '24px',
+          }}
+        >
           {activeTab === 'details' && (
             <T10PanelDetailsTab 
               item={item} 
@@ -139,14 +254,35 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete }: T10S
         </div>
 
         {/* Footer */}
-        <footer className="t10-drawer__footer">
-          <span className="t10-drawer__footer-meta">
-            Created by <strong>{creatorName}</strong> · {createdAgo}
+        <footer 
+          style={{
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 24px',
+            borderTop: '1px solid #e5e7eb',
+            backgroundColor: '#f9fafb',
+          }}
+        >
+          <span style={{ fontSize: '12px', color: '#9ca3af' }}>
+            Created by <strong style={{ fontWeight: 600 }}>{creatorName}</strong> · {createdAgo}
           </span>
           {onDelete && (
             <button 
-              className="t10-drawer__delete-btn"
               onClick={() => onDelete(item.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#ef4444',
+                cursor: 'pointer',
+              }}
             >
               <Trash2 size={16} />
               Delete
@@ -156,6 +292,9 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete }: T10S
       </aside>
     </>
   );
+
+  // Use portal to render at document.body to avoid stacking context issues
+  return createPortal(panelContent, document.body);
 }
 
 export default T10SidePanel;
