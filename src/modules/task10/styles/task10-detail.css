@@ -453,9 +453,21 @@
   font-size: 15px;
   font-weight: 400;
   color: #0f172a;
-  background: transparent;
-  border: none;
-  outline: none;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.t10-detail-add-input:focus,
+.t10-detail-add-input:focus-visible {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
 }
 
 .t10-detail-add-input::placeholder {
