@@ -481,7 +481,7 @@ export function T10LandingPageV3() {
             placeholder="Search lists, task number, or keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 text-[15px] font-medium text-slate-900 bg-transparent outline-none placeholder:text-slate-400"
+            className="flex-1 text-[15px] font-medium text-slate-900 bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 focus:border-none placeholder:text-slate-400"
           />
         </div>
 
