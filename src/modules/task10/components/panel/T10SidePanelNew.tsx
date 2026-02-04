@@ -257,7 +257,7 @@ export function T10SidePanelNew({
 
       {/* Panel - with invasive inline styles */}
       <div style={panelStyles}>
-        {/* Header - clean blue bar with proper layout */}
+        {/* Header - clean blue bar */}
         <div
           style={{
             background: '#2563eb',
@@ -287,6 +287,7 @@ export function T10SidePanelNew({
                 color: '#ffffff',
                 cursor: 'pointer',
                 fontSize: 18,
+                fontFamily: 'system-ui, sans-serif',
               }}
             >
               ←
@@ -298,9 +299,10 @@ export function T10SidePanelNew({
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
                 color: '#ffffff',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
               }}
             >
-              TASK¹⁰ PRIORITY
+              TASK<sup style={{ fontSize: '0.7em', verticalAlign: 'super' }}>10</sup> PRIORITY
             </span>
             {item.rank && (
               <span
