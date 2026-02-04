@@ -8,14 +8,12 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Search, 
   Plus, 
-  Tag, 
-  User, 
-  Calendar, 
-  Clock,
   MoreVertical,
   ChevronDown,
   RotateCcw,
-  Trash2
+  Trash2,
+  X,
+  Calendar
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { T10NewListModal } from './T10NewListModal';
@@ -34,20 +32,13 @@ import {
 } from '../../hooks';
 import { useToast } from '@/hooks/use-toast';
 import type { T10ListCardView, T10CompletedWeekView } from '../../types/listCards';
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// FILTER BUTTON COMPONENT
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function FilterButton({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
-  return (
-    <button className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 transition-all">
-      <Icon size={14} />
-      {label}
-      <ChevronDown size={14} />
-    </button>
-  );
-}
+import { useT10Filters, getDateRangeFromPreset } from '../../hooks/useT10Filters';
+import {
+  T10LabelFilter,
+  T10AssigneeFilter,
+  T10DateRangeFilter,
+  T10StatusFilter,
+} from '../filters';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LIST CARD COMPONENT
@@ -325,6 +316,17 @@ export function T10LandingPageV3() {
   const [selectedList, setSelectedList] = useState<{ id: string; name: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Filter state
+  const {
+    filters,
+    setLabels,
+    setAssignees,
+    setDateRange,
+    setStatus,
+    hasActiveFilters,
+    resetFilters,
+  } = useT10Filters();
+
   // Data hooks
   const { data: activeLists = [], isLoading: listsLoading } = useT10ListCards('active');
   const { data: archivedLists = [], isLoading: archivedLoading } = useT10ListCards('archived');
@@ -484,11 +486,32 @@ export function T10LandingPageV3() {
         </div>
 
         {/* FILTERS */}
-        <div className="flex gap-2.5 mb-6 flex-wrap">
-          <FilterButton icon={Tag} label="Label" />
-          <FilterButton icon={User} label="Assigned To" />
-          <FilterButton icon={Calendar} label="Date Range" />
-          <FilterButton icon={Clock} label="Status" />
+        <div className="flex gap-2.5 mb-6 flex-wrap items-center">
+          <T10LabelFilter
+            selected={filters.labels}
+            onChange={setLabels}
+          />
+          <T10AssigneeFilter
+            selected={filters.assignees}
+            onChange={setAssignees}
+          />
+          <T10DateRangeFilter
+            value={filters.dateRange}
+            onChange={setDateRange}
+          />
+          <T10StatusFilter
+            value={filters.status}
+            onChange={setStatus}
+          />
+          {hasActiveFilters && (
+            <button
+              onClick={resetFilters}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <X size={14} />
+              Clear all
+            </button>
+          )}
         </div>
 
         {/* TABS */}
