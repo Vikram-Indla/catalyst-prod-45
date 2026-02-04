@@ -1007,19 +1007,17 @@ export function T10WeekViewV3() {
         {/* AI SUGGESTIONS */}
         <div style={aiSectionStyle}>
           <div style={aiCardStyle}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
               <div style={aiIconStyle}>
-                <Zap size={18} strokeWidth={2} />
+                <Zap size={16} strokeWidth={2} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ fontSize: 15, fontWeight: 600, color: '#0f172a' }}>AI Suggestions</span>
-                <span style={{ fontSize: 13, color: '#64748b' }}>
-                  {uniqueParticipants.length > 0 
-                    ? `Based on TaskHub items for ${uniqueParticipants.join(', ')}`
-                    : 'Based on TaskHub backlog items'
-                  }
-                </span>
-              </div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>AI Suggestions</span>
+              <span style={{ fontSize: 13, color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {uniqueParticipants.length > 0 
+                  ? `Based on TaskHub items for ${uniqueParticipants.join(', ')}`
+                  : 'Based on TaskHub backlog items'
+                }
+              </span>
             </div>
             <button 
               style={aiToggleBtnStyle}
