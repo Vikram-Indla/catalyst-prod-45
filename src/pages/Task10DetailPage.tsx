@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useT10AISuggestions } from '@/modules/task10/hooks/useT10AISuggestions';
 import { 
   DndContext, 
   closestCenter, 
@@ -47,13 +48,19 @@ interface PriorityItem {
   rank: number;
   title: string;
   description: string | null;
-  is_completed: boolean;
-  assigned_to: string | null;
+  status: string | null;
+  assignee_id: string | null;
   assignee_name: string | null;
+  assignee_avatar: string | null;
   due_date: string | null;
-  labels: Array<{ id: string; name: string; color: string }>;
+  labels: unknown;
   taskhub_key: string | null;
-  created_at: string;
+  is_buffer: boolean | null;
+  carryover_count: number | null;
+  created_at: string | null;
+  created_by: string | null;
+  updated_at: string | null;
+  week_id: string | null;
 }
 
 interface WeekDetail {
@@ -64,18 +71,19 @@ interface WeekDetail {
   week_start: string;
   week_end: string;
   is_current: boolean;
-  completed_items: number;
-  total_items: number;
-  buffer_items: number;
+  completed_count: number;
+  total_count: number;
 }
 
 interface AISuggestion {
   id: string;
-  taskhub_key: string;
+  key: string;
   title: string;
   due_date: string | null;
-  priority: string;
-  assignee_name: string | null;
+  priority: 'critical' | 'high';
+  assignee_name: string;
+  assignee_id: string | null;
+  reason: string;
 }
 
 interface UserProfile {
@@ -119,7 +127,7 @@ function SortablePriorityCard({
       className={`
         flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl cursor-pointer
         hover:border-blue-200 hover:shadow-sm transition-all
-        ${item.is_completed ? 'bg-gray-50' : ''}
+        ${item.status === 'done' ? 'bg-gray-50' : ''}
         ${isDragging ? 'shadow-lg border-blue-500' : ''}
       `}
     >
@@ -151,12 +159,12 @@ function SortablePriorityCard({
 
       {/* CONTENT */}
       <div className="flex-1 min-w-0">
-        <div className={`text-sm font-medium ${item.is_completed ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+        <div className={`text-sm font-medium ${item.status === 'done' ? 'line-through text-gray-400' : 'text-gray-900'}`}>
           {item.title}
         </div>
         <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
           {/* LABELS */}
-          {item.labels && item.labels.length > 0 && item.labels.map((label) => (
+          {item.labels && Array.isArray(item.labels) && (item.labels as Array<{ id: string; name: string; color: string }>).map((label) => (
             <span 
               key={label.id} 
               className="px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-600"
@@ -198,13 +206,13 @@ function SortablePriorityCard({
         }}
         className={`
           w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0
-          ${item.is_completed 
+          ${item.status === 'done' 
             ? 'bg-[#2563eb] border-[#2563eb]' 
             : 'bg-white border-gray-300 hover:border-blue-400'
           }
         `}
       >
-        {item.is_completed && <Check className="w-4 h-4 text-white" />}
+        {item.status === 'done' && <Check className="w-4 h-4 text-white" />}
       </button>
     </div>
   );
@@ -337,20 +345,20 @@ function SidePanel({
                 <button
                   onClick={onToggleComplete}
                   className={`flex items-center gap-3 w-full p-3 rounded-xl border transition-all ${
-                    item.is_completed 
+                    item.status === 'done' 
                       ? 'bg-green-50 border-green-200' 
                       : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    item.is_completed 
+                    item.status === 'done' 
                       ? 'bg-[#2563eb] border-[#2563eb]' 
                       : 'bg-white border-gray-300'
                   }`}>
-                    {item.is_completed && <Check className="w-3.5 h-3.5 text-white" />}
+                    {item.status === 'done' && <Check className="w-3.5 h-3.5 text-white" />}
                   </div>
                   <span className="text-sm text-gray-700">
-                    {item.is_completed ? 'Completed' : 'Mark as completed'}
+                    {item.status === 'done' ? 'Completed' : 'Mark as completed'}
                   </span>
                 </button>
               </div>
@@ -379,7 +387,7 @@ function SidePanel({
                       />
                       <button
                         onClick={() => {
-                          onUpdate({ assigned_to: null, assignee_name: null });
+                          onUpdate({ assignee_id: null, assignee_name: null });
                           setShowAssigneeDropdown(false);
                         }}
                         className="w-full px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-50"
@@ -390,7 +398,7 @@ function SidePanel({
                         <button
                           key={user.id}
                           onClick={() => {
-                            onUpdate({ assigned_to: user.id, assignee_name: user.full_name });
+                            onUpdate({ assignee_id: user.id, assignee_name: user.full_name });
                             setShowAssigneeDropdown(false);
                           }}
                           className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
@@ -424,7 +432,7 @@ function SidePanel({
                   Labels
                 </div>
                 <div className="flex flex-wrap gap-2 mb-2">
-                  {item.labels && item.labels.map((label) => (
+                  {item.labels && Array.isArray(item.labels) && (item.labels as Array<{ id: string; name: string; color: string }>).map((label) => (
                     <span 
                       key={label.id}
                       className="flex items-center gap-1 px-2 py-1 bg-gray-100 border border-gray-200 rounded text-sm text-gray-600"
@@ -553,20 +561,49 @@ export default function Task10DetailPage() {
   // QUERIES
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const { data: weekDetail } = useQuery({
-    queryKey: ['t10-week-detail', listKey],
+  // Get list by key first
+  const { data: listData } = useQuery({
+    queryKey: ['t10-list', listKey],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('t10_week_detail')
-        .select('*')
-        .eq('list_key', listKey)
-        .eq('is_current', true)
+        .from('t10_lists')
+        .select('id, key, name')
+        .eq('key', listKey)
         .single();
       if (error) throw error;
-      return data as WeekDetail;
+      return data;
     },
     enabled: !!listKey,
   });
+
+  // Get current week for the list
+  const { data: weekData } = useQuery({
+    queryKey: ['t10-week', listData?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('t10_weeks')
+        .select('*')
+        .eq('list_id', listData!.id)
+        .eq('is_current', true)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!listData?.id,
+  });
+
+  // Combine into weekDetail
+  const weekDetail: WeekDetail | undefined = weekData && listData ? {
+    week_id: weekData.id,
+    list_id: weekData.list_id,
+    list_key: listData.key,
+    list_name: listData.name,
+    week_start: weekData.week_start,
+    week_end: weekData.week_end,
+    is_current: weekData.is_current ?? true,
+    completed_count: weekData.completed_count ?? 0,
+    total_count: weekData.total_count ?? 0,
+  } : undefined;
 
   const { data: items = [] } = useQuery({
     queryKey: ['t10-items', weekDetail?.week_id],
@@ -577,22 +614,18 @@ export default function Task10DetailPage() {
         .eq('week_id', weekDetail!.week_id)
         .order('rank');
       if (error) throw error;
-      return data as PriorityItem[];
+      return (data ?? []) as PriorityItem[];
     },
     enabled: !!weekDetail?.week_id,
   });
 
-  const { data: suggestions = [] } = useQuery({
-    queryKey: ['t10-ai-suggestions'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('t10_ai_suggestions')
-        .select('*')
-        .limit(5);
-      if (error) throw error;
-      return data as AISuggestion[];
-    },
-  });
+  // AI Suggestions - use existing hook instead of direct query
+  const { data: aiSuggestionsData } = useT10AISuggestions(
+    listData?.id,
+    weekDetail?.week_id,
+    undefined
+  );
+  const suggestions: AISuggestion[] = aiSuggestionsData?.suggestions ?? [];
 
   const { data: users = [] } = useQuery({
     queryKey: ['t10-users'],
@@ -607,8 +640,8 @@ export default function Task10DetailPage() {
   });
 
   // Split items
-  const top10Items = items.filter(i => i.rank <= 10);
-  const bufferItems = items.filter(i => i.rank > 10);
+  const top10Items = items.filter(i => (i.rank ?? 0) <= 10);
+  const bufferItems = items.filter(i => (i.rank ?? 0) > 10);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // MUTATIONS
@@ -616,46 +649,57 @@ export default function Task10DetailPage() {
 
   const addItemMutation = useMutation({
     mutationFn: async ({ title, taskhubKey }: { title: string; taskhubKey?: string }) => {
-      const { data, error } = await supabase.rpc('t10_add_item', {
-        p_week_id: weekDetail!.week_id,
-        p_title: title,
-        p_user_id: (await supabase.auth.getUser()).data.user?.id,
-        p_taskhub_key: taskhubKey || null,
-      });
+      const user = (await supabase.auth.getUser()).data.user;
+      const nextRank = items.length + 1;
+      
+      const { data, error } = await supabase
+        .from('t10_items')
+        .insert({
+          week_id: weekDetail!.week_id,
+          title,
+          taskhub_key: taskhubKey || null,
+          rank: nextRank,
+          status: 'todo',
+          created_by: user?.id,
+        })
+        .select()
+        .single();
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['t10-items'] });
-      queryClient.invalidateQueries({ queryKey: ['t10-week-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['t10-week'] });
       toast.success('Item added');
     },
   });
 
   const toggleCompleteMutation = useMutation({
     mutationFn: async (itemId: string) => {
-      const { data, error } = await supabase.rpc('t10_toggle_complete', {
-        p_item_id: itemId,
-        p_user_id: (await supabase.auth.getUser()).data.user?.id,
-      });
+      const item = items.find(i => i.id === itemId);
+      const newStatus = item?.status === 'done' ? 'todo' : 'done';
+      
+      const { error } = await supabase
+        .from('t10_items')
+        .update({ status: newStatus })
+        .eq('id', itemId);
       if (error) throw error;
-      return data;
+      return newStatus === 'done';
     },
     onSuccess: (isCompleted) => {
       queryClient.invalidateQueries({ queryKey: ['t10-items'] });
-      queryClient.invalidateQueries({ queryKey: ['t10-week-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['t10-week'] });
       toast.success(isCompleted ? 'Completed' : 'Incomplete');
     },
   });
 
   const reorderMutation = useMutation({
     mutationFn: async (itemIds: string[]) => {
-      const { error } = await supabase.rpc('t10_reorder_items', {
-        p_week_id: weekDetail!.week_id,
-        p_item_ids: itemIds,
-        p_user_id: (await supabase.auth.getUser()).data.user?.id,
-      });
-      if (error) throw error;
+      // Update each item with its new rank
+      const updates = itemIds.map((id, index) => 
+        supabase.from('t10_items').update({ rank: index + 1 }).eq('id', id)
+      );
+      await Promise.all(updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['t10-items'] });
@@ -666,7 +710,7 @@ export default function Task10DetailPage() {
   const updateItemMutation = useMutation({
     mutationFn: async ({ itemId, updates }: { itemId: string; updates: Partial<PriorityItem> }) => {
       const { error } = await supabase
-        .from('t10_priority_items')
+        .from('t10_items')
         .update(updates)
         .eq('id', itemId);
       if (error) throw error;
@@ -680,14 +724,14 @@ export default function Task10DetailPage() {
   const deleteItemMutation = useMutation({
     mutationFn: async (itemId: string) => {
       const { error } = await supabase
-        .from('t10_priority_items')
+        .from('t10_items')
         .delete()
         .eq('id', itemId);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['t10-items'] });
-      queryClient.invalidateQueries({ queryKey: ['t10-week-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['t10-week'] });
       setSelectedItem(null);
       setShowDeleteModal(false);
       toast.success('Item deleted');
@@ -696,15 +740,15 @@ export default function Task10DetailPage() {
 
   const checkoutMutation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc('t10_checkout_week', {
+      // Use the existing RPC
+      const { data, error } = await supabase.rpc('aqd_checkout_week', {
         p_week_id: weekDetail!.week_id,
-        p_user_id: (await supabase.auth.getUser()).data.user?.id,
       });
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['t10-week-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['t10-week'] });
       setShowCheckoutModal(false);
       toast.success('Week checked out!');
     },
@@ -712,12 +756,15 @@ export default function Task10DetailPage() {
 
   const swapBufferMutation = useMutation({
     mutationFn: async ({ bufferItemId, targetRank }: { bufferItemId: string; targetRank: number }) => {
-      const { error } = await supabase.rpc('t10_swap_with_buffer', {
-        p_buffer_item_id: bufferItemId,
-        p_top10_rank: targetRank,
-        p_user_id: (await supabase.auth.getUser()).data.user?.id,
-      });
-      if (error) throw error;
+      // Find the top10 item at targetRank and swap ranks
+      const top10Item = items.find(i => i.rank === targetRank);
+      const bufferItem = items.find(i => i.id === bufferItemId);
+      
+      if (!top10Item || !bufferItem) throw new Error('Items not found');
+      
+      // Swap ranks
+      await supabase.from('t10_items').update({ rank: bufferItem.rank }).eq('id', top10Item.id);
+      await supabase.from('t10_items').update({ rank: targetRank }).eq('id', bufferItemId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['t10-items'] });
@@ -825,7 +872,7 @@ export default function Task10DetailPage() {
           <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
             <Check className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-semibold text-gray-900">
-              <span className="text-blue-600">{weekDetail.completed_items}</span> of {weekDetail.total_items} completed
+              <span className="text-blue-600">{weekDetail.completed_count}</span> of {weekDetail.total_count} completed
             </span>
           </div>
           <button
@@ -870,7 +917,7 @@ export default function Task10DetailPage() {
               {suggestions.map((suggestion, index) => (
                 <div
                   key={suggestion.id}
-                  onClick={() => addItemMutation.mutate({ title: suggestion.title, taskhubKey: suggestion.taskhub_key })}
+                  onClick={() => addItemMutation.mutate({ title: suggestion.title, taskhubKey: suggestion.key })}
                   className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 border border-transparent"
                 >
                   <div className="w-8 h-8 flex items-center justify-center text-xs font-bold text-blue-600 bg-blue-100 rounded-lg">
@@ -883,7 +930,7 @@ export default function Task10DetailPage() {
                     </div>
                   </div>
                   <span className="px-2 py-1 text-xs font-mono font-semibold text-blue-600 bg-blue-50 rounded">
-                    {suggestion.taskhub_key}
+                    {suggestion.key}
                   </span>
                   <Plus className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100" />
                 </div>
@@ -1018,11 +1065,11 @@ export default function Task10DetailPage() {
               </p>
               <div className="flex gap-4">
                 <div className="flex-1 p-4 bg-gray-50 rounded-xl text-center">
-                  <div className="text-3xl font-bold text-gray-900">{weekDetail.completed_items}</div>
+                  <div className="text-3xl font-bold text-gray-900">{weekDetail.completed_count}</div>
                   <div className="text-xs text-gray-500 uppercase tracking-wide">Completed</div>
                 </div>
                 <div className="flex-1 p-4 bg-gray-50 rounded-xl text-center">
-                  <div className="text-3xl font-bold text-gray-900">{weekDetail.total_items - weekDetail.completed_items}</div>
+                  <div className="text-3xl font-bold text-gray-900">{weekDetail.total_count - weekDetail.completed_count}</div>
                   <div className="text-xs text-gray-500 uppercase tracking-wide">Incomplete</div>
                 </div>
               </div>
