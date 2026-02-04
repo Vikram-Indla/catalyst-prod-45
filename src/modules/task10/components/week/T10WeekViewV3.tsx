@@ -953,7 +953,7 @@ export function T10WeekViewV3() {
           disabled={!isCurrentWeek || allItems.length === 0}
         >
           <Check size={16} strokeWidth={2.5} />
-          Checkout Week
+          Checkout
         </button>
       </header>
 
