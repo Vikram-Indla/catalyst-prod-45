@@ -8,7 +8,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, ChevronLeft, ChevronRight, Calendar, 
   Zap, ChevronDown, Plus, Check, Layers, Info,
-  AlertCircle, GripVertical, User, X
+  AlertCircle, GripVertical, User, X, StickyNote
 } from 'lucide-react';
 import {
   DndContext,
@@ -70,6 +70,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
 
   const isCompleted = item.status === 'done';
   const dueStatus = item.due_date ? getDueStatus(item.due_date) : 'normal';
+  const hasNotes = Boolean(item.description && item.description.trim());
   const [isHovered, setIsHovered] = React.useState(false);
 
   // Card styling
@@ -237,6 +238,13 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
               onLabelsChange={onLabelsChange}
             />
           </div>
+          
+          {/* Notes indicator */}
+          {hasNotes && (
+            <span style={metaItemStyle} title="Has notes">
+              <StickyNote size={12} />
+            </span>
+          )}
           
           {item.assignee_name && (
             <span style={metaItemStyle}>
@@ -1069,8 +1077,11 @@ export function T10WeekViewV3() {
                   onClick={() => handleItemClick(item)}
                 >
                   <div style={bufferRankStyle}>{item.rank}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 500, color: '#475569' }}>{item.title}</span>
+                    {item.description && item.description.trim() && (
+                      <StickyNote size={12} style={{ color: '#94a3b8', flexShrink: 0 }} />
+                    )}
                   </div>
                   {hasEmptySlots ? (
                     <button 
