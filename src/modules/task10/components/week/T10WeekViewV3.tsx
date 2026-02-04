@@ -349,63 +349,74 @@ export function T10WeekViewV3() {
 
   return (
     <div className="t10-detail-page">
-      {/* HEADER */}
+      {/* HEADER - Single horizontal bar */}
       <header className="t10-detail-header">
-        <div className="t10-detail-header-left">
-          <nav className="t10-detail-breadcrumb">
-            <Link to="/taskhub/task10" className="t10-detail-breadcrumb-link">
-              <LayoutGrid size={16} strokeWidth={2} />
-              Task<sup>10</sup>
-            </Link>
-            <span className="t10-detail-breadcrumb-sep">/</span>
-            <span className="t10-detail-list-key">{list.key}</span>
-            <span className="t10-detail-breadcrumb-current">{list.name}</span>
-          </nav>
-        </div>
-
-        <div className="t10-detail-header-center">
-          <div className="t10-detail-week-nav">
-            <button 
-              className="t10-detail-week-btn"
-              onClick={handlePrevWeek}
-              disabled={!hasPrevWeek}
-            >
-              <ChevronLeft size={16} strokeWidth={2} />
-            </button>
-            <div className="t10-detail-week-display">
-              <Calendar size={16} strokeWidth={2} className="t10-detail-week-icon" />
-              <span className="t10-detail-week-text">{weekLabel}</span>
-              <span className={`t10-detail-week-badge ${!isCurrentWeek ? 't10-detail-week-badge-past' : ''}`}>
-                {isCurrentWeek ? 'Current' : 'Past'}
-              </span>
-            </div>
-            <button 
-              className="t10-detail-week-btn"
-              onClick={handleNextWeek}
-              disabled={!hasNextWeek}
-            >
-              <ChevronRight size={16} strokeWidth={2} />
-            </button>
+        {/* Logo */}
+        <Link to="/taskhub/task10" className="t10-detail-logo-link">
+          <div className="t10-detail-logo-badge">10</div>
+          <div className="t10-detail-logo-text">
+            <span className="t10-detail-logo-title">Task<sup>10</sup></span>
+            <span className="t10-detail-logo-subtitle">Priority Management</span>
           </div>
+        </Link>
+
+        {/* Divider */}
+        <div className="t10-detail-header-divider" />
+
+        {/* List Key + Name */}
+        <div className="t10-detail-list-info">
+          <span className="t10-detail-list-key">{list.key}</span>
+          <span className="t10-detail-list-name">{list.name}</span>
         </div>
 
-        <div className="t10-detail-header-right">
-          <div className="t10-detail-progress">
-            <Check size={18} className="t10-detail-progress-check" />
-            <span className="t10-detail-progress-text">
-              <strong>{completedCount}</strong> of 10 completed
+        {/* Divider */}
+        <div className="t10-detail-header-divider" />
+
+        {/* Week Navigation */}
+        <div className="t10-detail-week-nav">
+          <button 
+            className="t10-detail-week-btn"
+            onClick={handlePrevWeek}
+            disabled={!hasPrevWeek}
+          >
+            <ChevronLeft size={16} strokeWidth={2} />
+          </button>
+          <div className="t10-detail-week-display">
+            <Calendar size={16} strokeWidth={2} className="t10-detail-week-icon" />
+            <span className="t10-detail-week-text">{weekLabel}</span>
+            <span className={`t10-detail-week-badge ${!isCurrentWeek ? 't10-detail-week-badge-past' : ''}`}>
+              {isCurrentWeek ? 'CURRENT' : 'PAST'}
             </span>
           </div>
-
           <button 
-            className="t10-detail-btn-checkout"
-            onClick={handleCheckout}
-            disabled={!isCurrentWeek || allItems.length === 0}
+            className="t10-detail-week-btn"
+            onClick={handleNextWeek}
+            disabled={!hasNextWeek}
           >
-            <Check size={16} strokeWidth={2.5} />
-            Checkout Week
+            <ChevronRight size={16} strokeWidth={2} />
           </button>
         </div>
+
+        {/* Spacer */}
+        <div className="t10-detail-header-spacer" />
+
+        {/* Progress */}
+        <div className="t10-detail-progress">
+          <Check size={16} className="t10-detail-progress-check" />
+          <span className="t10-detail-progress-text">
+            {completedCount} of 10 completed
+          </span>
+        </div>
+
+        {/* Checkout Button */}
+        <button 
+          className="t10-detail-btn-checkout"
+          onClick={handleCheckout}
+          disabled={!isCurrentWeek || allItems.length === 0}
+        >
+          <Check size={16} strokeWidth={2.5} />
+          Checkout Week
+        </button>
       </header>
 
       {/* MAIN */}
