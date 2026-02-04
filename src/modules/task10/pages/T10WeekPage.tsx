@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Plus, Check } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { CheckCircle, Plus, Check, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { T10UnifiedSortableList } from '../components/week/T10UnifiedSortableList';
 import { T10WeekNavigation } from '../components/week/T10WeekNavigation';
 import { T10EnterpriseSidePanel } from '../components/panel/T10EnterpriseSidePanel';
@@ -18,10 +18,11 @@ import {
   useCarryoverT10Items,
   useBulkUpdateT10Items,
 } from '../hooks';
-import { getWeekStartDate, formatWeekRange } from '../utils';
+import { getWeekStartDate, formatWeekRange, formatT10WeekRange } from '../utils';
 import type { T10Item, T10CheckoutDecision } from '../types';
 import { useToast } from '@/hooks/use-toast';
 import '../styles/task10.css';
+import '../styles/task10-detail.css';
 
 export function T10WeekPage() {
   const navigate = useNavigate();
@@ -258,83 +259,162 @@ export function T10WeekPage() {
   // Get participant names for AI suggestions
   const participantNames = [...new Set(dbItems.map(i => i.assignee_name).filter(Boolean))];
 
+  // Week navigation handlers
+  const hasPrevWeek = currentWeekIndex < dbWeeks.length - 1;
+  const hasNextWeek = currentWeekIndex > 0;
+  
+  const handlePrevWeek = () => {
+    if (hasPrevWeek) {
+      setCurrentWeekIndex(currentWeekIndex + 1);
+    }
+  };
+
+  const handleNextWeek = () => {
+    if (hasNextWeek) {
+      setCurrentWeekIndex(currentWeekIndex - 1);
+    }
+  };
+
+  const weekLabel = currentWeek ? formatT10WeekRange(currentWeek.week_start, currentWeek.week_end) : '';
+  const isCurrentWeek = currentWeek?.is_current && currentWeek?.status === 'active';
+
   return (
-    <div className="t10-module">
-      <header className="t10-week-header">
-        <div className="t10-week-header-left">
-          <button className="t10-back-btn" onClick={() => navigate('/taskhub/task10')}>
-            <ArrowLeft size={18} />
-            Back
+    <div className="t10-detail-page">
+      {/* HEADER - Matches reference design */}
+      <header className="t10-detail-header">
+        {/* Logo - links back to lists */}
+        <Link to="/taskhub/task10" className="t10-detail-logo-link">
+          <div className="t10-detail-logo-badge">10</div>
+          <div className="t10-detail-logo-text">
+            <span className="t10-detail-logo-title">Task<sup>10</sup></span>
+            <span className="t10-detail-logo-subtitle">Priority Management</span>
+          </div>
+        </Link>
+
+        {/* List Key + Name */}
+        <div className="t10-detail-list-info">
+          <span className="t10-detail-list-key">{list?.key || 'T10-XXX'}</span>
+          <span className="t10-detail-list-name">{list?.name || 'Loading...'}</span>
+        </div>
+
+        {/* Week Navigation Arrows */}
+        <div className="t10-detail-week-nav">
+          <button 
+            className="t10-detail-week-btn"
+            onClick={handlePrevWeek}
+            disabled={!hasPrevWeek}
+          >
+            <ChevronLeft size={16} strokeWidth={2} />
           </button>
-          <span className="t10-list-title">{list?.name || 'Loading...'}</span>
+          <button 
+            className="t10-detail-week-btn"
+            onClick={handleNextWeek}
+            disabled={!hasNextWeek}
+          >
+            <ChevronRight size={16} strokeWidth={2} />
+          </button>
         </div>
-        
-        <T10WeekNavigation
-          weeks={dbWeeks}
-          currentWeek={currentWeek || null}
-          currentWeekIndex={currentWeekIndex}
-          onNavigate={setCurrentWeekIndex}
-          onCreateWeek={handleCreateWeek}
-          isCreating={isCreatingWeek}
-        />
-        
-        <div className="t10-week-header-right">
-          <div className="t10-week-progress">
-            <strong>{completedCount}</strong>/10 completed
-          </div>
-          {currentWeek?.status === 'completed' ? (
-            <span className="t10-checked-out-badge">
-              <Check size={16} /> Week Closed
+
+        {/* Week Display with Calendar */}
+        <div className="t10-detail-week-display">
+          <Calendar size={16} strokeWidth={2} className="t10-detail-week-icon" />
+          <span className="t10-detail-week-text">{weekLabel || 'No week'}</span>
+          {currentWeek && (
+            <span className={`t10-detail-week-badge ${currentWeek.status === 'completed' ? 't10-detail-week-badge-past' : ''}`}>
+              {currentWeek.status === 'completed' ? 'CLOSED' : isCurrentWeek ? 'CURRENT' : 'ACTIVE'}
             </span>
-          ) : currentWeek ? (
-            <button className="t10-btn t10-btn-primary" onClick={() => setCheckoutOpen(true)}>
-              <CheckCircle size={18} />
-              Checkout Week
-            </button>
-          ) : null}
+          )}
         </div>
-      </header>
 
-      {currentWeek?.status !== 'completed' && currentWeek && (
-        <T10AISuggestionsPanel
-          listId={listId}
-          weekId={currentWeek?.id}
-          participants={[]}
-          participantNames={participantNames}
-          currentTopTenCount={topTenItems.length}
-        disabled={false}
-        />
-      )}
+        {/* Spacer */}
+        <div className="t10-detail-header-spacer" />
 
-      {currentWeek?.status !== 'completed' && currentWeek && (
-        <div className="t10-quick-add">
-          <div className={`t10-quick-add-icon ${quickAddValue ? 'active' : ''}`}>
-            <Plus size={18} />
-          </div>
-          <input 
-            type="text" 
-            className="t10-quick-add-input" 
-            placeholder="Add a priority or paste TaskHub key..."
-            value={quickAddValue}
-            onChange={(e) => setQuickAddValue(e.target.value)}
-            onKeyDown={handleQuickAdd}
-          />
-          <span className="t10-quick-add-hint">
-            <kbd>Enter</kbd> to add
+        {/* Progress */}
+        <div className="t10-detail-progress">
+          <Check size={16} className="t10-detail-progress-check" />
+          <span className="t10-detail-progress-text">
+            {completedCount} of 10 completed
           </span>
         </div>
-      )}
 
-      <T10UnifiedSortableList
-        topTenItems={topTenItems}
-        bufferItems={bufferItems}
-        onReorderAll={handleReorderAll}
-        onCardClick={handleCardClick}
-        onToggleStatus={handleToggleStatus}
-        disabled={currentWeek?.status === 'completed'}
-        bufferExpanded={bufferExpanded}
-        onToggleBuffer={() => setBufferExpanded(!bufferExpanded)}
-      />
+        {/* Checkout Button */}
+        {currentWeek?.status === 'completed' ? (
+          <span className="t10-checked-out-badge" style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: 6, 
+            padding: '10px 20px',
+            fontSize: 13,
+            fontWeight: 600,
+            color: '#64748b',
+            background: '#f1f5f9',
+            borderRadius: 8
+          }}>
+            <Check size={16} /> Week Closed
+          </span>
+        ) : currentWeek ? (
+          <button 
+            className="t10-detail-btn-checkout"
+            onClick={() => setCheckoutOpen(true)}
+          >
+            <Check size={16} strokeWidth={2.5} />
+            Checkout Week
+          </button>
+        ) : (
+          <button 
+            className="t10-detail-btn-checkout"
+            onClick={handleCreateWeek}
+            disabled={isCreatingWeek}
+          >
+            <Plus size={16} strokeWidth={2.5} />
+            Start Week
+          </button>
+        )}
+      </header>
+
+      {/* MAIN CONTENT */}
+      <main className="t10-detail-main">
+        {currentWeek?.status !== 'completed' && currentWeek && (
+          <T10AISuggestionsPanel
+            listId={listId}
+            weekId={currentWeek?.id}
+            participants={[]}
+            participantNames={participantNames}
+            currentTopTenCount={topTenItems.length}
+            disabled={false}
+          />
+        )}
+
+        {currentWeek?.status !== 'completed' && currentWeek && (
+          <div className="t10-detail-add-container">
+            <div className="t10-detail-add-wrapper">
+              <Plus size={20} className="t10-detail-add-icon" />
+              <input 
+                type="text" 
+                className="t10-detail-add-input" 
+                placeholder="Add a priority or paste TaskHub key..."
+                value={quickAddValue}
+                onChange={(e) => setQuickAddValue(e.target.value)}
+                onKeyDown={handleQuickAdd}
+              />
+              <span className="t10-detail-add-hint">
+                <kbd>Enter</kbd> to add
+              </span>
+            </div>
+          </div>
+        )}
+
+        <T10UnifiedSortableList
+          topTenItems={topTenItems}
+          bufferItems={bufferItems}
+          onReorderAll={handleReorderAll}
+          onCardClick={handleCardClick}
+          onToggleStatus={handleToggleStatus}
+          disabled={currentWeek?.status === 'completed'}
+          bufferExpanded={bufferExpanded}
+          onToggleBuffer={() => setBufferExpanded(!bufferExpanded)}
+        />
+      </main>
 
       <T10EnterpriseSidePanel 
         item={dbItems.find(i => i.id === selectedItemId) || null} 
