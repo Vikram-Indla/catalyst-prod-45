@@ -45,32 +45,6 @@ export function T10EmptyState({ onCreateList }: T10EmptyStateProps) {
         </span>
       </div>
 
-      {/* Feature Cards */}
-      <div className="t10-feature-cards">
-        <div className="t10-feature-card">
-          <div className="t10-feature-icon">
-            <ListChecks size={24} />
-          </div>
-          <h3 className="t10-feature-title">Weekly Focus</h3>
-          <p className="t10-feature-text">Limit to 10 priorities each week</p>
-        </div>
-
-        <div className="t10-feature-card">
-          <div className="t10-feature-icon">
-            <BarChart3 size={24} />
-          </div>
-          <h3 className="t10-feature-title">Track Progress</h3>
-          <p className="t10-feature-text">Visual bars and history</p>
-        </div>
-
-        <div className="t10-feature-card">
-          <div className="t10-feature-icon">
-            <CalendarCheck size={24} />
-          </div>
-          <h3 className="t10-feature-title">Weekly Checkout</h3>
-          <p className="t10-feature-text">End each week clean</p>
-        </div>
-      </div>
     </div>
   );
 }
