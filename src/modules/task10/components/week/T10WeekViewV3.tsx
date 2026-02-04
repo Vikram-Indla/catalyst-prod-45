@@ -42,6 +42,8 @@ import { useT10AISuggestions, useAddSuggestionToT10 } from '../../hooks/useT10AI
 import { T10SidePanelNew } from '../panel/T10SidePanelNew';
 import { T10CheckoutModalNew } from '../modals/T10CheckoutModalNew';
 import { T10LabelDropdown } from './T10LabelDropdown';
+import { T10AssigneeDropdown } from './T10AssigneeDropdown';
+import { T10DueDateDropdown } from './T10DueDateDropdown';
 import { formatT10WeekRange, formatShortDate, getDueStatus } from '../../utils';
 import type { T10ItemFull } from '../../types';
 import '../../styles/task10-detail.css';
@@ -239,23 +241,29 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
             />
           </div>
           
+          {/* Assignee Dropdown */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <T10AssigneeDropdown
+              itemId={item.id}
+              currentAssigneeId={item.assignee_id || null}
+              currentAssigneeName={item.assignee_name || null}
+              onAssigneeChange={onLabelsChange}
+            />
+          </div>
+          
+          {/* Due Date Dropdown */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <T10DueDateDropdown
+              itemId={item.id}
+              currentDueDate={item.due_date || null}
+              onDueDateChange={onLabelsChange}
+            />
+          </div>
+          
           {/* Notes indicator */}
           {hasNotes && (
             <span style={metaItemStyle} title="Has notes">
               <StickyNote size={12} />
-            </span>
-          )}
-          
-          {item.assignee_name && (
-            <span style={metaItemStyle}>
-              <User size={12} />
-              {item.assignee_name}
-            </span>
-          )}
-          {item.due_date && (
-            <span style={dueStyle}>
-              <Calendar size={12} />
-              {formatShortDate(item.due_date)}
             </span>
           )}
         </div>

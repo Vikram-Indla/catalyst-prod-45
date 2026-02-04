@@ -1492,3 +1492,398 @@
   text-align: center;
   font-size: 13px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ASSIGNEE DROPDOWN - Inline assignee picker (same style as labels)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-assignee-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.t10-assignee-dropdown-current {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Assignee Chip */
+.t10-assignee-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid;
+  border-radius: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.t10-assignee-chip:hover {
+  filter: brightness(0.95);
+}
+
+.t10-assignee-chip-avatar {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #ffffff;
+  border-radius: 50%;
+}
+
+.t10-assignee-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.t10-assignee-chip-remove:hover {
+  opacity: 1;
+}
+
+/* Add Assignee Button */
+.t10-assignee-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-assignee-add-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #475569;
+}
+
+.t10-assignee-edit-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 4px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-assignee-dropdown:hover .t10-assignee-edit-btn {
+  display: flex;
+}
+
+.t10-assignee-edit-btn:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+/* Dropdown Panel */
+.t10-assignee-dropdown-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10000;
+  min-width: 280px;
+  margin-top: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.t10-assignee-dropdown-search {
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.t10-assignee-dropdown-search input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #0f172a;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.t10-assignee-dropdown-search input:focus {
+  background: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.t10-assignee-dropdown-search input::placeholder {
+  color: #94a3b8;
+}
+
+/* User List */
+.t10-assignee-dropdown-list {
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.t10-assignee-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s ease;
+}
+
+.t10-assignee-dropdown-item:hover {
+  background: #f8fafc;
+}
+
+.t10-assignee-dropdown-item.selected {
+  background: #eff6ff;
+}
+
+.t10-assignee-dropdown-avatar {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.t10-assignee-dropdown-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.t10-assignee-dropdown-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t10-assignee-dropdown-email {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t10-assignee-dropdown-check {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.t10-assignee-dropdown-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  color: #94a3b8;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DUE DATE DROPDOWN - Inline date picker (same style as labels)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-duedate-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.t10-duedate-dropdown-current {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Due Date Chip */
+.t10-duedate-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid;
+  border-radius: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-duedate-chip:hover {
+  filter: brightness(0.95);
+}
+
+.t10-duedate-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.t10-duedate-chip-remove:hover {
+  opacity: 1;
+}
+
+/* Add Due Date Button */
+.t10-duedate-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-duedate-add-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #475569;
+}
+
+/* Dropdown Panel */
+.t10-duedate-dropdown-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10000;
+  min-width: 300px;
+  margin-top: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+/* Quick Actions */
+.t10-duedate-quick-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.t10-duedate-quick-btn {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-duedate-quick-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.t10-duedate-quick-btn.selected {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #2563eb;
+}
+
+/* Calendar Container */
+.t10-duedate-calendar {
+  padding: 8px;
+}
+
+.t10-duedate-calendar .t10-calendar-component {
+  border: none;
+  box-shadow: none;
+}
+
+/* Footer */
+.t10-duedate-footer {
+  padding: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.t10-duedate-clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ef4444;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-duedate-clear-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
