@@ -35,7 +35,7 @@ export function T10Header({
         </div>
       </div>
 
-      {/* Right: New List Button + Avatar */}
+      {/* Right: New List Button */}
       <div className="t10-header-actions">
         <button 
           type="button"
@@ -45,16 +45,6 @@ export function T10Header({
           <Plus size={18} />
           New List
         </button>
-        <div 
-          className="t10-avatar"
-          title={userName || 'User'}
-        >
-          {userAvatar ? (
-            <img src={userAvatar} alt={userName || 'User'} />
-          ) : (
-            displayInitials
-          )}
-        </div>
       </div>
     </header>
   );
