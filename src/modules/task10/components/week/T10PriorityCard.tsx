@@ -4,6 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { T10Item } from '../../types';
 import { getDueStatus, formatShortDate } from '../../utils';
+import { T10EditableTitle } from './T10EditableTitle';
 
 interface T10PriorityCardProps {
   item: T10Item;
@@ -123,7 +124,11 @@ export function T10PriorityCard({
 
       {/* Content */}
       <div className="t10-detail-priority-content">
-        <div className="t10-detail-priority-text">{item.title}</div>
+        <T10EditableTitle 
+          itemId={item.id}
+          title={item.title}
+          className="t10-detail-priority-text"
+        />
         <div className="t10-detail-priority-meta">
           {item.taskhub_key && (
             <span 
