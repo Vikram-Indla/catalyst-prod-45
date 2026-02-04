@@ -154,8 +154,8 @@
   padding: 2px 6px;
   font-size: 10px;
   font-weight: 700;
-  background: #d1fae5;
-  color: #10b981;
+  background: #eff6ff;
+  color: #2563eb;
   border-radius: 4px;
   text-transform: uppercase;
 }
@@ -173,7 +173,7 @@
 }
 
 .t10-detail-progress-check {
-  color: #10b981;
+  color: #2563eb;
 }
 
 .t10-detail-progress-text {
@@ -182,7 +182,7 @@
 }
 
 .t10-detail-progress-text strong {
-  color: #10b981;
+  color: #2563eb;
   font-weight: 700;
 }
 
@@ -528,7 +528,7 @@
 }
 
 .t10-detail-priority-count strong {
-  color: #10b981;
+  color: #2563eb;
 }
 
 .t10-detail-priority-list {
@@ -580,7 +580,7 @@
   opacity: 1;
 }
 
-/* Rank Badge */
+/* Rank Badge — ALL RANKS USE SAME BLUE (no gradient variation) */
 .t10-detail-rank {
   width: 32px;
   height: 32px;
@@ -589,19 +589,15 @@
   justify-content: center;
   font-size: 13px;
   font-weight: 700;
-  color: #ffffff;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff !important;
+  background: #2563eb !important;
   border-radius: 10px;
   flex-shrink: 0;
 }
 
-.t10-detail-rank-low {
-  color: #6b7280;
-  background: #6b7280;
-}
-
+/* Completed items: rank stays BLUE (no green) */
 .t10-detail-priority-item-completed .t10-detail-rank {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: #2563eb !important;
 }
 
 /* Content */
@@ -703,13 +699,13 @@
 }
 
 .t10-detail-checkbox-input:hover + .t10-detail-checkbox-visual {
-  border-color: #10b981;
+  border-color: #2563eb;
 }
 
 .t10-detail-checkbox-input:checked + .t10-detail-checkbox-visual {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-color: #10b981;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 
 .t10-detail-checkbox-visual svg {
