@@ -98,6 +98,91 @@
   background: var(--t10-bg-page);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Portal wrapper - defines tokens but no container styling (for portaled overlays) */
+.t10-portal-wrapper {
+  /* Backgrounds */
+  --t10-bg-page: #f8fafc;
+  --t10-bg-card: #ffffff;
+  --t10-bg-subtle: #f1f5f9;
+  --t10-bg-hover: #f8fafc;
+  
+  /* Text */
+  --t10-text-primary: #0f172a;
+  --t10-text-secondary: #475569;
+  --t10-text-tertiary: #94a3b8;
+  --t10-text-placeholder: #cbd5e1;
+  
+  /* Borders */
+  --t10-border-subtle: #f1f5f9;
+  --t10-border-default: #e2e8f0;
+  --t10-border-strong: #cbd5e1;
+  
+  /* Accent (Catalyst V5 Blue) */
+  --t10-accent: #2563eb;
+  --t10-accent-hover: #1d4ed8;
+  --t10-accent-subtle: rgba(37, 99, 235, 0.08);
+  --t10-accent-light: rgba(37, 99, 235, 0.12);
+  
+  /* Status */
+  --t10-success: #22c55e;
+  --t10-success-subtle: rgba(34, 197, 94, 0.1);
+  --t10-warning: #f59e0b;
+  --t10-warning-subtle: rgba(245, 158, 11, 0.1);
+  --t10-danger: #ef4444;
+  --t10-danger-subtle: rgba(239, 68, 68, 0.1);
+  --t10-teal: #0d9488;
+  --t10-teal-subtle: rgba(13, 148, 136, 0.1);
+  
+  /* Shadows */
+  --t10-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --t10-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --t10-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --t10-shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --t10-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --t10-shadow-focus: 0 0 0 3px var(--t10-accent-subtle);
+  
+  /* Typography */
+  --t10-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --t10-font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  
+  /* Font Sizes */
+  --t10-text-xs: 11px;
+  --t10-text-sm: 12px;
+  --t10-text-base: 13px;
+  --t10-text-md: 14px;
+  --t10-text-lg: 15px;
+  --t10-text-xl: 17px;
+  --t10-text-2xl: 20px;
+  
+  /* Spacing */
+  --t10-space-1: 4px;
+  --t10-space-2: 8px;
+  --t10-space-3: 12px;
+  --t10-space-4: 16px;
+  --t10-space-5: 20px;
+  --t10-space-6: 24px;
+  --t10-space-8: 32px;
+  --t10-space-10: 40px;
+  
+  /* Radius */
+  --t10-radius-sm: 4px;
+  --t10-radius-md: 6px;
+  --t10-radius-lg: 8px;
+  --t10-radius-xl: 12px;
+  --t10-radius-full: 9999px;
+  
+  /* Transitions */
+  --t10-transition-fast: 120ms ease;
+  --t10-transition-normal: 200ms ease;
+  --t10-transition-slow: 300ms ease;
+  
+  /* Base styling */
+  font-family: var(--t10-font);
+  font-size: var(--t10-text-md);
+  color: var(--t10-text-primary);
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 

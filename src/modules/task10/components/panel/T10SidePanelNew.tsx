@@ -202,7 +202,7 @@ export function T10SidePanelNew({
 
   if (isLoading || !item) {
     return createPortal(
-      <div className="t10-module-v2">
+      <div className="t10-portal-wrapper">
         {/* Overlay */}
         <div className="t10-panel-overlay" onClick={handleOverlayClick} />
         {/* Panel Loading */}
@@ -219,7 +219,7 @@ export function T10SidePanelNew({
   const isCompleted = item.status === 'done';
 
   const panelContent = (
-    <div className="t10-module-v2">
+    <div className="t10-portal-wrapper">
       {/* Overlay */}
       <div 
         className={`t10-panel-overlay ${isClosing ? 't10-panel-overlay-closing' : ''}`}
