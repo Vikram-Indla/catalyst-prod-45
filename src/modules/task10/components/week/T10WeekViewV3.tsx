@@ -26,6 +26,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { T10EditableTitle } from './T10EditableTitle';
 import {
   useT10ListById,
   useT10Weeks,
@@ -1090,7 +1091,11 @@ export function T10WeekViewV3() {
                 >
                   <div style={bufferRankStyle}>{item.rank}</div>
                   <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#475569' }}>{item.title}</span>
+                    <T10EditableTitle 
+                      itemId={item.id}
+                      title={item.title}
+                      className="t10-buffer-item-title"
+                    />
                     {item.description && item.description.trim() && (
                       <StickyNote size={12} style={{ color: '#94a3b8', flexShrink: 0 }} />
                     )}
