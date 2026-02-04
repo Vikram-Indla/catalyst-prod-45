@@ -1,11 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: T10HeaderV3
-// Purpose: Minimal header with Task¹⁰ logo and New List button
-// Matches reference screenshot
+// Purpose: Landing page header matching week view detail page style
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
 import { Plus } from 'lucide-react';
+import '../../styles/task10-detail.css';
 
 interface T10HeaderV3Props {
   onNewList: () => void;
@@ -13,80 +13,31 @@ interface T10HeaderV3Props {
 
 export function T10HeaderV3({ onNewList }: T10HeaderV3Props) {
   return (
-    <header 
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '32px',
-      }}
-    >
-      {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {/* Icon Badge */}
-        <div
-          style={{
-            width: '44px',
-            height: '44px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#3b82f6',
-            borderRadius: '10px',
-            color: '#ffffff',
-            fontSize: '16px',
-            fontWeight: 800,
-          }}
-        >
-          10
-        </div>
-        
-        {/* Text */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span 
-            style={{ 
-              fontSize: '18px', 
-              fontWeight: 600, 
-              color: '#0f172a',
-              lineHeight: 1.2,
-            }}
-          >
-            Task<sup style={{ fontSize: '11px', color: '#3b82f6', position: 'relative', top: '-4px' }}>10</sup>
-          </span>
-          <span 
-            style={{ 
-              fontSize: '12px', 
-              color: '#94a3b8',
-              marginTop: '2px',
-            }}
-          >
-            Priority Management
-          </span>
+    <header className="t10-detail-header" style={{ marginBottom: '24px' }}>
+      {/* Logo - same as week view */}
+      <div className="t10-detail-logo-link" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
+        <div className="t10-detail-logo-badge">10</div>
+        <div className="t10-detail-logo-text">
+          <span className="t10-detail-logo-title">Task<sup>10</sup></span>
+          <span className="t10-detail-logo-subtitle">Priority Management</span>
         </div>
       </div>
 
-      {/* New List Button */}
+      {/* Spacer */}
+      <div className="t10-detail-header-spacer" />
+
+      {/* New List Button - matches week view checkout button style */}
       <button
         type="button"
         onClick={onNewList}
+        className="t10-detail-btn-checkout"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '6px',
-          padding: '10px 16px',
-          backgroundColor: '#3b82f6',
-          color: '#ffffff',
-          fontSize: '14px',
-          fontWeight: 500,
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          transition: 'background-color 0.15s ease',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2563eb')}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#3b82f6')}
       >
-        <Plus size={16} />
+        <Plus size={16} strokeWidth={2.5} />
         New List
       </button>
     </header>
