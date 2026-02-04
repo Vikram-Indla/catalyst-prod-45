@@ -14,19 +14,36 @@ interface T10HeaderV3Props {
 export function T10HeaderV3({ onNewList }: T10HeaderV3Props) {
   return (
     <header className="t10-detail-header" style={{ marginBottom: '24px' }}>
-      {/* Logo - same as week view */}
-      <div className="t10-detail-logo-link" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-        <div className="t10-detail-logo-badge">10</div>
-        <div className="t10-detail-logo-text">
-          <span className="t10-detail-logo-title">Task¹⁰</span>
-          <span className="t10-detail-logo-subtitle">Priority Management</span>
+      {/* Logo - "Task" text + blue circular badge with "10" */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ 
+          fontSize: '18px', 
+          fontWeight: 600, 
+          color: '#2563eb',
+          letterSpacing: '-0.01em'
+        }}>
+          Task
+        </span>
+        <div style={{
+          width: '28px',
+          height: '28px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#2563eb',
+          borderRadius: '50%',
+          color: '#ffffff',
+          fontSize: '12px',
+          fontWeight: 700,
+        }}>
+          10
         </div>
       </div>
 
       {/* Spacer */}
       <div className="t10-detail-header-spacer" />
 
-      {/* New List Button - matches week view checkout button style */}
+      {/* New List Button */}
       <button
         type="button"
         onClick={onNewList}
