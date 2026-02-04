@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Check, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import { Check, ArrowUp, ArrowDown, User, Calendar } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { T10Item } from '../../types';
-import { getRankTier, getDueStatus, formatShortDate } from '../../utils';
+import { getDueStatus, formatShortDate } from '../../utils';
 
 interface T10PriorityCardProps {
   item: T10Item;
@@ -24,7 +24,6 @@ export function T10PriorityCard({
   const [rankDiff, setRankDiff] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
 
-  const rankTier = getRankTier(item.rank);
   const dueStatus = item.due_date ? getDueStatus(item.due_date) : 'normal';
   const isCompleted = item.status === 'done';
 
@@ -50,17 +49,15 @@ export function T10PriorityCard({
   // Show rank change badge when rank changes
   useEffect(() => {
     if (previousRank !== undefined && previousRank !== item.rank) {
-      const diff = previousRank - item.rank; // Positive = moved up, Negative = moved down
+      const diff = previousRank - item.rank;
       setRankDiff(diff);
       setShowRankChange(true);
       setFadeOut(false);
 
-      // Start fade out after 2.5 seconds
       const fadeTimer = setTimeout(() => {
         setFadeOut(true);
       }, 2500);
 
-      // Hide badge after 3 seconds
       const hideTimer = setTimeout(() => {
         setShowRankChange(false);
         setFadeOut(false);
@@ -73,77 +70,118 @@ export function T10PriorityCard({
     }
   }, [item.rank, previousRank]);
 
+  const cardClasses = [
+    't10-detail-priority-item',
+    isCompleted ? 't10-detail-priority-item-completed' : '',
+    isDragging ? 't10-detail-priority-item-dragging' : '',
+  ].filter(Boolean).join(' ');
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`t10-card ${isCompleted ? 'completed' : ''} ${item.carryover_count > 0 ? 'carryover' : ''} ${isDragging ? 'dragging' : ''}`}
+      className={cardClasses}
       onClick={onClick}
     >
-      {/* Drag Handle */}
+      {/* Drag Handle - 6 dot pattern */}
       {isDraggable && (
         <div 
-          className="t10-drag-handle"
+          className="t10-detail-drag-handle"
           {...attributes}
           {...listeners}
           onClick={(e) => e.stopPropagation()}
-        >
-          <GripVertical size={16} />
-        </div>
+        />
       )}
 
-      {/* Rank Badge */}
-      <div className={`t10-rank t10-rank-${rankTier}`}>
+      {/* Rank Badge - 48px blue square */}
+      <div className="t10-detail-rank">
         {item.rank}
       </div>
 
       {/* Rank Change Badge */}
       {showRankChange && rankDiff !== 0 && (
-        <span className={`t10-rank-change ${rankDiff > 0 ? 'up' : 'down'} ${fadeOut ? 'fade-out' : ''}`}>
+        <span 
+          className="t10-detail-rank-change"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 2,
+            padding: '2px 8px',
+            fontSize: 11,
+            fontWeight: 600,
+            borderRadius: 4,
+            background: rankDiff > 0 ? '#dcfce7' : '#fee2e2',
+            color: rankDiff > 0 ? '#16a34a' : '#dc2626',
+            opacity: fadeOut ? 0 : 1,
+            transition: 'opacity 0.3s ease',
+          }}
+        >
           {rankDiff > 0 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
           {Math.abs(rankDiff)}
         </span>
       )}
 
       {/* Content */}
-      <div className="t10-card-content">
-        <div className="t10-card-title">{item.title}</div>
-        <div className="t10-card-meta">
+      <div className="t10-detail-priority-content">
+        <div className="t10-detail-priority-text">{item.title}</div>
+        <div className="t10-detail-priority-meta">
           {item.taskhub_key && (
-            <span className="t10-card-key">{item.taskhub_key}</span>
+            <span 
+              className="t10-detail-priority-label"
+              style={{
+                fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace",
+                color: '#2563eb',
+                background: '#eff6ff',
+                border: '1px solid #bfdbfe',
+              }}
+            >
+              {item.taskhub_key}
+            </span>
           )}
           {item.assignee_name && (
-            <span className="t10-card-assignee">
-              <span className="t10-avatar t10-avatar-xs">{item.assignee_initials}</span>
+            <span className="t10-detail-priority-assignee">
+              <User size={14} className="t10-detail-priority-assignee-avatar" />
               {item.assignee_name}
             </span>
           )}
           {item.due_date && (
-            <span className={`t10-card-due ${dueStatus}`}>
+            <span 
+              className={`t10-detail-priority-due ${
+                dueStatus === 'overdue' ? 't10-detail-priority-due-overdue' : 
+                dueStatus === 'today' ? 't10-detail-priority-due-today' : ''
+              }`}
+            >
+              <Calendar size={13} />
               {formatShortDate(item.due_date)}
             </span>
           )}
           {item.label && (
-            <span className="t10-card-label">{item.label}</span>
+            <span className="t10-detail-priority-label">{item.label}</span>
           )}
           {item.carryover_count > 0 && (
-            <span className="t10-carryover-badge" title={`Carried over ${item.carryover_count} time${item.carryover_count > 1 ? 's' : ''}`}>
+            <span 
+              className="t10-detail-priority-label"
+              style={{ color: '#f59e0b', background: '#fef3c7', border: '1px solid #fcd34d' }}
+              title={`Carried over ${item.carryover_count} time${item.carryover_count > 1 ? 's' : ''}`}
+            >
               ×{item.carryover_count}
             </span>
           )}
         </div>
       </div>
 
-      {/* Checkbox */}
-      <button
-        className={`t10-checkbox ${isCompleted ? 'checked' : ''}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleStatus();
-        }}
-      >
-        <Check size={16} />
-      </button>
+      {/* Checkbox - 32px circular */}
+      <label className="t10-detail-checkbox" onClick={(e) => e.stopPropagation()}>
+        <input
+          type="checkbox"
+          className="t10-detail-checkbox-input"
+          checked={isCompleted}
+          onChange={onToggleStatus}
+        />
+        <div className="t10-detail-checkbox-visual">
+          <Check size={16} strokeWidth={3} />
+        </div>
+      </label>
     </div>
   );
 }
