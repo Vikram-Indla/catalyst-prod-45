@@ -1208,10 +1208,10 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .t10-panel-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 500;
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  z-index: 9998 !important;
   animation: t10-fade-in 200ms ease;
 }
 
@@ -1220,17 +1220,17 @@
 }
 
 .t10-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 480px;
-  max-width: 100vw;
-  height: 100vh;
-  background: var(--t10-bg-card);
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12), -2px 0 8px rgba(0, 0, 0, 0.08);
-  z-index: 501;
-  display: flex;
-  flex-direction: column;
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 480px !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  background: #ffffff !important;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15), -2px 0 8px rgba(0, 0, 0, 0.1) !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  flex-direction: column !important;
   animation: t10-slide-in-right 250ms ease;
 }
 
