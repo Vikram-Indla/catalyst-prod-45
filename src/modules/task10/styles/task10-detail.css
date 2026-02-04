@@ -944,9 +944,9 @@
   opacity: 1;
 }
 
-/* Always show remove button on completed items */
+/* Hide remove button on completed items */
 .t10-detail-priority-item-completed .t10-detail-remove-btn {
-  opacity: 1;
+  display: none;
 }
 
 .t10-detail-remove-btn:hover {
