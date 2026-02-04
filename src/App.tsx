@@ -58,6 +58,7 @@ import { PlannerPage, KanbanPage, MyTasksPage } from "./modules/planner";
 // Task10 pages
 const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("./modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
+const T10WeekPageV3 = lazy(() => import("./modules/task10/pages/T10WeekPageV3").then(m => ({ default: m.T10WeekPageV3 })));
 const T10CompletedPage = lazy(() => import("./modules/task10/pages/T10CompletedPage").then(m => ({ default: m.T10CompletedPage })));
 // PlanHub pages
 import {
@@ -489,7 +490,7 @@ const App = () => (
               <Route path="/taskhub/task10" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
               <Route path="/taskhub/task10/completed" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10CompletedPage /></Suspense>} />
               <Route path="/taskhub/task10/list/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPage /></Suspense>} />
-              <Route path="/taskhub/task10/list/:listId/week/:weekId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPage /></Suspense>} />
+              <Route path="/taskhub/task10/list/:listId/week/:weekId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPageV3 /></Suspense>} />
               {/* Legacy planner routes - redirect to taskhub */}
               <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
               <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
