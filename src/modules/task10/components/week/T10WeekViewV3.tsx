@@ -616,46 +616,39 @@ export function T10WeekViewV3() {
   const headerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    height: 64,
+    height: 60,
     padding: '0 24px',
     background: '#ffffff',
     borderBottom: '1px solid #e2e8f0',
-    gap: 16,
+    gap: 20,
   };
 
   const logoBadgeStyle: React.CSSProperties = {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#2563eb',
+    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
     borderRadius: 10,
     color: '#ffffff',
     fontSize: 14,
     fontWeight: 800,
+    boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)',
+    flexShrink: 0,
   };
 
   const logoTextStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 1,
-  };
-
-  const logoTitleStyle: React.CSSProperties = {
     fontSize: 16,
     fontWeight: 600,
     color: '#0f172a',
-    lineHeight: 1.2,
-  };
-
-  const logoSubtitleStyle: React.CSSProperties = {
-    fontSize: 11,
-    color: '#64748b',
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: 0,
   };
 
   const listKeyStyle: React.CSSProperties = {
-    padding: '5px 10px',
+    padding: '4px 10px',
     fontSize: 12,
     fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace",
     fontWeight: 600,
@@ -667,13 +660,13 @@ export function T10WeekViewV3() {
 
   const listNameStyle: React.CSSProperties = {
     fontSize: 15,
-    fontWeight: 600,
-    color: '#0f172a',
+    fontWeight: 500,
+    color: '#334155',
   };
 
-  const weekBtnStyle: React.CSSProperties = {
-    width: 32,
-    height: 32,
+  const weekNavBtnStyle: React.CSSProperties = {
+    width: 28,
+    height: 28,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -682,34 +675,68 @@ export function T10WeekViewV3() {
     borderRadius: 6,
     cursor: 'pointer',
     color: '#475569',
+    transition: 'all 0.15s',
   };
 
   const weekDisplayStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 10,
-    padding: '8px 16px',
+    gap: 8,
+    padding: '6px 14px',
     background: '#f8fafc',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
+    fontSize: 13,
+    fontWeight: 500,
+    color: '#0f172a',
+    whiteSpace: 'nowrap',
   };
 
-  const weekBadgeStyle: React.CSSProperties = {
-    padding: '3px 8px',
-    fontSize: 10,
+  const statusBadgeStyle: React.CSSProperties = {
+    padding: '4px 10px',
+    fontSize: 11,
     fontWeight: 700,
-    background: isCurrentWeek ? '#2563eb' : '#64748b',
+    background: isCurrentWeek ? '#10b981' : '#64748b',
     color: '#ffffff',
     borderRadius: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.3,
   };
 
+  const progressBarContainerStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+  };
+
+  const progressBarTrackStyle: React.CSSProperties = {
+    width: 100,
+    height: 6,
+    background: '#e2e8f0',
+    borderRadius: 3,
+    overflow: 'hidden',
+  };
+
+  const progressBarFillStyle: React.CSSProperties = {
+    width: `${(completedCount / 10) * 100}%`,
+    height: '100%',
+    background: '#3b82f6',
+    borderRadius: 3,
+    transition: 'width 0.3s ease',
+  };
+
+  const progressTextStyle: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 500,
+    color: '#475569',
+    whiteSpace: 'nowrap',
+  };
+
   const checkoutBtnStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 8,
-    padding: '10px 20px',
+    padding: '8px 18px',
     fontSize: 13,
     fontWeight: 600,
     color: '#ffffff',
@@ -717,7 +744,8 @@ export function T10WeekViewV3() {
     border: 'none',
     borderRadius: 8,
     cursor: 'pointer',
-    boxShadow: '0 2px 12px rgba(37, 99, 235, 0.4)',
+    boxShadow: '0 2px 10px rgba(37, 99, 235, 0.35)',
+    transition: 'all 0.15s',
   };
 
   const mainStyle: React.CSSProperties = {
@@ -894,12 +922,11 @@ export function T10WeekViewV3() {
       {/* HEADER */}
       <header style={headerStyle}>
         {/* Logo */}
-        <Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+        <Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={logoBadgeStyle}>10</div>
-          <div style={logoTextStyle}>
-            <span style={logoTitleStyle}>Task<sup style={{ fontSize: 10, color: '#2563eb', position: 'relative', top: -3 }}>10</sup></span>
-            <span style={logoSubtitleStyle}>Priority Management</span>
-          </div>
+          <span style={logoTextStyle}>
+            Task<sup style={{ fontSize: 10, color: '#2563eb', marginLeft: 1 }}>10</sup>
+          </span>
         </Link>
 
         {/* List Key + Name */}
@@ -908,42 +935,44 @@ export function T10WeekViewV3() {
           <span style={listNameStyle}>{list.name}</span>
         </div>
 
-        {/* Week Navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <button 
-            style={{ ...weekBtnStyle, opacity: hasPrevWeek ? 1 : 0.4, cursor: hasPrevWeek ? 'pointer' : 'not-allowed' }}
-            onClick={handlePrevWeek}
-            disabled={!hasPrevWeek}
-          >
-            <ChevronLeft size={16} strokeWidth={2} />
-          </button>
-          <button 
-            style={{ ...weekBtnStyle, opacity: hasNextWeek ? 1 : 0.4, cursor: hasNextWeek ? 'pointer' : 'not-allowed' }}
-            onClick={handleNextWeek}
-            disabled={!hasNextWeek}
-          >
-            <ChevronRight size={16} strokeWidth={2} />
-          </button>
-        </div>
+        {/* Week Navigation: Prev Arrow */}
+        <button 
+          style={{ ...weekNavBtnStyle, opacity: hasPrevWeek ? 1 : 0.4, cursor: hasPrevWeek ? 'pointer' : 'not-allowed' }}
+          onClick={handlePrevWeek}
+          disabled={!hasPrevWeek}
+        >
+          <ChevronLeft size={14} strokeWidth={2} />
+        </button>
 
         {/* Week Display */}
         <div style={weekDisplayStyle}>
-          <Calendar size={16} strokeWidth={2} style={{ color: '#475569' }} />
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#0f172a', whiteSpace: 'nowrap' }}>{weekLabel}</span>
-          <span style={weekBadgeStyle}>
-            {isCurrentWeek ? 'CURRENT' : 'PAST'}
-          </span>
+          <Calendar size={14} strokeWidth={2} style={{ color: '#64748b' }} />
+          <span>{weekLabel}</span>
         </div>
+
+        {/* Week Navigation: Next Arrow */}
+        <button 
+          style={{ ...weekNavBtnStyle, opacity: hasNextWeek ? 1 : 0.4, cursor: hasNextWeek ? 'pointer' : 'not-allowed' }}
+          onClick={handleNextWeek}
+          disabled={!hasNextWeek}
+        >
+          <ChevronRight size={14} strokeWidth={2} />
+        </button>
+
+        {/* Status Badge */}
+        <span style={statusBadgeStyle}>
+          {isCurrentWeek ? 'CURRENT' : 'CLOSED'}
+        </span>
 
         {/* Spacer */}
         <div style={{ flex: 1 }} />
 
-        {/* Progress */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Check size={16} style={{ color: '#475569' }} />
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#475569' }}>
-            {completedCount} of 10 completed
-          </span>
+        {/* Progress Bar + Count */}
+        <div style={progressBarContainerStyle}>
+          <div style={progressBarTrackStyle}>
+            <div style={progressBarFillStyle} />
+          </div>
+          <span style={progressTextStyle}>{completedCount} of 10</span>
         </div>
 
         {/* Checkout Button */}
@@ -952,8 +981,8 @@ export function T10WeekViewV3() {
           onClick={handleCheckout}
           disabled={!isCurrentWeek || allItems.length === 0}
         >
-          <Check size={16} strokeWidth={2.5} />
-          Checkout
+          <Check size={14} strokeWidth={2.5} />
+          Checkout Week
         </button>
       </header>
 
