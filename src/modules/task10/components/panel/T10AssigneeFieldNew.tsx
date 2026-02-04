@@ -127,13 +127,13 @@ export function T10AssigneeFieldNew({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search people..."
+            className="flex-1 min-w-0 text-sm text-gray-700 placeholder:text-gray-400 !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
             style={{
-              flex: 1,
-              border: 'none',
-              outline: 'none',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              appearance: 'none',
               backgroundColor: 'transparent',
-              fontSize: '14px',
-              color: '#374151',
+              WebkitBoxShadow: '0 0 0 1000px transparent inset',
             }}
           />
         </div>
