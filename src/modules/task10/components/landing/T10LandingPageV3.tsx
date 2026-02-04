@@ -474,14 +474,23 @@ export function T10LandingPageV3() {
           ═══════════════════════════════════════════════════════════════════════ */}
       <main className="max-w-6xl mx-auto px-8 py-8">
         {/* SEARCH */}
-        <div className="flex items-center gap-3 px-5 py-3.5 bg-white border-2 border-slate-200 rounded-xl mb-5 focus-within:border-blue-500 focus-within:shadow-[0_0_0_4px_rgba(37,99,235,0.1)] transition-all">
-          <Search size={18} className="text-slate-400" />
+        <div className="flex items-center gap-3 px-5 py-3.5 bg-white border border-slate-200 rounded-xl mb-5 focus-within:border-blue-500 focus-within:ring-[3px] focus-within:ring-blue-500/10 transition-all">
+          <Search size={18} className="text-slate-400 flex-shrink-0" />
           <input
             type="text"
             placeholder="Search lists, task number, or keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 text-[15px] font-medium text-slate-900 bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 focus:border-none placeholder:text-slate-400"
+            style={{
+              flex: 1,
+              fontSize: '15px',
+              fontWeight: 500,
+              color: '#0f172a',
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              boxShadow: 'none',
+            }}
           />
         </div>
 
