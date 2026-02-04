@@ -144,12 +144,16 @@ export function useT10BufferItems(weekId: string | null) {
     queryFn: async (): Promise<T10ItemFull[]> => {
       if (!weekId) return [];
 
+      // Buffer items are ranks 11-15 (max 5 items)
       const { data, error } = await supabase
         .from('t10_items_full')
         .select('*')
         .eq('week_id', weekId)
         .eq('is_buffer', true)
-        .order('rank', { ascending: true });
+        .gte('rank', 11)
+        .lte('rank', 15)
+        .order('rank', { ascending: true })
+        .limit(5);
 
       if (error) {
         console.error('Error fetching buffer items:', error);
@@ -211,7 +215,18 @@ export function useT10CreateItem() {
         .limit(1);
 
       const maxExistingRank = existingItems?.[0]?.rank || 0;
-      const safeRank = Math.max(input.rank, maxExistingRank + 1);
+      
+      // Enforce max 15 items total
+      const { count: totalCount } = await supabase
+        .from('t10_items')
+        .select('*', { count: 'exact', head: true })
+        .eq('week_id', input.week_id);
+      
+      if ((totalCount || 0) >= 15) {
+        throw new Error('Maximum capacity reached (15 items). Remove an item first.');
+      }
+      
+      const safeRank = Math.min(Math.max(input.rank, maxExistingRank + 1), 15);
       const isBuffer = input.is_buffer ?? safeRank > 10;
 
       const { data, error } = await supabase
@@ -248,6 +263,7 @@ export function useT10CreateItem() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(data.week_id) });
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.buffer(data.week_id) });
       queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
       queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
     },
