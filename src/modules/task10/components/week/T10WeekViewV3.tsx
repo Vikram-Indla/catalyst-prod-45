@@ -11,12 +11,29 @@ import {
   AlertCircle, GripVertical
 } from 'lucide-react';
 import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
   useT10ListById,
   useT10Weeks,
   useT10Items,
   useT10BufferItems,
   useT10ToggleItemStatus,
   useT10CreateItem,
+  useT10ReorderItems,
 } from '../../hooks';
 import { useT10AISuggestions, useAddSuggestionToT10 } from '../../hooks/useT10AISuggestions';
 import { T10SidePanelNew } from '../panel/T10SidePanelNew';
@@ -25,9 +42,117 @@ import { formatT10WeekRange, formatShortDate, getDueStatus } from '../../utils';
 import type { T10ItemFull } from '../../types';
 import '../../styles/task10-detail.css';
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// SORTABLE PRIORITY ITEM
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface SortablePriorityItemProps {
+  item: T10ItemFull;
+  onClick: () => void;
+  onToggleStatus: () => void;
+}
+
+function SortablePriorityItem({ item, onClick, onToggleStatus }: SortablePriorityItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : undefined,
+  };
+
+  const isCompleted = item.status === 'done';
+  const dueStatus = item.due_date ? getDueStatus(item.due_date) : 'normal';
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`t10-detail-priority-item ${isCompleted ? 't10-detail-priority-item-completed' : ''} ${isDragging ? 't10-detail-priority-item-dragging' : ''}`}
+      onClick={onClick}
+    >
+      {/* Drag Handle */}
+      <div
+        className="t10-detail-drag-handle"
+        {...attributes}
+        {...listeners}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <GripVertical size={16} />
+      </div>
+
+      {/* Rank Badge */}
+      <div className={`t10-detail-rank ${item.rank > 5 ? 't10-detail-rank-low' : ''}`}>
+        {item.rank}
+      </div>
+
+      {/* Content */}
+      <div className="t10-detail-priority-content">
+        <span className="t10-detail-priority-text">{item.title}</span>
+        <div className="t10-detail-priority-meta">
+          {item.label && (
+            <span className="t10-detail-priority-label">{item.label}</span>
+          )}
+          {item.assignee_name && (
+            <span className="t10-detail-priority-assignee">
+              <span className="t10-detail-priority-assignee-avatar">
+                {item.assignee_initials || item.assignee_name.substring(0, 2).toUpperCase()}
+              </span>
+              {item.assignee_name}
+            </span>
+          )}
+          {item.due_date && (
+            <span className={`t10-detail-priority-due ${dueStatus === 'overdue' ? 't10-detail-priority-due-overdue' : ''} ${dueStatus === 'today' ? 't10-detail-priority-due-today' : ''}`}>
+              <Calendar size={12} />
+              {formatShortDate(item.due_date)}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Checkbox */}
+      <div
+        className="t10-detail-checkbox"
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleStatus();
+        }}
+      >
+        <input
+          type="checkbox"
+          className="t10-detail-checkbox-input"
+          checked={isCompleted}
+          onChange={() => {}}
+        />
+        <div className="t10-detail-checkbox-visual">
+          <Check size={14} strokeWidth={3} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
 export function T10WeekViewV3() {
   const { listId, weekId } = useParams<{ listId: string; weekId: string }>();
   const navigate = useNavigate();
+
+  // DnD Sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   // UI State
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
@@ -49,6 +174,7 @@ export function T10WeekViewV3() {
   // Mutations
   const toggleStatus = useT10ToggleItemStatus();
   const createItem = useT10CreateItem();
+  const reorderItems = useT10ReorderItems();
 
   // Find current week and calculate index
   const currentWeek = weeks?.find(w => w.id === weekId);
@@ -133,6 +259,27 @@ export function T10WeekViewV3() {
   const handleBufferSwap = (bufferItem: T10ItemFull) => {
     console.log('[T10] Swap buffer item:', bufferItem.id);
     // TODO: Implement swap logic
+  };
+
+  // Handle drag end for reordering
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (!over || active.id === over.id || !items || !weekId) return;
+    
+    const oldIndex = items.findIndex(i => i.id === active.id);
+    const newIndex = items.findIndex(i => i.id === over.id);
+    
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    // The new rank is the target position (1-indexed)
+    const newRank = newIndex + 1;
+
+    reorderItems.mutate({
+      week_id: weekId,
+      item_id: active.id as string,
+      new_rank: newRank,
+    });
   };
 
   // Handle AI suggestion add
@@ -361,82 +508,40 @@ export function T10WeekViewV3() {
             </span>
           </div>
 
-          <div className="t10-detail-priority-list">
-            {items && items.length > 0 ? (
-              items.map(item => {
-                const isCompleted = item.status === 'done';
-                const dueStatus = item.due_date ? getDueStatus(item.due_date) : 'normal';
-                
-                return (
-                  <div 
-                    key={item.id}
-                    className={`t10-detail-priority-item ${isCompleted ? 't10-detail-priority-item-completed' : ''}`}
-                    onClick={() => handleItemClick(item)}
-                  >
-                    <div className="t10-detail-drag-handle">
-                      <GripVertical size={16} />
-                    </div>
-                    
-                    <div className={`t10-detail-rank ${item.rank > 5 ? 't10-detail-rank-low' : ''}`}>
-                      {item.rank}
-                    </div>
-                    
-                    <div className="t10-detail-priority-content">
-                      <span className="t10-detail-priority-text">{item.title}</span>
-                      <div className="t10-detail-priority-meta">
-                        {item.label && (
-                          <span className="t10-detail-priority-label">{item.label}</span>
-                        )}
-                        {item.assignee_name && (
-                          <span className="t10-detail-priority-assignee">
-                            <span className="t10-detail-priority-assignee-avatar">
-                              {item.assignee_initials || item.assignee_name.substring(0, 2).toUpperCase()}
-                            </span>
-                            {item.assignee_name}
-                          </span>
-                        )}
-                        {item.due_date && (
-                          <span className={`t10-detail-priority-due ${dueStatus === 'overdue' ? 't10-detail-priority-due-overdue' : ''} ${dueStatus === 'today' ? 't10-detail-priority-due-today' : ''}`}>
-                            <Calendar size={12} />
-                            {formatShortDate(item.due_date)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div 
-                      className="t10-detail-checkbox"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleStatus(item);
-                      }}
-                    >
-                      <input 
-                        type="checkbox"
-                        className="t10-detail-checkbox-input"
-                        checked={isCompleted}
-                        onChange={() => {}}
-                      />
-                      <div className="t10-detail-checkbox-visual">
-                        <Check size={14} strokeWidth={3} />
-                      </div>
-                    </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={items?.map(i => i.id) || []}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="t10-detail-priority-list">
+                {items && items.length > 0 ? (
+                  items.map(item => (
+                    <SortablePriorityItem
+                      key={item.id}
+                      item={item}
+                      onClick={() => handleItemClick(item)}
+                      onToggleStatus={() => handleToggleStatus(item)}
+                    />
+                  ))
+                ) : (
+                  <div style={{ 
+                    padding: '40px', 
+                    textAlign: 'center', 
+                    color: '#94a3b8',
+                    background: '#f8fafc',
+                    borderRadius: '12px',
+                    border: '1px dashed #e2e8f0'
+                  }}>
+                    No items yet. Add your first priority above.
                   </div>
-                );
-              })
-            ) : (
-              <div style={{ 
-                padding: '40px', 
-                textAlign: 'center', 
-                color: '#94a3b8',
-                background: '#f8fafc',
-                borderRadius: '12px',
-                border: '1px dashed #e2e8f0'
-              }}>
-                No items yet. Add your first priority above.
+                )}
               </div>
-            )}
-          </div>
+            </SortableContext>
+          </DndContext>
         </div>
 
         {/* BUFFER ZONE */}
