@@ -78,6 +78,14 @@ export { useT10AISuggestions, useAddSuggestionToT10 } from './useT10AISuggestion
 export { useT10Activity, useLogT10Activity, useT10ActivityLogger } from './useT10Activity';
 export { useProfiles, type T10Profile } from './useProfiles';
 
+// Realtime subscriptions
+export {
+  useT10ItemRealtime,
+  useT10WeekItemsRealtime,
+  useT10ItemLabelsRealtime,
+  useT10FullItemRealtime,
+} from './useT10Realtime';
+
 // Completed View
 export {
   useT10CompletedSummary,

@@ -37,6 +37,7 @@ import {
   useT10SwapWithTen,
   useT10PromoteToTop10,
   useT10DeleteItem,
+  useT10WeekItemsRealtime,
 } from '../../hooks';
 import { useT10AISuggestions, useAddSuggestionToT10 } from '../../hooks/useT10AISuggestions';
 import { T10SidePanelNew } from '../panel/T10SidePanelNew';
@@ -325,6 +326,9 @@ export function T10WeekViewV3() {
   // AI Suggestions
   const { data: aiData, isLoading: aiLoading } = useT10AISuggestions(listId, weekId);
   const addSuggestion = useAddSuggestionToT10();
+  
+  // Enable real-time subscriptions for this week's items
+  useT10WeekItemsRealtime(weekId || null);
   
   // Mutations
   const toggleStatus = useT10ToggleItemStatus();
