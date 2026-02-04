@@ -709,17 +709,6 @@ export function T10WeekViewV3() {
                   <div className="t10-detail-buffer-content">
                     <span className="t10-detail-buffer-text">{item.title}</span>
                   </div>
-                  {/* Remove Button */}
-                  <button 
-                    className="t10-detail-buffer-remove"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveItem(item);
-                    }}
-                    title="Remove item"
-                  >
-                    <X size={16} strokeWidth={2} />
-                  </button>
                   {hasEmptySlots ? (
                     <button 
                       className="t10-detail-buffer-promote"
