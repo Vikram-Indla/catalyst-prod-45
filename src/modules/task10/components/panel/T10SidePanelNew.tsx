@@ -26,6 +26,7 @@ import {
   useT10ToggleItemStatus,
   useT10DeleteItem,
   useT10UpdateItemLabels,
+  useT10FullItemRealtime,
 } from '../../hooks';
 import { T10AssigneeFieldNew } from './T10AssigneeFieldNew';
 import { T10DateFieldNew } from './T10DateFieldNew';
@@ -64,6 +65,9 @@ export function T10SidePanelNew({
   const toggleStatus = useT10ToggleItemStatus();
   const deleteItem = useT10DeleteItem();
   const updateLabels = useT10UpdateItemLabels();
+
+  // Enable real-time subscriptions for this item
+  useT10FullItemRealtime(itemId);
 
   // Sync local state with item data
   useEffect(() => {
