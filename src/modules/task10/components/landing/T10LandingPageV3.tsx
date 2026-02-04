@@ -30,6 +30,7 @@ import {
 } from '../../hooks';
 import { useToast } from '@/hooks/use-toast';
 import type { T10ListCardView, T10CompletedWeekView } from '../../types/listCards';
+import type { T10DateRangePreset, T10ListStatus } from '../../types';
 import '../../styles/task10-v2.css';
 
 // Adapter type for delete modal
@@ -51,11 +52,13 @@ export function T10LandingPageV3() {
   const [selectedCompletedWeek, setSelectedCompletedWeek] = useState<T10CompletedWeekView | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Filter state
+  // Filter state - properly typed
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
-  const [selectedDateRange, setSelectedDateRange] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [selectedDateRange, setSelectedDateRange] = useState<T10DateRangePreset | null>(null);
+  const [selectedDateStart, setSelectedDateStart] = useState<string | null>(null);
+  const [selectedDateEnd, setSelectedDateEnd] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<T10ListStatus | 'all'>('all');
 
   // Data hooks based on active tab
   const { data: activeLists = [], isLoading: listsLoading } = useT10ListCards('active');
@@ -222,7 +225,13 @@ export function T10LandingPageV3() {
             selectedAssignees={selectedAssignees}
             onAssigneesChange={setSelectedAssignees}
             selectedDateRange={selectedDateRange}
-            onDateRangeChange={setSelectedDateRange}
+            selectedDateStart={selectedDateStart}
+            selectedDateEnd={selectedDateEnd}
+            onDateRangeChange={(preset, start, end) => {
+              setSelectedDateRange(preset);
+              setSelectedDateStart(start || null);
+              setSelectedDateEnd(end || null);
+            }}
             selectedStatus={selectedStatus}
             onStatusChange={setSelectedStatus}
           />
