@@ -232,15 +232,6 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
       <div style={contentStyle}>
         <div style={titleStyle}>{item.title}</div>
         <div style={metaStyle}>
-          {/* Labels Dropdown */}
-          <div onClick={(e) => e.stopPropagation()}>
-            <T10LabelDropdown
-              itemId={item.id}
-              currentLabels={item.labels || []}
-              onLabelsChange={onLabelsChange}
-            />
-          </div>
-          
           {/* Assignee Dropdown */}
           <div onClick={(e) => e.stopPropagation()}>
             <T10AssigneeDropdown
@@ -257,6 +248,15 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
               itemId={item.id}
               currentDueDate={item.due_date || null}
               onDueDateChange={onLabelsChange}
+            />
+          </div>
+          
+          {/* Labels Dropdown */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <T10LabelDropdown
+              itemId={item.id}
+              currentLabels={item.labels || []}
+              onLabelsChange={onLabelsChange}
             />
           </div>
           
