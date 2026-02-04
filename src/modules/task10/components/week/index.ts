@@ -12,6 +12,7 @@ export { T10AIBanner } from './T10AIBanner';
 // Main week view
 export { T10WeekView } from './T10WeekView';
 export { T10WeekViewNew } from './T10WeekViewNew';
+export { T10WeekViewV3 } from './T10WeekViewV3';
 
 // Legacy components
 export { T10WeekNavigation } from './T10WeekNavigation';
