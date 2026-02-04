@@ -336,6 +336,44 @@ export function T10WeekViewV3() {
     setShowCheckoutModal(true);
   };
 
+  // Get participants for AI suggestions (safe even while loading)
+  const participantNames = allItems?.map(i => i.assignee_name).filter(Boolean) || [];
+  const uniqueParticipants = [...new Set(participantNames)].slice(0, 3);
+
+  // Mock AI suggestions (UI-only) so you can see card behavior when the backend returns none
+  const mockSuggestions = useMemo(() => {
+    const today = new Date();
+    const plusDays = (d: number) => {
+      const dt = new Date(today);
+      dt.setDate(dt.getDate() + d);
+      return dt.toISOString().slice(0, 10);
+    };
+
+    return [
+      {
+        id: 'mock-1',
+        title: 'Review security audit findings and remediation plan',
+        key: 'TH-1042',
+        due_date: plusDays(2),
+        assignee_name: uniqueParticipants[0] || 'Unassigned',
+        priority: 'high',
+      },
+      {
+        id: 'mock-2',
+        title: 'Finalize week scope and confirm owners for top priorities',
+        key: 'TH-1088',
+        due_date: plusDays(5),
+        assignee_name: uniqueParticipants[1] || uniqueParticipants[0] || 'Unassigned',
+        priority: 'critical',
+      },
+    ];
+  }, [uniqueParticipants]);
+
+  const suggestionsToRender =
+    !aiLoading && (!aiData?.suggestions || aiData.suggestions.length === 0)
+      ? mockSuggestions
+      : (aiData?.suggestions || []).slice(0, 3);
+
   // Error state
   if (listError || (!isLoading && !list)) {
     return (
@@ -376,10 +414,6 @@ export function T10WeekViewV3() {
 
   const weekLabel = formatT10WeekRange(currentWeek.week_start, currentWeek.week_end);
   const isCurrentWeek = !!currentWeek.is_current && currentWeek.status === 'active';
-
-  // Get participants for AI suggestions
-  const participantNames = allItems?.map(i => i.assignee_name).filter(Boolean) || [];
-  const uniqueParticipants = [...new Set(participantNames)].slice(0, 3);
 
   return (
     <div className="t10-detail-page">
@@ -492,8 +526,8 @@ export function T10WeekViewV3() {
                 <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
                   Loading suggestions...
                 </div>
-              ) : aiData?.suggestions && aiData.suggestions.length > 0 ? (
-                aiData.suggestions.slice(0, 3).map((suggestion, i) => (
+              ) : suggestionsToRender.length > 0 ? (
+                suggestionsToRender.map((suggestion, i) => (
                   <div key={suggestion.id} className="t10-detail-ai-suggestion-item">
                     <div className="t10-detail-ai-suggestion-left">
                       <span className={`t10-detail-ai-priority t10-detail-ai-priority-p${i + 1}`}>
@@ -537,6 +571,15 @@ export function T10WeekViewV3() {
               value={newItemText}
               onChange={(e) => setNewItemText(e.target.value)}
               onKeyDown={handleKeyDown}
+              style={{
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                boxShadow: 'none',
+                padding: 0,
+                appearance: 'none',
+                WebkitAppearance: 'none',
+              }}
             />
             <div className="t10-detail-add-hint">
               <kbd>Enter</kbd> to add
