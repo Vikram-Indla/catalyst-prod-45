@@ -202,13 +202,23 @@ export function useT10CreateItem() {
     mutationFn: async (input: T10ItemCreateInput): Promise<T10ItemFull> => {
       const { data: { user } } = await supabase.auth.getUser();
 
-      const isBuffer = input.is_buffer ?? input.rank > 10;
+      // CRITICAL: Fetch current max rank from database to prevent duplicates
+      const { data: existingItems } = await supabase
+        .from('t10_items')
+        .select('rank')
+        .eq('week_id', input.week_id)
+        .order('rank', { ascending: false })
+        .limit(1);
+
+      const maxExistingRank = existingItems?.[0]?.rank || 0;
+      const safeRank = Math.max(input.rank, maxExistingRank + 1);
+      const isBuffer = input.is_buffer ?? safeRank > 10;
 
       const { data, error } = await supabase
         .from('t10_items')
         .insert({
           week_id: input.week_id,
-          rank: input.rank,
+          rank: safeRank,
           title: input.title,
           description: input.description || null,
           taskhub_key: input.taskhub_key || null,
@@ -225,7 +235,7 @@ export function useT10CreateItem() {
         throw new Error(error.message);
       }
 
-      console.log('[T10] Item created:', data.title);
+      console.log('[T10] Item created:', data.title, 'at rank:', safeRank);
 
       // Fetch full item with labels
       const { data: fullItem } = await supabase
