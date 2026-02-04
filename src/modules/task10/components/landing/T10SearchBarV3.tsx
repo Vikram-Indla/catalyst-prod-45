@@ -57,7 +57,7 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Search lists and items by label, assignee, or keyword..."
+        placeholder="Search lists, task number, or keyword..."
         style={{
           width: '100%',
           height: '48px',

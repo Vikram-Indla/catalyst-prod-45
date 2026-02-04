@@ -41,6 +41,8 @@ export function T10ListCardV3({
     ? formatT10Date(list.week_start)
     : '';
 
+  const createdLabel = `Created · ${formatT10Date(list.created_at)}`;
+
   const handleMenuClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowMenu(!showMenu);
@@ -86,7 +88,7 @@ export function T10ListCardV3({
         padding: '20px 24px',
         cursor: hasCurrentWeek ? 'pointer' : 'default',
         transition: 'all 0.2s ease',
-        marginBottom: '12px',
+        marginBottom: 0,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = '#cbd5e1';
@@ -123,6 +125,9 @@ export function T10ListCardV3({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Created Date (kept in header to avoid extra vertical space) */}
+          <span style={{ fontSize: '12px', color: 'var(--t10-text-tertiary)' }}>{createdLabel}</span>
+
           {/* Status Badge */}
           <span
             style={{
@@ -249,11 +254,6 @@ export function T10ListCardV3({
         </div>
       </div>
 
-      {/* Created Date */}
-      <p style={{ fontSize: '13px', color: '#94a3b8', margin: '0 0 16px 0' }}>
-        Created · {formatT10Date(list.created_at)}
-      </p>
-
       {/* Current Week Section */}
       {hasCurrentWeek ? (
         <div style={{ marginBottom: pastWeeks.length > 0 ? '8px' : '0' }}>
@@ -291,16 +291,26 @@ export function T10ListCardV3({
       ) : (
         <div
           style={{
-            padding: '24px',
-            backgroundColor: '#f8fafc',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            padding: '10px 14px',
+            backgroundColor: 'var(--t10-bg-subtle)',
+            border: '1px dashed var(--t10-border-default)',
             borderRadius: '10px',
-            textAlign: 'center',
             marginBottom: pastWeeks.length > 0 ? '8px' : '0',
           }}
         >
-          <p style={{ fontSize: '14px', color: '#94a3b8', margin: '0 0 12px 0' }}>
+          <span
+            style={{
+              fontSize: '13px',
+              color: 'var(--t10-text-tertiary)',
+              whiteSpace: 'nowrap',
+            }}
+          >
             No active week
-          </p>
+          </span>
           <button
             type="button"
             onClick={(e) => {
@@ -311,18 +321,19 @@ export function T10ListCardV3({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '10px 16px',
-              backgroundColor: '#3b82f6',
+              padding: '8px 12px',
+              backgroundColor: 'var(--t10-accent)',
               color: '#ffffff',
-              fontSize: '14px',
-              fontWeight: 500,
+              fontSize: '12px',
+              fontWeight: 600,
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
+              flexShrink: 0,
               transition: 'background-color 0.15s ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2563eb')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#3b82f6')}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--t10-accent-hover)')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--t10-accent)')}
           >
             <Plus size={16} />
             Start this week
