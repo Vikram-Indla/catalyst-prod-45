@@ -564,6 +564,26 @@
   text-decoration: line-through;
 }
 
+/* Dragging State — Keep all elements visible with enhanced styling */
+.t10-detail-priority-item-dragging {
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25), 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #2563eb !important;
+  background: #ffffff !important;
+  z-index: 1000;
+  cursor: grabbing;
+}
+
+.t10-detail-priority-item-dragging .t10-detail-rank {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  transform: scale(1.1);
+}
+
+.t10-detail-priority-item-dragging .t10-detail-drag-handle {
+  opacity: 1;
+  color: #2563eb;
+}
+
 /* Drag Handle */
 .t10-detail-drag-handle {
   display: flex;
