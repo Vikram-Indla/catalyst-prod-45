@@ -82,15 +82,7 @@
   color: #64748b;
 }
 
-/* Divider */
-.t10-detail-header-divider {
-  width: 1px;
-  height: 32px;
-  background: #e2e8f0;
-  flex-shrink: 0;
-}
-
-/* List Info */
+/* List Info - matches reference layout */
 .t10-detail-list-info {
   display: flex;
   align-items: center;
@@ -115,21 +107,21 @@
   color: #0f172a;
 }
 
-/* Week Navigation */
+/* Week Navigation - arrows side by side */
 .t10-detail-week-nav {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .t10-detail-week-btn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   cursor: pointer;
@@ -148,15 +140,16 @@
   cursor: not-allowed;
 }
 
+/* Week Display with Calendar */
 .t10-detail-week-display {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
+  gap: 10px;
+  padding: 8px 16px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  margin: 0 2px;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .t10-detail-week-icon {

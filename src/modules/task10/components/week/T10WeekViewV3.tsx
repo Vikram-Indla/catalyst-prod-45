@@ -446,9 +446,9 @@ export function T10WeekViewV3() {
 
   return (
     <div className="t10-detail-page">
-      {/* HEADER - Single horizontal bar */}
+      {/* HEADER - Single horizontal bar matching reference */}
       <header className="t10-detail-header">
-        {/* Logo */}
+        {/* Logo - links back to lists without back button */}
         <Link to="/taskhub/task10" className="t10-detail-logo-link">
           <div className="t10-detail-logo-badge">10</div>
           <div className="t10-detail-logo-text">
@@ -457,17 +457,11 @@ export function T10WeekViewV3() {
           </div>
         </Link>
 
-        {/* Divider */}
-        <div className="t10-detail-header-divider" />
-
         {/* List Key + Name */}
         <div className="t10-detail-list-info">
           <span className="t10-detail-list-key">{list.key}</span>
           <span className="t10-detail-list-name">{list.name}</span>
         </div>
-
-        {/* Divider */}
-        <div className="t10-detail-header-divider" />
 
         {/* Week Navigation */}
         <div className="t10-detail-week-nav">
@@ -478,13 +472,6 @@ export function T10WeekViewV3() {
           >
             <ChevronLeft size={16} strokeWidth={2} />
           </button>
-          <div className="t10-detail-week-display">
-            <Calendar size={16} strokeWidth={2} className="t10-detail-week-icon" />
-            <span className="t10-detail-week-text">{weekLabel}</span>
-            <span className={`t10-detail-week-badge ${!isCurrentWeek ? 't10-detail-week-badge-past' : ''}`}>
-              {isCurrentWeek ? 'CURRENT' : 'PAST'}
-            </span>
-          </div>
           <button 
             className="t10-detail-week-btn"
             onClick={handleNextWeek}
@@ -492,6 +479,15 @@ export function T10WeekViewV3() {
           >
             <ChevronRight size={16} strokeWidth={2} />
           </button>
+        </div>
+
+        {/* Week Display with Calendar */}
+        <div className="t10-detail-week-display">
+          <Calendar size={16} strokeWidth={2} className="t10-detail-week-icon" />
+          <span className="t10-detail-week-text">{weekLabel}</span>
+          <span className={`t10-detail-week-badge ${!isCurrentWeek ? 't10-detail-week-badge-past' : ''}`}>
+            {isCurrentWeek ? 'CURRENT' : 'PAST'}
+          </span>
         </div>
 
         {/* Spacer */}
