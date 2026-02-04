@@ -173,6 +173,7 @@ export function T10LandingPageV3() {
 
   const handleStartWeek = async (listId: string) => {
     const range = getCurrentWeekRange();
+    console.log('[T10] Starting week for list:', listId, 'range:', range);
     try {
       const newWeek = await createWeek.mutateAsync({
         list_id: listId,
@@ -180,9 +181,12 @@ export function T10LandingPageV3() {
         week_end: range.end,
         is_current: true,
       });
-      navigate(`/taskhub/task10/list/${listId}/week/${newWeek.id}`);
+      console.log('[T10] Week created, navigating to:', `/taskhub/task10/list/${listId}/week/${newWeek.id}`);
       toast({ title: 'Week started', description: 'New week has been created.' });
+      // Navigate after toast to ensure UI feedback
+      navigate(`/taskhub/task10/list/${listId}/week/${newWeek.id}`);
     } catch (error) {
+      console.error('[T10] Failed to start week:', error);
       toast({ title: 'Error', description: 'Failed to start week.', variant: 'destructive' });
     }
   };
