@@ -85,43 +85,65 @@ export function T10AIBanner({
 
   return (
     <div className="t10-ai-banner-v2">
-      {/* Header */}
-      <div className="t10-ai-banner-v2-header" onClick={handleToggle}>
-        <div className="t10-ai-banner-v2-header-left">
-          <div className="t10-ai-banner-v2-icon">
-            <Sparkles size={18} />
+      {/* Header - Compact single line */}
+      <div 
+        className="t10-ai-banner-v2-header" 
+        onClick={handleToggle}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 16px',
+          cursor: 'pointer',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+          <div 
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              border: '1.5px solid #8b5cf6',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <Sparkles size={16} color="#8b5cf6" />
           </div>
-          <div>
-            <h3 className="t10-ai-banner-v2-title">AI Suggestions</h3>
-            <p className="t10-ai-banner-v2-subtitle">
-              {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} based on your patterns
-            </p>
-          </div>
+          <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b', whiteSpace: 'nowrap' }}>
+            AI Suggestions
+          </span>
+          <span style={{ fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} based on your patterns
+          </span>
         </div>
 
-        <div className="t10-ai-banner-v2-header-right">
-          {onViewAll && (
-            <button
-              type="button"
-              className="t10-ai-banner-v2-action"
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewAll();
-              }}
-            >
-              View All
-              <ArrowRight size={14} />
-            </button>
-          )}
-          <button
-            type="button"
-            className="t10-ai-banner-v2-dismiss"
-            onClick={handleDismiss}
-            aria-label="Dismiss suggestions"
-          >
-            <X size={16} />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleToggle();
+          }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 12px',
+            fontSize: '13px',
+            fontWeight: 500,
+            color: '#6366f1',
+            background: 'transparent',
+            border: '1px solid #e2e8f0',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {isExpanded ? <X size={14} /> : <ArrowRight size={14} style={{ transform: 'rotate(90deg)' }} />}
+          {isExpanded ? 'Hide' : 'Show'}
+        </button>
       </div>
 
       {/* Content */}
