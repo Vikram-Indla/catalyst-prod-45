@@ -43,9 +43,6 @@ import {
 import { useT10AISuggestions, useAddSuggestionToT10 } from '../../hooks/useT10AISuggestions';
 import { T10SidePanelNew } from '../panel/T10SidePanelNew';
 import { T10CheckoutModalNew } from '../modals/T10CheckoutModalNew';
-import { T10LabelDropdown } from './T10LabelDropdown';
-import { T10AssigneeDropdown } from './T10AssigneeDropdown';
-import { T10DueDateDropdown } from './T10DueDateDropdown';
 import { formatT10WeekRange, formatShortDate, getDueStatus } from '../../utils';
 import type { T10ItemFull } from '../../types';
 import '../../styles/task10-detail.css';
@@ -77,15 +74,15 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   const hasNotes = Boolean(item.description && item.description.trim());
   const [isHovered, setIsHovered] = React.useState(false);
 
-  // Card styling
+  // Card styling - Updated padding: 20px 24px
   const cardStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 12,
-    padding: 16,
+    gap: 16,
+    padding: '20px 24px',
     background: isCompleted ? '#fafafa' : '#ffffff',
     border: isDragging ? '1px solid #2563eb' : '1px solid #e2e8f0',
-    borderRadius: 12,
+    borderRadius: 16,
     cursor: 'pointer',
     transition: 'all 0.2s',
     transform: CSS.Transform.toString(transform),
@@ -115,18 +112,18 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     borderRadius: '50%',
   };
 
-  // Rank badge - ALWAYS BLUE #2563eb
+  // Rank badge - 36x36 with 10px radius
   const rankStyle: React.CSSProperties = {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 700,
     color: '#ffffff',
     backgroundColor: '#2563eb',
-    borderRadius: 8,
+    borderRadius: 10,
     flexShrink: 0,
   };
 
@@ -135,27 +132,49 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     minWidth: 0,
   };
 
+  // Title row - 12px gap from meta
   const titleStyle: React.CSSProperties = {
     fontSize: 15,
     fontWeight: 500,
     color: isCompleted ? '#94a3b8' : '#0f172a',
     textDecoration: isCompleted ? 'line-through' : 'none',
-    marginBottom: 6,
+    marginBottom: 12,
   };
 
+  // Meta row - 16px gap between items
   const metaStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
     flexWrap: 'wrap',
   };
 
+  // Meta item base style
   const metaItemStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 4,
-    fontSize: 12,
+    gap: 6,
+    fontSize: 13,
     color: '#64748b',
+  };
+
+  // Separator dot style
+  const separatorStyle: React.CSSProperties = {
+    width: 4,
+    height: 4,
+    backgroundColor: '#cbd5e1',
+    borderRadius: '50%',
+    flexShrink: 0,
+  };
+
+  // Label style - GRAY only (slate-500 text, slate-100 bg)
+  const labelStyle: React.CSSProperties = {
+    padding: '4px 10px',
+    fontSize: 12,
+    fontWeight: 500,
+    backgroundColor: '#f1f5f9',
+    color: '#64748b',
+    borderRadius: 6,
   };
 
   const dueStyle: React.CSSProperties = {
@@ -234,38 +253,47 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
       <div style={contentStyle}>
         <div style={titleStyle}>{item.title}</div>
         <div style={metaStyle}>
-          {/* Assignee Dropdown */}
-          <div onClick={(e) => e.stopPropagation()}>
-            <T10AssigneeDropdown
-              itemId={item.id}
-              currentAssigneeId={item.assignee_id || null}
-              currentAssigneeName={item.assignee_name || null}
-              onAssigneeChange={onLabelsChange}
-            />
-          </div>
+          {/* Assignee - Read-only: just icon + name */}
+          {item.assignee_name && (
+            <>
+              <span style={metaItemStyle}>
+                <User size={14} style={{ color: '#94a3b8' }} />
+                {item.assignee_name.split(' ')[0]}
+              </span>
+              {(item.due_date || (item.labels && item.labels.length > 0)) && (
+                <span style={separatorStyle} />
+              )}
+            </>
+          )}
           
-          {/* Due Date Dropdown */}
-          <div onClick={(e) => e.stopPropagation()}>
-            <T10DueDateDropdown
-              itemId={item.id}
-              currentDueDate={item.due_date || null}
-              onDueDateChange={onLabelsChange}
-            />
-          </div>
+          {/* Due Date - Read-only display, no X button */}
+          {item.due_date && (
+            <>
+              <span style={dueStyle}>
+                <Calendar size={13} />
+                {formatShortDate(item.due_date)}
+              </span>
+              {item.labels && item.labels.length > 0 && (
+                <span style={separatorStyle} />
+              )}
+            </>
+          )}
           
-          {/* Labels Dropdown */}
-          <div onClick={(e) => e.stopPropagation()}>
-            <T10LabelDropdown
-              itemId={item.id}
-              currentLabels={item.labels || []}
-              onLabelsChange={onLabelsChange}
-            />
-          </div>
+          {/* Labels - Read-only GRAY labels, no + Add button */}
+          {item.labels && item.labels.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {item.labels.map((label) => (
+                <span key={label.id} style={labelStyle}>
+                  {label.name}
+                </span>
+              ))}
+            </div>
+          )}
           
           {/* Notes indicator */}
           {hasNotes && (
             <span style={metaItemStyle} title="Has notes">
-              <StickyNote size={12} />
+              <StickyNote size={12} style={{ color: '#94a3b8' }} />
             </span>
           )}
         </div>
