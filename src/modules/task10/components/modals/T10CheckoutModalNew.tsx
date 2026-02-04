@@ -199,7 +199,7 @@ export function T10CheckoutModalNew({
               </div>
               <div style={{ flex: 1 }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 600, margin: '0 0 4px' }}>
-                  Check out
+                  Checkout
                 </h2>
                 <p style={{ fontSize: '14px', opacity: 0.9, margin: 0 }}>
                   Select items to carry over from this week
