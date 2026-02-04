@@ -83,16 +83,45 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange }:
       className={`t10-detail-priority-item ${isCompleted ? 't10-detail-priority-item-completed' : ''} ${isDragging ? 't10-detail-priority-item-dragging' : ''}`}
       onClick={onClick}
     >
-      {/* Drag Handle - dots rendered via CSS background gradient */}
+      {/* Drag Handle - 6-dot pattern via inline styles for CSS isolation */}
       <div
-        className="t10-detail-drag-handle"
         {...attributes}
         {...listeners}
         onClick={(e) => e.stopPropagation()}
+        style={{
+          width: 14,
+          height: 24,
+          cursor: 'grab',
+          flexShrink: 0,
+          background: `
+            radial-gradient(circle at 2px 2px, #94a3b8 2px, transparent 2px),
+            radial-gradient(circle at 10px 2px, #94a3b8 2px, transparent 2px),
+            radial-gradient(circle at 2px 10px, #94a3b8 2px, transparent 2px),
+            radial-gradient(circle at 10px 10px, #94a3b8 2px, transparent 2px),
+            radial-gradient(circle at 2px 18px, #94a3b8 2px, transparent 2px),
+            radial-gradient(circle at 10px 18px, #94a3b8 2px, transparent 2px)
+          `,
+          backgroundSize: '14px 24px',
+          backgroundRepeat: 'no-repeat',
+        }}
       />
 
-      {/* Rank Badge */}
-      <div className={`t10-detail-rank ${item.rank > 5 ? 't10-detail-rank-low' : ''}`}>
+      {/* Rank Badge - solid blue for all 1-10 */}
+      <div
+        style={{
+          width: 48,
+          height: 48,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 17,
+          fontWeight: 700,
+          color: '#ffffff',
+          background: '#2563eb',
+          borderRadius: 12,
+          flexShrink: 0,
+        }}
+      >
         {item.rank}
       </div>
 
