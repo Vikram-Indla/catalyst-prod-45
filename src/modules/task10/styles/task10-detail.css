@@ -583,12 +583,12 @@
   gap: 10px;
 }
 
-/* Priority Item - High contrast card design matching reference */
+/* Priority Item - Clean card design matching reference */
 .t10-detail-priority-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
+  gap: 16px;
+  padding: 20px 24px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
@@ -629,43 +629,14 @@
   color: #2563eb;
 }
 
-/* Drag Handle - HIGH CONTRAST 6-dot grid (always visible) */
-.t10-detail-drag-handle {
-  display: grid;
-  grid-template-columns: repeat(2, 5px);
-  grid-template-rows: repeat(3, 5px);
-  gap: 3px;
-  padding: 6px;
-  cursor: grab;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
-}
-
-.t10-detail-drag-handle::before,
-.t10-detail-drag-handle::after {
-  display: none;
-}
-
-/* Create 2x3 dot pattern (6 dots) - matches reference */
+/* Drag Handle - 6-dot grid */
 .t10-detail-drag-handle {
   width: 14px;
   height: 24px;
-  display: grid;
-  grid-template-columns: repeat(2, 4px);
-  grid-template-rows: repeat(3, 4px);
-  gap: 4px;
-  opacity: 0.6;
-}
-
-.t10-detail-drag-handle::before,
-.t10-detail-drag-handle::after {
-  content: '';
-  grid-column: 1 / -1;
-  grid-row: 1 / -1;
-}
-
-/* Create 6 dots using background */
-.t10-detail-drag-handle {
+  cursor: grab;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  opacity: 0.5;
   background: 
     radial-gradient(circle at 2px 2px, #94a3b8 2px, transparent 2px),
     radial-gradient(circle at 10px 2px, #94a3b8 2px, transparent 2px),
@@ -690,18 +661,18 @@
   background-repeat: no-repeat;
 }
 
-/* Rank Badge — LARGER 48px matching reference exactly */
+/* Rank Badge — 36x36 with 10px radius */
 .t10-detail-rank {
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   color: #ffffff !important;
   background: #3b82f6 !important;
-  border-radius: 12px;
+  border-radius: 10px;
   flex-shrink: 0;
 }
 
@@ -710,12 +681,12 @@
   background: #3b82f6 !important;
 }
 
-/* Content */
+/* Content — 12px gap between title and meta */
 .t10-detail-priority-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -726,37 +697,50 @@
   line-height: 1.4;
 }
 
+/* Meta row — 16px gap with separator dots */
 .t10-detail-priority-meta {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
+/* Separator dot between meta groups */
+.t10-detail-priority-meta-separator {
+  width: 4px;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Labels — GRAY only (slate-500 text, slate-100 bg) */
 .t10-detail-priority-label {
   padding: 4px 10px;
   font-size: 12px;
   font-weight: 500;
-  background: #ffffff;
-  color: #334155;
+  background: #f1f5f9;
+  color: #64748b;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border: none;
 }
 
+/* Assignee — Just name + icon, gray text */
 .t10-detail-priority-assignee {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #3b82f6;
+  color: #64748b;
 }
 
 .t10-detail-priority-assignee-avatar {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   color: #94a3b8;
 }
 
+/* Due date — Read-only display, gray text */
 .t10-detail-priority-due {
   font-size: 13px;
   color: #64748b;
