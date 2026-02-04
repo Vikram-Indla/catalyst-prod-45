@@ -199,10 +199,15 @@ export function useT10UpdateList() {
  */
 export function useRenameT10List() {
   const updateList = useT10UpdateList();
+  const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: async ({ listId, name }: { listId: string; name: string }) => {
       return updateList.mutateAsync({ id: listId, name });
+    },
+    onSuccess: () => {
+      // Task10 landing uses separate query keys (list-cards views)
+      queryClient.invalidateQueries({ queryKey: ['t10'] });
     },
   });
 }
@@ -229,6 +234,8 @@ export function useT10DeleteList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
+      // Task10 landing uses separate query keys (list-cards views)
+      queryClient.invalidateQueries({ queryKey: ['t10'] });
     },
   });
 }
