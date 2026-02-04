@@ -977,12 +977,19 @@ export function T10WeekViewV3() {
           )}
         </div>
 
-        {/* ADD INPUT */}
+        {/* ADD INPUT - Nuclear box-inside-box fix applied */}
         <div style={addWrapperStyle}>
           <Plus size={20} strokeWidth={2.5} style={{ color: isAddDisabled ? '#94a3b8' : '#2563eb', flexShrink: 0 }} />
           <input 
             type="text"
-            style={addInputStyle}
+            className="flex-1 min-w-0 text-[15px] font-normal text-slate-900 placeholder:text-slate-400 !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
+            style={{
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              appearance: 'none',
+              backgroundColor: 'transparent',
+              WebkitBoxShadow: '0 0 0 1000px transparent inset',
+            }}
             placeholder={isAddDisabled ? "Maximum 15 items reached (10 priorities + 5 buffer)" : "Add list item or paste TaskHub key..."}
             value={newItemText}
             onChange={(e) => setNewItemText(e.target.value)}
