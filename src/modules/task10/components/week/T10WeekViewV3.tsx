@@ -1114,29 +1114,63 @@ export function T10WeekViewV3() {
                       <StickyNote size={12} style={{ color: '#94a3b8', flexShrink: 0 }} />
                     )}
                   </div>
-                  {hasEmptySlots ? (
-                    <button 
-                      style={{ ...bufferPromoteBtnStyle, opacity: promoteToTop10.isPending ? 0.6 : 1 }}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {hasEmptySlots ? (
+                      <button 
+                        style={{ ...bufferPromoteBtnStyle, opacity: promoteToTop10.isPending ? 0.6 : 1 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePromoteToTop10(item);
+                        }}
+                        disabled={promoteToTop10.isPending}
+                      >
+                        {promoteToTop10.isPending ? 'Adding...' : `Add to Top 10`}
+                      </button>
+                    ) : (
+                      <button 
+                        style={{ ...bufferSwapBtnStyle, opacity: swapWithTen.isPending ? 0.6 : 1 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleBufferSwap(item);
+                        }}
+                        disabled={swapWithTen.isPending}
+                      >
+                        {swapWithTen.isPending ? 'Swapping...' : 'Swap with #10'}
+                      </button>
+                    )}
+                    <button
+                      style={{
+                        width: 28,
+                        height: 28,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#94a3b8',
+                        background: 'transparent',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 6,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handlePromoteToTop10(item);
+                        handleRemoveItem(item);
                       }}
-                      disabled={promoteToTop10.isPending}
-                    >
-                      {promoteToTop10.isPending ? 'Adding...' : `Add to Top 10`}
-                    </button>
-                  ) : (
-                    <button 
-                      style={{ ...bufferSwapBtnStyle, opacity: swapWithTen.isPending ? 0.6 : 1 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleBufferSwap(item);
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#fee2e2';
+                        e.currentTarget.style.borderColor = '#fecaca';
+                        e.currentTarget.style.color = '#dc2626';
                       }}
-                      disabled={swapWithTen.isPending}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.borderColor = '#e2e8f0';
+                        e.currentTarget.style.color = '#94a3b8';
+                      }}
+                      title="Remove from buffer"
                     >
-                      {swapWithTen.isPending ? 'Swapping...' : 'Swap with #10'}
+                      <X size={14} strokeWidth={2} />
                     </button>
-                  )}
+                  </div>
                 </div>
               );
             })
