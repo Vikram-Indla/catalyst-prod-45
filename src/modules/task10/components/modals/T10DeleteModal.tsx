@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { AlertTriangle, X } from 'lucide-react';
 
 interface T10DeleteModalProps {
   isOpen: boolean;
@@ -10,6 +11,19 @@ interface T10DeleteModalProps {
 
 export function T10DeleteModal({ isOpen, onClose, listName, onDelete }: T10DeleteModalProps) {
   const [confirmText, setConfirmText] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) setConfirmText('');
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
 
   const canDelete = confirmText === listName;
 
@@ -22,45 +36,76 @@ export function T10DeleteModal({ isOpen, onClose, listName, onDelete }: T10Delet
 
   if (!isOpen) return null;
 
-  return (
-    <div className={`t10-modal-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
-      <div className="t10-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="t10-modal-header">
-          <h2 className="t10-modal-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <AlertTriangle size={20} style={{ color: '#ef4444' }} />
-            Delete List
-          </h2>
+  return createPortal(
+    <div className="fixed inset-0 z-[100001] flex items-center justify-center" style={{ isolation: 'isolate' }}>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Modal */}
+      <div
+        className="relative z-10 w-full max-w-md mx-4 rounded-2xl border border-border bg-background text-foreground shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
+              <AlertTriangle size={18} />
+            </span>
+            <h2 className="text-base font-semibold">Delete list</h2>
+          </div>
+          <button
+            type="button"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <X size={18} />
+          </button>
         </div>
-        <div className="t10-modal-content">
-          <p style={{ marginBottom: '16px', color: '#4b5563' }}>
+
+        {/* Content */}
+        <div className="px-6 py-5 space-y-3">
+          <p className="text-sm text-muted-foreground">
             This action cannot be undone. All items and history will be permanently deleted.
           </p>
-          <p style={{ marginBottom: '12px', color: '#374151', fontWeight: 500 }}>
-            Type <strong>"{listName}"</strong> to confirm:
+          <p className="text-sm">
+            Type <strong className="font-semibold">“{listName}”</strong> to confirm.
           </p>
           <input
             type="text"
-            className={`t10-input ${confirmText && confirmText !== listName ? 't10-input-danger' : ''}`}
-            placeholder="Type list name to confirm..."
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleDelete()}
             autoFocus
+            placeholder="Type list name…"
+            className="w-full rounded-lg border border-input bg-transparent px-3.5 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           />
+          {confirmText && confirmText !== listName && (
+            <p className="text-xs text-destructive">Name does not match.</p>
+          )}
         </div>
-        <div className="t10-modal-footer">
-          <button className="t10-btn t10-btn-secondary" onClick={onClose}>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-border bg-muted/40">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-9 items-center justify-center rounded-lg border border-input bg-background px-4 text-sm font-medium hover:bg-muted transition-colors"
+          >
             Cancel
           </button>
           <button
-            className="t10-btn t10-btn-danger"
+            type="button"
             onClick={handleDelete}
             disabled={!canDelete}
+            className="inline-flex h-9 items-center justify-center rounded-lg bg-destructive px-4 text-sm font-semibold text-destructive-foreground hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Delete List
+            Delete
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

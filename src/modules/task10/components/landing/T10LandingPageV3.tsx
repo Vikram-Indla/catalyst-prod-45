@@ -22,9 +22,11 @@ import { format, parseISO } from 'date-fns';
 import { T10NewListModal } from './T10NewListModal';
 import { T10RenameModal } from '../modals/T10RenameModal';
 import { T10DeleteModal } from '../modals/T10DeleteModal';
+import { T10ArchiveModal } from '../modals/T10ArchiveModal';
 import { 
   useT10ListCards, 
   useT10CompletedWeeksView,
+  useT10ArchiveList,
   useT10RestoreList,
 } from '../../hooks/useTask10ListCards';
 import { 
@@ -316,6 +318,7 @@ export function T10LandingPageV3() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [selectedList, setSelectedList] = useState<{ id: string; name: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState<{ id: string; name: string; rect: DOMRect } | null>(null);
@@ -340,6 +343,7 @@ export function T10LandingPageV3() {
   const renameList = useRenameT10List();
   const deleteList = useDeleteT10List();
   const createWeek = useT10CreateWeek();
+  const archiveList = useT10ArchiveList();
   const restoreList = useT10RestoreList();
 
   // Filter lists based on search
@@ -430,6 +434,17 @@ export function T10LandingPageV3() {
       setShowDeleteModal(false);
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to delete list.', variant: 'destructive' });
+    }
+  };
+
+  const handleArchiveSubmit = async () => {
+    if (!selectedList) return;
+    try {
+      await archiveList.mutateAsync(selectedList.id);
+      toast({ title: 'List archived', description: `"${selectedList.name}" has been archived.` });
+      setShowArchiveModal(false);
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to archive list.', variant: 'destructive' });
     }
   };
 
@@ -734,6 +749,12 @@ export function T10LandingPageV3() {
             listName={selectedList.name}
             onDelete={handleDeleteSubmit}
           />
+          <T10ArchiveModal
+            isOpen={showArchiveModal}
+            onClose={() => setShowArchiveModal(false)}
+            listName={selectedList.name}
+            onArchive={handleArchiveSubmit}
+          />
         </>
       )}
 
@@ -754,6 +775,7 @@ export function T10LandingPageV3() {
             }}
           >
             <button
+              type="button"
               onClick={() => {
                 setSelectedList({ id: menuOpen.id, name: menuOpen.name });
                 setShowRenameModal(true);
@@ -765,10 +787,10 @@ export function T10LandingPageV3() {
               Rename
             </button>
             <button
+              type="button"
               onClick={() => {
-                // Archive logic (same as delete for now)
                 setSelectedList({ id: menuOpen.id, name: menuOpen.name });
-                setShowDeleteModal(true);
+                setShowArchiveModal(true);
                 setMenuOpen(null);
               }}
               className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
@@ -778,6 +800,7 @@ export function T10LandingPageV3() {
             </button>
             <div className="my-1 border-t border-slate-100" />
             <button
+              type="button"
               onClick={() => {
                 setSelectedList({ id: menuOpen.id, name: menuOpen.name });
                 setShowDeleteModal(true);
