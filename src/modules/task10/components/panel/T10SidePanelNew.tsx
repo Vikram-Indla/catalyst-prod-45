@@ -203,25 +203,30 @@ export function T10SidePanelNew({
   // Invasive inline styles to ensure panel visibility regardless of CSS conflicts
   const panelStyles: React.CSSProperties = {
     position: 'fixed',
-    top: 0,
+    top: 'var(--app-top-offset, 0px)',
     right: 0,
     width: 480,
     maxWidth: '100vw',
-    height: '100vh',
+    height: 'calc(100dvh - var(--app-top-offset, 0px))',
     background: '#ffffff',
     boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.15), -2px 0 8px rgba(0, 0, 0, 0.1)',
-    zIndex: 9999,
+    zIndex: 100001,
     display: 'flex',
     flexDirection: 'column',
+    pointerEvents: 'auto',
     transform: isClosing ? 'translateX(100%)' : 'translateX(0)',
     transition: 'transform 0.25s ease-out',
   };
 
   const overlayStyles: React.CSSProperties = {
     position: 'fixed',
-    inset: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 'var(--app-top-offset, 0px)',
     background: 'rgba(0, 0, 0, 0.4)',
-    zIndex: 9998,
+    zIndex: 100000,
+    pointerEvents: 'auto',
   };
 
   if (isLoading || !item) {
@@ -253,13 +258,22 @@ export function T10SidePanelNew({
       {/* Panel - with invasive inline styles */}
       <div style={panelStyles}>
         {/* Header */}
-        <div className="t10-panel-header" style={{
-          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-          padding: '16px 20px',
-          flexShrink: 0,
-        }}>
-          <div className="t10-panel-header-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div className="t10-panel-header-left" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div
+          style={{
+            background: 'linear-gradient(135deg, var(--t10-accent) 0%, var(--t10-accent-hover) 100%)',
+            padding: '16px 20px',
+            flexShrink: 0,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 8,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -322,7 +336,7 @@ export function T10SidePanelNew({
             </div>
           </div>
           {item.taskhub_key && (
-            <div className="t10-panel-key-row">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span className="t10-panel-key">{item.taskhub_key}</span>
               <button
                 type="button"
@@ -337,7 +351,12 @@ export function T10SidePanelNew({
         </div>
 
         {/* Title Section */}
-        <div className="t10-panel-title-section">
+        <div
+          style={{
+            padding: 20,
+            borderBottom: '1px solid var(--t10-border-subtle)',
+          }}
+        >
           {isEditingTitle ? (
             <input
               type="text"
@@ -365,27 +384,64 @@ export function T10SidePanelNew({
         </div>
 
         {/* Tabs */}
-        <div className="t10-panel-tabs">
+        <div
+          style={{
+            display: 'flex',
+            borderBottom: '1px solid var(--t10-border-default)',
+            flexShrink: 0,
+          }}
+        >
           <button
             type="button"
             onClick={() => setActiveTab('details')}
-            className={`t10-panel-tab ${activeTab === 'details' ? 't10-panel-tab-active' : ''}`}
+            style={{
+              flex: 1,
+              padding: '12px 14px',
+              fontSize: 13,
+              fontWeight: 600,
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: activeTab === 'details' ? 'var(--t10-accent)' : 'var(--t10-text-secondary)',
+              borderBottom:
+                activeTab === 'details'
+                  ? '2px solid var(--t10-accent)'
+                  : '2px solid transparent',
+            }}
           >
             Details
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('activity')}
-            className={`t10-panel-tab ${activeTab === 'activity' ? 't10-panel-tab-active' : ''}`}
+            style={{
+              flex: 1,
+              padding: '12px 14px',
+              fontSize: 13,
+              fontWeight: 600,
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: activeTab === 'activity' ? 'var(--t10-accent)' : 'var(--t10-text-secondary)',
+              borderBottom:
+                activeTab === 'activity'
+                  ? '2px solid var(--t10-accent)'
+                  : '2px solid transparent',
+            }}
           >
             Activity
           </button>
         </div>
 
         {/* Content */}
-        <div className="t10-panel-content">
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+          }}
+        >
           {activeTab === 'details' && (
-            <div className="t10-panel-body">
+            <div style={{ padding: 20 }}>
               {/* Status Field */}
               <div className="t10-field-group">
                 <div className="t10-field-header">
@@ -478,15 +534,24 @@ export function T10SidePanelNew({
           )}
 
           {activeTab === 'activity' && (
-            <div className="t10-panel-body">
+            <div style={{ padding: 20 }}>
               <T10ActivityTimeline itemId={item.id} />
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="t10-panel-footer">
-          <span className="t10-panel-footer-meta">
+        <div
+          style={{
+            padding: '16px 20px',
+            borderTop: '1px solid var(--t10-border-subtle)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0,
+          }}
+        >
+          <span style={{ fontSize: 13, color: 'var(--t10-text-secondary)' }}>
             Created {formatT10RelativeTime(item.created_at)}
           </span>
           <button
