@@ -180,7 +180,7 @@ export function T10CheckoutModalNew({
                 alignItems: 'center',
                 gap: '12px',
                 padding: '20px 24px',
-                background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
                 color: '#ffffff',
               }}
             >
@@ -228,7 +228,7 @@ export function T10CheckoutModalNew({
             {/* Body */}
             <div style={{ padding: '24px' }}>
               <p style={{ fontSize: '15px', color: '#374151', marginBottom: '16px' }}>
-                <strong style={{ color: '#0d9488' }}>{completedItems.length}</strong> items completed this week
+                <strong style={{ color: '#2563eb' }}>{completedItems.length}</strong> items completed this week
               </p>
 
               {/* Items List */}
@@ -253,8 +253,8 @@ export function T10CheckoutModalNew({
                         alignItems: 'center',
                         gap: '12px',
                         padding: '12px 14px',
-                        backgroundColor: isSelected ? '#f0fdfa' : '#f9fafb',
-                        border: isSelected ? '1px solid #0d9488' : '1px solid #e5e7eb',
+                        backgroundColor: isSelected ? '#eff6ff' : '#f9fafb',
+                        border: isSelected ? '1px solid #2563eb' : '1px solid #e5e7eb',
                         borderRadius: '8px',
                         cursor: 'pointer',
                       }}
@@ -263,9 +263,9 @@ export function T10CheckoutModalNew({
                         style={{
                           width: '20px',
                           height: '20px',
-                          border: isSelected ? '2px solid #0d9488' : '2px solid #d1d5db',
+                          border: isSelected ? '2px solid #2563eb' : '2px solid #d1d5db',
                           borderRadius: '4px',
-                          backgroundColor: isSelected ? '#0d9488' : 'transparent',
+                          backgroundColor: isSelected ? '#2563eb' : 'transparent',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -429,7 +429,7 @@ export function T10CheckoutModalNew({
                   fontSize: '14px',
                   fontWeight: 500,
                   color: '#ffffff',
-                  backgroundColor: '#0d9488',
+                  backgroundColor: '#2563eb',
                   border: 'none',
                   borderRadius: '6px',
                   cursor: selectedIds.length === 0 ? 'not-allowed' : 'pointer',
