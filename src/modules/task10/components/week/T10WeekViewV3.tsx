@@ -68,69 +68,177 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     isDragging,
   } = useSortable({ id: item.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1000 : undefined,
-  };
-
   const isCompleted = item.status === 'done';
   const dueStatus = item.due_date ? getDueStatus(item.due_date) : 'normal';
+
+  // INVASIVE: All styles inline to prevent CSS cascade issues
+  const cardStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+    padding: '16px 20px',
+    background: '#ffffff',
+    border: isDragging ? '1px solid #2563eb' : '1px solid #e2e8f0',
+    borderRadius: 16,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    transform: CSS.Transform.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : undefined,
+    boxShadow: isDragging ? '0 12px 28px rgba(37, 99, 235, 0.25)' : undefined,
+  };
+
+  const dragHandleStyle: React.CSSProperties = {
+    width: 14,
+    height: 24,
+    cursor: 'grab',
+    flexShrink: 0,
+    opacity: 0.5,
+    background: `
+      radial-gradient(circle at 2px 2px, #64748b 2px, transparent 2px),
+      radial-gradient(circle at 10px 2px, #64748b 2px, transparent 2px),
+      radial-gradient(circle at 2px 10px, #64748b 2px, transparent 2px),
+      radial-gradient(circle at 10px 10px, #64748b 2px, transparent 2px),
+      radial-gradient(circle at 2px 18px, #64748b 2px, transparent 2px),
+      radial-gradient(circle at 10px 18px, #64748b 2px, transparent 2px)
+    `,
+    backgroundSize: '14px 24px',
+    backgroundRepeat: 'no-repeat',
+  };
+
+  const rankStyle: React.CSSProperties = {
+    width: 48,
+    height: 48,
+    minWidth: 48,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 17,
+    fontWeight: 700,
+    color: '#ffffff',
+    background: '#2563eb',
+    borderRadius: 12,
+    flexShrink: 0,
+  };
+
+  const contentStyle: React.CSSProperties = {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+    minWidth: 0,
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontSize: 15,
+    fontWeight: 500,
+    color: isCompleted ? '#94a3b8' : '#0f172a',
+    textDecoration: isCompleted ? 'line-through' : 'none',
+    lineHeight: 1.4,
+  };
+
+  const metaStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    flexWrap: 'wrap',
+  };
+
+  const assigneeStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5,
+    fontSize: 13,
+    color: '#3b82f6',
+  };
+
+  const dueStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5,
+    fontSize: 13,
+    color: dueStatus === 'overdue' ? '#dc2626' : dueStatus === 'today' ? '#f59e0b' : '#64748b',
+  };
+
+  const removeStyle: React.CSSProperties = {
+    width: 32,
+    height: 32,
+    display: isCompleted ? 'none' : 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#94a3b8',
+    background: 'transparent',
+    border: 'none',
+    borderRadius: 8,
+    cursor: 'pointer',
+    flexShrink: 0,
+    opacity: 0,
+    transition: 'opacity 0.15s ease, color 0.15s ease, background 0.15s ease',
+  };
+
+  const checkboxContainerStyle: React.CSSProperties = {
+    position: 'relative',
+    width: 32,
+    height: 32,
+    flexShrink: 0,
+    cursor: 'pointer',
+    marginLeft: 'auto',
+  };
+
+  const checkboxInputStyle: React.CSSProperties = {
+    position: 'absolute',
+    opacity: 0,
+    width: '100%',
+    height: '100%',
+    cursor: 'pointer',
+    zIndex: 1,
+    margin: 0,
+  };
+
+  const checkboxVisualStyle: React.CSSProperties = {
+    width: 32,
+    height: 32,
+    border: isCompleted ? 'none' : '2px solid #cbd5e1',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: isCompleted ? '#3b82f6' : '#ffffff',
+    transition: 'all 0.2s ease',
+    boxShadow: isCompleted ? '0 2px 8px rgba(59, 130, 246, 0.35)' : undefined,
+  };
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className={`t10-detail-priority-item ${isCompleted ? 't10-detail-priority-item-completed' : ''} ${isDragging ? 't10-detail-priority-item-dragging' : ''}`}
+      style={cardStyle}
       onClick={onClick}
+      onMouseEnter={(e) => {
+        const removeBtn = e.currentTarget.querySelector('[data-remove-btn]') as HTMLElement;
+        if (removeBtn) removeBtn.style.opacity = '1';
+      }}
+      onMouseLeave={(e) => {
+        const removeBtn = e.currentTarget.querySelector('[data-remove-btn]') as HTMLElement;
+        if (removeBtn) removeBtn.style.opacity = '0';
+      }}
     >
-      {/* Drag Handle - 6-dot pattern via inline styles for CSS isolation */}
+      {/* Drag Handle - 6-dot pattern */}
       <div
         {...attributes}
         {...listeners}
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: 14,
-          height: 24,
-          cursor: 'grab',
-          flexShrink: 0,
-          background: `
-            radial-gradient(circle at 2px 2px, #94a3b8 2px, transparent 2px),
-            radial-gradient(circle at 10px 2px, #94a3b8 2px, transparent 2px),
-            radial-gradient(circle at 2px 10px, #94a3b8 2px, transparent 2px),
-            radial-gradient(circle at 10px 10px, #94a3b8 2px, transparent 2px),
-            radial-gradient(circle at 2px 18px, #94a3b8 2px, transparent 2px),
-            radial-gradient(circle at 10px 18px, #94a3b8 2px, transparent 2px)
-          `,
-          backgroundSize: '14px 24px',
-          backgroundRepeat: 'no-repeat',
-        }}
+        style={dragHandleStyle}
       />
 
-      {/* Rank Badge - solid blue for all 1-10 */}
-      <div
-        style={{
-          width: 48,
-          height: 48,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 17,
-          fontWeight: 700,
-          color: '#ffffff',
-          background: '#2563eb',
-          borderRadius: 12,
-          flexShrink: 0,
-        }}
-      >
+      {/* Rank Badge */}
+      <div style={rankStyle}>
         {item.rank}
       </div>
 
       {/* Content */}
-      <div className="t10-detail-priority-content">
-        <span className="t10-detail-priority-text">{item.title}</span>
-        <div className="t10-detail-priority-meta">
+      <div style={contentStyle}>
+        <span style={titleStyle}>{item.title}</span>
+        <div style={metaStyle}>
           {/* Labels Dropdown */}
           <div onClick={(e) => e.stopPropagation()}>
             <T10LabelDropdown
@@ -141,13 +249,13 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
           </div>
           
           {item.assignee_name && (
-            <span className="t10-detail-priority-assignee">
-              <User size={14} className="t10-detail-priority-assignee-avatar" />
+            <span style={assigneeStyle}>
+              <User size={14} style={{ color: '#94a3b8' }} />
               {item.assignee_name}
             </span>
           )}
           {item.due_date && (
-            <span className={`t10-detail-priority-due ${dueStatus === 'overdue' ? 't10-detail-priority-due-overdue' : ''} ${dueStatus === 'today' ? 't10-detail-priority-due-today' : ''}`}>
+            <span style={dueStyle}>
               <Calendar size={12} />
               {formatShortDate(item.due_date)}
             </span>
@@ -157,10 +265,19 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
 
       {/* Remove Button */}
       <button
-        className="t10-detail-remove-btn"
+        data-remove-btn
+        style={removeStyle}
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = '#ef4444';
+          e.currentTarget.style.background = '#fef2f2';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = '#94a3b8';
+          e.currentTarget.style.background = 'transparent';
         }}
         title="Remove item"
       >
@@ -169,7 +286,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
 
       {/* Checkbox */}
       <div
-        className="t10-detail-checkbox"
+        style={checkboxContainerStyle}
         onClick={(e) => {
           e.stopPropagation();
           onToggleStatus();
@@ -177,12 +294,12 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
       >
         <input
           type="checkbox"
-          className="t10-detail-checkbox-input"
+          style={checkboxInputStyle}
           checked={isCompleted}
           onChange={() => {}}
         />
-        <div className="t10-detail-checkbox-visual">
-          <Check size={14} strokeWidth={3} />
+        <div style={checkboxVisualStyle}>
+          <Check size={14} strokeWidth={3} style={{ color: '#ffffff', opacity: isCompleted ? 1 : 0 }} />
         </div>
       </div>
     </div>
@@ -444,36 +561,321 @@ export function T10WeekViewV3() {
   const weekLabel = formatT10WeekRange(currentWeek.week_start, currentWeek.week_end);
   const isCurrentWeek = !!currentWeek.is_current && currentWeek.status === 'active';
 
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // INLINE STYLES (CSS cascade-proof)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const pageStyle: React.CSSProperties = {
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    background: '#f8fafc',
+    minHeight: '100vh',
+  };
+
+  const headerStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    height: 64,
+    padding: '0 24px',
+    background: '#ffffff',
+    borderBottom: '1px solid #e2e8f0',
+    gap: 16,
+  };
+
+  const logoBadgeStyle: React.CSSProperties = {
+    width: 40,
+    height: 40,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#2563eb',
+    borderRadius: 10,
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 800,
+  };
+
+  const logoTextStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+  };
+
+  const logoTitleStyle: React.CSSProperties = {
+    fontSize: 16,
+    fontWeight: 600,
+    color: '#0f172a',
+    lineHeight: 1.2,
+  };
+
+  const logoSubtitleStyle: React.CSSProperties = {
+    fontSize: 11,
+    color: '#64748b',
+  };
+
+  const listKeyStyle: React.CSSProperties = {
+    padding: '5px 10px',
+    fontSize: 12,
+    fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace",
+    fontWeight: 600,
+    borderRadius: 6,
+    background: '#f1f5f9',
+    color: '#475569',
+    border: '1px solid #e2e8f0',
+  };
+
+  const listNameStyle: React.CSSProperties = {
+    fontSize: 15,
+    fontWeight: 600,
+    color: '#0f172a',
+  };
+
+  const weekBtnStyle: React.CSSProperties = {
+    width: 32,
+    height: 32,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#ffffff',
+    border: '1px solid #e2e8f0',
+    borderRadius: 6,
+    cursor: 'pointer',
+    color: '#475569',
+  };
+
+  const weekDisplayStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    padding: '8px 16px',
+    background: '#f8fafc',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+  };
+
+  const weekBadgeStyle: React.CSSProperties = {
+    padding: '3px 8px',
+    fontSize: 10,
+    fontWeight: 700,
+    background: isCurrentWeek ? '#2563eb' : '#64748b',
+    color: '#ffffff',
+    borderRadius: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+  };
+
+  const checkoutBtnStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    padding: '10px 20px',
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#ffffff',
+    background: '#2563eb',
+    border: 'none',
+    borderRadius: 8,
+    cursor: 'pointer',
+    boxShadow: '0 2px 12px rgba(37, 99, 235, 0.4)',
+  };
+
+  const mainStyle: React.CSSProperties = {
+    maxWidth: 1200,
+    margin: '0 auto',
+    padding: '24px 48px',
+  };
+
+  const aiSectionStyle: React.CSSProperties = {
+    marginBottom: 20,
+    background: '#ffffff',
+    border: '1px dashed #cbd5e1',
+    borderRadius: 16,
+    overflow: 'hidden',
+  };
+
+  const aiCardStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '16px 20px',
+  };
+
+  const aiIconStyle: React.CSSProperties = {
+    width: 44,
+    height: 44,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'transparent',
+    border: '2px solid #8b5cf6',
+    borderRadius: 12,
+    color: '#8b5cf6',
+  };
+
+  const aiToggleBtnStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    padding: '8px 16px',
+    fontSize: 13,
+    fontWeight: 500,
+    color: '#475569',
+    background: '#ffffff',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+    cursor: 'pointer',
+  };
+
+  const addWrapperStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+    padding: '16px 20px',
+    marginBottom: 24,
+    background: '#ffffff',
+    border: '1px dashed #cbd5e1',
+    borderRadius: 16,
+    opacity: isAddDisabled ? 0.6 : 1,
+  };
+
+  const addInputStyle: React.CSSProperties = {
+    flex: 1,
+    padding: 0,
+    fontSize: 15,
+    fontWeight: 400,
+    color: '#0f172a',
+    background: 'transparent',
+    border: 'none',
+    outline: 'none',
+  };
+
+  const kbdStyle: React.CSSProperties = {
+    padding: '6px 12px',
+    fontFamily: 'inherit',
+    fontSize: 12,
+    fontWeight: 500,
+    color: '#475569',
+    background: '#ffffff',
+    border: '1px solid #e2e8f0',
+    borderRadius: 6,
+  };
+
+  const sectionHeaderStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  };
+
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: 11,
+    fontWeight: 700,
+    color: '#94a3b8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  };
+
+  const sectionCountStyle: React.CSSProperties = {
+    fontSize: 12,
+    color: '#94a3b8',
+  };
+
+  const priorityListStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+  };
+
+  const bufferSectionStyle: React.CSSProperties = {
+    marginTop: 24,
+  };
+
+  const bufferHeaderStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  };
+
+  const bufferItemStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '10px 12px',
+    background: '#f8fafc',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+    marginBottom: 6,
+    cursor: 'pointer',
+  };
+
+  const bufferRankStyle: React.CSSProperties = {
+    width: 28,
+    height: 28,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#94a3b8',
+    background: 'transparent',
+    border: '2px dashed #d1d5db',
+    borderRadius: 8,
+    flexShrink: 0,
+  };
+
+  const bufferSwapBtnStyle: React.CSSProperties = {
+    padding: '6px 12px',
+    fontSize: 12,
+    fontWeight: 500,
+    color: '#2563eb',
+    background: '#dbeafe',
+    border: 'none',
+    borderRadius: 6,
+    cursor: 'pointer',
+    flexShrink: 0,
+  };
+
+  const bufferPromoteBtnStyle: React.CSSProperties = {
+    padding: '6px 14px',
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#ffffff',
+    background: '#3b82f6',
+    border: 'none',
+    borderRadius: 6,
+    cursor: 'pointer',
+    flexShrink: 0,
+  };
+
   return (
-    <div className="t10-detail-page">
-      {/* HEADER - Single horizontal bar matching reference */}
-      <header className="t10-detail-header">
-        {/* Logo - links back to lists without back button */}
-        <Link to="/taskhub/task10" className="t10-detail-logo-link">
-          <div className="t10-detail-logo-badge">10</div>
-          <div className="t10-detail-logo-text">
-            <span className="t10-detail-logo-title">Task<sup>10</sup></span>
-            <span className="t10-detail-logo-subtitle">Priority Management</span>
+    <div style={pageStyle}>
+      {/* HEADER */}
+      <header style={headerStyle}>
+        {/* Logo */}
+        <Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <div style={logoBadgeStyle}>10</div>
+          <div style={logoTextStyle}>
+            <span style={logoTitleStyle}>Task<sup style={{ fontSize: 10, color: '#2563eb', position: 'relative', top: -3 }}>10</sup></span>
+            <span style={logoSubtitleStyle}>Priority Management</span>
           </div>
         </Link>
 
         {/* List Key + Name */}
-        <div className="t10-detail-list-info">
-          <span className="t10-detail-list-key">{list.key}</span>
-          <span className="t10-detail-list-name">{list.name}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={listKeyStyle}>{list.key}</span>
+          <span style={listNameStyle}>{list.name}</span>
         </div>
 
         {/* Week Navigation */}
-        <div className="t10-detail-week-nav">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <button 
-            className="t10-detail-week-btn"
+            style={{ ...weekBtnStyle, opacity: hasPrevWeek ? 1 : 0.4, cursor: hasPrevWeek ? 'pointer' : 'not-allowed' }}
             onClick={handlePrevWeek}
             disabled={!hasPrevWeek}
           >
             <ChevronLeft size={16} strokeWidth={2} />
           </button>
           <button 
-            className="t10-detail-week-btn"
+            style={{ ...weekBtnStyle, opacity: hasNextWeek ? 1 : 0.4, cursor: hasNextWeek ? 'pointer' : 'not-allowed' }}
             onClick={handleNextWeek}
             disabled={!hasNextWeek}
           >
@@ -481,29 +883,29 @@ export function T10WeekViewV3() {
           </button>
         </div>
 
-        {/* Week Display with Calendar */}
-        <div className="t10-detail-week-display">
-          <Calendar size={16} strokeWidth={2} className="t10-detail-week-icon" />
-          <span className="t10-detail-week-text">{weekLabel}</span>
-          <span className={`t10-detail-week-badge ${!isCurrentWeek ? 't10-detail-week-badge-past' : ''}`}>
+        {/* Week Display */}
+        <div style={weekDisplayStyle}>
+          <Calendar size={16} strokeWidth={2} style={{ color: '#475569' }} />
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#0f172a', whiteSpace: 'nowrap' }}>{weekLabel}</span>
+          <span style={weekBadgeStyle}>
             {isCurrentWeek ? 'CURRENT' : 'PAST'}
           </span>
         </div>
 
         {/* Spacer */}
-        <div className="t10-detail-header-spacer" />
+        <div style={{ flex: 1 }} />
 
         {/* Progress */}
-        <div className="t10-detail-progress">
-          <Check size={16} className="t10-detail-progress-check" />
-          <span className="t10-detail-progress-text">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Check size={16} style={{ color: '#475569' }} />
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#475569' }}>
             {completedCount} of 10 completed
           </span>
         </div>
 
         {/* Checkout Button */}
         <button 
-          className="t10-detail-btn-checkout"
+          style={{ ...checkoutBtnStyle, opacity: (!isCurrentWeek || allItems.length === 0) ? 0.5 : 1, cursor: (!isCurrentWeek || allItems.length === 0) ? 'not-allowed' : 'pointer' }}
           onClick={handleCheckout}
           disabled={!isCurrentWeek || allItems.length === 0}
         >
@@ -513,17 +915,17 @@ export function T10WeekViewV3() {
       </header>
 
       {/* MAIN */}
-      <main className="t10-detail-main">
+      <main style={mainStyle}>
         {/* AI SUGGESTIONS */}
-        <div className="t10-detail-ai-section">
-          <div className="t10-detail-ai-card">
-            <div className="t10-detail-ai-left">
-              <div className="t10-detail-ai-icon">
+        <div style={aiSectionStyle}>
+          <div style={aiCardStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={aiIconStyle}>
                 <Zap size={18} strokeWidth={2} />
               </div>
-              <div className="t10-detail-ai-content">
-                <span className="t10-detail-ai-title">AI Suggestions</span>
-                <span className="t10-detail-ai-subtitle">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: '#0f172a' }}>AI Suggestions</span>
+                <span style={{ fontSize: 13, color: '#64748b' }}>
                   {uniqueParticipants.length > 0 
                     ? `Based on TaskHub items for ${uniqueParticipants.join(', ')}`
                     : 'Based on TaskHub backlog items'
@@ -532,48 +934,58 @@ export function T10WeekViewV3() {
               </div>
             </div>
             <button 
-              className={`t10-detail-ai-toggle ${aiPanelOpen ? 'expanded' : ''}`}
+              style={aiToggleBtnStyle}
               onClick={() => setAiPanelOpen(!aiPanelOpen)}
             >
-              <ChevronDown size={14} strokeWidth={2} />
+              <ChevronDown size={14} strokeWidth={2} style={{ transform: aiPanelOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
               {aiPanelOpen ? 'Hide' : 'Show'}
             </button>
           </div>
 
           {aiPanelOpen && (
-            <div className="t10-detail-ai-panel">
-              <div className="t10-detail-ai-panel-header">
-                <Info size={14} strokeWidth={2} />
-                Showing HIGH and CRITICAL priority tasks assigned to participants
-              </div>
-              
+            <div style={{ padding: '0 20px 20px' }}>
               {aiLoading ? (
                 <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
                   Loading suggestions...
                 </div>
               ) : suggestionsToRender.length > 0 ? (
                 suggestionsToRender.map((suggestion, i) => (
-                  <div key={suggestion.id} className="t10-detail-ai-suggestion-item">
-                    <div className="t10-detail-ai-suggestion-left">
-                      <span className={`t10-detail-ai-priority t10-detail-ai-priority-p${i + 1}`}>
+                  <div 
+                    key={suggestion.id} 
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '16px 20px',
+                      background: '#f8fafc',
+                      borderRadius: 12,
+                      marginBottom: i < suggestionsToRender.length - 1 ? 8 : 0,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        width: 40,
+                        height: 40,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 13,
+                        fontWeight: 700,
+                        borderRadius: 10,
+                        background: i === 0 ? '#2563eb' : i === 1 ? '#3b82f6' : '#60a5fa',
+                        color: '#ffffff',
+                        flexShrink: 0,
+                      }}>
                         P{i + 1}
                       </span>
                       <div>
-                        <span className="t10-detail-ai-suggestion-text">{suggestion.title}</span>
-                        <div className="t10-detail-ai-suggestion-meta">
+                        <span style={{ display: 'block', fontSize: 15, fontWeight: 600, color: '#0f172a', marginBottom: 4 }}>{suggestion.title}</span>
+                        <div style={{ fontSize: 13, color: '#64748b' }}>
                           {suggestion.due_date && `Due ${formatShortDate(suggestion.due_date)}`}
                           {suggestion.assignee_name && ` · ${suggestion.assignee_name}`}
                         </div>
                       </div>
                     </div>
-                    <span className="t10-detail-ai-suggestion-key">{suggestion.key}</span>
-                    <button 
-                      className="t10-detail-ai-add-btn"
-                      onClick={() => handleAddSuggestion(suggestion)}
-                      disabled={slotsAvailable <= 0}
-                    >
-                      + Add
-                    </button>
+                    <span style={{ fontSize: 13, fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace", fontWeight: 600, color: '#2563eb', flexShrink: 0 }}>{suggestion.key}</span>
                   </div>
                 ))
               ) : (
@@ -585,34 +997,32 @@ export function T10WeekViewV3() {
           )}
         </div>
 
-        {/* ADD INPUT - single dashed container, no nested border */}
-        <div className={`t10-detail-add-container ${isAddDisabled ? 't10-detail-add-disabled' : ''}`}>
-          <div className="t10-detail-add-wrapper">
-            <Plus size={20} strokeWidth={2.5} className="t10-detail-add-icon" />
-            <input 
-              type="text"
-              className="t10-detail-add-input"
-              placeholder={isAddDisabled ? "Maximum 15 items reached (10 priorities + 5 buffer)" : "Add list item or paste TaskHub key..."}
-              value={newItemText}
-              onChange={(e) => setNewItemText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isAddDisabled}
-            />
-            {!isAddDisabled && (
-              <div className="t10-detail-add-hint">
-                <kbd>Enter</kbd>
-                <span>to add</span>
-              </div>
-            )}
-          </div>
+        {/* ADD INPUT */}
+        <div style={addWrapperStyle}>
+          <Plus size={20} strokeWidth={2.5} style={{ color: isAddDisabled ? '#94a3b8' : '#2563eb', flexShrink: 0 }} />
+          <input 
+            type="text"
+            style={addInputStyle}
+            placeholder={isAddDisabled ? "Maximum 15 items reached (10 priorities + 5 buffer)" : "Add list item or paste TaskHub key..."}
+            value={newItemText}
+            onChange={(e) => setNewItemText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isAddDisabled}
+          />
+          {!isAddDisabled && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8', flexShrink: 0 }}>
+              <kbd style={kbdStyle}>Enter</kbd>
+              <span>to add</span>
+            </div>
+          )}
         </div>
 
         {/* PRIORITY LIST */}
-        <div className="t10-detail-priority-section">
-          <div className="t10-detail-priority-header">
-            <span className="t10-detail-priority-title">Top 10 Priorities</span>
-            <span className="t10-detail-priority-count">
-              {totalCount}/10 slots
+        <div style={{ marginBottom: 24 }}>
+          <div style={sectionHeaderStyle}>
+            <span style={sectionTitleStyle}>Top 10 Priorities</span>
+            <span style={sectionCountStyle}>
+              <strong style={{ color: '#2563eb' }}>{totalCount}</strong>/10 slots
             </span>
           </div>
 
@@ -625,7 +1035,7 @@ export function T10WeekViewV3() {
               items={items?.map(i => i.id) || []}
               strategy={verticalListSortingStrategy}
             >
-              <div className="t10-detail-priority-list">
+              <div style={priorityListStyle}>
                 {items && items.length > 0 ? (
                   items.map(item => (
                     <SortablePriorityItem
@@ -633,9 +1043,7 @@ export function T10WeekViewV3() {
                       item={item}
                       onClick={() => handleItemClick(item)}
                       onToggleStatus={() => handleToggleStatus(item)}
-                      onLabelsChange={() => {
-                        // Query cache is invalidated by the mutation automatically
-                      }}
+                      onLabelsChange={() => {}}
                       onRemove={() => handleRemoveItem(item)}
                     />
                   ))
@@ -645,7 +1053,7 @@ export function T10WeekViewV3() {
                     textAlign: 'center', 
                     color: '#94a3b8',
                     background: '#f8fafc',
-                    borderRadius: '12px',
+                    borderRadius: 12,
                     border: '1px dashed #e2e8f0'
                   }}>
                     No items yet. Add your first priority above.
@@ -657,26 +1065,29 @@ export function T10WeekViewV3() {
         </div>
 
         {/* BUFFER ZONE */}
-        <div className="t10-detail-buffer-section">
-          <div className="t10-detail-buffer-header">
-            <Layers size={16} strokeWidth={2} className="t10-detail-buffer-icon" />
-            <span className="t10-detail-buffer-title">Buffer Zone</span>
-            <span className="t10-detail-buffer-count">{bufferItems?.length || 0}</span>
+        <div style={bufferSectionStyle}>
+          <div style={bufferHeaderStyle}>
+            <Layers size={16} strokeWidth={2} style={{ color: '#64748b' }} />
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 }}>Buffer Zone</span>
+            <span style={{ padding: '2px 10px', fontSize: 12, fontWeight: 600, color: '#64748b', background: '#f1f5f9', borderRadius: 6 }}>{bufferItems?.length || 0}</span>
           </div>
           {bufferItems && bufferItems.length > 0 ? (
-            bufferItems.map(item => {
-              // Determine which button to show based on available slots
+            bufferItems.map((item, i) => {
               const hasEmptySlots = slotsAvailable > 0;
               
               return (
-                <div key={item.id} className="t10-detail-buffer-item" onClick={() => handleItemClick(item)}>
-                  <div className="t10-detail-buffer-rank">{item.rank}</div>
-                  <div className="t10-detail-buffer-content">
-                    <span className="t10-detail-buffer-text">{item.title}</span>
+                <div 
+                  key={item.id} 
+                  style={{ ...bufferItemStyle, marginBottom: i < bufferItems.length - 1 ? 6 : 0 }} 
+                  onClick={() => handleItemClick(item)}
+                >
+                  <div style={bufferRankStyle}>{item.rank}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: '#475569' }}>{item.title}</span>
                   </div>
                   {hasEmptySlots ? (
                     <button 
-                      className="t10-detail-buffer-promote"
+                      style={{ ...bufferPromoteBtnStyle, opacity: promoteToTop10.isPending ? 0.6 : 1 }}
                       onClick={(e) => {
                         e.stopPropagation();
                         handlePromoteToTop10(item);
@@ -687,7 +1098,7 @@ export function T10WeekViewV3() {
                     </button>
                   ) : (
                     <button 
-                      className="t10-detail-buffer-swap"
+                      style={{ ...bufferSwapBtnStyle, opacity: swapWithTen.isPending ? 0.6 : 1 }}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleBufferSwap(item);
@@ -701,7 +1112,7 @@ export function T10WeekViewV3() {
               );
             })
           ) : (
-            <div className="t10-detail-buffer-item" style={{ justifyContent: 'center', color: '#94a3b8' }}>
+            <div style={{ ...bufferItemStyle, justifyContent: 'center', color: '#94a3b8' }}>
               No items in buffer yet
             </div>
           )}
