@@ -544,22 +544,29 @@ export function useT10DeleteItem() {
 
   return useMutation({
     mutationFn: async (item: T10ItemFull): Promise<void> => {
+      console.log('[T10] Attempting to delete item:', item.id, item.title);
+      
       const { error } = await supabase
         .from('t10_items')
         .delete()
         .eq('id', item.id);
 
       if (error) {
-        console.error('Error deleting T10 item:', error);
+        console.error('[T10] Error deleting T10 item:', error);
         throw new Error(error.message);
       }
 
-      console.log('[T10] Item deleted:', item.title);
+      console.log('[T10] Item deleted successfully:', item.title);
     },
     onSuccess: (_, item) => {
+      console.log('[T10] Invalidating queries after delete for week:', item.week_id);
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(item.week_id) });
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.buffer(item.week_id) });
       queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
       queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
+    },
+    onError: (error, item) => {
+      console.error('[T10] Delete mutation error for item:', item.title, error);
     },
   });
 }
