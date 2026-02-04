@@ -899,6 +899,67 @@
   background: #2563eb;
 }
 
+/* Remove button for buffer items */
+.t10-detail-buffer-remove {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.t10-detail-buffer-remove:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+/* Remove button for priority items */
+.t10-detail-remove-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+.t10-detail-priority-item:hover .t10-detail-remove-btn {
+  opacity: 1;
+}
+
+.t10-detail-remove-btn:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+/* Disabled add container */
+.t10-detail-add-container.t10-detail-add-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.t10-detail-add-container.t10-detail-add-disabled .t10-detail-add-icon {
+  color: #94a3b8;
+}
+
+.t10-detail-add-container.t10-detail-add-disabled .t10-detail-add-input::placeholder {
+  color: #94a3b8;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    LOADING & ERROR STATES
    ═══════════════════════════════════════════════════════════════════════════════ */
