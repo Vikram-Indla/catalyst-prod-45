@@ -49,13 +49,16 @@ function parseLabels(labels: unknown): T10Label[] {
   return [];
 }
 
-interface DbT10Item {
+// t10_items_full view returns flat columns (not nested relations)
+interface DbT10ItemFullView {
   id: string;
   week_id: string;
   rank: number;
   title: string;
   taskhub_key: string | null;
   assignee_id: string | null;
+  assignee_name: string | null;  // Flat from view
+  assignee_avatar: string | null;  // Flat from view
   due_date: string | null;
   description: string | null;
   status: string;
@@ -64,15 +67,10 @@ interface DbT10Item {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  labels: unknown;
 }
 
-interface DbT10ItemWithProfile extends DbT10Item {
-  assignee?: { id: string; full_name: string | null; avatar_url?: string | null } | null;
-  labels?: unknown;
-}
-
-function mapDbToT10Item(db: DbT10ItemWithProfile): T10Item {
-  const assigneeName = db.assignee?.full_name || undefined;
+function mapDbToT10Item(db: DbT10ItemFullView): T10Item {
   return {
     id: db.id,
     week_id: db.week_id,
@@ -80,8 +78,8 @@ function mapDbToT10Item(db: DbT10ItemWithProfile): T10Item {
     title: db.title,
     taskhub_key: db.taskhub_key || undefined,
     assignee_id: db.assignee_id || undefined,
-    assignee_name: assigneeName,
-    assignee_initials: getInitials(assigneeName),
+    assignee_name: db.assignee_name || undefined,
+    assignee_initials: getInitials(db.assignee_name),
     due_date: db.due_date || undefined,
     label: undefined, // Labels are now in a separate junction table
     description: db.description || undefined,
@@ -94,11 +92,11 @@ function mapDbToT10Item(db: DbT10ItemWithProfile): T10Item {
   };
 }
 
-function mapDbToT10ItemFull(db: DbT10ItemWithProfile): T10ItemFull {
+function mapDbToT10ItemFull(db: DbT10ItemFullView): T10ItemFull {
   const base = mapDbToT10Item(db);
   return {
     ...base,
-    assignee_avatar: db.assignee?.avatar_url || null,
+    assignee_avatar: db.assignee_avatar || null,
     labels: parseLabels(db.labels),
   };
 }
@@ -129,7 +127,7 @@ export function useT10Items(weekId: string | undefined | null) {
       // Log for Stage D verification
       console.log('[T10] Items fetched for week:', weekId, '| Count:', data?.length);
 
-      return (data || []).map((row) => mapDbToT10ItemFull(row as unknown as DbT10ItemWithProfile));
+      return (data || []).map((row) => mapDbToT10ItemFull(row as unknown as DbT10ItemFullView));
     },
     enabled: !!weekId,
     staleTime: 30 * 1000,
@@ -160,11 +158,7 @@ export function useT10BufferItems(weekId: string | null) {
 
       console.log('[T10] Buffer items fetched:', data?.length);
 
-      return (data || []).map(item => ({
-        ...mapDbToT10Item(item as unknown as DbT10ItemWithProfile),
-        assignee_avatar: (item as unknown as DbT10ItemWithProfile).assignee?.avatar_url || null,
-        labels: parseLabels((item as unknown as DbT10ItemWithProfile).labels),
-      })) as T10ItemFull[];
+      return (data || []).map(item => mapDbToT10ItemFull(item as unknown as DbT10ItemFullView));
     },
     enabled: !!weekId,
   });
@@ -192,7 +186,7 @@ export function useT10Item(itemId: string | null) {
 
       console.log('[T10] Item fetched:', data?.title);
 
-      return mapDbToT10ItemFull(data as unknown as DbT10ItemWithProfile);
+      return mapDbToT10ItemFull(data as unknown as DbT10ItemFullView);
     },
     enabled: !!itemId,
   });
@@ -240,7 +234,7 @@ export function useT10CreateItem() {
         .eq('id', data.id)
         .single();
 
-      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemWithProfile);
+      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemFullView);
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(data.week_id) });
@@ -287,11 +281,12 @@ export function useCreateT10Item() {
 
       if (error) throw error;
       
-      const dbRow: DbT10ItemWithProfile = {
+      return mapDbToT10Item({
         ...data,
-        assignee: null,
-      };
-      return mapDbToT10Item(dbRow);
+        assignee_name: null,
+        assignee_avatar: null,
+        labels: [],
+      } as DbT10ItemFullView);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['t10-items', variables.weekId] });
@@ -335,7 +330,7 @@ export function useT10UpdateItem() {
         .eq('id', data.id)
         .single();
 
-      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemWithProfile);
+      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemFullView);
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(data.week_id) });
@@ -389,11 +384,12 @@ export function useUpdateT10Item() {
 
       if (error) throw error;
       
-      const dbRow: DbT10ItemWithProfile = {
+      return mapDbToT10Item({
         ...data,
-        assignee: null,
-      };
-      return mapDbToT10Item(dbRow);
+        assignee_name: null,
+        assignee_avatar: null,
+        labels: [],
+      } as DbT10ItemFullView);
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['t10-items', data.week_id] });
@@ -431,7 +427,7 @@ export function useT10ToggleItemStatus() {
         .eq('id', data.id)
         .single();
 
-      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemWithProfile);
+      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemFullView);
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(data.week_id) });
@@ -660,13 +656,12 @@ export function useCarryoverT10Items() {
         .select();
 
       if (error) throw error;
-      return (data || []).map((row) => {
-        const dbRow: DbT10ItemWithProfile = {
-          ...row,
-          assignee: null,
-        };
-        return mapDbToT10Item(dbRow);
-      });
+      return (data || []).map((row) => mapDbToT10Item({
+        ...row,
+        assignee_name: null,
+        assignee_avatar: null,
+        labels: [],
+      } as DbT10ItemFullView));
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['t10-items', variables.targetWeekId] });
