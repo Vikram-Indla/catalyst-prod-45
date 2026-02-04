@@ -173,7 +173,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   // Due date style with conditional color
   const dueStyle: React.CSSProperties = {
     ...metaItemStyle,
-    color: dueStatus === 'overdue' ? '#ef4444' : dueStatus === 'today' ? '#f59e0b' : '#64748b',
+    color: dueStatus === 'overdue' ? '#ef4444' : dueStatus === 'today' ? '#0d9488' : '#64748b',
     fontWeight: dueStatus === 'overdue' ? 500 : 400,
   };
 
