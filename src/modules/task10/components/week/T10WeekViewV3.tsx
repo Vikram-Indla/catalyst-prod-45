@@ -3,7 +3,7 @@
 // Purpose: Main week view detail page matching the provided spec
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import React, { useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, ChevronLeft, ChevronRight, Calendar, 
@@ -17,12 +17,12 @@ import {
   useT10BufferItems,
   useT10ToggleItemStatus,
   useT10CreateItem,
-  useT10ReorderItems,
 } from '../../hooks';
 import { useT10AISuggestions, useAddSuggestionToT10 } from '../../hooks/useT10AISuggestions';
-import { T10SidePanel } from '../panel/T10SidePanel';
+import { T10SidePanelNew } from '../panel/T10SidePanelNew';
+import { T10CheckoutModalNew } from '../modals/T10CheckoutModalNew';
 import { formatT10WeekRange, formatShortDate, getDueStatus } from '../../utils';
-import type { T10Item } from '../../types';
+import type { T10ItemFull } from '../../types';
 import '../../styles/task10-detail.css';
 
 export function T10WeekViewV3() {
@@ -32,14 +32,15 @@ export function T10WeekViewV3() {
   // UI State
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
   const [newItemText, setNewItemText] = useState('');
-  const [selectedItem, setSelectedItem] = useState<T10Item | null>(null);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
 
   // Fetch data
   const { data: list, isLoading: listLoading, error: listError } = useT10ListById(listId || null);
-  const { data: weeks, isLoading: weeksLoading } = useT10Weeks(listId || null);
-  const { data: items, isLoading: itemsLoading } = useT10Items(weekId || null);
-  const { data: bufferItems } = useT10BufferItems(weekId || null);
+  const { data: weeks, isLoading: weeksLoading, refetch: refetchWeeks } = useT10Weeks(listId || null);
+  const { data: items, isLoading: itemsLoading, refetch: refetchItems } = useT10Items(weekId || null);
+  const { data: bufferItems, refetch: refetchBuffer } = useT10BufferItems(weekId || null);
   
   // AI Suggestions
   const { data: aiData, isLoading: aiLoading } = useT10AISuggestions(listId, weekId);
@@ -55,10 +56,17 @@ export function T10WeekViewV3() {
   const hasPrevWeek = currentWeekIndex > 0;
   const hasNextWeek = currentWeekIndex < (weeks?.length ?? 0) - 1;
 
-  // Calculate stats
+  const allItems = useMemo(() => {
+    return ([...(items || []), ...(bufferItems || [])] as T10ItemFull[]).sort((a, b) => a.rank - b.rank);
+  }, [items, bufferItems]);
+
+  // Calculate stats (Top 10 only for the header)
   const completedCount = items?.filter(item => item.status === 'done').length || 0;
   const totalCount = items?.length || 0;
   const slotsAvailable = 10 - totalCount;
+
+  const completedItems = useMemo(() => allItems.filter(i => i.status === 'done'), [allItems]);
+  const incompleteItems = useMemo(() => allItems.filter(i => i.status !== 'done'), [allItems]);
 
   // Loading state
   const isLoading = listLoading || weeksLoading || itemsLoading;
@@ -83,10 +91,12 @@ export function T10WeekViewV3() {
     if (!newItemText.trim() || !weekId) return;
     
     try {
+      const maxRank = Math.max(0, ...allItems.map(i => i.rank || 0));
+      const nextRank = totalCount < 10 ? totalCount + 1 : maxRank + 1;
       await createItem.mutateAsync({
         week_id: weekId,
         title: newItemText.trim(),
-        rank: totalCount + 1,
+        rank: nextRank,
       });
       setNewItemText('');
     } catch (error) {
@@ -102,26 +112,25 @@ export function T10WeekViewV3() {
   };
 
   // Handle toggle status
-  const handleToggleStatus = (item: T10Item) => {
+  const handleToggleStatus = (item: T10ItemFull) => {
     if (!weekId) return;
-    // Cast to T10ItemFull for the mutation
-    toggleStatus.mutate(item as any);
+    toggleStatus.mutate(item);
   };
 
   // Handle item click
-  const handleItemClick = (item: T10Item) => {
-    setSelectedItem(item);
+  const handleItemClick = (item: T10ItemFull) => {
+    setSelectedItemId(item.id);
     setIsPanelOpen(true);
   };
 
   // Handle panel close
   const handlePanelClose = () => {
     setIsPanelOpen(false);
-    setTimeout(() => setSelectedItem(null), 200);
+    setTimeout(() => setSelectedItemId(null), 200);
   };
 
   // Handle buffer swap
-  const handleBufferSwap = (bufferItem: T10Item) => {
+  const handleBufferSwap = (bufferItem: T10ItemFull) => {
     console.log('[T10] Swap buffer item:', bufferItem.id);
     // TODO: Implement swap logic
   };
@@ -143,8 +152,7 @@ export function T10WeekViewV3() {
 
   // Handle checkout
   const handleCheckout = () => {
-    console.log('[T10] Checkout initiated');
-    // TODO: Open checkout modal
+    setShowCheckoutModal(true);
   };
 
   // Error state
@@ -186,10 +194,10 @@ export function T10WeekViewV3() {
   }
 
   const weekLabel = formatT10WeekRange(currentWeek.week_start, currentWeek.week_end);
-  const isCurrentWeek = currentWeek.is_current ?? !currentWeek.is_checked_out;
+  const isCurrentWeek = !!currentWeek.is_current && currentWeek.status === 'active';
 
   // Get participants for AI suggestions
-  const participantNames = items?.map(i => i.assignee_name).filter(Boolean) || [];
+  const participantNames = allItems?.map(i => i.assignee_name).filter(Boolean) || [];
   const uniqueParticipants = [...new Set(participantNames)].slice(0, 3);
 
   return (
@@ -245,7 +253,7 @@ export function T10WeekViewV3() {
           <button 
             className="t10-detail-btn-checkout"
             onClick={handleCheckout}
-            disabled={completedCount === 0}
+            disabled={!isCurrentWeek || allItems.length === 0}
           >
             <Check size={16} strokeWidth={2.5} />
             Checkout Week
@@ -432,46 +440,72 @@ export function T10WeekViewV3() {
         </div>
 
         {/* BUFFER ZONE */}
-        {bufferItems && bufferItems.length > 0 && (
-          <div className="t10-detail-buffer-section">
-            <div className="t10-detail-buffer-header">
-              <Layers size={16} strokeWidth={2} className="t10-detail-buffer-icon" />
-              <span className="t10-detail-buffer-title">Buffer Zone</span>
-              <span className="t10-detail-buffer-count">{bufferItems.length}</span>
-            </div>
-            {bufferItems.map(item => (
-              <div key={item.id} className="t10-detail-buffer-item">
+        <div className="t10-detail-buffer-section">
+          <div className="t10-detail-buffer-header">
+            <Layers size={16} strokeWidth={2} className="t10-detail-buffer-icon" />
+            <span className="t10-detail-buffer-title">Buffer Zone</span>
+            <span className="t10-detail-buffer-count">{bufferItems?.length || 0}</span>
+          </div>
+          {bufferItems && bufferItems.length > 0 ? (
+            bufferItems.map(item => (
+              <div key={item.id} className="t10-detail-buffer-item" onClick={() => handleItemClick(item)}>
                 <div className="t10-detail-buffer-rank">{item.rank}</div>
                 <div className="t10-detail-buffer-content">
                   <span className="t10-detail-buffer-text">{item.title}</span>
                 </div>
                 <button 
                   className="t10-detail-buffer-swap"
-                  onClick={() => handleBufferSwap(item)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleBufferSwap(item);
+                  }}
                 >
                   Swap with #10
                 </button>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          ) : (
+            <div className="t10-detail-buffer-item" style={{ justifyContent: 'center', color: '#94a3b8' }}>
+              No items in buffer yet
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Side Panel */}
-      <T10SidePanel
-        item={selectedItem}
-        isOpen={isPanelOpen}
-        onClose={handlePanelClose}
-        onUpdate={(updates) => {
-          console.log('[T10] Update item:', updates);
-          // TODO: Implement update
-        }}
-        onDelete={() => {
-          console.log('[T10] Delete item');
-          // TODO: Implement delete
-        }}
-        isReadOnly={!isCurrentWeek}
-      />
+      {isPanelOpen && selectedItemId && (
+        <T10SidePanelNew
+          itemId={selectedItemId}
+          onClose={handlePanelClose}
+          onUpdated={() => {
+            refetchItems();
+            refetchBuffer();
+            refetchWeeks();
+          }}
+          onDeleted={() => {
+            refetchItems();
+            refetchBuffer();
+            refetchWeeks();
+          }}
+        />
+      )}
+
+      {/* Checkout Modal */}
+      {showCheckoutModal && (
+        <T10CheckoutModalNew
+          weekId={weekId || ''}
+          listId={listId || ''}
+          completedItems={completedItems}
+          incompleteCount={incompleteItems.length}
+          onClose={() => setShowCheckoutModal(false)}
+          onCheckoutComplete={() => {
+            setShowCheckoutModal(false);
+            refetchItems();
+            refetchBuffer();
+            refetchWeeks();
+          }}
+        />
+      )}
     </div>
   );
 }

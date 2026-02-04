@@ -104,20 +104,22 @@ function mapDbToT10ItemFull(db: DbT10ItemWithProfile): T10ItemFull {
 }
 
 /**
- * Fetch all items for a week (ranked 1-10, not buffer)
+ * Fetch Top 10 items for a week (ranked 1-10, excludes buffer)
+ * NOTE: Uses the t10_items_full view so assignee + labels are available.
  */
 export function useT10Items(weekId: string | undefined | null) {
   return useQuery({
     queryKey: t10ItemKeys.byWeek(weekId || ''),
-    queryFn: async (): Promise<T10Item[]> => {
+    queryFn: async (): Promise<T10ItemFull[]> => {
       if (!weekId) return [];
 
       const { data, error } = await supabase
-        .from('t10_items')
+        .from('t10_items_full')
         .select('*')
         .eq('week_id', weekId)
+        .eq('is_buffer', false)
         .order('rank', { ascending: true })
-        .limit(100);
+        .limit(10);
 
       if (error) {
         console.error('Error fetching T10 items:', error);
@@ -127,26 +129,7 @@ export function useT10Items(weekId: string | undefined | null) {
       // Log for Stage D verification
       console.log('[T10] Items fetched for week:', weekId, '| Count:', data?.length);
 
-      return (data || []).map((row) => {
-        const dbRow: DbT10ItemWithProfile = {
-          id: row.id,
-          week_id: row.week_id,
-          rank: row.rank,
-          title: row.title,
-          taskhub_key: row.taskhub_key,
-          assignee_id: row.assignee_id,
-          due_date: row.due_date,
-          description: row.description,
-          status: row.status,
-          carryover_count: row.carryover_count,
-          is_buffer: row.is_buffer,
-          created_by: row.created_by,
-          created_at: row.created_at,
-          updated_at: row.updated_at,
-          assignee: null,
-        };
-        return mapDbToT10Item(dbRow);
-      });
+      return (data || []).map((row) => mapDbToT10ItemFull(row as unknown as DbT10ItemWithProfile));
     },
     enabled: !!weekId,
     staleTime: 30 * 1000,
@@ -225,6 +208,8 @@ export function useT10CreateItem() {
     mutationFn: async (input: T10ItemCreateInput): Promise<T10ItemFull> => {
       const { data: { user } } = await supabase.auth.getUser();
 
+      const isBuffer = input.is_buffer ?? input.rank > 10;
+
       const { data, error } = await supabase
         .from('t10_items')
         .insert({
@@ -235,7 +220,7 @@ export function useT10CreateItem() {
           taskhub_key: input.taskhub_key || null,
           assignee_id: input.assignee_id || null,
           due_date: input.due_date || null,
-          is_buffer: input.is_buffer ?? false,
+          is_buffer: isBuffer,
           created_by: user?.id,
         })
         .select()
@@ -323,6 +308,11 @@ export function useT10UpdateItem() {
   return useMutation({
     mutationFn: async (input: T10ItemUpdateInput): Promise<T10ItemFull> => {
       const { id, ...updates } = input;
+
+      // Keep is_buffer consistent with rank whenever rank changes.
+      if (updates.rank !== undefined && updates.is_buffer === undefined) {
+        updates.is_buffer = updates.rank > 10;
+      }
 
       const { data, error } = await supabase
         .from('t10_items')
