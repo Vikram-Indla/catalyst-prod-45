@@ -21,10 +21,14 @@ const path = require('path');
 const SCAN_DIRS = ['src'];
 const SCAN_EXTENSIONS = ['.ts', '.tsx', '.css', '.scss'];
 
-// Files to exclude (token definition files)
+// Files to exclude (token definition files and ring-fenced modules)
 const EXCLUDED_FILES = [
   'src/index.css',
   'scripts/no-hardcoded-colors.js',
+  // Task10 module - ring-fenced CSS with isolated design tokens
+  'src/modules/task10/styles/task10.css',
+  'src/modules/task10/styles/task10-v2.css',
+  'src/modules/task10/styles/task10-detail.css',
 ];
 
 // Directories to exclude
