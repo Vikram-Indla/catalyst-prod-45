@@ -131,29 +131,32 @@ function SortablePriorityCard({
         ${isDragging ? 'shadow-lg border-blue-500' : ''}
       `}
     >
-      {/* DRAG HANDLE - Always visible */}
+      {/* DRAG HANDLE - Better contrast */}
       <div
         {...attributes}
         {...listeners}
-        className="flex flex-col gap-0.5 p-1 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500"
+        className="flex flex-col gap-0.5 p-1 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex gap-0.5">
-          <div className="w-1 h-1 bg-current rounded-sm" />
-          <div className="w-1 h-1 bg-current rounded-sm" />
+          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
+          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
         </div>
         <div className="flex gap-0.5">
-          <div className="w-1 h-1 bg-current rounded-sm" />
-          <div className="w-1 h-1 bg-current rounded-sm" />
+          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
+          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
         </div>
         <div className="flex gap-0.5">
-          <div className="w-1 h-1 bg-current rounded-sm" />
-          <div className="w-1 h-1 bg-current rounded-sm" />
+          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
+          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
         </div>
       </div>
 
-      {/* RANK BADGE - Always blue #2563eb */}
-      <div className="w-9 h-9 flex items-center justify-center text-sm font-bold text-white bg-[#2563eb] rounded-lg flex-shrink-0">
+      {/* RANK BADGE - Larger 40px with rounded-xl */}
+      <div 
+        className="w-10 h-10 flex items-center justify-center text-sm font-bold text-white rounded-xl flex-shrink-0"
+        style={{ backgroundColor: '#2563eb' }}
+      >
         {item.rank}
       </div>
 
@@ -162,20 +165,20 @@ function SortablePriorityCard({
         <div className={`text-sm font-medium ${item.status === 'done' ? 'line-through text-gray-400' : 'text-gray-900'}`}>
           {item.title}
         </div>
-        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+        <div className="flex flex-wrap items-center gap-3 mt-1.5">
           {/* LABELS */}
           {item.labels && Array.isArray(item.labels) && (item.labels as Array<{ id: string; name: string; color: string }>).map((label) => (
             <span 
               key={label.id} 
-              className="px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-600"
+              className="px-2 py-0.5 text-xs font-medium text-gray-600 bg-gray-100 border border-gray-200 rounded"
             >
               {label.name}
             </span>
           ))}
           
-          {/* ASSIGNEE - Full name, not avatar */}
+          {/* ASSIGNEE - Full name with icon */}
           {item.assignee_name && (
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 text-xs text-gray-500">
               <User className="w-3 h-3" />
               {item.assignee_name}
             </span>
@@ -183,7 +186,7 @@ function SortablePriorityCard({
           
           {/* DUE DATE */}
           {item.due_date && (
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 text-xs text-gray-500">
               <Calendar className="w-3 h-3" />
               {format(parseISO(item.due_date), 'MMM d')}
             </span>
@@ -191,26 +194,24 @@ function SortablePriorityCard({
 
           {/* TASKHUB KEY */}
           {item.taskhub_key && (
-            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded font-mono text-xs">
+            <span className="px-2 py-0.5 text-xs font-mono font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded">
               {item.taskhub_key}
             </span>
           )}
         </div>
       </div>
 
-      {/* CHECKBOX - Blue when checked */}
+      {/* CHECKBOX - Blue when checked with inline styles */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           onToggleComplete();
         }}
-        className={`
-          w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0
-          ${item.status === 'done' 
-            ? 'bg-[#2563eb] border-[#2563eb]' 
-            : 'bg-white border-gray-300 hover:border-blue-400'
-          }
-        `}
+        className="w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0"
+        style={{
+          backgroundColor: item.status === 'done' ? '#2563eb' : '#ffffff',
+          borderColor: item.status === 'done' ? '#2563eb' : '#d1d5db',
+        }}
       >
         {item.status === 'done' && <Check className="w-4 h-4 text-white" />}
       </button>
@@ -812,36 +813,32 @@ export default function Task10DetailPage() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f8fafc]">
       {/* ═══════════════════════════════════════════════════════════════════════
           HEADER
           ═══════════════════════════════════════════════════════════════════════ */}
       <header className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200">
         {/* LEFT */}
         <div className="flex items-center gap-5">
-          <button 
-            onClick={() => navigate('/task10')}
-            className="flex items-center gap-2"
-          >
-            <div className="w-10 h-10 flex items-center justify-center bg-[#2563eb] text-white rounded-xl font-bold">
+          <button onClick={() => navigate('/task10')} className="flex items-center gap-3">
+            <div 
+              className="w-10 h-10 flex items-center justify-center text-white rounded-xl font-bold text-sm"
+              style={{ backgroundColor: '#2563eb' }}
+            >
               10
             </div>
             <div>
-              <div className="text-lg font-bold text-gray-900">
-                Task<sup className="text-xs text-blue-600">10</sup>
-              </div>
+              <div className="text-base font-bold text-gray-900">Task<sup className="text-xs text-blue-600">10</sup></div>
               <div className="text-xs text-gray-500">Priority Management</div>
             </div>
           </button>
           
           <div className="flex items-center gap-3">
             <div className="w-px h-6 bg-gray-200" />
-            <span className="px-3 py-1.5 text-sm font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-lg font-mono">
+            <span className="px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-lg font-mono">
               {weekDetail.list_key}
             </span>
-            <span className="text-base font-semibold text-gray-900">
-              {weekDetail.list_name}
-            </span>
+            <span className="text-sm font-semibold text-gray-900">{weekDetail.list_name}</span>
           </div>
         </div>
 
@@ -870,14 +867,15 @@ export default function Task10DetailPage() {
         {/* RIGHT */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
-            <Check className="w-4 h-4 text-blue-600" />
+            <Check className="w-4 h-4" style={{ color: '#2563eb' }} />
             <span className="text-sm font-semibold text-gray-900">
-              <span className="text-blue-600">{weekDetail.completed_count}</span> of {weekDetail.total_count} completed
+              <span style={{ color: '#2563eb' }}>{weekDetail.completed_count}</span> of {weekDetail.total_count} completed
             </span>
           </div>
           <button
             onClick={() => setShowCheckoutModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#2563eb] rounded-lg hover:bg-[#1d4ed8] shadow-lg shadow-blue-500/25"
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-xl"
+            style={{ backgroundColor: '#2563eb', boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)' }}
           >
             <Check className="w-4 h-4" />
             Checkout Week
@@ -890,49 +888,47 @@ export default function Task10DetailPage() {
           ═══════════════════════════════════════════════════════════════════════ */}
       <main className="max-w-4xl mx-auto px-6 py-6">
         {/* AI SUGGESTIONS */}
-        <div className="mb-5 p-4 bg-white border border-gray-200 rounded-xl">
-          <div className="flex items-center justify-between mb-3">
+        <div className="mb-5 p-5 bg-white border border-gray-200 rounded-xl">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 flex items-center justify-center bg-blue-50 border border-blue-200 rounded-lg">
-                <Zap className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 flex items-center justify-center bg-blue-50 border border-blue-200 rounded-xl">
+                <Zap className="w-5 h-5" style={{ color: '#2563eb' }} />
               </div>
               <div>
                 <div className="text-sm font-semibold text-gray-900">AI Suggestions</div>
-                <div className="text-xs text-gray-500">
-                  Based on TaskHub items for Ibrahim Ahmed, Vikram Iyer, Maali Abbas
-                </div>
+                <div className="text-xs text-gray-500">Based on TaskHub items for Ibrahim Ahmed, Vikram Iyer, Maali Abbas</div>
               </div>
             </div>
             <button
               onClick={() => setShowAISuggestions(!showAISuggestions)}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
             >
               {showAISuggestions ? 'Hide' : 'Show'}
               <ChevronRight className={`w-4 h-4 transition-transform ${showAISuggestions ? 'rotate-90' : ''}`} />
             </button>
           </div>
           
-          {showAISuggestions && (
-            <div className="space-y-2">
+          {showAISuggestions && suggestions.length > 0 && (
+            <div className="mt-4 space-y-2">
               {suggestions.map((suggestion, index) => (
                 <div
                   key={suggestion.id}
                   onClick={() => addItemMutation.mutate({ title: suggestion.title, taskhubKey: suggestion.key })}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 border border-transparent"
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200 transition-all group"
                 >
-                  <div className="w-8 h-8 flex items-center justify-center text-xs font-bold text-blue-600 bg-blue-100 rounded-lg">
+                  <div className="w-9 h-9 flex items-center justify-center text-xs font-bold text-blue-600 bg-blue-100 rounded-lg">
                     P{index + 1}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">{suggestion.title}</div>
                     <div className="text-xs text-gray-500">
                       {suggestion.due_date ? `Due ${format(parseISO(suggestion.due_date), 'MMM d')}` : 'No due date'} · {suggestion.assignee_name || 'Unassigned'}
                     </div>
                   </div>
-                  <span className="px-2 py-1 text-xs font-mono font-semibold text-blue-600 bg-blue-50 rounded">
+                  <span className="px-2.5 py-1 text-xs font-mono font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded">
                     {suggestion.key}
                   </span>
-                  <Plus className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100" />
+                  <Plus className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               ))}
             </div>
@@ -941,8 +937,10 @@ export default function Task10DetailPage() {
 
         {/* ADD INPUT */}
         <div className="mb-5">
-          <div className="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden focus-within:border-blue-500 focus-within:shadow-lg focus-within:shadow-blue-500/10">
-            <div className="px-4 text-blue-600">
+          <div 
+            className="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden transition-all focus-within:border-blue-500 focus-within:shadow-lg focus-within:shadow-blue-500/10"
+          >
+            <div className="px-4" style={{ color: '#2563eb' }}>
               <Plus className="w-5 h-5" strokeWidth={2.5} />
             </div>
             <input
@@ -951,12 +949,10 @@ export default function Task10DetailPage() {
               onChange={(e) => setAddInputValue(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
               placeholder="Add list item or paste TaskHub key..."
-              className="flex-1 py-3.5 text-sm font-medium text-gray-900 bg-transparent outline-none placeholder:text-gray-400"
+              className="flex-1 py-4 text-sm font-medium text-gray-900 bg-transparent outline-none placeholder:text-gray-400"
             />
             <div className="flex items-center gap-2 px-4 text-sm text-gray-400">
-              <kbd className="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-100 border border-gray-200 rounded">
-                Enter
-              </kbd>
+              <kbd className="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-100 border border-gray-200 rounded">Enter</kbd>
               <span>to add</span>
             </div>
           </div>
