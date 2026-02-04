@@ -238,11 +238,11 @@ export function T10UnifiedSortableList({
   if (disabled) {
     return (
       <>
-        <div className="t10-cards-section">
-          <div className="t10-section-header">
-            <span className="t10-section-title">Top 10 Priorities</span>
+        <div className="t10-detail-priority-section">
+          <div className="t10-detail-section-header">
+            <h2 className="t10-detail-section-title">Top 10 Priorities</h2>
           </div>
-          <div className="t10-cards-list">
+          <div className="t10-detail-cards-list">
             {topTenItems.map((item) => (
               <T10PriorityCard
                 key={item.id}
@@ -256,19 +256,19 @@ export function T10UnifiedSortableList({
         </div>
         
         {bufferItems.length > 0 && (
-          <div className="t10-buffer-section">
+          <div className="t10-detail-buffer-section">
             <button 
-              className={`t10-buffer-toggle ${bufferExpanded ? 'expanded' : ''}`} 
+              className={`t10-detail-buffer-toggle ${bufferExpanded ? 'expanded' : ''}`} 
               onClick={onToggleBuffer}
             >
-              <div className="t10-buffer-toggle-left">
+              <div className="t10-detail-buffer-toggle-left">
                 <span>Buffer Queue</span>
-                <span className="t10-buffer-count">{bufferItems.length} items</span>
+                <span className="t10-detail-buffer-count">{bufferItems.length} items</span>
               </div>
               <ChevronDown size={18} />
             </button>
             {bufferExpanded && (
-              <div className="t10-buffer-list">
+              <div className="t10-detail-buffer-list">
                 {bufferItems.map(item => (
                   <T10PriorityCard 
                     key={item.id} 
@@ -296,16 +296,16 @@ export function T10UnifiedSortableList({
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="t10-cards-section">
-          <div className="t10-section-header">
-            <span className="t10-section-title">Top 10 Priorities</span>
+        <div className="t10-detail-priority-section">
+          <div className="t10-detail-section-header">
+            <h2 className="t10-detail-section-title">Top 10 Priorities</h2>
             {dragOverSection === 'top10' && activeItem && activeItem.rank > 10 && (
-              <span className="t10-drop-hint">Drop to promote to Top 10</span>
+              <span className="t10-detail-drop-hint">Drop to promote to Top 10</span>
             )}
           </div>
           
           <SortableContext items={topTenItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-            <DroppableZone id="top10-zone" className={`t10-cards-list ${dragOverSection === 'top10' ? 't10-zone-highlight' : ''}`}>
+            <DroppableZone id="top10-zone" className={`t10-detail-cards-list ${dragOverSection === 'top10' ? 't10-zone-highlight' : ''}`}>
               {topTenItems.length > 0 ? (
                 topTenItems.map((item) => (
                   <T10PriorityCard
@@ -318,7 +318,7 @@ export function T10UnifiedSortableList({
                   />
                 ))
               ) : (
-                <div className="t10-empty-state">
+                <div className="t10-detail-empty-state">
                   <p>Drop items here to add to Top 10</p>
                 </div>
               )}
@@ -328,16 +328,16 @@ export function T10UnifiedSortableList({
 
         {/* Buffer Section - always show when dragging or has items */}
         {(bufferItems.length > 0 || activeItem) && (
-          <div className="t10-buffer-section">
+          <div className="t10-detail-buffer-section">
             <button 
-              className={`t10-buffer-toggle ${bufferExpanded || activeItem ? 'expanded' : ''}`} 
+              className={`t10-detail-buffer-toggle ${bufferExpanded || activeItem ? 'expanded' : ''}`} 
               onClick={onToggleBuffer}
             >
-              <div className="t10-buffer-toggle-left">
+              <div className="t10-detail-buffer-toggle-left">
                 <span>Buffer Queue</span>
-                <span className="t10-buffer-count">{bufferItems.length} items</span>
+                <span className="t10-detail-buffer-count">{bufferItems.length} items</span>
                 {dragOverSection === 'buffer' && activeItem && activeItem.rank <= 10 && (
-                  <span className="t10-drop-hint-inline">Drop to move to buffer</span>
+                  <span className="t10-detail-drop-hint-inline">Drop to move to buffer</span>
                 )}
               </div>
               <ChevronDown size={18} />
@@ -345,7 +345,7 @@ export function T10UnifiedSortableList({
             
             {(bufferExpanded || activeItem) && (
               <SortableContext items={bufferItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-                <DroppableZone id="buffer-zone" className={`t10-buffer-list ${dragOverSection === 'buffer' ? 't10-zone-highlight' : ''}`}>
+                <DroppableZone id="buffer-zone" className={`t10-detail-buffer-list ${dragOverSection === 'buffer' ? 't10-zone-highlight' : ''}`}>
                   {bufferItems.length > 0 ? (
                     bufferItems.map(item => (
                       <T10PriorityCard 
@@ -358,7 +358,7 @@ export function T10UnifiedSortableList({
                       />
                     ))
                   ) : (
-                    <div className="t10-empty-state t10-empty-buffer">
+                    <div className="t10-detail-empty-state t10-detail-empty-buffer">
                       <p>Drop items here to move to buffer</p>
                     </div>
                   )}
@@ -370,7 +370,7 @@ export function T10UnifiedSortableList({
 
         <DragOverlay>
           {activeItem ? (
-            <div className="t10-card-overlay">
+            <div className="t10-detail-card-overlay">
               <T10PriorityCard
                 item={activeItem}
                 onClick={() => {}}
@@ -384,7 +384,7 @@ export function T10UnifiedSortableList({
 
       {/* Reorder Toast */}
       {showReorderToast && (
-        <div className="t10-reorder-toast">
+        <div className="t10-detail-reorder-toast">
           <ArrowUpDown size={18} />
           {reorderMessage}
         </div>

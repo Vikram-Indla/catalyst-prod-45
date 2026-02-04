@@ -51,25 +51,34 @@ export function T10AISuggestionsPanel({
   if (disabled) return null;
 
   return (
-    <div className="t10-ai-banner">
-      <div className="t10-ai-collapsed" onClick={() => setExpanded(!expanded)}>
-        <div className="t10-ai-collapsed-left">
-          <div className="t10-ai-icon-wrapper">
+    <div className="t10-detail-ai-section">
+      {/* Collapsed header */}
+      <div className="t10-detail-ai-card" onClick={() => setExpanded(!expanded)} style={{ cursor: 'pointer' }}>
+        <div className="t10-detail-ai-left">
+          <div className="t10-detail-ai-icon">
             <Zap size={20} />
           </div>
-          <div>
-            <div className="t10-ai-collapsed-title">
+          <div className="t10-detail-ai-content">
+            <div className="t10-detail-ai-title">
               AI Suggestions
               {aiEnhanced && (
-                <span className="t10-ai-enhanced-badge">
+                <span style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: 4, 
+                  marginLeft: 8,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: '#f3e8ff',
+                  color: '#7c3aed',
+                  borderRadius: 4
+                }}>
                   <Sparkles size={12} /> Enhanced
                 </span>
               )}
             </div>
-            <div className="t10-ai-collapsed-subtitle">
-              {participantNames.length > 0 ? (
-                <>Based on participants: <strong>{participantNames.join(', ')}</strong> · </>
-              ) : null}
+            <div className="t10-detail-ai-subtitle">
               {slotsAvailable > 0 
                 ? `${slotsAvailable} slots available`
                 : 'Top 10 is full'
@@ -77,7 +86,10 @@ export function T10AISuggestionsPanel({
             </div>
           </div>
         </div>
-        <button className={`t10-ai-toggle ${expanded ? 'expanded' : ''}`}>
+        <button 
+          className={`t10-detail-ai-toggle ${expanded ? 'expanded' : ''}`}
+          onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+        >
           {isLoading ? (
             <>
               <Loader2 size={14} className="animate-spin" />
@@ -94,62 +106,99 @@ export function T10AISuggestionsPanel({
         </button>
       </div>
 
+      {/* Expanded panel */}
       {expanded && (
-        <div className="t10-ai-expanded">
-          <div className="t10-ai-info-box">
+        <div className="t10-detail-ai-panel">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '12px 16px',
+            marginBottom: 12,
+            fontSize: 13,
+            color: '#64748b',
+            background: '#f1f5f9',
+            borderRadius: 8
+          }}>
             <Info size={16} />
             Showing HIGH and CRITICAL priority tasks from TaskHub
             {participantNames.length > 0 && ' assigned to this list\'s participants'}
           </div>
 
           {isLoading && (
-            <div className="t10-ai-loading">
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              gap: 12, 
+              padding: 32,
+              color: '#64748b'
+            }}>
               <Loader2 size={24} className="animate-spin" />
               <span>Analyzing backlog tasks...</span>
             </div>
           )}
 
           {error && (
-            <div className="t10-ai-error">
+            <div style={{ padding: '20px 16px', color: '#dc2626', textAlign: 'center' }}>
               Failed to load suggestions. Please try again later.
             </div>
           )}
 
           {!isLoading && !error && suggestions.length === 0 && (
-            <div className="t10-ai-empty">
+            <div style={{ padding: '20px 16px', color: '#64748b', textAlign: 'center' }}>
               No high-priority tasks found in your backlog that aren't already in this week's list.
             </div>
           )}
 
           {suggestions.map((suggestion) => (
-            <div key={suggestion.id} className="t10-ai-suggestion-card">
-              <div 
-                className={`t10-ai-priority-badge ${suggestion.priority}`}
-              >
-                {suggestion.priority === 'critical' ? 'Critical' : 'High'}
-              </div>
-              <div className="t10-ai-suggestion-content">
-                <div className="t10-ai-suggestion-title">{suggestion.title}</div>
-                <div className="t10-ai-suggestion-meta">
-                  <span className="t10-ai-suggestion-key">{suggestion.key}</span>
-                  {suggestion.assignee_name && suggestion.assignee_name !== 'Unassigned' && (
-                    <>Assigned to <strong>{suggestion.assignee_name}</strong></>
-                  )}
-                  {suggestion.due_date && (
-                    <>
-                      {' · '}Due {formatShortDate(suggestion.due_date)}
-                    </>
+            <div key={suggestion.id} className="t10-detail-ai-suggestion-item">
+              <div className="t10-detail-ai-suggestion-left">
+                <div className={`t10-detail-ai-priority t10-detail-ai-priority-${suggestion.priority === 'critical' ? 'p1' : 'p2'}`}>
+                  {suggestion.priority === 'critical' ? 'P1' : 'P2'}
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <span className="t10-detail-ai-suggestion-text">{suggestion.title}</span>
+                  <div className="t10-detail-ai-suggestion-meta">
+                    <span className="t10-detail-ai-suggestion-key">{suggestion.key}</span>
+                    {suggestion.assignee_name && suggestion.assignee_name !== 'Unassigned' && (
+                      <> · Assigned to <strong>{suggestion.assignee_name}</strong></>
+                    )}
+                    {suggestion.due_date && (
+                      <> · Due {formatShortDate(suggestion.due_date)}</>
+                    )}
+                  </div>
+                  {suggestion.reason && (
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 6, 
+                      marginTop: 6,
+                      fontSize: 12,
+                      color: '#7c3aed'
+                    }}>
+                      <Sparkles size={12} />
+                      {suggestion.reason}
+                    </div>
                   )}
                 </div>
-                {suggestion.reason && (
-                  <div className="t10-ai-suggestion-reason">
-                    <Sparkles size={12} />
-                    {suggestion.reason}
-                  </div>
-                )}
               </div>
               <button 
-                className="t10-ai-add-btn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 14px',
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: '#2563eb',
+                  background: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: 6,
+                  cursor: slotsAvailable <= 0 ? 'not-allowed' : 'pointer',
+                  opacity: slotsAvailable <= 0 ? 0.5 : 1,
+                  transition: 'all 0.15s ease'
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleAddSuggestion(suggestion);
