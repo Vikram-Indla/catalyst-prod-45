@@ -585,19 +585,48 @@
   display: none;
 }
 
-/* Create 6-dot pattern using box-shadow */
+/* Create 2x3 dot pattern (6 dots) - matches reference */
 .t10-detail-drag-handle {
-  width: 16px;
-  height: 22px;
-  background-image: radial-gradient(circle, #94a3b8 2px, transparent 2px);
-  background-size: 8px 7px;
-  background-position: 0 0;
-  opacity: 0.7;
+  width: 14px;
+  height: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 4px);
+  grid-template-rows: repeat(3, 4px);
+  gap: 4px;
+  opacity: 0.6;
+}
+
+.t10-detail-drag-handle::before,
+.t10-detail-drag-handle::after {
+  content: '';
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+}
+
+/* Create 6 dots using background */
+.t10-detail-drag-handle {
+  background: 
+    radial-gradient(circle at 2px 2px, #94a3b8 2px, transparent 2px),
+    radial-gradient(circle at 10px 2px, #94a3b8 2px, transparent 2px),
+    radial-gradient(circle at 2px 10px, #94a3b8 2px, transparent 2px),
+    radial-gradient(circle at 10px 10px, #94a3b8 2px, transparent 2px),
+    radial-gradient(circle at 2px 18px, #94a3b8 2px, transparent 2px),
+    radial-gradient(circle at 10px 18px, #94a3b8 2px, transparent 2px);
+  background-size: 14px 24px;
+  background-repeat: no-repeat;
 }
 
 .t10-detail-priority-item:hover .t10-detail-drag-handle {
   opacity: 1;
-  background-image: radial-gradient(circle, #3b82f6 2.5px, transparent 2.5px);
+  background: 
+    radial-gradient(circle at 2px 2px, #3b82f6 2.5px, transparent 2.5px),
+    radial-gradient(circle at 10px 2px, #3b82f6 2.5px, transparent 2.5px),
+    radial-gradient(circle at 2px 10px, #3b82f6 2.5px, transparent 2.5px),
+    radial-gradient(circle at 10px 10px, #3b82f6 2.5px, transparent 2.5px),
+    radial-gradient(circle at 2px 18px, #3b82f6 2.5px, transparent 2.5px),
+    radial-gradient(circle at 10px 18px, #3b82f6 2.5px, transparent 2.5px);
+  background-size: 14px 24px;
+  background-repeat: no-repeat;
 }
 
 /* Rank Badge — LARGER 48px matching reference exactly */
