@@ -599,13 +599,18 @@ export function T10WeekViewV3() {
               onChange={(e) => setNewItemText(e.target.value)}
               onKeyDown={handleKeyDown}
               style={{
+                flex: 1,
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
                 boxShadow: 'none',
                 padding: 0,
+                margin: 0,
                 appearance: 'none',
                 WebkitAppearance: 'none',
+                MozAppearance: 'none',
+                borderRadius: 0,
+                WebkitBorderRadius: 0,
               }}
             />
             <div className="t10-detail-add-hint">
