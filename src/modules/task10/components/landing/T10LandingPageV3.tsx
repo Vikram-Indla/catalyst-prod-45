@@ -211,11 +211,6 @@ export function T10LandingPageV3() {
     activeTab === 'completed' ? completedLoading :
     archivedLoading;
 
-  // Handle showing archived tab
-  const handleShowArchived = () => {
-    setActiveTab('archived');
-  };
-
   return (
     <div className="t10-module-v2 t10-detail-page">
       <div className="t10-landing-v3">
@@ -224,7 +219,6 @@ export function T10LandingPageV3() {
           onNewList={() => setShowNewModal(true)}
           listCount={listCount}
           activeWeekCount={activeWeekCount}
-          onShowArchived={handleShowArchived}
         />
 
         {/* Search */}
