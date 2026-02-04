@@ -199,10 +199,10 @@ export function T10CheckoutModalNew({
               </div>
               <div style={{ flex: 1 }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 600, margin: '0 0 4px' }}>
-                  Checkout Completed Items
+                  Check out
                 </h2>
                 <p style={{ fontSize: '14px', opacity: 0.9, margin: 0 }}>
-                  Select items to archive and clear from this week
+                  Select items to carry over from this week
                 </p>
               </div>
               <button
