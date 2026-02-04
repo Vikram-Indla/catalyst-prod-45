@@ -70,62 +70,63 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
 
   const isCompleted = item.status === 'done';
   const dueStatus = item.due_date ? getDueStatus(item.due_date) : 'normal';
+  const [isHovered, setIsHovered] = React.useState(false);
 
-  // INVASIVE: All styles inline to prevent CSS cascade issues
+  // Card styling
   const cardStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 14,
-    padding: '16px 20px',
-    background: '#ffffff',
+    gap: 12,
+    padding: 16,
+    background: isCompleted ? '#fafafa' : '#ffffff',
     border: isDragging ? '1px solid #2563eb' : '1px solid #e2e8f0',
-    borderRadius: 16,
+    borderRadius: 12,
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
+    transition: 'all 0.2s',
     transform: CSS.Transform.toString(transform),
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : undefined,
-    boxShadow: isDragging ? '0 12px 28px rgba(37, 99, 235, 0.25)' : undefined,
+    boxShadow: isDragging 
+      ? '0 8px 24px rgba(0,0,0,0.12)' 
+      : isHovered 
+        ? '0 4px 12px rgba(0,0,0,0.06)' 
+        : undefined,
   };
 
+  // Drag handle - 6 dots (2x3 grid)
   const dragHandleStyle: React.CSSProperties = {
-    width: 14,
-    height: 24,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+    padding: 4,
     cursor: 'grab',
-    flexShrink: 0,
-    opacity: 0.5,
-    background: `
-      radial-gradient(circle at 2px 2px, #64748b 2px, transparent 2px),
-      radial-gradient(circle at 10px 2px, #64748b 2px, transparent 2px),
-      radial-gradient(circle at 2px 10px, #64748b 2px, transparent 2px),
-      radial-gradient(circle at 10px 10px, #64748b 2px, transparent 2px),
-      radial-gradient(circle at 2px 18px, #64748b 2px, transparent 2px),
-      radial-gradient(circle at 10px 18px, #64748b 2px, transparent 2px)
-    `,
-    backgroundSize: '14px 24px',
-    backgroundRepeat: 'no-repeat',
+    color: '#94a3b8',
   };
 
+  const dotStyle: React.CSSProperties = {
+    width: 4,
+    height: 4,
+    backgroundColor: 'currentColor',
+    borderRadius: '50%',
+  };
+
+  // Rank badge - ALWAYS BLUE #2563eb
   const rankStyle: React.CSSProperties = {
-    width: 48,
-    height: 48,
-    minWidth: 48,
+    width: 32,
+    height: 32,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 17,
+    fontSize: 13,
     fontWeight: 700,
     color: '#ffffff',
-    background: '#2563eb',
-    borderRadius: 12,
+    backgroundColor: '#2563eb',
+    borderRadius: 8,
     flexShrink: 0,
   };
 
   const contentStyle: React.CSSProperties = {
     flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 6,
     minWidth: 0,
   };
 
@@ -134,80 +135,60 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     fontWeight: 500,
     color: isCompleted ? '#94a3b8' : '#0f172a',
     textDecoration: isCompleted ? 'line-through' : 'none',
-    lineHeight: 1.4,
+    marginBottom: 6,
   };
 
   const metaStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
     flexWrap: 'wrap',
   };
 
-  const assigneeStyle: React.CSSProperties = {
+  const metaItemStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 5,
-    fontSize: 13,
-    color: '#3b82f6',
+    gap: 4,
+    fontSize: 12,
+    color: '#64748b',
   };
 
   const dueStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 5,
-    fontSize: 13,
-    color: dueStatus === 'overdue' ? '#dc2626' : dueStatus === 'today' ? '#f59e0b' : '#64748b',
+    ...metaItemStyle,
+    color: dueStatus === 'overdue' ? '#ef4444' : dueStatus === 'today' ? '#f59e0b' : '#64748b',
   };
 
-  const [isHovered, setIsHovered] = React.useState(false);
-
+  // Remove button - visible on hover, hidden when completed
   const removeStyle: React.CSSProperties = {
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
     display: isCompleted ? 'none' : 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#94a3b8',
-    background: 'transparent',
+    color: isHovered ? '#ef4444' : '#94a3b8',
+    background: isHovered ? '#fef2f2' : 'transparent',
     border: 'none',
-    borderRadius: 8,
+    borderRadius: 6,
     cursor: 'pointer',
     flexShrink: 0,
     opacity: isHovered ? 1 : 0,
-    transition: 'opacity 0.15s ease, color 0.15s ease, background 0.15s ease',
+    transition: 'all 0.15s',
+    marginRight: 4,
   };
 
-  const checkboxContainerStyle: React.CSSProperties = {
-    position: 'relative',
-    width: 32,
-    height: 32,
-    flexShrink: 0,
-    cursor: 'pointer',
-    marginLeft: 'auto',
-  };
-
-  const checkboxInputStyle: React.CSSProperties = {
-    position: 'absolute',
-    opacity: 0,
-    width: '100%',
-    height: '100%',
-    cursor: 'pointer',
-    zIndex: 1,
-    margin: 0,
-  };
-
-  const checkboxVisualStyle: React.CSSProperties = {
-    width: 32,
-    height: 32,
-    border: isCompleted ? 'none' : '2px solid #cbd5e1',
-    borderRadius: '50%',
+  // Checkbox - BLUE when checked
+  const checkboxStyle: React.CSSProperties = {
+    width: 28,
+    height: 28,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: isCompleted ? '#3b82f6' : '#ffffff',
-    transition: 'all 0.2s ease',
-    boxShadow: isCompleted ? '0 2px 8px rgba(59, 130, 246, 0.35)' : undefined,
+    borderRadius: '50%',
+    border: isCompleted ? 'none' : '2px solid #d1d5db',
+    backgroundColor: isCompleted ? '#2563eb' : '#ffffff',
+    cursor: 'pointer',
+    transition: 'all 0.15s',
+    flexShrink: 0,
   };
 
   return (
@@ -218,22 +199,35 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Drag Handle - 6-dot pattern */}
+      {/* DRAG HANDLE - 6 dots (2x3 grid) - ALWAYS VISIBLE */}
       <div
         {...attributes}
         {...listeners}
         onClick={(e) => e.stopPropagation()}
         style={dragHandleStyle}
-      />
+      >
+        <div style={{ display: 'flex', gap: 2 }}>
+          <span style={dotStyle} />
+          <span style={dotStyle} />
+        </div>
+        <div style={{ display: 'flex', gap: 2 }}>
+          <span style={dotStyle} />
+          <span style={dotStyle} />
+        </div>
+        <div style={{ display: 'flex', gap: 2 }}>
+          <span style={dotStyle} />
+          <span style={dotStyle} />
+        </div>
+      </div>
 
-      {/* Rank Badge */}
+      {/* RANK BADGE - ALWAYS #2563eb BLUE */}
       <div style={rankStyle}>
         {item.rank}
       </div>
 
-      {/* Content */}
+      {/* CONTENT */}
       <div style={contentStyle}>
-        <span style={titleStyle}>{item.title}</span>
+        <div style={titleStyle}>{item.title}</div>
         <div style={metaStyle}>
           {/* Labels Dropdown */}
           <div onClick={(e) => e.stopPropagation()}>
@@ -245,8 +239,8 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
           </div>
           
           {item.assignee_name && (
-            <span style={assigneeStyle}>
-              <User size={14} style={{ color: '#94a3b8' }} />
+            <span style={metaItemStyle}>
+              <User size={12} />
               {item.assignee_name}
             </span>
           )}
@@ -259,44 +253,27 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
         </div>
       </div>
 
-      {/* Remove Button */}
+      {/* REMOVE BUTTON - visible on hover, hidden when completed */}
       <button
-        data-remove-btn
         style={removeStyle}
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#ef4444';
-          e.currentTarget.style.background = '#fef2f2';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = '#94a3b8';
-          e.currentTarget.style.background = 'transparent';
         }}
         title="Remove item"
       >
         <X size={16} strokeWidth={2} />
       </button>
 
-      {/* Checkbox */}
+      {/* CHECKBOX - BLUE when checked, NOT green */}
       <div
-        style={checkboxContainerStyle}
+        style={checkboxStyle}
         onClick={(e) => {
           e.stopPropagation();
           onToggleStatus();
         }}
       >
-        <input
-          type="checkbox"
-          style={checkboxInputStyle}
-          checked={isCompleted}
-          onChange={() => {}}
-        />
-        <div style={checkboxVisualStyle}>
-          <Check size={14} strokeWidth={3} style={{ color: '#ffffff', opacity: isCompleted ? 1 : 0 }} />
-        </div>
+        {isCompleted && <Check size={16} color="#ffffff" strokeWidth={3} />}
       </div>
     </div>
   );
