@@ -1,22 +1,26 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// PAGE: T10LandingPageV3
-// Purpose: Complete landing page with Tabs (This Week / Completed / Archived)
+// TASK10 LANDING PAGE — OPTION 1: CLEAN CARDS WITH DEPTH
+// Uses Tailwind classes directly for styling
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { T10HeaderV3 } from './T10HeaderV3';
-import { T10SearchBarV3 } from './T10SearchBarV3';
-import { T10FilterBarV3 } from './T10FilterBarV3';
-import { T10TabsV3, type T10TabId } from './T10TabsV3';
-import { T10ListCardV3 } from './T10ListCardV3';
-import { T10CompletedCardV3 } from './T10CompletedCardV3';
-import { T10ArchivedCardV3 } from './T10ArchivedCardV3';
-import { T10CompletedDetailModal } from './T10CompletedDetailModal';
+import { 
+  Search, 
+  Plus, 
+  Tag, 
+  User, 
+  Calendar, 
+  Clock,
+  MoreVertical,
+  ChevronDown,
+  RotateCcw,
+  Trash2
+} from 'lucide-react';
+import { format, parseISO } from 'date-fns';
 import { T10NewListModal } from './T10NewListModal';
 import { T10RenameModal } from '../modals/T10RenameModal';
 import { T10DeleteModal } from '../modals/T10DeleteModal';
-import { T10EmptyState } from './T10EmptyState';
 import { 
   useT10ListCards, 
   useT10CompletedWeeksView,
@@ -30,37 +34,298 @@ import {
 } from '../../hooks';
 import { useToast } from '@/hooks/use-toast';
 import type { T10ListCardView, T10CompletedWeekView } from '../../types/listCards';
-import type { T10DateRangePreset, T10ListStatus } from '../../types';
-import '../../styles/task10-v2.css';
 
-// Adapter type for delete modal
-interface SelectedListForModal {
-  id: string;
-  name: string;
+// ═══════════════════════════════════════════════════════════════════════════════
+// FILTER BUTTON COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function FilterButton({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
+  return (
+    <button className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 transition-all">
+      <Icon size={14} />
+      {label}
+      <ChevronDown size={14} />
+    </button>
+  );
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LIST CARD COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function ListCard({ 
+  list, 
+  onClick,
+  onStartWeek,
+  onMore
+}: { 
+  list: T10ListCardView; 
+  onClick: () => void;
+  onStartWeek: () => void;
+  onMore: (e: React.MouseEvent) => void;
+}) {
+  const formatWeekRange = (weekStart: string | null, weekEnd: string | null) => {
+    if (!weekStart || !weekEnd) return 'Current Week';
+    try {
+      const start = parseISO(weekStart);
+      const end = parseISO(weekEnd);
+      return `${format(start, 'MMM d')} – ${format(end, 'MMM d, yyyy')}`;
+    } catch {
+      return 'Current Week';
+    }
+  };
+
+  const getProgressPercent = () => {
+    if (list.total_count === 0) return 0;
+    return Math.round((list.completed_count / list.total_count) * 100);
+  };
+
+  const getSlotsAvailable = () => {
+    return list.slots_available;
+  };
+
+  const hasActiveWeek = !!list.current_week_id;
+
+  return (
+    <div
+      onClick={onClick}
+      className="flex items-center p-5 bg-white border border-slate-200 rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_4px_20px_rgba(37,99,235,0.12)] hover:-translate-y-0.5"
+    >
+      {/* LEFT SIDE */}
+      <div className="flex-1 min-w-0">
+        {/* Header: Key + Title */}
+        <div className="flex items-center gap-3.5 mb-2.5">
+          <span className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-md tracking-wide flex-shrink-0">
+            {list.key || 'T10'}
+          </span>
+          <span className="text-[17px] font-semibold text-slate-900 tracking-tight truncate">
+            {list.name}
+          </span>
+        </div>
+
+        {/* Meta: Week + Created */}
+        <div className="flex items-center gap-5 text-[13px] text-slate-500">
+          <span className="flex items-center gap-1.5">
+            <Calendar size={14} />
+            {hasActiveWeek ? (
+              <>
+                Week of{' '}
+                <strong className="text-slate-900 font-semibold">
+                  {formatWeekRange(list.week_start, list.week_end)}
+                </strong>
+              </>
+            ) : (
+              <span className="text-slate-400">No active week</span>
+            )}
+          </span>
+          <span className="text-slate-400">
+            Created {format(parseISO(list.created_at), 'MMM d, yyyy')}
+          </span>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE */}
+      <div className="flex items-center gap-6 ml-6 flex-shrink-0">
+        {/* Progress or Start Week */}
+        {hasActiveWeek ? (
+          <div className="text-right">
+            {/* Progress Bar */}
+            <div className="w-[140px] h-2 bg-slate-200 rounded-full mb-2 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300"
+                style={{ width: `${getProgressPercent()}%` }}
+              />
+            </div>
+            {/* Progress Text */}
+            <div className="text-[13px] font-medium text-slate-500">
+              <strong className="text-blue-600 font-bold">
+                {list.completed_count}
+              </strong>
+              {' '}of {list.total_count} completed
+              {getSlotsAvailable() > 0 && (
+                <span className="text-emerald-600 font-semibold">
+                  {' '}· {getSlotsAvailable()} slots
+                </span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onStartWeek();
+            }}
+            className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            Start Week
+          </button>
+        )}
+
+        {/* Status Badge */}
+        <div
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide rounded-md ${
+            list.status === 'active'
+              ? 'text-emerald-600 bg-emerald-50'
+              : 'text-slate-500 bg-slate-100'
+          }`}
+        >
+          <span className="w-1.5 h-1.5 bg-current rounded-full" />
+          {list.status === 'active' ? 'Active' : 'Archived'}
+        </div>
+
+        {/* More Button */}
+        <button
+          onClick={onMore}
+          className="w-9 h-9 flex items-center justify-center text-slate-400 rounded-lg hover:bg-slate-100 hover:text-slate-600 transition-all"
+        >
+          <MoreVertical size={18} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPLETED WEEK CARD COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function CompletedWeekCard({ week }: { week: T10CompletedWeekView }) {
+  const formatWeekRange = () => {
+    try {
+      const start = parseISO(week.week_start);
+      const end = parseISO(week.week_end);
+      return `${format(start, 'MMM d')} - ${format(end, 'd, yyyy')}`;
+    } catch {
+      return 'Week';
+    }
+  };
+
+  const getCompletionRate = () => {
+    return week.completion_rate;
+  };
+
+  const rate = getCompletionRate();
+
+  return (
+    <div className="flex items-center p-5 bg-white border border-slate-200 rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_4px_20px_rgba(37,99,235,0.12)]">
+      {/* Check icon */}
+      <div className="w-12 h-12 flex items-center justify-center bg-emerald-50 text-emerald-500 rounded-full mr-4 flex-shrink-0">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-3 mb-1">
+          <span className="px-2 py-1 font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded">
+            {week.list_key || 'T10'}
+          </span>
+          <span className="text-[15px] font-semibold text-slate-900 truncate">
+            {week.list_name}
+          </span>
+        </div>
+        <p className="text-[13px] text-slate-500">
+          {formatWeekRange()} · Checked out {format(parseISO(week.checkout_at || week.week_end), 'MMM d, h:mm a')}
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="text-right mr-4">
+        <p className={`text-lg font-bold ${rate === 100 ? 'text-emerald-600' : 'text-blue-600'}`}>
+          {rate}%
+        </p>
+        <p className="text-xs text-slate-500">
+          {week.completed_count}/{week.total_count} done
+        </p>
+      </div>
+
+      {/* Rating badge */}
+      <div className={`px-3 py-1.5 text-xs font-bold rounded-md ${
+        rate === 100 ? 'text-emerald-600 bg-emerald-50' :
+        rate >= 70 ? 'text-blue-600 bg-blue-50' :
+        'text-amber-600 bg-amber-50'
+      }`}>
+        {rate === 100 ? 'Perfect' : rate >= 70 ? 'Good' : 'Partial'}
+      </div>
+
+      <ChevronDown size={18} className="ml-4 text-slate-400 -rotate-90" />
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ARCHIVED LIST CARD COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function ArchivedListCard({ 
+  list, 
+  onRestore, 
+  onDelete 
+}: { 
+  list: T10ListCardView; 
+  onRestore: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="flex items-center p-5 bg-white border border-slate-200 rounded-[14px]">
+      {/* Archive icon */}
+      <div className="w-12 h-12 flex items-center justify-center bg-amber-50 text-amber-500 rounded-full mr-4 flex-shrink-0">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+        </svg>
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-3 mb-1">
+          <span className="px-2 py-1 font-mono text-xs font-medium text-slate-500 bg-slate-100 border border-slate-200 rounded">
+            {list.key || 'T10'}
+          </span>
+          <span className="text-[15px] font-semibold text-slate-700 truncate">
+            {list.name}
+          </span>
+        </div>
+        <p className="text-[13px] text-slate-400">
+          Archived {format(parseISO(list.created_at), 'MMM d, yyyy')}
+        </p>
+      </div>
+
+      {/* Actions */}
+      <button
+        onClick={onRestore}
+        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors mr-2"
+      >
+        <RotateCcw size={16} />
+        Restore
+      </button>
+      <button
+        onClick={onDelete}
+        className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+      >
+        <Trash2 size={18} />
+      </button>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN PAGE COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
 
 export function T10LandingPageV3() {
   const navigate = useNavigate();
   const { toast } = useToast();
   
   // UI State
-  const [activeTab, setActiveTab] = useState<T10TabId>('this-week');
+  const [activeTab, setActiveTab] = useState<'this-week' | 'completed' | 'archived'>('this-week');
   const [showNewModal, setShowNewModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedList, setSelectedList] = useState<SelectedListForModal | null>(null);
-  const [selectedCompletedWeek, setSelectedCompletedWeek] = useState<T10CompletedWeekView | null>(null);
+  const [selectedList, setSelectedList] = useState<{ id: string; name: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Filter state - properly typed
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-  const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
-  const [selectedDateRange, setSelectedDateRange] = useState<T10DateRangePreset | null>(null);
-  const [selectedDateStart, setSelectedDateStart] = useState<string | null>(null);
-  const [selectedDateEnd, setSelectedDateEnd] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<T10ListStatus | 'all'>('all');
 
-  // Data hooks based on active tab
+  // Data hooks
   const { data: activeLists = [], isLoading: listsLoading } = useT10ListCards('active');
   const { data: archivedLists = [], isLoading: archivedLoading } = useT10ListCards('archived');
   const { data: completedWeeks = [], isLoading: completedLoading } = useT10CompletedWeeksView();
@@ -71,25 +336,15 @@ export function T10LandingPageV3() {
   const createWeek = useT10CreateWeek();
   const restoreList = useT10RestoreList();
 
-  // Filter active lists based on search and filters
+  // Filter lists based on search
   const filteredActiveLists = useMemo(() => {
-    let filtered = activeLists;
+    if (!searchQuery) return activeLists;
+    const q = searchQuery.toLowerCase();
+    return activeLists.filter(
+      l => l.name.toLowerCase().includes(q) || l.key?.toLowerCase().includes(q)
+    );
+  }, [activeLists, searchQuery]);
 
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        l => l.name.toLowerCase().includes(q) || l.key?.toLowerCase().includes(q)
-      );
-    }
-
-    if (selectedStatus) {
-      filtered = filtered.filter(l => l.status === selectedStatus);
-    }
-
-    return filtered;
-  }, [activeLists, searchQuery, selectedStatus]);
-
-  // Filter archived lists
   const filteredArchivedLists = useMemo(() => {
     if (!searchQuery) return archivedLists;
     const q = searchQuery.toLowerCase();
@@ -98,7 +353,6 @@ export function T10LandingPageV3() {
     );
   }, [archivedLists, searchQuery]);
 
-  // Filter completed weeks
   const filteredCompletedWeeks = useMemo(() => {
     if (!searchQuery) return completedWeeks;
     const q = searchQuery.toLowerCase();
@@ -107,7 +361,7 @@ export function T10LandingPageV3() {
     );
   }, [completedWeeks, searchQuery]);
 
-  // Global "C" shortcut
+  // "C" shortcut to create new list
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -121,7 +375,6 @@ export function T10LandingPageV3() {
         setShowNewModal(true);
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
@@ -130,24 +383,36 @@ export function T10LandingPageV3() {
     navigate(`/taskhub/task10/list/${listId}`);
   };
 
-  const handleRename = (list: T10ListCardView) => {
-    setSelectedList({ id: list.id, name: list.name });
-    setShowRenameModal(true);
-  };
-
-  const handleDelete = (list: T10ListCardView) => {
-    setSelectedList({ id: list.id, name: list.name });
-    setShowDeleteModal(true);
-  };
-
-  const handleRenameSubmit = async (name: string) => {
-    if (!selectedList) return;
+  const handleStartWeek = async (listId: string) => {
+    const range = getCurrentWeekRange();
     try {
-      await renameList.mutateAsync({ listId: selectedList.id, name });
-      toast({ title: 'List renamed', description: `Renamed to "${name}".` });
-      setShowRenameModal(false);
+      const newWeek = await createWeek.mutateAsync({
+        list_id: listId,
+        week_start: range.start,
+        week_end: range.end,
+        is_current: true,
+      });
+      toast({ title: 'Week started', description: 'New week has been created.' });
+      navigate(`/taskhub/task10/list/${listId}/week/${newWeek.id}`);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to start week.', variant: 'destructive' });
+    }
+  };
+
+  const handleListClick = (list: T10ListCardView) => {
+    if (list.current_week_id) {
+      navigate(`/taskhub/task10/list/${list.id}/week/${list.current_week_id}`);
+    } else {
+      navigate(`/taskhub/task10/list/${list.id}`);
+    }
+  };
+
+  const handleRestore = async (list: T10ListCardView) => {
+    try {
+      await restoreList.mutateAsync(list.id);
+      toast({ title: 'List restored', description: `"${list.name}" has been restored.` });
     } catch (err) {
-      toast({ title: 'Error', description: 'Failed to rename list.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Failed to restore list.', variant: 'destructive' });
     }
   };
 
@@ -162,212 +427,248 @@ export function T10LandingPageV3() {
     }
   };
 
-  const handleRestore = async (list: T10ListCardView) => {
-    try {
-      await restoreList.mutateAsync(list.id);
-      toast({ title: 'List restored', description: `"${list.name}" has been restored.` });
-    } catch (err) {
-      toast({ title: 'Error', description: 'Failed to restore list.', variant: 'destructive' });
-    }
-  };
-
-  const handleStartWeek = async (listId: string) => {
-    const range = getCurrentWeekRange();
-    console.log('[T10] Starting week for list:', listId, 'range:', range);
-    try {
-      const newWeek = await createWeek.mutateAsync({
-        list_id: listId,
-        week_start: range.start,
-        week_end: range.end,
-        is_current: true,
-      });
-      console.log('[T10] Week created, navigating to:', `/taskhub/task10/list/${listId}/week/${newWeek.id}`);
-      toast({ title: 'Week started', description: 'New week has been created.' });
-      // Navigate after toast to ensure UI feedback
-      navigate(`/taskhub/task10/list/${listId}/week/${newWeek.id}`);
-    } catch (error) {
-      console.error('[T10] Failed to start week:', error);
-      toast({ title: 'Error', description: 'Failed to start week.', variant: 'destructive' });
-    }
-  };
-
-  const handleListClick = (list: T10ListCardView) => {
-    if (list.current_week_id) {
-      navigate(`/taskhub/task10/list/${list.id}/week/${list.current_week_id}`);
-    } else {
-      navigate(`/taskhub/task10/list/${list.id}`);
-    }
-  };
-
-  // Get counts for tabs and header
+  // Counts
   const completedCount = completedWeeks.length;
   const archivedCount = archivedLists.length;
-  const listCount = activeLists.length;
-  const activeWeekCount = activeLists.filter(l => l.current_week_id).length;
 
-  // Loading state based on active tab
   const isLoading = 
     activeTab === 'this-week' ? listsLoading :
     activeTab === 'completed' ? completedLoading :
     archivedLoading;
 
   return (
-    <div className="t10-module-v2 t10-detail-page">
-      <div className="t10-landing-v3">
-        {/* Header */}
-        <T10HeaderV3 
-          onNewList={() => setShowNewModal(true)}
-          listCount={listCount}
-          activeWeekCount={activeWeekCount}
-        />
+    <div className="min-h-screen bg-slate-100">
+      {/* ═══════════════════════════════════════════════════════════════════════
+          HEADER
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200 shadow-sm">
+        {/* Logo */}
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-700 text-white text-lg font-extrabold rounded-[14px] shadow-lg shadow-blue-600/30">
+            10
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold text-slate-900 tracking-tight">
+              Task<sup className="text-xs text-blue-600 font-bold">10</sup>
+            </span>
+            <span className="text-xs font-medium text-slate-500">
+              Priority Management
+            </span>
+          </div>
+        </div>
 
-        {/* Search */}
-        <T10SearchBarV3 
-          value={searchQuery}
-          onChange={setSearchQuery} 
-        />
+        {/* New List Button */}
+        <button
+          onClick={() => setShowNewModal(true)}
+          className="flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-br from-blue-600 to-blue-700 rounded-[10px] shadow-lg shadow-blue-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40 transition-all"
+        >
+          <Plus size={18} strokeWidth={2.5} />
+          New List
+        </button>
+      </header>
 
-        {/* Filter Bar - only show on This Week tab */}
-        {activeTab === 'this-week' && (
-          <T10FilterBarV3
-            selectedLabels={selectedLabels}
-            onLabelsChange={setSelectedLabels}
-            selectedAssignees={selectedAssignees}
-            onAssigneesChange={setSelectedAssignees}
-            selectedDateRange={selectedDateRange}
-            selectedDateStart={selectedDateStart}
-            selectedDateEnd={selectedDateEnd}
-            onDateRangeChange={(preset, start, end) => {
-              setSelectedDateRange(preset);
-              setSelectedDateStart(start || null);
-              setSelectedDateEnd(end || null);
-            }}
-            selectedStatus={selectedStatus}
-            onStatusChange={setSelectedStatus}
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MAIN CONTENT
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <main className="max-w-6xl mx-auto px-8 py-8">
+        {/* SEARCH */}
+        <div className="flex items-center gap-3 px-5 py-3.5 bg-white border-2 border-slate-200 rounded-xl mb-5 focus-within:border-blue-500 focus-within:shadow-[0_0_0_4px_rgba(37,99,235,0.1)] transition-all">
+          <Search size={18} className="text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search lists, task number, or keyword..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 text-[15px] font-medium text-slate-900 bg-transparent outline-none placeholder:text-slate-400"
           />
+        </div>
+
+        {/* FILTERS */}
+        <div className="flex gap-2.5 mb-6 flex-wrap">
+          <FilterButton icon={Tag} label="Label" />
+          <FilterButton icon={User} label="Assigned To" />
+          <FilterButton icon={Calendar} label="Date Range" />
+          <FilterButton icon={Clock} label="Status" />
+        </div>
+
+        {/* TABS */}
+        <div className="flex gap-1 p-1 bg-slate-100 rounded-xl w-fit mb-6 border border-slate-200">
+          <button
+            onClick={() => setActiveTab('this-week')}
+            className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+              activeTab === 'this-week'
+                ? 'text-slate-900 bg-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            This Week
+          </button>
+          <button
+            onClick={() => setActiveTab('completed')}
+            className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+              activeTab === 'completed'
+                ? 'text-slate-900 bg-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Completed
+            <span
+              className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                activeTab === 'completed'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-200 text-slate-600'
+              }`}
+            >
+              {completedCount}
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab('archived')}
+            className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+              activeTab === 'archived'
+                ? 'text-slate-900 bg-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Archived
+            <span
+              className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                activeTab === 'archived'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-200 text-slate-600'
+              }`}
+            >
+              {archivedCount}
+            </span>
+          </button>
+        </div>
+
+        {/* TAB CONTENT */}
+        {activeTab === 'this-week' && (
+          <>
+            {/* SECTION HEADER */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                Your Lists
+              </span>
+              <span className="text-[13px] text-slate-400">
+                {filteredActiveLists.length} lists
+              </span>
+            </div>
+
+            {/* LIST GRID */}
+            {isLoading ? (
+              <div className="flex flex-col gap-3">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-[88px] bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 rounded-[14px] animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : filteredActiveLists.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 bg-white border border-slate-200 rounded-[14px]">
+                <p className="text-[15px] text-slate-500 mb-4">No lists yet</p>
+                <button
+                  onClick={() => setShowNewModal(true)}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Plus size={18} />
+                  Create your first list
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {filteredActiveLists.map((list) => (
+                  <ListCard
+                    key={list.id}
+                    list={list}
+                    onClick={() => handleListClick(list)}
+                    onStartWeek={() => handleStartWeek(list.id)}
+                    onMore={(e) => {
+                      e.stopPropagation();
+                      setSelectedList({ id: list.id, name: list.name });
+                      // Could show dropdown menu here
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
-        {/* Tabs */}
-        <T10TabsV3
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          completedCount={completedCount}
-          archivedCount={archivedCount}
-        />
+        {activeTab === 'completed' && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                Completed Weeks
+              </span>
+              <span className="text-[13px] text-slate-400">
+                {filteredCompletedWeeks.length} weeks
+              </span>
+            </div>
 
-        {/* Tab Content */}
-        <div className="t10-lists-section">
-          {/* THIS WEEK TAB */}
-          {activeTab === 'this-week' && (
-            <>
-              <div className="t10-lists-header">
-                <span className="t10-lists-label">YOUR LISTS</span>
-                <span className="t10-lists-count">{filteredActiveLists.length} lists</span>
+            {completedLoading ? (
+              <div className="flex flex-col gap-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-[88px] bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 rounded-[14px] animate-pulse" />
+                ))}
               </div>
-
-              {isLoading ? (
-                <div className="t10-cards-list">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="t10-card-skeleton">
-                      <div className="t10-skeleton" style={{ height: '20px', width: '80px', marginBottom: '8px' }} />
-                      <div className="t10-skeleton" style={{ height: '24px', width: '200px', marginBottom: '16px' }} />
-                      <div className="t10-skeleton" style={{ height: '60px', width: '100%' }} />
-                    </div>
-                  ))}
-                </div>
-              ) : filteredActiveLists.length === 0 ? (
-                <T10EmptyState 
-                  onCreateList={() => setShowNewModal(true)}
-                />
-              ) : (
-                <div className="t10-cards-list">
-                  {filteredActiveLists.map(list => (
-                    <T10ListCardV3
-                      key={list.id}
-                      list={list}
-                      onCardClick={() => handleListClick(list)}
-                      onStartWeek={() => handleStartWeek(list.id)}
-                      onRename={() => handleRename(list)}
-                      onDelete={() => handleDelete(list)}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {/* COMPLETED TAB */}
-          {activeTab === 'completed' && (
-            <>
-              <div className="t10-lists-header">
-                <span className="t10-lists-label">COMPLETED WEEKS</span>
-                <span className="t10-lists-count">{filteredCompletedWeeks.length} weeks</span>
+            ) : filteredCompletedWeeks.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 bg-white border border-slate-200 rounded-[14px]">
+                <p className="text-[15px] text-slate-500 mb-2">No completed weeks yet</p>
+                <p className="text-[13px] text-slate-400">Complete a week by checking out all items</p>
               </div>
-
-              {completedLoading ? (
-                <div className="t10-cards-list">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="t10-card-skeleton">
-                      <div className="t10-skeleton" style={{ height: '60px', width: '100%' }} />
-                    </div>
-                  ))}
-                </div>
-              ) : filteredCompletedWeeks.length === 0 ? (
-                <div className="t10-empty-tab">
-                  <p className="t10-empty-tab__text">No completed weeks yet</p>
-                  <p className="t10-empty-tab__hint">Complete a week by checking out all items</p>
-                </div>
-              ) : (
-                <div className="t10-cards-list">
-                  {filteredCompletedWeeks.map(week => (
-                    <T10CompletedCardV3
-                      key={week.week_id}
-                      week={week}
-                      onClick={() => setSelectedCompletedWeek(week)}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {/* ARCHIVED TAB */}
-          {activeTab === 'archived' && (
-            <>
-              <div className="t10-lists-header">
-                <span className="t10-lists-label">ARCHIVED LISTS</span>
-                <span className="t10-lists-count">{filteredArchivedLists.length} lists</span>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {filteredCompletedWeeks.map((week) => (
+                  <CompletedWeekCard key={week.week_id} week={week} />
+                ))}
               </div>
+            )}
+          </>
+        )}
 
-              {archivedLoading ? (
-                <div className="t10-cards-list">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="t10-card-skeleton">
-                      <div className="t10-skeleton" style={{ height: '60px', width: '100%' }} />
-                    </div>
-                  ))}
-                </div>
-              ) : filteredArchivedLists.length === 0 ? (
-                <div className="t10-empty-tab">
-                  <p className="t10-empty-tab__text">No archived lists</p>
-                  <p className="t10-empty-tab__hint">Archived lists will appear here</p>
-                </div>
-              ) : (
-                <div className="t10-cards-list">
-                  {filteredArchivedLists.map(list => (
-                    <T10ArchivedCardV3
-                      key={list.id}
-                      list={list}
-                      onRestore={() => handleRestore(list)}
-                      onDelete={() => handleDelete(list)}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </div>
+        {activeTab === 'archived' && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                Archived Lists
+              </span>
+              <span className="text-[13px] text-slate-400">
+                {filteredArchivedLists.length} lists
+              </span>
+            </div>
+
+            {archivedLoading ? (
+              <div className="flex flex-col gap-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-[88px] bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 rounded-[14px] animate-pulse" />
+                ))}
+              </div>
+            ) : filteredArchivedLists.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 bg-white border border-slate-200 rounded-[14px]">
+                <p className="text-[15px] text-slate-500 mb-2">No archived lists</p>
+                <p className="text-[13px] text-slate-400">Archived lists will appear here</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {filteredArchivedLists.map((list) => (
+                  <ArchivedListCard
+                    key={list.id}
+                    list={list}
+                    onRestore={() => handleRestore(list)}
+                    onDelete={() => {
+                      setSelectedList({ id: list.id, name: list.name });
+                      setShowDeleteModal(true);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </main>
 
       {/* Modals */}
       <T10NewListModal
@@ -377,27 +678,11 @@ export function T10LandingPageV3() {
       />
       
       {selectedList && (
-        <>
-          <T10RenameModal
-            isOpen={showRenameModal}
-            onClose={() => setShowRenameModal(false)}
-            currentName={selectedList.name}
-            onRename={handleRenameSubmit}
-          />
-          <T10DeleteModal
-            isOpen={showDeleteModal}
-            onClose={() => setShowDeleteModal(false)}
-            listName={selectedList.name}
-            onDelete={handleDeleteSubmit}
-          />
-        </>
-      )}
-
-      {/* Completed Week Detail Modal */}
-      {selectedCompletedWeek && (
-        <T10CompletedDetailModal
-          week={selectedCompletedWeek}
-          onClose={() => setSelectedCompletedWeek(null)}
+        <T10DeleteModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          listName={selectedList.name}
+          onDelete={handleDeleteSubmit}
         />
       )}
     </div>
