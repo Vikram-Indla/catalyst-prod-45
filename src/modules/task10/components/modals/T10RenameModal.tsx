@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
 
 interface T10RenameModalProps {
   isOpen: boolean;
@@ -17,41 +19,80 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
   const handleSubmit = () => {
     if (name.trim() && name.trim() !== currentName) {
       onRename(name.trim());
+      onClose();
     }
   };
 
   if (!isOpen) return null;
 
-  return (
-    <div className={`t10-modal-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
-      <div className="t10-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="t10-modal-header">
-          <h2 className="t10-modal-title">Rename List</h2>
+  return createPortal(
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{ isolation: 'isolate' }}
+    >
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div 
+        className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+          <h2 className="text-lg font-semibold text-slate-900">Rename List</h2>
+          <button
+            type="button"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            onClick={onClose}
+          >
+            <X size={18} />
+          </button>
         </div>
-        <div className="t10-modal-content">
-          <input
-            type="text"
-            className="t10-input"
-            placeholder="List name..."
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-            autoFocus
-          />
+
+        {/* Form */}
+        <div className="px-6 py-5">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-700">
+              List Name
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              placeholder="List name..."
+              autoFocus
+              className="w-full px-4 py-2.5 text-[15px] text-slate-900 placeholder:text-slate-400 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            />
+          </div>
         </div>
-        <div className="t10-modal-footer">
-          <button className="t10-btn t10-btn-secondary" onClick={onClose}>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+          >
             Cancel
           </button>
           <button
-            className="t10-btn t10-btn-primary"
+            type="button"
             onClick={handleSubmit}
             disabled={!name.trim() || name.trim() === currentName}
+            className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             Rename
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
+
+export default T10RenameModal;

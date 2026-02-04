@@ -13,8 +13,11 @@ import {
   RotateCcw,
   Trash2,
   X,
-  Calendar
+  Calendar,
+  Pencil,
+  Archive
 } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { format, parseISO } from 'date-fns';
 import { T10NewListModal } from './T10NewListModal';
 import { T10RenameModal } from '../modals/T10RenameModal';
@@ -315,6 +318,7 @@ export function T10LandingPageV3() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedList, setSelectedList] = useState<{ id: string; name: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState<{ id: string; name: string; rect: DOMRect } | null>(null);
 
   // Filter state
   const {
@@ -619,8 +623,8 @@ export function T10LandingPageV3() {
                     onStartWeek={() => handleStartWeek(list.id)}
                     onMore={(e) => {
                       e.stopPropagation();
-                      setSelectedList({ id: list.id, name: list.name });
-                      // Could show dropdown menu here
+                      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                      setMenuOpen({ id: list.id, name: list.name, rect });
                     }}
                   />
                 ))}
@@ -710,12 +714,83 @@ export function T10LandingPageV3() {
       />
       
       {selectedList && (
-        <T10DeleteModal
-          isOpen={showDeleteModal}
-          onClose={() => setShowDeleteModal(false)}
-          listName={selectedList.name}
-          onDelete={handleDeleteSubmit}
-        />
+        <>
+          <T10RenameModal
+            isOpen={showRenameModal}
+            onClose={() => setShowRenameModal(false)}
+            currentName={selectedList.name}
+            onRename={async (newName) => {
+              try {
+                await renameList.mutateAsync({ listId: selectedList.id, name: newName });
+                toast({ title: 'List renamed', description: `List renamed to "${newName}".` });
+              } catch (err) {
+                toast({ title: 'Error', description: 'Failed to rename list.', variant: 'destructive' });
+              }
+            }}
+          />
+          <T10DeleteModal
+            isOpen={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            listName={selectedList.name}
+            onDelete={handleDeleteSubmit}
+          />
+        </>
+      )}
+
+      {/* Kebab Dropdown Menu */}
+      {menuOpen && createPortal(
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 z-[99998]"
+            onClick={() => setMenuOpen(null)}
+          />
+          {/* Dropdown */}
+          <div
+            className="fixed z-[99999] w-44 bg-white border border-slate-200 rounded-lg shadow-xl py-1 animate-in fade-in zoom-in-95 duration-150"
+            style={{
+              top: menuOpen.rect.bottom + 4,
+              left: menuOpen.rect.right - 176,
+            }}
+          >
+            <button
+              onClick={() => {
+                setSelectedList({ id: menuOpen.id, name: menuOpen.name });
+                setShowRenameModal(true);
+                setMenuOpen(null);
+              }}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
+            >
+              <Pencil size={15} className="text-slate-400" />
+              Rename
+            </button>
+            <button
+              onClick={() => {
+                // Archive logic (same as delete for now)
+                setSelectedList({ id: menuOpen.id, name: menuOpen.name });
+                setShowDeleteModal(true);
+                setMenuOpen(null);
+              }}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
+            >
+              <Archive size={15} className="text-slate-400" />
+              Archive
+            </button>
+            <div className="my-1 border-t border-slate-100" />
+            <button
+              onClick={() => {
+                setSelectedList({ id: menuOpen.id, name: menuOpen.name });
+                setShowDeleteModal(true);
+                setMenuOpen(null);
+              }}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <Trash2 size={15} />
+              Delete
+            </button>
+          </div>
+        </>,
+        document.body
       )}
     </div>
   );
