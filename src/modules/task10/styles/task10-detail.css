@@ -278,9 +278,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2563eb;
+  background: transparent;
+  border: 2px solid #8b5cf6;
   border-radius: 12px;
-  color: #ffffff;
+  color: #8b5cf6;
 }
 
 .t10-detail-ai-content {
