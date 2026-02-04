@@ -34,6 +34,8 @@ import {
   useT10ToggleItemStatus,
   useT10CreateItem,
   useT10ReorderItems,
+  useT10SwapWithTen,
+  useT10PromoteToTop10,
 } from '../../hooks';
 import { useT10AISuggestions, useAddSuggestionToT10 } from '../../hooks/useT10AISuggestions';
 import { T10SidePanelNew } from '../panel/T10SidePanelNew';
@@ -181,6 +183,8 @@ export function T10WeekViewV3() {
   const toggleStatus = useT10ToggleItemStatus();
   const createItem = useT10CreateItem();
   const reorderItems = useT10ReorderItems();
+  const swapWithTen = useT10SwapWithTen();
+  const promoteToTop10 = useT10PromoteToTop10();
 
   // Find current week and calculate index
   const currentWeek = weeks?.find(w => w.id === weekId);
@@ -261,10 +265,34 @@ export function T10WeekViewV3() {
     setTimeout(() => setSelectedItemId(null), 200);
   };
 
-  // Handle buffer swap
-  const handleBufferSwap = (bufferItem: T10ItemFull) => {
-    console.log('[T10] Swap buffer item:', bufferItem.id);
-    // TODO: Implement swap logic
+  // Handle buffer swap with #10
+  const handleBufferSwap = async (bufferItem: T10ItemFull) => {
+    if (!weekId) return;
+    
+    try {
+      await swapWithTen.mutateAsync({
+        week_id: weekId,
+        buffer_item_id: bufferItem.id,
+      });
+      console.log('[T10] Swapped buffer item with #10:', bufferItem.title);
+    } catch (error) {
+      console.error('[T10] Error swapping:', error);
+    }
+  };
+
+  // Handle promote buffer item to Top 10 (when slots available)
+  const handlePromoteToTop10 = async (bufferItem: T10ItemFull) => {
+    if (!weekId) return;
+    
+    try {
+      await promoteToTop10.mutateAsync({
+        week_id: weekId,
+        buffer_item_id: bufferItem.id,
+      });
+      console.log('[T10] Promoted buffer item to Top 10:', bufferItem.title);
+    } catch (error) {
+      console.error('[T10] Error promoting:', error);
+    }
   };
 
   // Handle drag end for reordering
@@ -572,23 +600,42 @@ export function T10WeekViewV3() {
             <span className="t10-detail-buffer-count">{bufferItems?.length || 0}</span>
           </div>
           {bufferItems && bufferItems.length > 0 ? (
-            bufferItems.map(item => (
-              <div key={item.id} className="t10-detail-buffer-item" onClick={() => handleItemClick(item)}>
-                <div className="t10-detail-buffer-rank">{item.rank}</div>
-                <div className="t10-detail-buffer-content">
-                  <span className="t10-detail-buffer-text">{item.title}</span>
+            bufferItems.map(item => {
+              // Determine which button to show based on available slots
+              const hasEmptySlots = slotsAvailable > 0;
+              
+              return (
+                <div key={item.id} className="t10-detail-buffer-item" onClick={() => handleItemClick(item)}>
+                  <div className="t10-detail-buffer-rank">{item.rank}</div>
+                  <div className="t10-detail-buffer-content">
+                    <span className="t10-detail-buffer-text">{item.title}</span>
+                  </div>
+                  {hasEmptySlots ? (
+                    <button 
+                      className="t10-detail-buffer-promote"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePromoteToTop10(item);
+                      }}
+                      disabled={promoteToTop10.isPending}
+                    >
+                      {promoteToTop10.isPending ? 'Adding...' : `Add to Top 10`}
+                    </button>
+                  ) : (
+                    <button 
+                      className="t10-detail-buffer-swap"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBufferSwap(item);
+                      }}
+                      disabled={swapWithTen.isPending}
+                    >
+                      {swapWithTen.isPending ? 'Swapping...' : 'Swap with #10'}
+                    </button>
+                  )}
                 </div>
-                <button 
-                  className="t10-detail-buffer-swap"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleBufferSwap(item);
-                  }}
-                >
-                  Swap with #10
-                </button>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="t10-detail-buffer-item" style={{ justifyContent: 'center', color: '#94a3b8' }}>
               No items in buffer yet

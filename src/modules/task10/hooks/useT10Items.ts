@@ -710,3 +710,148 @@ export function useT10UpdateItemLabels() {
     },
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SWAP BUFFER ITEM WITH #10
+// Swaps a buffer item with the item ranked at #10 in the Top 10
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface T10SwapWithTen {
+  week_id: string;
+  buffer_item_id: string;
+}
+
+export function useT10SwapWithTen() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ week_id, buffer_item_id }: T10SwapWithTen): Promise<void> => {
+      // Get item at rank 10 (Top 10 item)
+      const { data: rank10Item, error: fetchError } = await supabase
+        .from('t10_items')
+        .select('id, rank')
+        .eq('week_id', week_id)
+        .eq('rank', 10)
+        .eq('is_buffer', false)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        throw new Error(fetchError.message);
+      }
+
+      if (!rank10Item) {
+        throw new Error('No item at rank #10 to swap with');
+      }
+
+      // Get buffer item
+      const { data: bufferItem, error: bufferError } = await supabase
+        .from('t10_items')
+        .select('id, rank')
+        .eq('id', buffer_item_id)
+        .single();
+
+      if (bufferError) throw new Error(bufferError.message);
+      if (!bufferItem) throw new Error('Buffer item not found');
+
+      const bufferRank = bufferItem.rank;
+
+      // Swap: buffer item gets rank 10, #10 item gets buffer's rank
+      const { error: updateBuffer } = await supabase
+        .from('t10_items')
+        .update({ rank: 10, is_buffer: false })
+        .eq('id', buffer_item_id);
+
+      if (updateBuffer) throw new Error(updateBuffer.message);
+
+      const { error: updateTen } = await supabase
+        .from('t10_items')
+        .update({ rank: bufferRank, is_buffer: true })
+        .eq('id', rank10Item.id);
+
+      if (updateTen) throw new Error(updateTen.message);
+
+      console.log('[T10] Swapped buffer item with #10:', buffer_item_id, '<->', rank10Item.id);
+    },
+    onSuccess: (_, { week_id }) => {
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(week_id) });
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.buffer(week_id) });
+      queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
+      queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
+    },
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROMOTE BUFFER ITEM TO TOP 10
+// Promotes a buffer item to the next available slot in the Top 10
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface T10PromoteToTop10 {
+  week_id: string;
+  buffer_item_id: string;
+}
+
+export function useT10PromoteToTop10() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ week_id, buffer_item_id }: T10PromoteToTop10): Promise<void> => {
+      // Get all Top 10 items to find next available rank
+      const { data: top10Items, error: fetchError } = await supabase
+        .from('t10_items')
+        .select('id, rank')
+        .eq('week_id', week_id)
+        .eq('is_buffer', false)
+        .order('rank', { ascending: true });
+
+      if (fetchError) throw new Error(fetchError.message);
+
+      const top10Count = top10Items?.length || 0;
+      
+      if (top10Count >= 10) {
+        throw new Error('Top 10 is full. Use swap instead.');
+      }
+
+      // Next available rank is count + 1
+      const nextRank = top10Count + 1;
+
+      // Promote buffer item
+      const { error: promoteError } = await supabase
+        .from('t10_items')
+        .update({ rank: nextRank, is_buffer: false })
+        .eq('id', buffer_item_id);
+
+      if (promoteError) throw new Error(promoteError.message);
+
+      // Re-rank remaining buffer items (shift down by 1)
+      const { data: remainingBuffer, error: bufferFetchError } = await supabase
+        .from('t10_items')
+        .select('id, rank')
+        .eq('week_id', week_id)
+        .eq('is_buffer', true)
+        .order('rank', { ascending: true });
+
+      if (bufferFetchError) throw new Error(bufferFetchError.message);
+
+      // Re-assign ranks starting from 11
+      if (remainingBuffer && remainingBuffer.length > 0) {
+        for (let i = 0; i < remainingBuffer.length; i++) {
+          const { error } = await supabase
+            .from('t10_items')
+            .update({ rank: 11 + i })
+            .eq('id', remainingBuffer[i].id);
+          
+          if (error) throw new Error(error.message);
+        }
+      }
+
+      console.log('[T10] Promoted buffer item to Top 10 at rank:', nextRank);
+    },
+    onSuccess: (_, { week_id }) => {
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(week_id) });
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.buffer(week_id) });
+      queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
+      queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
+    },
+  });
+}

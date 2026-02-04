@@ -863,6 +863,30 @@
   background: #bfdbfe;
 }
 
+.t10-detail-buffer-swap:disabled,
+.t10-detail-buffer-promote:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Promote button - solid blue for adding to Top 10 */
+.t10-detail-buffer-promote {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.t10-detail-buffer-promote:hover {
+  background: #2563eb;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    LOADING & ERROR STATES
    ═══════════════════════════════════════════════════════════════════════════════ */
