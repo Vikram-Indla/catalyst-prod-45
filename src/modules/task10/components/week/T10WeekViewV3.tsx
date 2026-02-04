@@ -8,7 +8,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, ChevronLeft, ChevronRight, Calendar, 
   Zap, ChevronDown, Plus, Check, Layers, Info,
-  AlertCircle, GripVertical
+  AlertCircle, GripVertical, User
 } from 'lucide-react';
 import {
   DndContext,
@@ -38,6 +38,7 @@ import {
 import { useT10AISuggestions, useAddSuggestionToT10 } from '../../hooks/useT10AISuggestions';
 import { T10SidePanelNew } from '../panel/T10SidePanelNew';
 import { T10CheckoutModalNew } from '../modals/T10CheckoutModalNew';
+import { T10LabelDropdown } from './T10LabelDropdown';
 import { formatT10WeekRange, formatShortDate, getDueStatus } from '../../utils';
 import type { T10ItemFull } from '../../types';
 import '../../styles/task10-detail.css';
@@ -50,9 +51,10 @@ interface SortablePriorityItemProps {
   item: T10ItemFull;
   onClick: () => void;
   onToggleStatus: () => void;
+  onLabelsChange?: () => void;
 }
 
-function SortablePriorityItem({ item, onClick, onToggleStatus }: SortablePriorityItemProps) {
+function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange }: SortablePriorityItemProps) {
   const {
     attributes,
     listeners,
@@ -98,14 +100,18 @@ function SortablePriorityItem({ item, onClick, onToggleStatus }: SortablePriorit
       <div className="t10-detail-priority-content">
         <span className="t10-detail-priority-text">{item.title}</span>
         <div className="t10-detail-priority-meta">
-          {item.label && (
-            <span className="t10-detail-priority-label">{item.label}</span>
-          )}
+          {/* Labels Dropdown */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <T10LabelDropdown
+              itemId={item.id}
+              currentLabels={item.labels || []}
+              onLabelsChange={onLabelsChange}
+            />
+          </div>
+          
           {item.assignee_name && (
             <span className="t10-detail-priority-assignee">
-              <span className="t10-detail-priority-assignee-avatar">
-                {item.assignee_initials || item.assignee_name.substring(0, 2).toUpperCase()}
-              </span>
+              <User size={14} className="t10-detail-priority-assignee-avatar" />
               {item.assignee_name}
             </span>
           )}
@@ -536,6 +542,9 @@ export function T10WeekViewV3() {
                       item={item}
                       onClick={() => handleItemClick(item)}
                       onToggleStatus={() => handleToggleStatus(item)}
+                      onLabelsChange={() => {
+                        // Query cache is invalidated by the mutation automatically
+                      }}
                     />
                   ))
                 ) : (
