@@ -1,18 +1,17 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: T10ListCardV3
 // Purpose: Individual list card with current week progress and past weeks
-// Matches reference screenshot design
+// Matches reference screenshot design - supports both T10ListSummary and T10ListCardView
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
 import { Plus, MoreVertical, ChevronDown, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useT10CurrentWeek, useT10WeekHistory } from '../../hooks';
 import { formatT10Date, getT10SlotsAvailable } from '../../utils';
-import type { T10ListSummary } from '../../types';
+import type { T10ListCardView } from '../../types/listCards';
 
 interface T10ListCardV3Props {
-  list: T10ListSummary;
+  list: T10ListCardView;
   onCardClick: () => void;
   onStartWeek: () => void;
   onRename: () => void;
@@ -30,18 +29,16 @@ export function T10ListCardV3({
   const [showMenu, setShowMenu] = useState(false);
   const [showPastWeeks, setShowPastWeeks] = useState(false);
   
-  // Fetch current week and past weeks
-  const { data: currentWeek, isLoading: weekLoading } = useT10CurrentWeek(list.id);
-  const { data: pastWeeks = [] } = useT10WeekHistory(list.id);
-
-  const hasCurrentWeek = !!currentWeek;
-  const completedCount = currentWeek?.completed_count ?? 0;
-  const totalCount = currentWeek?.total_count ?? 0;
+  // Use embedded data from the view - no additional fetching needed!
+  const hasCurrentWeek = !!list.current_week_id;
+  const completedCount = list.completed_count || 0;
+  const totalCount = list.total_count || 0;
   const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
-  const slotsAvailable = getT10SlotsAvailable(totalCount);
+  const slotsAvailable = list.slots_available || getT10SlotsAvailable(totalCount);
+  const pastWeeks = list.past_weeks || [];
 
-  const weekLabel = currentWeek?.week_start 
-    ? formatT10Date(currentWeek.week_start)
+  const weekLabel = list.week_start 
+    ? formatT10Date(list.week_start)
     : '';
 
   const handleMenuClick = (e: React.MouseEvent) => {
@@ -258,13 +255,7 @@ export function T10ListCardV3({
       </p>
 
       {/* Current Week Section */}
-      {weekLoading ? (
-        <div style={{ padding: '16px', backgroundColor: '#f8fafc', borderRadius: '10px' }}>
-          <div style={{ height: '16px', width: '120px', backgroundColor: '#e2e8f0', borderRadius: '4px', marginBottom: '12px' }} />
-          <div style={{ height: '6px', width: '100%', backgroundColor: '#e2e8f0', borderRadius: '3px', marginBottom: '12px' }} />
-          <div style={{ height: '14px', width: '160px', backgroundColor: '#e2e8f0', borderRadius: '4px' }} />
-        </div>
-      ) : hasCurrentWeek ? (
+      {hasCurrentWeek ? (
         <div style={{ marginBottom: pastWeeks.length > 0 ? '8px' : '0' }}>
           <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 8px 0' }}>
             Week of <strong style={{ color: '#0f172a', fontWeight: 600 }}>{weekLabel}</strong>
