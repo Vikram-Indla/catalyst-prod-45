@@ -160,6 +160,8 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     color: dueStatus === 'overdue' ? '#dc2626' : dueStatus === 'today' ? '#f59e0b' : '#64748b',
   };
 
+  const [isHovered, setIsHovered] = React.useState(false);
+
   const removeStyle: React.CSSProperties = {
     width: 32,
     height: 32,
@@ -172,7 +174,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     borderRadius: 8,
     cursor: 'pointer',
     flexShrink: 0,
-    opacity: 0,
+    opacity: isHovered ? 1 : 0,
     transition: 'opacity 0.15s ease, color 0.15s ease, background 0.15s ease',
   };
 
@@ -213,14 +215,8 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
       ref={setNodeRef}
       style={cardStyle}
       onClick={onClick}
-      onMouseEnter={(e) => {
-        const removeBtn = e.currentTarget.querySelector('[data-remove-btn]') as HTMLElement;
-        if (removeBtn) removeBtn.style.opacity = '1';
-      }}
-      onMouseLeave={(e) => {
-        const removeBtn = e.currentTarget.querySelector('[data-remove-btn]') as HTMLElement;
-        if (removeBtn) removeBtn.style.opacity = '0';
-      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Drag Handle - 6-dot pattern */}
       <div
@@ -394,12 +390,19 @@ export function T10WeekViewV3() {
     if (!newItemText.trim() || !weekId) return;
     
     try {
-      const maxRank = Math.max(0, ...allItems.map(i => i.rank || 0));
+      // Calculate next available rank - ensure it's unique
+      const existingRanks = allItems.map(i => i.rank || 0);
+      const maxRank = Math.max(0, ...existingRanks);
+      // For new items: if under 10 items, use totalCount+1; else place after max rank
       const nextRank = totalCount < 10 ? totalCount + 1 : maxRank + 1;
+      
+      // Double-check rank isn't already taken
+      const finalRank = existingRanks.includes(nextRank) ? maxRank + 1 : nextRank;
+      
       await createItem.mutateAsync({
         week_id: weekId,
         title: newItemText.trim(),
-        rank: nextRank,
+        rank: finalRank,
       });
       setNewItemText('');
     } catch (error) {
