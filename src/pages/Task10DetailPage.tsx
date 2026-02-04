@@ -21,7 +21,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { 
-  GripVertical, 
   Check, 
   ChevronLeft, 
   ChevronRight, 
@@ -34,7 +33,8 @@ import {
   Clock,
   AlignLeft,
   Trash2,
-  Archive
+  Archive,
+  ChevronDown
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { toast } from 'sonner';
@@ -92,6 +92,35 @@ interface UserProfile {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// DRAG HANDLE COMPONENT - 6 dots in 2x3 grid
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function DragHandle({ listeners, attributes }: { listeners: any; attributes: any }) {
+  return (
+    <div
+      {...attributes}
+      {...listeners}
+      className="flex flex-col gap-[3px] p-2 cursor-grab active:cursor-grabbing"
+      onClick={(e) => e.stopPropagation()}
+      style={{ color: '#9ca3af' }}
+    >
+      <div className="flex gap-[3px]">
+        <div style={{ width: 4, height: 4, backgroundColor: 'currentColor', borderRadius: 1 }} />
+        <div style={{ width: 4, height: 4, backgroundColor: 'currentColor', borderRadius: 1 }} />
+      </div>
+      <div className="flex gap-[3px]">
+        <div style={{ width: 4, height: 4, backgroundColor: 'currentColor', borderRadius: 1 }} />
+        <div style={{ width: 4, height: 4, backgroundColor: 'currentColor', borderRadius: 1 }} />
+      </div>
+      <div className="flex gap-[3px]">
+        <div style={{ width: 4, height: 4, backgroundColor: 'currentColor', borderRadius: 1 }} />
+        <div style={{ width: 4, height: 4, backgroundColor: 'currentColor', borderRadius: 1 }} />
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // SORTABLE PRIORITY CARD COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -113,107 +142,131 @@ function SortablePriorityCard({
     isDragging,
   } = useSortable({ id: item.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
+  const isCompleted = item.status === 'done';
+  const labels = item.labels && Array.isArray(item.labels) 
+    ? (item.labels as Array<{ id: string; name: string; color: string }>) 
+    : [];
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+      }}
       onClick={onClick}
       className={`
-        flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl cursor-pointer
+        flex items-center gap-4 px-4 py-5 bg-white border border-gray-200 rounded-2xl cursor-pointer
         hover:border-blue-200 hover:shadow-sm transition-all
-        ${item.status === 'done' ? 'bg-gray-50' : ''}
-        ${isDragging ? 'shadow-lg border-blue-500' : ''}
+        ${isDragging ? 'shadow-lg border-blue-400 z-50' : ''}
       `}
     >
-      {/* DRAG HANDLE - Better contrast */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="flex flex-col gap-0.5 p-1 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex gap-0.5">
-          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
-          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
-        </div>
-        <div className="flex gap-0.5">
-          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
-          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
-        </div>
-        <div className="flex gap-0.5">
-          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
-          <div className="w-1.5 h-1.5 bg-current rounded-sm" />
-        </div>
-      </div>
+      {/* DRAG HANDLE */}
+      <DragHandle listeners={listeners} attributes={attributes} />
 
-      {/* RANK BADGE - Larger 40px with rounded-xl */}
+      {/* RANK BADGE - Blue rounded square */}
       <div 
-        className="w-10 h-10 flex items-center justify-center text-sm font-bold text-white rounded-xl flex-shrink-0"
-        style={{ backgroundColor: '#2563eb' }}
+        style={{
+          width: 48,
+          height: 48,
+          backgroundColor: '#3b82f6',
+          borderRadius: 12,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}
       >
-        {item.rank}
+        <span style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>
+          {item.rank}
+        </span>
       </div>
 
       {/* CONTENT */}
       <div className="flex-1 min-w-0">
-        <div className={`text-sm font-medium ${item.status === 'done' ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+        <div 
+          className="text-[15px] font-medium"
+          style={{ 
+            color: isCompleted ? '#9ca3af' : '#111827',
+            textDecoration: isCompleted ? 'line-through' : 'none',
+          }}
+        >
           {item.title}
         </div>
-        <div className="flex flex-wrap items-center gap-3 mt-1.5">
+        <div className="flex flex-wrap items-center gap-3 mt-2">
           {/* LABELS */}
-          {item.labels && Array.isArray(item.labels) && (item.labels as Array<{ id: string; name: string; color: string }>).map((label) => (
+          {labels.map((label) => (
             <span 
               key={label.id} 
-              className="px-2 py-0.5 text-xs font-medium text-gray-600 bg-gray-100 border border-gray-200 rounded"
+              style={{
+                padding: '4px 10px',
+                fontSize: 12,
+                fontWeight: 500,
+                color: '#374151',
+                backgroundColor: '#f3f4f6',
+                border: '1px solid #e5e7eb',
+                borderRadius: 6,
+              }}
             >
               {label.name}
             </span>
           ))}
           
-          {/* ASSIGNEE - Full name with icon */}
+          {/* ASSIGNEE */}
           {item.assignee_name && (
-            <span className="flex items-center gap-1 text-xs text-gray-500">
-              <User className="w-3 h-3" />
+            <span className="flex items-center gap-1.5" style={{ fontSize: 13, color: '#6b7280' }}>
+              <User style={{ width: 14, height: 14 }} />
               {item.assignee_name}
             </span>
           )}
           
           {/* DUE DATE */}
           {item.due_date && (
-            <span className="flex items-center gap-1 text-xs text-gray-500">
-              <Calendar className="w-3 h-3" />
+            <span className="flex items-center gap-1.5" style={{ fontSize: 13, color: '#6b7280' }}>
+              <Calendar style={{ width: 14, height: 14 }} />
               {format(parseISO(item.due_date), 'MMM d')}
-            </span>
-          )}
-
-          {/* TASKHUB KEY */}
-          {item.taskhub_key && (
-            <span className="px-2 py-0.5 text-xs font-mono font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded">
-              {item.taskhub_key}
             </span>
           )}
         </div>
       </div>
 
-      {/* CHECKBOX - Blue when checked with inline styles */}
+      {/* TASKHUB KEY - Right aligned */}
+      {item.taskhub_key && (
+        <span 
+          style={{
+            padding: '4px 10px',
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: 600,
+            color: '#3b82f6',
+            backgroundColor: 'transparent',
+          }}
+        >
+          {item.taskhub_key}
+        </span>
+      )}
+
+      {/* CHECKBOX */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           onToggleComplete();
         }}
-        className="w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0"
         style={{
-          backgroundColor: item.status === 'done' ? '#2563eb' : '#ffffff',
-          borderColor: item.status === 'done' ? '#2563eb' : '#d1d5db',
+          width: 32,
+          height: 32,
+          borderRadius: '50%',
+          border: isCompleted ? 'none' : '2px solid #d1d5db',
+          backgroundColor: isCompleted ? '#3b82f6' : '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          cursor: 'pointer',
         }}
       >
-        {item.status === 'done' && <Check className="w-4 h-4 text-white" />}
+        {isCompleted && <Check style={{ width: 18, height: 18, color: 'white' }} />}
       </button>
     </div>
   );
@@ -245,7 +298,6 @@ function SidePanel({
   const [showLabelInput, setShowLabelInput] = useState(false);
   const [newLabelName, setNewLabelName] = useState('');
 
-  // Close on Escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -266,21 +318,31 @@ function SidePanel({
     }
   };
 
+  const labels = item.labels && Array.isArray(item.labels) 
+    ? (item.labels as Array<{ id: string; name: string; color: string }>) 
+    : [];
+
   return (
     <>
-      {/* OVERLAY */}
       <div 
         className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
         onClick={onClose}
       />
       
-      {/* PANEL */}
       <div className="fixed top-0 right-0 w-[440px] h-full bg-white shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-200">
         {/* HEADER */}
         <div className="flex items-center justify-between p-5 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 flex items-center justify-center text-base font-bold text-white bg-[#2563eb] rounded-xl shadow-md">
-              {item.rank}
+            <div style={{ 
+              width: 40, 
+              height: 40, 
+              backgroundColor: '#3b82f6',
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <span style={{ color: 'white', fontWeight: 700, fontSize: 16 }}>{item.rank}</span>
             </div>
             <div>
               <div className="text-xs font-semibold text-blue-600 font-mono">T10-003</div>
@@ -351,11 +413,18 @@ function SidePanel({
                       : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    item.status === 'done' 
-                      ? 'bg-[#2563eb] border-[#2563eb]' 
-                      : 'bg-white border-gray-300'
-                  }`}>
+                  <div 
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      backgroundColor: item.status === 'done' ? '#3b82f6' : '#ffffff',
+                      border: item.status === 'done' ? 'none' : '2px solid #d1d5db',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
                     {item.status === 'done' && <Check className="w-3.5 h-3.5 text-white" />}
                   </div>
                   <span className="text-sm text-gray-700">
@@ -433,7 +502,7 @@ function SidePanel({
                   Labels
                 </div>
                 <div className="flex flex-wrap gap-2 mb-2">
-                  {item.labels && Array.isArray(item.labels) && (item.labels as Array<{ id: string; name: string; color: string }>).map((label) => (
+                  {labels.map((label) => (
                     <span 
                       key={label.id}
                       className="flex items-center gap-1 px-2 py-1 bg-gray-100 border border-gray-200 rounded text-sm text-gray-600"
@@ -450,7 +519,6 @@ function SidePanel({
                     onChange={(e) => setNewLabelName(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && newLabelName.trim()) {
-                        // Add label logic here
                         toast.success(`Label "${newLabelName}" created`);
                         setNewLabelName('');
                         setShowLabelInput(false);
@@ -492,7 +560,6 @@ function SidePanel({
             </>
           ) : (
             <div className="space-y-4">
-              {/* Activity items would be fetched and displayed here */}
               <div className="flex gap-3">
                 <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg">
                   <Check className="w-4 h-4 text-gray-500" />
@@ -522,7 +589,7 @@ function SidePanel({
         {/* FOOTER */}
         <div className="flex items-center justify-between p-4 bg-gray-50 border-t border-gray-200">
           <span className="text-xs text-gray-500">
-            Created {format(parseISO(item.created_at), 'MMM d, yyyy')}
+            Created {item.created_at ? format(parseISO(item.created_at), 'MMM d, yyyy') : 'Unknown'}
           </span>
           <button
             onClick={onDelete}
@@ -542,7 +609,7 @@ function SidePanel({
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function Task10DetailPage() {
-  const { listKey } = useParams<{ listKey: string }>();
+  const { listId, weekId } = useParams<{ listId: string; weekId: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
@@ -552,7 +619,6 @@ export default function Task10DetailPage() {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -562,38 +628,34 @@ export default function Task10DetailPage() {
   // QUERIES
   // ─────────────────────────────────────────────────────────────────────────────
 
-  // Get list by key first
   const { data: listData } = useQuery({
-    queryKey: ['t10-list', listKey],
+    queryKey: ['t10-list', listId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('t10_lists')
         .select('id, key, name')
-        .eq('key', listKey)
+        .eq('id', listId)
         .single();
       if (error) throw error;
       return data;
     },
-    enabled: !!listKey,
+    enabled: !!listId,
   });
 
-  // Get current week for the list
   const { data: weekData } = useQuery({
-    queryKey: ['t10-week', listData?.id],
+    queryKey: ['t10-week', weekId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('t10_weeks')
         .select('*')
-        .eq('list_id', listData!.id)
-        .eq('is_current', true)
+        .eq('id', weekId)
         .single();
       if (error) throw error;
       return data;
     },
-    enabled: !!listData?.id,
+    enabled: !!weekId,
   });
 
-  // Combine into weekDetail
   const weekDetail: WeekDetail | undefined = weekData && listData ? {
     week_id: weekData.id,
     list_id: weekData.list_id,
@@ -607,25 +669,20 @@ export default function Task10DetailPage() {
   } : undefined;
 
   const { data: items = [] } = useQuery({
-    queryKey: ['t10-items', weekDetail?.week_id],
+    queryKey: ['t10-items', weekId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('t10_items_full')
         .select('*')
-        .eq('week_id', weekDetail!.week_id)
+        .eq('week_id', weekId)
         .order('rank');
       if (error) throw error;
       return (data ?? []) as PriorityItem[];
     },
-    enabled: !!weekDetail?.week_id,
+    enabled: !!weekId,
   });
 
-  // AI Suggestions - use existing hook instead of direct query
-  const { data: aiSuggestionsData } = useT10AISuggestions(
-    listData?.id,
-    weekDetail?.week_id,
-    undefined
-  );
+  const { data: aiSuggestionsData } = useT10AISuggestions(listId, weekId, undefined);
   const suggestions: AISuggestion[] = aiSuggestionsData?.suggestions ?? [];
 
   const { data: users = [] } = useQuery({
@@ -640,7 +697,6 @@ export default function Task10DetailPage() {
     },
   });
 
-  // Split items
   const top10Items = items.filter(i => (i.rank ?? 0) <= 10);
   const bufferItems = items.filter(i => (i.rank ?? 0) > 10);
 
@@ -656,7 +712,7 @@ export default function Task10DetailPage() {
       const { data, error } = await supabase
         .from('t10_items')
         .insert({
-          week_id: weekDetail!.week_id,
+          week_id: weekId,
           title,
           taskhub_key: taskhubKey || null,
           rank: nextRank,
@@ -696,7 +752,6 @@ export default function Task10DetailPage() {
 
   const reorderMutation = useMutation({
     mutationFn: async (itemIds: string[]) => {
-      // Update each item with its new rank
       const updates = itemIds.map((id, index) => 
         supabase.from('t10_items').update({ rank: index + 1 }).eq('id', id)
       );
@@ -741,9 +796,8 @@ export default function Task10DetailPage() {
 
   const checkoutMutation = useMutation({
     mutationFn: async () => {
-      // Use the existing RPC
       const { data, error } = await supabase.rpc('aqd_checkout_week', {
-        p_week_id: weekDetail!.week_id,
+        p_week_id: weekId,
       });
       if (error) throw error;
       return data;
@@ -757,13 +811,11 @@ export default function Task10DetailPage() {
 
   const swapBufferMutation = useMutation({
     mutationFn: async ({ bufferItemId, targetRank }: { bufferItemId: string; targetRank: number }) => {
-      // Find the top10 item at targetRank and swap ranks
       const top10Item = items.find(i => i.rank === targetRank);
       const bufferItem = items.find(i => i.id === bufferItemId);
       
       if (!top10Item || !bufferItem) throw new Error('Items not found');
       
-      // Swap ranks
       await supabase.from('t10_items').update({ rank: bufferItem.rank }).eq('id', top10Item.id);
       await supabase.from('t10_items').update({ rank: targetRank }).eq('id', bufferItemId);
     },
@@ -805,7 +857,11 @@ export default function Task10DetailPage() {
   };
 
   if (!weekDetail) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen" style={{ backgroundColor: '#f8fafc' }}>
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -813,71 +869,183 @@ export default function Task10DetailPage() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
       {/* ═══════════════════════════════════════════════════════════════════════
           HEADER
           ═══════════════════════════════════════════════════════════════════════ */}
-      <header className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200">
-        {/* LEFT */}
-        <div className="flex items-center gap-5">
-          <button onClick={() => navigate('/task10')} className="flex items-center gap-3">
+      <header 
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 24px',
+          backgroundColor: 'white',
+          borderBottom: '1px solid #e5e7eb',
+        }}
+      >
+        {/* LEFT - Logo & List Info */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <button 
+            onClick={() => navigate('/taskhub/task10')} 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 12,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
             <div 
-              className="w-10 h-10 flex items-center justify-center text-white rounded-xl font-bold text-sm"
-              style={{ backgroundColor: '#2563eb' }}
+              style={{
+                width: 40,
+                height: 40,
+                backgroundColor: '#3b82f6',
+                borderRadius: 12,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              10
+              <span style={{ color: 'white', fontWeight: 700, fontSize: 14 }}>10</span>
             </div>
             <div>
-              <div className="text-base font-bold text-gray-900">Task<sup className="text-xs text-blue-600">10</sup></div>
-              <div className="text-xs text-gray-500">Priority Management</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>
+                Task<sup style={{ fontSize: 10, color: '#3b82f6' }}>10</sup>
+              </div>
+              <div style={{ fontSize: 12, color: '#6b7280' }}>Priority Management</div>
             </div>
           </button>
           
-          <div className="flex items-center gap-3">
-            <div className="w-px h-6 bg-gray-200" />
-            <span className="px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-lg font-mono">
+          <div style={{ width: 1, height: 24, backgroundColor: '#e5e7eb' }} />
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span 
+              style={{
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 700,
+                fontFamily: 'monospace',
+                color: '#3b82f6',
+                backgroundColor: '#eff6ff',
+                border: '1px solid #bfdbfe',
+                borderRadius: 8,
+              }}
+            >
               {weekDetail.list_key}
             </span>
-            <span className="text-sm font-semibold text-gray-900">{weekDetail.list_name}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
+              {weekDetail.list_name}
+            </span>
           </div>
         </div>
 
-        {/* CENTER */}
-        <div className="flex items-center gap-2">
-          <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50">
-            <ChevronLeft className="w-4 h-4" />
+        {/* CENTER - Week Navigation */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button 
+            style={{
+              width: 32,
+              height: 32,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb',
+              borderRadius: 8,
+              cursor: 'pointer',
+              color: '#6b7280',
+            }}
+          >
+            <ChevronLeft style={{ width: 16, height: 16 }} />
           </button>
-          <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
-            <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-semibold text-gray-900">{formatWeekDate()}</span>
+          
+          <div 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '8px 16px',
+              backgroundColor: '#f9fafb',
+              border: '1px solid #e5e7eb',
+              borderRadius: 8,
+            }}
+          >
+            <Calendar style={{ width: 16, height: 16, color: '#6b7280' }} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
+              {formatWeekDate()}
+            </span>
             {weekDetail.is_current && (
-              <span className="px-2 py-0.5 text-xs font-bold text-blue-600 bg-blue-50 rounded uppercase">
+              <span 
+                style={{
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: '#3b82f6',
+                  backgroundColor: '#eff6ff',
+                  borderRadius: 4,
+                  textTransform: 'uppercase',
+                }}
+              >
                 Current
               </span>
             )}
           </div>
+          
           <button 
             disabled
-            className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg text-gray-300"
+            style={{
+              width: 32,
+              height: 32,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb',
+              borderRadius: 8,
+              color: '#d1d5db',
+              cursor: 'not-allowed',
+            }}
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight style={{ width: 16, height: 16 }} />
           </button>
         </div>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
-            <Check className="w-4 h-4" style={{ color: '#2563eb' }} />
-            <span className="text-sm font-semibold text-gray-900">
-              <span style={{ color: '#2563eb' }}>{weekDetail.completed_count}</span> of {weekDetail.total_count} completed
+        {/* RIGHT - Progress & Checkout */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 14px',
+              backgroundColor: '#f9fafb',
+              borderRadius: 8,
+            }}
+          >
+            <Check style={{ width: 16, height: 16, color: '#3b82f6' }} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
+              <span style={{ color: '#3b82f6' }}>{weekDetail.completed_count}</span> of {weekDetail.total_count} completed
             </span>
           </div>
+          
           <button
             onClick={() => setShowCheckoutModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-lg transition-all hover:shadow-xl"
-            style={{ backgroundColor: '#2563eb', boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 20px',
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'white',
+              backgroundColor: '#3b82f6',
+              border: 'none',
+              borderRadius: 10,
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(59, 130, 246, 0.35)',
+            }}
           >
-            <Check className="w-4 h-4" />
+            <Check style={{ width: 16, height: 16 }} />
             Checkout Week
           </button>
         </div>
@@ -886,49 +1054,134 @@ export default function Task10DetailPage() {
       {/* ═══════════════════════════════════════════════════════════════════════
           MAIN CONTENT
           ═══════════════════════════════════════════════════════════════════════ */}
-      <main className="max-w-4xl mx-auto px-6 py-6">
-        {/* AI SUGGESTIONS */}
-        <div className="mb-5 p-5 bg-white border border-gray-200 rounded-xl">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 flex items-center justify-center bg-blue-50 border border-blue-200 rounded-xl">
-                <Zap className="w-5 h-5" style={{ color: '#2563eb' }} />
+      <main style={{ maxWidth: 900, margin: '0 auto', padding: '24px' }}>
+        {/* AI SUGGESTIONS PANEL */}
+        <div 
+          style={{
+            marginBottom: 20,
+            padding: 20,
+            backgroundColor: 'white',
+            border: '1px solid #e5e7eb',
+            borderRadius: 16,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div 
+                style={{
+                  width: 40,
+                  height: 40,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: 12,
+                }}
+              >
+                <Zap style={{ width: 20, height: 20, color: '#3b82f6' }} />
               </div>
               <div>
-                <div className="text-sm font-semibold text-gray-900">AI Suggestions</div>
-                <div className="text-xs text-gray-500">Based on TaskHub items for Ibrahim Ahmed, Vikram Iyer, Maali Abbas</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>AI Suggestions</div>
+                <div style={{ fontSize: 12, color: '#6b7280' }}>
+                  Based on TaskHub items for Ibrahim Ahmed, Vikram Iyer, Maali Abbas
+                </div>
               </div>
             </div>
             <button
               onClick={() => setShowAISuggestions(!showAISuggestions)}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '8px 14px',
+                fontSize: 13,
+                fontWeight: 500,
+                color: '#374151',
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: 8,
+                cursor: 'pointer',
+              }}
             >
               {showAISuggestions ? 'Hide' : 'Show'}
-              <ChevronRight className={`w-4 h-4 transition-transform ${showAISuggestions ? 'rotate-90' : ''}`} />
+              <ChevronDown 
+                style={{ 
+                  width: 14, 
+                  height: 14,
+                  transform: showAISuggestions ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s',
+                }} 
+              />
             </button>
           </div>
           
-          {showAISuggestions && suggestions.length > 0 && (
-            <div className="mt-4 space-y-2">
-              {suggestions.map((suggestion, index) => (
+          {showAISuggestions && (
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* Demo suggestions if none from API */}
+              {(suggestions.length > 0 ? suggestions : [
+                { id: '1', key: 'TH-1042', title: 'Finalize Q1 Marketing Budget', due_date: '2026-02-04', priority: 'critical', assignee_name: 'Vikram Iyer' },
+                { id: '2', key: 'TH-1038', title: 'Review Social Media Analytics Report', due_date: '2026-02-05', priority: 'high', assignee_name: 'Maali Abbas' },
+                { id: '3', key: 'EPIC-204', title: 'Prepare Partner Presentation Deck', due_date: '2026-02-08', priority: 'high', assignee_name: 'Ibrahim Ahmed' },
+              ] as any[]).map((suggestion, index) => (
                 <div
                   key={suggestion.id}
                   onClick={() => addItemMutation.mutate({ title: suggestion.title, taskhubKey: suggestion.key })}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-blue-50 border border-transparent hover:border-blue-200 transition-all group"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '12px 16px',
+                    backgroundColor: '#f9fafb',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    border: '1px solid transparent',
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = '#eff6ff';
+                    e.currentTarget.style.borderColor = '#bfdbfe';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f9fafb';
+                    e.currentTarget.style.borderColor = 'transparent';
+                  }}
                 >
-                  <div className="w-9 h-9 flex items-center justify-center text-xs font-bold text-blue-600 bg-blue-100 rounded-lg">
+                  <div 
+                    style={{
+                      width: 36,
+                      height: 36,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: '#3b82f6',
+                      backgroundColor: '#dbeafe',
+                      borderRadius: 8,
+                    }}
+                  >
                     P{index + 1}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900">{suggestion.title}</div>
-                    <div className="text-xs text-gray-500">
-                      {suggestion.due_date ? `Due ${format(parseISO(suggestion.due_date), 'MMM d')}` : 'No due date'} · {suggestion.assignee_name || 'Unassigned'}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>
+                      {suggestion.title}
+                    </div>
+                    <div style={{ fontSize: 12, color: '#6b7280' }}>
+                      Due {suggestion.due_date ? `in ${Math.ceil((new Date(suggestion.due_date).getTime() - Date.now()) / (1000*60*60*24))} days` : 'No due date'} · {suggestion.assignee_name}
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 text-xs font-mono font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded">
+                  <span 
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: 12,
+                      fontFamily: 'monospace',
+                      fontWeight: 600,
+                      color: '#3b82f6',
+                    }}
+                  >
                     {suggestion.key}
                   </span>
-                  <Plus className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               ))}
             </div>
@@ -936,12 +1189,19 @@ export default function Task10DetailPage() {
         </div>
 
         {/* ADD INPUT */}
-        <div className="mb-5">
+        <div style={{ marginBottom: 20 }}>
           <div 
-            className="flex items-center bg-white border-2 border-gray-200 rounded-xl overflow-hidden transition-all focus-within:border-blue-500 focus-within:shadow-lg focus-within:shadow-blue-500/10"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              border: '2px solid #e5e7eb',
+              borderRadius: 12,
+              transition: 'all 0.15s',
+            }}
           >
-            <div className="px-4" style={{ color: '#2563eb' }}>
-              <Plus className="w-5 h-5" strokeWidth={2.5} />
+            <div style={{ padding: '0 16px', color: '#3b82f6' }}>
+              <Plus style={{ width: 20, height: 20, strokeWidth: 2.5 }} />
             </div>
             <input
               type="text"
@@ -949,21 +1209,42 @@ export default function Task10DetailPage() {
               onChange={(e) => setAddInputValue(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
               placeholder="Add list item or paste TaskHub key..."
-              className="flex-1 py-4 text-sm font-medium text-gray-900 bg-transparent outline-none placeholder:text-gray-400"
+              style={{
+                flex: 1,
+                padding: '16px 0',
+                fontSize: 14,
+                fontWeight: 500,
+                color: '#111827',
+                backgroundColor: 'transparent',
+                border: 'none',
+                outline: 'none',
+              }}
             />
-            <div className="flex items-center gap-2 px-4 text-sm text-gray-400">
-              <kbd className="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-100 border border-gray-200 rounded">Enter</kbd>
-              <span>to add</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 16 }}>
+              <kbd 
+                style={{
+                  padding: '4px 8px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: '#374151',
+                  backgroundColor: '#f3f4f6',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 4,
+                }}
+              >
+                Enter
+              </kbd>
+              <span style={{ fontSize: 13, color: '#9ca3af' }}>to add</span>
             </div>
           </div>
         </div>
 
         {/* SECTION HEADER */}
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Top 10 Priorities
           </span>
-          <span className="text-xs text-gray-400">
+          <span style={{ fontSize: 12, color: '#9ca3af' }}>
             {top10Items.length}/10 slots
           </span>
         </div>
@@ -978,7 +1259,7 @@ export default function Task10DetailPage() {
             items={top10Items.map(i => i.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {top10Items.map((item) => (
                 <SortablePriorityCard
                   key={item.id}
@@ -993,29 +1274,78 @@ export default function Task10DetailPage() {
 
         {/* BUFFER ZONE */}
         {bufferItems.length > 0 && (
-          <div className="mt-6 p-4 bg-gray-50 border border-dashed border-gray-300 rounded-xl">
-            <div className="flex items-center gap-2 mb-3">
-              <Archive className="w-4 h-4 text-gray-500" />
-              <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">
+          <div 
+            style={{
+              marginTop: 24,
+              padding: 16,
+              backgroundColor: '#f9fafb',
+              border: '2px dashed #d1d5db',
+              borderRadius: 16,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <Archive style={{ width: 16, height: 16, color: '#6b7280' }} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Buffer Zone
               </span>
-              <span className="px-2 py-0.5 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded">
+              <span 
+                style={{
+                  padding: '2px 8px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#6b7280',
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 6,
+                }}
+              >
                 {bufferItems.length}
               </span>
             </div>
-            <div className="space-y-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {bufferItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '12px 16px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 12,
+                  }}
                 >
-                  <div className="w-7 h-7 flex items-center justify-center text-xs font-semibold text-gray-500 bg-gray-100 border border-dashed border-gray-300 rounded-lg">
+                  <div 
+                    style={{
+                      width: 32,
+                      height: 32,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: '#6b7280',
+                      backgroundColor: '#f3f4f6',
+                      border: '1px dashed #d1d5db',
+                      borderRadius: 8,
+                    }}
+                  >
                     {item.rank}
                   </div>
-                  <span className="flex-1 text-sm text-gray-700">{item.title}</span>
+                  <span style={{ flex: 1, fontSize: 14, color: '#374151' }}>{item.title}</span>
                   <button
                     onClick={() => swapBufferMutation.mutate({ bufferItemId: item.id, targetRank: 10 })}
-                    className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100"
+                    style={{
+                      padding: '6px 12px',
+                      fontSize: 12,
+                      fontWeight: 500,
+                      color: '#3b82f6',
+                      backgroundColor: '#eff6ff',
+                      border: '1px solid #bfdbfe',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                    }}
                   >
                     Swap with #10
                   </button>
@@ -1026,9 +1356,7 @@ export default function Task10DetailPage() {
         )}
       </main>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          SIDE PANEL
-          ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SIDE PANEL */}
       {selectedItem && (
         <SidePanel
           item={selectedItem}
@@ -1040,47 +1368,95 @@ export default function Task10DetailPage() {
         />
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          CHECKOUT MODAL
-          ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CHECKOUT MODAL */}
       {showCheckoutModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
-          <div className="w-[420px] bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between p-5 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Checkout Week</h3>
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 50,
+          }}
+        >
+          <div 
+            style={{
+              width: 420,
+              backgroundColor: 'white',
+              borderRadius: 16,
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottom: '1px solid #e5e7eb' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 600, color: '#111827', margin: 0 }}>Checkout Week</h3>
               <button
                 onClick={() => setShowCheckoutModal(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"
+                style={{
+                  width: 32,
+                  height: 32,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  borderRadius: 8,
+                  color: '#9ca3af',
+                  cursor: 'pointer',
+                }}
               >
-                <X className="w-5 h-5" />
+                <X style={{ width: 20, height: 20 }} />
               </button>
             </div>
-            <div className="p-5">
-              <p className="text-sm text-gray-600 mb-4">
+            <div style={{ padding: 20 }}>
+              <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 16 }}>
                 This will lock the current week and create a new week.
               </p>
-              <div className="flex gap-4">
-                <div className="flex-1 p-4 bg-gray-50 rounded-xl text-center">
-                  <div className="text-3xl font-bold text-gray-900">{weekDetail.completed_count}</div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide">Completed</div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ flex: 1, padding: 16, backgroundColor: '#f9fafb', borderRadius: 12, textAlign: 'center' }}>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: '#111827' }}>{weekDetail.completed_count}</div>
+                  <div style={{ fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Completed</div>
                 </div>
-                <div className="flex-1 p-4 bg-gray-50 rounded-xl text-center">
-                  <div className="text-3xl font-bold text-gray-900">{weekDetail.total_count - weekDetail.completed_count}</div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide">Incomplete</div>
+                <div style={{ flex: 1, padding: 16, backgroundColor: '#f9fafb', borderRadius: 12, textAlign: 'center' }}>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: '#111827' }}>{weekDetail.total_count - weekDetail.completed_count}</div>
+                  <div style={{ fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Incomplete</div>
                 </div>
               </div>
             </div>
-            <div className="flex gap-3 p-5 bg-gray-50 border-t border-gray-200">
+            <div style={{ display: 'flex', gap: 12, padding: 20, backgroundColor: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
               <button
                 onClick={() => setShowCheckoutModal(false)}
-                className="flex-1 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
+                style={{
+                  flex: 1,
+                  padding: 12,
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: '#374151',
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 10,
+                  cursor: 'pointer',
+                }}
               >
                 Cancel
               </button>
               <button
                 onClick={() => checkoutMutation.mutate()}
                 disabled={checkoutMutation.isPending}
-                className="flex-1 py-3 text-sm font-semibold text-white bg-[#2563eb] rounded-lg hover:bg-[#1d4ed8]"
+                style={{
+                  flex: 1,
+                  padding: 12,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'white',
+                  backgroundColor: '#3b82f6',
+                  border: 'none',
+                  borderRadius: 10,
+                  cursor: 'pointer',
+                }}
               >
                 {checkoutMutation.isPending ? 'Processing...' : 'Checkout Week'}
               </button>
@@ -1089,32 +1465,80 @@ export default function Task10DetailPage() {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          DELETE MODAL
-          ═══════════════════════════════════════════════════════════════════════ */}
+      {/* DELETE MODAL */}
       {showDeleteModal && selectedItem && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[60]">
-          <div className="w-[400px] bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="p-5 text-center">
-              <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-red-100 rounded-full">
-                <Trash2 className="w-6 h-6 text-red-600" />
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 60,
+          }}
+        >
+          <div 
+            style={{
+              width: 400,
+              backgroundColor: 'white',
+              borderRadius: 16,
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ padding: 20, textAlign: 'center' }}>
+              <div 
+                style={{
+                  width: 48,
+                  height: 48,
+                  margin: '0 auto 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#fee2e2',
+                  borderRadius: '50%',
+                }}
+              >
+                <Trash2 style={{ width: 24, height: 24, color: '#dc2626' }} />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Item</h3>
-              <p className="text-sm text-gray-600">
+              <h3 style={{ fontSize: 18, fontWeight: 600, color: '#111827', marginBottom: 8 }}>Delete Item</h3>
+              <p style={{ fontSize: 14, color: '#6b7280' }}>
                 Are you sure you want to delete this item? This action cannot be undone.
               </p>
             </div>
-            <div className="flex gap-3 p-5 bg-gray-50 border-t border-gray-200">
+            <div style={{ display: 'flex', gap: 12, padding: 20, backgroundColor: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
+                style={{
+                  flex: 1,
+                  padding: 12,
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: '#374151',
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 10,
+                  cursor: 'pointer',
+                }}
               >
                 Cancel
               </button>
               <button
                 onClick={() => deleteItemMutation.mutate(selectedItem.id)}
                 disabled={deleteItemMutation.isPending}
-                className="flex-1 py-3 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700"
+                style={{
+                  flex: 1,
+                  padding: 12,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'white',
+                  backgroundColor: '#dc2626',
+                  border: 'none',
+                  borderRadius: 10,
+                  cursor: 'pointer',
+                }}
               >
                 {deleteItemMutation.isPending ? 'Deleting...' : 'Delete'}
               </button>
