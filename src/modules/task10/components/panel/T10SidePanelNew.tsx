@@ -15,7 +15,7 @@ import {
   User,
   Calendar,
   Tag,
-  FileText,
+  StickyNote,
   Check,
   Trash2,
 } from 'lucide-react';
@@ -52,8 +52,8 @@ export function T10SidePanelNew({
   const [activeTab, setActiveTab] = useState<'details' | 'activity'>('details');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState('');
-  const [descriptionValue, setDescriptionValue] = useState('');
-  const [descriptionStatus, setDescriptionStatus] = useState<
+  const [notesValue, setNotesValue] = useState('');
+  const [notesStatus, setNotesStatus] = useState<
     'idle' | 'saving' | 'saved'
   >('idle');
   const [copiedKey, setCopiedKey] = useState(false);
@@ -69,7 +69,7 @@ export function T10SidePanelNew({
   useEffect(() => {
     if (item) {
       setTitleValue(item.title);
-      setDescriptionValue(item.description || '');
+      setNotesValue(item.description || '');
     }
   }, [item]);
 
@@ -110,29 +110,29 @@ export function T10SidePanelNew({
     setIsEditingTitle(false);
   };
 
-  // Handle description auto-save (debounced)
+  // Handle notes auto-save (debounced)
   useEffect(() => {
-    if (!item || descriptionValue === (item.description || '')) return;
+    if (!item || notesValue === (item.description || '')) return;
 
-    setDescriptionStatus('saving');
+    setNotesStatus('saving');
     const timer = setTimeout(async () => {
       try {
         await updateItem.mutateAsync({
           id: item.id,
-          description: descriptionValue || null,
+          description: notesValue || null,
         });
-        setDescriptionStatus('saved');
-        console.log('[T10] Description auto-saved');
+        setNotesStatus('saved');
+        console.log('[T10] Notes auto-saved');
         onUpdated?.();
-        setTimeout(() => setDescriptionStatus('idle'), 2000);
+        setTimeout(() => setNotesStatus('idle'), 2000);
       } catch (err) {
-        setDescriptionStatus('idle');
-        console.error('[T10] Description save failed:', err);
+        setNotesStatus('idle');
+        console.error('[T10] Notes save failed:', err);
       }
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [descriptionValue, item]);
+  }, [notesValue, item]);
 
   // Handle status toggle
   const handleStatusToggle = async () => {
@@ -519,17 +519,17 @@ export function T10SidePanelNew({
                 />
               </div>
 
-              {/* Description Field */}
+              {/* Notes Field */}
               <div className="t10-field-group">
                 <div className="t10-field-header">
                   <label className="t10-field-label">
-                    <FileText size={14} />
-                    Description
+                    <StickyNote size={14} />
+                    Notes
                   </label>
-                  {descriptionStatus !== 'idle' && (
-                    <span className={`t10-save-status ${descriptionStatus === 'saving' ? 't10-save-status-saving' : 't10-save-status-saved'}`}>
-                      {descriptionStatus === 'saving' && 'Saving...'}
-                      {descriptionStatus === 'saved' && (
+                  {notesStatus !== 'idle' && (
+                    <span className={`t10-save-status ${notesStatus === 'saving' ? 't10-save-status-saving' : 't10-save-status-saved'}`}>
+                      {notesStatus === 'saving' && 'Saving...'}
+                      {notesStatus === 'saved' && (
                         <>
                           <Check size={12} />
                           Saved
@@ -539,9 +539,9 @@ export function T10SidePanelNew({
                   )}
                 </div>
                 <textarea
-                  value={descriptionValue}
-                  onChange={(e) => setDescriptionValue(e.target.value)}
-                  placeholder="Add a description..."
+                  value={notesValue}
+                  onChange={(e) => setNotesValue(e.target.value)}
+                  placeholder="Add notes..."
                   className="t10-description-textarea"
                 />
               </div>
