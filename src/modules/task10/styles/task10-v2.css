@@ -2508,3 +2508,63 @@
   height: 16px !important;
   color: #ffffff !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   V3 LANDING PAGE STYLES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-landing-v3 {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Lists Section */
+.t10-lists-section {
+  margin-top: 8px;
+}
+
+.t10-lists-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.t10-lists-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.t10-lists-count {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Card Skeleton */
+.t10-card-skeleton {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.t10-skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: t10-shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes t10-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
