@@ -2568,3 +2568,337 @@
     background-position: -200% 0;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   V3 TABS COMPONENT
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-tabs-container {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.t10-tab-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-family: var(--t10-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-tab-button:hover {
+  color: #0f172a;
+}
+
+.t10-tab-button--active {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.t10-tab-indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3b82f6;
+  border-radius: 2px 2px 0 0;
+}
+
+.t10-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+}
+
+.t10-tab-badge--warning {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   V3 STATUS BADGES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.t10-status-badge--success {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+}
+
+.t10-status-badge--info {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.t10-status-badge--warning {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.t10-status-badge--danger {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   V3 KEY BADGE
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-key-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 6px;
+}
+
+.t10-key-badge--small {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.t10-key-badge--muted {
+  color: #64748b;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   V3 COMPLETED CARD
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-completed-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.t10-completed-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.t10-completed-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(22, 163, 74, 0.1);
+  color: #22c55e;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.t10-completed-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.t10-completed-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.t10-completed-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.t10-completed-card__meta {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.t10-completed-card__dot {
+  margin: 0 6px;
+}
+
+.t10-completed-card__stats {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.t10-completed-card__rate {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.t10-completed-card__counts {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   V3 ARCHIVED CARD
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-archived-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  opacity: 0.85;
+  transition: all 0.2s ease;
+}
+
+.t10-archived-card:hover {
+  opacity: 1;
+  border-color: #cbd5e1;
+}
+
+.t10-archived-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.t10-archived-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.t10-archived-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.t10-archived-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.t10-archived-card__meta {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.t10-archived-card__dot {
+  margin: 0 6px;
+}
+
+.t10-archived-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.t10-archived-card__restore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-archived-card__restore-btn:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.t10-archived-card__delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.t10-archived-card__delete-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   V3 EMPTY TAB STATE
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.t10-empty-tab {
+  padding: 60px 20px;
+  text-align: center;
+  background: #f8fafc;
+  border: 1px dashed #e2e8f0;
+  border-radius: 12px;
+}
+
+.t10-empty-tab__text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #64748b;
+  margin: 0 0 4px 0;
+}
+
+.t10-empty-tab__hint {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
