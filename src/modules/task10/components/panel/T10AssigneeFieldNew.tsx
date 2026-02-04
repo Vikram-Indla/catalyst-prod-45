@@ -101,7 +101,9 @@ export function T10AssigneeFieldNew({
         border: '1px solid #e5e7eb',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
-        zIndex: 99999,
+        // Must be above the side panel overlay (z=100000) and panel (z=100001)
+        zIndex: 100002,
+        pointerEvents: 'auto',
         overflow: 'hidden',
       }}
     >
