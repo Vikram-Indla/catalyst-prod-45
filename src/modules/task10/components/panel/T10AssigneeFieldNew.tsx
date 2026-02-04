@@ -10,6 +10,17 @@ import { ChevronDown, X, Search, Check } from 'lucide-react';
 import { useT10Users } from '../../hooks';
 import { getT10Initials } from '../../utils';
 
+// Generate consistent vibrant avatar color from name
+function getAvatarColor(name: string | null): string {
+  if (!name) return 'hsl(220, 70%, 55%)';
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash % 360);
+  return `hsl(${hue}, 65%, 50%)`;
+}
+
 interface T10AssigneeFieldNewProps {
   value: string | null;
   assigneeName: string | null;
@@ -223,18 +234,19 @@ export function T10AssigneeFieldNew({
               >
                 <div
                   style={{
-                    width: '28px',
-                    height: '28px',
+                    width: '32px',
+                    height: '32px',
                     borderRadius: '50%',
-                    backgroundColor: '#e5e7eb',
+                    backgroundColor: user.avatar_url ? '#e5e7eb' : getAvatarColor(user.full_name),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '11px',
+                    fontSize: '12px',
                     fontWeight: 600,
-                    color: '#4b5563',
+                    color: '#ffffff',
                     flexShrink: 0,
                     overflow: 'hidden',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                   }}
                 >
                   {user.avatar_url ? (
@@ -294,17 +306,18 @@ export function T10AssigneeFieldNew({
             <>
               <div
                 style={{
-                  width: '28px',
-                  height: '28px',
+                  width: '32px',
+                  height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: '#e5e7eb',
+                  backgroundColor: assigneeAvatar ? '#e5e7eb' : getAvatarColor(assigneeName),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '11px',
+                  fontSize: '12px',
                   fontWeight: 600,
-                  color: '#4b5563',
+                  color: '#ffffff',
                   overflow: 'hidden',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                 }}
               >
                 {assigneeAvatar ? (
@@ -321,7 +334,7 @@ export function T10AssigneeFieldNew({
                   getT10Initials(assigneeName)
                 )}
               </div>
-              <span style={{ fontSize: '14px', color: '#111827' }}>{assigneeName}</span>
+              <span style={{ fontSize: '14px', color: '#111827', fontWeight: 500 }}>{assigneeName}</span>
             </>
           ) : (
             <span style={{ color: '#9ca3af', fontSize: '14px' }}>Select assignee</span>
