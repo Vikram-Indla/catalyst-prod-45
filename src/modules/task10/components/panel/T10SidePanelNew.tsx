@@ -313,20 +313,51 @@ export function T10SidePanelNew({
                 fontFamily: 'system-ui, sans-serif',
               }}
             >
-              ←
+            ←
             </button>
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                color: '#ffffff',
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-              }}
-            >
-              TASK<sup style={{ fontSize: '0.7em', verticalAlign: 'super' }}>10</sup> PRIORITY
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  color: '#ffffff',
+                  fontFamily: 'system-ui, -apple-system, sans-serif',
+                }}
+              >
+                TASK
+              </span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: 28,
+                  height: 22,
+                  padding: '0 6px',
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: '#ffffff',
+                }}
+              >
+                10
+              </span>
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  color: '#ffffff',
+                  fontFamily: 'system-ui, -apple-system, sans-serif',
+                }}
+              >
+                PRIORITY
+              </span>
+            </div>
             {item.rank && (
               <span
                 style={{
