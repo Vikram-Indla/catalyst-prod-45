@@ -1,34 +1,52 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: T10HeaderV3
-// Purpose: Landing page header matching dashboard style
+// Purpose: Landing page header matching Workstreams style
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface T10HeaderV3Props {
   onNewList: () => void;
+  listCount?: number;
+  activeWeekCount?: number;
+  onShowArchived?: () => void;
 }
 
-export function T10HeaderV3({ onNewList }: T10HeaderV3Props) {
+export function T10HeaderV3({ 
+  onNewList, 
+  listCount = 0, 
+  activeWeekCount = 0,
+  onShowArchived 
+}: T10HeaderV3Props) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-background">
       <div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+        <h1 className="text-xl font-bold text-foreground">
           Task<sup>10</sup>
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Priority Management
+        <p className="text-sm text-muted-foreground">
+          {listCount} {listCount === 1 ? 'list' : 'lists'} · {activeWeekCount} active {activeWeekCount === 1 ? 'week' : 'weeks'}
         </p>
       </div>
       
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
+        {onShowArchived && (
+          <Button
+            variant="outline"
+            onClick={onShowArchived}
+            className="gap-2"
+          >
+            <Archive className="w-4 h-4" />
+            Archived
+          </Button>
+        )}
         <Button
           onClick={onNewList}
-          className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 gap-2"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4" />
           New List
         </Button>
       </div>

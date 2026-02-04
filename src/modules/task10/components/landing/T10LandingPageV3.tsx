@@ -199,9 +199,11 @@ export function T10LandingPageV3() {
     }
   };
 
-  // Get counts for tabs
+  // Get counts for tabs and header
   const completedCount = completedWeeks.length;
   const archivedCount = archivedLists.length;
+  const listCount = activeLists.length;
+  const activeWeekCount = activeLists.filter(l => l.current_week_id).length;
 
   // Loading state based on active tab
   const isLoading = 
@@ -209,11 +211,21 @@ export function T10LandingPageV3() {
     activeTab === 'completed' ? completedLoading :
     archivedLoading;
 
+  // Handle showing archived tab
+  const handleShowArchived = () => {
+    setActiveTab('archived');
+  };
+
   return (
     <div className="t10-module-v2 t10-detail-page">
       <div className="t10-landing-v3">
         {/* Header */}
-        <T10HeaderV3 onNewList={() => setShowNewModal(true)} />
+        <T10HeaderV3 
+          onNewList={() => setShowNewModal(true)}
+          listCount={listCount}
+          activeWeekCount={activeWeekCount}
+          onShowArchived={handleShowArchived}
+        />
 
         {/* Search */}
         <T10SearchBarV3 
