@@ -8,7 +8,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, ChevronLeft, ChevronRight, Calendar, 
   Zap, ChevronDown, Plus, Check, Layers, Info,
-  AlertCircle, GripVertical, User
+  AlertCircle, GripVertical, User, X
 } from 'lucide-react';
 import {
   DndContext,
@@ -36,6 +36,7 @@ import {
   useT10ReorderItems,
   useT10SwapWithTen,
   useT10PromoteToTop10,
+  useT10DeleteItem,
 } from '../../hooks';
 import { useT10AISuggestions, useAddSuggestionToT10 } from '../../hooks/useT10AISuggestions';
 import { T10SidePanelNew } from '../panel/T10SidePanelNew';
@@ -54,9 +55,10 @@ interface SortablePriorityItemProps {
   onClick: () => void;
   onToggleStatus: () => void;
   onLabelsChange?: () => void;
+  onRemove: () => void;
 }
 
-function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange }: SortablePriorityItemProps) {
+function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, onRemove }: SortablePriorityItemProps) {
   const {
     attributes,
     listeners,
@@ -153,6 +155,18 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange }:
         </div>
       </div>
 
+      {/* Remove Button */}
+      <button
+        className="t10-detail-remove-btn"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        title="Remove item"
+      >
+        <X size={16} strokeWidth={2} />
+      </button>
+
       {/* Checkbox */}
       <div
         className="t10-detail-checkbox"
@@ -212,6 +226,7 @@ export function T10WeekViewV3() {
   const reorderItems = useT10ReorderItems();
   const swapWithTen = useT10SwapWithTen();
   const promoteToTop10 = useT10PromoteToTop10();
+  const deleteItem = useT10DeleteItem();
 
   // Find current week and calculate index
   const currentWeek = weeks?.find(w => w.id === weekId);
@@ -223,10 +238,18 @@ export function T10WeekViewV3() {
     return ([...(items || []), ...(bufferItems || [])] as T10ItemFull[]).sort((a, b) => a.rank - b.rank);
   }, [items, bufferItems]);
 
-  // Calculate stats (Top 10 only for the header)
+  // Calculate stats and limits
   const completedCount = items?.filter(item => item.status === 'done').length || 0;
   const totalCount = items?.length || 0;
+  const bufferCount = bufferItems?.length || 0;
   const slotsAvailable = 10 - totalCount;
+  
+  // Limit: 10 in main list + 5 in buffer = 15 total
+  const MAX_MAIN_ITEMS = 10;
+  const MAX_BUFFER_ITEMS = 5;
+  const isMainListFull = totalCount >= MAX_MAIN_ITEMS;
+  const isBufferFull = bufferCount >= MAX_BUFFER_ITEMS;
+  const isAddDisabled = isMainListFull && isBufferFull;
 
   const completedItems = useMemo(() => allItems.filter(i => i.status === 'done'), [allItems]);
   const incompleteItems = useMemo(() => allItems.filter(i => i.status !== 'done'), [allItems]);
@@ -290,6 +313,16 @@ export function T10WeekViewV3() {
   const handlePanelClose = () => {
     setIsPanelOpen(false);
     setTimeout(() => setSelectedItemId(null), 200);
+  };
+
+  // Handle remove item
+  const handleRemoveItem = async (item: T10ItemFull) => {
+    try {
+      await deleteItem.mutateAsync(item);
+      console.log('[T10] Item removed:', item.title);
+    } catch (error) {
+      console.error('[T10] Error removing item:', error);
+    }
   };
 
   // Handle buffer swap with #10
@@ -588,21 +621,24 @@ export function T10WeekViewV3() {
         </div>
 
         {/* ADD INPUT - single dashed container, no nested border */}
-        <div className="t10-detail-add-container">
+        <div className={`t10-detail-add-container ${isAddDisabled ? 't10-detail-add-disabled' : ''}`}>
           <div className="t10-detail-add-wrapper">
             <Plus size={20} strokeWidth={2.5} className="t10-detail-add-icon" />
             <input 
               type="text"
               className="t10-detail-add-input"
-              placeholder="Add list item or paste TaskHub key..."
+              placeholder={isAddDisabled ? "Maximum 15 items reached (10 priorities + 5 buffer)" : "Add list item or paste TaskHub key..."}
               value={newItemText}
               onChange={(e) => setNewItemText(e.target.value)}
               onKeyDown={handleKeyDown}
+              disabled={isAddDisabled}
             />
-            <div className="t10-detail-add-hint">
-              <kbd>Enter</kbd>
-              <span>to add</span>
-            </div>
+            {!isAddDisabled && (
+              <div className="t10-detail-add-hint">
+                <kbd>Enter</kbd>
+                <span>to add</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -635,6 +671,7 @@ export function T10WeekViewV3() {
                       onLabelsChange={() => {
                         // Query cache is invalidated by the mutation automatically
                       }}
+                      onRemove={() => handleRemoveItem(item)}
                     />
                   ))
                 ) : (
@@ -672,6 +709,17 @@ export function T10WeekViewV3() {
                   <div className="t10-detail-buffer-content">
                     <span className="t10-detail-buffer-text">{item.title}</span>
                   </div>
+                  {/* Remove Button */}
+                  <button 
+                    className="t10-detail-buffer-remove"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveItem(item);
+                    }}
+                    title="Remove item"
+                  >
+                    <X size={16} strokeWidth={2} />
+                  </button>
                   {hasEmptySlots ? (
                     <button 
                       className="t10-detail-buffer-promote"
