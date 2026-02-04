@@ -841,13 +841,14 @@
 .t10-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--t10-space-4);
-  z-index: 500;
+  z-index: 100000;
   animation: t10-fade-in 150ms ease;
+  isolation: isolate;
 }
 
 @keyframes t10-fade-in {
