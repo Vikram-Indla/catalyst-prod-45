@@ -83,15 +83,13 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange }:
       className={`t10-detail-priority-item ${isCompleted ? 't10-detail-priority-item-completed' : ''} ${isDragging ? 't10-detail-priority-item-dragging' : ''}`}
       onClick={onClick}
     >
-      {/* Drag Handle */}
+      {/* Drag Handle - dots rendered via CSS background gradient */}
       <div
         className="t10-detail-drag-handle"
         {...attributes}
         {...listeners}
         onClick={(e) => e.stopPropagation()}
-      >
-        <GripVertical size={16} />
-      </div>
+      />
 
       {/* Rank Badge */}
       <div className={`t10-detail-rank ${item.rank > 5 ? 't10-detail-rank-low' : ''}`}>
