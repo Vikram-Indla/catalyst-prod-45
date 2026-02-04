@@ -1,11 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: T10HeaderV3
-// Purpose: Landing page header matching week view detail page style
+// Purpose: Landing page header matching dashboard style
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
 import { Plus } from 'lucide-react';
-import '../../styles/task10-detail.css';
+import { Button } from '@/components/ui/button';
 
 interface T10HeaderV3Props {
   onNewList: () => void;
@@ -13,51 +13,26 @@ interface T10HeaderV3Props {
 
 export function T10HeaderV3({ onNewList }: T10HeaderV3Props) {
   return (
-    <header className="t10-detail-header" style={{ marginBottom: '24px' }}>
-      {/* Logo - "Task" text + blue circular badge with "10" */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ 
-          fontSize: '18px', 
-          fontWeight: 600, 
-          color: '#2563eb',
-          letterSpacing: '-0.01em'
-        }}>
-          Task
-        </span>
-        <div style={{
-          width: '28px',
-          height: '28px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#2563eb',
-          borderRadius: '50%',
-          color: '#ffffff',
-          fontSize: '12px',
-          fontWeight: 700,
-        }}>
-          10
-        </div>
+    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <div>
+        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+          Task<sup>10</sup>
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Priority Management
+        </p>
       </div>
-
-      {/* Spacer */}
-      <div className="t10-detail-header-spacer" />
-
-      {/* New List Button */}
-      <button
-        type="button"
-        onClick={onNewList}
-        className="t10-detail-btn-checkout"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
-        }}
-      >
-        <Plus size={16} strokeWidth={2.5} />
-        New List
-      </button>
-    </header>
+      
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={onNewList}
+          className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New List
+        </Button>
+      </div>
+    </div>
   );
 }
 
