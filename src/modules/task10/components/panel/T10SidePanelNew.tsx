@@ -257,97 +257,91 @@ export function T10SidePanelNew({
 
       {/* Panel - with invasive inline styles */}
       <div style={panelStyles}>
-        {/* Header */}
+        {/* Header - clean blue bar with proper layout */}
         <div
           style={{
-            background: 'linear-gradient(135deg, var(--t10-accent) 0%, var(--t10-accent-hover) 100%)',
-            padding: '16px 20px',
+            background: '#2563eb',
+            padding: '14px 20px',
             flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            minHeight: 56,
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: 8,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
+          {/* Left side: Back arrow + branding */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button
+              type="button"
+              onClick={handleClose}
+              title="Back"
+              style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: 28,
-                height: 28,
-                background: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: 6,
-                fontSize: 12,
-                fontWeight: 700,
+                width: 32,
+                height: 32,
+                background: 'rgba(255, 255, 255, 0.15)',
+                border: 'none',
+                borderRadius: 8,
                 color: '#ffffff',
-              }}>{item.rank}</div>
-              <h2 style={{
-                fontSize: 12,
+                cursor: 'pointer',
+                fontSize: 18,
+              }}
+            >
+              ←
+            </button>
+            <span
+              style={{
+                fontSize: 13,
                 fontWeight: 600,
                 textTransform: 'uppercase',
-                letterSpacing: 0.5,
-                color: 'rgba(255, 255, 255, 0.9)',
-                margin: 0,
-              }}>Task¹⁰ Priority</h2>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              {item.taskhub_key && (
-                <button
-                  type="button"
-                  onClick={handleExternalLink}
-                  title="Open in TaskHub"
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: 32, height: 32, background: 'transparent', border: 'none',
-                    borderRadius: 6, color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer',
-                  }}
-                >
-                  <ExternalLink size={18} />
-                </button>
-              )}
-              <button
-                type="button"
-                title="More actions"
+                letterSpacing: '0.5px',
+                color: '#ffffff',
+              }}
+            >
+              TASK¹⁰ PRIORITY
+            </span>
+            {item.rank && (
+              <span
                 style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  width: 32, height: 32, background: 'transparent', border: 'none',
-                  borderRadius: 6, color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 24,
+                  height: 24,
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  borderRadius: 6,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: '#ffffff',
                 }}
               >
-                <MoreHorizontal size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={handleClose}
-                title="Close (ESC)"
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  width: 32, height: 32, background: 'transparent', border: 'none',
-                  borderRadius: 6, color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer',
-                }}
-              >
-                <X size={18} />
-              </button>
-            </div>
+                {item.rank}
+              </span>
+            )}
           </div>
-          {item.taskhub_key && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span className="t10-panel-key">{item.taskhub_key}</span>
-              <button
-                type="button"
-                onClick={handleCopyKey}
-                title={copiedKey ? 'Copied!' : 'Copy key'}
-                className="t10-panel-copy-btn"
-              >
-                {copiedKey ? <Check size={14} /> : <Copy size={14} />}
-              </button>
-            </div>
-          )}
+
+          {/* Right side: Close button */}
+          <button
+            type="button"
+            onClick={handleClose}
+            title="Close (ESC)"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: 'none',
+              borderRadius: 8,
+              color: '#ffffff',
+              cursor: 'pointer',
+            }}
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Title Section */}
