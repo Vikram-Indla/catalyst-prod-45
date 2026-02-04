@@ -1,55 +1,61 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: T10HeaderV3
-// Purpose: Landing page header matching Workstreams style
+// Purpose: /taskhub/task10 header matching Workstreams/Boards page header
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Plus, Archive } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 interface T10HeaderV3Props {
   onNewList: () => void;
   listCount?: number;
   activeWeekCount?: number;
-  onShowArchived?: () => void;
 }
 
-export function T10HeaderV3({ 
-  onNewList, 
-  listCount = 0, 
+export function T10HeaderV3({
+  onNewList,
+  listCount = 0,
   activeWeekCount = 0,
-  onShowArchived 
 }: T10HeaderV3Props) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-background">
+    <div
+      className="-mx-6 -mt-8 mb-6"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '16px 24px',
+        backgroundColor: 'var(--t10-bg-card)',
+        borderBottom: '1px solid var(--t10-border-default)',
+      }}
+    >
       <div>
-        <h1 className="text-xl font-bold text-foreground">
-          Task<sup>10</sup>
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {listCount} {listCount === 1 ? 'list' : 'lists'} · {activeWeekCount} active {activeWeekCount === 1 ? 'week' : 'weeks'}
+        <div className="t10-logo-minimal">
+          <span className="t10-logo-text-minimal">Task</span>
+          <sup className="t10-logo-super-minimal">10</sup>
+        </div>
+        <p
+          style={{
+            fontSize: '0.875rem',
+            lineHeight: '1.25rem',
+            color: 'var(--t10-text-tertiary)',
+            margin: 0,
+          }}
+        >
+          {listCount} {listCount === 1 ? 'list' : 'lists'} • {activeWeekCount} active{' '}
+          {activeWeekCount === 1 ? 'week' : 'weeks'}
         </p>
       </div>
-      
-      <div className="flex items-center gap-3">
-        {onShowArchived && (
-          <Button
-            variant="outline"
-            onClick={onShowArchived}
-            className="gap-2"
-          >
-            <Archive className="w-4 h-4" />
-            Archived
-          </Button>
-        )}
-        <Button
-          onClick={onNewList}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          New List
-        </Button>
-      </div>
+
+      <button
+        type="button"
+        onClick={onNewList}
+        className="t10-btn-new"
+        style={{ boxShadow: '0 1px 3px rgba(37, 99, 235, 0.35)' }}
+      >
+        <Plus size={16} />
+        New List
+      </button>
     </div>
   );
 }
