@@ -35,3 +35,10 @@ export { T10ListsContainer } from './T10ListsContainer';
 // List Cards (New Linear-inspired v2)
 export { T10ListCardMinimal } from './T10ListCardMinimal';
 export { T10ListsContainerNew } from './T10ListsContainerNew';
+
+// V3 Landing Page Components
+export { T10LandingPageV3 } from './T10LandingPageV3';
+export { T10HeaderV3 } from './T10HeaderV3';
+export { T10SearchBarV3 } from './T10SearchBarV3';
+export { T10FilterBarV3 } from './T10FilterBarV3';
+export { T10ListCardV3 } from './T10ListCardV3';

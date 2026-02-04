@@ -1,0 +1,446 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPONENT: T10ListCardV3
+// Purpose: Individual list card with current week progress and past weeks
+// Matches reference screenshot design
+// ═══════════════════════════════════════════════════════════════════════════════
+
+import React, { useState } from 'react';
+import { Plus, MoreVertical, ChevronDown, Pencil, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useT10CurrentWeek, useT10WeekHistory } from '../../hooks';
+import { formatT10Date, getT10SlotsAvailable } from '../../utils';
+import type { T10ListSummary } from '../../types';
+
+interface T10ListCardV3Props {
+  list: T10ListSummary;
+  onCardClick: () => void;
+  onStartWeek: () => void;
+  onRename: () => void;
+  onDelete: () => void;
+}
+
+export function T10ListCardV3({ 
+  list, 
+  onCardClick, 
+  onStartWeek, 
+  onRename, 
+  onDelete 
+}: T10ListCardV3Props) {
+  const navigate = useNavigate();
+  const [showMenu, setShowMenu] = useState(false);
+  const [showPastWeeks, setShowPastWeeks] = useState(false);
+  
+  // Fetch current week and past weeks
+  const { data: currentWeek, isLoading: weekLoading } = useT10CurrentWeek(list.id);
+  const { data: pastWeeks = [] } = useT10WeekHistory(list.id);
+
+  const hasCurrentWeek = !!currentWeek;
+  const completedCount = currentWeek?.completed_count ?? 0;
+  const totalCount = currentWeek?.total_count ?? 0;
+  const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  const slotsAvailable = getT10SlotsAvailable(totalCount);
+
+  const weekLabel = currentWeek?.week_start 
+    ? formatT10Date(currentWeek.week_start)
+    : '';
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowMenu(!showMenu);
+  };
+
+  const handleRenameClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowMenu(false);
+    onRename();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowMenu(false);
+    onDelete();
+  };
+
+  const handlePastWeeksToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowPastWeeks(!showPastWeeks);
+  };
+
+  const handleWeekClick = (weekId: string) => {
+    navigate(`/taskhub/task10/list/${list.id}/week/${weekId}`);
+  };
+
+  // Close menu when clicking outside
+  React.useEffect(() => {
+    if (showMenu) {
+      const handleClickOutside = () => setShowMenu(false);
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showMenu]);
+
+  return (
+    <div
+      onClick={hasCurrentWeek ? onCardClick : undefined}
+      style={{
+        backgroundColor: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: '12px',
+        padding: '20px 24px',
+        cursor: hasCurrentWeek ? 'pointer' : 'default',
+        transition: 'all 0.2s ease',
+        marginBottom: '12px',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = '#cbd5e1';
+        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = '#e2e8f0';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
+    >
+      {/* Header Row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Key Badge */}
+          <span
+            style={{
+              padding: '4px 10px',
+              fontSize: '12px',
+              fontWeight: 600,
+              fontFamily: 'monospace',
+              color: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.08)',
+              border: '1px solid rgba(59, 130, 246, 0.2)',
+              borderRadius: '6px',
+            }}
+          >
+            {list.key}
+          </span>
+          
+          {/* Name */}
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', margin: 0 }}>
+            {list.name}
+          </h3>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Status Badge */}
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 10px',
+              fontSize: '11px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              color: list.status === 'active' ? '#16a34a' : '#64748b',
+              backgroundColor: list.status === 'active' ? 'rgba(22, 163, 74, 0.08)' : '#f1f5f9',
+              borderRadius: '99px',
+            }}
+          >
+            <span
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: list.status === 'active' ? '#22c55e' : '#94a3b8',
+              }}
+            />
+            {list.status === 'active' ? 'Active' : 'Inactive'}
+          </span>
+
+          {/* Menu Button */}
+          <div style={{ position: 'relative' }}>
+            <button
+              type="button"
+              onClick={handleMenuClick}
+              style={{
+                width: '28px',
+                height: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                color: '#94a3b8',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f1f5f9';
+                e.currentTarget.style.color = '#64748b';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#94a3b8';
+              }}
+            >
+              <MoreVertical size={16} />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showMenu && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: '4px',
+                  width: '140px',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  zIndex: 50,
+                  padding: '4px',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleRenameClick}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    color: '#475569',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f1f5f9')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <Pencil size={14} />
+                  Rename
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteClick}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 10px',
+                    fontSize: '13px',
+                    color: '#ef4444',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fef2f2')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <Trash2 size={14} />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Created Date */}
+      <p style={{ fontSize: '13px', color: '#94a3b8', margin: '0 0 16px 0' }}>
+        Created · {formatT10Date(list.created_at)}
+      </p>
+
+      {/* Current Week Section */}
+      {weekLoading ? (
+        <div style={{ padding: '16px', backgroundColor: '#f8fafc', borderRadius: '10px' }}>
+          <div style={{ height: '16px', width: '120px', backgroundColor: '#e2e8f0', borderRadius: '4px', marginBottom: '12px' }} />
+          <div style={{ height: '6px', width: '100%', backgroundColor: '#e2e8f0', borderRadius: '3px', marginBottom: '12px' }} />
+          <div style={{ height: '14px', width: '160px', backgroundColor: '#e2e8f0', borderRadius: '4px' }} />
+        </div>
+      ) : hasCurrentWeek ? (
+        <div style={{ marginBottom: pastWeeks.length > 0 ? '8px' : '0' }}>
+          <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 8px 0' }}>
+            Week of <strong style={{ color: '#0f172a', fontWeight: 600 }}>{weekLabel}</strong>
+          </p>
+          
+          {/* Progress Bar */}
+          <div style={{ height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', marginBottom: '8px', overflow: 'hidden' }}>
+            <div
+              style={{
+                height: '100%',
+                width: `${progressPercent}%`,
+                background: progressPercent === 100 
+                  ? 'linear-gradient(90deg, #22c55e, #4ade80)' 
+                  : 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                borderRadius: '3px',
+                transition: 'width 0.3s ease',
+              }}
+            />
+          </div>
+          
+          {/* Stats */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+            <span style={{ color: '#3b82f6', fontWeight: 600 }}>{completedCount}</span>
+            <span style={{ color: '#64748b' }}>of {totalCount} completed</span>
+            {slotsAvailable > 0 && totalCount > 0 && (
+              <>
+                <span style={{ color: '#cbd5e1' }}>·</span>
+                <span style={{ color: '#0d9488', fontWeight: 500 }}>{slotsAvailable} slots available</span>
+              </>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            padding: '24px',
+            backgroundColor: '#f8fafc',
+            borderRadius: '10px',
+            textAlign: 'center',
+            marginBottom: pastWeeks.length > 0 ? '8px' : '0',
+          }}
+        >
+          <p style={{ fontSize: '14px', color: '#94a3b8', margin: '0 0 12px 0' }}>
+            No active week
+          </p>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onStartWeek();
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '10px 16px',
+              backgroundColor: '#3b82f6',
+              color: '#ffffff',
+              fontSize: '14px',
+              fontWeight: 500,
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'background-color 0.15s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2563eb')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#3b82f6')}
+          >
+            <Plus size={16} />
+            Start this week
+          </button>
+        </div>
+      )}
+
+      {/* Past Weeks Accordion */}
+      {pastWeeks.length > 0 && (
+        <>
+          <button
+            type="button"
+            onClick={handlePastWeeksToggle}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 0',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#64748b',
+              width: '100%',
+              justifyContent: 'flex-start',
+            }}
+          >
+            <ChevronDown 
+              size={14} 
+              style={{ 
+                transform: showPastWeeks ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s ease',
+              }} 
+            />
+            Past Weeks
+            <span
+              style={{
+                marginLeft: '4px',
+                padding: '2px 8px',
+                fontSize: '11px',
+                fontWeight: 600,
+                color: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                borderRadius: '4px',
+              }}
+            >
+              {pastWeeks.length}
+            </span>
+          </button>
+
+          {showPastWeeks && (
+            <div
+              style={{
+                marginLeft: '8px',
+                paddingLeft: '12px',
+                borderLeft: '2px solid #3b82f6',
+                marginTop: '4px',
+              }}
+            >
+              {pastWeeks.slice(0, 5).map((week) => {
+                const weekProgress = week.total_count > 0 
+                  ? (week.completed_count / week.total_count) * 100 
+                  : 0;
+                const isComplete = weekProgress === 100 && week.total_count > 0;
+                
+                return (
+                  <div
+                    key={week.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleWeekClick(week.id);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f1f5f9')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <span
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: isComplete ? '#22c55e' : '#cbd5e1',
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#475569' }}>
+                      {formatT10Date(week.week_start)} - {formatT10Date(week.week_end)}
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: 'auto' }}>
+                      {week.completed_count}/{week.total_count} completed
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+export default T10ListCardV3;
