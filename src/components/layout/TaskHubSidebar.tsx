@@ -36,7 +36,32 @@ const taskHubSidebarConfig: SidebarConfig = {
         { id: 'boards', title: 'Boards', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
         { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
         { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
-        { id: 'task10', title: 'Task¹⁰', path: '/taskhub/task10', icon: Target, exact: false },
+        {
+          id: 'task10',
+          title: (
+            <span className="flex items-center gap-2">
+              <span>Task</span>
+              <span
+                className="inline-flex items-center justify-center"
+                style={{
+                  width: '22px',
+                  height: '22px',
+                  borderRadius: '9999px',
+                  background: 'hsl(var(--brand-primary))',
+                  color: 'hsl(var(--primary-foreground))',
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  lineHeight: 1,
+                }}
+              >
+                10
+              </span>
+            </span>
+          ),
+          path: '/taskhub/task10',
+          icon: Target,
+          exact: false,
+        },
       ],
     },
   ],

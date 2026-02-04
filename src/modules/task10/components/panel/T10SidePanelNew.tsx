@@ -227,7 +227,9 @@ export function T10SidePanelNew({
       />
 
       {/* Panel */}
-      <div className={`t10-panel ${isClosing ? 't10-panel-closing' : ''}`}>
+      <div
+        className={`t10-panel ${isClosing ? 't10-panel-closing' : 'open'}`}
+      >
         {/* Header */}
         <div className="t10-panel-header">
           <div className="t10-panel-header-row">
