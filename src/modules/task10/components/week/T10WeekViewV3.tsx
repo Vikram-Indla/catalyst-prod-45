@@ -400,39 +400,8 @@ export function T10WeekViewV3() {
   const participantNames = allItems?.map(i => i.assignee_name).filter(Boolean) || [];
   const uniqueParticipants = [...new Set(participantNames)].slice(0, 3);
 
-  // Mock AI suggestions (UI-only) so you can see card behavior when the backend returns none
-  const mockSuggestions = useMemo(() => {
-    const today = new Date();
-    const plusDays = (d: number) => {
-      const dt = new Date(today);
-      dt.setDate(dt.getDate() + d);
-      return dt.toISOString().slice(0, 10);
-    };
-
-    return [
-      {
-        id: 'mock-1',
-        title: 'Review security audit findings and remediation plan',
-        key: 'TH-1042',
-        due_date: plusDays(2),
-        assignee_name: uniqueParticipants[0] || 'Unassigned',
-        priority: 'high',
-      },
-      {
-        id: 'mock-2',
-        title: 'Finalize week scope and confirm owners for top priorities',
-        key: 'TH-1088',
-        due_date: plusDays(5),
-        assignee_name: uniqueParticipants[1] || uniqueParticipants[0] || 'Unassigned',
-        priority: 'critical',
-      },
-    ];
-  }, [uniqueParticipants]);
-
-  const suggestionsToRender =
-    !aiLoading && (!aiData?.suggestions || aiData.suggestions.length === 0)
-      ? mockSuggestions
-      : (aiData?.suggestions || []).slice(0, 3);
+  // Use real AI suggestions only (no mock fallback)
+  const suggestionsToRender = (aiData?.suggestions || []).slice(0, 3);
 
   // Error state
   if (listError || (!isLoading && !list)) {
