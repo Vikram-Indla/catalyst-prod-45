@@ -130,35 +130,32 @@ export function T10PriorityCard({
           className="t10-detail-priority-text"
         />
         <div className="t10-detail-priority-meta">
-          {item.taskhub_key && (
-            <span 
-              className="t10-detail-priority-label"
-              style={{
-                fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace",
-                color: '#2563eb',
-                background: '#eff6ff',
-                border: '1px solid #bfdbfe',
-              }}
-            >
-              {item.taskhub_key}
-            </span>
-          )}
           {item.assignee_name && (
-            <span className="t10-detail-priority-assignee">
-              <User size={14} className="t10-detail-priority-assignee-avatar" />
-              {item.assignee_name}
-            </span>
+            <>
+              <span className="t10-detail-priority-assignee">
+                <User size={14} className="t10-detail-priority-assignee-avatar" />
+                {item.assignee_name}
+              </span>
+              {(item.due_date || item.label) && (
+                <span className="t10-detail-priority-meta-separator" />
+              )}
+            </>
           )}
           {item.due_date && (
-            <span 
-              className={`t10-detail-priority-due ${
-                dueStatus === 'overdue' ? 't10-detail-priority-due-overdue' : 
-                dueStatus === 'today' ? 't10-detail-priority-due-today' : ''
-              }`}
-            >
-              <Calendar size={13} />
-              {formatShortDate(item.due_date)}
-            </span>
+            <>
+              <span 
+                className={`t10-detail-priority-due ${
+                  dueStatus === 'overdue' ? 't10-detail-priority-due-overdue' : 
+                  dueStatus === 'today' ? 't10-detail-priority-due-today' : ''
+                }`}
+              >
+                <Calendar size={13} />
+                {formatShortDate(item.due_date)}
+              </span>
+              {item.label && (
+                <span className="t10-detail-priority-meta-separator" />
+              )}
+            </>
           )}
           {item.label && (
             <span className="t10-detail-priority-label">{item.label}</span>
@@ -166,7 +163,7 @@ export function T10PriorityCard({
           {item.carryover_count > 0 && (
             <span 
               className="t10-detail-priority-label"
-              style={{ color: '#f59e0b', background: '#fef3c7', border: '1px solid #fcd34d' }}
+              style={{ color: '#f59e0b', background: '#fef3c7' }}
               title={`Carried over ${item.carryover_count} time${item.carryover_count > 1 ? 's' : ''}`}
             >
               ×{item.carryover_count}
