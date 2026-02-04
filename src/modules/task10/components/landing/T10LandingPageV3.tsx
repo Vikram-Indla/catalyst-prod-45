@@ -481,15 +481,15 @@ export function T10LandingPageV3() {
             placeholder="Search lists, task number, or keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 min-w-0 text-[15px] font-medium text-slate-900 placeholder:text-slate-400 !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
             style={{
-              flex: 1,
-              fontSize: '15px',
-              fontWeight: 500,
-              color: '#0f172a',
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              boxShadow: 'none',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              appearance: 'none',
+              backgroundColor: 'transparent',
+              // Some resets/autofill styles use inset box-shadow to paint a background.
+              // This forces it to stay transparent.
+              WebkitBoxShadow: '0 0 0 1000px transparent inset',
             }}
           />
         </div>
