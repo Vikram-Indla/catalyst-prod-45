@@ -358,9 +358,11 @@ export function T10WeekViewV3() {
   // Limit: 10 in main list + 5 in buffer = 15 total
   const MAX_MAIN_ITEMS = 10;
   const MAX_BUFFER_ITEMS = 5;
+  const MAX_TOTAL_ITEMS = MAX_MAIN_ITEMS + MAX_BUFFER_ITEMS; // 15
+  const totalItemCount = totalCount + bufferCount;
   const isMainListFull = totalCount >= MAX_MAIN_ITEMS;
   const isBufferFull = bufferCount >= MAX_BUFFER_ITEMS;
-  const isAddDisabled = isMainListFull && isBufferFull;
+  const isAddDisabled = totalItemCount >= MAX_TOTAL_ITEMS;
 
   const completedItems = useMemo(() => allItems.filter(i => i.status === 'done'), [allItems]);
   const incompleteItems = useMemo(() => allItems.filter(i => i.status !== 'done'), [allItems]);
@@ -387,6 +389,12 @@ export function T10WeekViewV3() {
   const handleAddItem = async () => {
     if (!newItemText.trim() || !weekId) return;
     
+    // Block if at max capacity (15 items)
+    if (totalItemCount >= MAX_TOTAL_ITEMS) {
+      console.warn('[T10] Cannot add item: max capacity reached (15 items)');
+      return;
+    }
+    
     try {
       // Calculate next available rank - ensure it's unique
       const existingRanks = allItems.map(i => i.rank || 0);
@@ -396,6 +404,12 @@ export function T10WeekViewV3() {
       
       // Double-check rank isn't already taken
       const finalRank = existingRanks.includes(nextRank) ? maxRank + 1 : nextRank;
+      
+      // Enforce max rank of 15
+      if (finalRank > 15) {
+        console.warn('[T10] Cannot add item: max rank exceeded (15)');
+        return;
+      }
       
       await createItem.mutateAsync({
         week_id: weekId,
