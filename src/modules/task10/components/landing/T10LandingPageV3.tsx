@@ -210,7 +210,7 @@ export function T10LandingPageV3() {
     archivedLoading;
 
   return (
-    <div className="t10-module-v2">
+    <div className="t10-module-v2 t10-detail-page">
       <div className="t10-landing-v3">
         {/* Header */}
         <T10HeaderV3 onNewList={() => setShowNewModal(true)} />
