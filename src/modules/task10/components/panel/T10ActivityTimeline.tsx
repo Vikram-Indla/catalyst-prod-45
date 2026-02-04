@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Check, Edit, ArrowRight, UserPlus, RotateCcw, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Check, Edit, ArrowRight, UserPlus, RotateCcw, Loader2, AlertCircle, X, FileText, Calendar, Tag, UserMinus, RefreshCw, CheckCircle } from 'lucide-react';
 import { useT10Activity } from '../../hooks/useT10Activity';
 import { getRelativeTime } from '../../utils';
 import type { T10Activity } from '../../types';
@@ -12,10 +12,17 @@ const getActivityIcon = (type: T10Activity['type']) => {
   switch (type) {
     case 'created': return <Plus size={16} />;
     case 'completed': return <Check size={16} />;
-    case 'updated': return <Edit size={16} />;
-    case 'ranked': return <ArrowRight size={16} />;
+    case 'reopened': return <RefreshCw size={16} />;
+    case 'rank_changed': return <ArrowRight size={16} />;
     case 'assigned': return <UserPlus size={16} />;
-    case 'carried': return <RotateCcw size={16} />;
+    case 'unassigned': return <UserMinus size={16} />;
+    case 'title_updated': return <Edit size={16} />;
+    case 'due_date_changed': return <Calendar size={16} />;
+    case 'label_changed': return <Tag size={16} />;
+    case 'description_updated': return <FileText size={16} />;
+    case 'carried_over': return <RotateCcw size={16} />;
+    case 'removed': return <X size={16} />;
+    case 'resolved': return <CheckCircle size={16} />;
     default: return <Edit size={16} />;
   }
 };

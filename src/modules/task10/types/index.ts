@@ -168,12 +168,25 @@ export interface T10ItemFull extends T10Item {
 }
 
 /**
- * Activity log entry
+ * Activity log entry - types must match t10_activity_activity_type_check constraint
  */
 export interface T10Activity {
   id: string;
   item_id: string;
-  type: 'created' | 'updated' | 'completed' | 'ranked' | 'assigned' | 'carried';
+  type: 
+    | 'created' 
+    | 'completed' 
+    | 'reopened' 
+    | 'rank_changed' 
+    | 'assigned' 
+    | 'unassigned' 
+    | 'title_updated' 
+    | 'due_date_changed' 
+    | 'label_changed' 
+    | 'description_updated' 
+    | 'carried_over' 
+    | 'removed' 
+    | 'resolved';
   description: string;
   actor_name: string;
   created_at: string;

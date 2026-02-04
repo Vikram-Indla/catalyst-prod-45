@@ -32,14 +32,21 @@ function getDefaultDescription(type: string, metadata: Record<string, unknown> |
   switch (type) {
     case 'created': return 'Created this priority';
     case 'completed': return 'Marked as completed';
-    case 'ranked': {
+    case 'reopened': return 'Reopened this priority';
+    case 'rank_changed': {
       const oldRank = meta.oldRank;
       const newRank = meta.newRank;
       return oldRank && newRank ? `Moved from rank #${oldRank} to #${newRank}` : 'Changed rank';
     }
     case 'assigned': return meta.assigneeName ? `Assigned to ${meta.assigneeName}` : 'Updated assignee';
-    case 'carried': return 'Carried over to next week';
-    case 'updated': return meta.field ? `Updated ${meta.field}` : 'Updated item';
+    case 'unassigned': return 'Unassigned';
+    case 'title_updated': return 'Updated title';
+    case 'due_date_changed': return 'Updated due date';
+    case 'label_changed': return 'Updated labels';
+    case 'description_updated': return 'Updated notes';
+    case 'carried_over': return 'Carried over to next week';
+    case 'removed': return 'Removed from list';
+    case 'resolved': return 'Resolved';
     default: return 'Updated item';
   }
 }
@@ -139,10 +146,16 @@ export function useT10ActivityLogger() {
         type: 'completed',
         description: `Marked "${title}" as completed`,
       }),
-    logRanked: (itemId: string, oldRank: number, newRank: number) =>
+    logReopened: (itemId: string) =>
       logActivity.mutateAsync({
         itemId,
-        type: 'ranked',
+        type: 'reopened',
+        description: 'Reopened this priority',
+      }),
+    logRankChanged: (itemId: string, oldRank: number, newRank: number) =>
+      logActivity.mutateAsync({
+        itemId,
+        type: 'rank_changed',
         description: `Moved from rank #${oldRank} to #${newRank}`,
         metadata: { oldRank, newRank },
       }),
@@ -150,22 +163,47 @@ export function useT10ActivityLogger() {
       logActivity.mutateAsync({
         itemId,
         type: 'assigned',
-        description: assigneeName ? `Assigned to ${assigneeName}` : 'Unassigned',
+        description: `Assigned to ${assigneeName}`,
         metadata: { assigneeName },
       }),
-    logCarried: (itemId: string, count: number) =>
+    logUnassigned: (itemId: string) =>
       logActivity.mutateAsync({
         itemId,
-        type: 'carried',
+        type: 'unassigned',
+        description: 'Unassigned',
+      }),
+    logTitleUpdated: (itemId: string, newTitle: string) =>
+      logActivity.mutateAsync({
+        itemId,
+        type: 'title_updated',
+        description: `Updated title to "${newTitle}"`,
+        metadata: { newTitle },
+      }),
+    logDueDateChanged: (itemId: string, dueDate: string | null) =>
+      logActivity.mutateAsync({
+        itemId,
+        type: 'due_date_changed',
+        description: dueDate ? `Set due date to ${dueDate}` : 'Removed due date',
+        metadata: { dueDate },
+      }),
+    logLabelChanged: (itemId: string) =>
+      logActivity.mutateAsync({
+        itemId,
+        type: 'label_changed',
+        description: 'Updated labels',
+      }),
+    logDescriptionUpdated: (itemId: string) =>
+      logActivity.mutateAsync({
+        itemId,
+        type: 'description_updated',
+        description: 'Updated notes',
+      }),
+    logCarriedOver: (itemId: string, count: number) =>
+      logActivity.mutateAsync({
+        itemId,
+        type: 'carried_over',
         description: `Carried over to next week (×${count})`,
         metadata: { carryoverCount: count },
-      }),
-    logUpdated: (itemId: string, field: string) =>
-      logActivity.mutateAsync({
-        itemId,
-        type: 'updated',
-        description: `Updated ${field}`,
-        metadata: { field },
       }),
   };
 }

@@ -34,14 +34,21 @@ export const T10_COLORS = {
   purple: '#8b5cf6',
 } as const;
 
-// Activity Types
+// Activity Types - must match t10_activity_activity_type_check constraint
 export const T10_ACTIVITY_TYPES = {
   CREATED: 'created',
-  UPDATED: 'updated',
   COMPLETED: 'completed',
-  RANKED: 'ranked',
+  REOPENED: 'reopened',
+  RANK_CHANGED: 'rank_changed',
   ASSIGNED: 'assigned',
-  CARRIED: 'carried',
+  UNASSIGNED: 'unassigned',
+  TITLE_UPDATED: 'title_updated',
+  DUE_DATE_CHANGED: 'due_date_changed',
+  LABEL_CHANGED: 'label_changed',
+  DESCRIPTION_UPDATED: 'description_updated',
+  CARRIED_OVER: 'carried_over',
+  REMOVED: 'removed',
+  RESOLVED: 'resolved',
 } as const;
 
 // Labels
