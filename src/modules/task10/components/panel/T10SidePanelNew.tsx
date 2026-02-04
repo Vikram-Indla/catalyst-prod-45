@@ -200,13 +200,37 @@ export function T10SidePanelNew({
     }
   };
 
+  // Invasive inline styles to ensure panel visibility regardless of CSS conflicts
+  const panelStyles: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    width: 480,
+    maxWidth: '100vw',
+    height: '100vh',
+    background: '#ffffff',
+    boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.15), -2px 0 8px rgba(0, 0, 0, 0.1)',
+    zIndex: 9999,
+    display: 'flex',
+    flexDirection: 'column',
+    transform: isClosing ? 'translateX(100%)' : 'translateX(0)',
+    transition: 'transform 0.25s ease-out',
+  };
+
+  const overlayStyles: React.CSSProperties = {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0, 0, 0, 0.4)',
+    zIndex: 9998,
+  };
+
   if (isLoading || !item) {
     return createPortal(
       <div className="t10-portal-wrapper">
         {/* Overlay */}
-        <div className="t10-panel-overlay" onClick={handleOverlayClick} />
+        <div style={overlayStyles} onClick={handleOverlayClick} />
         {/* Panel Loading */}
-        <div className="t10-panel">
+        <div style={panelStyles}>
           <div className="t10-loading-center">
             <span className="t10-loading-text">Loading...</span>
           </div>
@@ -222,28 +246,52 @@ export function T10SidePanelNew({
     <div className="t10-portal-wrapper">
       {/* Overlay */}
       <div 
-        className={`t10-panel-overlay ${isClosing ? 't10-panel-overlay-closing' : ''}`}
+        style={overlayStyles}
         onClick={handleOverlayClick}
       />
 
-      {/* Panel */}
-      <div
-        className={`t10-panel ${isClosing ? 't10-panel-closing' : 'open'}`}
-      >
+      {/* Panel - with invasive inline styles */}
+      <div style={panelStyles}>
         {/* Header */}
-        <div className="t10-panel-header">
-          <div className="t10-panel-header-row">
-            <div className="t10-panel-header-left">
-              <div className="t10-panel-rank-badge">{item.rank}</div>
-              <h2 className="t10-panel-title-label">Task¹⁰ Priority</h2>
+        <div className="t10-panel-header" style={{
+          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+          padding: '16px 20px',
+          flexShrink: 0,
+        }}>
+          <div className="t10-panel-header-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div className="t10-panel-header-left" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 28,
+                height: 28,
+                background: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#ffffff',
+              }}>{item.rank}</div>
+              <h2 style={{
+                fontSize: 12,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+                color: 'rgba(255, 255, 255, 0.9)',
+                margin: 0,
+              }}>Task¹⁰ Priority</h2>
             </div>
-            <div className="t10-panel-header-actions">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {item.taskhub_key && (
                 <button
                   type="button"
                   onClick={handleExternalLink}
                   title="Open in TaskHub"
-                  className="t10-panel-header-btn"
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: 32, height: 32, background: 'transparent', border: 'none',
+                    borderRadius: 6, color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer',
+                  }}
                 >
                   <ExternalLink size={18} />
                 </button>
@@ -251,7 +299,11 @@ export function T10SidePanelNew({
               <button
                 type="button"
                 title="More actions"
-                className="t10-panel-header-btn"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 32, height: 32, background: 'transparent', border: 'none',
+                  borderRadius: 6, color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer',
+                }}
               >
                 <MoreHorizontal size={18} />
               </button>
@@ -259,7 +311,11 @@ export function T10SidePanelNew({
                 type="button"
                 onClick={handleClose}
                 title="Close (ESC)"
-                className="t10-panel-header-btn"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 32, height: 32, background: 'transparent', border: 'none',
+                  borderRadius: 6, color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer',
+                }}
               >
                 <X size={18} />
               </button>
