@@ -71,63 +71,65 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="t10-modal-overlay" onClick={onClose}>
-      <div className="t10-modal" onClick={e => e.stopPropagation()}>
-        <div className="t10-modal-header">
-          <h2 className="t10-modal-title">Create list</h2>
-          <button
-            type="button"
-            className="t10-modal-close"
-            onClick={onClose}
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="t10-modal-body">
-            <div className="t10-form-group">
-              <label className="t10-form-label">Name</label>
-              <input
-                ref={inputRef}
-                type="text"
-                className="t10-modal-input"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Q1 Goals"
-                maxLength={100}
-              />
-            </div>
-
-            <div className="t10-form-group">
-              <label className="t10-form-label">Description (optional)</label>
-              <textarea
-                className="t10-modal-textarea"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="What is this list for?"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          <div className="t10-modal-footer">
+    <div className="t10-portal-wrapper">
+      <div className="t10-modal-overlay" onClick={onClose}>
+        <div className="t10-modal" onClick={e => e.stopPropagation()}>
+          <div className="t10-modal-header">
+            <h2 className="t10-modal-title">Create list</h2>
             <button
               type="button"
-              className="t10-btn-secondary"
+              className="t10-modal-close"
               onClick={onClose}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="t10-btn-new"
-              disabled={!name.trim() || createList.isPending}
-            >
-              {createList.isPending ? 'Creating...' : 'Create'}
+              <X size={16} />
             </button>
           </div>
-        </form>
+
+          <form onSubmit={handleSubmit}>
+            <div className="t10-modal-body">
+              <div className="t10-form-group">
+                <label className="t10-form-label">Name</label>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  className="t10-modal-input"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g., Q1 Goals"
+                  maxLength={100}
+                />
+              </div>
+
+              <div className="t10-form-group">
+                <label className="t10-form-label">Description (optional)</label>
+                <textarea
+                  className="t10-modal-textarea"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="What is this list for?"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            <div className="t10-modal-footer">
+              <button
+                type="button"
+                className="t10-btn-secondary"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="t10-btn-new"
+                disabled={!name.trim() || createList.isPending}
+              >
+                {createList.isPending ? 'Creating...' : 'Create'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>,
     document.body
