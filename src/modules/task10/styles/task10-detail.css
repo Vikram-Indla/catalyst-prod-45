@@ -583,37 +583,38 @@
   gap: 10px;
 }
 
-/* Priority Item - Clean card design matching reference */
+/* Priority Item - COMPACT SINGLE-LINE card design */
 .t10-detail-priority-item {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px 24px;
+  gap: 12px;
+  padding: 12px 16px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  border-radius: 12px;
+  cursor: default;
+  transition: all 0.15s ease;
 }
 
 .t10-detail-priority-item:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .t10-detail-priority-item-completed {
-  background: #ffffff;
+  background: #fafafa;
 }
 
 .t10-detail-priority-item-completed .t10-detail-priority-text {
-  color: #64748b;
+  color: #94a3b8;
   text-decoration: line-through;
 }
 
-/* Dragging State — Keep all elements visible with enhanced styling */
+/* Dragging State — Enhanced styling */
 .t10-detail-priority-item-dragging {
-  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25), 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
   border-color: #2563eb !important;
+  border-width: 2px !important;
   background: #ffffff !important;
   z-index: 1000;
   cursor: grabbing;
@@ -661,40 +662,44 @@
   background-repeat: no-repeat;
 }
 
-/* Rank Badge — 36x36 with 10px radius */
+/* Rank Badge — COMPACT 28x28 with 8px radius */
 .t10-detail-rank {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 700;
   color: #ffffff !important;
-  background: #3b82f6 !important;
-  border-radius: 10px;
+  background: #2563eb !important;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
 /* Completed items: rank stays BLUE (no green) */
 .t10-detail-priority-item-completed .t10-detail-rank {
-  background: #3b82f6 !important;
+  background: #2563eb !important;
 }
 
-/* Content — 12px gap between title and meta */
+/* Content — Single line, title truncates */
 .t10-detail-priority-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .t10-detail-priority-text {
-  font-size: 16px;
-  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  fontWeight: 500;
   color: #0f172a;
-  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Meta row — 16px gap with separator dots */
@@ -757,14 +762,13 @@
   color: #f59e0b;
 }
 
-/* Checkbox - LARGER 32px circular design */
+/* Checkbox - COMPACT 24px circular design */
 .t10-detail-checkbox {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
   cursor: pointer;
-  margin-left: auto;
 }
 
 .t10-detail-checkbox-input {
@@ -777,30 +781,30 @@
 }
 
 .t10-detail-checkbox-visual {
-  width: 32px;
-  height: 32px;
-  border: 2px solid #cbd5e1;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #d1d5db;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   background: #ffffff;
 }
 
 .t10-detail-checkbox-input:hover + .t10-detail-checkbox-visual {
-  border-color: #3b82f6;
+  border-color: #2563eb;
 }
 
 .t10-detail-checkbox-input:checked + .t10-detail-checkbox-visual {
-  background: #3b82f6 !important;
-  border-color: #3b82f6 !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
 }
 
 .t10-detail-checkbox-visual svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   color: #ffffff;
   opacity: 0;
   transition: opacity 0.15s ease;
@@ -808,6 +812,39 @@
 
 .t10-detail-checkbox-input:checked + .t10-detail-checkbox-visual svg {
   opacity: 1;
+}
+
+/* Action buttons - Edit & Remove */
+.t10-detail-action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: #94a3b8;
+}
+
+.t10-detail-action-btn:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+.t10-detail-action-btn-edit:hover {
+  background: #eff6ff;
+  border-color: #dbeafe;
+  color: #2563eb;
+}
+
+.t10-detail-action-btn-remove:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #ef4444;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

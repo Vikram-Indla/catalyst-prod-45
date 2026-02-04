@@ -8,7 +8,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, ChevronLeft, ChevronRight, Calendar, 
   Zap, ChevronDown, Plus, Check, Layers, Info,
-  AlertCircle, GripVertical, User, X, StickyNote
+  AlertCircle, GripVertical, User, X, StickyNote, Pencil, Trash2, AlertTriangle
 } from 'lucide-react';
 import {
   DndContext,
@@ -48,7 +48,7 @@ import type { T10ItemFull } from '../../types';
 import '../../styles/task10-detail.css';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SORTABLE PRIORITY ITEM
+// SORTABLE PRIORITY ITEM - COMPACT SINGLE-LINE DESIGN
 // ═══════════════════════════════════════════════════════════════════════════════
 
 interface SortablePriorityItemProps {
@@ -74,136 +74,145 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   const hasNotes = Boolean(item.description && item.description.trim());
   const [isHovered, setIsHovered] = React.useState(false);
 
-  // Card styling - Updated padding: 20px 24px
+  // COMPACT SINGLE-LINE CARD - Reduced padding, height ~56px
   const cardStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 16,
-    padding: '20px 24px',
+    gap: 12,
+    padding: '12px 16px',
     background: isCompleted ? '#fafafa' : '#ffffff',
-    border: isDragging ? '1px solid #2563eb' : '1px solid #e2e8f0',
-    borderRadius: 16,
-    cursor: 'pointer',
-    transition: 'all 0.2s',
+    border: isDragging ? '2px solid #2563eb' : '1px solid #e2e8f0',
+    borderRadius: 12,
+    cursor: 'default',
+    transition: 'all 0.15s ease',
     transform: CSS.Transform.toString(transform),
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : undefined,
     boxShadow: isDragging 
-      ? '0 8px 24px rgba(0,0,0,0.12)' 
+      ? '0 8px 24px rgba(37, 99, 235, 0.2)' 
       : isHovered 
-        ? '0 4px 12px rgba(0,0,0,0.06)' 
+        ? '0 2px 8px rgba(0,0,0,0.06)' 
         : undefined,
   };
 
-  // Drag handle - 6 dots (2x3 grid)
+  // Drag handle - 6 dots (2x3 grid) - Compact
   const dragHandleStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     gap: 2,
     padding: 4,
     cursor: 'grab',
-    color: '#94a3b8',
+    color: isHovered ? '#3b82f6' : '#94a3b8',
+    opacity: isHovered ? 1 : 0.6,
+    transition: 'all 0.15s',
   };
 
   const dotStyle: React.CSSProperties = {
-    width: 4,
-    height: 4,
+    width: 3,
+    height: 3,
     backgroundColor: 'currentColor',
     borderRadius: '50%',
   };
 
-  // Rank badge - 36x36 with 10px radius
+  // Rank badge - Compact 28x28 with 8px radius
   const rankStyle: React.CSSProperties = {
-    width: 36,
-    height: 36,
+    width: 28,
+    height: 28,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 700,
     color: '#ffffff',
     backgroundColor: '#2563eb',
-    borderRadius: 10,
+    borderRadius: 8,
     flexShrink: 0,
   };
 
-  const contentStyle: React.CSSProperties = {
+  // Title - Takes remaining space, truncates with ellipsis
+  const titleStyle: React.CSSProperties = {
     flex: 1,
     minWidth: 0,
-  };
-
-  // Title row - 12px gap from meta
-  const titleStyle: React.CSSProperties = {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: 500,
     color: isCompleted ? '#94a3b8' : '#0f172a',
     textDecoration: isCompleted ? 'line-through' : 'none',
-    marginBottom: 12,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   };
 
-  // Meta row - 16px gap between items
-  const metaStyle: React.CSSProperties = {
+  // Meta section - Right side, all inline
+  const metaSectionStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 16,
-    flexWrap: 'wrap',
+    gap: 12,
+    flexShrink: 0,
   };
 
   // Meta item base style
   const metaItemStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 6,
-    fontSize: 13,
-    color: '#64748b',
-  };
-
-  // Separator dot style
-  const separatorStyle: React.CSSProperties = {
-    width: 4,
-    height: 4,
-    backgroundColor: '#cbd5e1',
-    borderRadius: '50%',
-    flexShrink: 0,
-  };
-
-  // Label style - GRAY only (slate-500 text, slate-100 bg)
-  const labelStyle: React.CSSProperties = {
-    padding: '4px 10px',
+    gap: 5,
     fontSize: 12,
+    color: '#64748b',
+    whiteSpace: 'nowrap',
+  };
+
+  // Label style - GRAY pills
+  const labelStyle: React.CSSProperties = {
+    padding: '3px 8px',
+    fontSize: 11,
     fontWeight: 500,
     backgroundColor: '#f1f5f9',
     color: '#64748b',
-    borderRadius: 6,
+    borderRadius: 4,
   };
 
+  // Due date style with conditional color
   const dueStyle: React.CSSProperties = {
     ...metaItemStyle,
     color: dueStatus === 'overdue' ? '#ef4444' : dueStatus === 'today' ? '#f59e0b' : '#64748b',
+    fontWeight: dueStatus === 'overdue' ? 500 : 400,
   };
 
-  // Remove button - visible on hover, hidden when completed
-  const removeStyle: React.CSSProperties = {
+  // Action button base style
+  const actionBtnStyle: React.CSSProperties = {
     width: 28,
     height: 28,
-    display: isCompleted ? 'none' : 'flex',
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: isHovered ? '#ef4444' : '#94a3b8',
-    background: isHovered ? '#fef2f2' : 'transparent',
-    border: 'none',
+    background: 'transparent',
+    border: '1px solid transparent',
     borderRadius: 6,
     cursor: 'pointer',
-    flexShrink: 0,
-    opacity: isHovered ? 1 : 0,
     transition: 'all 0.15s',
-    marginRight: 4,
+    flexShrink: 0,
   };
 
-  // Checkbox - BLUE when checked
+  // Edit button style
+  const editBtnStyle: React.CSSProperties = {
+    ...actionBtnStyle,
+    color: isHovered ? '#2563eb' : '#94a3b8',
+    background: isHovered ? '#eff6ff' : 'transparent',
+    border: isHovered ? '1px solid #dbeafe' : '1px solid transparent',
+  };
+
+  // Remove button style
+  const removeBtnStyle: React.CSSProperties = {
+    ...actionBtnStyle,
+    color: isHovered ? '#ef4444' : '#94a3b8',
+    background: isHovered ? '#fef2f2' : 'transparent',
+    border: isHovered ? '1px solid #fecaca' : '1px solid transparent',
+    opacity: isCompleted ? 0.5 : 1,
+  };
+
+  // Checkbox - Compact 24px
   const checkboxStyle: React.CSSProperties = {
-    width: 28,
-    height: 28,
+    width: 24,
+    height: 24,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -219,11 +228,21 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     <div
       ref={setNodeRef}
       style={cardStyle}
-      onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* DRAG HANDLE - 6 dots (2x3 grid) - ALWAYS VISIBLE */}
+      {/* CHECKBOX - First element */}
+      <div
+        style={checkboxStyle}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleStatus();
+        }}
+      >
+        {isCompleted && <Check size={14} color="#ffffff" strokeWidth={3} />}
+      </div>
+
+      {/* DRAG HANDLE - 6 dots (2x3 grid) */}
       <div
         {...attributes}
         {...listeners}
@@ -244,82 +263,79 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
         </div>
       </div>
 
-      {/* RANK BADGE - ALWAYS #2563eb BLUE */}
+      {/* RANK BADGE */}
       <div style={rankStyle}>
         {item.rank}
       </div>
 
-      {/* CONTENT */}
-      <div style={contentStyle}>
-        <div style={titleStyle}>{item.title}</div>
-        <div style={metaStyle}>
-          {/* Assignee - Read-only: just icon + name */}
-          {item.assignee_name && (
-            <>
-              <span style={metaItemStyle}>
-                <User size={14} style={{ color: '#94a3b8' }} />
-                {item.assignee_name.split(' ')[0]}
-              </span>
-              {(item.due_date || (item.labels && item.labels.length > 0)) && (
-                <span style={separatorStyle} />
-              )}
-            </>
-          )}
-          
-          {/* Due Date - Read-only display, no X button */}
-          {item.due_date && (
-            <>
-              <span style={dueStyle}>
-                <Calendar size={13} />
-                {formatShortDate(item.due_date)}
-              </span>
-              {item.labels && item.labels.length > 0 && (
-                <span style={separatorStyle} />
-              )}
-            </>
-          )}
-          
-          {/* Labels - Read-only GRAY labels, no + Add button */}
-          {item.labels && item.labels.length > 0 && (
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {item.labels.map((label) => (
-                <span key={label.id} style={labelStyle}>
-                  {label.name}
-                </span>
-              ))}
-            </div>
-          )}
-          
-          {/* Notes indicator */}
-          {hasNotes && (
-            <span style={metaItemStyle} title="Has notes">
-              <StickyNote size={12} style={{ color: '#94a3b8' }} />
-            </span>
-          )}
-        </div>
+      {/* TITLE - Truncated with ellipsis */}
+      <div style={titleStyle} title={item.title}>
+        {item.title}
       </div>
 
-      {/* REMOVE BUTTON - visible on hover, hidden when completed */}
-      <button
-        style={removeStyle}
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove();
-        }}
-        title="Remove item"
-      >
-        <X size={16} strokeWidth={2} />
-      </button>
+      {/* META SECTION - All inline on right side */}
+      <div style={metaSectionStyle}>
+        {/* Assignee */}
+        {item.assignee_name && (
+          <span style={metaItemStyle}>
+            <User size={12} style={{ color: '#94a3b8' }} />
+            {item.assignee_name.split(' ')[0]}
+          </span>
+        )}
+        
+        {/* Due Date */}
+        {item.due_date && (
+          <span style={dueStyle}>
+            {dueStatus === 'overdue' && <AlertTriangle size={12} />}
+            {dueStatus !== 'overdue' && <Calendar size={12} />}
+            {dueStatus === 'overdue' ? 'Overdue: ' : ''}{formatShortDate(item.due_date)}
+          </span>
+        )}
+        
+        {/* Labels - Max 2 visible */}
+        {item.labels && item.labels.length > 0 && (
+          <div style={{ display: 'flex', gap: 4 }}>
+            {item.labels.slice(0, 2).map((label) => (
+              <span key={label.id} style={labelStyle}>
+                {label.name}
+              </span>
+            ))}
+            {item.labels.length > 2 && (
+              <span style={labelStyle}>+{item.labels.length - 2}</span>
+            )}
+          </div>
+        )}
+        
+        {/* Notes indicator */}
+        {hasNotes && (
+          <span style={{ ...metaItemStyle, color: '#94a3b8' }} title="Has notes">
+            <StickyNote size={14} />
+          </span>
+        )}
 
-      {/* CHECKBOX - BLUE when checked, NOT green */}
-      <div
-        style={checkboxStyle}
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleStatus();
-        }}
-      >
-        {isCompleted && <Check size={16} color="#ffffff" strokeWidth={3} />}
+        {/* EDIT BUTTON - Opens side panel */}
+        <button
+          style={editBtnStyle}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+          title="Edit item"
+        >
+          <Pencil size={14} />
+        </button>
+
+        {/* REMOVE BUTTON */}
+        <button
+          style={removeBtnStyle}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          title="Remove item"
+        >
+          <Trash2 size={14} />
+        </button>
       </div>
     </div>
   );
