@@ -289,7 +289,9 @@ export function useCreateT10Item() {
       } as DbT10ItemFullView);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['t10-items', variables.weekId] });
+      queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(variables.weekId) });
+      queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
+      queryClient.invalidateQueries({ queryKey: t10ListKeys.all });
     },
   });
 }
