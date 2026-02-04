@@ -588,12 +588,21 @@ export function T10WeekViewV3() {
         </div>
 
         {/* ADD INPUT */}
-        <div className="t10-detail-add-container">
-          <div className="t10-detail-add-wrapper">
-            <Plus size={20} strokeWidth={2.5} className="t10-detail-add-icon" />
+        <div style={{ marginBottom: 24 }}>
+          <div 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              padding: '16px 20px',
+              background: '#ffffff',
+              border: '1px dashed #cbd5e1',
+              borderRadius: 16,
+            }}
+          >
+            <Plus size={20} strokeWidth={2.5} style={{ color: '#2563eb', flexShrink: 0 }} />
             <input 
               type="text"
-              className="t10-detail-add-input"
               placeholder="Add list item or paste TaskHub key..."
               value={newItemText}
               onChange={(e) => setNewItemText(e.target.value)}
@@ -606,15 +615,22 @@ export function T10WeekViewV3() {
                 boxShadow: 'none',
                 padding: 0,
                 margin: 0,
-                appearance: 'none',
-                WebkitAppearance: 'none',
-                MozAppearance: 'none',
-                borderRadius: 0,
-                WebkitBorderRadius: 0,
+                fontSize: 15,
+                fontWeight: 400,
+                color: '#0f172a',
               }}
             />
-            <div className="t10-detail-add-hint">
-              <kbd>Enter</kbd> to add
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#94a3b8', fontSize: 13 }}>
+              <kbd style={{
+                padding: '4px 8px',
+                background: '#f1f5f9',
+                border: '1px solid #e2e8f0',
+                borderRadius: 6,
+                fontSize: 12,
+                fontFamily: 'inherit',
+                color: '#64748b',
+              }}>Enter</kbd>
+              <span>to add</span>
             </div>
           </div>
         </div>
