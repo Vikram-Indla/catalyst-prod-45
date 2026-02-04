@@ -46,6 +46,8 @@ export {
   useBulkUpdateT10Items,
   useCarryoverT10Items,
   useT10UpdateItemLabels,
+  useT10SwapWithTen,
+  useT10PromoteToTop10,
   t10ItemKeys,
 } from './useT10Items';
 
