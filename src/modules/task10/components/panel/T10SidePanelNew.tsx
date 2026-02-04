@@ -19,6 +19,7 @@ import {
   Check,
   Trash2,
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import {
   useT10Item,
   useT10UpdateItem,
@@ -46,6 +47,7 @@ export function T10SidePanelNew({
   onUpdated,
   onDeleted,
 }: T10SidePanelNewProps) {
+  const { toast } = useToast();
   const [isClosing, setIsClosing] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'activity'>('details');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -172,13 +174,30 @@ export function T10SidePanelNew({
     }
   };
 
-  // Handle delete
+  // Handle delete with toast notification
   const handleDelete = async () => {
-    if (item && confirm(`Delete "${item.title}"? This action cannot be undone.`)) {
+    if (!item) return;
+
+    try {
       await deleteItem.mutateAsync(item);
+      
+      // Show success toast
+      toast({
+        title: 'Item deleted',
+        description: `"${item.title}" has been removed`,
+        variant: 'destructive',
+      });
+      
       console.log('[T10] Item deleted via panel');
       onDeleted?.();
-      handleClose();
+      setTimeout(() => handleClose(), 300);
+    } catch (error) {
+      console.error('[T10] Error deleting item:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete item',
+        variant: 'destructive',
+      });
     }
   };
 
