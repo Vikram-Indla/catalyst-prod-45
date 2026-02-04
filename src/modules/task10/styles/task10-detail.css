@@ -936,9 +936,16 @@
   transition: all 0.15s ease;
   flex-shrink: 0;
   opacity: 0;
+  z-index: 10;
+  position: relative;
 }
 
 .t10-detail-priority-item:hover .t10-detail-remove-btn {
+  opacity: 1;
+}
+
+/* Always show remove button on completed items */
+.t10-detail-priority-item-completed .t10-detail-remove-btn {
   opacity: 1;
 }
 
