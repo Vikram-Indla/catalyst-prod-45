@@ -1,11 +1,11 @@
 // ============================================================
 // MENTION TEXTAREA COMPONENT
 // Rich textarea with @mention dropdown for tagging users
+// Enterprise-level avatars with vibrant colors
 // ============================================================
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useMentionableUsers, MentionableUser } from '@/hooks/useMentionableUsers';
 import { cn } from '@/lib/utils';
 import Fuse from 'fuse.js';
@@ -20,6 +20,36 @@ interface MentionTextareaProps {
   onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
+// Generate consistent vibrant avatar color from name
+function getAvatarColor(name: string): string {
+  const colors = [
+    'hsl(220, 90%, 56%)',  // Blue
+    'hsl(262, 83%, 58%)',  // Purple
+    'hsl(330, 81%, 60%)',  // Pink
+    'hsl(10, 78%, 54%)',   // Red-Orange
+    'hsl(36, 90%, 50%)',   // Orange
+    'hsl(158, 64%, 40%)',  // Teal
+    'hsl(199, 89%, 48%)',  // Sky Blue
+    'hsl(142, 71%, 45%)',  // Green
+  ];
+  
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || '??';
+}
+
 export function MentionTextarea({
   value,
   onChange,
@@ -30,6 +60,7 @@ export function MentionTextarea({
   onKeyDown,
 }: MentionTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [mentionQuery, setMentionQuery] = useState('');
   const [mentionStartPos, setMentionStartPos] = useState(0);
@@ -118,12 +149,19 @@ export function MentionTextarea({
     setMentionQuery('');
     
     // Focus and set cursor after mention
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       const newCursorPos = mentionStartPos + mentionHandle.length + 2; // +2 for @ and space
       textarea.setSelectionRange(newCursorPos, newCursorPos);
       textarea.focus();
-    }, 0);
+    });
   }, [value, mentionStartPos, onChange]);
+
+  // Handle user selection via click
+  const handleUserClick = useCallback((e: React.MouseEvent, user: MentionableUser) => {
+    e.preventDefault();
+    e.stopPropagation();
+    insertMention(user);
+  }, [insertMention]);
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -155,13 +193,20 @@ export function MentionTextarea({
 
   // Close dropdown on click outside
   useEffect(() => {
-    const handleClickOutside = () => {
-      setShowDropdown(false);
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(e.target as Node) &&
+        textareaRef.current &&
+        !textareaRef.current.contains(e.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
     };
     
     if (showDropdown) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [showDropdown]);
 
@@ -183,48 +228,72 @@ export function MentionTextarea({
         style={{ minHeight }}
       />
       
-      {/* Mention dropdown */}
+      {/* Mention dropdown - Enterprise styled */}
       {showDropdown && filteredUsers.length > 0 && createPortal(
         <div
-          className="fixed z-[99999] w-72 max-h-64 overflow-auto rounded-lg border border-border bg-popover shadow-xl animate-in fade-in-0 zoom-in-95"
+          ref={dropdownRef}
+          className="fixed z-[99999] w-80 max-h-80 overflow-auto rounded-lg border border-border bg-popover shadow-xl animate-in fade-in-0 zoom-in-95"
           style={{ 
             top: dropdownPosition.top, 
             left: dropdownPosition.left,
+            backgroundColor: 'hsl(var(--popover))',
           }}
-          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.preventDefault()}
         >
           <div className="py-1">
-            <div className="px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border">
+            <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
               People
             </div>
-            {filteredUsers.map((user, index) => (
-              <button
-                key={user.id}
-                type="button"
-                onClick={() => insertMention(user)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2 text-sm text-left transition-colors",
-                  index === selectedIndex 
-                    ? "bg-accent text-accent-foreground" 
-                    : "hover:bg-accent/50"
-                )}
-              >
-                <Avatar className="h-7 w-7">
-                  <AvatarImage src={user.avatar_url || undefined} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
-                    {user.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">{user.name}</div>
-                  {user.role && (
-                    <div className="text-xs text-muted-foreground truncate">
-                      {user.role}
-                    </div>
+            {filteredUsers.map((user, index) => {
+              const avatarColor = getAvatarColor(user.name);
+              const isSelected = index === selectedIndex;
+              
+              return (
+                <button
+                  key={user.id}
+                  type="button"
+                  onMouseDown={(e) => handleUserClick(e, user)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors cursor-pointer",
+                    isSelected && "bg-primary text-primary-foreground"
                   )}
-                </div>
-              </button>
-            ))}
+                  style={{
+                    backgroundColor: isSelected ? 'hsl(220, 90%, 56%)' : undefined,
+                    color: isSelected ? 'white' : undefined,
+                  }}
+                >
+                  {/* Enterprise Avatar with vibrant color */}
+                  <div
+                    className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm"
+                    style={{ 
+                      backgroundColor: avatarColor,
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                    }}
+                  >
+                    {getInitials(user.name)}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div 
+                      className="font-medium text-sm truncate"
+                      style={{ color: isSelected ? 'white' : 'hsl(var(--foreground))' }}
+                    >
+                      {user.name}
+                    </div>
+                    {user.role && (
+                      <div 
+                        className="text-xs truncate"
+                        style={{ 
+                          color: isSelected ? 'rgba(255,255,255,0.8)' : 'hsl(var(--muted-foreground))',
+                        }}
+                      >
+                        {user.role}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>,
         document.body
@@ -250,7 +319,11 @@ export function MentionText({ text, className }: MentionTextProps) {
           return (
             <span 
               key={i} 
-              className="text-primary font-medium bg-primary/10 rounded px-1"
+              className="font-medium rounded px-1"
+              style={{
+                color: 'hsl(220, 90%, 56%)',
+                backgroundColor: 'hsl(220, 90%, 56%, 0.1)',
+              }}
             >
               {part}
             </span>
