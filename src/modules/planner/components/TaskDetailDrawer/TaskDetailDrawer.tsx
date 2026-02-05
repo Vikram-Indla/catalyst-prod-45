@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { X, Link2, Maximize2, MoreHorizontal, Copy, Trash2, Star } from 'lucide-react';
+import { X, Link2, Maximize2, MoreHorizontal, Copy, Trash2, Loader2, Check } from 'lucide-react';
 import {
   Modal,
   ModalContent,
@@ -32,6 +32,7 @@ import { ActivitySection } from './ActivitySection';
 import { SidebarFields } from './SidebarFields';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 import {
   useTaskDependencies,
@@ -84,11 +85,15 @@ function useTaskDetail(taskId: string | null) {
 export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onClose, onOpenChange, onTaskUpdated }: TaskDetailDrawerProps) {
   const effectiveTaskId = propTaskId ?? propTask?.id ?? null;
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const lastUpdatedAtRef = useRef<string | null>(null);
   
   // Save status for indicator
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const saveStatusTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Expanded mode state
+  const [isExpanded, setIsExpanded] = useState(false);
   
   // Tab state
   const [activeTab, setActiveTab] = useState<'description' | 'checklist' | 'files' | 'activity'>('description');
@@ -259,13 +264,25 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     }
   };
 
+  // Handle expand to full page
+  const handleExpand = () => {
+    handleClose();
+    navigate(`/taskhub/task/${effectiveTaskId}`);
+  };
+
   return (
     <Modal open={open} onOpenChange={(o) => !o && handleClose()}>
       <ModalContent 
         size="lg"
         hideClose
-        className="task-modal-v3 p-0 gap-0 overflow-hidden max-h-[85vh] flex flex-col"
-        style={{ maxWidth: '900px', width: '90vw' }}
+        className={cn(
+          "task-modal-v3 p-0 gap-0 overflow-hidden flex flex-col",
+          isExpanded ? "max-h-[95vh]" : "max-h-[85vh]"
+        )}
+        style={{ 
+          maxWidth: isExpanded ? '1200px' : '900px', 
+          width: isExpanded ? '95vw' : '90vw' 
+        }}
       >
         {isLoading ? (
           <ModalSkeleton />
@@ -287,7 +304,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                   <button onClick={handleCopyLink} className="task-modal-v3__icon-btn" title="Copy link">
                     <Link2 className="w-4 h-4" />
                   </button>
-                  <button className="task-modal-v3__icon-btn" title="Expand">
+                  <button onClick={handleExpand} className="task-modal-v3__icon-btn" title="Open in full page">
                     <Maximize2 className="w-4 h-4" />
                   </button>
                   <DropdownMenu>
@@ -390,8 +407,32 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                 onFieldChange={handleFieldUpdate}
               />
               
-              {/* Footer: Created/Updated + Actions */}
+              {/* Footer: Created/Updated + Save Status + Actions */}
               <div className="task-modal-v3__sidebar-footer">
+                {/* Save Status Indicator */}
+                {saveStatus !== 'idle' && (
+                  <div className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium mb-4 transition-all duration-200",
+                    saveStatus === 'saving' && "bg-muted text-muted-foreground",
+                    saveStatus === 'saved' && "bg-emerald-50 text-emerald-600",
+                    saveStatus === 'error' && "bg-red-50 text-red-600"
+                  )}>
+                    {saveStatus === 'saving' && (
+                      <>
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    )}
+                    {saveStatus === 'saved' && (
+                      <>
+                        <Check className="w-3 h-3" />
+                        <span>Saved</span>
+                      </>
+                    )}
+                    {saveStatus === 'error' && <span>Failed to save</span>}
+                  </div>
+                )}
+
                 <div className="task-modal-v3__timestamps">
                   <div className="task-modal-v3__timestamp-row">
                     <span className="task-modal-v3__timestamp-label">Created</span>
