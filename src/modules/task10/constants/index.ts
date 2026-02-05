@@ -51,12 +51,5 @@ export const T10_ACTIVITY_TYPES = {
   RESOLVED: 'resolved',
 } as const;
 
-// Labels
-export const T10_DEFAULT_LABELS = [
-  'HR',
-  'FINANCE',
-  'TECH',
-  'LEGAL',
-  'OPERATIONS',
-  'MARKETING',
-] as const;
+// Labels - no defaults, user creates their own
+export const T10_DEFAULT_LABELS = [] as const;

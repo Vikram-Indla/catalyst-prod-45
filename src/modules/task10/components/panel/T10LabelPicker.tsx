@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Plus, X, Search } from 'lucide-react';
 
-// Default label presets
-const DEFAULT_LABELS = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'BLOCKED', 'NEEDS-REVIEW', 'HR', 'Bug Fix', 'Feature', 'Documentation'];
+// No default labels - user creates their own
+const DEFAULT_LABELS: string[] = [];
 
 // Get consistent color for a label based on its name
 export function getLabelColor(label: string): { bg: string; color: string; border: string } {
