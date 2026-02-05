@@ -264,10 +264,10 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     }
   };
 
-  // Handle expand to full page
+  // Handle expand to full page - uses query param pattern per workItemRoutes.ts
   const handleExpand = () => {
     handleClose();
-    navigate(`/taskhub/task/${effectiveTaskId}`);
+    navigate(`/taskhub/tasks?taskId=${effectiveTaskId}`);
   };
 
   return (
