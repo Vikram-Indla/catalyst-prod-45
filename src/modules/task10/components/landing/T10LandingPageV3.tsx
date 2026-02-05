@@ -483,7 +483,7 @@ export function T10LandingPageV3() {
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-bold text-slate-900 tracking-tight">
-              Task
+              Priorities
             </span>
             <span className="text-xs font-medium text-slate-500">
               Priority Management
