@@ -55,6 +55,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { exportToExcel, exportToCsv, exportToPdf } from '@/utils/exports';
 import type { ExportColumn } from '@/utils/exports/types';
 import { downloadDocumentation } from '@/utils/releaseModuleDocumentation';
+import { downloadFeatureTree } from '@/utils/releaseModuleFeatureTree';
 
 // Import real data hooks
 import {
@@ -691,6 +692,13 @@ export default function CommandCenterPage() {
                 Export as Excel
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => {
+                downloadFeatureTree('markdown');
+                catalystToast.success('Feature tree downloaded');
+              }} className="gap-2">
+                <FileText className="h-4 w-4" />
+                Feature Hierarchy Tree (.md)
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 downloadDocumentation();
                 catalystToast.success('Documentation downloaded');
