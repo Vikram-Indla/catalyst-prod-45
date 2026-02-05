@@ -943,13 +943,12 @@ export function T10WeekViewV3() {
       {/* HEADER */}
       <header style={headerStyle}>
         {/* Logo */}
-        <Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-          <span style={logoBadgeStyle}>10</span>
-          <div style={logoTextContainerStyle}>
-            <span style={logoTitleStyle}>Priorities</span>
-            <span style={logoSubtitleStyle}>Priority Management</span>
-          </div>
-        </Link>
+<Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+            <span style={logoBadgeStyle}>10</span>
+            <div style={logoTextContainerStyle}>
+              <span style={logoTitleStyle}>Priorities</span>
+            </div>
+          </Link>
 
         {/* List Key + Name */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
