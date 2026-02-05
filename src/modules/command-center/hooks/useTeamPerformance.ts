@@ -89,15 +89,7 @@ export function useTeamPerformance(limit: number = 5, projectId?: string) {
           color: avatarColors[hashStringToIndex(member.id, avatarColors.length)],
         }));
 
-      // If no real data, return sample data
-      if (teamPerformance.length === 0) {
-        return [
-          { id: '1', name: 'Ahmed Khan', initials: 'AK', role: 'Senior QA', testsToday: 24, passRate: 92, color: 'blue' },
-          { id: '2', name: 'Sara Mohammed', initials: 'SM', role: 'QA Lead', testsToday: 18, passRate: 88, color: 'teal' },
-          { id: '3', name: 'Omar Hassan', initials: 'OH', role: 'QA Engineer', testsToday: 31, passRate: 85, color: 'purple' },
-          { id: '4', name: 'Fatima Ali', initials: 'FA', role: 'QA Engineer', testsToday: 22, passRate: 91, color: 'orange' },
-        ];
-      }
+      // No-mock-data policy: return actual data (may be empty)
 
       return teamPerformance;
     },
