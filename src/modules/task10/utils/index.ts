@@ -3,6 +3,10 @@
 // Helper functions for Task¹⁰ module
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// Week calculations for advance planning
+export { getWeekOptions, formatWeekRange as formatWeekRangeAdvanced } from './weekCalculations';
+export type { WeekOption } from './weekCalculations';
+
 /**
  * Format date for display
  */

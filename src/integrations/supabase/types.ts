@@ -19966,6 +19966,7 @@ export type Database = {
           dropped_count: number | null
           id: string
           is_current: boolean | null
+          is_upcoming: boolean | null
           list_id: string
           status: string | null
           total_count: number | null
@@ -19982,6 +19983,7 @@ export type Database = {
           dropped_count?: number | null
           id?: string
           is_current?: boolean | null
+          is_upcoming?: boolean | null
           list_id: string
           status?: string | null
           total_count?: number | null
@@ -19998,6 +20000,7 @@ export type Database = {
           dropped_count?: number | null
           id?: string
           is_current?: boolean | null
+          is_upcoming?: boolean | null
           list_id?: string
           status?: string | null
           total_count?: number | null
@@ -33498,6 +33501,11 @@ export type Database = {
         }
         Returns: Json
       }
+      t10_create_list: {
+        Args: { p_description?: string; p_name: string; p_week_offset?: number }
+        Returns: Json
+      }
+      t10_promote_upcoming_weeks: { Args: never; Returns: undefined }
       t10_restore_list: { Args: { p_list_id: string }; Returns: Json }
       test_connector: { Args: { p_connector_id: string }; Returns: Json }
       text2ltree: { Args: { "": string }; Returns: unknown }
