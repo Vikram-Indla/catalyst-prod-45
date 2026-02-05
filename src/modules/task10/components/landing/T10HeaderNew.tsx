@@ -13,9 +13,9 @@ interface T10HeaderNewProps {
 export function T10HeaderNew({ onNewList }: T10HeaderNewProps) {
   return (
     <header className="t10-header-minimal">
-      {/* Logo: Text only with superscript - no chunky badge */}
+      {/* Logo: Text only */}
       <div className="t10-logo-minimal">
-        <span className="t10-logo-text-minimal">Task10</span>
+        <span className="t10-logo-text-minimal">Task</span>
       </div>
 
       {/* Action: Short label "+ New" */}
