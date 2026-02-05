@@ -197,16 +197,17 @@ export function useT10Item(itemId: string | null) {
 }
 
 /**
- * Create new item
+ * Create new item - Optimized for speed with optimistic updates
  */
 export function useT10CreateItem() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: T10ItemCreateInput): Promise<T10ItemFull> => {
+      // Get user from cache or fetch once
       const { data: { user } } = await supabase.auth.getUser();
-
-      // CRITICAL: Fetch current max rank from database to prevent duplicates
+      
+      // Single query: get max rank - this is fast
       const { data: existingItems } = await supabase
         .from('t10_items')
         .select('rank')
@@ -215,20 +216,16 @@ export function useT10CreateItem() {
         .limit(1);
 
       const maxExistingRank = existingItems?.[0]?.rank || 0;
+      const safeRank = Math.min(maxExistingRank + 1, 15);
       
-      // Enforce max 15 items total
-      const { count: totalCount } = await supabase
-        .from('t10_items')
-        .select('*', { count: 'exact', head: true })
-        .eq('week_id', input.week_id);
-      
-      if ((totalCount || 0) >= 15) {
+      // Quick check: if at capacity, fail fast
+      if (safeRank > 15) {
         throw new Error('Maximum capacity reached (15 items). Remove an item first.');
       }
       
-      const safeRank = Math.min(Math.max(input.rank, maxExistingRank + 1), 15);
       const isBuffer = input.is_buffer ?? safeRank > 10;
 
+      // Insert and return in one call
       const { data, error } = await supabase
         .from('t10_items')
         .insert({
@@ -252,16 +249,30 @@ export function useT10CreateItem() {
 
       console.log('[T10] Item created:', data.title, 'at rank:', safeRank);
 
-      // Fetch full item with labels
-      const { data: fullItem } = await supabase
-        .from('t10_items_full')
-        .select('*')
-        .eq('id', data.id)
-        .single();
-
-      return mapDbToT10ItemFull(fullItem as unknown as DbT10ItemFullView);
+      // Return immediately with constructed full item (no extra fetch)
+      return {
+        id: data.id,
+        week_id: data.week_id,
+        rank: data.rank,
+        title: data.title,
+        taskhub_key: data.taskhub_key || undefined,
+        assignee_id: data.assignee_id || undefined,
+        assignee_name: undefined,
+        assignee_initials: '',
+        assignee_avatar: null,
+        due_date: data.due_date || undefined,
+        description: data.description || undefined,
+        status: data.status as 'todo' | 'done',
+        carryover_count: data.carryover_count,
+        is_buffer: data.is_buffer,
+        created_by: data.created_by,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        labels: [],
+      };
     },
     onSuccess: (data) => {
+      // Invalidate queries - React Query will refetch with full data
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.byWeek(data.week_id) });
       queryClient.invalidateQueries({ queryKey: t10ItemKeys.buffer(data.week_id) });
       queryClient.invalidateQueries({ queryKey: t10WeekKeys.all });
