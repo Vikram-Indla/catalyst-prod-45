@@ -14503,6 +14503,350 @@ export type Database = {
           },
         ]
       }
+      pri_item_history: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          item_id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          item_id: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pri_item_history_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_item_history_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pri_item_labels: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          label_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          label_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          label_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pri_item_labels_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_item_labels_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_item_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "pri_labels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pri_item_notes: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string
+          id: string
+          item_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          item_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pri_item_notes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_item_notes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pri_items: {
+        Row: {
+          assignee_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_carryover: boolean
+          list_id: string
+          rank: number
+          source_item_id: string | null
+          status: string
+          task_key: string | null
+          title: string
+          updated_at: string
+          week_id: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_carryover?: boolean
+          list_id: string
+          rank?: number
+          source_item_id?: string | null
+          status?: string
+          task_key?: string | null
+          title: string
+          updated_at?: string
+          week_id: string
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_carryover?: boolean
+          list_id?: string
+          rank?: number
+          source_item_id?: string | null
+          status?: string
+          task_key?: string | null
+          title?: string
+          updated_at?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pri_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_source_item_fkey"
+            columns: ["source_item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_source_item_fkey"
+            columns: ["source_item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "pri_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "pri_weeks_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pri_labels: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          list_id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          list_id: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          list_id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pri_labels_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_labels_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pri_lists: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          owner_id: string | null
+          status: string
+          title: string
+          updated_at: string
+          workstream: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          workstream?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          workstream?: string | null
+        }
+        Relationships: []
+      }
+      pri_weeks: {
+        Row: {
+          checked_out_at: string | null
+          checked_out_by: string | null
+          created_at: string
+          id: string
+          list_id: string
+          status: string
+          updated_at: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          created_at?: string
+          id?: string
+          list_id: string
+          status?: string
+          updated_at?: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          created_at?: string
+          id?: string
+          list_id?: string
+          status?: string
+          updated_at?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pri_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prioritization_config: {
         Row: {
           created_at: string | null
@@ -31569,6 +31913,129 @@ export type Database = {
           },
         ]
       }
+      pri_items_full: {
+        Row: {
+          assignee_avatar: string | null
+          assignee_id: string | null
+          assignee_name: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_carryover: boolean | null
+          labels: Json | null
+          list_id: string | null
+          note_count: number | null
+          rank: number | null
+          source_item_id: string | null
+          status: string | null
+          task_key: string | null
+          title: string | null
+          updated_at: string | null
+          week_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pri_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_source_item_fkey"
+            columns: ["source_item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_source_item_fkey"
+            columns: ["source_item_id"]
+            isOneToOne: false
+            referencedRelation: "pri_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "pri_weeks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_items_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "pri_weeks_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pri_lists_full: {
+        Row: {
+          active_item_count: number | null
+          completed_item_count: number | null
+          created_at: string | null
+          current_week_end: string | null
+          current_week_id: string | null
+          current_week_start: string | null
+          description: string | null
+          id: string | null
+          owner_avatar: string | null
+          owner_id: string | null
+          owner_name: string | null
+          status: string | null
+          title: string | null
+          total_weeks: number | null
+          updated_at: string | null
+          workstream: string | null
+        }
+        Relationships: []
+      }
+      pri_weeks_full: {
+        Row: {
+          carryover_count: number | null
+          checked_out_at: string | null
+          checked_out_by: string | null
+          checked_out_by_name: string | null
+          completed_count: number | null
+          created_at: string | null
+          id: string | null
+          in_progress_count: number | null
+          list_id: string | null
+          overflow_count: number | null
+          status: string | null
+          todo_count: number | null
+          top_count: number | null
+          total_items: number | null
+          updated_at: string | null
+          week_end: string | null
+          week_start: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pri_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pri_weeks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "pri_lists_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ra_generation_summary: {
         Row: {
           avg_confidence: number | null
@@ -33337,6 +33804,22 @@ export type Database = {
           overdue_count: number
           total_count: number
         }[]
+      }
+      pri_checkout_week: {
+        Args: { p_decisions: Json; p_week_id: string }
+        Returns: string
+      }
+      pri_cycle_item_status: {
+        Args: { p_actor_id?: string; p_item_id: string }
+        Returns: string
+      }
+      pri_get_or_create_current_week: {
+        Args: { p_list_id: string }
+        Returns: string
+      }
+      pri_reorder_items: {
+        Args: { p_item_ids: string[]; p_week_id: string }
+        Returns: undefined
       }
       quick_create_defect_v2: {
         Args: {
