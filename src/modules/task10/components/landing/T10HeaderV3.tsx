@@ -31,7 +31,7 @@ export function T10HeaderV3({
     >
       <div>
         <div className="t10-logo-minimal">
-          <span className="t10-logo-text-minimal">Task10</span>
+          <span className="t10-logo-text-minimal">Task</span>
         </div>
         <p
           style={{
