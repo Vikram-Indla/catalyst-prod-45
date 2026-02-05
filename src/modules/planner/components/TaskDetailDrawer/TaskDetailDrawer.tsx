@@ -1,7 +1,7 @@
 // ============================================================
-// TASK DETAIL MODAL V2 - ENTERPRISE CLEAN DESIGN
-// CRITICAL: This is a MODAL, not a drawer!
-// 18px title, status bar, tabs, inline fields
+// TASK DETAIL MODAL V3 - TWO-COLUMN SIDEBAR LAYOUT
+// Left: Breadcrumb, Title, Tabs, Content
+// Right: Sidebar with Status, Priority, Workstream, Assignee
 // ============================================================
 
 import { useCallback, useEffect, useState, useRef } from 'react';
@@ -10,24 +10,28 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { X, Link2, MoreHorizontal } from 'lucide-react';
+import { X, Link2, Maximize2, MoreHorizontal, Copy, Trash2, Star } from 'lucide-react';
 import {
   Modal,
   ModalContent,
 } from '@/components/overlays/AtlassianModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import '@/styles/task-detail-modal-enterprise.css';
 
-import { DrawerHeader } from './DrawerHeader';
 import { TaskDescription } from './TaskDescription';
-import { TaskFieldsGrid } from './TaskFieldsGrid';
-import { ProgressSection } from './ProgressSection';
 import { LeadNotesTab } from './LeadNotesTab';
 import { ChecklistSection } from './ChecklistSection';
 import { AttachmentsSection } from './AttachmentsSection';
-import { DependenciesSection } from './DependenciesSection';
 import { ActivitySection } from './ActivitySection';
-import { DrawerFooter } from './DrawerFooter';
+import { SidebarFields } from './SidebarFields';
 import { cn } from '@/lib/utils';
+import { format, formatDistanceToNow } from 'date-fns';
 
 import {
   useTaskDependencies,
@@ -86,11 +90,10 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const saveStatusTimerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Tab state for V2 tabbed interface
-  const [activeTab, setActiveTab] = useState<'description' | 'lead-notes' | 'checklist' | 'files' | 'activity'>('description');
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'description' | 'checklist' | 'files' | 'activity'>('description');
   
   const handleClose = useCallback(() => {
-    // Flush any pending debounced updates before closing
     if (effectiveTaskId) {
       flushPending(effectiveTaskId);
     }
@@ -101,13 +104,10 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const { data: serverTask, isLoading } = useTaskDetail(effectiveTaskId);
   const [draftTask, setDraftTask] = useState<any | null>(null);
 
-  // Track the server's updated_at to detect external changes
   useEffect(() => {
     if (!serverTask) return;
     
-    // Detect if update came from another source
     if (lastUpdatedAtRef.current && lastUpdatedAtRef.current !== serverTask.updated_at) {
-      // Only show toast if modal is open and it wasn't our update
       if (open && saveStatus === 'idle') {
         toast.info('Task updated by another user', { duration: 2000 });
       }
@@ -122,21 +122,16 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   const task = draftTask ?? serverTask;
 
-  // Real-time subscription for this specific task
   usePlannerTaskRealtime({
     taskId: effectiveTaskId,
-    onUpdate: () => {
-      // Cache will be updated by the hook, draft will sync via the useEffect above
-    },
+    onUpdate: () => {},
     onDelete: () => {
       handleClose();
     },
   });
 
-  // Enhanced update hook with debouncing
   const { updateNow, updateDebounced, flushPending, isPending } = useUpdatePlannerTaskField();
 
-  // Show saving indicator
   const showSaving = useCallback(() => {
     if (saveStatusTimerRef.current) {
       clearTimeout(saveStatusTimerRef.current);
@@ -151,11 +146,9 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     }, 1500);
   }, []);
 
-  // Handle immediate field updates (dropdowns, checkboxes)
   const handleFieldUpdate = useCallback(async (field: string, value: any) => {
     if (!effectiveTaskId) return;
 
-    // Optimistically update local draft
     setDraftTask((prev: any) => {
       if (!prev) return prev;
       return { ...prev, [field]: value };
@@ -164,7 +157,6 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     showSaving();
     updateNow(effectiveTaskId, field, value);
     
-    // Show saved after a brief delay
     setTimeout(() => {
       showSaved();
     }, 300);
@@ -172,11 +164,9 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     onTaskUpdated?.();
   }, [effectiveTaskId, updateNow, showSaving, showSaved, onTaskUpdated]);
 
-  // Handle debounced text field updates (title, description)
   const handleTextFieldUpdate = useCallback((field: string, value: any) => {
     if (!effectiveTaskId) return;
 
-    // Optimistically update local draft immediately
     setDraftTask((prev: any) => {
       if (!prev) return prev;
       return { ...prev, [field]: value };
@@ -185,21 +175,17 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     showSaving();
     updateDebounced(effectiveTaskId, field, value, 500);
     
-    // Show saved after debounce completes
     setTimeout(() => {
       showSaved();
     }, 600);
   }, [effectiveTaskId, updateDebounced, showSaving, showSaved]);
 
   // Fetch related data
-  const { data: dependencies } = useTaskDependencies(effectiveTaskId);
   const { data: checklist } = useTaskChecklist(effectiveTaskId);
   const { data: attachments } = useTaskAttachments(effectiveTaskId);
   const { data: comments } = useTaskComments(effectiveTaskId);
   const { data: activity } = useTaskActivity(effectiveTaskId);
-  const { data: leadNotes } = useLeadNotes(effectiveTaskId);
 
-  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (saveStatusTimerRef.current) {
@@ -210,176 +196,226 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   if (!effectiveTaskId) return null;
 
-  // Tab badge counts
-  const leadNotesCount = leadNotes?.length || 0;
   const checklistCount = checklist?.length || 0;
-  const linksCount = dependencies?.length || 0;
   const filesCount = attachments?.length || 0;
   const activityCount = (comments?.length || 0) + (activity?.length || 0);
 
   const tabs = [
     { id: 'description' as const, label: 'Description', badge: null },
-    { id: 'lead-notes' as const, label: 'Notes', badge: leadNotesCount || null },
     { id: 'checklist' as const, label: 'Checklist', badge: checklistCount || null },
     { id: 'files' as const, label: 'Files', badge: filesCount || null },
     { id: 'activity' as const, label: 'Activity', badge: activityCount || null },
   ];
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/taskhub/task-list?task=${task?.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard');
+  };
+
+  const handleDuplicate = async () => {
+    if (!task) return;
+    try {
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const newTaskKey = `TSK-${timestamp}`;
+      
+      const { error } = await supabase
+        .from('planner_tasks')
+        .insert([{
+          task_key: newTaskKey,
+          title: `${task.title} (Copy)`,
+          description: task.description || null,
+          priority: task.priority || 'medium',
+          status_id: task.status_id || null,
+          workstream_id: task.workstream_id || task.workstream?.id || null,
+          assignee_id: task.assignee_id || task.assignee?.id || null,
+          due_date: task.due_date || null,
+          start_date: task.start_date || null,
+        }]);
+      
+      if (error) throw error;
+      toast.success('Task duplicated successfully');
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      onTaskUpdated?.();
+    } catch (err) {
+      console.error('Duplicate error:', err);
+      toast.error('Failed to duplicate task');
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from('planner_tasks')
+        .delete()
+        .eq('id', effectiveTaskId);
+      
+      if (error) throw error;
+      toast.success('Task deleted');
+      queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
+      handleClose();
+    } catch (err) {
+      toast.error('Failed to delete task');
+    }
+  };
 
   return (
     <Modal open={open} onOpenChange={(o) => !o && handleClose()}>
       <ModalContent 
         size="lg"
         hideClose
-        className="task-modal task-modal-enterprise p-0 gap-0 overflow-hidden max-h-[85vh] flex flex-col"
+        className="task-modal-v3 p-0 gap-0 overflow-hidden max-h-[85vh] flex flex-col"
         style={{ maxWidth: '900px', width: '90vw' }}
       >
         {isLoading ? (
           <ModalSkeleton />
         ) : task ? (
-          <>
-            {/* Header - V2 with status bar */}
-            <DrawerHeader
-              task={task}
-              onClose={handleClose}
-              onTitleChange={(title) => handleTextFieldUpdate('title', title)}
-              onStatusChange={(statusId) => handleFieldUpdate('status_id', statusId)}
-              onAssigneeChange={(assigneeId) => handleFieldUpdate('assignee_id', assigneeId)}
-              onWorkstreamChange={(workstreamId) => handleFieldUpdate('workstream_id', workstreamId)}
-              onPriorityChange={(priority) => handleFieldUpdate('priority', priority)}
-              onEdit={() => {
-                toast.info('Edit mode - changes save automatically');
-              }}
-              onDuplicate={async () => {
-                try {
-                  // Generate a new task_key
-                  const timestamp = Date.now().toString(36).toUpperCase();
-                  const newTaskKey = `TSK-${timestamp}`;
-                  
-                  const { error } = await supabase
-                    .from('planner_tasks')
-                    .insert([{
-                      task_key: newTaskKey,
-                      title: `${task.title} (Copy)`,
-                      description: task.description || null,
-                      priority: task.priority || 'medium',
-                      status_id: task.status_id || null,
-                      workstream_id: task.workstream_id || task.workstream?.id || null,
-                      assignee_id: task.assignee_id || task.assignee?.id || null,
-                      due_date: task.due_date || null,
-                      start_date: task.start_date || null,
-                    }]);
-                  
-                  if (error) throw error;
-                  toast.success('Task duplicated successfully');
-                  queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
-                  onTaskUpdated?.();
-                } catch (err) {
-                  console.error('Duplicate error:', err);
-                  toast.error('Failed to duplicate task');
-                }
-              }}
-              onDelete={async () => {
-                try {
-                  const { error } = await supabase
-                    .from('planner_tasks')
-                    .delete()
-                    .eq('id', effectiveTaskId);
-                  
-                  if (error) throw error;
-                  toast.success('Task deleted');
-                  queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
-                  handleClose();
-                } catch (err) {
-                  toast.error('Failed to delete task');
-                }
-              }}
-              saveStatus={saveStatus}
-            />
-            
-            {/* Tab Navigation - V2 */}
-            <nav className="task-modal__tabs">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={cn(
-                    "task-modal__tab",
-                    activeTab === tab.id && "task-modal__tab--active"
-                  )}
+          <div className="task-modal-v3__layout">
+            {/* ===== LEFT COLUMN: Main content ===== */}
+            <div className="task-modal-v3__main">
+              {/* Breadcrumb Header */}
+              <header className="task-modal-v3__header">
+                <div className="task-modal-v3__breadcrumb">
+                  <span className="task-modal-v3__breadcrumb-ws">{task.workstream?.name || 'No Workstream'}</span>
+                  <span className="task-modal-v3__breadcrumb-sep">›</span>
+                  <span className="task-modal-v3__breadcrumb-item">Board</span>
+                  <span className="task-modal-v3__breadcrumb-sep">›</span>
+                  <span className="task-modal-v3__breadcrumb-key">{task.task_key || 'TSK-000'}</span>
+                </div>
+                
+                <div className="task-modal-v3__header-actions">
+                  <button onClick={handleCopyLink} className="task-modal-v3__icon-btn" title="Copy link">
+                    <Link2 className="w-4 h-4" />
+                  </button>
+                  <button className="task-modal-v3__icon-btn" title="Expand">
+                    <Maximize2 className="w-4 h-4" />
+                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="task-modal-v3__icon-btn" title="More options">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 bg-popover z-[600]">
+                      <DropdownMenuItem onClick={handleDuplicate}>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Duplicate
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={handleDelete}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <button onClick={handleClose} className="task-modal-v3__icon-btn task-modal-v3__icon-btn--close" title="Close">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </header>
+
+              {/* Title */}
+              <div className="task-modal-v3__title-wrap">
+                <div 
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleTextFieldUpdate('title', e.currentTarget.textContent || '')}
+                  className="task-modal-v3__title"
                 >
-                  {tab.label}
-                  {tab.badge !== null && tab.badge > 0 && (
-                    <span className="task-modal__tab-badge">{tab.badge}</span>
-                  )}
-                </button>
-              ))}
-            </nav>
-            
-            {/* Tab Content - Scrollable */}
-            <ScrollArea className="flex-1 min-h-0">
-              <div className="task-modal__content">
-                {/* Description Tab */}
-                {activeTab === 'description' && (
-                  <div className="space-y-5">
-                    {/* Description - Single label only */}
+                  {task.title}
+                </div>
+              </div>
+              
+              {/* Tab Navigation */}
+              <nav className="task-modal-v3__tabs">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "task-modal-v3__tab",
+                      activeTab === tab.id && "task-modal-v3__tab--active"
+                    )}
+                  >
+                    {tab.label}
+                    {tab.badge !== null && tab.badge > 0 && (
+                      <span className="task-modal-v3__tab-badge">{tab.badge}</span>
+                    )}
+                  </button>
+                ))}
+              </nav>
+              
+              {/* Tab Content */}
+              <ScrollArea className="task-modal-v3__content-scroll">
+                <div className="task-modal-v3__content">
+                  {activeTab === 'description' && (
                     <TaskDescription
                       value={task.description || ''}
                       onChange={(desc) => handleTextFieldUpdate('description', desc)}
                     />
-                    
-                    {/* Inline Fields Row - V2 style */}
-                    <TaskFieldsGrid
-                      task={task}
-                      onFieldChange={handleFieldUpdate}
+                  )}
+
+                  {activeTab === 'checklist' && (
+                    <ChecklistSection
+                      taskId={effectiveTaskId!}
+                      items={checklist || []}
                     />
-                  </div>
-                )}
+                  )}
 
-                {/* Lead Notes Tab */}
-                {activeTab === 'lead-notes' && (
-                  <LeadNotesTab
-                    taskId={effectiveTaskId!}
-                    workstreamId={task.workstream_id || task.workstream?.id || null}
-                  />
-                )}
+                  {activeTab === 'files' && (
+                    <AttachmentsSection
+                      taskId={effectiveTaskId!}
+                      attachments={attachments || []}
+                    />
+                  )}
 
-                {/* Checklist Tab */}
-                {activeTab === 'checklist' && (
-                  <ChecklistSection
-                    taskId={effectiveTaskId!}
-                    items={checklist || []}
-                  />
-                )}
-
-                {/* Files Tab */}
-                {activeTab === 'files' && (
-                  <AttachmentsSection
-                    taskId={effectiveTaskId!}
-                    attachments={attachments || []}
-                  />
-                )}
-
-                {/* Activity Tab */}
-                {activeTab === 'activity' && (
-                  <ActivitySection
-                    taskId={effectiveTaskId!}
-                    comments={comments || []}
-                    activity={activity || []}
-                  />
-                )}
-              </div>
-            </ScrollArea>
-            
-            {/* Footer - With save indicator */}
-            <div className="task-modal__footer">
-              <DrawerFooter
-                task={task}
-                onDelete={handleClose}
-                onDuplicate={() => {}}
-                saveStatus={saveStatus}
-              />
+                  {activeTab === 'activity' && (
+                    <ActivitySection
+                      taskId={effectiveTaskId!}
+                      comments={comments || []}
+                      activity={activity || []}
+                    />
+                  )}
+                </div>
+              </ScrollArea>
             </div>
-          </>
+
+            {/* ===== RIGHT COLUMN: Sidebar ===== */}
+            <aside className="task-modal-v3__sidebar">
+              <SidebarFields
+                task={task}
+                onFieldChange={handleFieldUpdate}
+              />
+              
+              {/* Footer: Created/Updated + Actions */}
+              <div className="task-modal-v3__sidebar-footer">
+                <div className="task-modal-v3__timestamps">
+                  <div className="task-modal-v3__timestamp-row">
+                    <span className="task-modal-v3__timestamp-label">Created</span>
+                    <span className="task-modal-v3__timestamp-value">{format(new Date(task.created_at), 'MMM d, yyyy')}</span>
+                  </div>
+                  <div className="task-modal-v3__timestamp-row">
+                    <span className="task-modal-v3__timestamp-label">Updated</span>
+                    <span className="task-modal-v3__timestamp-value">{formatDistanceToNow(new Date(task.updated_at), { addSuffix: false })}</span>
+                  </div>
+                </div>
+                
+                <div className="task-modal-v3__footer-actions">
+                  <button onClick={handleDuplicate} className="task-modal-v3__footer-btn">
+                    <Copy className="w-4 h-4" />
+                    Duplicate
+                  </button>
+                  <button onClick={handleDelete} className="task-modal-v3__footer-btn task-modal-v3__footer-btn--danger">
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
         ) : (
           <div className="flex items-center justify-center h-64 text-muted-foreground">
             Task not found
@@ -392,16 +428,19 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
 function ModalSkeleton() {
   return (
-    <div className="p-6 space-y-6">
-      <Skeleton className="h-20 w-full rounded-xl" />
-      <Skeleton className="h-8 w-3/4" />
-      <Skeleton className="h-4 w-1/2" />
-      <div className="space-y-3">
-        <Skeleton className="h-12" />
-        <Skeleton className="h-12" />
-        <Skeleton className="h-12" />
+    <div className="task-modal-v3__layout">
+      <div className="task-modal-v3__main p-6 space-y-4">
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-32 w-full" />
       </div>
-      <Skeleton className="h-24" />
+      <div className="task-modal-v3__sidebar p-4 space-y-4">
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
+      </div>
     </div>
   );
 }
