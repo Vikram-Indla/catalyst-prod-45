@@ -125,60 +125,19 @@ function CoverageRing({ percentage, size = 'md' }: { percentage: number; size?: 
 }
 
 // ============================================
-// MOCK DATA - Replace with real API calls
+// EMPTY DATA - Replace with database hooks
 // ============================================
-const mockReleases = [
-  { id: 'rel-1', name: 'Release 2.4.0', status: 'active' },
-  { id: 'rel-2', name: 'Release 2.3.1', status: 'released' },
-  { id: 'rel-3', name: 'Release 2.5.0', status: 'planning' },
-];
+const mockReleases: { id: string; name: string; status: string }[] = [];
 
-const mockModules = [
-  { id: 'mod-1', name: 'User Management', requirements: 24, covered: 20, partial: 2, uncovered: 2, passRate: 85 },
-  { id: 'mod-2', name: 'Authentication', requirements: 18, covered: 16, partial: 1, uncovered: 1, passRate: 92 },
-  { id: 'mod-3', name: 'Payments', requirements: 32, covered: 22, partial: 6, uncovered: 4, passRate: 71 },
-  { id: 'mod-4', name: 'Notifications', requirements: 12, covered: 10, partial: 1, uncovered: 1, passRate: 88 },
-  { id: 'mod-5', name: 'Reporting', requirements: 15, covered: 8, partial: 3, uncovered: 4, passRate: 65 },
-  { id: 'mod-6', name: 'API Gateway', requirements: 20, covered: 18, partial: 1, uncovered: 1, passRate: 94 },
-];
+const mockModules: { id: string; name: string; requirements: number; covered: number; partial: number; uncovered: number; passRate: number }[] = [];
 
-const mockRequirements = [
-  { id: 'REQ-001', title: 'User can register with email', priority: 'critical', module: 'User Management', type: 'functional', tests: 5, passed: 4, failed: 1, blocked: 0, notRun: 0, coverage: 'partial', coveragePercent: 80 },
-  { id: 'REQ-002', title: 'Password reset via email link', priority: 'high', module: 'Authentication', type: 'functional', tests: 3, passed: 3, failed: 0, blocked: 0, notRun: 0, coverage: 'covered', coveragePercent: 100 },
-  { id: 'REQ-003', title: 'OAuth2 integration with Google', priority: 'high', module: 'Authentication', type: 'functional', tests: 4, passed: 4, failed: 0, blocked: 0, notRun: 0, coverage: 'covered', coveragePercent: 100 },
-  { id: 'REQ-004', title: 'Payment processing with Stripe', priority: 'critical', module: 'Payments', type: 'functional', tests: 8, passed: 5, failed: 2, blocked: 1, notRun: 0, coverage: 'partial', coveragePercent: 63 },
-  { id: 'REQ-005', title: 'Refund processing within 48 hours', priority: 'high', module: 'Payments', type: 'functional', tests: 0, passed: 0, failed: 0, blocked: 0, notRun: 0, coverage: 'uncovered', coveragePercent: 0 },
-  { id: 'REQ-006', title: 'Email notification on order', priority: 'medium', module: 'Notifications', type: 'functional', tests: 2, passed: 2, failed: 0, blocked: 0, notRun: 0, coverage: 'covered', coveragePercent: 100 },
-  { id: 'REQ-007', title: 'API rate limiting (1000 req/min)', priority: 'critical', module: 'API Gateway', type: 'non_functional', tests: 3, passed: 3, failed: 0, blocked: 0, notRun: 0, coverage: 'covered', coveragePercent: 100 },
-  { id: 'REQ-008', title: 'GDPR data export compliance', priority: 'critical', module: 'User Management', type: 'compliance', tests: 0, passed: 0, failed: 0, blocked: 0, notRun: 0, coverage: 'uncovered', coveragePercent: 0 },
-  { id: 'REQ-009', title: 'Dashboard report generation', priority: 'medium', module: 'Reporting', type: 'functional', tests: 2, passed: 1, failed: 0, blocked: 0, notRun: 1, coverage: 'partial', coveragePercent: 50 },
-  { id: 'REQ-010', title: 'PDF export functionality', priority: 'low', module: 'Reporting', type: 'functional', tests: 1, passed: 1, failed: 0, blocked: 0, notRun: 0, coverage: 'covered', coveragePercent: 100 },
-];
+const mockRequirements: { id: string; title: string; priority: string; module: string; type: string; tests: number; passed: number; failed: number; blocked: number; notRun: number; coverage: string; coveragePercent: number }[] = [];
 
-const mockGaps = [
-  { id: 'gap-1', reqId: 'REQ-005', reqTitle: 'Refund processing within 48 hours', priority: 'high', module: 'Payments', gapType: 'no_tests', severity: 'critical', riskScore: 85, effort: 8 },
-  { id: 'gap-2', reqId: 'REQ-008', reqTitle: 'GDPR data export compliance', priority: 'critical', module: 'User Management', gapType: 'no_tests', severity: 'critical', riskScore: 92, effort: 12 },
-  { id: 'gap-3', reqId: 'REQ-004', reqTitle: 'Payment processing with Stripe', priority: 'critical', module: 'Payments', gapType: 'all_failing', severity: 'high', riskScore: 78, effort: 4 },
-  { id: 'gap-4', reqId: 'REQ-009', reqTitle: 'Dashboard report generation', priority: 'medium', module: 'Reporting', gapType: 'insufficient', severity: 'medium', riskScore: 45, effort: 6 },
-];
+const mockGaps: { id: string; reqId: string; reqTitle: string; priority: string; module: string; gapType: string; severity: string; riskScore: number; effort: number }[] = [];
 
-const mockTrendData = [
-  { week: 'W1', coverage: 62, requirements: 95 },
-  { week: 'W2', coverage: 65, requirements: 102 },
-  { week: 'W3', coverage: 68, requirements: 108 },
-  { week: 'W4', coverage: 71, requirements: 112 },
-  { week: 'W5', coverage: 73, requirements: 118 },
-  { week: 'W6', coverage: 75, requirements: 121 },
-  { week: 'W7', coverage: 76, requirements: 121 },
-  { week: 'W8', coverage: 78, requirements: 121 },
-];
+const mockTrendData: { week: string; coverage: number; requirements: number }[] = [];
 
-const mockSprintCoverage = [
-  { sprint: 'Sprint 12', coverage: 82, newReqs: 8, testedReqs: 6 },
-  { sprint: 'Sprint 13', coverage: 79, newReqs: 12, testedReqs: 8 },
-  { sprint: 'Sprint 14', coverage: 76, newReqs: 10, testedReqs: 6 },
-  { sprint: 'Sprint 15', coverage: 78, newReqs: 5, testedReqs: 5 },
-];
+const mockSprintCoverage: { sprint: string; coverage: number; newReqs: number; testedReqs: number }[] = [];
 
 // ============================================
 // HELPER COMPONENTS
