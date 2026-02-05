@@ -3,6 +3,7 @@
 // ============================================================
 
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   usePriList,
   usePriCurrentWeek,
@@ -31,10 +32,12 @@ import type { PriItemFull, PriUpdateItemInput, PriCheckoutDecisionItem } from '.
 import styles from '../styles/priorities.module.css';
 
 interface PriWeekPageProps {
-  listId: string;
+  listId?: string;
 }
 
-export function PriWeekPage({ listId }: PriWeekPageProps) {
+export function PriWeekPage({ listId: propListId }: PriWeekPageProps) {
+  const params = useParams<{ listId: string }>();
+  const listId = propListId || params.listId || '';
   const [selectedItem, setSelectedItem] = useState<PriItemFull | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
