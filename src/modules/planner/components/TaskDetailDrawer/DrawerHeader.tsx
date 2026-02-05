@@ -276,7 +276,7 @@ function WorkstreamSelector({
             !value ? "bg-muted font-semibold" : "hover:bg-muted/50"
           )}
         >
-          <span className="w-2.5 h-2.5 rounded-full bg-gray-400" />
+          <span className="w-2.5 h-2.5 rounded-full bg-muted-foreground/60" />
           <span className="text-muted-foreground">None</span>
           {!value && <Check className="w-4 h-4 ml-auto text-primary" />}
         </button>
@@ -302,16 +302,35 @@ function WorkstreamSelector({
   );
 }
 
-// Assignee Selector with proper avatars
+// Enterprise avatar color generator - consistent vibrant colors based on name
+function getAvatarColor(name: string): string {
+  const colors = [
+    'hsl(220, 90%, 56%)',  // Blue
+    'hsl(262, 83%, 58%)',  // Purple
+    'hsl(158, 64%, 40%)',  // Teal
+    'hsl(340, 82%, 52%)',  // Pink
+    'hsl(24, 95%, 53%)',   // Orange
+    'hsl(142, 71%, 45%)',  // Green
+    'hsl(199, 89%, 48%)',  // Sky
+    'hsl(47, 96%, 53%)',   // Amber
+    'hsl(291, 64%, 52%)',  // Fuchsia
+    'hsl(174, 72%, 40%)',  // Cyan
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+// Assignee Selector with enterprise-level avatars
 function AssigneeSelector({
   value,
   currentAssignee,
-  workstreamName,
   onChange,
 }: {
   value: string | null;
   currentAssignee: any;
-  workstreamName?: string;
   onChange: (id: string | null) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -326,7 +345,6 @@ function AssigneeSelector({
   }, [open]);
 
   const displayAssignee = profiles.find((p) => p.id === value) || currentAssignee || null;
-  const wsColors = getWorkstreamColor(workstreamName || '');
 
   const filteredProfiles = useMemo(() => {
     if (!search.trim()) return profiles;
@@ -356,8 +374,8 @@ function AssigneeSelector({
                 />
               ) : (
                 <div
-                  className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold text-white"
-                  style={{ backgroundColor: wsColors.hex }}
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold text-white shadow-sm"
+                  style={{ backgroundColor: getAvatarColor(displayAssignee.full_name || '') }}
                 >
                   {getInitials(displayAssignee.full_name)}
                 </div>
@@ -366,8 +384,8 @@ function AssigneeSelector({
             </>
           ) : (
             <>
-              <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[9px] text-muted-foreground">
-                ?
+              <div className="w-5 h-5 rounded-full border-2 border-dashed border-muted-foreground/40 flex items-center justify-center">
+                <span className="text-[9px] text-muted-foreground">+</span>
               </div>
               <span className="text-muted-foreground">Unassigned</span>
             </>
@@ -375,58 +393,70 @@ function AssigneeSelector({
           <span className="task-modal__status-chevron">▾</span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-0 z-[500] bg-popover" align="start">
-        <div className="p-2 border-b border-border">
+      <PopoverContent 
+        className="w-72 p-0 z-[100001] bg-popover shadow-xl border border-border/60" 
+        align="start"
+        sideOffset={4}
+      >
+        <div className="p-3 border-b border-border/60">
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search..."
+            placeholder="Search people..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-2.5 py-1.5 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
-        <div className="max-h-[240px] overflow-y-auto p-1.5">
+        <div className="max-h-[280px] overflow-y-auto p-2">
           <button
-            onClick={() => { onChange(null); setOpen(false); }}
+            onMouseDown={(e) => { e.preventDefault(); onChange(null); setOpen(false); }}
             className={cn(
-              "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
-              !value ? "bg-muted font-semibold" : "hover:bg-muted/50"
+              "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
+              !value ? "bg-primary/10 font-medium" : "hover:bg-muted/60"
             )}
           >
-            <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
-              ?
+            <div className="w-8 h-8 rounded-full border-2 border-dashed border-muted-foreground/40 flex items-center justify-center flex-shrink-0">
+              <span className="text-xs text-muted-foreground">+</span>
             </div>
             <span className="text-muted-foreground">Unassigned</span>
             {!value && <Check className="w-4 h-4 ml-auto text-primary" />}
           </button>
-          {filteredProfiles.map((profile) => (
-            <button
-              key={profile.id}
-              onClick={() => { onChange(profile.id); setOpen(false); }}
-              className={cn(
-                "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors",
-                value === profile.id ? "bg-muted font-semibold" : "hover:bg-muted/50"
-              )}
-            >
-              {profile.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt={profile.full_name}
-                  className="w-6 h-6 rounded-full object-cover"
-                />
-              ) : (
-                <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-white"
-                  style={{ backgroundColor: wsColors.hex }}
-                >
-                  {getInitials(profile.full_name)}
+          {filteredProfiles.map((profile) => {
+            const avatarColor = getAvatarColor(profile.full_name || profile.email || '');
+            return (
+              <button
+                key={profile.id}
+                onMouseDown={(e) => { e.preventDefault(); onChange(profile.id); setOpen(false); }}
+                className={cn(
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                  value === profile.id ? "bg-primary/10 font-medium" : "hover:bg-muted/60"
+                )}
+              >
+                {profile.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.full_name}
+                    className="w-8 h-8 rounded-full object-cover flex-shrink-0 shadow-sm"
+                  />
+                ) : (
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: avatarColor }}
+                  >
+                    {getInitials(profile.full_name)}
+                  </div>
+                )}
+                <div className="flex-1 text-left min-w-0">
+                  <div className="font-medium truncate">{profile.full_name || 'Unnamed'}</div>
+                  {profile.email && (
+                    <div className="text-xs text-muted-foreground truncate">{profile.email}</div>
+                  )}
                 </div>
-              )}
-              <span>{profile.full_name || 'Unnamed'}</span>
-              {value === profile.id && <Check className="w-4 h-4 ml-auto text-primary" />}
-            </button>
-          ))}
+                {value === profile.id && <Check className="w-4 h-4 text-primary flex-shrink-0" />}
+              </button>
+            );
+          })}
         </div>
       </PopoverContent>
     </Popover>
@@ -560,13 +590,12 @@ export function DrawerHeader({
           />
         </div>
         
-        {/* Assignee - Now editable with proper avatars */}
+        {/* Assignee - Enterprise avatars with vibrant colors */}
         <div className="task-modal__status-field">
           <span className="task-modal__status-label">Assignee</span>
           <AssigneeSelector
             value={task.assignee_id || task.assignee?.id || null}
             currentAssignee={task.assignee}
-            workstreamName={workstreamName}
             onChange={(id) => onAssigneeChange?.(id)}
           />
         </div>
