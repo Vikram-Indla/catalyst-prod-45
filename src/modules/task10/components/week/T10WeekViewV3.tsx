@@ -941,7 +941,7 @@ export function T10WeekViewV3() {
         <Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={logoBadgeStyle}>10</div>
           <span style={logoTextStyle}>
-            Task<sup style={{ fontSize: 10, color: '#2563eb', marginLeft: 1 }}>10</sup>
+            Task
           </span>
         </Link>
 
