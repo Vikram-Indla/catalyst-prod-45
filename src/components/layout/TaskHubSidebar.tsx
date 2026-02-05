@@ -38,26 +38,7 @@ const taskHubSidebarConfig: SidebarConfig = {
         { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
         {
           id: 'task10',
-          title: (
-            <span className="flex items-center gap-2">
-              <span>Priorities</span>
-              <span
-                className="inline-flex items-center justify-center"
-                style={{
-                  width: '22px',
-                  height: '22px',
-                  borderRadius: '9999px',
-                  background: 'hsl(var(--brand-primary))',
-                  color: 'hsl(var(--primary-foreground))',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  lineHeight: 1,
-                }}
-              >
-                10
-              </span>
-            </span>
-          ),
+          title: 'Priorities',
           path: '/taskhub/task10',
           icon: Disc,
           exact: false,
