@@ -54,6 +54,7 @@ import { useQueryClient } from '@tanstack/react-query';
 // Export utilities
 import { exportToExcel, exportToCsv, exportToPdf } from '@/utils/exports';
 import type { ExportColumn } from '@/utils/exports/types';
+import { downloadDocumentation } from '@/utils/releaseModuleDocumentation';
 
 // Import real data hooks
 import {
@@ -676,7 +677,7 @@ export default function CommandCenterPage() {
                 <ChevronDown className="h-3 w-3 ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={handleExportPdf} className="gap-2">
                 <FileText className="h-4 w-4" />
                 Export as PDF
@@ -685,10 +686,17 @@ export default function CommandCenterPage() {
                 <Table2 className="h-4 w-4" />
                 Export as CSV
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleExportExcel} className="gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
                 Export as Excel
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => {
+                downloadDocumentation();
+                catalystToast.success('Documentation downloaded');
+              }} className="gap-2">
+                <FileText className="h-4 w-4" />
+                Module Documentation (.md)
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
