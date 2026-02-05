@@ -2,13 +2,13 @@
  * LEAD NOTES TAB - Enterprise Clean V2
  * Private notes for workstream leads and management
  * Shows author name, avatar, and timestamp for each note
+ * Supports @mentions for tagging users
  */
 
 import { useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   AlertDialog, 
@@ -21,7 +21,7 @@ import {
   AlertDialogTitle, 
   AlertDialogTrigger 
 } from '@/components/ui/alert-dialog';
-import { FileText, Lock, Pencil, Trash2, Send, X, Check } from 'lucide-react';
+import { FileText, Pencil, Trash2, Send, X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   useLeadNotes,
@@ -32,6 +32,7 @@ import {
   LeadNote,
 } from '../../hooks/useLeadNotes';
 import { useAuth } from '@/lib/auth';
+import { MentionTextarea, MentionText } from '@/components/shared/MentionTextarea';
 
 interface LeadNotesTabProps {
   taskId: string;
@@ -113,11 +114,12 @@ export function LeadNotesTab({ taskId, workstreamId }: LeadNotesTabProps) {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 space-y-3">
-              <Textarea
+              <MentionTextarea
                 value={newNote}
-                onChange={(e) => setNewNote(e.target.value)}
-                placeholder="Add a note for the team..."
-                className="min-h-[80px] resize-none bg-background border-border-subtle focus:border-brand-primary"
+                onChange={setNewNote}
+                placeholder="Add a note for the team... (Type @ to mention)"
+                minHeight="80px"
+                className="bg-background border-border-subtle focus:border-brand-primary"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                     e.preventDefault();
@@ -235,11 +237,11 @@ export function LeadNotesTab({ taskId, workstreamId }: LeadNotesTabProps) {
                 {/* Note content */}
                 {isEditing ? (
                   <div className="space-y-3">
-                    <Textarea
+                    <MentionTextarea
                       value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      className="min-h-[80px] resize-none"
-                      autoFocus
+                      onChange={setEditContent}
+                      minHeight="80px"
+                      className="resize-none"
                     />
                     <div className="flex items-center justify-end gap-2">
                       <Button
@@ -263,9 +265,9 @@ export function LeadNotesTab({ taskId, workstreamId }: LeadNotesTabProps) {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-text-primary whitespace-pre-wrap leading-relaxed">
-                    {note.content}
-                  </p>
+                  <div className="text-sm text-text-primary whitespace-pre-wrap leading-relaxed">
+                    <MentionText text={note.content} />
+                  </div>
                 )}
               </div>
             );

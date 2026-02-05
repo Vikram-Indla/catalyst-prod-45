@@ -1,9 +1,9 @@
 // ============================================================
-// TASK DESCRIPTION COMPONENT - MATCHES REFERENCE
-// Simple section with icon + label, clean text area
+// TASK DESCRIPTION COMPONENT - WITH @MENTIONS SUPPORT
+// Simple section with MentionTextarea for user tagging
 // ============================================================
 
-import { FileText } from 'lucide-react';
+import { MentionTextarea } from '@/components/shared/MentionTextarea';
 
 interface TaskDescriptionProps {
   value: string;
@@ -13,16 +13,14 @@ interface TaskDescriptionProps {
 export function TaskDescription({ value, onChange }: TaskDescriptionProps) {
   return (
     <div className="space-y-3">
-      {/* Description content - editable (no duplicate header) */}
-      <div
-        contentEditable
-        suppressContentEditableWarning
-        onBlur={(e) => onChange(e.currentTarget.textContent || '')}
-        data-placeholder="Add a description..."
-        className="min-h-[60px] text-sm text-foreground leading-relaxed outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground cursor-text"
-      >
-        {value}
-      </div>
+      {/* Description content - editable with @mentions */}
+      <MentionTextarea
+        value={value}
+        onChange={onChange}
+        placeholder="Add a description... (Type @ to mention someone)"
+        minHeight="100px"
+        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 p-0 text-sm leading-relaxed resize-none"
+      />
     </div>
   );
 }
