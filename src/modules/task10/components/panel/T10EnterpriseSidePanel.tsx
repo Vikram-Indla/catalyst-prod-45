@@ -362,7 +362,7 @@ export function T10EnterpriseSidePanel({
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}>
-                TASK PRIORITY
+                PRIORITY
               </div>
               {item.taskhub_key && (
                 <button

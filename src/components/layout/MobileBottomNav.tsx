@@ -27,7 +27,7 @@ const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', path: '/taskhub/dashboard', icon: LayoutDashboard },
   { id: 'my-tasks', label: 'My Tasks', path: '/taskhub/my-tasks', icon: CheckSquare },
   { id: 'boards', label: 'Boards', path: '/taskhub/boards', icon: LayoutGrid },
-  { id: 'task10', label: 'Task¹⁰', path: '/taskhub/task10', icon: Target },
+  { id: 'task10', label: 'Priorities¹⁰', path: '/taskhub/task10', icon: Target },
 ];
 
 interface MobileBottomNavProps {

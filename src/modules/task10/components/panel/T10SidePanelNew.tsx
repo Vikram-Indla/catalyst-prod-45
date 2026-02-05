@@ -326,7 +326,7 @@ export function T10SidePanelNew({
                   fontFamily: 'system-ui, -apple-system, sans-serif',
                 }}
               >
-                TASK
+                PRIORITIES
               </span>
               <span
                 style={{
@@ -343,18 +343,6 @@ export function T10SidePanelNew({
                 }}
               >
                 10
-              </span>
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  color: '#ffffff',
-                  fontFamily: 'system-ui, -apple-system, sans-serif',
-                }}
-              >
-                PRIORITY
               </span>
             </div>
             {item.rank && (

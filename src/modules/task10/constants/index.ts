@@ -1,7 +1,7 @@
-// Task10 Module Constants
+// Priorities10 Module Constants
 export const T10_MODULE_SLUG = 'task10';
 export const T10_ROUTE_PREFIX = '/task10';
-export const T10_TOP_NAV_LABEL = 'Task¹⁰';
+export const T10_TOP_NAV_LABEL = 'Priorities¹⁰';
 export const T10_SIDEBAR_LABEL = 'Priority Lists';
 
 // Status

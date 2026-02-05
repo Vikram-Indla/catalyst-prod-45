@@ -40,7 +40,7 @@ const taskHubSidebarConfig: SidebarConfig = {
           id: 'task10',
           title: (
             <span className="flex items-center gap-2">
-              <span>Task</span>
+              <span>Priorities</span>
               <span
                 className="inline-flex items-center justify-center"
                 style={{
