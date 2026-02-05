@@ -13,7 +13,7 @@ import {
   CheckSquare,
   List,
   Layers,
-  Target,
+  Disc,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -59,7 +59,7 @@ const taskHubSidebarConfig: SidebarConfig = {
             </span>
           ),
           path: '/taskhub/task10',
-          icon: Target,
+          icon: Disc,
           exact: false,
         },
       ],
