@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { X, Link2, Maximize2, MoreHorizontal, Copy, Trash2, Loader2, Check } from 'lucide-react';
 import {
   Modal,
@@ -221,30 +222,80 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const handleDuplicate = async () => {
     if (!task) return;
     try {
-      const timestamp = Date.now().toString(36).toUpperCase();
-      const newTaskKey = `TSK-${timestamp}`;
+      const workstreamId = task.workstream_id || task.workstream?.id;
       
-      const { error } = await supabase
+      // 1. Get workstream key_prefix
+      let keyPrefix = 'TSK';
+      if (workstreamId) {
+        const { data: wsData } = await supabase
+          .from('planner_workstreams')
+          .select('key_prefix')
+          .eq('id', workstreamId)
+          .maybeSingle();
+        
+        if (wsData?.key_prefix) {
+          keyPrefix = wsData.key_prefix;
+        }
+      }
+      
+      // 2. Get max sequence number for this workstream
+      const { data: existingTasks } = await supabase
+        .from('planner_tasks')
+        .select('task_key')
+        .eq('workstream_id', workstreamId || '')
+        .like('task_key', `${keyPrefix}-%`);
+      
+      let maxSequence = 0;
+      if (existingTasks && existingTasks.length > 0) {
+        existingTasks.forEach((t) => {
+          const match = t.task_key?.match(new RegExp(`^${keyPrefix}-(\\d+)$`));
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num > maxSequence) maxSequence = num;
+          }
+        });
+      }
+      
+      const newSequence = maxSequence + 1;
+      const newTaskKey = `${keyPrefix}-${newSequence}`;
+      
+      // 3. Insert duplicated task
+      const { data: newTask, error } = await supabase
         .from('planner_tasks')
         .insert([{
           task_key: newTaskKey,
-          title: `${task.title} (Copy)`,
+          title: task.title, // No "(Copy)" suffix per requirement
           description: task.description || null,
           priority: task.priority || 'medium',
           status_id: task.status_id || null,
-          workstream_id: task.workstream_id || task.workstream?.id || null,
+          workstream_id: workstreamId || null,
           assignee_id: task.assignee_id || task.assignee?.id || null,
           due_date: task.due_date || null,
           start_date: task.start_date || null,
-        }]);
+        }])
+        .select('id')
+        .single();
       
       if (error) throw error;
-      toast.success('Task duplicated successfully');
+      
+      // 4. Show Catalyst toast with action to open new task
+      catalystToast.success(
+        'Task Duplicated',
+        `Created as ${newTaskKey}`,
+        {
+          label: 'View Task',
+          onClick: () => {
+            handleClose();
+            navigate(`/taskhub/tasks?taskId=${newTask.id}`);
+          }
+        }
+      );
+      
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
       onTaskUpdated?.();
     } catch (err) {
       console.error('Duplicate error:', err);
-      toast.error('Failed to duplicate task');
+      catalystToast.error('Duplication Failed', 'Could not duplicate task');
     }
   };
 
