@@ -643,27 +643,29 @@ export function T10WeekViewV3() {
   };
 
   const logoBadgeStyle: React.CSSProperties = {
-    width: 36,
-    height: 36,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-    borderRadius: 10,
-    color: '#ffffff',
-    fontSize: 14,
+    fontSize: 32,
     fontWeight: 800,
-    boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)',
+    color: '#2563eb',
+    lineHeight: 1,
     flexShrink: 0,
   };
 
-  const logoTextStyle: React.CSSProperties = {
+  const logoTextContainerStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+  };
+
+  const logoTitleStyle: React.CSSProperties = {
     fontSize: 16,
     fontWeight: 600,
     color: '#0f172a',
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: 0,
+    lineHeight: 1.2,
+  };
+
+  const logoSubtitleStyle: React.CSSProperties = {
+    fontSize: 11,
+    color: '#64748b',
   };
 
   const listKeyStyle: React.CSSProperties = {
@@ -941,11 +943,12 @@ export function T10WeekViewV3() {
       {/* HEADER */}
       <header style={headerStyle}>
         {/* Logo */}
-        <Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={logoBadgeStyle}>10</div>
-          <span style={logoTextStyle}>
-            Task
-          </span>
+        <Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <span style={logoBadgeStyle}>10</span>
+          <div style={logoTextContainerStyle}>
+            <span style={logoTitleStyle}>Priorities</span>
+            <span style={logoSubtitleStyle}>Priority Management</span>
+          </div>
         </Link>
 
         {/* List Key + Name */}
