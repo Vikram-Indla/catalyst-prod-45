@@ -44,17 +44,13 @@
 }
 
 .t10-detail-logo-badge {
-  width: 28px;
-  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2563eb;
-  border-radius: 50%;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
-  margin-left: 10px;
+  color: #2563eb;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
   transition: transform 0.15s ease;
 }
 
