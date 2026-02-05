@@ -1103,10 +1103,31 @@ export function T10WeekViewV3() {
             disabled={isAddDisabled}
           />
           {!isAddDisabled && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8', flexShrink: 0 }}>
-              <kbd style={kbdStyle}>Enter</kbd>
+            <button
+              type="button"
+              onClick={handleAddItem}
+              disabled={!newItemText.trim()}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 8, 
+                fontSize: 13, 
+                color: newItemText.trim() ? '#2563eb' : '#94a3b8', 
+                flexShrink: 0,
+                background: 'transparent',
+                border: 'none',
+                cursor: newItemText.trim() ? 'pointer' : 'default',
+                padding: 0,
+              }}
+            >
+              <kbd style={{
+                ...kbdStyle,
+                background: newItemText.trim() ? '#2563eb' : '#ffffff',
+                color: newItemText.trim() ? '#ffffff' : '#475569',
+                borderColor: newItemText.trim() ? '#2563eb' : '#e2e8f0',
+              }}>Enter</kbd>
               <span>to add</span>
-            </div>
+            </button>
           )}
         </div>
 
