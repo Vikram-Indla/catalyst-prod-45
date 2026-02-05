@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function useBulkDeleteTasks() {
   const queryClient = useQueryClient();
@@ -45,11 +45,11 @@ export function useBulkDeleteTasks() {
       if (context?.previousKanban) {
         queryClient.setQueryData(['kanban-tasks'], context.previousKanban);
       }
-      toast.error(`Failed to delete ${taskIds.length} tasks`);
+      catalystToast.error('Delete Failed', `Could not delete ${taskIds.length} tasks`);
     },
 
     onSuccess: (taskIds) => {
-      toast.success(`Deleted ${taskIds.length} task${taskIds.length > 1 ? 's' : ''}`);
+      catalystToast.success('Tasks Deleted', `${taskIds.length} task${taskIds.length > 1 ? 's' : ''} removed`);
     },
 
     onSettled: () => {
