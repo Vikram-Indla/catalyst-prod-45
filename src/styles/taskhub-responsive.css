@@ -1,0 +1,892 @@
+/**
+ * TASKHUB RESPONSIVE STYLES
+ * ==========================
+ * iPad and iPhone responsive adjustments for all TaskHub modules
+ * 
+ * Breakpoints:
+ * - Mobile (iPhone): max-width 639px
+ * - Tablet (iPad portrait): 640px - 1023px
+ * - Desktop: 1024px+
+ */
+
+/* ==========================================================================
+   MOBILE-FIRST BASE RESETS
+   ========================================================================== */
+
+/* Hide sidebar on mobile/tablet - use bottom nav or hamburger instead */
+@media (max-width: 1023px) {
+  /* Sidebar hidden on mobile/tablet */
+  .taskhub-sidebar,
+  [class*="TaskHubSidebar"],
+  .sidebar-base,
+  .ws-sidebar {
+    display: none !important;
+  }
+
+  /* Main content takes full width */
+  .taskhub-main-content,
+  .ws-page,
+  .planner-content,
+  .t10-page-container {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Reduce padding on mobile */
+  .taskhub-container,
+  .ws-page-content,
+  .planner-page-content {
+    padding: 12px !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE (iPhone) - max-width: 639px
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Typography scale down */
+  .ws-page,
+  .t10-page-container,
+  .planner-page {
+    font-size: 14px;
+  }
+
+  /* Page headers stack vertically */
+  .ws-header,
+  .t10-header,
+  .planner-header,
+  [class*="page-header"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .ws-header-title,
+  .t10-header-title {
+    font-size: 20px !important;
+  }
+
+  .ws-header-subtitle {
+    font-size: 13px !important;
+  }
+
+  /* Summary cards - horizontal scroll on mobile */
+  .ws-summary-bar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 8px !important;
+    padding-bottom: 8px;
+  }
+
+  .ws-summary-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ws-summary-card {
+    min-width: 100px !important;
+    flex-shrink: 0 !important;
+    padding: 10px 12px !important;
+  }
+
+  .ws-summary-value {
+    font-size: 18px !important;
+  }
+
+  .ws-summary-label {
+    font-size: 10px !important;
+  }
+
+  /* Toolbar stacks on mobile */
+  .ws-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .ws-toolbar-left,
+  .ws-toolbar-right {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .ws-search-input {
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* List view - simplified columns on mobile */
+  .ws-list-header,
+  .ws-list-row {
+    grid-template-columns: 1fr auto !important;
+    gap: 8px !important;
+    padding: 12px !important;
+  }
+
+  /* Hide non-essential columns on mobile */
+  .ws-list-header-cell:nth-child(n+3),
+  .ws-list-row > *:nth-child(n+3) {
+    display: none !important;
+  }
+
+  /* Show only name and actions on mobile */
+  .ws-list-row .ws-row-actions {
+    display: flex !important;
+  }
+
+  /* Task10 list cards - full width stack */
+  .t10-list-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Task10 list card - compact mobile layout */
+  .t10-list-card,
+  [class*="ListCard"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 14px !important;
+  }
+
+  .t10-list-card-right,
+  .t10-list-card-actions {
+    width: 100% !important;
+    margin-top: 12px !important;
+    justify-content: space-between !important;
+  }
+
+  /* Priority cards - compact on mobile */
+  .t10-priority-card {
+    padding: 12px !important;
+  }
+
+  .t10-priority-rank {
+    font-size: 16px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  /* Side panel - full screen on mobile */
+  .t10-side-panel,
+  [class*="SidePanel"] {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  /* Task detail drawer - full screen on mobile */
+  .task-detail-drawer,
+  [class*="TaskDetailDrawer"] {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
+  /* Buttons - larger touch targets */
+  .ws-btn,
+  .t10-btn {
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+  }
+
+  .ws-btn-sm {
+    min-height: 36px !important;
+  }
+
+  /* Modal dialogs - nearly full screen on mobile */
+  [role="dialog"],
+  .modal-content,
+  [class*="DialogContent"] {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100vh - 48px) !important;
+    margin: 12px !important;
+  }
+
+  /* Form fields - full width on mobile */
+  input,
+  select,
+  textarea,
+  .input,
+  .select-trigger {
+    width: 100% !important;
+    min-height: 44px;
+  }
+
+  /* Dashboard KPI cards - stack vertically */
+  .dashboard-kpi-grid,
+  .kpi-cards-container {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Timeline - simplified mobile view */
+  .timeline-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Kanban board - horizontal scroll */
+  .kanban-container,
+  .kanban-columns {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 12px !important;
+    padding-bottom: 16px;
+  }
+
+  .kanban-column {
+    min-width: 280px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Filter dropdowns - full width on mobile */
+  [class*="FilterDropdown"],
+  .filter-popover {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  /* Hide keyboard shortcuts on mobile */
+  .keyboard-shortcut,
+  [class*="shortcut-badge"],
+  .ws-search-shortcut {
+    display: none !important;
+  }
+
+  /* Reduce row height on mobile for density */
+  .ws-list-row {
+    min-height: 56px;
+  }
+
+  /* Avatar sizes - smaller on mobile */
+  .avatar-md,
+  [class*="Avatar"] {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  /* Popover positioning - center on mobile */
+  [data-radix-popper-content-wrapper] {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: calc(100vw - 24px) !important;
+  }
+}
+
+/* ==========================================================================
+   TABLET (iPad) - 640px to 1023px
+   ========================================================================== */
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Reduced padding for tablet */
+  .taskhub-container,
+  .ws-page-content,
+  .planner-page-content {
+    padding: 16px !important;
+  }
+
+  /* Headers - horizontal but compact */
+  .ws-header,
+  .t10-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Summary cards - 2 per row */
+  .ws-summary-bar {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .ws-summary-card {
+    min-width: 0 !important;
+  }
+
+  /* List view - show more columns on tablet */
+  .ws-list-header,
+  .ws-list-row {
+    grid-template-columns: 40px 2fr 1fr 100px 80px !important;
+  }
+
+  /* Hide less essential columns on tablet */
+  .ws-list-header-cell:nth-child(n+6),
+  .ws-list-row > *:nth-child(n+6) {
+    display: none !important;
+  }
+
+  /* Task10 list cards - 2 columns on tablet */
+  .t10-list-cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* Side panel - 50% width on tablet */
+  .t10-side-panel,
+  [class*="SidePanel"] {
+    width: 50vw !important;
+    min-width: 400px !important;
+  }
+
+  /* Task detail drawer - 60% width on tablet */
+  .task-detail-drawer,
+  [class*="TaskDetailDrawer"] {
+    width: 60vw !important;
+    min-width: 480px !important;
+  }
+
+  /* Modal dialogs - responsive width */
+  [role="dialog"],
+  .modal-content,
+  [class*="DialogContent"] {
+    width: min(90vw, 560px) !important;
+  }
+
+  /* Dashboard KPI cards - 2x2 grid */
+  .dashboard-kpi-grid,
+  .kpi-cards-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* Kanban columns - fit 2-3 on screen */
+  .kanban-column {
+    min-width: 300px !important;
+  }
+
+  /* Keep keyboard shortcuts visible on tablet */
+  .keyboard-shortcut,
+  [class*="shortcut-badge"] {
+    display: inline-flex;
+  }
+}
+
+/* ==========================================================================
+   TOUCH OPTIMIZATIONS
+   ========================================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  button,
+  a,
+  .clickable,
+  [role="button"],
+  .ws-btn,
+  .t10-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Disable hover effects on touch devices */
+  .ws-list-row:hover,
+  .ws-summary-card:hover,
+  .t10-list-card:hover,
+  .t10-priority-card:hover {
+    transform: none !important;
+    box-shadow: inherit !important;
+  }
+
+  /* Active state for touch feedback */
+  .ws-list-row:active,
+  .ws-summary-card:active,
+  .t10-list-card:active,
+  .t10-priority-card:active {
+    background-color: var(--ws-bg-tertiary, #f1f5f9) !important;
+  }
+
+  /* Scrollable areas momentum */
+  .scrollable,
+  .overflow-auto,
+  .overflow-x-auto,
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ==========================================================================
+   ORIENTATION SPECIFIC
+   ========================================================================== */
+
+/* Landscape phone optimizations */
+@media (max-width: 896px) and (orientation: landscape) {
+  /* Reduce vertical padding */
+  .ws-header,
+  .t10-header {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  /* Compact summary bar */
+  .ws-summary-bar {
+    margin-bottom: 8px !important;
+  }
+
+  /* Modal - wider in landscape */
+  [role="dialog"],
+  .modal-content {
+    max-height: 85vh !important;
+    width: 80vw !important;
+  }
+}
+
+/* ==========================================================================
+   SAFE AREA INSETS (notch handling)
+   ========================================================================== */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  .taskhub-container,
+  .ws-page,
+  .t10-page-container {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  /* Bottom navigation safe area */
+  .mobile-bottom-nav {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ==========================================================================
+   MOBILE BOTTOM NAVIGATION
+   ========================================================================== */
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+    padding: 8px 0;
+  }
+
+  .mobile-bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 12px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 150ms ease;
+  }
+
+  .mobile-bottom-nav-item.active {
+    color: #2563eb;
+    background: #eff6ff;
+  }
+
+  .mobile-bottom-nav-item svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Add bottom padding to content when bottom nav is visible */
+  .taskhub-main-content,
+  .ws-page,
+  .t10-page-container {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE HAMBURGER MENU
+   ========================================================================== */
+
+.mobile-menu-toggle {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: #334155;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+
+  .mobile-menu-toggle:hover {
+    background: #f1f5f9;
+  }
+}
+
+/* ==========================================================================
+   WORKSTREAMS PAGE RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Workstream row - card layout on mobile */
+  .ws-list-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    padding: 16px !important;
+    border-radius: 8px !important;
+    margin-bottom: 8px !important;
+    border: 1px solid var(--ws-border-primary, #e2e8f0) !important;
+  }
+
+  .ws-row-name {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  .ws-row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ws-text-tertiary, #64748b);
+  }
+
+  /* Health badge inline on mobile */
+  .ws-health-badge {
+    display: inline-flex !important;
+  }
+}
+
+/* ==========================================================================
+   TASK10 WEEK VIEW RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Week header - stacked on mobile */
+  .t10-week-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* Priority cards - full width stack */
+  .t10-priority-cards-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Top 5 / Mid 5 sections - full width */
+  .t10-tier-section {
+    margin-bottom: 16px;
+  }
+
+  .t10-tier-header {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Buffer section */
+  .t10-buffer-section {
+    padding: 12px !important;
+  }
+
+  /* Add item input - full width */
+  .t10-add-item-input {
+    width: 100% !important;
+  }
+}
+
+/* ==========================================================================
+   TASK DASHBOARD RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Dashboard grid - single column */
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Chart containers - full width */
+  .chart-container {
+    min-height: 200px !important;
+  }
+
+  /* Stats cards - horizontal scroll */
+  .stats-cards-row {
+    display: flex !important;
+    overflow-x: auto !important;
+    gap: 12px !important;
+    padding-bottom: 8px;
+  }
+
+  .stat-card {
+    min-width: 140px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Dashboard grid - 2 columns on tablet */
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+/* ==========================================================================
+   MY TASKS RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Task groups - full width */
+  .my-tasks-group {
+    padding: 0 !important;
+  }
+
+  .my-tasks-group-header {
+    padding: 12px 16px !important;
+    font-size: 13px !important;
+  }
+
+  /* Task row - compact card on mobile */
+  .my-task-row {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .my-task-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .my-task-title {
+    font-size: 14px !important;
+  }
+
+  .my-task-meta {
+    font-size: 12px !important;
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+
+  /* Hide non-essential meta on mobile */
+  .my-task-workstream {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   BOARDS VIEW RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Board selector - dropdown on mobile */
+  .boards-tabs {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Kanban columns - horizontal scroll */
+  .boards-kanban-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 16px;
+  }
+
+  .boards-kanban-column {
+    min-width: 280px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Column header compact */
+  .boards-column-header {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+  }
+
+  /* Task card compact */
+  .boards-task-card {
+    padding: 10px 12px !important;
+  }
+}
+
+/* ==========================================================================
+   TASK LIST VIEW RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Table becomes card list on mobile */
+  .task-list-table {
+    display: block !important;
+  }
+
+  .task-list-table thead {
+    display: none !important;
+  }
+
+  .task-list-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .task-list-table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    gap: 8px !important;
+  }
+
+  .task-list-table td {
+    display: flex !important;
+    justify-content: space-between !important;
+    padding: 4px 0 !important;
+    border: none !important;
+  }
+
+  .task-list-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #64748b;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Task list - horizontal scroll on tablet */
+  .task-list-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .task-list-table {
+    min-width: 800px !important;
+  }
+}
+
+/* ==========================================================================
+   TIMELINE VIEW RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+  /* Timeline - always horizontal scroll */
+  .timeline-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .timeline-grid {
+    min-width: 1200px !important;
+  }
+
+  /* Simplified timeline on mobile */
+  @media (max-width: 639px) {
+    .timeline-grid {
+      min-width: 800px !important;
+    }
+
+    .timeline-row-label {
+      min-width: 120px !important;
+      font-size: 12px !important;
+    }
+
+    .timeline-bar {
+      height: 24px !important;
+      font-size: 10px !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   CREATE MODAL RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Full screen modal on mobile */
+  .create-task-modal,
+  .create-workstream-modal,
+  .t10-create-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Modal header - sticky on mobile */
+  .modal-header {
+    position: sticky !important;
+    top: 0 !important;
+    background: white !important;
+    z-index: 10 !important;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  /* Modal content scrollable */
+  .modal-body {
+    overflow-y: auto !important;
+    max-height: calc(100vh - 120px) !important;
+  }
+
+  /* Modal footer - sticky on mobile */
+  .modal-footer {
+    position: sticky !important;
+    bottom: 0 !important;
+    background: white !important;
+    border-top: 1px solid #e2e8f0;
+    padding: 16px !important;
+  }
+}
+
+/* ==========================================================================
+   DROPDOWN/SELECT RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Dropdowns - bottom sheet style on mobile */
+  [data-radix-popper-content-wrapper] {
+    transform: none !important;
+  }
+
+  .select-content,
+  .dropdown-content,
+  [role="listbox"] {
+    max-height: 50vh !important;
+  }
+}
+
+/* ==========================================================================
+   PRINT STYLES (hide mobile elements)
+   ========================================================================== */
+
+@media print {
+  .mobile-bottom-nav,
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+}
