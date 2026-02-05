@@ -44,6 +44,8 @@ import {
   T10DateRangeFilter,
   T10StatusFilter,
 } from '../filters';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LIST CARD COMPONENT
@@ -332,6 +334,7 @@ export function T10LandingPageV3() {
   const [selectedList, setSelectedList] = useState<{ id: string; name: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState<{ id: string; name: string; rect: DOMRect } | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Filter state
   const {
@@ -834,6 +837,18 @@ export function T10LandingPageV3() {
         </>,
         document.body
       )}
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav 
+        onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        menuOpen={mobileMenuOpen}
+      />
+
+      {/* Mobile Menu Drawer */}
+      <MobileMenuDrawer 
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
     </div>
   );
 }

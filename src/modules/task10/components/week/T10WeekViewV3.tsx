@@ -45,6 +45,8 @@ import { T10SidePanelNew } from '../panel/T10SidePanelNew';
 import { T10CheckoutModalNew } from '../modals/T10CheckoutModalNew';
 import { formatT10WeekRange, formatShortDate, getDueStatus } from '../../utils';
 import type { T10ItemFull } from '../../types';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 import '../../styles/task10-detail.css';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -361,6 +363,7 @@ export function T10WeekViewV3() {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch data
   const { data: list, isLoading: listLoading, error: listError } = useT10ListById(listId || null);
@@ -1308,6 +1311,18 @@ export function T10WeekViewV3() {
           }}
         />
       )}
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav 
+        onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        menuOpen={mobileMenuOpen}
+      />
+
+      {/* Mobile Menu Drawer */}
+      <MobileMenuDrawer 
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
     </div>
   );
 }

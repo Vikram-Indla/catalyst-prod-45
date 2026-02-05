@@ -11,12 +11,15 @@ import { TaskDetailDrawer } from '../components/TaskDetailDrawer/TaskDetailDrawe
 import { PlannerCreateModal } from '../components/PlannerCreateModal';
 import { useCreatePlannerTask } from '../hooks/useCreatePlannerTask';
 import { usePlannerUsers } from '../hooks/usePlannerUsers';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 import type { FilterConfig } from '../types/my-tasks';
 import type { TaskStatus, TaskPriority } from '../types';
 
 export function MyTasksPage() {
   // Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Filter state
   const [filters, setFilters] = useState<FilterConfig>({});
@@ -108,6 +111,18 @@ export function MyTasksPage() {
         defaultStatus="backlog"
         users={users}
         teams={teams}
+      />
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav 
+        onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        menuOpen={mobileMenuOpen}
+      />
+
+      {/* Mobile Menu Drawer */}
+      <MobileMenuDrawer 
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
       />
     </div>
   );

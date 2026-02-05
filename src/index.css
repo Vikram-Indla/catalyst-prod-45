@@ -11,6 +11,7 @@
 @import './styles/users-module.css';
 @import './styles/caty.css';
 @import './modules/task10/styles/task10.css';
+@import './styles/taskhub-responsive.css';
 /* @import './styles/priority-lists.css'; */
 
 @tailwind base;

@@ -40,6 +40,8 @@ import { WorkstreamQuickEditDialog } from './WorkstreamQuickEditDialog';
 import { ArchivedWorkstreamsView } from './ArchivedWorkstreamsView';
 import { WorkstreamCard } from './WorkstreamCard';
 import { WorkstreamMembersDialog } from './WorkstreamMembersDialog';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -154,6 +156,7 @@ export function WorkstreamsPage() {
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
   const [leadSearchQuery, setLeadSearchQuery] = useState('');
   const [allUsers, setAllUsers] = useState<TeamMember[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [leads, setLeads] = useState<Record<string, TeamMember | null>>({});
 
   // Toolbar filter dropdowns

@@ -23,6 +23,8 @@ import { PlannerCreateTeamModal } from './components/PlannerCreateTeamModal';
 import { PlannerBulkActionBar } from './components/PlannerBulkActionBar';
 import { PlannerBulkDeleteModal } from './components/PlannerBulkDeleteModal';
 
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 
 import { PlannerSearchBar } from './components/PlannerSearchBar';
 import { usePlannerTasks, useUpdatePlannerTask, useDeletePlannerTask, useBulkDeletePlannerTasks } from './hooks/usePlannerTasks';
@@ -68,6 +70,7 @@ export function PlannerPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [groupBy, setGroupBy] = useState<GroupByOption | 'none'>('none');
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Column visibility state for task list
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
@@ -635,6 +638,18 @@ export function PlannerPage() {
           onClose={() => setIsCreateTeamModalOpen(false)}
           onCreate={handleCreateTeam}
           users={users}
+        />
+
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav 
+          onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          menuOpen={mobileMenuOpen}
+        />
+
+        {/* Mobile Menu Drawer */}
+        <MobileMenuDrawer 
+          open={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
         />
     </div>
   );
